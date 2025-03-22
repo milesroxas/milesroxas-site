@@ -1,21 +1,17 @@
 import type { CollectionConfig } from 'payload'
 
-import {
-  BlocksFeature,
-  FixedToolbarFeature,
-  HeadingFeature,
-  HorizontalRuleFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
-
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
-import { Banner } from '../../blocks/Banner/config'
-import { Code } from '../../blocks/Code/config'
+import { Archive } from '../../blocks/ArchiveBlock/config'
+import { CallToAction } from '../../blocks/CallToAction/config'
+import { Content } from '../../blocks/Content/config'
+import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
+import { hero } from '@/heros/config'
+import { slugField } from '@/fields/slug'
+import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
-import { revalidateDelete, revalidatePost as revalidateWork } from '../Posts/hooks/revalidatePost'
+import { revalidateDelete, revalidateWork } from './hooks/revalidateWorks'
 
 import {
   MetaDescriptionField,
@@ -24,23 +20,21 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
-import { slugField } from '@/fields/slug'
 
-export const Works: CollectionConfig = {
-  slug: 'works' as 'works',
+export const Works: CollectionConfig<'works'> = {
+  slug: 'works',
   access: {
     create: authenticated,
     delete: authenticated,
     read: authenticatedOrPublished,
     update: authenticated,
   },
+  // This config controls what's populated by default when a page is referenced
+  // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property
+  // Type safe if the collection slug generic is passed to `CollectionConfig` - `CollectionConfig<'pages'>
   defaultPopulate: {
     title: true,
     slug: true,
-    meta: {
-      image: true,
-      description: true,
-    },
   },
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
@@ -48,7 +42,7 @@ export const Works: CollectionConfig = {
       url: ({ data, req }) => {
         const path = generatePreviewPath({
           slug: typeof data?.slug === 'string' ? data.slug : '',
-          collection: 'works' as 'works',
+          collection: 'works',
           req,
         })
 
@@ -58,7 +52,7 @@ export const Works: CollectionConfig = {
     preview: (data, { req }) =>
       generatePreviewPath({
         slug: typeof data?.slug === 'string' ? data.slug : '',
-        collection: 'works' as 'works',
+        collection: 'works',
         req,
       }),
     useAsTitle: 'title',
@@ -73,29 +67,19 @@ export const Works: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
+          fields: [hero],
+          label: 'Hero',
+        },
+        {
           fields: [
             {
-              name: 'heroImage',
-              type: 'upload',
-              relationTo: 'media',
-            },
-            {
-              name: 'content',
-              type: 'richText',
-              editor: lexicalEditor({
-                features: ({ rootFeatures }) => {
-                  return [
-                    ...rootFeatures,
-                    HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                    BlocksFeature({ blocks: [Banner, Code, MediaBlock] }),
-                    FixedToolbarFeature(),
-                    InlineToolbarFeature(),
-                    HorizontalRuleFeature(),
-                  ]
-                },
-              }),
-              label: false,
+              name: 'layout',
+              type: 'blocks',
+              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock],
               required: true,
+              admin: {
+                initCollapsed: true,
+              },
             },
           ],
           label: 'Content',
@@ -115,9 +99,13 @@ export const Works: CollectionConfig = {
             MetaImageField({
               relationTo: 'media',
             }),
+
             MetaDescriptionField({}),
             PreviewField({
+              // if the `generateUrl` function is configured
               hasGenerateFn: true,
+
+              // field paths to match the target field for data
               titlePath: 'meta.title',
               descriptionPath: 'meta.description',
             }),
@@ -125,16 +113,24 @@ export const Works: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'publishedAt',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+      },
+    },
     ...slugField(),
   ],
   hooks: {
     afterChange: [revalidateWork],
+    beforeChange: [populatePublishedAt],
     afterDelete: [revalidateDelete],
   },
   versions: {
     drafts: {
       autosave: {
-        interval: 100,
+        interval: 100, // We set this interval for optimal live preview
       },
       schedulePublish: true,
     },

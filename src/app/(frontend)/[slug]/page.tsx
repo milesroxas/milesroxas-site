@@ -5,13 +5,13 @@ import configPromise from '@payload-config'
 import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
-import { homeStatic } from '@/endpoints/seed/home-static'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { HomeContentScroll } from '@/components/HomeContentScroll'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -54,25 +54,37 @@ export default async function Page({ params: paramsPromise }: Args) {
     slug,
   })
 
-  // Remove this code once your website is seeded
-  if (!page && slug === 'home') {
-    page = homeStatic
-  }
-
   if (!page) {
     return <PayloadRedirects url={url} />
   }
 
   const { hero, layout } = page
 
+  // Home page handling for "/"
+  if (slug === 'home') {
+    const payload = await getPayload({ config: configPromise })
+    const worksQuery = await payload.find({
+      collection: 'works',
+      limit: 100,
+      depth: 1,
+    })
+
+    return (
+      <article className="flex flex-col justify-center h-screen">
+        <PageClient />
+        {draft && <LivePreviewListener />}
+        <HomeContentScroll works={worksQuery.docs} />
+      </article>
+    )
+  }
+
+  // All other pages
   return (
     <article className="pt-16 pb-24">
       <PageClient />
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
-
       {draft && <LivePreviewListener />}
-
       <RenderHero {...hero} />
       <RenderBlocks blocks={layout} />
     </article>

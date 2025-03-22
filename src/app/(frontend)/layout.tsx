@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
-import { GeistMono } from 'geist/font/mono'
-import { GeistSans } from 'geist/font/sans'
+import { IBM_Plex_Sans } from 'next/font/google'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -14,13 +13,21 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
 import './globals.css'
+
 import { getServerSideURL } from '@/utilities/getURL'
+
+// Initialize the font at the module scope
+const ibmPlexSans = IBM_Plex_Sans({
+  weight: ['300', '400', '600', '700'],
+  subsets: ['latin'],
+  variable: '--font-ibm-plex-sans',
+})
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
 
   return (
-    <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
+    <html className={cn(ibmPlexSans.className)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
@@ -28,14 +35,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <Providers>
+          <Header />
+          {children}
           <AdminBar
             adminBarProps={{
               preview: isEnabled,
             }}
           />
-
-          <Header />
-          {children}
           <Footer />
         </Providers>
       </body>
