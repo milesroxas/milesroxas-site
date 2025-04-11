@@ -1,6 +1,9 @@
 // storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
 
+// Import the IPv4 DNS utility
+import './utilities/dns-ipv4'
+
 import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
@@ -63,6 +66,9 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
+      // Force IPv4 connection
+      ssl: process.env.NODE_ENV === 'production' ? true : false,
+      keepAlive: true,
     },
   }),
   collections: [Pages, Posts, Works, Media, Categories, Users],
