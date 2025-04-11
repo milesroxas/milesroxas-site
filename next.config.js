@@ -22,6 +22,11 @@ const nextConfig = {
   },
   reactStrictMode: true,
   redirects,
+  turbopack: {
+    // Configure Turbopack
+    resolveAlias: {},
+    rules: {},
+  },
 }
 
 export default withPayload(nextConfig, { devBundleServerPackages: false })
