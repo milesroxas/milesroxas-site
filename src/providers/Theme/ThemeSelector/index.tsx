@@ -20,7 +20,7 @@ export const ThemeSelector: React.FC = () => {
 
   const onThemeChange = (themeToSet: Theme & 'auto') => {
     if (themeToSet === 'auto') {
-      setTheme('dark')
+      setTheme(null)
       setValue('auto')
     } else {
       setTheme(themeToSet)

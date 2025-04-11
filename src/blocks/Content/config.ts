@@ -9,30 +9,7 @@ import {
 
 import { link } from '@/fields/link'
 
-const columnFields: Field[] = [
-  {
-    name: 'size',
-    type: 'select',
-    defaultValue: 'oneThird',
-    options: [
-      {
-        label: 'One Third',
-        value: 'oneThird',
-      },
-      {
-        label: 'Half',
-        value: 'half',
-      },
-      {
-        label: 'Two Thirds',
-        value: 'twoThirds',
-      },
-      {
-        label: 'Full',
-        value: 'full',
-      },
-    ],
-  },
+const richTextFields: Field[] = [
   {
     name: 'richText',
     type: 'richText',
@@ -61,6 +38,93 @@ const columnFields: Field[] = [
       },
     },
   }),
+]
+
+const archiveFields: Field[] = [
+  {
+    name: 'archive',
+    type: 'relationship',
+    relationTo: 'posts',
+    hasMany: true,
+  },
+]
+
+const mediaFields: Field[] = [
+  {
+    name: 'media',
+    type: 'upload',
+    relationTo: 'media',
+    required: true,
+  },
+]
+
+const columnFields: Field[] = [
+  {
+    name: 'size',
+    type: 'select',
+    defaultValue: 'oneThird',
+    options: [
+      {
+        label: 'One Third',
+        value: 'oneThird',
+      },
+      {
+        label: 'Half',
+        value: 'half',
+      },
+      {
+        label: 'Two Thirds',
+        value: 'twoThirds',
+      },
+      {
+        label: 'Full',
+        value: 'full',
+      },
+    ],
+  },
+  {
+    name: 'contentType',
+    type: 'select',
+    defaultValue: 'text',
+    options: [
+      {
+        label: 'Rich Text',
+        value: 'text',
+      },
+      {
+        label: 'Archive',
+        value: 'archive',
+      },
+      {
+        label: 'Media',
+        value: 'media',
+      },
+    ],
+  },
+  {
+    name: 'text',
+    type: 'group',
+    fields: richTextFields,
+    admin: {
+      condition: (_, siblingData) => siblingData.contentType === 'text',
+    },
+  },
+  {
+    name: 'archive',
+    type: 'group',
+    fields: archiveFields,
+    admin: {
+      condition: (_, siblingData) => siblingData.contentType === 'archive',
+    },
+  },
+  {
+    name: 'media',
+    type: 'group',
+    fields: mediaFields,
+    admin: {
+      condition: (_, siblingData) => siblingData.contentType === 'media',
+    },
+  },
 ]
 
 export const Content: Block = {

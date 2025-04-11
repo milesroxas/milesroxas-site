@@ -5,6 +5,8 @@ import RichText from '@/components/RichText'
 import type { ContentBlock as ContentBlockProps } from '@/payload-types'
 
 import { CMSLink } from '../../components/Link'
+import { ArchiveBlock } from '../ArchiveBlock/Component'
+import { MediaBlock } from '../MediaBlock/Component'
 
 export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
   const { columns } = props
@@ -22,7 +24,9 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
         {columns &&
           columns.length > 0 &&
           columns.map((col, index) => {
-            const { enableLink, link, richText, size } = col
+            const { size, contentType } = col
+            // Use a type assertion to tell TypeScript the column has these fields
+            const column = col as any
 
             return (
               <div
@@ -31,9 +35,25 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                 })}
                 key={index}
               >
-                {richText && <RichText data={richText} enableGutter={false} />}
-
-                {enableLink && <CMSLink {...link} />}
+                {contentType === 'text' && column.text?.richText && (
+                  <RichText data={column.text.richText} enableGutter={false} />
+                )}
+                {contentType === 'archive' && column.archive?.archive && (
+                  <ArchiveBlock
+                    blockType="archive"
+                    populateBy="selection"
+                    selectedDocs={column.archive.archive.map((item: any) => ({
+                      relationTo: 'posts',
+                      value: item,
+                    }))}
+                  />
+                )}
+                {contentType === 'media' && column.media?.media && (
+                  <MediaBlock blockType="mediaBlock" media={column.media.media} />
+                )}
+                {contentType === 'text' && column.text?.enableLink && column.text?.link && (
+                  <CMSLink {...column.text.link} />
+                )}
               </div>
             )
           })}

@@ -36,5 +36,13 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit"
     }
-  }
+  },
+  // CSS settings for Tailwind v4
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  // Add known at-rules for Tailwind v4
+  "css.customData": [".vscode/tailwind-v4.json"]
 }

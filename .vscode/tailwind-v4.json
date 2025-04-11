@@ -1,0 +1,45 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@utility",
+      "description": "Define a Tailwind v4 utility",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Documentation",
+          "url": "https://tailwindcss.com/"
+        }
+      ]
+    },
+    {
+      "name": "@theme",
+      "description": "Define Tailwind v4 theme variables",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Documentation",
+          "url": "https://tailwindcss.com/"
+        }
+      ]
+    },
+    {
+      "name": "@source",
+      "description": "Provide class hints for Tailwind v4",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Documentation",
+          "url": "https://tailwindcss.com/"
+        }
+      ]
+    },
+    {
+      "name": "@screen",
+      "description": "Define styles for specific screen sizes in Tailwind",
+      "references": [
+        {
+          "name": "Tailwind CSS v4 Documentation",
+          "url": "https://tailwindcss.com/"
+        }
+      ]
+    }
+  ]
+}
