@@ -21,7 +21,6 @@
   "dependencies": {
     "@payloadcms/admin-bar": "latest",
     "@payloadcms/db-postgres": "latest",
-    "@payloadcms/db-vercel-postgres": "^3.34.0",
     "@payloadcms/live-preview-react": "latest",
     "@payloadcms/next": "latest",
     "@payloadcms/payload-cloud": "latest",
