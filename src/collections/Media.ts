@@ -26,7 +26,6 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      //required: true,
     },
     {
       name: 'caption',
@@ -74,5 +73,6 @@ export const Media: CollectionConfig = {
         crop: 'center',
       },
     ],
+    mimeTypes: ['image/*', 'video/*', 'application/pdf'],
   },
 }
