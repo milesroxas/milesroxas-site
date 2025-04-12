@@ -14,9 +14,6 @@ importers:
       '@payloadcms/db-postgres':
         specifier: latest
         version: 3.34.0(@neondatabase/serverless@0.9.5)(@types/react@19.1.1)(@vercel/postgres@0.9.0)(payload@3.34.0(bufferutil@4.0.9)(graphql@16.10.0)(typescript@5.8.3)(utf-8-validate@6.0.5))(react@19.1.0)
-      '@payloadcms/db-vercel-postgres':
-        specifier: ^3.34.0
-        version: 3.34.0(@neondatabase/serverless@0.9.5)(@types/pg@8.10.2)(@types/react@19.1.1)(payload@3.34.0(bufferutil@4.0.9)(graphql@16.10.0)(typescript@5.8.3)(utf-8-validate@6.0.5))(react@19.1.0)
       '@payloadcms/live-preview-react':
         specifier: latest
         version: 3.34.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1347,11 +1344,6 @@ packages:
 
   '@payloadcms/db-postgres@3.34.0':
     resolution: {integrity: sha512-ymhRgi/0bqsG2pihJ0nYy5UZfR38toZT+Bs/OW6zU51Rhy0FeciBTa2bCghBI3JFHPsot14LM3QWcZZAm/00uA==}
-    peerDependencies:
-      payload: 3.34.0
-
-  '@payloadcms/db-vercel-postgres@3.34.0':
-    resolution: {integrity: sha512-3YlDLlvl5WSvG+pkK98ORjm3K38n8sZ9v9gw6ccXZuJyay5cG7MF0kSpfYKPwAZf5MvPmrXPoCa4p2Mf7AU2Iw==}
     peerDependencies:
       payload: 3.34.0
 
@@ -6674,6 +6666,7 @@ snapshots:
   '@neondatabase/serverless@0.9.5':
     dependencies:
       '@types/pg': 8.11.6
+    optional: true
 
   '@next/env@13.5.11': {}
 
@@ -6754,49 +6747,6 @@ snapshots:
       - '@types/react'
       - '@types/sql.js'
       - '@vercel/postgres'
-      - '@xata.io/client'
-      - better-sqlite3
-      - bun-types
-      - expo-sqlite
-      - knex
-      - kysely
-      - mysql2
-      - pg-native
-      - postgres
-      - prisma
-      - react
-      - sql.js
-      - sqlite3
-      - supports-color
-
-  '@payloadcms/db-vercel-postgres@3.34.0(@neondatabase/serverless@0.9.5)(@types/pg@8.10.2)(@types/react@19.1.1)(payload@3.34.0(bufferutil@4.0.9)(graphql@16.10.0)(typescript@5.8.3)(utf-8-validate@6.0.5))(react@19.1.0)':
-    dependencies:
-      '@payloadcms/drizzle': 3.34.0(@neondatabase/serverless@0.9.5)(@types/pg@8.10.2)(@types/react@19.1.1)(@vercel/postgres@0.9.0)(payload@3.34.0(bufferutil@4.0.9)(graphql@16.10.0)(typescript@5.8.3)(utf-8-validate@6.0.5))(pg@8.11.3)(react@19.1.0)
-      '@vercel/postgres': 0.9.0
-      console-table-printer: 2.12.1
-      drizzle-kit: 0.28.0
-      drizzle-orm: 0.36.1(@neondatabase/serverless@0.9.5)(@types/pg@8.10.2)(@types/react@19.1.1)(@vercel/postgres@0.9.0)(pg@8.11.3)(react@19.1.0)
-      payload: 3.34.0(bufferutil@4.0.9)(graphql@16.10.0)(typescript@5.8.3)(utf-8-validate@6.0.5)
-      pg: 8.11.3
-      prompts: 2.4.2
-      to-snake-case: 1.0.0
-      uuid: 10.0.0
-    transitivePeerDependencies:
-      - '@aws-sdk/client-rds-data'
-      - '@cloudflare/workers-types'
-      - '@electric-sql/pglite'
-      - '@libsql/client'
-      - '@libsql/client-wasm'
-      - '@neondatabase/serverless'
-      - '@op-engineering/op-sqlite'
-      - '@opentelemetry/api'
-      - '@planetscale/database'
-      - '@prisma/client'
-      - '@tidbcloud/serverless'
-      - '@types/better-sqlite3'
-      - '@types/pg'
-      - '@types/react'
-      - '@types/sql.js'
       - '@xata.io/client'
       - better-sqlite3
       - bun-types
@@ -8021,6 +7971,7 @@ snapshots:
       '@types/node': 22.14.0
       pg-protocol: 1.8.0
       pg-types: 4.0.2
+    optional: true
 
   '@types/prismjs@1.26.5': {}
 
@@ -8199,6 +8150,7 @@ snapshots:
       bufferutil: 4.0.9
       utf-8-validate: 6.0.5
       ws: 8.18.1(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+    optional: true
 
   '@webgpu/types@0.1.60': {}
 
@@ -8432,6 +8384,7 @@ snapshots:
   bufferutil@4.0.9:
     dependencies:
       node-gyp-build: 4.8.4
+    optional: true
 
   busboy@1.6.0:
     dependencies:
@@ -10114,7 +10067,8 @@ snapshots:
     dependencies:
       whatwg-url: 5.0.0
 
-  node-gyp-build@4.8.4: {}
+  node-gyp-build@4.8.4:
+    optional: true
 
   nodemailer@6.9.16: {}
 
@@ -11305,6 +11259,7 @@ snapshots:
   utf-8-validate@6.0.5:
     dependencies:
       node-gyp-build: 4.8.4
+    optional: true
 
   utf8-byte-length@1.0.5: {}
 

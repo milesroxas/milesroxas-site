@@ -166,31 +166,31 @@ html[data-theme='light'] {
   @apply mx-auto px-4;
   max-width: 100%;
   
-  @screen sm {
+  @media (min-width: 640px) {
     max-width: var(--container-screens-sm);
     padding-left: var(--container-padding-sm);
     padding-right: var(--container-padding-sm);
   }
   
-  @screen md {
+  @media (min-width: 768px) {
     max-width: var(--container-screens-md);
     padding-left: var(--container-padding-md);
     padding-right: var(--container-padding-md);
   }
   
-  @screen lg {
+  @media (min-width: 1024px) {
     max-width: var(--container-screens-lg);
     padding-left: var(--container-padding-lg);
     padding-right: var(--container-padding-lg);
   }
   
-  @screen xl {
+  @media (min-width: 1280px) {
     max-width: var(--container-screens-xl);
     padding-left: var(--container-padding-xl);
     padding-right: var(--container-padding-xl);
   }
   
-  @screen 2xl {
+  @media (min-width: 1536px) {
     max-width: var(--container-screens-2xl);
     padding-left: var(--container-padding-2xl);
     padding-right: var(--container-padding-2xl);
@@ -225,22 +225,22 @@ html[data-theme='light'] {
     font-weight: normal;
     margin-bottom: 0.25em;
     
-    @screen base {
+    @media (min-width: 0px) {
       font-size: 2.5rem;
     }
     
-    @screen md {
+    @media (min-width: 768px) {
       font-size: 3.5rem;
     }
   }
   
   & h2 {
-    @screen base {
+    @media (min-width: 0px) {
       font-size: 1.25rem;
       font-weight: 600;
     }
     
-    @screen md {
+    @media (min-width: 768px) {
       font-size: 1.5rem;
     }
   }
