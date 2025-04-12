@@ -7,9 +7,9 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
-export const Archive: Block = {
-  slug: 'archive',
-  interfaceName: 'ArchiveBlock',
+export const Works: Block = {
+  slug: 'works',
+  interfaceName: 'WorksBlock',
   fields: [
     {
       name: 'introContent',
@@ -47,13 +47,9 @@ export const Archive: Block = {
       admin: {
         condition: (_, siblingData) => siblingData.populateBy === 'collection',
       },
-      defaultValue: 'posts',
+      defaultValue: 'works',
       label: 'Collections To Show',
       options: [
-        {
-          label: 'Posts',
-          value: 'posts',
-        },
         {
           label: 'Works',
           value: 'works',
@@ -77,7 +73,7 @@ export const Archive: Block = {
         condition: (_, siblingData) => siblingData.populateBy === 'collection',
         step: 1,
       },
-      defaultValue: 10,
+      defaultValue: 4,
       label: 'Limit',
     },
     {
@@ -88,11 +84,11 @@ export const Archive: Block = {
       },
       hasMany: true,
       label: 'Selection',
-      relationTo: ['posts'],
+      relationTo: ['works'],
     },
   ],
   labels: {
-    plural: 'Archives',
-    singular: 'Archive',
+    plural: 'Works',
+    singular: 'Work',
   },
 }
