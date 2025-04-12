@@ -11,7 +11,6 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import { HomeContentScroll } from '@/components/HomeContentScroll'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -58,25 +57,6 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   const { hero, layout } = page
 
-  // Home page handling for "/"
-  if (slug === 'home') {
-    const payload = await getPayload({ config: configPromise })
-    const worksQuery = await payload.find({
-      collection: 'works',
-      limit: 100,
-      depth: 1,
-    })
-
-    return (
-      <article className="flex flex-col justify-center h-screen">
-        <PageClient />
-        {draft && <LivePreviewListener />}
-        <HomeContentScroll works={worksQuery.docs} />
-      </article>
-    )
-  }
-
-  // All other pages
   return (
     <article className="pt-16 pb-24">
       <PageClient />
