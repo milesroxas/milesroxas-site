@@ -1,12 +1,8 @@
-import React, { cache } from 'react'
+import React from 'react'
 import PageClient from './page.client'
-import { ContentCard, type AspectRatio } from '@/prototypes/components/contentCard'
-
-import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
-
+import { ContentCard3D, type AspectRatio } from '@/prototypes/components/contentCard3D'
+import { getPayload } from 'payload'
 import configPromise from '@payload-config'
-import { draftMode } from 'next/headers'
-import { cn } from '@/utilities/ui'
 
 export default async function Page() {
   const payload = await getPayload({ config: configPromise })
@@ -25,62 +21,79 @@ export default async function Page() {
     limit: 10,
   })
 
-  // Combine works and posts for display
-  const combinedEntries = [
-    ...workEntries.docs.map((doc) => ({ doc, relationTo: 'works' as const })),
-    ...postEntries.docs.map((doc) => ({ doc, relationTo: 'posts' as const })),
+  // Get first post and work for first row
+  const firstPost = postEntries.docs[0]
+  const firstWork = workEntries.docs[0]
+
+  // Combine remaining works and posts for other rows
+  const remainingEntries = [
+    ...workEntries.docs.slice(1).map((doc) => ({ doc, relationTo: 'works' as const })),
+    ...postEntries.docs.slice(1).map((doc) => ({ doc, relationTo: 'posts' as const })),
   ]
 
   return (
     <article className="pt-16 pb-24">
       <PageClient />
 
-      <div className="container">
-        <h2 className="text-sm uppercase font-mono text-accent mb-8">Mixed Content</h2>
+      <section className="container">
+        <h2 className="text-sm uppercase font-mono text-accent mb-8">3D Content Cards</h2>
 
         {/* First row - responsive with standard breakpoints */}
         <div className="flex flex-wrap gap-12 mb-12">
-          {combinedEntries.slice(0, 2).map((entry, index) => (
-            <ContentCard
-              key={`${entry.relationTo}-${entry.doc.id || index}`}
-              doc={entry.doc}
-              relationTo={entry.relationTo}
+          {firstPost && (
+            <ContentCard3D
+              key={`3d-posts-${firstPost?.id}`}
+              doc={firstPost}
+              relationTo="posts"
               showCategories={true}
-              aspectRatio={index === 0 ? 'landscape' : 'portrait'}
-              isFlipped={false}
-              className={cn(
-                'w-full', // Full width on mobile
-                index === 0
-                  ? 'md:w-[62%]' // 62% on tablet+
-                  : 'md:w-[31%]', // 31% on tablet+
-              )}
+              aspectRatio="portrait"
+              type="post"
+              className="w-full md:w-[31%]"
             />
-          ))}
+          )}
+
+          {firstWork && (
+            <ContentCard3D
+              key={`3d-works-${firstWork?.id}`}
+              doc={firstWork}
+              relationTo="works"
+              showCategories={true}
+              aspectRatio="landscape"
+              type="work"
+              className="w-full md:w-[62%]"
+            />
+          )}
         </div>
 
-        {/* Second row - responsive with standard breakpoints */}
+        {/* Second row - using 3D cards */}
         <div className="flex flex-wrap gap-12 mb-12">
-          {combinedEntries.slice(2, 4).map((entry, index) => (
-            <ContentCard
-              key={`${entry.relationTo}-${entry.doc.id || index + 2}`}
-              doc={entry.doc}
-              relationTo={entry.relationTo}
+          {workEntries.docs[1] && (
+            <ContentCard3D
+              key={`3d-works-${workEntries.docs[1]?.id}`}
+              doc={workEntries.docs[1]}
+              relationTo="works"
               showCategories={true}
-              aspectRatio={index === 0 ? 'portrait' : 'landscape'}
-              isFlipped={true}
-              className={cn(
-                'w-full', // Full width on mobile
-                index === 0
-                  ? 'md:w-[31%]' // 31% on tablet+
-                  : 'md:w-[62%]', // 62% on tablet+
-              )}
+              aspectRatio="landscape"
+              type="work"
+              className="w-full md:w-[62%]"
             />
-          ))}
+          )}
+          {postEntries.docs[1] && (
+            <ContentCard3D
+              key={`3d-posts-${postEntries.docs[1]?.id}`}
+              doc={postEntries.docs[1]}
+              relationTo="posts"
+              showCategories={true}
+              aspectRatio="portrait"
+              type="post"
+              className="w-full md:w-[31%]"
+            />
+          )}
         </div>
 
-        {/* Additional rows using grid layout - automatically responsive with grid */}
+        {/* Additional rows using grid layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {combinedEntries.slice(4).map((entry, index) => {
+          {remainingEntries.slice(2).map((entry, index) => {
             // Determine aspect ratio and flip based on index position
             let aspectRatio: AspectRatio
             let isFlipped: boolean
@@ -104,18 +117,21 @@ export default async function Page() {
             }
 
             return (
-              <ContentCard
-                key={`${entry.relationTo}-${entry.doc.id || index + 4}`}
-                doc={entry.doc}
-                relationTo={entry.relationTo}
-                showCategories={true}
-                aspectRatio={aspectRatio}
-                isFlipped={isFlipped}
-              />
+              entry.doc && (
+                <ContentCard3D
+                  key={`3d-${entry.relationTo}-${entry.doc.id || index + 4}`}
+                  doc={entry.doc}
+                  relationTo={entry.relationTo}
+                  showCategories={true}
+                  aspectRatio={aspectRatio}
+                  isFlipped={isFlipped}
+                  fullWidth={true}
+                />
+              )
             )
           })}
         </div>
-      </div>
+      </section>
     </article>
   )
 }
