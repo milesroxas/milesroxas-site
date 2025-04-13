@@ -4,8 +4,7 @@ import React from 'react'
 
 import { HeaderThemeProvider } from './HeaderTheme'
 import { ThemeProvider } from './Theme'
-import { ThreeCanvasProvider } from './ThreeCanvas'
-import { LoadingProvider } from './LoadingProvider'
+import { GlobalCanvasProvider } from './ThreeCanvas'
 
 export const Providers: React.FC<{
   children: React.ReactNode
@@ -13,9 +12,7 @@ export const Providers: React.FC<{
   return (
     <ThemeProvider>
       <HeaderThemeProvider>
-        <ThreeCanvasProvider>
-          <LoadingProvider>{children}</LoadingProvider>
-        </ThreeCanvasProvider>
+        <GlobalCanvasProvider>{children}</GlobalCanvasProvider>
       </HeaderThemeProvider>
     </ThemeProvider>
   )

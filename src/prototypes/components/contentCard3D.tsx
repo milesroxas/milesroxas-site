@@ -1,31 +1,17 @@
 'use client'
 
-import React, { useRef, useState, useLayoutEffect, useMemo, Suspense, useEffect } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { Text, useCursor, useTexture, Html, useProgress } from '@react-three/drei'
-import Link from 'next/link'
+import React, { useMemo, useRef } from 'react'
+import { useTexture, View, PerspectiveCamera, shaderMaterial } from '@react-three/drei'
+import { extend, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import Link from 'next/link'
 
 import { ThreeCanvas } from '@/providers/ThreeCanvas'
 import useClickableCard from '@/utilities/useClickableCard'
 import { cn } from '@/utilities/ui'
 import { getImageURL } from '@/utilities/getImageURL'
-import { useLoading } from '@/providers/LoadingProvider'
 
 import type { Post, Work } from '@/payload-types'
-
-// Create a shared loading manager for all textures
-const globalLoadingManager = new THREE.LoadingManager()
-
-// Configure the global loading manager
-globalLoadingManager.onLoad = () => {
-  // Wait a short delay to ensure all textures are rendered
-  setTimeout(() => {
-    // Signal that all textures are loaded and rendered
-    window.dispatchEvent(new Event('textures:loaded'))
-    window.dispatchEvent(new Event('site:loaded'))
-  }, 300)
-}
 
 // Common fields needed for both Work and Post types
 export type ContentCardData =
@@ -34,249 +20,172 @@ export type ContentCardData =
 
 export type AspectRatio = 'square' | 'portrait' | 'landscape'
 
+// Custom shader material for proper image cropping
+const ImageCropMaterial = shaderMaterial(
+  {
+    map: null,
+    imageAspect: 1.0,
+    coverMode: 0, // 0: cover, 1: contain
+    brightness: 1.5, // Increased brightness adjustment for better visibility
+  },
+  // Vertex shader
+  `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  // Fragment shader
+  `
+    uniform sampler2D map;
+    uniform float imageAspect;
+    uniform float coverMode;
+    uniform float brightness;
+    varying vec2 vUv;
+    
+    void main() {
+      // Center the UV coordinates
+      vec2 centeredUv = vUv - 0.5;
+      
+      // Adjust UVs to maintain aspect ratio (cover mode)
+      // This crops the image properly rather than stretching
+      vec2 adjustedUv;
+      
+      if (coverMode < 0.5) {
+        // Cover mode - we fill the container and crop if needed
+        adjustedUv = centeredUv;
+        
+        // Modify the scaling factor to show more of the image
+        // This uses the inverse of imageAspect to maintain proportions
+        // while showing more of the image content
+        if (imageAspect > 1.0) {
+          // Image is wider than container - scale horizontal UV
+          adjustedUv.x *= imageAspect * 0.85; // 0.85 factor shows more of image width
+        } else {
+          // Image is taller than container - scale vertical UV
+          adjustedUv.y /= imageAspect * 0.85; // 0.85 factor shows more of image height
+        }
+      } else {
+        // Contain mode - we fit the whole image
+        adjustedUv = centeredUv;
+      }
+      
+      // Move back from center coord system to 0-1
+      adjustedUv += 0.5;
+      
+      // Discard pixels outside 0-1 range (the cropped part)
+      if(adjustedUv.x < 0.0 || adjustedUv.x > 1.0 || adjustedUv.y < 0.0 || adjustedUv.y > 1.0) {
+        discard;
+      }
+      
+      // Get the texture color (unaffected by lighting)
+      vec4 texColor = texture2D(map, adjustedUv);
+      
+      // Apply brightness adjustment while preventing over-brightening
+      vec3 brightColor = texColor.rgb * brightness;
+      
+      // Ensure we don't exceed maximum brightness
+      brightColor = min(brightColor, vec3(1.0));
+      
+      // Output the brightened color
+      gl_FragColor = vec4(brightColor, texColor.a);
+    }
+  `,
+)
+
+// Register the material
+extend({ ImageCropMaterial })
+
+// Add the types for TypeScript
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      imageCropMaterial: any
+    }
+  }
+}
+
 // 3D Plane component that renders the image with shader
 const ImagePlane = ({
   imageUrl,
-  aspectRatio = 'square',
+  aspectRatio,
+  index = 0,
 }: {
   imageUrl: string
   aspectRatio: AspectRatio
+  index?: number
 }) => {
-  const meshRef = useRef<THREE.Mesh>(null)
-  const [hovered, setHovered] = useState(false)
-  const [textureError, setTextureError] = useState(false)
-  const [textureInfo, setTextureInfo] = useState<{
-    texture: THREE.Texture | null
-    aspectRatio: number
-  }>({ texture: null, aspectRatio: 1 })
-  useCursor(hovered)
+  const texture = useTexture(imageUrl)
+  const { viewport } = useThree()
 
-  // Calculate the appropriate plane size based on aspect ratio
-  const planeSize = useMemo(() => {
+  // Calculate the image aspect ratio
+  const imgAspect = useMemo(() => {
+    if (!texture || !texture.image) return 1
+    return texture.image.width / texture.image.height
+  }, [texture])
+
+  // Get container aspect ratio based on the aspectRatio prop
+  const containerAspect = useMemo(() => {
     switch (aspectRatio) {
-      case 'portrait':
-        return { width: 3, height: 3.75 }
-      case 'landscape':
-        // Adjusted landscape aspect ratio for proper display
-        return { width: 4, height: 2.25 }
       case 'square':
+        return 1 // 1:1
+      case 'portrait':
+        return 4 / 5 // 4:5 - Exact ratio to match CSS
+      case 'landscape':
+        return 16 / 9 // 16:9
       default:
-        return { width: 3, height: 3 }
+        return 1
     }
   }, [aspectRatio])
 
-  useEffect(() => {
-    // Register this texture with the global loading manager
-    const loader = new THREE.TextureLoader(globalLoadingManager)
-    loader.crossOrigin = 'anonymous'
+  // Calculate scaling factor for the mesh to maintain aspect ratio
+  const scale = useMemo(() => {
+    // Increase base size for better coverage
+    const BASE_SIZE = 2.8
 
-    try {
-      loader.load(
-        imageUrl,
-        (loadedTexture) => {
-          // Calculate image aspect ratio
-          const imageAspect = loadedTexture.image.width / loadedTexture.image.height
-
-          // Optimize texture settings
-          loadedTexture.wrapS = loadedTexture.wrapT = THREE.ClampToEdgeWrapping
-          loadedTexture.minFilter = THREE.LinearFilter
-          loadedTexture.magFilter = THREE.LinearFilter
-          loadedTexture.needsUpdate = true
-
-          setTextureInfo({
-            texture: loadedTexture,
-            aspectRatio: imageAspect,
-          })
-        },
-        undefined,
-        (error) => {
-          console.error('Error loading texture in ImagePlane:', error)
-          setTextureError(true)
-        },
-      )
-    } catch (error) {
-      console.error('Exception loading texture:', error)
-      setTextureError(true)
+    // For portrait mode, we need to ensure full width coverage
+    if (aspectRatio === 'portrait') {
+      // Force wider plane for portrait mode to ensure full coverage
+      return [BASE_SIZE * 1.1, BASE_SIZE * (5 / 4), 1] // Force 4:5 ratio but wider
     }
 
-    return () => {
-      if (textureInfo.texture) {
-        textureInfo.texture.dispose()
-      }
-    }
-  }, [imageUrl])
-
-  // Create custom shader material with the loaded texture - kept before conditional returns
-  const shaderMaterial = useMemo(() => {
-    if (!textureInfo.texture) return null
-
-    // Calculate container aspect ratio
-    const containerAspect = planeSize.width / planeSize.height
-
-    // Calculate scale factors to ensure proper center cropping
-    // These scale factors are used to scale the UV coordinates
-    let scaleFactorX = 1
-    let scaleFactorY = 1
-
-    if (textureInfo.aspectRatio > containerAspect) {
-      // Image is wider than container - scale to height and crop width
-      scaleFactorX = containerAspect / textureInfo.aspectRatio
-      scaleFactorX = 1 / scaleFactorX // Invert for UV scaling
+    // For other modes, use standard calculation
+    if (imgAspect > containerAspect) {
+      // Image is wider than container - adjust height to fit container width
+      return [BASE_SIZE, BASE_SIZE / containerAspect, 1]
     } else {
-      // Image is taller than container - scale to width and crop height
-      scaleFactorY = textureInfo.aspectRatio / containerAspect
-      scaleFactorY = 1 / scaleFactorY // Invert for UV scaling
+      // Image is taller than container - adjust width to fit container height
+      return [BASE_SIZE * containerAspect, BASE_SIZE, 1]
     }
+  }, [imgAspect, containerAspect, aspectRatio])
 
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        uTexture: { value: textureInfo.texture },
-        uTime: { value: 0 },
-        uHover: { value: 0 },
-        uImageAspect: { value: textureInfo.aspectRatio },
-        uContainerAspect: { value: containerAspect },
-        uScaleX: { value: scaleFactorX },
-        uScaleY: { value: scaleFactorY },
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform sampler2D uTexture;
-        uniform float uTime;
-        uniform float uHover;
-        uniform float uImageAspect;
-        uniform float uContainerAspect;
-        uniform float uScaleX;
-        uniform float uScaleY;
-        varying vec2 vUv;
-        
-        void main() {
-          // Center-crop the image by scaling UV coordinates
-          vec2 uv = vUv;
-          
-          // Scale from center
-          uv.x = 0.5 + (uv.x - 0.5) / uScaleX;
-          uv.y = 0.5 + (uv.y - 0.5) / uScaleY;
-          
-          // Apply hover distortion to original UVs to maintain proper scaling
-          if (uHover > 0.0) {
-            float wavex = sin(vUv.y * 10.0 + uTime) * 0.02 * uHover;
-            float wavey = sin(vUv.x * 10.0 + uTime) * 0.02 * uHover;
-            uv.x += wavex;
-            uv.y += wavey;
-          }
-          
-          // Only show pixels within the valid texture range
-          if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-          } else {
-            vec4 color = texture2D(uTexture, uv);
-            gl_FragColor = color;
-          }
-        }
-      `,
-      transparent: true,
-    })
-  }, [textureInfo.texture, textureInfo.aspectRatio, planeSize])
+  // Material reference to update uniforms
+  const materialRef = useRef<THREE.ShaderMaterial>(null)
 
-  // Update shader uniforms - kept before conditional returns
-  useFrame((state) => {
-    if (shaderMaterial && 'uniforms' in shaderMaterial && meshRef.current) {
-      // Update time uniform for animation
-      if (shaderMaterial.uniforms.uTime) {
-        shaderMaterial.uniforms.uTime.value = state.clock.getElapsedTime()
+  // Update material uniforms when texture or aspect changes
+  React.useEffect(() => {
+    if (materialRef.current && texture) {
+      if (materialRef.current.uniforms && materialRef.current.uniforms.map) {
+        materialRef.current.uniforms.map.value = texture
       }
-
-      // Smooth transition for hover with improved easing
-      if (shaderMaterial.uniforms.uHover) {
-        const easingFactor = 0.05 // Lower value = slower, smoother transition
-        shaderMaterial.uniforms.uHover.value = THREE.MathUtils.lerp(
-          shaderMaterial.uniforms.uHover.value,
-          hovered ? 1.0 : 0.0,
-          easingFactor,
-        )
+      if (materialRef.current.uniforms && materialRef.current.uniforms.imageAspect) {
+        // Special adjustment for portrait mode to ensure proper coverage
+        if (aspectRatio === 'portrait') {
+          // Slightly increase the aspect ratio for portrait mode to ensure full width coverage
+          materialRef.current.uniforms.imageAspect.value = (imgAspect / containerAspect) * 1.05
+        } else {
+          materialRef.current.uniforms.imageAspect.value = imgAspect / containerAspect
+        }
       }
-
-      // Add subtle rotation on hover with easing
-      const targetRotation = hovered ? Math.sin(state.clock.getElapsedTime() * 0.5) * 0.05 : 0
-      meshRef.current.rotation.y = THREE.MathUtils.lerp(
-        meshRef.current.rotation.y,
-        targetRotation,
-        0.05,
-      )
     }
-  })
-
-  // Show fallback if texture loading failed
-  if (textureError) {
-    return (
-      <mesh scale={[planeSize.width, planeSize.height, 1]}>
-        <planeGeometry />
-        <meshBasicMaterial color="#f0f0f0" />
-        <Html center>
-          <div className="text-xs text-gray-500">Failed to load</div>
-        </Html>
-      </mesh>
-    )
-  }
-
-  // Show placeholder until texture is loaded
-  if (!textureInfo.texture) {
-    return (
-      <mesh scale={[planeSize.width, planeSize.height, 1]}>
-        <planeGeometry />
-        <meshBasicMaterial color="#f8f8f8" />
-      </mesh>
-    )
-  }
-
-  // If shader material creation failed, show basic material with proper center crop
-  if (!shaderMaterial) {
-    // Create a basic material with proper texture settings
-    const material = new THREE.MeshBasicMaterial({
-      map: textureInfo.texture,
-    })
-
-    // Calculate container aspect ratio
-    const containerAspect = planeSize.width / planeSize.height
-
-    // Center crop by adjusting texture settings
-    if (textureInfo.aspectRatio > containerAspect) {
-      // Image is wider than container - fit height, crop width
-      const ratio = containerAspect / textureInfo.aspectRatio
-      textureInfo.texture.repeat.set(ratio, 1)
-      textureInfo.texture.offset.set((1 - ratio) / 2, 0)
-    } else {
-      // Image is taller than container - fit width, crop height
-      const ratio = textureInfo.aspectRatio / containerAspect
-      textureInfo.texture.repeat.set(1, ratio)
-      textureInfo.texture.offset.set(0, (1 - ratio) / 2)
-    }
-
-    return (
-      <mesh ref={meshRef} scale={[planeSize.width, planeSize.height, 1]}>
-        <planeGeometry />
-        <primitive object={material} attach="material" />
-      </mesh>
-    )
-  }
+  }, [texture, imgAspect, containerAspect, aspectRatio])
 
   return (
-    <mesh
-      ref={meshRef}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
-      scale={[planeSize.width, planeSize.height, 1]}
-      position={[0, 0, 0]}
-    >
-      <planeGeometry args={[planeSize.width, planeSize.height, 32, 32]} />
-      <primitive object={shaderMaterial} attach="material" />
+    <mesh position={[0, 0, 0]} scale={scale as [number, number, number]}>
+      <planeGeometry args={[1, 1]} />
+      {/* @ts-ignore - Custom material is registered at runtime */}
+      <imageCropMaterial ref={materialRef} map={texture} transparent />
     </mesh>
   )
 }
@@ -290,26 +199,27 @@ export const ContentCard3D: React.FC<{
   isFlipped?: boolean
   type?: 'post' | 'work'
   fullWidth?: boolean
-}> = (props) => {
+}> = ({
+  className,
+  doc,
+  relationTo = 'works',
+  showCategories = true,
+  aspectRatio = 'square',
+  isFlipped = false,
+  type: explicitType,
+  fullWidth = false,
+}) => {
   const { card, link } = useClickableCard({})
-  const {
-    className,
-    doc,
-    relationTo = 'works',
-    showCategories = true,
-    aspectRatio = 'square',
-    isFlipped = false,
-    type: explicitType,
-    fullWidth = false,
-  } = props
+  const viewRef = useRef<HTMLDivElement>(null)
 
-  const [mounted, setMounted] = useState(false)
+  // Memoize camera to avoid recreating it on each render
+  const camera = useMemo(
+    () => <PerspectiveCamera makeDefault position={[0, 0, 2.5]} fov={35} near={0.1} far={1000} />,
+    [],
+  )
 
-  // Only track mounting state
-  useLayoutEffect(() => {
-    setMounted(true)
-    return () => setMounted(false)
-  }, [])
+  // Memoize light to avoid recreating it on each render
+  const light = useMemo(() => <ambientLight intensity={2} />, [])
 
   if (!doc) return null
 
@@ -320,9 +230,7 @@ export const ContentCard3D: React.FC<{
   const imageResource =
     docType === 'post' && 'heroImage' in doc && doc.heroImage ? doc.heroImage : meta?.image || null
 
-  // Get the image URL using our utility function
   const imageUrl = getImageURL(imageResource)
-
   const href = `/${relationTo}/${slug}`
 
   // Format categories for display
@@ -345,32 +253,31 @@ export const ContentCard3D: React.FC<{
     <article className={widthClass} ref={card.ref}>
       <div className={cn('content-card', isFlipped && 'flex flex-col-reverse')}>
         <Link href={href} ref={link.ref} className="block h-full">
-          {/* 3D Image section */}
           <div
             className={cn(
               aspectRatioClasses[aspectRatio],
-              'overflow-hidden relative w-full mb-2 bg-gray-100',
+              'overflow-hidden relative w-full mb-2',
+              // Different background color based on card type for better visibility
+              docType === 'post' ? 'bg-gray-200' : 'bg-gray-100',
             )}
           >
-            {mounted && (
-              <div
-                style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'hidden' }}
-              >
-                <ThreeCanvas>
-                  <ambientLight intensity={1} />
-                  {imageUrl ? (
+            <div ref={viewRef} className="absolute inset-0" style={{ zIndex: 0 }}>
+              {imageUrl ? (
+                <ThreeCanvas
+                  style={{ backgroundColor: docType === 'post' ? '#e5e7eb' : '#f3f4f6' }}
+                >
+                  <View track={viewRef as unknown as React.RefObject<HTMLElement>}>
+                    {camera}
+                    {light}
                     <ImagePlane imageUrl={imageUrl} aspectRatio={aspectRatio} />
-                  ) : (
-                    <Html center>
-                      <div className="text-xs">No image</div>
-                    </Html>
-                  )}
+                  </View>
                 </ThreeCanvas>
-              </div>
-            )}
+              ) : (
+                <div className="w-full h-full bg-gray-200 z-[-1]" />
+              )}
+            </div>
           </div>
 
-          {/* Content section */}
           <div
             className={cn('flex gap-2 justify-between items-center', isFlipped ? 'mb-4' : 'mt-4')}
           >
@@ -385,13 +292,6 @@ export const ContentCard3D: React.FC<{
               </div>
             )}
           </div>
-
-          {/* Visual indicator of content type */}
-          {docType === 'post' && (
-            <div className="absolute top-3 right-3 bg-black text-white text-xs px-2 py-1 rounded-full">
-              Post
-            </div>
-          )}
         </Link>
       </div>
     </article>
