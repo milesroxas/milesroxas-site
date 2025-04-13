@@ -90,47 +90,6 @@ export default async function Page() {
             />
           )}
         </div>
-
-        {/* Additional rows using grid layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {remainingEntries.slice(2).map((entry, index) => {
-            // Determine aspect ratio and flip based on index position
-            let aspectRatio: AspectRatio
-            let isFlipped: boolean
-
-            switch (index % 4) {
-              case 0:
-                aspectRatio = 'square'
-                isFlipped = false
-                break
-              case 1:
-                aspectRatio = 'landscape'
-                isFlipped = true
-                break
-              case 2:
-                aspectRatio = 'portrait'
-                isFlipped = false
-                break
-              default:
-                aspectRatio = 'square'
-                isFlipped = true
-            }
-
-            return (
-              entry.doc && (
-                <ContentCard3D
-                  key={`3d-${entry.relationTo}-${entry.doc.id || index + 4}`}
-                  doc={entry.doc}
-                  relationTo={entry.relationTo}
-                  showCategories={true}
-                  aspectRatio={aspectRatio}
-                  isFlipped={isFlipped}
-                  fullWidth={true}
-                />
-              )
-            )
-          })}
-        </div>
       </section>
     </article>
   )

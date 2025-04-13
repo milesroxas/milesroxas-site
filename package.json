@@ -62,7 +62,8 @@
     "tailwindcss-theme": "^1.0.2",
     "tailwindcss-utilities": "^1.0.14",
     "three": "^0.175.0",
-    "three-stdlib": "^2.35.15"
+    "three-stdlib": "^2.35.15",
+    "tunnel-rat": "^0.1.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
