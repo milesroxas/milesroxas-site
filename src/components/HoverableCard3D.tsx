@@ -18,7 +18,7 @@ type HoverableCard3DProps = {
   brightness?: number
   baseSize?: number
   position?: [number, number, number]
-  onClick?: () => void
+  onClick?: (event?: any) => void
 }
 
 /**
