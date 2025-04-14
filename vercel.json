@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "src/app/**/*": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  },
+  "images": {
+    "sizes": [256, 640, 1280, 1920],
+    "domains": [],
+    "minimumCacheTTL": 3600
+  }
+}

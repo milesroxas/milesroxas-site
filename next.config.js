@@ -22,6 +22,19 @@ const nextConfig = {
   },
   reactStrictMode: true,
   redirects,
+  serverRuntimeConfig: {
+    // Increase function timeout (in seconds)
+    maxDuration: 60,
+  },
+  webpack: (config) => {
+    // Optimize threejs bundle size
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'three/examples/jsm/loaders/GLTFLoader': 'three-stdlib/loaders/GLTFLoader',
+    }
+
+    return config
+  },
   turbopack: {
     // Configure Turbopack
     resolveAlias: {},
