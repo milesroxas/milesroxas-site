@@ -27,8 +27,6 @@ export const GlobalCanvasProvider: React.FC<GlobalCanvasProviderProps> = ({
         gl={{
           antialias: true,
           alpha: true,
-          powerPreference: 'default',
-          failIfMajorPerformanceCaveat: false,
         }}
         linear
         style={{

@@ -3,6 +3,7 @@
 import React from 'react'
 
 import { HeaderThemeProvider } from './HeaderTheme'
+import { LenisProvider } from './Lenis'
 import { ThemeProvider } from './Theme'
 import { GlobalCanvasProvider } from './ThreeCanvas'
 
@@ -12,7 +13,9 @@ export const Providers: React.FC<{
   return (
     <ThemeProvider>
       <HeaderThemeProvider>
-        <GlobalCanvasProvider>{children}</GlobalCanvasProvider>
+        <LenisProvider>
+          <GlobalCanvasProvider>{children}</GlobalCanvasProvider>
+        </LenisProvider>
       </HeaderThemeProvider>
     </ThemeProvider>
   )
