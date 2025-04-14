@@ -14,6 +14,7 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
+import PageTransition from '@/components/PageTransition'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -63,33 +64,35 @@ export default async function Work({ params: paramsPromise }: Args) {
     <>
       <PageClient />
 
-      <article className="pt-16 pb-16 relative z-10">
-        <PayloadRedirects disableNotFound url={url} />
+      <PageTransition>
+        <article className="pt-16 pb-16 relative z-10">
+          <PayloadRedirects disableNotFound url={url} />
 
-        {draft && <LivePreviewListener />}
+          {draft && <LivePreviewListener />}
 
-        <div className="container mb-8">
-          <h1 className="text-4xl font-bold">{title}</h1>
-        </div>
-
-        {hero && <RenderHero {...hero} />}
-
-        <div className="flex flex-col items-center gap-4 pt-8">
-          <div className="container">
-            {layout && layout.length > 0 && (
-              <div className="max-w-[48rem] mx-auto">
-                <RenderBlocks blocks={layout} />
-              </div>
-            )}
-
-            {relatedWorks && relatedWorks.length > 0 && (
-              <div className="mt-12 max-w-[52rem] mx-auto">
-                <h2 className="text-2xl font-bold mb-6">Related Works</h2>
-              </div>
-            )}
+          <div className="container mb-8">
+            <h1 className="text-4xl font-bold">{title}</h1>
           </div>
-        </div>
-      </article>
+
+          {hero && <RenderHero {...hero} />}
+
+          <div className="flex flex-col items-center gap-4 pt-8">
+            <div className="container">
+              {layout && layout.length > 0 && (
+                <div className="max-w-[48rem] mx-auto">
+                  <RenderBlocks blocks={layout} />
+                </div>
+              )}
+
+              {relatedWorks && relatedWorks.length > 0 && (
+                <div className="mt-12 max-w-[52rem] mx-auto">
+                  <h2 className="text-2xl font-bold mb-6">Related Works</h2>
+                </div>
+              )}
+            </div>
+          </div>
+        </article>
+      </PageTransition>
     </>
   )
 }

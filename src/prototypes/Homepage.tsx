@@ -1,11 +1,11 @@
 import React from 'react'
-import PageClient from './page.client'
+import PageClient from './Homepage.client'
 import { ContentCard3D } from '@/prototypes/components/contentCard3D'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import PageTransition from '@/components/PageTransition'
 
-export default async function Page() {
+export default async function Homepage() {
   const payload = await getPayload({ config: configPromise })
 
   const workEntries = await payload.find({
