@@ -10,6 +10,7 @@ import useClickableCard from '@/utilities/useClickableCard'
 import { cn } from '@/utilities/ui'
 import { getImageURL } from '@/utilities/getImageURL'
 import HoverableCard3D from '@/components/HoverableCard3D'
+import useTransitionNavigation from '@/hooks/useTransitionNavigation'
 
 import type { Post, Work } from '@/payload-types'
 
@@ -40,6 +41,8 @@ export const ContentCard3D: React.FC<{
   // All hooks called unconditionally
   const { card, link } = useClickableCard({})
   const viewRef = useRef<HTMLDivElement>(null)
+  const { handleNavigate, isNavigating } = useTransitionNavigation()
+
   const camera = useMemo(
     () => <PerspectiveCamera makeDefault position={[0, 0, 2.5]} fov={35} near={0.1} far={1000} />,
     [],
@@ -78,8 +81,12 @@ export const ContentCard3D: React.FC<{
         const titleStyles = docType === 'post' ? 'text-lg' : 'text-3xl font-light'
         const widthClass = fullWidth ? 'w-full' : className || 'w-full'
 
-        // Handle 3D card click
-        const handleCardClick = () => {
+        // Handle 3D card click with link click
+        const handleCardClick = (event: any) => {
+          // Only call preventDefault if it exists as a function
+          if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault()
+          }
           if (link.ref.current) {
             link.ref.current.click()
           }
@@ -88,7 +95,7 @@ export const ContentCard3D: React.FC<{
         return (
           <article className={widthClass} ref={card.ref}>
             <div className={cn('content-card', isFlipped && 'flex flex-col-reverse')}>
-              <Link href={href} ref={link.ref} className="hidden">
+              <Link href={href} ref={link.ref} className="hidden" onNavigate={handleNavigate}>
                 <span>{title}</span>
               </Link>
 
@@ -96,6 +103,7 @@ export const ContentCard3D: React.FC<{
                 className={cn(
                   aspectRatioClasses[aspectRatio],
                   'overflow-hidden relative w-full mb-2',
+                  isNavigating && 'pointer-events-none',
                 )}
               >
                 <div ref={viewRef} className="absolute top-0 left-0 w-full h-full" />
