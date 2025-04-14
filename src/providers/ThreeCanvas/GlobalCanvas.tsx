@@ -27,6 +27,7 @@ export const GlobalCanvasProvider: React.FC<GlobalCanvasProviderProps> = ({
         gl={{
           antialias: true,
           alpha: true,
+          powerPreference: 'high-performance',
         }}
         linear
         style={{
@@ -38,8 +39,9 @@ export const GlobalCanvasProvider: React.FC<GlobalCanvasProviderProps> = ({
           backgroundColor: 'none',
           zIndex: -1,
         }}
-        dpr={[1, 1.5]}
+        dpr={[0.75, 1.5]} // Reduce min DPR for better performance
         eventSource={containerRef as unknown as React.RefObject<HTMLElement>}
+        performance={{ min: 0.5 }} // Allow ThreeJS to reduce quality during low FPS
       >
         <Suspense fallback={null}>
           {/* This is where all tunneled content will appear */}

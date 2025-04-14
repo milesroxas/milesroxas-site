@@ -1,16 +1,23 @@
 'use client'
 
 import React, { useMemo, useRef } from 'react'
-import { View, PerspectiveCamera } from '@react-three/drei'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
-import { ThreeCanvas } from '@/providers/ThreeCanvas'
+import DynamicThreeCanvas from '@/components/DynamicThreeCanvas'
 import { AspectRatio } from '@/hooks/useImageCropMaterial'
 import useClickableCard from '@/utilities/useClickableCard'
 import { cn } from '@/utilities/ui'
 import { getImageURL } from '@/utilities/getImageURL'
-import HoverableCard3D from '@/components/HoverableCard3D'
+import DynamicHoverableCard3D from '@/components/DynamicHoverableCard3D'
 import useTransitionNavigation from '@/hooks/useTransitionNavigation'
+
+// Dynamically import Three.js components
+const View = dynamic(() => import('@react-three/drei').then((mod) => mod.View), { ssr: false })
+const PerspectiveCamera = dynamic(
+  () => import('@react-three/drei').then((mod) => mod.PerspectiveCamera),
+  { ssr: false },
+)
 
 import type { Post, Work } from '@/payload-types'
 
@@ -107,18 +114,18 @@ export const ContentCard3D: React.FC<{
                 )}
               >
                 <div ref={viewRef} className="absolute top-0 left-0 w-full h-full" />
-                <ThreeCanvas>
+                <DynamicThreeCanvas>
                   <View track={viewRef as any}>
                     <ambientLight intensity={0.8} />
                     {camera}
-                    <HoverableCard3D
+                    <DynamicHoverableCard3D
                       imageUrl={imageUrl}
                       aspectRatio={aspectRatio}
                       brightness={1.2}
                       onClick={handleCardClick}
                     />
                   </View>
-                </ThreeCanvas>
+                </DynamicThreeCanvas>
               </div>
 
               <div

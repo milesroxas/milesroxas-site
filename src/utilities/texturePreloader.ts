@@ -5,6 +5,9 @@ import * as THREE from 'three'
 // Simple texture cache to avoid reloading the same textures
 const textureCache = new Map<string, THREE.Texture>()
 
+// Maximum number of textures to keep in cache
+const MAX_CACHE_SIZE = 20
+
 /**
  * Preloads a texture and returns a promise that resolves when the texture is loaded
  * @param url - URL of the texture to preload
@@ -16,6 +19,19 @@ export const preloadTexture = (url: string): Promise<THREE.Texture> => {
     return Promise.resolve(textureCache.get(url)!)
   }
 
+  // Limit cache size to prevent memory leaks
+  if (textureCache.size >= MAX_CACHE_SIZE) {
+    // Delete the oldest texture in the cache (first inserted)
+    const oldestKey = textureCache.keys().next().value
+    if (oldestKey) {
+      const oldTexture = textureCache.get(oldestKey)
+      if (oldTexture) {
+        oldTexture.dispose() // Properly dispose of the THREE.js texture
+      }
+      textureCache.delete(oldestKey)
+    }
+  }
+
   return new Promise((resolve, reject) => {
     // Configure texture loader
     const textureLoader = new THREE.TextureLoader()
@@ -25,10 +41,11 @@ export const preloadTexture = (url: string): Promise<THREE.Texture> => {
     textureLoader.load(
       url,
       (texture) => {
-        // Optimize texture settings
+        // Optimize texture settings for performance
         texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping
         texture.minFilter = THREE.LinearFilter
         texture.magFilter = THREE.LinearFilter
+        texture.generateMipmaps = false // Disable mipmaps for better performance
         texture.needsUpdate = true
 
         // Cache the texture
@@ -65,8 +82,13 @@ export const getCachedTexture = (url: string): THREE.Texture | null => {
 }
 
 /**
- * Clears the texture cache
+ * Clears the texture cache to free up memory
+ * This should be called when navigating away from pages with 3D content
  */
 export const clearTextureCache = (): void => {
+  // Properly dispose of all textures
+  textureCache.forEach((texture) => {
+    texture.dispose()
+  })
   textureCache.clear()
 }
