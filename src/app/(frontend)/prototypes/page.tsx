@@ -1,6 +1,6 @@
 import React from 'react'
 import PageClient from './page.client'
-import { ContentCard3D, type AspectRatio } from '@/prototypes/components/contentCard3D'
+import { ContentCard3D } from '@/prototypes/components/contentCard3D'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 

@@ -47,26 +47,50 @@ type Args = {
 
 export default async function Work({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = 'works' } = await paramsPromise
+  const { slug = '' } = await paramsPromise
   const url = '/works/' + slug
 
   const work = await queryWorkBySlug({ slug })
 
   if (!work) return <PayloadRedirects url={url} />
 
-  const { hero, layout } = work
+  const hero = work?.hero
+  const layout = work?.layout || []
+  const relatedWorks = work?.relatedWorks || []
+  const title = work?.title || 'Work'
 
   return (
-    <article className="pt-16 pb-16">
+    <>
       <PageClient />
 
-      <PayloadRedirects disableNotFound url={url} />
+      <article className="pt-16 pb-16 relative z-10">
+        <PayloadRedirects disableNotFound url={url} />
 
-      {draft && <LivePreviewListener />}
+        {draft && <LivePreviewListener />}
 
-      <RenderHero {...hero} />
-      <RenderBlocks blocks={layout} />
-    </article>
+        <div className="container mb-8">
+          <h1 className="text-4xl font-bold">{title}</h1>
+        </div>
+
+        {hero && <RenderHero {...hero} />}
+
+        <div className="flex flex-col items-center gap-4 pt-8">
+          <div className="container">
+            {layout && layout.length > 0 && (
+              <div className="max-w-[48rem] mx-auto">
+                <RenderBlocks blocks={layout} />
+              </div>
+            )}
+
+            {relatedWorks && relatedWorks.length > 0 && (
+              <div className="mt-12 max-w-[52rem] mx-auto">
+                <h2 className="text-2xl font-bold mb-6">Related Works</h2>
+              </div>
+            )}
+          </div>
+        </div>
+      </article>
+    </>
   )
 }
 

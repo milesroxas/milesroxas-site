@@ -8,6 +8,7 @@ import React, { cache } from 'react'
 import PageClient from './page.client'
 import { PageRange } from '@/components/PageRange'
 import { WorkArchive } from '@/components/WorkArchive'
+import { Pagination } from '@/components/Pagination'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -47,6 +48,12 @@ export default async function Page() {
       </div>
 
       <WorkArchive works={works.docs} />
+
+      <div className="container">
+        {works.totalPages > 1 && works.page && (
+          <Pagination page={works.page} totalPages={works.totalPages} />
+        )}
+      </div>
     </div>
   )
 }
