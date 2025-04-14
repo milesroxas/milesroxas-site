@@ -1,8 +1,8 @@
 'use client'
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
-import Link from 'next/link'
 import React from 'react'
+import { TransitionLink } from '@/components/Link'
 
 import type { Work } from '@/payload-types'
 
@@ -43,9 +43,9 @@ export const Card: React.FC<{
         {titleToUse && (
           <div className="prose">
             <h3>
-              <Link className="not-prose" href={href} ref={link.ref}>
+              <TransitionLink className="not-prose" href={href}>
                 {titleToUse}
-              </Link>
+              </TransitionLink>
             </h3>
           </div>
         )}

@@ -35,15 +35,15 @@ export const GlobalCanvasProvider: React.FC<GlobalCanvasProviderProps> = ({
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: 'transparent',
-          zIndex: 1,
+          backgroundColor: 'none',
+          zIndex: -1,
         }}
         dpr={[1, 1.5]}
         eventSource={containerRef as unknown as React.RefObject<HTMLElement>}
       >
         <Suspense fallback={null}>
           {/* This is where all tunneled content will appear */}
-          <color attach="background" args={['transparent']} />
+          <color attach="background" args={['#ffffff']} />
           <threeTunnel.Out />
         </Suspense>
       </Canvas>

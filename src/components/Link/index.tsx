@@ -5,6 +5,9 @@ import React from 'react'
 
 import type { Page, Post } from '@/payload-types'
 
+// Export TransitionLink component
+export { default as TransitionLink } from './TransitionLink'
+
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
   children?: React.ReactNode

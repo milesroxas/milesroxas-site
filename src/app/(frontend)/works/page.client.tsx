@@ -1,6 +1,7 @@
 'use client'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import React, { useEffect } from 'react'
+import { PageTransition } from '@/components/PageTransition'
 
 const PageClient: React.FC = () => {
   /* Force the header to be dark mode while we have an image behind it */
@@ -9,7 +10,12 @@ const PageClient: React.FC = () => {
   useEffect(() => {
     setHeaderTheme('light')
   }, [setHeaderTheme])
-  return <React.Fragment />
+
+  return (
+    <PageTransition>
+      <React.Fragment />
+    </PageTransition>
+  )
 }
 
 export default PageClient
