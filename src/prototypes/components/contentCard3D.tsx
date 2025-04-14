@@ -98,10 +98,13 @@ const ImageCropMaterial = shaderMaterial(
 extend({ ImageCropMaterial })
 
 // Add the types for TypeScript
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      imageCropMaterial: any
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    imageCropMaterial: {
+      map: THREE.Texture | null
+      imageAspect: number
+      coverMode: number
+      brightness: number
     }
   }
 }
@@ -184,7 +187,7 @@ const ImagePlane = ({
   return (
     <mesh position={[0, 0, 0]} scale={scale as [number, number, number]}>
       <planeGeometry args={[1, 1]} />
-      {/* @ts-ignore - Custom material is registered at runtime */}
+      {/* @ts-expect-error - Custom material is registered at runtime */}
       <imageCropMaterial ref={materialRef} map={texture} transparent />
     </mesh>
   )
