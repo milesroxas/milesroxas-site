@@ -8,7 +8,7 @@ const PageClient: React.FC = () => {
   const { setHeaderTheme } = useHeaderTheme()
 
   useEffect(() => {
-    setHeaderTheme('dark')
+    setHeaderTheme('light')
   }, [setHeaderTheme])
 
   // This doesn't need to wrap content

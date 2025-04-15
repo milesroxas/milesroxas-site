@@ -5,7 +5,6 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
-import RichText from '@/components/RichText'
 
 import type { Work } from '@/payload-types'
 
@@ -65,32 +64,17 @@ export default async function Work({ params: paramsPromise }: Args) {
       <PageClient />
 
       <PageTransition>
-        <article className="pt-16 pb-16 relative z-10">
+        <article className="relative z-10">
           <PayloadRedirects disableNotFound url={url} />
 
           {draft && <LivePreviewListener />}
 
-          <div className="container mb-8">
+          <div className="container mb-8 mx-auto">
             <h1 className="text-4xl font-bold">{title}</h1>
           </div>
 
           {hero && <RenderHero {...hero} />}
-
-          <div className="flex flex-col items-center gap-4 pt-8">
-            <div className="container">
-              {layout && layout.length > 0 && (
-                <div className="max-w-[48rem] mx-auto">
-                  <RenderBlocks blocks={layout} />
-                </div>
-              )}
-
-              {relatedWorks && relatedWorks.length > 0 && (
-                <div className="mt-12 max-w-[52rem] mx-auto">
-                  <h2 className="text-2xl font-bold mb-6">Related Works</h2>
-                </div>
-              )}
-            </div>
-          </div>
+          <RenderBlocks blocks={layout} />
         </article>
       </PageTransition>
     </>

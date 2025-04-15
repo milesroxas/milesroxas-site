@@ -16,6 +16,7 @@ type Props = MediaBlockProps & {
   imgClassName?: string
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
+  aspectRatio?: 'square' | 'landscape' | 'portrait'
 }
 
 export const MediaBlock: React.FC<Props> = (props) => {
@@ -27,6 +28,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
     media,
     staticImage,
     disableInnerContainer,
+    aspectRatio = 'landscape',
   } = props
 
   let caption
@@ -44,7 +46,11 @@ export const MediaBlock: React.FC<Props> = (props) => {
     >
       {(media || staticImage) && (
         <Media
-          imgClassName={cn('border border-border rounded-[0.8rem]', imgClassName)}
+          imgClassName={cn('rounded-[0.2rem]', imgClassName, {
+            'aspect-square': aspectRatio === 'square',
+            'aspect-[4/5]': aspectRatio === 'portrait',
+            'aspect-[16/9]': aspectRatio === 'landscape',
+          })}
           resource={media}
           src={staticImage}
         />

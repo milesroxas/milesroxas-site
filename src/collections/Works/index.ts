@@ -7,6 +7,7 @@ import { CallToAction } from '../../blocks/CallToAction/config'
 import { Content } from '../../blocks/Content/config'
 import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
+import { SliderBlock } from '../../blocks/Slider/config'
 import { Works as WorksBlock } from '../../blocks/WorksBlock/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
@@ -76,7 +77,15 @@ export const Works: CollectionConfig<'works'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, WorksBlock],
+              blocks: [
+                CallToAction,
+                Content,
+                MediaBlock,
+                Archive,
+                FormBlock,
+                WorksBlock,
+                SliderBlock,
+              ],
               required: true,
               admin: {
                 initCollapsed: true,
