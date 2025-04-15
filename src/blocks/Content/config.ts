@@ -8,6 +8,8 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { link } from '@/fields/link'
+import { SliderBlock } from '@/blocks/Slider/config'
+import { sectionSpacing } from '@/fields/sectionSpacing'
 
 const richTextFields: Field[] = [
   {
@@ -25,6 +27,7 @@ const richTextFields: Field[] = [
     }),
     label: false,
   },
+
   {
     name: 'enableLink',
     type: 'checkbox',
@@ -38,6 +41,29 @@ const richTextFields: Field[] = [
       },
     },
   }),
+]
+
+const sectionHeadingFields: Field[] = [
+  {
+    name: 'heading',
+    type: 'text',
+  },
+  {
+    name: 'subheading',
+    type: 'text',
+  },
+  {
+    name: 'size',
+    type: 'select',
+    defaultValue: 'base',
+    options: ['base', 'lg', 'xl'],
+  },
+  {
+    name: 'align',
+    type: 'select',
+    defaultValue: 'left',
+    options: ['left', 'center'],
+  },
 ]
 
 const archiveFields: Field[] = [
@@ -55,6 +81,25 @@ const mediaFields: Field[] = [
     type: 'upload',
     relationTo: 'media',
     required: true,
+  },
+  {
+    name: 'aspectRatio',
+    type: 'select',
+    defaultValue: 'landscape',
+    options: [
+      {
+        label: 'Square',
+        value: 'square',
+      },
+      {
+        label: 'Landscape',
+        value: 'landscape',
+      },
+      {
+        label: 'Portrait',
+        value: 'portrait',
+      },
+    ],
   },
 ]
 
@@ -92,12 +137,20 @@ const columnFields: Field[] = [
         value: 'text',
       },
       {
+        label: 'Section Heading',
+        value: 'sectionHeading',
+      },
+      {
         label: 'Archive',
         value: 'archive',
       },
       {
         label: 'Media',
         value: 'media',
+      },
+      {
+        label: 'Slider',
+        value: 'slider',
       },
     ],
   },
@@ -110,11 +163,27 @@ const columnFields: Field[] = [
     },
   },
   {
+    name: 'sectionHeading',
+    type: 'group',
+    fields: sectionHeadingFields,
+    admin: {
+      condition: (_, siblingData) => siblingData.contentType === 'sectionHeading',
+    },
+  },
+  {
     name: 'archive',
     type: 'group',
     fields: archiveFields,
     admin: {
       condition: (_, siblingData) => siblingData.contentType === 'archive',
+    },
+  },
+  {
+    name: 'slider',
+    type: 'group',
+    fields: SliderBlock.fields,
+    admin: {
+      condition: (_, siblingData) => siblingData.contentType === 'slider',
     },
   },
   {
@@ -131,6 +200,16 @@ export const Content: Block = {
   slug: 'content',
   interfaceName: 'ContentBlock',
   fields: [
+    {
+      name: 'theme',
+      type: 'select',
+      defaultValue: 'light',
+      options: [
+        { label: 'Light', value: 'light' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
+    sectionSpacing(),
     {
       name: 'columns',
       type: 'array',

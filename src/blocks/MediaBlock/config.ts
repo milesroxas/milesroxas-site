@@ -10,5 +10,24 @@ export const MediaBlock: Block = {
       relationTo: 'media',
       required: true,
     },
+    {
+      name: 'captionSize',
+      type: 'select',
+      defaultValue: 'normal',
+      options: [
+        {
+          label: 'Normal',
+          value: 'normal',
+        },
+        {
+          label: 'Large',
+          value: 'large',
+        },
+        {
+          label: 'Extra Large',
+          value: 'xl',
+        },
+      ],
+    },
   ],
 }

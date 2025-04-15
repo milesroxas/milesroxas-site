@@ -193,7 +193,7 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | WorksBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | WorksBlock | SliderBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -440,10 +440,17 @@ export interface CallToActionBlock {
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
+  theme?: ('light' | 'dark') | null;
+  space?: {
+    pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  };
   columns?:
     | {
         size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
-        contentType?: ('text' | 'archive' | 'media') | null;
+        contentType?: ('text' | 'sectionHeading' | 'archive' | 'media' | 'slider') | null;
         text?: {
           richText?: {
             root: {
@@ -481,11 +488,49 @@ export interface ContentBlock {
             appearance?: ('default' | 'outline') | null;
           };
         };
+        sectionHeading?: {
+          heading?: string | null;
+          subheading?: string | null;
+          size?: ('base' | 'lg' | 'xl') | null;
+          align?: ('left' | 'center') | null;
+        };
         archive?: {
           archive?: (number | Post)[] | null;
         };
+        slider?: {
+          introContent?: {
+            heading?: string | null;
+            subheading?: string | null;
+            size?: ('base' | 'lg' | 'xl') | null;
+            align?: ('left' | 'center') | null;
+          };
+          style?: ('default' | 'single') | null;
+          space?: {
+            pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+            pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+            mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+            mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+          };
+          slides: {
+            slide: {
+              image: number | Media;
+              caption?: string | null;
+              link?:
+                | ({
+                    relationTo: 'works';
+                    value: number | Work;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+            };
+            id?: string | null;
+          }[];
+        };
         media?: {
           media: number | Media;
+          aspectRatio?: ('square' | 'landscape' | 'portrait') | null;
         };
         id?: string | null;
       }[]
@@ -496,10 +541,79 @@ export interface ContentBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "works".
+ */
+export interface Work {
+  id: number;
+  title: string;
+  hero: {
+    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    richText?: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    links?:
+      | {
+          link: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+            label: string;
+            /**
+             * Choose how the link should be rendered.
+             */
+            appearance?: ('default' | 'outline') | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    media?: (number | null) | Media;
+  };
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | WorksBlock | SliderBlock)[];
+  relatedWorks?: (number | Work)[] | null;
+  categories?: (number | Category)[] | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "MediaBlock".
  */
 export interface MediaBlock {
   media: number | Media;
+  captionSize?: ('normal' | 'large' | 'xl') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -774,71 +888,41 @@ export interface WorksBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "works".
+ * via the `definition` "SliderBlock".
  */
-export interface Work {
-  id: number;
-  title: string;
-  hero: {
-    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
-    richText?: {
-      root: {
-        type: string;
-        children: {
-          type: string;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    links?:
-      | {
-          link: {
-            type?: ('reference' | 'custom') | null;
-            newTab?: boolean | null;
-            reference?:
-              | ({
-                  relationTo: 'pages';
-                  value: number | Page;
-                } | null)
-              | ({
-                  relationTo: 'posts';
-                  value: number | Post;
-                } | null);
-            url?: string | null;
-            label: string;
-            /**
-             * Choose how the link should be rendered.
-             */
-            appearance?: ('default' | 'outline') | null;
-          };
-          id?: string | null;
-        }[]
-      | null;
-    media?: (number | null) | Media;
+export interface SliderBlock {
+  introContent?: {
+    heading?: string | null;
+    subheading?: string | null;
+    size?: ('base' | 'lg' | 'xl') | null;
+    align?: ('left' | 'center') | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | WorksBlock)[];
-  relatedWorks?: (number | Work)[] | null;
-  categories?: (number | Category)[] | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
+  style?: ('default' | 'single') | null;
+  space?: {
+    pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
   };
-  publishedAt?: string | null;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
+  slides: {
+    slide: {
+      image: number | Media;
+      caption?: string | null;
+      link?:
+        | ({
+            relationTo: 'works';
+            value: number | Work;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+    };
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'slider';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1135,6 +1219,7 @@ export interface PagesSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         works?: T | WorksBlockSelect<T>;
+        slider?: T | SliderBlockSelect<T>;
       };
   meta?:
     | T
@@ -1179,6 +1264,15 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
  * via the `definition` "ContentBlock_select".
  */
 export interface ContentBlockSelect<T extends boolean = true> {
+  theme?: T;
+  space?:
+    | T
+    | {
+        pt?: T;
+        pb?: T;
+        mt?: T;
+        mb?: T;
+      };
   columns?:
     | T
     | {
@@ -1200,15 +1294,57 @@ export interface ContentBlockSelect<T extends boolean = true> {
                     appearance?: T;
                   };
             };
+        sectionHeading?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              size?: T;
+              align?: T;
+            };
         archive?:
           | T
           | {
               archive?: T;
             };
+        slider?:
+          | T
+          | {
+              introContent?:
+                | T
+                | {
+                    heading?: T;
+                    subheading?: T;
+                    size?: T;
+                    align?: T;
+                  };
+              style?: T;
+              space?:
+                | T
+                | {
+                    pt?: T;
+                    pb?: T;
+                    mt?: T;
+                    mb?: T;
+                  };
+              slides?:
+                | T
+                | {
+                    slide?:
+                      | T
+                      | {
+                          image?: T;
+                          caption?: T;
+                          link?: T;
+                        };
+                    id?: T;
+                  };
+            };
         media?:
           | T
           | {
               media?: T;
+              aspectRatio?: T;
             };
         id?: T;
       };
@@ -1221,6 +1357,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
  */
 export interface MediaBlockSelect<T extends boolean = true> {
   media?: T;
+  captionSize?: T;
   id?: T;
   blockName?: T;
 }
@@ -1260,6 +1397,43 @@ export interface WorksBlockSelect<T extends boolean = true> {
   categories?: T;
   limit?: T;
   selectedDocs?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SliderBlock_select".
+ */
+export interface SliderBlockSelect<T extends boolean = true> {
+  introContent?:
+    | T
+    | {
+        heading?: T;
+        subheading?: T;
+        size?: T;
+        align?: T;
+      };
+  style?: T;
+  space?:
+    | T
+    | {
+        pt?: T;
+        pb?: T;
+        mt?: T;
+        mb?: T;
+      };
+  slides?:
+    | T
+    | {
+        slide?:
+          | T
+          | {
+              image?: T;
+              caption?: T;
+              link?: T;
+            };
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -1331,6 +1505,7 @@ export interface WorksSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         works?: T | WorksBlockSelect<T>;
+        slider?: T | SliderBlockSelect<T>;
       };
   relatedWorks?: T;
   categories?: T;
