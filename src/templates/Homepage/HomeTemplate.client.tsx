@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import SplitType from 'split-type'
+import Link from 'next/link'
 
 import PageTransition from '@/components/PageTransition'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
@@ -11,6 +12,7 @@ import { Media } from '@/components/Media'
 import SceneSetter from '@/r3f/canvas/SceneSetter'
 import type { SceneTrackRefs } from '@/r3f/types/r3f'
 import type { Post, Work } from '@/payload-types'
+import useClickableCard from '@/utilities/useClickableCard'
 
 interface HomeTemplateClientProps {
   posts?: Post[]
@@ -44,6 +46,12 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
     banner: bannerRef,
     ctaSection: ctaRef,
   }
+
+  // Add hooks for clickable cards
+  const post0 = useClickableCard<HTMLDivElement>({})
+  const work0 = useClickableCard<HTMLDivElement>({})
+  const work1 = useClickableCard<HTMLDivElement>({})
+  const post1 = useClickableCard<HTMLDivElement>({})
 
   useEffect(() => {
     setHeaderTheme('light')
@@ -82,7 +90,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
         <section className="container">
           <div className="flex flex-wrap gap-12 mb-12">
             {posts?.[0] && (
-              <div className="w-full md:w-[31%]">
+              <div ref={post0.card.ref} className="w-full md:w-[31%] cursor-pointer">
                 <div ref={cardRefs[0]} className="aspect-[4/5]"></div>
                 {posts?.[0].heroImage && (
                   <Media
@@ -91,13 +99,21 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
                     alt={posts?.[0].title}
                   />
                 )}
-                <h2 className="mt-4 text-xl font-bold">{posts?.[0].title}</h2>
+                <h2 className="mt-4 text-xl font-bold">
+                  <Link
+                    href={`/posts/${posts?.[0].slug}`}
+                    ref={post0.link.ref}
+                    className="not-prose"
+                  >
+                    {posts?.[0].title}
+                  </Link>
+                </h2>
                 <p className="mt-2">{posts?.[0].meta?.description}</p>
               </div>
             )}
 
             {works?.[0] && (
-              <div className="w-full md:w-[62%]">
+              <div ref={work0.card.ref} className="w-full md:w-[62%] cursor-pointer">
                 <div ref={cardRefs[1]} className="aspect-[16/9]"></div>
                 {works?.[0].hero?.media && (
                   <Media
@@ -106,7 +122,15 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
                     alt={works?.[0].title}
                   />
                 )}
-                <h2 className="mt-4 text-xl font-bold">{works?.[0].title}</h2>
+                <h2 className="mt-4 text-xl font-bold">
+                  <Link
+                    href={`/works/${works?.[0].slug}`}
+                    ref={work0.link.ref}
+                    className="not-prose"
+                  >
+                    {works?.[0].title}
+                  </Link>
+                </h2>
                 <p className="mt-2">{works?.[0].meta?.description}</p>
               </div>
             )}
@@ -114,7 +138,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
 
           <div className="flex flex-wrap gap-12 mb-12">
             {works?.[1] && (
-              <div className="w-full md:w-[62%]">
+              <div ref={work1.card.ref} className="w-full md:w-[62%] cursor-pointer">
                 <div ref={cardRefs[2]} className="aspect-[16/9]"></div>
                 {works?.[1].hero?.media && (
                   <Media
@@ -123,12 +147,21 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
                     alt={works?.[1].title}
                   />
                 )}
-                <h2 className="mt-4 text-xl font-bold">{works?.[1].title}</h2>
+                <h2 className="mt-4 text-xl font-bold">
+                  <Link
+                    href={`/works/${works?.[1].slug}`}
+                    ref={work1.link.ref}
+                    className="not-prose"
+                  >
+                    {works?.[1].title}
+                  </Link>
+                </h2>
                 <p className="mt-2">{works?.[1].meta?.description}</p>
               </div>
             )}
+
             {posts?.[1] && (
-              <div className="w-full md:w-[31%]">
+              <div ref={post1.card.ref} className="w-full md:w-[31%] cursor-pointer">
                 <div ref={cardRefs[3]} className="aspect-[16/9]"></div>
                 {posts?.[1].heroImage && (
                   <Media
@@ -137,7 +170,15 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
                     alt={posts?.[1].title}
                   />
                 )}
-                <h2 className="mt-4 text-xl font-bold">{posts?.[1].title}</h2>
+                <h2 className="mt-4 text-xl font-bold">
+                  <Link
+                    href={`/posts/${posts?.[1].slug}`}
+                    ref={post1.link.ref}
+                    className="not-prose"
+                  >
+                    {posts?.[1].title}
+                  </Link>
+                </h2>
                 <p className="mt-2">{posts?.[1].meta?.description}</p>
               </div>
             )}
