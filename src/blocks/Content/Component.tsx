@@ -82,17 +82,35 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                     />
                   )}
                   {contentType === 'sectionHeading' && column.sectionHeading?.heading && (
-                    <p
-                      className={cn('text-2xl font-light', {
-                        'text-center': column.sectionHeading.align === 'center',
+                    <div
+                      className={cn('text-center', {
                         'text-left': column.sectionHeading.align === 'left',
-                        'text-2xl/8': column.sectionHeading.size === 'base',
-                        'text-3xl/12': column.sectionHeading.size === 'lg',
-                        'text-4xl/12': column.sectionHeading.size === 'xl',
                       })}
                     >
-                      {column.sectionHeading.heading}
-                    </p>
+                      <p
+                        className={cn('text-2xl font-light', {
+                          'text-center': column.sectionHeading.align === 'center',
+                          'text-left': column.sectionHeading.align === 'left',
+                          'text-2xl/8': column.sectionHeading.size === 'base',
+                          'text-3xl/12': column.sectionHeading.size === 'lg',
+                          'text-4xl/12': column.sectionHeading.size === 'xl',
+                          'mb-4': column.sectionHeading.subheading,
+                        })}
+                      >
+                        {column.sectionHeading.heading}
+                      </p>
+                      {column.sectionHeading.subheading && (
+                        <p
+                          className={cn('text-2xl font-light', {
+                            'text-lg': column.sectionHeading.size === 'base',
+                            'text-xl': column.sectionHeading.size === 'lg',
+                            'text-2xl': column.sectionHeading.size === 'xl',
+                          })}
+                        >
+                          {column.sectionHeading.subheading}
+                        </p>
+                      )}
+                    </div>
                   )}
                   {contentType === 'archive' && column.archive?.archive && (
                     <ArchiveBlock

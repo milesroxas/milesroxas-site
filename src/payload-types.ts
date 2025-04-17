@@ -493,6 +493,7 @@ export interface ContentBlock {
           subheading?: string | null;
           size?: ('base' | 'lg' | 'xl') | null;
           align?: ('left' | 'center') | null;
+          style?: ('default' | 'border' | 'jumbo') | null;
         };
         archive?: {
           archive?: (number | Post)[] | null;
@@ -1301,6 +1302,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
               subheading?: T;
               size?: T;
               align?: T;
+              style?: T;
             };
         archive?:
           | T
