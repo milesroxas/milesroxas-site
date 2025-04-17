@@ -11,7 +11,7 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import Homepage from '@/prototypes/Homepage'
+import HomeTemplate from '@/templates/Homepage/HomeTemplate'
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const pages = await payload.find({
@@ -49,7 +49,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   // If we're on the home slug, return an empty div
   if (slug === 'home') {
-    return <Homepage />
+    return <HomeTemplate />
   }
 
   const page: RequiredDataFromCollectionSlug<'pages'> | null = await queryPageBySlug({

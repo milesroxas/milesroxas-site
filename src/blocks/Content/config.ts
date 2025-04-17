@@ -64,6 +64,12 @@ const sectionHeadingFields: Field[] = [
     defaultValue: 'left',
     options: ['left', 'center'],
   },
+  {
+    name: 'style',
+    type: 'select',
+    defaultValue: 'default',
+    options: ['default', 'border', 'jumbo'],
+  },
 ]
 
 const archiveFields: Field[] = [

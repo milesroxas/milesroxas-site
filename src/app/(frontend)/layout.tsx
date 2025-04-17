@@ -15,6 +15,7 @@ import { draftMode } from 'next/headers'
 import './globals.css'
 
 import { getServerSideURL } from '@/utilities/getURL'
+import CanvasLayout from '@/r3f/canvas/CanvasLayout'
 
 // Initialize the font at the module scope
 const ibmPlexSans = IBM_Plex_Sans({
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               preview: isEnabled,
             }}
           />
+          <CanvasLayout />
           <Footer />
         </Providers>
       </body>
