@@ -17,6 +17,9 @@ export default function SceneSetter({
   useEffect(() => {
     setScene(scene)
     setTrackedRefs(trackedRefs)
+    return () => {
+      setScene(undefined)
+    }
   }, [scene, trackedRefs])
 
   return null
