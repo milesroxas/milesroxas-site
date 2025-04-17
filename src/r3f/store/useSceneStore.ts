@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 type SceneState = {
-  currentScene: 'home' | 'about'
+  currentScene: 'home' | 'about' | undefined
   setScene: (scene: SceneState['currentScene']) => void
   trackedRefs?: any
   setTrackedRefs: (refs: any) => void
