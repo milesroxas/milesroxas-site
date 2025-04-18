@@ -1,4 +1,4 @@
-import { Header } from '@/Header/Component'
+import BottomSection from './BottomSection/Component'
 
 export const SiteFrame = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -10,7 +10,7 @@ export const SiteFrame = ({ children }: { children: React.ReactNode }) => {
         <div className="absolute top-0 bottom-0 left-0 z-50 w-4 bg-white md:w-[40px]"></div>
       </div>
       <div className="min-h-screen p-4 md:p-[40px]">
-        <Header />
+        <BottomSection />
         {children}
       </div>
     </div>
