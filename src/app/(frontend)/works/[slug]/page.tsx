@@ -69,12 +69,8 @@ export default async function Work({ params: paramsPromise }: Args) {
 
           {draft && <LivePreviewListener />}
 
-          <div className="container mb-8 mx-auto">
-            <h1 className="text-4xl font-bold">{title}</h1>
-          </div>
-
           {hero && <RenderHero {...hero} />}
-          <RenderBlocks blocks={layout} />
+          <RenderBlocks blocks={layout as any} />
         </article>
       </PageTransition>
     </>

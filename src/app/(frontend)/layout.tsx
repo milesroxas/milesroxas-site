@@ -6,7 +6,6 @@ import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'
-import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
@@ -16,7 +15,7 @@ import './globals.css'
 
 import { getServerSideURL } from '@/utilities/getURL'
 import CanvasLayout from '@/r3f/canvas/CanvasLayout'
-
+import { SiteFrame } from '@/SiteFrame/Component'
 // Initialize the font at the module scope
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ['300', '400', '600', '700'],
@@ -36,8 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="bg-background text-foreground min-h-screen">
         <Providers>
-          <Header />
-          {children}
+          <SiteFrame>{children}</SiteFrame>
           <AdminBar
             adminBarProps={{
               preview: isEnabled,

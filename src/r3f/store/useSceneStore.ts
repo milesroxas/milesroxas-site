@@ -10,6 +10,6 @@ type SceneState = {
 export const useSceneStore = create<SceneState>((set) => ({
   currentScene: 'home',
   setScene: (scene) => set({ currentScene: scene }),
-  trackedRefs: undefined,
+  trackedRefs: [],
   setTrackedRefs: (refs) => set({ trackedRefs: refs }),
 }))

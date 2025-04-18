@@ -37,7 +37,7 @@ export type SliderBlockProps = {
       }
     }
   }[]
-  style?: 'default' | 'single'
+  style?: 'default' | 'single' | 'cropped'
   blockType: 'slider'
   className?: string
 }
@@ -142,7 +142,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
 
       <div
         className={cn('overflow-hidden', {
-          'max-w-6xl mx-auto px-4': style === 'single',
+          'mx-auto max-w-6xl px-4': style === 'single',
         })}
       >
         <Carousel
@@ -169,25 +169,31 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                   key={index}
                   className={cn(
                     {
-                      'pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3': style === 'default',
+                      'pl-2 md:basis-1/2 md:pl-4 lg:basis-1/3': style === 'default',
                       'w-full basis-full px-0': style === 'single',
+                      'pl-2 md:basis-1/2 md:pl-4 lg:basis-1/2': style === 'cropped',
                     },
-                    currentIndex === index ? 'z-10' : style === 'default' ? 'opacity-50' : '',
+                    currentIndex === index
+                      ? 'z-10'
+                      : style === 'default' || style === 'cropped'
+                        ? 'opacity-50'
+                        : '',
                   )}
                   style={style === 'single' ? { paddingLeft: 0 } : {}}
                 >
                   <div
                     className={cn(
                       'p-1 transition-all duration-300 ease-out',
-                      style === 'single' ? 'w-full mx-auto aspect-[16/9]' : '',
+                      style === 'single' ? 'mx-auto aspect-[16/9] w-full' : '',
                       style === 'default' && (currentIndex === index ? 'scale-110' : 'scale-90'),
+                      style === 'cropped' && (currentIndex === index ? 'scale-110' : 'scale-90'),
                     )}
                   >
                     {slide.link ? (
                       <Link
                         href={getHref(slide.link)}
                         className={cn(
-                          'overflow-hidden block w-full',
+                          'block w-full overflow-hidden',
                           style === 'single' ? 'aspect-[16/9] w-full' : '',
                         )}
                       >
@@ -196,7 +202,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                             resource={slide.image}
                             priority={index === 0}
                             loading={index === 0 ? 'eager' : 'lazy'}
-                            className="w-full h-full object-cover"
+                            className="h-full w-full object-cover"
                             size={
                               style === 'single'
                                 ? '(max-width: 1024px) 100vw, 1024px'
@@ -213,7 +219,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                     ) : (
                       <div
                         className={cn(
-                          'flex flex-col items-center justify-center p-6',
+                          'flex flex-col items-center justify-center',
                           style === 'single' ? 'aspect-[16/9] w-full' : 'aspect-[4/3]',
                         )}
                       >
@@ -222,7 +228,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                             resource={slide.image}
                             priority={index === 0}
                             loading={index === 0 ? 'eager' : 'lazy'}
-                            className="w-full h-full object-cover"
+                            className="h-full w-full object-cover"
                             size={
                               style === 'single'
                                 ? '(max-width: 1024px) 100vw, 1024px'
@@ -241,18 +247,6 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                 </CarouselItem>
               ))}
           </CarouselContent>
-          <CarouselPrevious
-            className={cn('left-2', {
-              'hidden md:flex': style === 'default',
-              '-left-2 md:left-0': style === 'single',
-            })}
-          />
-          <CarouselNext
-            className={cn('right-2', {
-              'hidden md:flex': style === 'default',
-              '-right-2 md:right-0': style === 'single',
-            })}
-          />
         </Carousel>
       </div>
     </div>

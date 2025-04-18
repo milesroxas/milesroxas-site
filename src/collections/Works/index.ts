@@ -8,6 +8,7 @@ import { Content } from '../../blocks/Content/config'
 import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { SliderBlock } from '../../blocks/Slider/config'
+import { TabsBlock } from '../../blocks/Tabs/config'
 import { Works as WorksBlock } from '../../blocks/WorksBlock/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
@@ -85,6 +86,7 @@ export const Works: CollectionConfig<'works'> = {
                 FormBlock,
                 WorksBlock,
                 SliderBlock,
+                TabsBlock,
               ],
               required: true,
               admin: {

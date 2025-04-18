@@ -48,12 +48,12 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
   return (
     <div
       className={cn(getSpacingClasses(space), {
-        'bg-white text-foreground': sectionTheme === 'light',
-        'bg-primary text-primary-foreground  font-light': sectionTheme === 'dark',
+        'text-foreground': sectionTheme === 'light',
+        'bg-primary text-primary-foreground font-light': sectionTheme === 'dark',
       })}
     >
       <div className="container">
-        <div className="grid grid-cols-4 lg:grid-cols-12 gap-y-8 gap-x-16">
+        <div className="grid grid-cols-4 gap-x-16 gap-y-8 lg:grid-cols-12">
           {columns &&
             columns.length > 0 &&
             columns.map((col, index) => {
