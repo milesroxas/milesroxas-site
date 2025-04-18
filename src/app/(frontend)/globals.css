@@ -8,6 +8,18 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+
+  /* Hide default cursor */
+  * {
+    cursor: none;
+  }
+
+  /* Show default cursor on mobile */
+  @media (max-width: 768px) {
+    * {
+      cursor: auto;
+    }
+  }
 }
 
 @layer base {
@@ -21,15 +33,13 @@
     font-weight: unset;
   }
 
-
-
   /* Disable transitions on small screens for performance */
   @media (max-width: 639px) {
     .container,
     .grid,
     .flex,
-    [class*="w-"],
-    [class*="aspect-"],
+    [class*='w-'],
+    [class*='aspect-'],
     .content-card {
       transition: none;
     }
@@ -127,51 +137,51 @@ html[data-theme='light'] {
   --container-padding-lg: 4rem;
   --container-padding-xl: 6rem;
   --container-padding-2xl: 6rem;
-  
+
   --container-screens-sm: 40rem;
   --container-screens-md: 52rem;
   --container-screens-lg: 72rem;
   --container-screens-xl: 90rem;
   --container-screens-2xl: 100rem;
-  
+
   /* Border radius */
   --radius: 0.5rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  
+
   /* Colors */
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-border: hsla(var(--border));
   --color-ring: hsl(var(--ring));
   --color-input: hsl(var(--input));
-  
+
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
-  
+
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
-  
+
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
-  
+
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
-  
+
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
-  
+
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
-  
+
   --color-popover: hsl(var(--popover));
   --color-popover-foreground: hsl(var(--popover-foreground));
-  
+
   --color-success: hsl(var(--success));
   --color-error: hsl(var(--error));
   --color-warning: hsl(var(--warning));
-  
+
   /* Font families */
   --font-family-sans: var(--font-geist-sans);
   --font-family-mono: var(--font-geist-mono);
@@ -181,31 +191,31 @@ html[data-theme='light'] {
 @utility container {
   @apply mx-auto px-4;
   max-width: 100%;
-  
+
   @media (min-width: 640px) {
     max-width: var(--container-screens-sm);
     padding-left: var(--container-padding-sm);
     padding-right: var(--container-padding-sm);
   }
-  
+
   @media (min-width: 768px) {
     max-width: var(--container-screens-md);
     padding-left: var(--container-padding-md);
     padding-right: var(--container-padding-md);
   }
-  
+
   @media (min-width: 1024px) {
     max-width: var(--container-screens-lg);
     padding-left: var(--container-padding-lg);
     padding-right: var(--container-padding-lg);
   }
-  
+
   @media (min-width: 1280px) {
     max-width: var(--container-screens-xl);
     padding-left: var(--container-padding-xl);
     padding-right: var(--container-padding-xl);
   }
-  
+
   @media (min-width: 1536px) {
     max-width: var(--container-screens-2xl);
     padding-left: var(--container-padding-2xl);
@@ -215,13 +225,21 @@ html[data-theme='light'] {
 
 /* Animations */
 @keyframes accordion-down {
-  from { height: 0; }
-  to { height: var(--radix-accordion-content-height); }
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
 }
 
 @keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); }
-  to { height: 0; }
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 
 /* Custom animations */
@@ -231,7 +249,3 @@ html[data-theme='light'] {
 }
 
 @source "lg:col-span-4 lg:col-span-6 lg:col-span-8 lg:col-span-12 border-border bg-card border-error bg-error/30 border-success bg-success/30 border-warning bg-warning/30";
-
-
-
-
