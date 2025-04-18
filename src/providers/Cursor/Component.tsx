@@ -18,49 +18,81 @@ const Cursor = () => {
   const cursorPosition = useRef({ x: 0, y: 0 })
   const requestRef = useRef<number | null>(null)
 
+  // Cache dimensions to avoid layout thrashing
+  const dimensions = useRef({
+    outerWidth: 30,
+    outerHeight: 30,
+    innerWidth: 12,
+    innerHeight: 12,
+  })
+
   // Function to update cursor position with damping effect
   const animateCursor = () => {
     // Damping factor: lower = smoother, higher = more responsive
-    const damping = 0.1
+    const damping = 0.12
 
     // Calculate distance between current and target position
     const dx = mousePosition.current.x - cursorPosition.current.x
     const dy = mousePosition.current.y - cursorPosition.current.y
 
     // Maximum distance the cursor can lag behind the mouse (in pixels)
-    const maxDistance = 15
+    const maxDistance = 30
 
     // Limit distance if it exceeds the maximum
     const distance = Math.sqrt(dx * dx + dy * dy)
-    let limitedDx = dx
-    let limitedDy = dy
 
+    // Handle cursor movement differently based on distance from mouse
     if (distance > maxDistance) {
+      // When too far, move more directly toward mouse position
       const scale = maxDistance / distance
-      limitedDx = dx * scale
-      limitedDy = dy * scale
-
-      // Set cursor position closer to mouse when exceeding max distance
-      cursorPosition.current.x = mousePosition.current.x - limitedDx
-      cursorPosition.current.y = mousePosition.current.y - limitedDy
+      cursorPosition.current.x = mousePosition.current.x - dx * scale
+      cursorPosition.current.y = mousePosition.current.y - dy * scale
     } else {
-      // Regular damping when within max distance
-      cursorPosition.current.x += dx * damping
-      cursorPosition.current.y += dy * damping
+      // Regular damping when within max distance - ensure movement even for small distances
+      // Small threshold to ensure we always complete the animation
+      const threshold = 0.01
+      if (Math.abs(dx) > threshold || Math.abs(dy) > threshold) {
+        cursorPosition.current.x += dx * damping
+        cursorPosition.current.y += dy * damping
+      } else {
+        // When extremely close, snap to final position to prevent sticking
+        cursorPosition.current.x = mousePosition.current.x
+        cursorPosition.current.y = mousePosition.current.y
+      }
     }
 
-    // Apply the position to cursor elements
+    // Apply the position to cursor elements with simple translate
     if (cursorOuterRef.current) {
-      cursorOuterRef.current.style.transform = `translate(${cursorPosition.current.x}px, ${cursorPosition.current.y}px) translate(-50%, -50%)`
+      // Center cursor by offsetting half its dimensions
+      cursorOuterRef.current.style.transform = `translate(${cursorPosition.current.x - dimensions.current.outerWidth / 2}px, ${cursorPosition.current.y - dimensions.current.outerHeight / 2}px)`
     }
 
     if (cursorInnerRef.current) {
       // Inner cursor follows exactly with no damping
-      cursorInnerRef.current.style.transform = `translate(${mousePosition.current.x}px, ${mousePosition.current.y}px) translate(-50%, -50%)`
+      cursorInnerRef.current.style.transform = `translate(${mousePosition.current.x - dimensions.current.innerWidth / 2}px, ${mousePosition.current.y - dimensions.current.innerHeight / 2}px)`
     }
 
     requestRef.current = requestAnimationFrame(animateCursor)
   }
+
+  // Initialize cursor position
+  useEffect(() => {
+    // Set initial positions to prevent jumps on first render
+    if (typeof window !== 'undefined') {
+      mousePosition.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+      cursorPosition.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+    }
+
+    // Initialize dimensions once elements are rendered
+    if (cursorOuterRef.current && cursorInnerRef.current) {
+      dimensions.current = {
+        outerWidth: cursorOuterRef.current.offsetWidth,
+        outerHeight: cursorOuterRef.current.offsetHeight,
+        innerWidth: cursorInnerRef.current.offsetWidth,
+        innerHeight: cursorInnerRef.current.offsetHeight,
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -96,6 +128,24 @@ const Cursor = () => {
       }
     }
   }, [isVisible])
+
+  // Update dimensions on variant change since the cursor might resize
+  useEffect(() => {
+    // Small delay to let GSAP animations complete
+    const updateDimensions = () => {
+      if (cursorOuterRef.current && cursorInnerRef.current) {
+        dimensions.current = {
+          outerWidth: cursorOuterRef.current.offsetWidth,
+          outerHeight: cursorOuterRef.current.offsetHeight,
+          innerWidth: cursorInnerRef.current.offsetWidth,
+          innerHeight: cursorInnerRef.current.offsetHeight,
+        }
+      }
+    }
+
+    const timeoutId = setTimeout(updateDimensions, 150)
+    return () => clearTimeout(timeoutId)
+  }, [variant])
 
   // Apply different styles based on variant
   useEffect(() => {
