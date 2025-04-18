@@ -505,7 +505,7 @@ export interface ContentBlock {
             size?: ('base' | 'lg' | 'xl') | null;
             align?: ('left' | 'center') | null;
           };
-          style?: ('default' | 'single') | null;
+          style?: ('default' | 'cropped' | 'single') | null;
           space?: {
             pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
             pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
@@ -590,7 +590,16 @@ export interface Work {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | WorksBlock | SliderBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | WorksBlock
+    | SliderBlock
+    | TabsBlock
+  )[];
   relatedWorks?: (number | Work)[] | null;
   categories?: (number | Category)[] | null;
   meta?: {
@@ -898,7 +907,7 @@ export interface SliderBlock {
     size?: ('base' | 'lg' | 'xl') | null;
     align?: ('left' | 'center') | null;
   };
-  style?: ('default' | 'single') | null;
+  style?: ('default' | 'cropped' | 'single') | null;
   space?: {
     pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
@@ -924,6 +933,71 @@ export interface SliderBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'slider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TabsBlock".
+ */
+export interface TabsBlock {
+  heading?: {
+    style?: ('default' | 'center') | null;
+    eyebrow?: string | null;
+    heading?: string | null;
+    subheading?: string | null;
+  };
+  space?: {
+    pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  };
+  tabs?:
+    | {
+        tabTitle: string;
+        /**
+         * Choose the type of content for this tab.
+         */
+        contentType: 'richText' | 'slider';
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: string;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        slider?: {
+          style?: ('default' | 'cropped' | 'single') | null;
+          slides: {
+            slide: {
+              image: number | Media;
+              caption?: string | null;
+              link?:
+                | ({
+                    relationTo: 'works';
+                    value: number | Work;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+            };
+            id?: string | null;
+          }[];
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'tabs';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1508,6 +1582,7 @@ export interface WorksSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         works?: T | WorksBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
+        tabs?: T | TabsBlockSelect<T>;
       };
   relatedWorks?: T;
   categories?: T;
@@ -1524,6 +1599,55 @@ export interface WorksSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TabsBlock_select".
+ */
+export interface TabsBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        style?: T;
+        eyebrow?: T;
+        heading?: T;
+        subheading?: T;
+      };
+  space?:
+    | T
+    | {
+        pt?: T;
+        pb?: T;
+        mt?: T;
+        mb?: T;
+      };
+  tabs?:
+    | T
+    | {
+        tabTitle?: T;
+        contentType?: T;
+        richText?: T;
+        slider?:
+          | T
+          | {
+              style?: T;
+              slides?:
+                | T
+                | {
+                    slide?:
+                      | T
+                      | {
+                          image?: T;
+                          caption?: T;
+                          link?: T;
+                        };
+                    id?: T;
+                  };
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

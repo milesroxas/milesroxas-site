@@ -64,6 +64,10 @@ export const SliderBlock: Block = {
           value: 'default',
         },
         {
+          label: 'Cropped',
+          value: 'cropped',
+        },
+        {
           label: 'Single',
           value: 'single',
         },

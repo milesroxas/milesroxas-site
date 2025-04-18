@@ -32,12 +32,6 @@ export default async function Page() {
     <div className="pt-16 pb-24">
       <PageClient />
 
-      <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
-          <h1>Works</h1>
-        </div>
-      </div>
-
       <div className="container mb-8">
         <PageRange
           collection="works"
