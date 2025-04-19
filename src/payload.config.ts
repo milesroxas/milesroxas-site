@@ -24,6 +24,8 @@ const dirname = path.dirname(filename)
 // Determine if we're in a production environment
 const isProduction = process.env.NODE_ENV === 'production'
 
+console.log('Payload DB connection string:', process.env.DATABASE_URL)
+
 export default buildConfig({
   admin: {
     components: {
