@@ -79,7 +79,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
       <PageTransition>
         <div ref={heroRef}>
           <div className="container mb-16">
-            <h2 className="text-sm uppercase font-mono text-accent mb-4">Works</h2>
+            <h2 className="text-accent mb-4 font-mono text-sm uppercase">Works</h2>
             <p ref={paragraphRef} className="text-3xl font-light">
               I help businesses define–or redefine–their brand through a blend of powerfully
               insightful consultative services and creative production.
@@ -88,9 +88,9 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
         </div>
 
         <section className="container">
-          <div className="flex flex-wrap gap-12 mb-12">
+          <div className="mb-12 flex flex-wrap gap-12">
             {posts?.[0] && (
-              <div ref={post0.card.ref} className="w-full md:w-[31%] cursor-pointer">
+              <div ref={post0.card.ref} className="w-full cursor-pointer md:w-[31%]">
                 <div ref={cardRefs[0]} className="aspect-[4/5]"></div>
                 {posts?.[0].heroImage && (
                   <Media
@@ -99,7 +99,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
                     alt={posts?.[0].title}
                   />
                 )}
-                <h2 className="mt-4 text-xl font-bold">
+                <h2 className="mt-4 text-xl">
                   <Link
                     href={`/posts/${posts?.[0].slug}`}
                     ref={post0.link.ref}
@@ -113,7 +113,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
             )}
 
             {works?.[0] && (
-              <div ref={work0.card.ref} className="w-full md:w-[62%] cursor-pointer">
+              <div ref={work0.card.ref} className="w-full cursor-pointer md:w-[62%]">
                 <div ref={cardRefs[1]} className="aspect-[16/9]"></div>
                 {works?.[0].hero?.media && (
                   <Media
@@ -122,7 +122,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
                     alt={works?.[0].title}
                   />
                 )}
-                <h2 className="mt-4 text-xl font-bold">
+                <h2 className="mt-4 text-xl">
                   <Link
                     href={`/works/${works?.[0].slug}`}
                     ref={work0.link.ref}
@@ -136,9 +136,9 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
             )}
           </div>
 
-          <div className="flex flex-wrap gap-12 mb-12">
+          <div className="mb-12 flex flex-wrap gap-12">
             {works?.[1] && (
-              <div ref={work1.card.ref} className="w-full md:w-[62%] cursor-pointer">
+              <div ref={work1.card.ref} className="w-full cursor-pointer md:w-[62%]">
                 <div ref={cardRefs[2]} className="aspect-[16/9]"></div>
                 {works?.[1].hero?.media && (
                   <Media
@@ -147,7 +147,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
                     alt={works?.[1].title}
                   />
                 )}
-                <h2 className="mt-4 text-xl font-bold">
+                <h2 className="mt-4 text-xl">
                   <Link
                     href={`/works/${works?.[1].slug}`}
                     ref={work1.link.ref}
@@ -161,7 +161,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
             )}
 
             {posts?.[1] && (
-              <div ref={post1.card.ref} className="w-full md:w-[31%] cursor-pointer">
+              <div ref={post1.card.ref} className="w-full cursor-pointer md:w-[31%]">
                 <div ref={cardRefs[3]} className="aspect-[16/9]"></div>
                 {posts?.[1].heroImage && (
                   <Media
@@ -170,7 +170,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
                     alt={posts?.[1].title}
                   />
                 )}
-                <h2 className="mt-4 text-xl font-bold">
+                <h2 className="mt-4 text-xl">
                   <Link
                     href={`/posts/${posts?.[1].slug}`}
                     ref={post1.link.ref}
