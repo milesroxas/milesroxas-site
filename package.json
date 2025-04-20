@@ -20,8 +20,7 @@
   },
   "dependencies": {
     "@payloadcms/admin-bar": "latest",
-    "@payloadcms/db-postgres": "^3.35.1",
-    "@payloadcms/db-vercel-postgres": "^3.34.0",
+    "@payloadcms/db-vercel-postgres": "^3.35.1",
     "@payloadcms/live-preview-react": "latest",
     "@payloadcms/next": "latest",
     "@payloadcms/payload-cloud": "latest",
