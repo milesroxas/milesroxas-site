@@ -30,10 +30,8 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   }, [headerTheme])
 
   return (
-    <header className="fixed top-16 right-16 z-50" {...(theme ? { 'data-theme': theme } : {})}>
-      <Button className="bg-background/40 flex h-auto items-center justify-center rounded-sm px-5 py-1 font-medium tracking-[0.25em] text-slate-800 uppercase backdrop-blur-sm hover:bg-green-50 hover:text-green-900">
-        Menu
-      </Button>
+    <header {...(theme ? { 'data-theme': theme } : {})}>
+      <HeaderNav data={data} />
     </header>
   )
 }

@@ -22,10 +22,7 @@ const nextConfig = {
   },
   reactStrictMode: true,
   redirects,
-  serverRuntimeConfig: {
-    // Increase function timeout (in seconds)
-    maxDuration: 60,
-  },
+
   webpack: (config) => {
     // Optimize threejs bundle size
     config.resolve.alias = {
@@ -34,11 +31,6 @@ const nextConfig = {
     }
 
     return config
-  },
-  turbopack: {
-    // Configure Turbopack
-    resolveAlias: {},
-    rules: {},
   },
 }
 

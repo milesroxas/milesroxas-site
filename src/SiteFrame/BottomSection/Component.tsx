@@ -28,13 +28,13 @@ export default function BottomSection() {
   return (
     <div className="fixed right-0 bottom-0 z-50 w-full">
       <div className="flex h-[40px] items-center justify-between px-[40px] align-middle">
-        <div className="w-20 font-mono text-xs text-slate-700 uppercase">{currentTime}</div>
+        <div className="w-30 font-mono text-xs text-slate-700 uppercase">{currentTime}</div>
         <Link href="/">
           <div className="w-40 md:w-50">
             <Logo className="dark:invert-0" />
           </div>
         </Link>
-        <div className="w-20 text-right font-mono text-xs tracking-wider text-slate-700 uppercase">
+        <div className="w-30 text-right font-mono text-xs tracking-wider text-slate-700 uppercase">
           Contact
         </div>
       </div>
