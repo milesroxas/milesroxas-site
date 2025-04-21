@@ -10,6 +10,7 @@ export default function SceneSetter({
 }: {
   scene: 'home' | 'about'
   trackedRefs: SceneTrackRefs
+  image?: string
 }) {
   const setScene = useSceneStore((s) => s.setScene)
   const setTrackedRefs = useSceneStore((s) => s.setTrackedRefs)

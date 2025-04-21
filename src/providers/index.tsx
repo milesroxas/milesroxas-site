@@ -13,7 +13,9 @@ export const Providers: React.FC<{
   return (
     <ThemeProvider>
       <HeaderThemeProvider>
-        <LenisProvider>{children}</LenisProvider>
+        <LenisProvider>
+          <CursorProvider>{children}</CursorProvider>
+        </LenisProvider>
       </HeaderThemeProvider>
     </ThemeProvider>
   )
