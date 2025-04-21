@@ -2,12 +2,26 @@
 
 import { View } from '@react-three/drei'
 import type { SceneTrackRefs } from '@/r3f/types/r3f'
-
+import { useTexture } from '@react-three/drei'
+import * as THREE from 'three'
+import PlaneWithImage from '../collections/PlaneWithImage'
 type Props = {
   trackedRefs: SceneTrackRefs
+  resource: {
+    url: string
+    variant: 'original' | 'wide' | 'portrait'
+  }
+  collection: {
+    variant: 'post' | 'work'
+  }
 }
 
-export default function SceneHome({ trackedRefs }: Props) {
+export default function SceneHome({ trackedRefs, resource, collection }: Props) {
+  const texture = useTexture('/textures/fpo-arturo.jpg')
+
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+
   return (
     <>
       {/* Hero mesh */}
@@ -25,22 +39,9 @@ export default function SceneHome({ trackedRefs }: Props) {
         ref ? (
           <View key={i} track={ref as unknown as React.RefObject<HTMLElement>}>
             <ambientLight intensity={1} />
-            <mesh position={[0, 0, 0]}>
-              <boxGeometry args={[1, 1, 1]} />
-              <meshStandardMaterial color="orange" />
-            </mesh>
+            <PlaneWithImage url={resource.url} variant={resource.variant} size={2} />
           </View>
         ) : null,
-      )}
-
-      {/* Banner mesh */}
-      {trackedRefs.banner && (
-        <View track={trackedRefs.banner as unknown as React.RefObject<HTMLElement>}>
-          <mesh position={[0, 0, 0]}>
-            <sphereGeometry args={[0.5, 32, 32]} />
-            <meshStandardMaterial color="pink" />
-          </mesh>
-        </View>
       )}
     </>
   )

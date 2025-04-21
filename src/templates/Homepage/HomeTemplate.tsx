@@ -55,10 +55,10 @@ export default async function HomeTemplate() {
 
   return (
     <PageTransition>
-      <article className="pt-16 pb-24">
+      <article className="pb-24">
         {draft && <LivePreviewListener />}
-        <RenderHero {...hero} />
-        <RenderBlocks blocks={layout} />
+        {/* <RenderHero {...hero} />
+        <RenderBlocks blocks={layout} /> */}
 
         <HomeTemplateClient posts={postEntries.docs} works={workEntries.docs} />
       </article>

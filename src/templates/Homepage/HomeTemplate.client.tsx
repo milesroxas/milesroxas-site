@@ -13,6 +13,7 @@ import SceneSetter from '@/r3f/canvas/SceneSetter'
 import type { SceneTrackRefs } from '@/r3f/types/r3f'
 import type { Post, Work } from '@/payload-types'
 import useClickableCard from '@/utilities/useClickableCard'
+import { useSceneStore } from '@/r3f/store/useSceneStore'
 
 interface HomeTemplateClientProps {
   posts?: Post[]
@@ -22,6 +23,8 @@ interface HomeTemplateClientProps {
 const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works }) => {
   const { setHeaderTheme } = useHeaderTheme()
   const { setTheme } = useTheme()
+  const setResource = useSceneStore((s) => s.setResource)
+  const setCollection = useSceneStore((s) => s.setCollection)
 
   const heroRef = useRef<HTMLDivElement>(null)
   const bannerRef = useRef<HTMLDivElement>(null)
@@ -57,6 +60,29 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
     setHeaderTheme('light')
     setTheme('light')
 
+    // Set resource and collection for the first card only (minimal implementation)
+    const postHeroImage = posts?.[0]?.heroImage
+    if (
+      postHeroImage &&
+      typeof postHeroImage === 'object' &&
+      'url' in postHeroImage &&
+      postHeroImage.url
+    ) {
+      setResource({ url: postHeroImage.url, variant: 'portrait' })
+      setCollection({ variant: 'post' })
+    } else {
+      const workHeroMedia = works?.[0]?.hero?.media
+      if (
+        workHeroMedia &&
+        typeof workHeroMedia === 'object' &&
+        'url' in workHeroMedia &&
+        workHeroMedia.url
+      ) {
+        setResource({ url: workHeroMedia.url, variant: 'wide' })
+        setCollection({ variant: 'work' })
+      }
+    }
+
     if (paragraphRef.current) {
       const splitText = new SplitType(paragraphRef.current, { types: 'words,chars' })
 
@@ -70,7 +96,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
         delay: 0.1,
       })
     }
-  }, [setHeaderTheme, setTheme])
+  }, [setHeaderTheme, setTheme, posts, works, setResource, setCollection])
 
   return (
     <div>
@@ -92,13 +118,6 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
             {posts?.[0] && (
               <div ref={post0.card.ref} className="w-full cursor-pointer md:w-[31%]">
                 <div ref={cardRefs[0]} className="aspect-[4/5]"></div>
-                {posts?.[0].heroImage && (
-                  <Media
-                    resource={posts?.[0].heroImage}
-                    imgClassName="w-full h-auto object-cover aspect-[4/5]"
-                    alt={posts?.[0].title}
-                  />
-                )}
                 <h2 className="mt-4 text-xl">
                   <Link
                     href={`/posts/${posts?.[0].slug}`}
@@ -115,13 +134,6 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
             {works?.[0] && (
               <div ref={work0.card.ref} className="w-full cursor-pointer md:w-[62%]">
                 <div ref={cardRefs[1]} className="aspect-[16/9]"></div>
-                {works?.[0].hero?.media && (
-                  <Media
-                    resource={works?.[0].hero?.media}
-                    imgClassName="w-full h-auto object-cover aspect-[16/9]"
-                    alt={works?.[0].title}
-                  />
-                )}
                 <h2 className="mt-4 text-xl">
                   <Link
                     href={`/works/${works?.[0].slug}`}
@@ -140,13 +152,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
             {works?.[1] && (
               <div ref={work1.card.ref} className="w-full cursor-pointer md:w-[62%]">
                 <div ref={cardRefs[2]} className="aspect-[16/9]"></div>
-                {works?.[1].hero?.media && (
-                  <Media
-                    resource={works?.[1].hero.media}
-                    imgClassName="w-full h-auto object-cover aspect-[16/9]"
-                    alt={works?.[1].title}
-                  />
-                )}
+                {/* Media removed: handled by PlaneWithImage in 3D scene */}
                 <h2 className="mt-4 text-xl">
                   <Link
                     href={`/works/${works?.[1].slug}`}
@@ -163,13 +169,6 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
             {posts?.[1] && (
               <div ref={post1.card.ref} className="w-full cursor-pointer md:w-[31%]">
                 <div ref={cardRefs[3]} className="aspect-[16/9]"></div>
-                {posts?.[1].heroImage && (
-                  <Media
-                    resource={posts?.[1].heroImage}
-                    imgClassName="w-full h-auto object-cover aspect-[4/5]"
-                    alt={posts?.[1].title}
-                  />
-                )}
                 <h2 className="mt-4 text-xl">
                   <Link
                     href={`/posts/${posts?.[1].slug}`}
