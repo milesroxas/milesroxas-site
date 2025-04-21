@@ -21,11 +21,6 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// Determine if we're in a production environment
-const isProduction = process.env.NODE_ENV === 'production'
-
-console.log('Payload DB connection string:', process.env.DATABASE_URL)
-
 export default buildConfig({
   admin: {
     components: {
@@ -75,25 +70,21 @@ export default buildConfig({
   globals: [Header, Footer],
   plugins: [
     ...plugins,
-    ...(isProduction
-      ? [
-          s3Storage({
-            collections: {
-              media: true,
-            },
-            bucket: process.env.S3_BUCKET || '',
-            config: {
-              credentials: {
-                accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-                secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
-              },
-              region: process.env.S3_REGION,
-              endpoint: process.env.S3_ENDPOINT,
-              forcePathStyle: true,
-            },
-          }),
-        ]
-      : []), // Empty array when not in production = local file storage
+    s3Storage({
+      collections: {
+        media: true,
+      },
+      bucket: process.env.S3_BUCKET || '',
+      config: {
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+        },
+        region: process.env.S3_REGION,
+        endpoint: process.env.S3_ENDPOINT,
+        forcePathStyle: true,
+      },
+    }),
   ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
