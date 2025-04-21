@@ -5,7 +5,7 @@ import React from 'react'
 import { HeaderThemeProvider } from './HeaderTheme'
 import { LenisProvider } from './Lenis'
 import { ThemeProvider } from './Theme'
-import { CursorProvider } from './CursorProvider'
+import { CursorProvider } from './Cursor/CursorProvider'
 
 export const Providers: React.FC<{
   children: React.ReactNode
@@ -13,9 +13,7 @@ export const Providers: React.FC<{
   return (
     <ThemeProvider>
       <HeaderThemeProvider>
-        <LenisProvider>
-          <CursorProvider>{children}</CursorProvider>
-        </LenisProvider>
+        <LenisProvider>{children}</LenisProvider>
       </HeaderThemeProvider>
     </ThemeProvider>
   )

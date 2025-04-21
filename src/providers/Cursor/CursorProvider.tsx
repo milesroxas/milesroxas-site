@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode } from 'react'
-import Cursor from './Cursor/Component'
+import Cursor from './Component'
 
 // Types
 export type CursorVariant = 'default' | 'text' | 'button' | 'link' | 'media'

@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { useCursor } from '../../CursorProvider'
+import { useCursor } from '../CursorProvider'
 
 export const CursorText = ({ children }: { children: ReactNode }) => {
   const { setVariant } = useCursor()

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import styles from './cursor.module.css'
-import { CursorContext } from '../CursorProvider'
+import { CursorContext } from './CursorProvider'
 import { useContext } from 'react'
 
 // Main Cursor Component
