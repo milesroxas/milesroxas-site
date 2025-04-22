@@ -27,12 +27,12 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
   const { setTheme } = useTheme()
   const setResources = useSceneStore((s) => s.setResources)
   const setCollections = useSceneStore((s) => s.setCollections)
-
+  const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
+  const setMouseUV = useSceneStore((s) => s.setMouseUV)
   const heroRef = useRef<HTMLDivElement>(null)
   const bannerRef = useRef<HTMLDivElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
   const paragraphRef = useRef<HTMLParagraphElement>(null)
-  const eventSourceRef = useRef<HTMLDivElement>(null)
 
   // Predefine refs and clickable card hooks for each possible card slot (4 total)
   const cardRefs = [
@@ -187,6 +187,15 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
                     ref={card.imageRef}
                     className={cn('z-50 w-full', card.type === 'post')}
                     style={{ aspectRatio: `${aspect}` }}
+                    onMouseEnter={() => setHoveredIndex(i)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                    onMouseMove={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect()
+                      // compute UV: x in [0,1], y inverted so 0=bottom, 1=top
+                      const x = (e.clientX - rect.left) / rect.width
+                      const y = 1 - (e.clientY - rect.top) / rect.height
+                      setMouseUV([x, y])
+                    }}
                   ></div>
                   <h2 className="mt-4 text-xl">
                     <Link

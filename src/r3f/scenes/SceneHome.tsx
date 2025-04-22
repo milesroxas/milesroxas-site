@@ -4,7 +4,7 @@ import { View } from '@react-three/drei'
 import type { SceneTrackRefs } from '@/r3f/types/r3f'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
-import PlaneWithImage from '@/r3f/collections/CardPlane/PlaneWithImage'
+import PlaneWithImage from '@/r3f/components/CardPlane/PlaneWithImage'
 
 type Props = {
   trackedRefs: SceneTrackRefs
@@ -30,7 +30,7 @@ export default function SceneHome({ trackedRefs, resources, collections }: Props
         <View track={trackedRefs.heroSection as React.RefObject<HTMLElement>}>
           <mesh position={[0, 0, 0]}>
             <torusGeometry args={[0.5, 0.2, 16, 100]} />
-            <meshStandardMaterial color="cyan" />
+            <meshStandardMaterial map={texture} />
           </mesh>
         </View>
       )}
@@ -39,8 +39,13 @@ export default function SceneHome({ trackedRefs, resources, collections }: Props
       {trackedRefs.cards?.map((ref, i) =>
         ref && resources[i] ? (
           <View key={i} track={ref as React.RefObject<HTMLElement>}>
-            <ambientLight intensity={2} />
-            <PlaneWithImage url={resources[i]!.url} variant={resources[i]!.variant} size={1} />
+            <ambientLight intensity={1} />
+            <PlaneWithImage
+              url={resources[i]!.url}
+              variant={resources[i]!.variant}
+              size={1}
+              cardIndex={i}
+            />
           </View>
         ) : null,
       )}

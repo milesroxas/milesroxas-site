@@ -1,5 +1,7 @@
-varying vec2 vUv;
+#define GLSLIFY 1
+
+varying vec2 v_uv;
 void main() {
-    vUv = uv;
+    v_uv = uv;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }

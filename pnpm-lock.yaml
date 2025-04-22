@@ -67,13 +67,13 @@ importers:
         version: 1.1.8(@types/react-dom@19.1.2(@types/react@19.1.1))(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@react-three/drei':
         specifier: ^10.0.6
-        version: 10.0.6(@react-three/fiber@9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(@types/react@19.1.1)(@types/three@0.170.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
+        version: 10.0.6(@react-three/fiber@9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(@types/react@19.1.1)(@types/three@0.170.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
       '@react-three/fiber':
-        specifier: 9.1.1
-        version: 9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
+        specifier: 9.1.2
+        version: 9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
       '@react-three/postprocessing':
         specifier: 3.0.4
-        version: 3.0.4(@react-three/fiber@9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(@types/three@0.170.0)(react@19.1.0)(three@0.175.0)
+        version: 3.0.4(@react-three/fiber@9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(@types/three@0.170.0)(react@19.1.0)(three@0.175.0)
       '@studio-freight/lenis':
         specifier: ^1.0.42
         version: 1.0.42
@@ -184,7 +184,7 @@ importers:
         version: 0.175.0
       three-custom-shader-material:
         specifier: ^6.3.5
-        version: 6.3.5(@react-three/fiber@9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(react@19.1.0)(three@0.175.0)
+        version: 6.3.5(@react-three/fiber@9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(react@19.1.0)(three@0.175.0)
       three-stdlib:
         specifier: ^2.35.15
         version: 2.35.15(three@0.175.0)
@@ -2002,8 +2002,8 @@ packages:
       react-dom:
         optional: true
 
-  '@react-three/fiber@9.1.1':
-    resolution: {integrity: sha512-S0De6e7xnlZd2QmnBm2rZVXxlknynCSAoCW1M8fF2yH93Q/cra3xwH8rAq4CMqNARsotbZSU/eNPGY/rdQaAhA==}
+  '@react-three/fiber@9.1.2':
+    resolution: {integrity: sha512-k8FR9yVHV9kIF3iuOD0ds5hVymXYXfgdKklqziBVod9ZEJ8uk05Zjw29J/omU3IKeUfLNAIHfxneN3TUYM4I2w==}
     peerDependencies:
       expo: '>=43.0'
       expo-asset: '>=8.4'
@@ -8231,12 +8231,12 @@ snapshots:
 
   '@radix-ui/rect@1.1.1': {}
 
-  '@react-three/drei@10.0.6(@react-three/fiber@9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(@types/react@19.1.1)(@types/three@0.170.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)':
+  '@react-three/drei@10.0.6(@react-three/fiber@9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(@types/react@19.1.1)(@types/three@0.170.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)':
     dependencies:
       '@babel/runtime': 7.27.0
       '@mediapipe/tasks-vision': 0.10.17
       '@monogrid/gainmap-js': 3.1.0(three@0.175.0)
-      '@react-three/fiber': 9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
+      '@react-three/fiber': 9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
       '@use-gesture/react': 10.3.1(react@19.1.0)
       camera-controls: 2.10.1(three@0.175.0)
       cross-env: 7.0.3
@@ -8264,7 +8264,7 @@ snapshots:
       - '@types/three'
       - immer
 
-  '@react-three/fiber@9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)':
+  '@react-three/fiber@9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)':
     dependencies:
       '@babel/runtime': 7.27.0
       '@types/react-reconciler': 0.28.9(@types/react@19.1.1)
@@ -8286,9 +8286,9 @@ snapshots:
       - '@types/react'
       - immer
 
-  '@react-three/postprocessing@3.0.4(@react-three/fiber@9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(@types/three@0.170.0)(react@19.1.0)(three@0.175.0)':
+  '@react-three/postprocessing@3.0.4(@react-three/fiber@9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(@types/three@0.170.0)(react@19.1.0)(three@0.175.0)':
     dependencies:
-      '@react-three/fiber': 9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
+      '@react-three/fiber': 9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
       maath: 0.6.0(@types/three@0.170.0)(three@0.175.0)
       n8ao: 1.9.4(postprocessing@6.37.2(three@0.175.0))(three@0.175.0)
       postprocessing: 6.37.2(three@0.175.0)
@@ -12328,11 +12328,11 @@ snapshots:
     dependencies:
       real-require: 0.2.0
 
-  three-custom-shader-material@6.3.5(@react-three/fiber@9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(react@19.1.0)(three@0.175.0):
+  three-custom-shader-material@6.3.5(@react-three/fiber@9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0))(react@19.1.0)(three@0.175.0):
     dependencies:
       three: 0.175.0
     optionalDependencies:
-      '@react-three/fiber': 9.1.1(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
+      '@react-three/fiber': 9.1.2(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.175.0)
       react: 19.1.0
 
   three-mesh-bvh@0.8.3(three@0.175.0):
