@@ -89,6 +89,7 @@ export default function PlaneWithImage({
 
   return (
     <Plane args={[width, height]}>
+      {/* @ts-ignore */}
       <cardMaterial ref={matRef} transparent />
     </Plane>
   )
