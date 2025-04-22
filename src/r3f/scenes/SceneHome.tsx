@@ -4,7 +4,7 @@ import { View } from '@react-three/drei'
 import type { SceneTrackRefs } from '@/r3f/types/r3f'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
-import PlaneWithImage from '../collections/PlaneWithImage'
+import PlaneWithImage from '@/r3f/collections/CardPlane/PlaneWithImage'
 
 type Props = {
   trackedRefs: SceneTrackRefs
