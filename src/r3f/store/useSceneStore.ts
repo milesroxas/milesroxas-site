@@ -9,6 +9,10 @@ type SceneState = {
   setResources: (resources: { url: string; variant: 'original' | 'wide' | 'portrait' }[]) => void
   collections?: { variant: 'post' | 'work' }[]
   setCollections: (collections: { variant: 'post' | 'work' }[]) => void
+  hoveredIndex: number | null
+  setHoveredIndex: (i: number | null) => void
+  mouseUV: [number, number]
+  setMouseUV: (uv: [number, number]) => void
 }
 
 export const useSceneStore = create<SceneState>((set) => ({
@@ -20,4 +24,8 @@ export const useSceneStore = create<SceneState>((set) => ({
   setResources: (resources) => set({ resources }),
   collections: undefined,
   setCollections: (collections) => set({ collections }),
+  hoveredIndex: null,
+  setHoveredIndex: (i) => set({ hoveredIndex: i }),
+  mouseUV: [0.5, 0.5],
+  setMouseUV: (uv) => set({ mouseUV: uv }),
 }))

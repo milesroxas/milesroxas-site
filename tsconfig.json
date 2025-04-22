@@ -39,7 +39,7 @@
       ],
       "@/*": [
         "./src/*"
-      ],
+      ]
     }
   },
   "include": [
@@ -49,8 +49,7 @@
     "redirects.js",
     "next.config.js",
     "next-sitemap.config.cjs",
-    "src/r3f/types/**/*.d.ts",
-    "src/r3f/types/custom-image-material.d.ts"
+    "**/*.d.ts"
   ],
   "exclude": [
     "node_modules"

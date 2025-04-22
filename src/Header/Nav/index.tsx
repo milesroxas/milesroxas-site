@@ -83,7 +83,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
             </div>
             <div className="absolute top-16 right-8">
               <button
-                className="bg-background/40 flex h-auto items-center justify-center rounded-sm px-5 py-1 font-medium tracking-[0.25em] text-slate-800 uppercase backdrop-blur-sm hover:bg-green-50 hover:text-green-900"
+                className="bg-background/40 flex h-auto items-center justify-center rounded-sm px-5 py-1 font-medium tracking-[0.25em] text-slate-800 uppercase backdrop-blur-sm hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg"
                 onClick={closeModal}
                 tabIndex={isOpen ? 0 : -1}
               >
