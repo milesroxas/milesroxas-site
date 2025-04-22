@@ -64,7 +64,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   return (
     <>
       <button onClick={openModal} className="fixed top-16 right-16 z-50">
-        <span className="bg-background/40 flex h-auto items-center justify-center rounded-sm px-5 py-1 font-medium tracking-[0.25em] text-slate-800 uppercase backdrop-blur-sm hover:bg-green-50 hover:text-green-900">
+        <span className="bg-background/40 flex h-auto items-center justify-center rounded-sm px-5 py-1 font-medium tracking-[0.25em] text-slate-800 uppercase backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-slate-100/80 hover:text-slate-900 hover:shadow-lg">
           Menu
         </span>
       </button>

@@ -21,7 +21,7 @@ export default function SceneSetter({
     return () => {
       setScene(undefined)
     }
-  }, [scene, trackedRefs])
+  }, [scene, trackedRefs, setScene, setTrackedRefs])
 
   return null
 }

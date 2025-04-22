@@ -14,6 +14,8 @@ import type { SceneTrackRefs } from '@/r3f/types/r3f'
 import type { Post, Work } from '@/payload-types'
 import useClickableCard from '@/utilities/useClickableCard'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
+import HomeHero from './components/HomeHero'
+import { cn } from '@/utilities/ui'
 
 interface HomeTemplateClientProps {
   posts?: Post[]
@@ -23,65 +25,109 @@ interface HomeTemplateClientProps {
 const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works }) => {
   const { setHeaderTheme } = useHeaderTheme()
   const { setTheme } = useTheme()
-  const setResource = useSceneStore((s) => s.setResource)
-  const setCollection = useSceneStore((s) => s.setCollection)
+  const setResources = useSceneStore((s) => s.setResources)
+  const setCollections = useSceneStore((s) => s.setCollections)
 
   const heroRef = useRef<HTMLDivElement>(null)
   const bannerRef = useRef<HTMLDivElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
   const paragraphRef = useRef<HTMLParagraphElement>(null)
+  const eventSourceRef = useRef<HTMLDivElement>(null)
 
+  // Predefine refs and clickable card hooks for each possible card slot (4 total)
   const cardRefs = [
     useRef<HTMLDivElement>(null),
     useRef<HTMLDivElement>(null),
     useRef<HTMLDivElement>(null),
     useRef<HTMLDivElement>(null),
-  ] as [
-    React.RefObject<HTMLDivElement>,
-    React.RefObject<HTMLDivElement>,
-    React.RefObject<HTMLDivElement>,
-    React.RefObject<HTMLDivElement>,
+  ]
+  const imageRefs = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+  ]
+  const linkRefs = [
+    useClickableCard<HTMLDivElement>({}).link.ref,
+    useClickableCard<HTMLDivElement>({}).link.ref,
+    useClickableCard<HTMLDivElement>({}).link.ref,
+    useClickableCard<HTMLDivElement>({}).link.ref,
   ]
 
-  const trackedRefs: SceneTrackRefs = {
-    heroSection: heroRef,
-    cards: cardRefs,
-    banner: bannerRef,
-    ctaSection: ctaRef,
-  }
+  // Build cards array dynamically in the order: post0, work0, work1, post1
+  const cards = [
+    posts?.[0] &&
+    posts[0].heroImage &&
+    typeof posts[0].heroImage === 'object' &&
+    posts[0].heroImage.url
+      ? {
+          ref: cardRefs[0],
+          imageRef: imageRefs[0],
+          resource: { url: posts[0].heroImage.url, variant: 'portrait' as const },
+          collection: { variant: 'post' as const },
+          type: 'post',
+          data: posts[0],
+          linkRef: linkRefs[0],
+        }
+      : null,
+    works?.[0] &&
+    works[0].hero?.media &&
+    typeof works[0].hero.media === 'object' &&
+    works[0].hero.media.url
+      ? {
+          ref: cardRefs[1],
+          imageRef: imageRefs[1],
+          resource: { url: works[0].hero.media.url, variant: 'wide' as const },
+          collection: { variant: 'work' as const },
+          type: 'work',
+          data: works[0],
+          linkRef: linkRefs[1],
+        }
+      : null,
+    works?.[1] &&
+    works[1].hero?.media &&
+    typeof works[1].hero.media === 'object' &&
+    works[1].hero.media.url
+      ? {
+          ref: cardRefs[2],
+          imageRef: imageRefs[2],
+          resource: { url: works[1].hero.media.url, variant: 'wide' as const },
+          collection: { variant: 'work' as const },
+          type: 'work',
+          data: works[1],
+          linkRef: linkRefs[2],
+        }
+      : null,
+    posts?.[1] &&
+    posts[1].heroImage &&
+    typeof posts[1].heroImage === 'object' &&
+    posts[1].heroImage.url
+      ? {
+          ref: cardRefs[3],
+          imageRef: imageRefs[3],
+          resource: { url: posts[1].heroImage.url, variant: 'wide' as const },
+          collection: { variant: 'post' as const },
+          type: 'post',
+          data: posts[1],
+          linkRef: linkRefs[3],
+        }
+      : null,
+  ].filter(Boolean) as Array<{
+    ref: React.RefObject<HTMLDivElement>
+    imageRef: React.RefObject<HTMLDivElement>
+    resource: { url: string; variant: 'portrait' | 'wide' | 'original' }
+    collection: { variant: 'post' | 'work' }
+    type: 'post' | 'work'
+    data: Post | Work
+    linkRef: React.RefObject<HTMLAnchorElement>
+  }>
 
-  // Add hooks for clickable cards
-  const post0 = useClickableCard<HTMLDivElement>({})
-  const work0 = useClickableCard<HTMLDivElement>({})
-  const work1 = useClickableCard<HTMLDivElement>({})
-  const post1 = useClickableCard<HTMLDivElement>({})
-
+  // Set resources and collections for 3D scene
   useEffect(() => {
     setHeaderTheme('light')
     setTheme('light')
-
-    // Set resource and collection for the first card only (minimal implementation)
-    const postHeroImage = posts?.[0]?.heroImage
-    if (
-      postHeroImage &&
-      typeof postHeroImage === 'object' &&
-      'url' in postHeroImage &&
-      postHeroImage.url
-    ) {
-      setResource({ url: postHeroImage.url, variant: 'portrait' })
-      setCollection({ variant: 'post' })
-    } else {
-      const workHeroMedia = works?.[0]?.hero?.media
-      if (
-        workHeroMedia &&
-        typeof workHeroMedia === 'object' &&
-        'url' in workHeroMedia &&
-        workHeroMedia.url
-      ) {
-        setResource({ url: workHeroMedia.url, variant: 'wide' })
-        setCollection({ variant: 'work' })
-      }
-    }
+    setResources(cards.map((c) => c.resource))
+    setCollections(cards.map((c) => c.collection))
 
     if (paragraphRef.current) {
       const splitText = new SplitType(paragraphRef.current, { types: 'words,chars' })
@@ -96,14 +142,23 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
         delay: 0.1,
       })
     }
-  }, [setHeaderTheme, setTheme, posts, works, setResource, setCollection])
+  }, [setHeaderTheme, setTheme, cards, setResources, setCollections])
+
+  // For trackedRefs, use the dynamic cards array
+  const trackedRefs: SceneTrackRefs = {
+    heroSection: heroRef,
+    cards: cards.map((c) => c.imageRef),
+    banner: bannerRef,
+    ctaSection: ctaRef,
+  }
 
   return (
     <div>
       <SceneSetter scene="home" trackedRefs={trackedRefs} />
 
       <PageTransition>
-        <div ref={heroRef}>
+        <HomeHero />
+        {/* <div ref={heroRef}>
           <div className="container mb-16">
             <h2 className="text-accent mb-4 font-mono text-sm uppercase">Works</h2>
             <p ref={paragraphRef} className="text-3xl font-light">
@@ -111,76 +166,41 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
               insightful consultative services and creative production.
             </p>
           </div>
-        </div>
+        </div> */}
 
         <section className="container">
-          <div className="mb-12 flex flex-wrap gap-12">
-            {posts?.[0] && (
-              <div ref={post0.card.ref} className="w-full cursor-pointer md:w-[31%]">
-                <div ref={cardRefs[0]} className="aspect-[4/5]"></div>
-                <h2 className="mt-4 text-xl">
-                  <Link
-                    href={`/posts/${posts?.[0].slug}`}
-                    ref={post0.link.ref}
-                    className="not-prose"
-                  >
-                    {posts?.[0].title}
-                  </Link>
-                </h2>
-                <p className="mt-2">{posts?.[0].meta?.description}</p>
-              </div>
-            )}
-
-            {works?.[0] && (
-              <div ref={work0.card.ref} className="w-full cursor-pointer md:w-[62%]">
-                <div ref={cardRefs[1]} className="aspect-[16/9]"></div>
-                <h2 className="mt-4 text-xl">
-                  <Link
-                    href={`/works/${works?.[0].slug}`}
-                    ref={work0.link.ref}
-                    className="not-prose"
-                  >
-                    {works?.[0].title}
-                  </Link>
-                </h2>
-                <p className="mt-2">{works?.[0].meta?.description}</p>
-              </div>
-            )}
-          </div>
-
-          <div className="mb-12 flex flex-wrap gap-12">
-            {works?.[1] && (
-              <div ref={work1.card.ref} className="w-full cursor-pointer md:w-[62%]">
-                <div ref={cardRefs[2]} className="aspect-[16/9]"></div>
-                {/* Media removed: handled by PlaneWithImage in 3D scene */}
-                <h2 className="mt-4 text-xl">
-                  <Link
-                    href={`/works/${works?.[1].slug}`}
-                    ref={work1.link.ref}
-                    className="not-prose"
-                  >
-                    {works?.[1].title}
-                  </Link>
-                </h2>
-                <p className="mt-2">{works?.[1].meta?.description}</p>
-              </div>
-            )}
-
-            {posts?.[1] && (
-              <div ref={post1.card.ref} className="w-full cursor-pointer md:w-[31%]">
-                <div ref={cardRefs[3]} className="aspect-[16/9]"></div>
-                <h2 className="mt-4 text-xl">
-                  <Link
-                    href={`/posts/${posts?.[1].slug}`}
-                    ref={post1.link.ref}
-                    className="not-prose"
-                  >
-                    {posts?.[1].title}
-                  </Link>
-                </h2>
-                <p className="mt-2">{posts?.[1].meta?.description}</p>
-              </div>
-            )}
+          <div className="mb-12 flex gap-12 py-24">
+            {cards.map((card, i) => {
+              // Map variant to aspect ratio (must match PlaneWithImage)
+              const aspectRatios = {
+                original: 1064 / 625,
+                wide: 16 / 9,
+                portrait: 3 / 4,
+                box: 1 / 1,
+              } as const
+              const aspect = aspectRatios[card.resource.variant] ?? aspectRatios.original
+              // Alternate widths: 4/12 and 8/12
+              const widthClass = i % 2 === 0 ? 'w-4/12' : 'w-8/12'
+              return (
+                <div key={card.data.slug ?? i} className={`h-full ${widthClass} cursor-pointer`}>
+                  <div
+                    ref={card.imageRef}
+                    className={cn('z-50 w-full', card.type === 'post')}
+                    style={{ aspectRatio: `${aspect}` }}
+                  ></div>
+                  <h2 className="mt-4 text-xl">
+                    <Link
+                      href={`/${card.type === 'post' ? 'posts' : 'works'}/${card.data.slug}`}
+                      ref={card.linkRef}
+                      className="not-prose"
+                    >
+                      {card.data.title}
+                    </Link>
+                  </h2>
+                  <p className="mt-2">{card.data.meta?.description}</p>
+                </div>
+              )
+            })}
           </div>
         </section>
       </PageTransition>

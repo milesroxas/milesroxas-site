@@ -26,6 +26,12 @@ const Cursor = () => {
     innerHeight: 12,
   })
 
+  const isMobile =
+    typeof window !== 'undefined' &&
+    ('ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+
   // Function to update cursor position with damping effect
   const animateCursor = () => {
     // Damping factor: lower = smoother, higher = more responsive
@@ -196,7 +202,7 @@ const Cursor = () => {
     }
   }, [variant])
 
-  return (
+  return isMobile ? null : (
     <>
       <div
         ref={cursorOuterRef}

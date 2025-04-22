@@ -6,13 +6,13 @@ import SceneHome from '@/r3f/scenes/SceneHome'
 export default function SceneManager() {
   const scene = useSceneStore((s) => s.currentScene)
   const trackedRefs = useSceneStore((s) => s.trackedRefs)
-  const resource = useSceneStore((s) => s.resource)
-  const collection = useSceneStore((s) => s.collection)
+  const resources = useSceneStore((s) => s.resources)
+  const collections = useSceneStore((s) => s.collections)
 
   return (
     <>
-      {scene === 'home' && resource && collection && (
-        <SceneHome trackedRefs={trackedRefs} resource={resource} collection={collection} />
+      {scene === 'home' && resources && collections && (
+        <SceneHome trackedRefs={trackedRefs} resources={resources} collections={collections} />
       )}
     </>
   )
