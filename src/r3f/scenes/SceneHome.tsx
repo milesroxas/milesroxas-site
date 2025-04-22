@@ -5,18 +5,19 @@ import type { SceneTrackRefs } from '@/r3f/types/r3f'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import PlaneWithImage from '../collections/PlaneWithImage'
+
 type Props = {
   trackedRefs: SceneTrackRefs
-  resource: {
+  resources: {
     url: string
     variant: 'original' | 'wide' | 'portrait'
-  }
-  collection: {
+  }[]
+  collections: {
     variant: 'post' | 'work'
-  }
+  }[]
 }
 
-export default function SceneHome({ trackedRefs, resource, collection }: Props) {
+export default function SceneHome({ trackedRefs, resources, collections }: Props) {
   const texture = useTexture('/textures/fpo-arturo.jpg')
 
   texture.wrapS = THREE.RepeatWrapping
@@ -26,7 +27,7 @@ export default function SceneHome({ trackedRefs, resource, collection }: Props) 
     <>
       {/* Hero mesh */}
       {trackedRefs.heroSection && (
-        <View track={trackedRefs.heroSection as unknown as React.RefObject<HTMLElement>}>
+        <View track={trackedRefs.heroSection as React.RefObject<HTMLElement>}>
           <mesh position={[0, 0, 0]}>
             <torusGeometry args={[0.5, 0.2, 16, 100]} />
             <meshStandardMaterial color="cyan" />
@@ -36,10 +37,10 @@ export default function SceneHome({ trackedRefs, resource, collection }: Props) 
 
       {/* Card meshes */}
       {trackedRefs.cards?.map((ref, i) =>
-        ref ? (
-          <View key={i} track={ref as unknown as React.RefObject<HTMLElement>}>
-            <ambientLight intensity={1} />
-            <PlaneWithImage url={resource.url} variant={resource.variant} size={2} />
+        ref && resources[i] ? (
+          <View key={i} track={ref as React.RefObject<HTMLElement>}>
+            <ambientLight intensity={2} />
+            <PlaneWithImage url={resources[i]!.url} variant={resources[i]!.variant} size={1} />
           </View>
         ) : null,
       )}

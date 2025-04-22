@@ -5,10 +5,10 @@ type SceneState = {
   setScene: (scene: SceneState['currentScene']) => void
   trackedRefs?: any
   setTrackedRefs: (refs: any) => void
-  resource?: { url: string; variant: 'original' | 'wide' | 'portrait' }
-  setResource: (resource: { url: string; variant: 'original' | 'wide' | 'portrait' }) => void
-  collection?: { variant: 'post' | 'work' }
-  setCollection: (collection: { variant: 'post' | 'work' }) => void
+  resources?: { url: string; variant: 'original' | 'wide' | 'portrait' }[]
+  setResources: (resources: { url: string; variant: 'original' | 'wide' | 'portrait' }[]) => void
+  collections?: { variant: 'post' | 'work' }[]
+  setCollections: (collections: { variant: 'post' | 'work' }[]) => void
 }
 
 export const useSceneStore = create<SceneState>((set) => ({
@@ -16,8 +16,8 @@ export const useSceneStore = create<SceneState>((set) => ({
   setScene: (scene) => set({ currentScene: scene }),
   trackedRefs: [],
   setTrackedRefs: (refs) => set({ trackedRefs: refs }),
-  resource: undefined,
-  setResource: (resource) => set({ resource }),
-  collection: undefined,
-  setCollection: (collection) => set({ collection }),
+  resources: undefined,
+  setResources: (resources) => set({ resources }),
+  collections: undefined,
+  setCollections: (collections) => set({ collections }),
 }))

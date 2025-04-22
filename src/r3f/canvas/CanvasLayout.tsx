@@ -9,11 +9,19 @@ export default function CanvasLayout() {
   return (
     <div
       ref={eventSourceRef}
-      style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1 }}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: -1,
+        pointerEvents: 'auto',
+      }}
     >
       <Canvas
         style={{ width: '100%', height: '100%' }}
-        camera={{ position: [0, 0, 3], fov: 30 }}
+        camera={{ position: [0, 0, 1], fov: 30 }}
         eventSource={eventSourceRef as React.RefObject<HTMLElement>}
       >
         <SceneManager />
