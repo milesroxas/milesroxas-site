@@ -1,10 +1,8 @@
-// global.d.ts (at your project root)
-
-import { ReactThreeFiber } from '@react-three/fiber'
+import type { ReactThreeFiber } from '@react-three/fiber'
 import * as THREE from 'three'
 
 // ← point to the real file via your TS alias
-import { CardMaterial } from '@/r3f/components/CardPlane/PlaneWithImage'
+import { CardMaterial } from './r3f/components/CardPlane/PlaneWithImage'
 
 declare global {
   namespace JSX {
