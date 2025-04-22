@@ -24,13 +24,27 @@ const nextConfig = {
   redirects,
 
   webpack: (config) => {
-    // Optimize threejs bundle size
+    config.module.rules.push({
+      test: /\.(glsl|vs|fs|vert|frag)$/,
+      use: ['raw-loader', 'glslify-loader'],
+    })
     config.resolve.alias = {
       ...config.resolve.alias,
       'three/examples/jsm/loaders/GLTFLoader': 'three-stdlib/loaders/GLTFLoader',
     }
 
     return config
+  },
+
+  experimental: {
+    turbo: {
+      rules: {
+        '*.{glsl,vs,fs,vert,frag}': {
+          loaders: ['raw-loader'],
+          as: '*.js',
+        },
+      },
+    },
   },
 }
 
