@@ -71,7 +71,7 @@ export const sectionSpacing: SectionSpacingType = ({
       name: 'mt',
       type: 'select',
       label: 'Top Margin',
-      defaultValue: 'md',
+      defaultValue: 'none',
       options: Object.values(spacingOptions),
     })
 
@@ -79,7 +79,7 @@ export const sectionSpacing: SectionSpacingType = ({
       name: 'mb',
       type: 'select',
       label: 'Bottom Margin',
-      defaultValue: 'md',
+      defaultValue: 'none',
       options: Object.values(spacingOptions),
     })
   }

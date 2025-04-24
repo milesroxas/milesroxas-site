@@ -29,6 +29,19 @@ float smoothNoise(vec2 st) {
     return mix(b, t, f.y);
 }
 
+// Function to calculate UVs for "cover" effect
+vec2 getCoverUV(vec2 uv, float textureAspect, float planeAspect) {
+    vec2 coverUV = uv;
+    float aspectDiff = textureAspect / planeAspect;
+
+    if (aspectDiff > 1.0) { // Texture is wider than plane
+        coverUV.x = uv.x / aspectDiff + (1.0 - 1.0 / aspectDiff) * 0.5;
+    } else { // Texture is taller than plane (or same aspect)
+        coverUV.y = uv.y * aspectDiff + (1.0 - aspectDiff) * 0.5;
+    }
+    return coverUV;
+}
+
 vec2 distort(vec2 uv, vec2 center, float strength, float frequency) {
     vec2 dir   = uv - center;
     vec2 adir  = dir * vec2(u_planeAspect, 1.0);
@@ -38,19 +51,29 @@ vec2 distort(vec2 uv, vec2 center, float strength, float frequency) {
     return uv + dir * d;
 }
 
-vec3 chromaticAberration(sampler2D tex, vec2 uv, float strength) {
+vec3 chromaticAberration(sampler2D tex, vec2 uv, float strength, float textureAspect, float planeAspect) {
     vec2 offset = vec2(strength, 0.0);
-    float r = texture2D(tex, uv - offset).r;
-    float g = texture2D(tex, uv         ).g;
-    float b = texture2D(tex, uv + offset).b;
+    vec2 coverUV = getCoverUV(uv, textureAspect, planeAspect); // Use cover UV for sampling
+    float r = texture2D(tex, getCoverUV(uv - offset, textureAspect, planeAspect)).r;
+    float g = texture2D(tex, coverUV).g;
+    float b = texture2D(tex, getCoverUV(uv + offset, textureAspect, planeAspect)).b;
     return vec3(r, g, b);
 }
 
 void main() {
     vec2 uv   = v_uv;
-    vec3 base = texture2D(u_texture, uv).rgb;
 
-    // Aspect‑corrected mouse distance
+    // Calculate texture aspect ratio
+    vec2 textureSize = vec2(textureSize(u_texture, 0));
+    float textureAspect = textureSize.x / textureSize.y;
+
+    // Get cover UVs
+    vec2 coverUV = getCoverUV(uv, textureAspect, u_planeAspect);
+
+    // Sample base texture using cover UVs
+    vec3 base = texture2D(u_texture, coverUV).rgb;
+
+    // Aspect‑corrected mouse distance (using original uv for interaction mapping)
     vec2 md     = (uv - u_mouse) * vec2(u_planeAspect, 1.0);
     float dMouse = length(md);
 
@@ -61,11 +84,11 @@ void main() {
     float n         = smoothNoise(uv * 3.0 + u_time * 0.1) * 0.02;
     vec2  dUV       = distort(uv, u_mouse, strength + n, freq);
 
-    // Chromatic aberration
-    vec3 fancy = chromaticAberration(u_texture, dUV, 0.005 + influence * 0.015);
+    // Chromatic aberration (pass aspects)
+    vec3 fancy = chromaticAberration(u_texture, dUV, 0.005 + influence * 0.015, textureAspect, u_planeAspect);
 
     // Vignette around mouse
-    float v = smoothstep(0.7, 0.2, dMouse) * 0.5;
+    float v = mix(0.7, 1.0, smoothstep(0.5, 0.3, dMouse));
     fancy *= v;
 
     // Pulsing glow around mouse

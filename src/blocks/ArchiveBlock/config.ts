@@ -12,6 +12,21 @@ export const Archive: Block = {
   interfaceName: 'ArchiveBlock',
   fields: [
     {
+      name: 'cardStyle',
+      type: 'select',
+      defaultValue: 'card',
+      options: [
+        {
+          label: 'Card',
+          value: 'card',
+        },
+        {
+          label: 'Featured',
+          value: 'featured',
+        },
+      ],
+    },
+    {
       name: 'introContent',
       type: 'richText',
       editor: lexicalEditor({
@@ -88,7 +103,7 @@ export const Archive: Block = {
       },
       hasMany: true,
       label: 'Selection',
-      relationTo: ['posts'],
+      relationTo: ['posts', 'works'],
     },
   ],
   labels: {

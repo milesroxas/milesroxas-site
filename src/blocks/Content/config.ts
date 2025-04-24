@@ -72,12 +72,61 @@ const sectionHeadingFields: Field[] = [
   },
 ]
 
-const archiveFields: Field[] = [
+const workEntryFields: Field[] = [
   {
-    name: 'archive',
+    name: 'works',
+    label: 'Select Work Entry',
+    type: 'relationship',
+    relationTo: 'works',
+  },
+  {
+    name: 'aspect',
+    type: 'select',
+    defaultValue: 'wide',
+    options: [
+      { label: 'Wide', value: 'wide' },
+      { label: 'Square', value: 'square' },
+      { label: 'Portrait', value: 'portrait' },
+    ],
+  },
+  {
+    name: 'variant',
+    label: 'Style',
+    type: 'select',
+    defaultValue: 'featured',
+    options: [
+      { label: 'Featured', value: 'featured' },
+      { label: 'Card', value: 'card' },
+    ],
+  },
+]
+
+const PostEntryFields: Field[] = [
+  {
+    name: 'posts',
+    label: 'Select Post Entry',
     type: 'relationship',
     relationTo: 'posts',
-    hasMany: true,
+  },
+  {
+    name: 'aspect',
+    type: 'select',
+    defaultValue: 'wide',
+    options: [
+      { label: 'Wide', value: 'wide' },
+      { label: 'Square', value: 'square' },
+      { label: 'Portrait', value: 'portrait' },
+    ],
+  },
+  {
+    name: 'variant',
+    label: 'Style',
+    type: 'select',
+    defaultValue: 'featured',
+    options: [
+      { label: 'Featured', value: 'featured' },
+      { label: 'Card', value: 'card' },
+    ],
   },
 ]
 
@@ -134,7 +183,7 @@ const columnFields: Field[] = [
     ],
   },
   {
-    name: 'contentType',
+    name: 'content',
     type: 'select',
     defaultValue: 'text',
     options: [
@@ -147,8 +196,12 @@ const columnFields: Field[] = [
         value: 'sectionHeading',
       },
       {
-        label: 'Archive',
-        value: 'archive',
+        label: 'Work Entry',
+        value: 'work',
+      },
+      {
+        label: 'Post Entry',
+        value: 'post',
       },
       {
         label: 'Media',
@@ -165,7 +218,7 @@ const columnFields: Field[] = [
     type: 'group',
     fields: richTextFields,
     admin: {
-      condition: (_, siblingData) => siblingData.contentType === 'text',
+      condition: (_, siblingData) => siblingData.content === 'text',
     },
   },
   {
@@ -173,15 +226,23 @@ const columnFields: Field[] = [
     type: 'group',
     fields: sectionHeadingFields,
     admin: {
-      condition: (_, siblingData) => siblingData.contentType === 'sectionHeading',
+      condition: (_, siblingData) => siblingData.content === 'sectionHeading',
     },
   },
   {
-    name: 'archive',
+    name: 'work',
     type: 'group',
-    fields: archiveFields,
+    fields: workEntryFields,
     admin: {
-      condition: (_, siblingData) => siblingData.contentType === 'archive',
+      condition: (_, siblingData) => siblingData.content === 'work',
+    },
+  },
+  {
+    name: 'post',
+    type: 'group',
+    fields: PostEntryFields,
+    admin: {
+      condition: (_, siblingData) => siblingData.content === 'post',
     },
   },
   {
@@ -189,7 +250,7 @@ const columnFields: Field[] = [
     type: 'group',
     fields: SliderBlock.fields,
     admin: {
-      condition: (_, siblingData) => siblingData.contentType === 'slider',
+      condition: (_, siblingData) => siblingData.content === 'slider',
     },
   },
   {
@@ -197,7 +258,7 @@ const columnFields: Field[] = [
     type: 'group',
     fields: mediaFields,
     admin: {
-      condition: (_, siblingData) => siblingData.contentType === 'media',
+      condition: (_, siblingData) => siblingData.content === 'media',
     },
   },
 ]

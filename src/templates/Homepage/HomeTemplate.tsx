@@ -12,13 +12,17 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 
 import PageTransition from '@/components/PageTransition'
 
+import ContentSceneSetup from '@/templates/shared/ContentSceneSetup.client'
 import HomeTemplateClient from './HomeTemplate.client'
+import HomeHero from './components/HomeHero'
+
 export default async function HomeTemplate() {
   const { isEnabled: draft } = await draftMode()
   const payload = await getPayload({ config: configPromise })
 
   // Fetch the homepage data
   const homepageResult = await payload.find({
+    depth: 2,
     collection: 'pages',
     draft,
     limit: 1,
@@ -34,33 +38,41 @@ export default async function HomeTemplate() {
   const page = homepageResult.docs?.[0]
   const url = '/home'
 
-  // Fetch works and posts for the content cards
-  const workEntries = await payload.find({
-    collection: 'works',
-    depth: 1,
-    limit: 10,
-  })
-
-  const postEntries = await payload.find({
-    collection: 'posts',
-    depth: 1,
-    limit: 10,
-  })
-
   if (!page) {
     return <PayloadRedirects url={url} />
   }
 
   const { hero, layout } = page
 
+  // fetch the latest posts and works for homepage cards
+  const postsResult = await payload.find({
+    collection: 'posts',
+    depth: 2,
+    draft,
+    limit: 2,
+    pagination: false,
+    overrideAccess: draft,
+  })
+  const worksResult = await payload.find({
+    collection: 'works',
+    depth: 2,
+    draft,
+    limit: 2,
+    pagination: false,
+    overrideAccess: draft,
+  })
+  const posts = postsResult.docs
+  const works = worksResult.docs
+
   return (
     <PageTransition>
       <article className="pb-24">
         {draft && <LivePreviewListener />}
-        {/* <RenderHero {...hero} />
-        <RenderBlocks blocks={layout} /> */}
+        <HomeHero />
+        <ContentSceneSetup layout={layout} />
+        {/* <HomeTemplateClient posts={posts} works={works} /> */}
 
-        <HomeTemplateClient posts={postEntries.docs} works={workEntries.docs} />
+        <RenderBlocks blocks={layout} />
       </article>
     </PageTransition>
   )
