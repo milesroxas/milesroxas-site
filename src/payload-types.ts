@@ -193,7 +193,7 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | WorksBlock | SliderBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | SliderBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -450,7 +450,7 @@ export interface ContentBlock {
   columns?:
     | {
         size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
-        contentType?: ('text' | 'sectionHeading' | 'archive' | 'media' | 'slider') | null;
+        content?: ('text' | 'sectionHeading' | 'work' | 'post' | 'media' | 'slider') | null;
         text?: {
           richText?: {
             root: {
@@ -495,8 +495,15 @@ export interface ContentBlock {
           align?: ('left' | 'center') | null;
           style?: ('default' | 'border' | 'jumbo') | null;
         };
-        archive?: {
-          archive?: (number | Post)[] | null;
+        work?: {
+          works?: (number | null) | Work;
+          aspect?: ('wide' | 'square' | 'portrait') | null;
+          variant?: ('featured' | 'card') | null;
+        };
+        post?: {
+          posts?: (number | null) | Post;
+          aspect?: ('wide' | 'square' | 'portrait') | null;
+          variant?: ('featured' | 'card') | null;
         };
         slider?: {
           introContent?: {
@@ -590,16 +597,7 @@ export interface Work {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (
-    | CallToActionBlock
-    | ContentBlock
-    | MediaBlock
-    | ArchiveBlock
-    | FormBlock
-    | WorksBlock
-    | SliderBlock
-    | TabsBlock
-  )[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | SliderBlock | TabsBlock)[];
   relatedWorks?: (number | Work)[] | null;
   categories?: (number | Category)[] | null;
   meta?: {
@@ -633,6 +631,7 @@ export interface MediaBlock {
  * via the `definition` "ArchiveBlock".
  */
 export interface ArchiveBlock {
+  cardStyle?: ('card' | 'featured') | null;
   introContent?: {
     root: {
       type: string;
@@ -653,10 +652,16 @@ export interface ArchiveBlock {
   categories?: (number | Category)[] | null;
   limit?: number | null;
   selectedDocs?:
-    | {
-        relationTo: 'posts';
-        value: number | Post;
-      }[]
+    | (
+        | {
+            relationTo: 'posts';
+            value: number | Post;
+          }
+        | {
+            relationTo: 'works';
+            value: number | Work;
+          }
+      )[]
     | null;
   id?: string | null;
   blockName?: string | null;
@@ -861,40 +866,6 @@ export interface Form {
     | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "WorksBlock".
- */
-export interface WorksBlock {
-  introContent?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  populateBy?: ('collection' | 'selection') | null;
-  relationTo?: 'works' | null;
-  categories?: (number | Category)[] | null;
-  limit?: number | null;
-  selectedDocs?:
-    | {
-        relationTo: 'works';
-        value: number | Work;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'works';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1293,7 +1264,6 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
-        works?: T | WorksBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
       };
   meta?:
@@ -1352,7 +1322,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
     | T
     | {
         size?: T;
-        contentType?: T;
+        content?: T;
         text?:
           | T
           | {
@@ -1378,10 +1348,19 @@ export interface ContentBlockSelect<T extends boolean = true> {
               align?: T;
               style?: T;
             };
-        archive?:
+        work?:
           | T
           | {
-              archive?: T;
+              works?: T;
+              aspect?: T;
+              variant?: T;
+            };
+        post?:
+          | T
+          | {
+              posts?: T;
+              aspect?: T;
+              variant?: T;
             };
         slider?:
           | T
@@ -1442,6 +1421,7 @@ export interface MediaBlockSelect<T extends boolean = true> {
  * via the `definition` "ArchiveBlock_select".
  */
 export interface ArchiveBlockSelect<T extends boolean = true> {
+  cardStyle?: T;
   introContent?: T;
   populateBy?: T;
   relationTo?: T;
@@ -1459,20 +1439,6 @@ export interface FormBlockSelect<T extends boolean = true> {
   form?: T;
   enableIntro?: T;
   introContent?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "WorksBlock_select".
- */
-export interface WorksBlockSelect<T extends boolean = true> {
-  introContent?: T;
-  populateBy?: T;
-  relationTo?: T;
-  categories?: T;
-  limit?: T;
-  selectedDocs?: T;
   id?: T;
   blockName?: T;
 }
@@ -1580,7 +1546,6 @@ export interface WorksSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
-        works?: T | WorksBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         tabs?: T | TabsBlockSelect<T>;
       };

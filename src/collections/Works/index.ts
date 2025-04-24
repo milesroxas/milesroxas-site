@@ -9,7 +9,6 @@ import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { SliderBlock } from '../../blocks/Slider/config'
 import { TabsBlock } from '../../blocks/Tabs/config'
-import { Works as WorksBlock } from '../../blocks/WorksBlock/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -38,6 +37,13 @@ export const Works: CollectionConfig<'works'> = {
   defaultPopulate: {
     title: true,
     slug: true,
+    hero: {
+      media: true,
+    },
+    meta: {
+      image: true,
+      description: true,
+    },
   },
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
@@ -84,7 +90,6 @@ export const Works: CollectionConfig<'works'> = {
                 MediaBlock,
                 Archive,
                 FormBlock,
-                WorksBlock,
                 SliderBlock,
                 TabsBlock,
               ],

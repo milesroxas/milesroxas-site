@@ -8,7 +8,7 @@ import { useSceneStore } from '@/r3f/store/useSceneStore'
 
 type Props = {
   url: string
-  variant?: 'original' | 'wide' | 'portrait' | 'box'
+  variant?: 'wide' | 'portrait' | 'square'
   customAspect?: number
   size?: number
   cardIndex: number
@@ -42,11 +42,13 @@ extend({ CardMaterial })
 
 export default function PlaneWithImage({
   url,
-  variant = 'original',
+  variant = 'wide',
   customAspect,
   size = 2,
   cardIndex,
 }: Props) {
+  console.log('[PlaneWithImage] url:', url)
+  console.log(`[PlaneWithImage] Initializing with cardIndex: ${cardIndex}, url: ${url}`)
   const texture = useTexture(url)
   const matRef = useRef<THREE.ShaderMaterial & { uniforms: Uniforms }>(null!)
 
@@ -54,10 +56,15 @@ export default function PlaneWithImage({
   const hovered = useSceneStore((s) => s.hoveredIndex === cardIndex)
   const [mouseX, mouseY] = useSceneStore((s) => s.mouseUV)
 
-  // compute this plane’s aspect (width / height)
+  // Log hovered state for debugging
+  useEffect(() => {
+    console.log(`[PlaneWithImage] cardIndex ${cardIndex} hovered:`, hovered)
+  }, [hovered, cardIndex])
+
+  // compute this plane's aspect (width / height)
   const aspect = useMemo(() => {
-    const map = { original: 1064 / 625, wide: 16 / 9, portrait: 3 / 4, box: 1 } as const
-    return customAspect ?? map[variant] ?? map.original
+    const map = { wide: 16 / 9, portrait: 3 / 4, square: 1 } as const
+    return customAspect ?? map[variant] ?? map.wide
   }, [variant, customAspect])
   const width = size * aspect
   const height = size

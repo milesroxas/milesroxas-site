@@ -5,16 +5,17 @@ import Link from 'next/link'
 import React, { Fragment } from 'react'
 
 import type { Post } from '@/payload-types'
+import type { Work } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
-
+export type CardWorkData = Pick<Work, 'slug' | 'categories' | 'meta' | 'title'>
 export const Card: React.FC<{
   alignItems?: 'center'
   className?: string
-  doc?: CardPostData
-  relationTo?: 'posts'
+  doc?: CardPostData | CardWorkData
+  relationTo?: 'posts' | 'works'
   showCategories?: boolean
   title?: string
 }> = (props) => {
@@ -32,18 +33,22 @@ export const Card: React.FC<{
   return (
     <article
       className={cn(
-        'border border-border rounded-lg overflow-hidden bg-card hover:cursor-pointer',
+        'border-border bg-card overflow-hidden rounded-lg border hover:cursor-pointer',
         className,
       )}
       ref={card.ref}
     >
-      <div className="relative w-full ">
-        {!metaImage && <div className="">No image</div>}
-        {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
+      <div className="relative w-full">
+        {!(metaImage && typeof metaImage === 'object' && metaImage.url) && (
+          <div className="">No image</div>
+        )}
+        {metaImage && typeof metaImage === 'object' && metaImage.url && (
+          <Media resource={metaImage} size="33vw" />
+        )}
       </div>
       <div className="p-4">
         {showCategories && hasCategories && (
-          <div className="uppercase text-sm mb-4">
+          <div className="mb-4 text-sm uppercase">
             {showCategories && hasCategories && (
               <div>
                 {categories?.map((category, index) => {

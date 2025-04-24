@@ -4,11 +4,11 @@ import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import SplitType from 'split-type'
 import Link from 'next/link'
+import { getClientSideURL } from '@/utilities/getURL'
 
 import PageTransition from '@/components/PageTransition'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import { useTheme } from '@/providers/Theme'
-import { Media } from '@/components/Media'
 import SceneSetter from '@/r3f/canvas/SceneSetter'
 import type { SceneTrackRefs } from '@/r3f/types/r3f'
 import type { Post, Work } from '@/payload-types'
@@ -23,6 +23,7 @@ interface HomeTemplateClientProps {
 }
 
 const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works }) => {
+  const base = getClientSideURL()
   const { setHeaderTheme } = useHeaderTheme()
   const { setTheme } = useTheme()
   const setResources = useSceneStore((s) => s.setResources)
@@ -63,7 +64,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
       ? {
           ref: cardRefs[0],
           imageRef: imageRefs[0],
-          resource: { url: posts[0].heroImage.url, variant: 'portrait' as const },
+          resource: { url: `${base}${posts[0].heroImage.url}`, variant: 'portrait' as const },
           collection: { variant: 'post' as const },
           type: 'post',
           data: posts[0],
@@ -77,7 +78,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
       ? {
           ref: cardRefs[1],
           imageRef: imageRefs[1],
-          resource: { url: works[0].hero.media.url, variant: 'wide' as const },
+          resource: { url: `${base}${works[0].hero.media.url}`, variant: 'wide' as const },
           collection: { variant: 'work' as const },
           type: 'work',
           data: works[0],
@@ -91,7 +92,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
       ? {
           ref: cardRefs[2],
           imageRef: imageRefs[2],
-          resource: { url: works[1].hero.media.url, variant: 'wide' as const },
+          resource: { url: `${base}${works[1].hero.media.url}`, variant: 'wide' as const },
           collection: { variant: 'work' as const },
           type: 'work',
           data: works[1],
@@ -105,7 +106,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
       ? {
           ref: cardRefs[3],
           imageRef: imageRefs[3],
-          resource: { url: posts[1].heroImage.url, variant: 'wide' as const },
+          resource: { url: `${base}${posts[1].heroImage.url}`, variant: 'wide' as const },
           collection: { variant: 'post' as const },
           type: 'post',
           data: posts[1],
@@ -115,7 +116,7 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
   ].filter(Boolean) as Array<{
     ref: React.RefObject<HTMLDivElement>
     imageRef: React.RefObject<HTMLDivElement>
-    resource: { url: string; variant: 'portrait' | 'wide' | 'original' }
+    resource: { url: string; variant: 'portrait' | 'wide' | 'square' }
     collection: { variant: 'post' | 'work' }
     type: 'post' | 'work'
     data: Post | Work
@@ -173,12 +174,11 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
             {cards.map((card, i) => {
               // Map variant to aspect ratio (must match PlaneWithImage)
               const aspectRatios = {
-                original: 1064 / 625,
                 wide: 16 / 9,
                 portrait: 3 / 4,
-                box: 1 / 1,
+                square: 1 / 1,
               } as const
-              const aspect = aspectRatios[card.resource.variant] ?? aspectRatios.original
+              const aspect = aspectRatios[card.resource.variant] ?? aspectRatios.square
               // Alternate widths: 4/12 and 8/12
               const widthClass = i % 2 === 0 ? 'w-4/12' : 'w-8/12'
               return (

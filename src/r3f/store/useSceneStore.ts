@@ -5,8 +5,8 @@ type SceneState = {
   setScene: (scene: SceneState['currentScene']) => void
   trackedRefs?: any
   setTrackedRefs: (refs: any) => void
-  resources?: { url: string; variant: 'original' | 'wide' | 'portrait' }[]
-  setResources: (resources: { url: string; variant: 'original' | 'wide' | 'portrait' }[]) => void
+  resources?: { url: string; variant: 'wide' | 'portrait' | 'square' }[]
+  setResources: (resources: { url: string; variant: 'wide' | 'portrait' | 'square' }[]) => void
   collections?: { variant: 'post' | 'work' }[]
   setCollections: (collections: { variant: 'post' | 'work' }[]) => void
   hoveredIndex: number | null
