@@ -13,7 +13,6 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
-import PageTransition from '@/components/PageTransition'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -61,16 +60,14 @@ export default async function Work({ params: paramsPromise }: Args) {
     <>
       <PageClient />
 
-      <PageTransition>
-        <article className="relative z-10">
-          <PayloadRedirects disableNotFound url={url} />
+      <article className="relative z-10">
+        <PayloadRedirects disableNotFound url={url} />
 
-          {draft && <LivePreviewListener />}
+        {draft && <LivePreviewListener />}
 
-          {hero && <RenderHero {...hero} />}
-          <RenderBlocks blocks={layout as any} />
-        </article>
-      </PageTransition>
+        {hero && <RenderHero {...hero} />}
+        <RenderBlocks blocks={layout as any} />
+      </article>
     </>
   )
 }

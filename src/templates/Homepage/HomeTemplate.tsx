@@ -65,15 +65,13 @@ export default async function HomeTemplate() {
   const works = worksResult.docs
 
   return (
-    <PageTransition>
-      <article className="pb-24">
-        {draft && <LivePreviewListener />}
-        <HomeHero />
-        <ContentSceneSetup layout={layout} />
-        {/* <HomeTemplateClient posts={posts} works={works} /> */}
+    <article className="pb-24">
+      {draft && <LivePreviewListener />}
+      <HomeHero />
+      <ContentSceneSetup layout={layout} />
+      {/* <HomeTemplateClient posts={posts} works={works} /> */}
 
-        <RenderBlocks blocks={layout} />
-      </article>
-    </PageTransition>
+      <RenderBlocks blocks={layout} />
+    </article>
   )
 }

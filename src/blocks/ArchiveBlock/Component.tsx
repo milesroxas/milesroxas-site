@@ -4,7 +4,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import RichText from '@/components/RichText'
-
+import { CardWorkData } from '@/components/Card/Works'
 import { CollectionArchive } from '@/components/CollectionArchive'
 
 export const ArchiveBlock: React.FC<
@@ -53,6 +53,8 @@ export const ArchiveBlock: React.FC<
     }
   }
 
+  const works: CardWorkData[] = []
+
   return (
     <div className="my-16" id={`block-${id}`}>
       {introContent && (
@@ -60,7 +62,7 @@ export const ArchiveBlock: React.FC<
           <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
         </div>
       )}
-      <CollectionArchive posts={posts} />
+      <CollectionArchive posts={posts} works={works} />
     </div>
   )
 }
