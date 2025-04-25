@@ -10,7 +10,6 @@ export default function ContentSceneSetup({ layout }: { layout: Page['layout'] }
   const setCollections = useSceneStore((s) => s.setCollections)
 
   useEffect(() => {
-    console.log('[ContentSceneSetup] layout:', layout)
     const base = getClientSideURL()
     const resources: { url: string; variant: 'wide' | 'portrait' | 'square' }[] = []
     const collections: { variant: 'work' | 'post' }[] = []

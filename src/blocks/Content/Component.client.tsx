@@ -56,11 +56,15 @@ export const ContentBlockClient: React.FC<ContentBlockClientProps> = ({
       })
       .filter((r): r is NonNullable<typeof r> => r !== null)
 
+    // Read the current state directly for comparison
+    const currentResources = useSceneStore.getState().resources
+
     // Only update if resources have changed
     if (JSON.stringify(newResources) !== JSON.stringify(currentResources)) {
       setResources(newResources)
     }
-  }, [setResources, currentResources])
+    // Depend on the ref and the setter function, not the state value itself
+  }, [workColumnsRef, setResources])
 
   const cardRefs = useRef<React.RefObject<HTMLDivElement | null>[]>(
     workColumns.map(() => React.createRef<HTMLDivElement | null>()),

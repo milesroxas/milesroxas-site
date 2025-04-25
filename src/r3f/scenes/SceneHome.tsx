@@ -12,6 +12,9 @@ type Props = {
     url: string
     variant: 'wide' | 'portrait' | 'square'
   }[]
+  collections: {
+    variant: 'post' | 'work'
+  }[]
 }
 
 export default function SceneHome({ trackedRefs, resources }: Props) {

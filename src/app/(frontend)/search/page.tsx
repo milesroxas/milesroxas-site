@@ -7,6 +7,7 @@ import React from 'react'
 import { Search } from '@/search/Component'
 import PageClient from './page.client'
 import { CardPostData } from '@/components/Card'
+import { CardWorkData } from '@/components/Card/Works'
 
 type Args = {
   searchParams: Promise<{
@@ -59,6 +60,12 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       : {}),
   })
 
+  const works = await payload.find({
+    collection: 'works',
+    depth: 1,
+    limit: 12,
+  })
+
   return (
     <div className="pt-24 pb-24">
       <PageClient />
@@ -66,14 +73,17 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
         <div className="prose dark:prose-invert max-w-none text-center">
           <h1 className="mb-8 lg:mb-16">Search</h1>
 
-          <div className="max-w-[50rem] mx-auto">
+          <div className="mx-auto max-w-[50rem]">
             <Search />
           </div>
         </div>
       </div>
 
       {posts.totalDocs > 0 ? (
-        <CollectionArchive posts={posts.docs as CardPostData[]} />
+        <CollectionArchive
+          posts={posts.docs as CardPostData[]}
+          works={works.docs as CardWorkData[]}
+        />
       ) : (
         <div className="container">No results found.</div>
       )}

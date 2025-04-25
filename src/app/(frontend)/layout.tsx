@@ -16,6 +16,7 @@ import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import CanvasLayout from '@/r3f/canvas/CanvasLayout'
 import { SiteFrame } from '@/SiteFrame/Component'
+import PageTransition from '@/components/PageTransition'
 // Initialize the font at the module scope
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ['300', '400', '600', '700'],
@@ -36,7 +37,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="bg-background text-foreground min-h-screen">
         <Providers>
           <Header />
-          <SiteFrame>{children}</SiteFrame>
+          <SiteFrame>
+            <PageTransition>{children}</PageTransition>
+          </SiteFrame>
           <AdminBar
             adminBarProps={{
               preview: isEnabled,
