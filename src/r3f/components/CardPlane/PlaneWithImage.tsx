@@ -47,19 +47,12 @@ export default function PlaneWithImage({
   size = 2,
   cardIndex,
 }: Props) {
-  console.log('[PlaneWithImage] url:', url)
-  console.log(`[PlaneWithImage] Initializing with cardIndex: ${cardIndex}, url: ${url}`)
   const texture = useTexture(url)
   const matRef = useRef<THREE.ShaderMaterial & { uniforms: Uniforms }>(null!)
 
   // get hover from the store
   const hovered = useSceneStore((s) => s.hoveredIndex === cardIndex)
   const [mouseX, mouseY] = useSceneStore((s) => s.mouseUV)
-
-  // Log hovered state for debugging
-  useEffect(() => {
-    console.log(`[PlaneWithImage] cardIndex ${cardIndex} hovered:`, hovered)
-  }, [hovered, cardIndex])
 
   // compute this plane's aspect (width / height)
   const aspect = useMemo(() => {

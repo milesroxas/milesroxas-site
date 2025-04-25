@@ -2,9 +2,8 @@
 import { cn } from '@/utilities/ui'
 
 import React, { useRef, useEffect } from 'react'
-// import { getClientSideURL } from '@/utilities/getURL'
 
-import type { Work } from '@/payload-types'
+import type { Post } from '@/payload-types'
 import { Media } from '@/components/Media' // removed for 3D plane rendering
 import useClickableCard from '@/utilities/useClickableCard'
 
@@ -13,17 +12,15 @@ import { useSceneStore } from '@/r3f/store/useSceneStore'
 import { SceneTrackRefs } from '@/r3f/types/r3f'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
-export type CardWorkData = Pick<Work, 'slug' | 'meta' | 'title' | 'hero'>
-
-export const WorkCard: React.FC<{
+export const PostCard: React.FC<{
   alignItems?: 'center'
   className?: string
-  doc?: CardWorkData
-  relationTo?: 'works'
+  doc?: Post
+  relationTo?: 'posts'
   title?: string
   index?: number
   aspect?: 'wide' | 'portrait' | 'square'
-  data?: Work[]
+  data?: Post[]
   hero?: number
   /** Ref for the image container div */
   imageRef?: React.RefObject<HTMLDivElement | null>
@@ -33,14 +30,14 @@ export const WorkCard: React.FC<{
   const {
     className,
     doc,
-    relationTo = 'works',
+    relationTo = 'posts',
     title: titleFromProps,
     index,
     aspect = 'wide',
     imageRef: imageRefProp,
   } = props
 
-  const { slug, meta, title, hero } = doc || {}
+  const { slug, meta, title } = doc || {}
   const { description, image: metaImage } = meta || {}
 
   const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
@@ -94,9 +91,9 @@ export const WorkCard: React.FC<{
             setMouseUV([x, y])
           }}
         >
-          {hero && (
+          {metaImage && (
             <Media
-              resource={hero.media}
+              resource={metaImage}
               priority={index === 0}
               loading={index === 0 ? 'eager' : 'lazy'}
               className="h-full w-full object-cover"
@@ -105,10 +102,10 @@ export const WorkCard: React.FC<{
         </div>
         {titleToUse && (
           <div className="prose">
-            <h3 className="text-3xl font-light">{titleToUse}</h3>
+            <h3 className="w-[80%] text-lg font-light">{titleToUse}</h3>
           </div>
         )}
-        {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
+        {/* {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>} */}
       </TransitionLink>
     </article>
   )
