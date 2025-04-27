@@ -8,6 +8,8 @@ import { MediaBlock } from '../MediaBlock/Component'
 import { SliderBlock } from '../Slider/Component'
 import { WorkCard } from '@/components/Card/Works/Component'
 import { PostCard } from '@/components/Card/Posts/Component'
+
+import RichText from '@/components/RichText'
 export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
   const { columns, theme, space } = props
 
@@ -82,6 +84,8 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                   })}
                 />
               )}
+
+              {content === 'text' && col.text?.richText && <RichText data={col.text.richText} />}
 
               {content === 'sectionHeading' && col.sectionHeading?.heading && (
                 <div

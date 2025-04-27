@@ -7,13 +7,8 @@ import configPromise from '@payload-config'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 
-import { RenderHero } from '@/heros/RenderHero'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 
-import PageTransition from '@/components/PageTransition'
-
-import ContentSceneSetup from '@/templates/shared/ContentSceneSetup.client'
-import HomeTemplateClient from './HomeTemplate.client'
 import HomeHero from './components/HomeHero'
 
 export default async function HomeTemplate() {
@@ -61,14 +56,13 @@ export default async function HomeTemplate() {
     pagination: false,
     overrideAccess: draft,
   })
-  const posts = postsResult.docs
-  const works = worksResult.docs
 
   return (
     <article className="pb-24">
       {draft && <LivePreviewListener />}
+
       <HomeHero />
-      <ContentSceneSetup layout={layout} />
+      {/* <ContentSceneSetup layout={layout} /> */}
       {/* <HomeTemplateClient posts={posts} works={works} /> */}
 
       <RenderBlocks blocks={layout} />
