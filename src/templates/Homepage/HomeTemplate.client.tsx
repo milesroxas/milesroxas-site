@@ -6,7 +6,6 @@ import SplitType from 'split-type'
 import Link from 'next/link'
 import { getClientSideURL } from '@/utilities/getURL'
 
-import PageTransition from '@/components/PageTransition'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import { useTheme } from '@/providers/Theme'
 import SceneSetter from '@/r3f/canvas/SceneSetter'
@@ -157,9 +156,8 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
     <div>
       <SceneSetter scene="home" trackedRefs={trackedRefs} />
 
-      <PageTransition>
-        <HomeHero />
-        {/* <div ref={heroRef}>
+      <HomeHero />
+      {/* <div ref={heroRef}>
           <div className="container mb-16">
             <h2 className="text-accent mb-4 font-mono text-sm uppercase">Works</h2>
             <p ref={paragraphRef} className="text-3xl font-light">
@@ -169,50 +167,49 @@ const HomeTemplateClient: React.FC<HomeTemplateClientProps> = ({ posts, works })
           </div>
         </div> */}
 
-        <section className="container">
-          <div className="mb-12 flex gap-12 py-24">
-            {cards.map((card, i) => {
-              // Map variant to aspect ratio (must match PlaneWithImage)
-              const aspectRatios = {
-                wide: 16 / 9,
-                portrait: 3 / 4,
-                square: 1 / 1,
-              } as const
-              const aspect = aspectRatios[card.resource.variant] ?? aspectRatios.square
-              // Alternate widths: 4/12 and 8/12
-              const widthClass = i % 2 === 0 ? 'w-4/12' : 'w-8/12'
-              return (
-                <div key={card.data.slug ?? i} className={`h-full ${widthClass} cursor-pointer`}>
-                  <div
-                    ref={card.imageRef}
-                    className={cn('z-50 w-full', card.type === 'post')}
-                    style={{ aspectRatio: `${aspect}` }}
-                    onMouseEnter={() => setHoveredIndex(i)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                    onMouseMove={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect()
-                      // compute UV: x in [0,1], y inverted so 0=bottom, 1=top
-                      const x = (e.clientX - rect.left) / rect.width
-                      const y = 1 - (e.clientY - rect.top) / rect.height
-                      setMouseUV([x, y])
-                    }}
-                  ></div>
-                  <h2 className="mt-4 text-xl">
-                    <Link
-                      href={`/${card.type === 'post' ? 'posts' : 'works'}/${card.data.slug}`}
-                      ref={card.linkRef}
-                      className="not-prose"
-                    >
-                      {card.data.title}
-                    </Link>
-                  </h2>
-                  <p className="mt-2">{card.data.meta?.description}</p>
-                </div>
-              )
-            })}
-          </div>
-        </section>
-      </PageTransition>
+      <section className="container">
+        <div className="mb-12 flex gap-12 py-24">
+          {cards.map((card, i) => {
+            // Map variant to aspect ratio (must match PlaneWithImage)
+            const aspectRatios = {
+              wide: 16 / 9,
+              portrait: 3 / 4,
+              square: 1 / 1,
+            } as const
+            const aspect = aspectRatios[card.resource.variant] ?? aspectRatios.square
+            // Alternate widths: 4/12 and 8/12
+            const widthClass = i % 2 === 0 ? 'w-4/12' : 'w-8/12'
+            return (
+              <div key={card.data.slug ?? i} className={`h-full ${widthClass} cursor-pointer`}>
+                <div
+                  ref={card.imageRef}
+                  className={cn('z-50 w-full', card.type === 'post')}
+                  style={{ aspectRatio: `${aspect}` }}
+                  onMouseEnter={() => setHoveredIndex(i)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    // compute UV: x in [0,1], y inverted so 0=bottom, 1=top
+                    const x = (e.clientX - rect.left) / rect.width
+                    const y = 1 - (e.clientY - rect.top) / rect.height
+                    setMouseUV([x, y])
+                  }}
+                ></div>
+                <h2 className="mt-4 text-xl">
+                  <Link
+                    href={`/${card.type === 'post' ? 'posts' : 'works'}/${card.data.slug}`}
+                    ref={card.linkRef}
+                    className="not-prose"
+                  >
+                    {card.data.title}
+                  </Link>
+                </h2>
+                <p className="mt-2">{card.data.meta?.description}</p>
+              </div>
+            )
+          })}
+        </div>
+      </section>
     </div>
   )
 }

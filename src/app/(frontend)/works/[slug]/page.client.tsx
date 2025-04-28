@@ -2,7 +2,6 @@
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import React, { useEffect } from 'react'
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
-import { LenisProvider } from '@/providers/Lenis'
 import { useLenis } from '@/hooks/useLenis'
 
 const PageClient: React.FC = () => {
