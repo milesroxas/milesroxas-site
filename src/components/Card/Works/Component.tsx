@@ -10,7 +10,6 @@ gsap.registerPlugin(Flip)
 
 import type { Work } from '@/payload-types'
 import { Media } from '@/components/Media' // removed for 3D plane rendering
-
 import { useSceneStore } from '@/r3f/store/useSceneStore'
 import { SceneTrackRefs } from '@/r3f/types/r3f'
 import { useRouter } from 'next/navigation'
@@ -41,10 +40,9 @@ export const WorkCard: React.FC<{
     imageRef: imageRefProp,
   } = props
 
+  const router = useRouter()
   const { slug, meta, title, hero } = doc || {}
   const { description, image: metaImage } = meta || {}
-
-  const router = useRouter()
 
   const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
   const setMouseUV = useSceneStore((s) => s.setMouseUV)
@@ -74,37 +72,48 @@ export const WorkCard: React.FC<{
   const handleExit = (e: NavigateEvent) => {
     e.preventDefault()
     const el = imageRef.current!
-    const rect = el.getBoundingClientRect()
 
-    // 1) snap it into fixed positioning exactly where it started
+    // Store the initial state for GSAP Flip
+    const state = Flip.getState(el)
+
+    // Get viewport dimensions accounting for the 40px frame
+    const frameSize = 40
+    const viewportWidth = window.innerWidth - frameSize * 2
+    const viewportHeight = window.innerHeight - frameSize * 2
+
+    // Calculate final size maintaining aspect ratio
+    // Use the smaller dimension to ensure it fits within frame
+    const maxWidth = viewportWidth
+    const maxHeight = viewportHeight
+
+    // Calculate dimensions that maintain aspect ratio
+    let finalWidth, finalHeight
+
+    if (maxWidth / aspectValue <= maxHeight) {
+      // Width is the limiting factor
+      finalWidth = maxWidth
+      finalHeight = maxWidth / aspectValue
+    } else {
+      // Height is the limiting factor
+      finalHeight = maxHeight
+      finalWidth = maxHeight * aspectValue
+    }
+
+    // Position fixed with correct offsets for the frame
     Object.assign(el.style, {
       position: 'fixed',
-      top: `${rect.top}px`,
-      left: `${rect.left}px`,
-      width: `${rect.width}px`,
-      height: `${rect.height}px`,
-      transformOrigin: 'top left',
+      top: `${frameSize}px`,
+      left: `${frameSize}px`,
+      width: `${finalWidth}px`,
+      height: `${finalHeight}px`,
       zIndex: '9999',
     })
 
-    // 2) calculate final size & position with 40px margin
-    const margin = 40
-    const finalLeft = margin
-    const finalTop = margin
-    const finalWidth = window.innerWidth - margin * 2.43
-    const finalHeight = finalWidth / aspectValue // keep your aspect ratio
-
-    const deltaX = finalLeft - rect.left
-    const deltaY = finalTop - rect.top
-
-    // 3) animate x/y and width/height
-    gsap.to(el, {
-      x: deltaX,
-      y: deltaY,
-      width: finalWidth,
-      height: finalHeight,
-      duration: 0.6,
+    // Run the FLIP animation
+    Flip.from(state, {
+      duration: 0.8,
       ease: 'power2.inOut',
+      absolute: true,
       onComplete: () => {
         router.push(href)
       },

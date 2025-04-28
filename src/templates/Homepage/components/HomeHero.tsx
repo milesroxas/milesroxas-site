@@ -1,7 +1,12 @@
+'use client'
 import styles from '../styles/home.module.css'
 import { cn } from '@/utilities/ui'
+import { useEffect, useRef, useState } from 'react'
 
 export default function HomeHero() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [videoError, setVideoError] = useState(false)
+
   const experienceText = [
     'Co-Founder',
     'Creative Director',
@@ -22,6 +27,16 @@ export default function HomeHero() {
     '3D Modeling & Rendering',
   ]
 
+  useEffect(() => {
+    const video = videoRef.current
+    if (video) {
+      video.play().catch((error) => {
+        console.error('Video playback failed:', error)
+        setVideoError(true)
+      })
+    }
+  }, [])
+
   return (
     <section className="relative w-full overflow-hidden">
       {/* Skills text behind (lower z-index, starts at 25vh) */}
@@ -37,14 +52,23 @@ export default function HomeHero() {
 
       {/* Video */}
       <div className="relative z-10 flex justify-center py-24">
-        <video
-          className="w-[30vh] rounded-sm object-cover"
-          src="/media/intro-test.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
+        {!videoError ? (
+          <video
+            ref={videoRef}
+            className="w-[30vh] rounded-sm object-cover"
+            src="/media/intro-test.mp4"
+            poster="/media/intro-test-poster.jpg"
+            autoPlay
+            muted
+            loop
+            playsInline
+            onError={() => setVideoError(true)}
+          />
+        ) : (
+          <div className="flex aspect-video w-[30vh] items-center justify-center rounded-sm bg-gray-100">
+            <p className="text-sm text-gray-500">Video unavailable</p>
+          </div>
+        )}
       </div>
 
       {/* Experience text in front (higher z-index, slightly below the skills text) */}
