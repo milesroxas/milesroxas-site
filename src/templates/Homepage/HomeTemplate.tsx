@@ -2,7 +2,6 @@ import React from 'react'
 
 import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
-
 import configPromise from '@payload-config'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
@@ -38,24 +37,6 @@ export default async function HomeTemplate() {
   }
 
   const { hero, layout } = page
-
-  // fetch the latest posts and works for homepage cards
-  const postsResult = await payload.find({
-    collection: 'posts',
-    depth: 2,
-    draft,
-    limit: 2,
-    pagination: false,
-    overrideAccess: draft,
-  })
-  const worksResult = await payload.find({
-    collection: 'works',
-    depth: 2,
-    draft,
-    limit: 2,
-    pagination: false,
-    overrideAccess: draft,
-  })
 
   return (
     <article className="pb-24">
