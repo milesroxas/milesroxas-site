@@ -134,6 +134,9 @@ importers:
       next-sitemap:
         specifier: ^4.2.3
         version: 4.2.3(next@15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))
+      next-view-transitions:
+        specifier: ^0.3.4
+        version: 0.3.4(next@15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       payload:
         specifier: ^3.35.1
         version: 3.35.1(bufferutil@4.0.9)(graphql@16.10.0)(typescript@5.8.3)(utf-8-validate@6.0.5)
@@ -4597,6 +4600,13 @@ packages:
     hasBin: true
     peerDependencies:
       next: '*'
+
+  next-view-transitions@0.3.4:
+    resolution: {integrity: sha512-SSiskenQ8JkEFGzPjvFwC5LGGoqgTxM5dxexkeugxvcXFLpWI2ZUh4IsCURD3ovW+8Ue7xXlrtrpy8b7XR7IwQ==}
+    peerDependencies:
+      next: '>=14.0.0'
+      react: ^18.2.0
+      react-dom: ^18.2.0
 
   next@15.3.1:
     resolution: {integrity: sha512-8+dDV0xNLOgHlyBxP1GwHGVaNXsmp+2NhZEYrXr24GWLHtt27YrBPbPuHvzlhi7kZNYjeJNR93IF5zfFu5UL0g==}
@@ -11250,6 +11260,12 @@ snapshots:
       fast-glob: 3.3.3
       minimist: 1.2.8
       next: 15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4)
+
+  next-view-transitions@0.3.4(next@15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      next: 15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
 
   next@15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4):
     dependencies:

@@ -2,17 +2,17 @@
 import { cn } from '@/utilities/ui'
 import React, { useRef, useEffect } from 'react'
 import Link, { LinkProps } from 'next/link'
-import { useExitFrameTransition } from '@/utilities/useExitFrameTransition'
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 import { gsap } from 'gsap'
 import Flip from 'gsap/Flip'
 gsap.registerPlugin(Flip)
 
 import type { Work } from '@/payload-types'
-import { Media } from '@/components/Media' // removed for 3D plane rendering
+import { Media } from '@/components/Media'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
 import { SceneTrackRefs } from '@/r3f/types/r3f'
-import { useRouter } from 'next/navigation'
+import { useTransitionRouter } from 'next-view-transitions'
+
 export type CardWorkData = Pick<Work, 'slug' | 'meta' | 'title' | 'hero'>
 type NavigateEvent = Parameters<NonNullable<LinkProps['onNavigate']>>[0]
 
@@ -40,7 +40,7 @@ export const WorkCard: React.FC<{
     imageRef: imageRefProp,
   } = props
 
-  const router = useRouter()
+  const router = useTransitionRouter()
   const { slug, meta, title, hero } = doc || {}
   const { description, image: metaImage } = meta || {}
 
@@ -69,52 +69,57 @@ export const WorkCard: React.FC<{
 
   const aspectValue = aspectRatios[aspect] ?? aspectRatios.wide
 
-  const handleExit = (e: NavigateEvent) => {
+  const handleTransition = (e: NavigateEvent) => {
     e.preventDefault()
-    const el = imageRef.current!
 
-    // Store the initial state for GSAP Flip
-    const state = Flip.getState(el)
-
-    // Get viewport dimensions accounting for the 40px frame
-    const frameSize = 40
-    const viewportWidth = window.innerWidth - frameSize * 2
-    const viewportHeight = window.innerHeight - frameSize * 2
-
-    // Calculate final size maintaining aspect ratio
-    // Use the smaller dimension to ensure it fits within frame
-    const maxWidth = viewportWidth
-    const maxHeight = viewportHeight
-
-    // Calculate dimensions that maintain aspect ratio
-    let finalWidth, finalHeight
-
-    if (maxWidth / aspectValue <= maxHeight) {
-      // Width is the limiting factor
-      finalWidth = maxWidth
-      finalHeight = maxWidth / aspectValue
-    } else {
-      // Height is the limiting factor
-      finalHeight = maxHeight
-      finalWidth = maxHeight * aspectValue
+    const containerEl = imageRef.current
+    if (!containerEl) {
+      return router.push(href)
     }
 
-    // Position fixed with correct offsets for the frame
-    Object.assign(el.style, {
-      position: 'fixed',
-      top: `${frameSize}px`,
-      left: `${frameSize}px`,
-      width: `${finalWidth}px`,
-      height: `${finalHeight}px`,
-      zIndex: '9999',
-    })
+    // Find the media element - target the actual image/video
+    const mediaEl = containerEl.querySelector('img') || containerEl.querySelector('video')
+    if (!mediaEl) {
+      return router.push(href)
+    }
 
-    // Run the FLIP animation
+    // Create a clone of the media element to animate
+    const clone = mediaEl.cloneNode(true) as HTMLElement
+    document.body.appendChild(clone)
+
+    // Position the clone exactly where the original is
+    const rect = mediaEl.getBoundingClientRect()
+    clone.style.position = 'fixed'
+    clone.style.top = `${rect.top}px`
+    clone.style.left = `${rect.left}px`
+    clone.style.width = `${rect.width}px`
+    clone.style.height = `${rect.height}px`
+    clone.style.objectFit = 'cover'
+    clone.style.zIndex = '10000'
+
+    // Capture initial state
+    const state = Flip.getState(clone)
+
+    // Apply fullscreen styles to the clone
+    clone.style.top = '0'
+    clone.style.left = '0'
+    clone.style.width = '100vw'
+    clone.style.height = '100vh'
+
+    // Execute FLIP animation
     Flip.from(state, {
       duration: 0.8,
-      ease: 'power2.inOut',
-      absolute: true,
+      ease: 'power3.inOut',
       onComplete: () => {
+        // Clean up and navigate
+        document.body.removeChild(clone)
+        router.push(href)
+      },
+      onInterrupt: () => {
+        // Clean up if interrupted
+        if (document.body.contains(clone)) {
+          document.body.removeChild(clone)
+        }
         router.push(href)
       },
     })
@@ -122,7 +127,7 @@ export const WorkCard: React.FC<{
 
   return (
     <article className={cn('h-full', className)}>
-      <Link href={href} onNavigate={handleExit} className="not-prose">
+      <Link href={href} onNavigate={handleTransition} className="not-prose">
         <div
           className="relative mb-6 w-full"
           ref={imageRef}

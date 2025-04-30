@@ -8,7 +8,7 @@ import { PayloadRedirects } from '@/components/PayloadRedirects'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 
-import HomeHero from './components/HomeHero'
+import { RenderHero } from '@/heros/RenderHero'
 
 export default async function HomeTemplate() {
   const { isEnabled: draft } = await draftMode()
@@ -42,10 +42,10 @@ export default async function HomeTemplate() {
     <article className="pb-24">
       {draft && <LivePreviewListener />}
 
-      <HomeHero />
+      {/* <HomeHero /> */}
       {/* <ContentSceneSetup layout={layout} /> */}
       {/* <HomeTemplateClient posts={posts} works={works} /> */}
-
+      <RenderHero {...hero} />
       <RenderBlocks blocks={layout} />
     </article>
   )
