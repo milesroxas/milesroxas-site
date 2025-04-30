@@ -1,0 +1,30 @@
+.marquee {
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee-horizontal-alt 40s linear infinite;
+  /* manipulate the speed of the marquee by changing "40s" line above*/
+}
+@keyframes marquee-horizontal-alt {
+  from {
+    transform: translateX(-10%);
+  }
+  to {
+    transform: translateX(10%);
+  }
+}
+
+.marquee-top {
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee-horizontal-alt-b 40s linear infinite;
+  /* manipulate the speed of the marquee by changing "40s" line above*/
+}
+
+@keyframes marquee-horizontal-alt-b {
+  from {
+    transform: translateX(10%);
+  }
+  to {
+    transform: translateX(-10%);
+  }
+}

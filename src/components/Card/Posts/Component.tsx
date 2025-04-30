@@ -51,11 +51,6 @@ export const PostCard: React.FC<{
   const localImageRef = useRef<HTMLDivElement>(null)
   const imageRef = imageRefProp ?? localImageRef
 
-  // log when the ref attaches to a DOM node
-  useEffect(() => {
-    console.log('[WorkCard] imageRef.current:', imageRef.current)
-  }, [imageRef])
-
   const trackedRefs: SceneTrackRefs = {
     cards: [imageRef],
   }

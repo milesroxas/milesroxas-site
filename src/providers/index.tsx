@@ -6,6 +6,7 @@ import { HeaderThemeProvider } from './HeaderTheme'
 import { LenisProvider } from './Lenis'
 import { ThemeProvider } from './Theme'
 import { CursorProvider } from './Cursor/CursorProvider'
+import { ViewTransitions } from 'next-view-transitions'
 
 export const Providers: React.FC<{
   children: React.ReactNode
