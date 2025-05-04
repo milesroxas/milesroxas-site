@@ -598,6 +598,9 @@ export interface Work {
     media?: (number | null) | Media;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | SliderBlock | TabsBlock)[];
+  industry?: string | null;
+  role?: string | null;
+  deliverables?: string | null;
   relatedWorks?: (number | Work)[] | null;
   categories?: (number | Category)[] | null;
   meta?: {
@@ -1549,6 +1552,9 @@ export interface WorksSelect<T extends boolean = true> {
         slider?: T | SliderBlockSelect<T>;
         tabs?: T | TabsBlockSelect<T>;
       };
+  industry?: T;
+  role?: T;
+  deliverables?: T;
   relatedWorks?: T;
   categories?: T;
   meta?:

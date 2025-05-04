@@ -24,6 +24,9 @@ export async function generateStaticParams() {
     pagination: false,
     select: {
       slug: true,
+      industry: true,
+      role: true,
+      deliverables: true,
     },
   })
 
@@ -55,17 +58,17 @@ export default async function Work({ params: paramsPromise }: Args) {
 
   const hero = work?.hero
   const layout = work?.layout || []
+  const { industry, role, deliverables } = work
 
   return (
     <>
-      <PageClient />
-
       <article className="relative z-10">
         <PayloadRedirects disableNotFound url={url} />
 
         {draft && <LivePreviewListener />}
 
         {hero && <RenderHero {...hero} />}
+        <PageClient work={work} />
         <RenderBlocks blocks={layout as any} />
       </article>
     </>

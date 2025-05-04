@@ -47,17 +47,18 @@ export default async function Page({ params: paramsPromise }: Args) {
   const { slug = 'home' } = await paramsPromise
   const url = '/' + slug
 
-  // If we're on the home slug, return an empty div
-  if (slug === 'home') {
-    return <HomeTemplate />
-  }
-
   const page: RequiredDataFromCollectionSlug<'pages'> | null = await queryPageBySlug({
     slug,
   })
 
   if (!page) {
     return <PayloadRedirects url={url} />
+  }
+
+  // the homepage
+  if (slug === 'home') {
+    const { hero, layout } = page
+    return <HomeTemplate hero={hero} layout={layout} />
   }
 
   const { hero, layout } = page
@@ -82,7 +83,6 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   return generateMeta({ doc: page })
 }
-
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()
 

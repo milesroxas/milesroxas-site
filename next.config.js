@@ -23,7 +23,7 @@ const nextConfig = {
   turbopack: {
     rules: {
       '*.{glsl,vs,fs,vert,frag}': {
-        loaders: ['raw-loader'],
+        loaders: ['raw-loader', 'glslify-loader'],
         as: '*.js',
       },
     },

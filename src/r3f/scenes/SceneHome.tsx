@@ -2,8 +2,6 @@
 
 import { View } from '@react-three/drei'
 import type { SceneTrackRefs } from '@/r3f/types/r3f'
-import { useTexture } from '@react-three/drei'
-import * as THREE from 'three'
 import PlaneWithImage from '@/r3f/components/CardPlane/PlaneWithImage'
 
 type Props = {
@@ -18,23 +16,10 @@ type Props = {
 }
 
 export default function SceneHome({ trackedRefs, resources }: Props) {
-  const texture = useTexture('/textures/fpo-arturo.jpg')
-
-  texture.wrapS = THREE.RepeatWrapping
-  texture.wrapT = THREE.RepeatWrapping
+  // const texture = useTexture('/textures/fpo-arturo.jpg')
 
   return (
     <>
-      {/* Hero mesh */}
-      {trackedRefs.heroSection && (
-        <View track={trackedRefs.heroSection as React.RefObject<HTMLElement>}>
-          <mesh position={[0, 0, 0]}>
-            <torusGeometry args={[0.5, 0.2, 16, 100]} />
-            <meshStandardMaterial map={texture} />
-          </mesh>
-        </View>
-      )}
-
       {/* Scene Home Cards - Only render if we have both ref and matching resource */}
       {trackedRefs.cards?.map((ref, i) =>
         ref && resources[i] ? (
