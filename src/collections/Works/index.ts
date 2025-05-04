@@ -104,6 +104,26 @@ export const Works: CollectionConfig<'works'> = {
         {
           fields: [
             {
+              name: 'industry',
+              label: 'Industry',
+              type: 'text',
+            },
+            {
+              name: 'role',
+              label: 'Role',
+              type: 'text',
+            },
+            {
+              name: 'deliverables',
+              label: 'Deliverables',
+              type: 'text',
+            },
+          ],
+          label: 'Work Details',
+        },
+        {
+          fields: [
+            {
               name: 'relatedWorks',
               type: 'relationship',
               admin: {

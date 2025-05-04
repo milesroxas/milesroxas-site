@@ -1,149 +1,128 @@
+// components/WorkCard.tsx
 'use client'
-import { cn } from '@/utilities/ui'
-import React, { useRef, useEffect } from 'react'
-import Link, { LinkProps } from 'next/link'
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
-import { gsap } from 'gsap'
-import Flip from 'gsap/Flip'
-gsap.registerPlugin(Flip)
 
+import React, { useRef } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import gsap from 'gsap'
+import Flip from 'gsap/Flip'
+import { useGSAP } from '@gsap/react'
+
+import { cn } from '@/utilities/ui'
 import type { Work } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
-import { SceneTrackRefs } from '@/r3f/types/r3f'
-import { useTransitionRouter } from 'next-view-transitions'
+import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+
+gsap.registerPlugin(Flip, useGSAP)
 
 export type CardWorkData = Pick<Work, 'slug' | 'meta' | 'title' | 'hero'>
-type NavigateEvent = Parameters<NonNullable<LinkProps['onNavigate']>>[0]
 
-export const WorkCard: React.FC<{
-  alignItems?: 'center'
+interface WorkCardProps {
   className?: string
   doc?: CardWorkData
   relationTo?: 'works'
   title?: string
   index?: number
   aspect?: 'wide' | 'portrait' | 'square'
-  data?: Work[]
-  hero?: number
-  /** Ref for the image container div */
   imageRef?: React.RefObject<HTMLDivElement | null>
-  setHoveredIndex?: (index: number | null) => void
-}> = (props) => {
-  const {
-    className,
-    doc,
-    relationTo = 'works',
-    title: titleFromProps,
-    index,
-    aspect = 'wide',
-    imageRef: imageRefProp,
-  } = props
+}
 
-  const router = useTransitionRouter()
+export const WorkCard: React.FC<WorkCardProps> = ({
+  className,
+  doc,
+  relationTo = 'works',
+  title: titleFromProps,
+  index,
+  aspect = 'wide',
+  imageRef: imageRefProp,
+}) => {
   const { slug, meta, title, hero } = doc || {}
-  const { description, image: metaImage } = meta || {}
+  const description = meta?.description
+  const sanitizedDescription = description?.replace(/\s+/g, ' ')
+  const href = `/${relationTo}/${slug}`
+  const router = useRouter()
 
   const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
   const setMouseUV = useSceneStore((s) => s.setMouseUV)
-
-  const titleToUse = titleFromProps || title
-  const sanitizedDescription = description?.replace(/\s/g, ' ')
-  const href = `/${relationTo}/${slug}`
-
-  // use provided ref or fallback to a local image container div ref
-  const localImageRef = useRef<HTMLDivElement>(null)
-  const imageRef = imageRefProp ?? localImageRef
-
-  const trackedRefs: SceneTrackRefs = {
-    cards: [imageRef],
-  }
-
   const { collapseFrame } = usePageAnimationStore()
 
-  const aspectRatios = {
-    wide: 16 / 9,
-    portrait: 3 / 4,
-    square: 1 / 1,
-  } as const
+  const localImageRef = useRef<HTMLDivElement>(null)
+  const imageRef = imageRefProp ?? localImageRef
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const aspectValue = aspectRatios[aspect] ?? aspectRatios.wide
+  const { contextSafe } = useGSAP({ scope: containerRef })
 
-  const handleTransition = (e: NavigateEvent) => {
+  const handleTransition = contextSafe((e: React.MouseEvent) => {
     e.preventDefault()
 
     const containerEl = imageRef.current
     if (!containerEl) {
-      return router.push(href)
+      router.push(href)
+      return
     }
 
-    // Find the media element - target the actual image/video
-    const mediaEl = containerEl.querySelector('img') || containerEl.querySelector('video')
+    const mediaEl =
+      (containerEl.querySelector('img') as HTMLElement) ||
+      (containerEl.querySelector('video') as HTMLElement)
+
     if (!mediaEl) {
-      return router.push(href)
+      router.push(href)
+      return
     }
 
-    // Create a clone of the media element to animate
+    // clone & stash
     const clone = mediaEl.cloneNode(true) as HTMLElement
+    clone.classList.add('page-transition-clone')
+    window.__PAGE_TRANSITION_CLONE = clone
     document.body.appendChild(clone)
 
-    // Position the clone exactly where the original is
     const rect = mediaEl.getBoundingClientRect()
-    clone.style.position = 'fixed'
-    clone.style.top = `${rect.top}px`
-    clone.style.left = `${rect.left}px`
-    clone.style.width = `${rect.width}px`
-    clone.style.height = `${rect.height}px`
-    clone.style.objectFit = 'cover'
-    clone.style.zIndex = '10000'
+    Object.assign(clone.style, {
+      position: 'fixed',
+      top: `${rect.top}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`,
+      objectFit: 'cover',
+      zIndex: '10000',
+    })
 
-    // Capture initial state
+    mediaEl.style.visibility = 'hidden'
+
+    // FLIP to full-screen
     const state = Flip.getState(clone)
+    Object.assign(clone.style, {
+      top: '0',
+      left: '0',
+      width: '100vw',
+      height: '100vh',
+    })
 
-    // Apply fullscreen styles to the clone
-    clone.style.top = '0'
-    clone.style.left = '0'
-    clone.style.width = '100vw'
-    clone.style.height = '100vh'
-
-    // Execute FLIP animation
     Flip.from(state, {
       duration: 0.8,
       ease: 'power3.inOut',
-      onComplete: () => {
-        // Clean up and navigate
-        document.body.removeChild(clone)
-        router.push(href)
-      },
-      onInterrupt: () => {
-        // Clean up if interrupted
-        if (document.body.contains(clone)) {
-          document.body.removeChild(clone)
-        }
-        router.push(href)
-      },
+      onComplete: () => router.push(href),
+      onInterrupt: () => router.push(href),
     })
-  }
+  })
+
+  const aspectRatios = { wide: 16 / 9, portrait: 3 / 4, square: 1 } as const
+  const aspectValue = aspectRatios[aspect]
 
   return (
-    <article className={cn('h-full', className)}>
-      <Link href={href} onNavigate={handleTransition} className="not-prose">
+    <article ref={containerRef} className={cn('h-full', className)}>
+      <Link href={href} onClick={handleTransition} className="not-prose">
         <div
-          className="relative mb-6 w-full"
           ref={imageRef}
-          style={{
-            aspectRatio: `${aspectValue}`,
-          }}
-          onMouseEnter={() => {
-            setHoveredIndex(index ?? null)
-          }}
-          onMouseLeave={() => {
-            setHoveredIndex(null)
-          }}
+          className="relative mb-6 w-full"
+          style={{ aspectRatio: aspectValue }}
+          onMouseEnter={() => setHoveredIndex?.(index ?? null)}
+          onMouseLeave={() => setHoveredIndex?.(null)}
           onMouseMove={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect()
-            const x = (e.clientX - rect.left) / rect.width
-            const y = 1 - (e.clientY - rect.top) / rect.height
+            const r = e.currentTarget.getBoundingClientRect()
+            const x = (e.clientX - r.left) / r.width
+            const y = 1 - (e.clientY - r.top) / r.height
             setMouseUV([x, y])
           }}
         >
@@ -156,12 +135,18 @@ export const WorkCard: React.FC<{
             />
           )}
         </div>
-        {titleToUse && (
+
+        {(titleFromProps || title) && (
           <div className="prose">
-            <h3 className="text-3xl font-light">{titleToUse}</h3>
+            <h3 className="text-3xl font-light">{titleFromProps || title}</h3>
           </div>
         )}
-        {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
+
+        {description && (
+          <div className="mt-2">
+            <p>{sanitizedDescription}</p>
+          </div>
+        )}
       </Link>
     </article>
   )

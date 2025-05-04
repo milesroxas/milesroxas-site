@@ -8,6 +8,7 @@ import { Media } from '@/components/Media'
 import useClickableCard from '@/utilities/useClickableCard'
 
 import { TransitionLink } from '@/components/Link'
+import Link from 'next/link'
 
 export type CardWorkData = Pick<Work, 'slug' | 'meta' | 'title' | 'hero'>
 
@@ -45,9 +46,9 @@ export const CardWork: React.FC<{
         {titleToUse && (
           <div className="prose mt-2">
             <h3>
-              <TransitionLink className="not-prose" href={href}>
+              <Link className="not-prose" href={href}>
                 {titleToUse}
-              </TransitionLink>
+              </Link>
             </h3>
           </div>
         )}

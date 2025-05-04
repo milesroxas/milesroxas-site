@@ -95,9 +95,9 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                 >
                   {col.sectionHeading.subheading && (
                     <p
-                      className={cn('font-light text-orange-600 uppercase', {
+                      className={cn('text-orange-600 uppercase', {
                         'text-sm': col.sectionHeading.size === 'base',
-                        'text-xl': col.sectionHeading.size === 'lg',
+                        'text-md mb-4 tracking-wider': col.sectionHeading.size === 'lg',
                         'text-2xl': col.sectionHeading.size === 'xl',
                       })}
                     >
