@@ -43,8 +43,17 @@ export const hero: Field = {
       required: true,
     },
     {
+      name: 'showContent',
+      type: 'checkbox',
+      defaultValue: true,
+      label: 'Show Content',
+    },
+    {
       name: 'richText',
       type: 'richText',
+      admin: {
+        condition: (_, { showContent } = {}) => showContent,
+      },
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
           return [

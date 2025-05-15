@@ -13,8 +13,10 @@ import {
 import Link from 'next/link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
+import { useTheme } from '@/providers/Theme'
 
 export type SliderBlockProps = {
+  theme?: 'light' | 'dark' | 'system'
   introContent?: {
     heading?: string
     subheading?: string
@@ -40,18 +42,23 @@ export type SliderBlockProps = {
   style?: 'default' | 'single' | 'cropped'
   blockType: 'slider'
   className?: string
+  fullWidth?: boolean
 }
 
 export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
+  theme: propTheme,
   id,
   introContent,
   slides,
   style = 'default',
   className,
   space,
+  fullWidth = false,
 }) => {
   const [api, setApi] = useState<CarouselApi>()
   const [currentIndex, setCurrentIndex] = useState(0)
+  const { theme: systemTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
   const getSpacingClasses = (space?: SliderBlockProps['space']) => {
     if (!space) return {}
@@ -110,10 +117,34 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
     }
   }, [api])
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Determine the active theme based on the prop and system theme
+  const activeTheme =
+    propTheme === 'dark'
+      ? 'dark'
+      : mounted && (propTheme === 'system' || !propTheme)
+        ? systemTheme
+        : propTheme || 'light'
+
   return (
-    <div className={cn(className, getSpacingClasses(space))} id={`block-${id}`}>
+    <div
+      data-theme={activeTheme}
+      className={cn(
+        'theme-transition w-full',
+        {
+          'bg-primary text-primary-foreground font-light': activeTheme === 'dark',
+          'bg-background text-foreground': activeTheme === 'light',
+        },
+        className,
+        getSpacingClasses(space),
+      )}
+      id={`block-${id}`}
+    >
       {introContent && (
-        <div className="container mb-12">
+        <div className={cn({ container: !fullWidth, 'px-4 md:px-6 lg:px-8': fullWidth }, 'mb-12')}>
           {introContent.heading && (
             <h2
               className={cn('mb-2', {
@@ -129,7 +160,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
           )}
           {introContent.subheading && (
             <p
-              className={cn('text-gray-500', {
+              className={cn('text-muted-foreground', {
                 'text-left': introContent.align === 'left' || !introContent.align,
                 'text-center': introContent.align === 'center',
               })}
@@ -140,115 +171,149 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
         </div>
       )}
 
-      <div
-        className={cn('overflow-hidden', {
-          'mx-auto max-w-6xl px-4': style === 'single',
-        })}
-      >
-        <Carousel
-          className={cn('w-full', {
-            'max-w-full': style === 'single',
-          })}
-          style={{ transition: 'none' }}
-          setApi={setApi}
-          opts={{
-            loop: true,
-            align: style === 'single' ? 'start' : 'center',
-            containScroll: style === 'single' ? false : 'trimSnaps',
-            skipSnaps: style === 'single',
-            duration: style === 'default' ? 40 : 25,
-          }}
-        >
-          <CarouselContent
-            className={cn('slider-content', style === 'default' ? '-ml-2 md:-ml-4' : '')}
-            style={style === 'single' ? { marginLeft: 0, marginRight: 0 } : {}}
+      {style === 'single' ? (
+        <div className={cn({ 'mx-auto max-w-4xl px-4': !fullWidth, 'w-full': fullWidth })}>
+          <Carousel
+            className="w-full"
+            style={{ transition: 'none' }}
+            setApi={setApi}
+            opts={{
+              loop: true,
+              align: 'center',
+              containScroll: false,
+              skipSnaps: false,
+              duration: 25,
+            }}
           >
-            {slides &&
-              slides.map(({ slide }, index) => (
-                <CarouselItem
-                  key={index}
-                  className={cn(
-                    {
-                      'pl-2 md:basis-1/2 md:pl-4 lg:basis-1/3': style === 'default',
-                      'w-full basis-full px-0': style === 'single',
-                      'pl-2 md:basis-1/2 md:pl-4 lg:basis-1/2': style === 'cropped',
-                    },
-                    currentIndex === index
-                      ? 'z-10'
-                      : style === 'default' || style === 'cropped'
-                        ? 'opacity-50'
-                        : '',
-                  )}
-                  style={style === 'single' ? { paddingLeft: 0 } : {}}
-                >
-                  <div
+            <CarouselContent className="gap-4">
+              {slides &&
+                slides.map(({ slide }, index) => (
+                  <CarouselItem key={index} className="w-full basis-full">
+                    <div className="mx-auto aspect-[16/9] w-full">
+                      {slide.link ? (
+                        <Link
+                          href={getHref(slide.link)}
+                          className="block aspect-[16/9] w-full overflow-hidden"
+                        >
+                          {slide.image && (
+                            <Media
+                              resource={slide.image}
+                              priority={index === 0}
+                              loading={index === 0 ? 'eager' : 'lazy'}
+                              className="h-full w-full object-cover"
+                              size={fullWidth ? '100vw' : '(max-width: 1024px) 100vw, 1024px'}
+                            />
+                          )}
+                          {slide.caption && (
+                            <div className="mt-2">
+                              <p className="text-muted-foreground text-sm">{slide.caption}</p>
+                            </div>
+                          )}
+                        </Link>
+                      ) : (
+                        <div className="flex aspect-[16/9] w-full flex-col items-center justify-center">
+                          {slide.image && (
+                            <Media
+                              resource={slide.image}
+                              priority={index === 0}
+                              loading={index === 0 ? 'eager' : 'lazy'}
+                              className="h-full w-full object-cover"
+                              size={fullWidth ? '100vw' : '(max-width: 1024px) 100vw, 1024px'}
+                            />
+                          )}
+                          {slide.caption && (
+                            <div className="mt-2">
+                              <p className="text-muted-foreground text-sm">{slide.caption}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </CarouselItem>
+                ))}
+            </CarouselContent>
+          </Carousel>
+        </div>
+      ) : (
+        <div className="w-full overflow-hidden">
+          <Carousel
+            className="w-full"
+            style={{ transition: 'none' }}
+            setApi={setApi}
+            opts={{
+              loop: true,
+              align: 'center',
+              containScroll: false,
+              skipSnaps: false,
+              duration: 40,
+            }}
+          >
+            <CarouselContent className="gap-2">
+              {slides &&
+                slides.map(({ slide }, index) => (
+                  <CarouselItem
+                    key={index}
                     className={cn(
-                      'p-1 transition-all duration-300 ease-out',
-                      style === 'single' ? 'mx-auto aspect-[16/9] w-full' : '',
-                      style === 'default' && (currentIndex === index ? 'scale-110' : 'scale-90'),
-                      style === 'cropped' && (currentIndex === index ? 'scale-110' : 'scale-90'),
+                      'md:basis-3/4 lg:basis-2/3',
+                      currentIndex === index ? 'z-20' : 'opacity-30',
                     )}
                   >
-                    {slide.link ? (
-                      <Link
-                        href={getHref(slide.link)}
-                        className={cn(
-                          'block w-full overflow-hidden',
-                          style === 'single' ? 'aspect-[16/9] w-full' : '',
-                        )}
-                      >
-                        {slide.image && (
-                          <Media
-                            resource={slide.image}
-                            priority={index === 0}
-                            loading={index === 0 ? 'eager' : 'lazy'}
-                            className="h-full w-full object-cover"
-                            size={
-                              style === 'single'
-                                ? '(max-width: 1024px) 100vw, 1024px'
-                                : '(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw'
-                            }
-                          />
-                        )}
-                        {slide.caption && (
-                          <div className="mt-2">
-                            <p className="text-sm text-gray-500">{slide.caption}</p>
-                          </div>
-                        )}
-                      </Link>
-                    ) : (
-                      <div
-                        className={cn(
-                          'flex flex-col items-center justify-center',
-                          style === 'single' ? 'aspect-[16/9] w-full' : 'aspect-[4/3]',
-                        )}
-                      >
-                        {slide.image && (
-                          <Media
-                            resource={slide.image}
-                            priority={index === 0}
-                            loading={index === 0 ? 'eager' : 'lazy'}
-                            className="h-full w-full object-cover"
-                            size={
-                              style === 'single'
-                                ? '(max-width: 1024px) 100vw, 1024px'
-                                : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                            }
-                          />
-                        )}
-                        {slide.caption && (
-                          <div className="mt-2">
-                            <p className="text-sm text-gray-500">{slide.caption}</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </CarouselItem>
-              ))}
-          </CarouselContent>
-        </Carousel>
-      </div>
+                    <div
+                      className={cn(
+                        'transition-all duration-300 ease-out',
+                        currentIndex === index ? 'scale-110' : 'scale-90',
+                      )}
+                    >
+                      {slide.link ? (
+                        <Link href={getHref(slide.link)} className="block w-full overflow-hidden">
+                          {slide.image && (
+                            <Media
+                              resource={slide.image}
+                              priority={index === 0}
+                              loading={index === 0 ? 'eager' : 'lazy'}
+                              className="h-full w-full object-cover"
+                              size={
+                                fullWidth
+                                  ? '100vw'
+                                  : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 80vw'
+                              }
+                            />
+                          )}
+                          {slide.caption && (
+                            <div className="mt-2">
+                              <p className="text-muted-foreground text-sm">{slide.caption}</p>
+                            </div>
+                          )}
+                        </Link>
+                      ) : (
+                        <div className="flex aspect-[4/3] flex-col items-center justify-center">
+                          {slide.image && (
+                            <Media
+                              resource={slide.image}
+                              priority={index === 0}
+                              loading={index === 0 ? 'eager' : 'lazy'}
+                              className="h-full w-full object-cover"
+                              size={
+                                fullWidth
+                                  ? '100vw'
+                                  : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 80vw'
+                              }
+                            />
+                          )}
+                          {slide.caption && (
+                            <div className="mt-2">
+                              <p className="text-muted-foreground text-sm">{slide.caption}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </CarouselItem>
+                ))}
+            </CarouselContent>
+          </Carousel>
+        </div>
+      )}
     </div>
   )
 }

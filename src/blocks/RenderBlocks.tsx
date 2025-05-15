@@ -1,5 +1,4 @@
-import React, { Fragment } from 'react'
-
+import React from 'react'
 import type { Page } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
@@ -9,6 +8,8 @@ import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { SliderBlock } from '@/blocks/Slider/Component'
 import { TabsBlock } from '@/blocks/Tabs/Component'
+import { AnimatedBlocksContainer } from './AnimatedBlocksContainer'
+
 const blockComponents = {
   archive: ArchiveBlock,
   content: ContentBlock,
@@ -28,7 +29,7 @@ export const RenderBlocks: React.FC<{
 
   if (hasBlocks) {
     return (
-      <Fragment>
+      <AnimatedBlocksContainer>
         {blocks.map((block, index) => {
           const { blockType } = block
 
@@ -39,10 +40,15 @@ export const RenderBlocks: React.FC<{
               // Make a deep copy of the block to avoid reference issues
               const blockProps = { ...block }
 
-              return (
-                <div key={index}>
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
+              // Check if this block should be full-width
+              const isFullWidth =
+                blockType === 'content' &&
+                'containerWidth' in blockProps &&
+                blockProps.containerWidth === 'fullWidth'
 
+              return (
+                <div key={index} className={`block-wrapper ${isFullWidth ? 'w-full' : ''}`}>
+                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
                   <Block {...blockProps} disableInnerContainer />
                 </div>
               )
@@ -50,7 +56,7 @@ export const RenderBlocks: React.FC<{
           }
           return null
         })}
-      </Fragment>
+      </AnimatedBlocksContainer>
     )
   }
 

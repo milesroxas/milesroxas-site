@@ -48,8 +48,8 @@
   :root {
     --background: 60 5% 96%;
     --foreground: 240 6% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 4%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 98%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 4%;
     --primary: 240 6% 10%;
@@ -58,7 +58,7 @@
     --secondary-foreground: 240 6% 10%;
     --muted: 240 5% 96%;
     --muted-foreground: 240 4% 46%;
-    --accent: 80 89% 89%;
+    --accent: 21 90% 48%;
     --accent-foreground: 240 6% 10%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 86% 97%;
@@ -80,42 +80,42 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 240 5% 65%;
   }
-}
 
-[data-theme='dark'] {
-  --background: 240 10% 4%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 4%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 4%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 6% 10%;
-  --secondary: 240 4% 16%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 4% 16%;
-  --muted-foreground: 240 5% 65%;
-  --accent: 166 91% 9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 0 86% 97%;
-  --border: 240 4% 16%;
-  --input: 240 4% 16%;
-  --ring: 240 5% 84%;
-  --radius: 0.5rem;
-  --chart-1: 220 70% 50%;
-  --chart-2: 340 75% 55%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 160 60% 45%;
-  --sidebar-background: 240 6% 10%;
-  --sidebar-foreground: 240 5% 96%;
-  --sidebar-primary: 224 76% 48%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 240 4% 16%;
-  --sidebar-accent-foreground: 240 5% 96%;
-  --sidebar-border: 240 4% 16%;
-  --sidebar-ring: 240 5% 84%;
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 98%;
+    --card-foreground: 224 71% 4%;
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 6% 10%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 142 71% 45%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 86% 97%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 240 5% 84%;
+    --radius: 0.5rem;
+    --chart-1: 220 70% 50%;
+    --chart-2: 340 75% 55%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 160 60% 45%;
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 240 5% 96%;
+    --sidebar-primary: 224 76% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 240 5% 96%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 240 5% 84%;
+  }
 }
 
 html {
@@ -125,6 +125,15 @@ html {
 html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
+}
+
+/* Theme transition handling */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: all 0.3s ease-out !important;
+  transition-delay: 0 !important;
 }
 
 /* Base configuration */
@@ -220,6 +229,40 @@ html[data-theme='light'] {
     max-width: var(--container-screens-2xl);
     padding-left: var(--container-padding-2xl);
     padding-right: var(--container-padding-2xl);
+  }
+}
+
+/* Define theme-transition utility explicitly */
+@utility theme-transition {
+  transition:
+    background-color 0.3s ease-out,
+    color 0.3s ease-out,
+    border-color 0.3s ease-out,
+    box-shadow 0.3s ease-out;
+}
+
+@layer utilities {
+  .prose-custom h1 {
+    @apply text-4xl;
+  }
+  .prose-custom h2 {
+    @apply mb-4 text-3xl leading-relaxed font-medium;
+  }
+  .prose-custom h3 {
+    @apply text-2xl;
+  }
+
+  .prose-blocks h1 {
+    @apply text-4xl;
+  }
+  .prose-blocks h2 {
+    @apply mb-4 text-3xl font-medium;
+  }
+  .prose-blocks h3 {
+    @apply text-2xl;
+  }
+  .prose-blocks p {
+    @apply max-w-[480px] text-lg;
   }
 }
 

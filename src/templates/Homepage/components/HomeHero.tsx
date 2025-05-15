@@ -56,7 +56,7 @@ export default function HomeHero() {
           <video
             ref={videoRef}
             className="w-[30vh] rounded-sm object-cover"
-            src="/media/intro-test.mp4"
+            src="/media/home-hero.mp4"
             poster="/media/intro-test-poster.jpg"
             autoPlay
             muted

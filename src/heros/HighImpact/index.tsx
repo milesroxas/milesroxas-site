@@ -9,7 +9,7 @@ import { Media } from '@/components/Media'
 import { CMSLink } from '@/components/Link'
 import RichText from '@/components/RichText'
 
-export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText }) => {
+export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText, showContent }) => {
   const { setHeaderTheme } = useHeaderTheme()
   const heroRef = useRef<HTMLDivElement>(null)
 
@@ -24,9 +24,9 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText 
     clone.style.transformOrigin = 'top left'
 
     // find the real <img> so we get its exact position & size
-    const img = heroEl.querySelector('img') as HTMLElement | null
-    if (!img) {
-      // if no hero image, just fade clone out
+    const mediaEl = heroEl.querySelector('img, video') as HTMLElement | null
+    if (!mediaEl) {
+      // if no hero media, just fade clone out
       gsap.to(clone, {
         opacity: 0,
         duration: 0.5,
@@ -39,7 +39,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText 
       return
     }
 
-    const { top, left, width, height } = img.getBoundingClientRect()
+    const { top, left, width, height } = mediaEl.getBoundingClientRect()
 
     gsap
       .timeline({
@@ -72,32 +72,37 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText 
   return (
     <section
       ref={heroRef}
-      className="relative min-h-[60vh] w-full overflow-hidden text-white"
+      className="relative min-h-[78vh] w-full overflow-hidden text-white"
       data-theme="dark"
     >
-      {/* full‑bleed background image */}
+      {/* full‑bleed background image or video */}
       {media && typeof media === 'object' && (
         <Media
           fill
           imgClassName="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          videoClassName="absolute inset-0 w-full h-full object-cover pointer-events-none"
           priority
           resource={media}
         />
       )}
 
       {/* your overlayed text + links */}
-      <div className="relative z-10 container mx-auto flex min-h-[60vh] flex-col items-center justify-center px-4">
-        {richText && <RichText className="mb-6 text-center" data={richText} enableGutter={false} />}
-        {Array.isArray(links) && links.length > 0 && (
-          <ul className="flex gap-4">
-            {links.map(({ link }, i) => (
-              <li key={i}>
-                <CMSLink {...link} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      {showContent && (
+        <div className="relative z-10 container mx-auto flex min-h-[78vh] flex-col items-center justify-center px-4">
+          {richText && (
+            <RichText className="mb-6 text-center" data={richText} enableGutter={false} />
+          )}
+          {Array.isArray(links) && links.length > 0 && (
+            <ul className="flex gap-4">
+              {links.map(({ link }, i) => (
+                <li key={i}>
+                  <CMSLink {...link} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </section>
   )
 }

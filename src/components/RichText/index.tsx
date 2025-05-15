@@ -42,7 +42,7 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => (
       <MediaBlock
-        className="col-start-1 col-span-3"
+        className="col-span-3 col-start-1"
         imgClassName="m-0"
         {...node.fields}
         captionClassName="mx-auto max-w-[48rem]"
@@ -59,11 +59,10 @@ type Props = {
   data: DefaultTypedEditorState
   enableGutter?: boolean
   enableProse?: boolean
-  size?: 'base' | 'lg' | 'xl'
 } & React.HTMLAttributes<HTMLDivElement>
 
 export default function RichText(props: Props) {
-  const { className, enableProse = true, enableGutter = true, size = 'base', ...rest } = props
+  const { className, enableProse = true, enableGutter = true, ...rest } = props
   return (
     <ConvertRichText
       converters={jsxConverters}
@@ -72,9 +71,7 @@ export default function RichText(props: Props) {
         {
           container: enableGutter,
           'max-w-none': !enableGutter,
-          'prose prose-custom-base dark:prose-invert': enableProse && size === 'base',
-          'prose prose-custom-lg dark:prose-invert': enableProse && size === 'lg',
-          'prose prose-custom-xl dark:prose-invert': enableProse && size === 'xl',
+          'prose md:prose-md dark:prose-invert prose-custom mx-auto': enableProse,
         },
         className,
       )}

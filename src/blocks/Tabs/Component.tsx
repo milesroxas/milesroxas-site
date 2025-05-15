@@ -109,7 +109,9 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
                     <RichText data={tab.richText} enableGutter={false} />
                   )}
                   {tab.contentType === 'slider' && tab.slider && (
-                    <SliderBlock {...tab.slider} blockType="slider" />
+                    <div className="w-full">
+                      <SliderBlock {...tab.slider} blockType="slider" theme="dark" />
+                    </div>
                   )}
                 </TabsContent>
               ))}

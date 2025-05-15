@@ -97,7 +97,7 @@ export const PostCard: React.FC<{
         </div>
         {titleToUse && (
           <div className="prose">
-            <h3 className="w-[80%] text-lg font-light">{titleToUse}</h3>
+            <h3 className="text-md w-[80%]">{titleToUse}</h3>
           </div>
         )}
         {/* {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>} */}

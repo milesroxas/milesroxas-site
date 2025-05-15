@@ -152,6 +152,7 @@ export interface Page {
   title: string;
   hero: {
     type: 'none' | 'home' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    showContent?: boolean | null;
     richText?: {
       root: {
         type: string;
@@ -440,7 +441,14 @@ export interface CallToActionBlock {
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
-  theme?: ('light' | 'dark') | null;
+  /**
+   * Override the site theme for this content block.
+   */
+  theme?: ('system' | 'light' | 'dark') | null;
+  /**
+   * Control the width of the content container
+   */
+  containerWidth?: ('contained' | 'fullWidth') | null;
   space?: {
     pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
@@ -489,8 +497,22 @@ export interface ContentBlock {
           };
         };
         sectionHeading?: {
-          heading?: string | null;
-          subheading?: string | null;
+          eyebrow?: string | null;
+          content?: {
+            root: {
+              type: string;
+              children: {
+                type: string;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
           size?: ('base' | 'lg' | 'xl') | null;
           align?: ('left' | 'center') | null;
           style?: ('default' | 'border' | 'jumbo') | null;
@@ -506,6 +528,7 @@ export interface ContentBlock {
           variant?: ('featured' | 'card') | null;
         };
         slider?: {
+          theme?: ('system' | 'light' | 'dark') | null;
           introContent?: {
             heading?: string | null;
             subheading?: string | null;
@@ -556,6 +579,7 @@ export interface Work {
   title: string;
   hero: {
     type: 'none' | 'home' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    showContent?: boolean | null;
     richText?: {
       root: {
         type: string;
@@ -624,7 +648,18 @@ export interface Work {
  */
 export interface MediaBlock {
   media: number | Media;
+  aspectRatio?: ('landscape' | 'square' | 'portrait' | 'original') | null;
+  /**
+   * Makes the media span the full width of its container. Note: For true edge-to-edge display, set both this option AND use "Full Width" in the parent Content Block settings.
+   */
+  fullWidth?: boolean | null;
   captionSize?: ('normal' | 'large' | 'xl') | null;
+  space?: {
+    pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  };
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -875,6 +910,7 @@ export interface Form {
  * via the `definition` "SliderBlock".
  */
 export interface SliderBlock {
+  theme?: ('system' | 'light' | 'dark') | null;
   introContent?: {
     heading?: string | null;
     subheading?: string | null;
@@ -948,6 +984,7 @@ export interface TabsBlock {
           [k: string]: unknown;
         } | null;
         slider?: {
+          theme?: ('system' | 'light' | 'dark') | null;
           style?: ('default' | 'cropped' | 'single') | null;
           slides: {
             slide: {
@@ -1241,6 +1278,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         type?: T;
+        showContent?: T;
         richText?: T;
         links?:
           | T
@@ -1313,6 +1351,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
  */
 export interface ContentBlockSelect<T extends boolean = true> {
   theme?: T;
+  containerWidth?: T;
   space?:
     | T
     | {
@@ -1345,8 +1384,8 @@ export interface ContentBlockSelect<T extends boolean = true> {
         sectionHeading?:
           | T
           | {
-              heading?: T;
-              subheading?: T;
+              eyebrow?: T;
+              content?: T;
               size?: T;
               align?: T;
               style?: T;
@@ -1368,6 +1407,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
         slider?:
           | T
           | {
+              theme?: T;
               introContent?:
                 | T
                 | {
@@ -1415,7 +1455,17 @@ export interface ContentBlockSelect<T extends boolean = true> {
  */
 export interface MediaBlockSelect<T extends boolean = true> {
   media?: T;
+  aspectRatio?: T;
+  fullWidth?: T;
   captionSize?: T;
+  space?:
+    | T
+    | {
+        pt?: T;
+        pb?: T;
+        mt?: T;
+        mb?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -1450,6 +1500,7 @@ export interface FormBlockSelect<T extends boolean = true> {
  * via the `definition` "SliderBlock_select".
  */
 export interface SliderBlockSelect<T extends boolean = true> {
+  theme?: T;
   introContent?:
     | T
     | {
@@ -1523,6 +1574,7 @@ export interface WorksSelect<T extends boolean = true> {
     | T
     | {
         type?: T;
+        showContent?: T;
         richText?: T;
         links?:
           | T
@@ -1601,6 +1653,7 @@ export interface TabsBlockSelect<T extends boolean = true> {
         slider?:
           | T
           | {
+              theme?: T;
               style?: T;
               slides?:
                 | T
