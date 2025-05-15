@@ -49,6 +49,16 @@ export const SliderBlock: Block = {
   interfaceName: 'SliderBlock',
   fields: [
     {
+      name: 'theme',
+      type: 'select',
+      defaultValue: 'system',
+      options: [
+        { label: 'System Default', value: 'system' },
+        { label: 'Light', value: 'light' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
+    {
       name: 'introContent',
       type: 'group',
       fields: introFields,

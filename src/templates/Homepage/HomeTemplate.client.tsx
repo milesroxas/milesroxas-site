@@ -1,11 +1,23 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
+import { useAnimationStore, ensureAnimationsComplete } from '@/stores/animationStore'
 
 const HomeTemplateClient = () => {
-  // Build cards array dynamically in the order: post0, work0, work1, post1
+  const resetAnimations = useAnimationStore((state) => state.resetAnimations)
 
-  return <div></div>
+  // Reset animation state when navigating away from the page
+  useEffect(() => {
+    // Ensure animations complete after a reasonable timeout
+    ensureAnimationsComplete(2500)
+
+    return () => {
+      // Clean up animations when page is unmounted
+      resetAnimations()
+    }
+  }, [resetAnimations])
+
+  return null
 }
 
 export default HomeTemplateClient

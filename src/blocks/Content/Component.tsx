@@ -1,20 +1,59 @@
+'use client'
+
 import { cn } from '@/utilities/ui'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import type { ContentBlock as ContentBlockProps, Work, Media, Post } from '@/payload-types'
+import type { Theme } from '@/providers/Theme'
 
 import { CMSLink } from '../../components/Link'
 import { MediaBlock } from '../MediaBlock/Component'
-import { SliderBlock } from '../Slider/Component'
+import { SliderBlock, type SliderBlockProps } from '../Slider/Component'
 import { WorkCard } from '@/components/Card/Works/Component'
 import { PostCard } from '@/components/Card/Posts/Component'
+import { useTheme } from '@/providers/Theme'
 
 import RichText from '@/components/RichText'
-export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
-  const { columns, theme, space } = props
 
-  // Calculate theme and spacing on the server
-  const sectionTheme = theme || 'light'
+// Helper function to filter out null values from introContent
+const filterIntroContent = (introContent: any): SliderBlockProps['introContent'] | undefined => {
+  if (!introContent) return undefined
+
+  // Create a new object with non-null values
+  const filtered: Record<string, any> = {}
+
+  if (introContent.heading) filtered.heading = introContent.heading
+  if (introContent.subheading) filtered.subheading = introContent.subheading
+  if (introContent.size) filtered.size = introContent.size
+  if (introContent.align) filtered.align = introContent.align
+
+  return Object.keys(filtered).length > 0
+    ? (filtered as SliderBlockProps['introContent'])
+    : undefined
+}
+
+export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
+  const { columns, theme, space, containerWidth } = props
+  console.log('ContentBlock props:', { columns, theme, space, containerWidth })
+  const { theme: siteTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // Set mounted state after hydration
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Determine effective theme:
+  // 1. If theme is 'system' or undefined, use the site theme
+  // 2. Otherwise use the specified theme
+  const effectiveTheme = (() => {
+    if (!mounted) return 'light' // Default for SSR
+    if (theme === 'system' || !theme) {
+      // Make sure we handle null/undefined theme properly
+      return (siteTheme || 'light') as Theme
+    }
+    return theme as Theme
+  })()
 
   const getSpacingClasses = (space?: ContentBlockProps['space']) => {
     if (!space) return {}
@@ -43,15 +82,25 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
   }
 
   const spacingClasses = getSpacingClasses(space)
+  const isFullWidth = containerWidth === 'fullWidth'
 
   return (
     <div
-      className={cn(spacingClasses, {
-        'text-foreground': sectionTheme === 'light',
-        'bg-primary text-primary-foreground font-light': sectionTheme === 'dark',
-      })}
+      data-theme={effectiveTheme}
+      className={cn(
+        'theme-transition',
+        spacingClasses,
+        effectiveTheme === 'dark'
+          ? 'bg-primary text-primary-foreground font-light'
+          : 'bg-background text-foreground',
+      )}
     >
-      <div className="container grid grid-cols-4 gap-4 md:grid-cols-4 lg:grid-cols-12">
+      <div
+        className={cn(
+          'grid grid-cols-4 gap-4 md:grid-cols-4 lg:grid-cols-12',
+          isFullWidth ? 'w-full px-4 md:px-6 lg:px-8' : 'container',
+        )}
+      >
         {columns?.map((col, index) => {
           if (!col) return null
           const { size, content } = col
@@ -71,7 +120,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                 <WorkCard
                   doc={col.work.works as Work}
                   className={cn({
-                    'text-primary-foreground': sectionTheme === 'dark',
+                    'text-primary-foreground': effectiveTheme === 'dark',
                   })}
                 />
               )}
@@ -80,42 +129,43 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                 <PostCard
                   doc={col.post.posts as Post}
                   className={cn({
-                    'text-primary-foreground': sectionTheme === 'dark',
+                    'text-primary-foreground': effectiveTheme === 'dark',
                   })}
                 />
               )}
 
-              {content === 'text' && col.text?.richText && <RichText data={col.text.richText} />}
+              {content === 'text' && col.text?.richText && (
+                <RichText data={col.text.richText} enableGutter={false} className="prose-blocks" />
+              )}
 
-              {content === 'sectionHeading' && col.sectionHeading?.heading && (
+              {content === 'sectionHeading' && col.sectionHeading?.content && (
                 <div
                   className={cn('text-center', {
                     'text-left': col.sectionHeading.align === 'left',
                   })}
                 >
-                  {col.sectionHeading.subheading && (
+                  {col.sectionHeading.eyebrow && (
                     <p
-                      className={cn('text-orange-600 uppercase', {
-                        'text-sm': col.sectionHeading.size === 'base',
-                        'text-md mb-4 tracking-wider': col.sectionHeading.size === 'lg',
+                      className={cn('text-accent mb-4 tracking-wider uppercase', {
+                        'text-xs': col.sectionHeading.size === 'base',
+                        'mb-4 text-sm tracking-wider': col.sectionHeading.size === 'lg',
                         'text-2xl': col.sectionHeading.size === 'xl',
                       })}
                     >
-                      {col.sectionHeading.subheading}
+                      {col.sectionHeading.eyebrow}
                     </p>
                   )}
-                  <p
-                    className={cn('text-2xl font-light', {
-                      'text-center': col.sectionHeading.align === 'center',
-                      'text-left': col.sectionHeading.align === 'left',
-                      'text-2xl/8': col.sectionHeading.size === 'base',
-                      'text-3xl/12': col.sectionHeading.size === 'lg',
-                      'text-4xl/12': col.sectionHeading.size === 'xl',
-                      'mb-4': col.sectionHeading.subheading,
-                    })}
-                  >
-                    {col.sectionHeading.heading}
-                  </p>
+                  {col.sectionHeading.content && (
+                    <div
+                      className={cn({
+                        'text-base': col.sectionHeading.size === 'base',
+                        'text-lg md:text-2xl': col.sectionHeading.size === 'lg',
+                        'text-2xl md:text-3xl': col.sectionHeading.size === 'xl',
+                      })}
+                    >
+                      <RichText data={col.sectionHeading.content} enableGutter={false} />
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -123,18 +173,23 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                 <MediaBlock
                   blockType="mediaBlock"
                   media={col.media.media as Media}
-                  enableGutter={false}
                   aspectRatio={col.media.aspectRatio || undefined}
+                  fullWidth={isFullWidth && size === 'full'}
                 />
               )}
 
               {content === 'slider' && col.slider?.slides && (
-                <SliderBlock
-                  blockType="slider"
-                  slides={col.slider.slides as any}
-                  style={col.slider.style || undefined}
-                  className="py-0"
-                />
+                <div className={size === 'full' ? 'w-full' : undefined}>
+                  <SliderBlock
+                    blockType="slider"
+                    slides={col.slider.slides as any}
+                    style={col.slider.style || undefined}
+                    className="py-0"
+                    theme={effectiveTheme}
+                    introContent={filterIntroContent(col.slider.introContent)}
+                    fullWidth={isFullWidth && size === 'full'}
+                  />
+                </div>
               )}
 
               {content === 'text' && col.text?.enableLink && col.text?.link && (
@@ -142,7 +197,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                   {...col.text.link}
                   className={cn({
                     'text-primary-foreground hover:text-primary-foreground/80':
-                      sectionTheme === 'dark',
+                      effectiveTheme === 'dark',
                   })}
                 />
               )}

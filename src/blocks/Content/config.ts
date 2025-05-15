@@ -45,13 +45,22 @@ const richTextFields: Field[] = [
 
 const sectionHeadingFields: Field[] = [
   {
-    name: 'heading',
+    name: 'eyebrow',
     type: 'text',
   },
+
   {
-    name: 'subheading',
-    type: 'text',
+    name: 'content',
+    type: 'richText',
+    editor: lexicalEditor({
+      features: ({ rootFeatures }) => [
+        ...rootFeatures,
+        FixedToolbarFeature(),
+        InlineToolbarFeature(),
+      ],
+    }),
   },
+
   {
     name: 'size',
     type: 'select',
@@ -270,10 +279,26 @@ export const Content: Block = {
     {
       name: 'theme',
       type: 'select',
-      defaultValue: 'light',
+      defaultValue: 'system',
+      admin: {
+        description: 'Override the site theme for this content block.',
+      },
       options: [
+        { label: 'System (Follow site theme)', value: 'system' },
         { label: 'Light', value: 'light' },
         { label: 'Dark', value: 'dark' },
+      ],
+    },
+    {
+      name: 'containerWidth',
+      type: 'select',
+      defaultValue: 'contained',
+      admin: {
+        description: 'Control the width of the content container',
+      },
+      options: [
+        { label: 'Contained (default width)', value: 'contained' },
+        { label: 'Full Width (edge to edge)', value: 'fullWidth' },
       ],
     },
     sectionSpacing(),

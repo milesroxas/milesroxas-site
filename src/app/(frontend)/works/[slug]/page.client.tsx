@@ -21,8 +21,8 @@ const PageClient: React.FC<{ work: Work }> = ({ work }) => {
   return (
     <>
       {(industry || role || deliverables) && (
-        <div className="bg-primary container flex min-h-[25vh] items-center font-light text-white">
-          <div className="flex gap-20">
+        <div className="bg-primary flex min-h-[12vh] w-full items-center font-light text-white">
+          <div className="container flex gap-20">
             {industry && (
               <div>
                 <h2 className="text-muted-foreground">Industry</h2>

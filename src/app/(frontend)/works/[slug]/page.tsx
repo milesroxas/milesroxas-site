@@ -58,7 +58,6 @@ export default async function Work({ params: paramsPromise }: Args) {
 
   const hero = work?.hero
   const layout = work?.layout || []
-  const { industry, role, deliverables } = work
 
   return (
     <>
