@@ -72,6 +72,16 @@ export const TabsBlock: Block = {
   slug: 'tabs',
   interfaceName: 'TabsBlock',
   fields: [
+    {
+      name: 'theme',
+      type: 'select',
+      defaultValue: 'system',
+      options: [
+        { label: 'System Default', value: 'system' },
+        { label: 'Light', value: 'light' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
     sectionHeading(),
     sectionSpacing(),
     {

@@ -1,7 +1,11 @@
+'use client'
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
 import { SliderBlock, type SliderBlockProps as SliderDataProps } from '@/blocks/Slider/Component'
+import { useTheme } from '@/providers/Theme'
+import { useEffect, useState } from 'react'
 
 type Tab = {
   id: string
@@ -20,6 +24,7 @@ type TabsBlockProps = {
     mt?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
     mb?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
   }
+  theme?: 'light' | 'dark' | 'system'
 
   className?: string
   tabsListClassName?: string
@@ -35,7 +40,7 @@ type TabsBlockProps = {
 }
 
 export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
-  const { tabs, space, className, id, heading } = props
+  const { tabs, space, className, id, heading, theme = 'system' } = props
   const getSpacingClasses = (space?: TabsBlockProps['space']) => {
     if (!space) return {}
 
@@ -65,9 +70,34 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
       'mb-64': space.mb === 'xl',
     }
   }
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const { theme: systemTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const activeTheme =
+    theme === 'dark'
+      ? 'dark'
+      : mounted && (theme === 'system' || !theme)
+        ? systemTheme
+        : theme || 'light'
 
   return (
-    <div className={cn(className, getSpacingClasses(space))} id={`block-${id}`}>
+    <div
+      className={cn(
+        className,
+        {
+          'bg-primary text-primary-foreground font-light': activeTheme === 'dark',
+          'bg-background text-foreground': activeTheme === 'light',
+        },
+        getSpacingClasses(space),
+      )}
+      id={`block-${id}`}
+      data-theme={activeTheme}
+    >
       <div className="container">
         <Tabs defaultValue={tabs[0]?.id}>
           <div className="basis-4/12">

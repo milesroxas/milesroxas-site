@@ -3,12 +3,13 @@
 import type { StaticImageData } from 'next/image'
 
 import { cn } from '@/utilities/ui'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import RichText from '@/components/RichText'
 
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
 
 import { Media } from '../../components/Media'
+import { Theme, useTheme } from '@/providers/Theme'
 
 type Props = MediaBlockProps & {
   breakout?: boolean
@@ -18,6 +19,7 @@ type Props = MediaBlockProps & {
   imgClassName?: string
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
+  theme?: 'system' | 'light' | 'dark'
 }
 
 export const MediaBlock: React.FC<Props> = (props) => {
@@ -32,6 +34,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
     aspectRatio = 'landscape',
     fullWidth = false,
     space,
+    theme = 'system',
   } = props
 
   let caption
@@ -42,24 +45,24 @@ export const MediaBlock: React.FC<Props> = (props) => {
     return {
       'pt-0': space.pt === 'none',
       'pt-12': space.pt === 'sm',
-      'pt-16': space.pt === 'md',
-      'pt-32': space.pt === 'lg',
-      'pt-64': space.pt === 'xl',
+      'pt-40': space.pt === 'md',
+      'pt-64': space.pt === 'lg',
+      'pt-80': space.pt === 'xl',
       'pb-0': space.pb === 'none',
       'pb-12': space.pb === 'sm',
-      'pb-16': space.pb === 'md',
-      'pb-32': space.pb === 'lg',
-      'pb-64': space.pb === 'xl',
+      'pb-40': space.pb === 'md',
+      'pb-64': space.pb === 'lg',
+      'pb-80': space.pb === 'xl',
       'mt-0': space.mt === 'none',
       'mt-12': space.mt === 'sm',
-      'mt-16': space.mt === 'md',
-      'mt-32': space.mt === 'lg',
-      'mt-64': space.mt === 'xl',
+      'mt-40': space.mt === 'md',
+      'mt-64': space.mt === 'lg',
+      'mt-80': space.mt === 'xl',
       'mb-0': space.mb === 'none',
       'mb-12': space.mb === 'sm',
-      'mb-16': space.mb === 'md',
-      'mb-32': space.mb === 'lg',
-      'mb-64': space.mb === 'xl',
+      'mb-40': space.mb === 'md',
+      'mb-64': space.mb === 'lg',
+      'mb-80': space.mb === 'xl',
     }
   }
 
@@ -67,6 +70,19 @@ export const MediaBlock: React.FC<Props> = (props) => {
 
   // Determine if we should use aspect ratio or let the image maintain its original dimensions
   const useAspectRatio = aspectRatio !== 'original'
+  const { theme: siteTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  const effectiveTheme = (() => {
+    if (!mounted) return 'light' // Default for SSR
+    if (theme === 'system' || !theme) {
+      // Make sure we handle null/undefined theme properly
+      return (siteTheme || 'light') as Theme
+    }
+    return theme as Theme
+  })()
 
   return (
     <div
@@ -77,7 +93,11 @@ export const MediaBlock: React.FC<Props> = (props) => {
           'px-0': fullWidth,
           'mx-0': fullWidth,
           container: enableGutter && !fullWidth,
+          'text-primary-foreground': effectiveTheme === 'dark',
         },
+        effectiveTheme === 'dark'
+          ? 'bg-primary text-primary-foreground font-light'
+          : 'bg-background text-foreground',
         className,
       )}
     >

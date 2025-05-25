@@ -1,107 +1,155 @@
+// components/WorkCard.tsx
 'use client'
+
+import React, { useRef } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import gsap from 'gsap'
+import Flip from 'gsap/Flip'
+import { useGSAP } from '@gsap/react'
+
 import { cn } from '@/utilities/ui'
-
-import React, { useRef, useEffect } from 'react'
-
 import type { Post } from '@/payload-types'
-import { Media } from '@/components/Media' // removed for 3D plane rendering
-import useClickableCard from '@/utilities/useClickableCard'
-
-import { TransitionLink } from '@/components/Link'
+import { Media } from '@/components/Media'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
-import { SceneTrackRefs } from '@/r3f/types/r3f'
-import { MediaBlock } from '@/blocks/MediaBlock/Component'
+import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
-export const PostCard: React.FC<{
-  alignItems?: 'center'
+gsap.registerPlugin(Flip, useGSAP)
+
+export type CardPostData = Pick<Post, 'slug' | 'meta' | 'title' | 'heroImage'>
+
+interface PostCardProps {
   className?: string
-  doc?: Post
+  doc?: CardPostData
   relationTo?: 'posts'
   title?: string
   index?: number
   aspect?: 'wide' | 'portrait' | 'square'
-  data?: Post[]
-  hero?: number
-  /** Ref for the image container div */
   imageRef?: React.RefObject<HTMLDivElement | null>
-  setHoveredIndex?: (index: number | null) => void
-}> = (props) => {
-  const { card, link } = useClickableCard({})
-  const {
-    className,
-    doc,
-    relationTo = 'posts',
-    title: titleFromProps,
-    index,
-    aspect = 'wide',
-    imageRef: imageRefProp,
-  } = props
+}
 
-  const { slug, meta, title } = doc || {}
-  const { description, image: metaImage } = meta || {}
+export const PostCard: React.FC<PostCardProps> = ({
+  className,
+  doc,
+  relationTo = 'posts',
+  title: titleFromProps,
+  index,
+  aspect = 'wide',
+  imageRef: imageRefProp,
+}) => {
+  const { slug, meta, title, heroImage } = doc || {}
+  const description = meta?.description
+  const sanitizedDescription = description?.replace(/\s+/g, ' ')
+  const href = `/${relationTo}/${slug}`
+  const router = useRouter()
 
   const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
   const setMouseUV = useSceneStore((s) => s.setMouseUV)
+  const { collapseFrame } = usePageAnimationStore()
 
-  const titleToUse = titleFromProps || title
-  const sanitizedDescription = description?.replace(/\s/g, ' ')
-  const href = `/${relationTo}/${slug}`
-
-  // use provided ref or fallback to a local image container div ref
   const localImageRef = useRef<HTMLDivElement>(null)
   const imageRef = imageRefProp ?? localImageRef
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const trackedRefs: SceneTrackRefs = {
-    cards: [imageRef],
-  }
+  console.log(heroImage)
 
-  const aspectRatios = {
-    wide: 16 / 9,
-    portrait: 3 / 4,
-    square: 1 / 1,
-  } as const
+  const { contextSafe } = useGSAP({ scope: containerRef })
 
-  const aspectValue = aspectRatios[aspect] ?? aspectRatios.wide
+  const handleTransition = contextSafe((e: React.MouseEvent) => {
+    e.preventDefault()
+
+    const containerEl = imageRef.current
+    if (!containerEl) {
+      router.push(href)
+      return
+    }
+
+    const mediaEl =
+      (containerEl.querySelector('img') as HTMLElement) ||
+      (containerEl.querySelector('video') as HTMLElement)
+
+    if (!mediaEl) {
+      router.push(href)
+      return
+    }
+
+    // clone & stash
+    const clone = mediaEl.cloneNode(true) as HTMLElement
+    clone.classList.add('page-transition-clone')
+    window.__PAGE_TRANSITION_CLONE = clone
+    document.body.appendChild(clone)
+
+    const rect = mediaEl.getBoundingClientRect()
+    Object.assign(clone.style, {
+      position: 'fixed',
+      top: `${rect.top}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`,
+      objectFit: 'cover',
+      zIndex: '10000',
+    })
+
+    mediaEl.style.visibility = 'hidden'
+
+    // FLIP to full-screen
+    const state = Flip.getState(clone)
+    Object.assign(clone.style, {
+      top: '0',
+      left: '0',
+      width: '100vw',
+      height: '100vh',
+    })
+
+    Flip.from(state, {
+      duration: 0.8,
+      ease: 'power3.inOut',
+      onComplete: () => router.push(href),
+      onInterrupt: () => router.push(href),
+    })
+  })
+
+  const aspectRatios = { wide: 16 / 9, portrait: 3 / 4, square: 1 } as const
+  const aspectValue = aspectRatios[aspect]
 
   return (
-    <article className={cn('h-full', className)} ref={card.ref}>
-      <TransitionLink className="not-prose" href={href}>
+    <article ref={containerRef} className={cn('h-full', className)}>
+      <Link href={href} onClick={handleTransition} className="not-prose">
         <div
-          className="relative mb-6 w-full"
           ref={imageRef}
-          style={{
-            aspectRatio: `${aspectValue}`,
-          }}
-          onMouseEnter={() => {
-            setHoveredIndex(index ?? null)
-          }}
-          onMouseLeave={() => {
-            setHoveredIndex(null)
-          }}
+          className="relative mb-6 w-full"
+          style={{ aspectRatio: aspectValue }}
+          onMouseEnter={() => setHoveredIndex?.(index ?? null)}
+          onMouseLeave={() => setHoveredIndex?.(null)}
           onMouseMove={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect()
-            const x = (e.clientX - rect.left) / rect.width
-            const y = 1 - (e.clientY - rect.top) / rect.height
-            console.log('[CardWork] onMouseMove', { index, x, y })
+            const r = e.currentTarget.getBoundingClientRect()
+            const x = (e.clientX - r.left) / r.width
+            const y = 1 - (e.clientY - r.top) / r.height
             setMouseUV([x, y])
           }}
         >
-          {metaImage && (
+          {heroImage && typeof heroImage !== 'string' && (
             <Media
-              resource={metaImage}
-              priority={index === 0}
-              loading={index === 0 ? 'eager' : 'lazy'}
-              className="h-full w-full object-cover"
+              fill
+              priority
+              imgClassName="h-full w-full object-cover object-cover"
+              resource={heroImage}
             />
           )}
         </div>
-        {titleToUse && (
+
+        {(titleFromProps || title) && (
           <div className="prose">
-            <h3 className="text-md w-[80%]">{titleToUse}</h3>
+            <h3 className="text-2xl font-light">{titleFromProps || title}</h3>
           </div>
         )}
-        {/* {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>} */}
-      </TransitionLink>
+
+        {description && (
+          <div className="mt-2">
+            <p>{sanitizedDescription}</p>
+          </div>
+        )}
+      </Link>
     </article>
   )
 }

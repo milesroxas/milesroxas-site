@@ -45,6 +45,19 @@ export const MediaBlock: Block = {
       },
     },
     {
+      name: 'theme',
+      type: 'select',
+      defaultValue: 'system',
+      admin: {
+        description: 'Override the site theme for this content block.',
+      },
+      options: [
+        { label: 'System (Follow site theme)', value: 'system' },
+        { label: 'Light', value: 'light' },
+        { label: 'Dark', value: 'dark' },
+      ],
+    },
+    {
       name: 'captionSize',
       type: 'select',
       defaultValue: 'normal',
