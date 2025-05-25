@@ -653,6 +653,10 @@ export interface MediaBlock {
    * Makes the media span the full width of its container. Note: For true edge-to-edge display, set both this option AND use "Full Width" in the parent Content Block settings.
    */
   fullWidth?: boolean | null;
+  /**
+   * Override the site theme for this content block.
+   */
+  theme?: ('system' | 'light' | 'dark') | null;
   captionSize?: ('normal' | 'large' | 'xl') | null;
   space?: {
     pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
@@ -949,6 +953,7 @@ export interface SliderBlock {
  * via the `definition` "TabsBlock".
  */
 export interface TabsBlock {
+  theme?: ('system' | 'light' | 'dark') | null;
   heading?: {
     style?: ('default' | 'center') | null;
     eyebrow?: string | null;
@@ -1457,6 +1462,7 @@ export interface MediaBlockSelect<T extends boolean = true> {
   media?: T;
   aspectRatio?: T;
   fullWidth?: T;
+  theme?: T;
   captionSize?: T;
   space?:
     | T
@@ -1628,6 +1634,7 @@ export interface WorksSelect<T extends boolean = true> {
  * via the `definition` "TabsBlock_select".
  */
 export interface TabsBlockSelect<T extends boolean = true> {
+  theme?: T;
   heading?:
     | T
     | {
