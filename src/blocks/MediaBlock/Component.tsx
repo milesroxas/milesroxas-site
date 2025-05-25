@@ -19,7 +19,7 @@ type Props = MediaBlockProps & {
   imgClassName?: string
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
-  theme?: 'system' | 'light' | 'dark'
+  theme?: 'system' | 'light' | 'dark' | null
 }
 
 export const MediaBlock: React.FC<Props> = (props) => {
