@@ -457,7 +457,7 @@ export interface ContentBlock {
   };
   columns?:
     | {
-        size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
+        sizes?: ('oneThird' | 'half' | 'twoThirds' | 'fiveCols' | 'full') | null;
         content?: ('text' | 'sectionHeading' | 'work' | 'post' | 'media' | 'slider') | null;
         text?: {
           richText?: {
@@ -1368,7 +1368,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
   columns?:
     | T
     | {
-        size?: T;
+        sizes?: T;
         content?: T;
         text?:
           | T

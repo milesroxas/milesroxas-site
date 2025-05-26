@@ -169,7 +169,7 @@ const mediaFields: Field[] = [
 
 const columnFields: Field[] = [
   {
-    name: 'size',
+    name: 'sizes',
     type: 'select',
     defaultValue: 'oneThird',
     options: [
@@ -184,6 +184,10 @@ const columnFields: Field[] = [
       {
         label: 'Two Thirds',
         value: 'twoThirds',
+      },
+      {
+        label: 'Five Cols',
+        value: 'fiveCols',
       },
       {
         label: 'Full',

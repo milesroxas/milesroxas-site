@@ -97,22 +97,23 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
     >
       <div
         className={cn(
-          'grid grid-cols-4 gap-4 md:grid-cols-4 lg:grid-cols-12',
+          'grid grid-cols-4 gap-x-10 gap-y-4 md:grid-cols-4 lg:grid-cols-12',
           isFullWidth ? 'w-full px-4 md:px-6 lg:px-8' : 'container',
         )}
       >
         {columns?.map((col, index) => {
           if (!col) return null
-          const { size, content } = col
+          const { sizes, content } = col
 
           return (
             <div
               className={cn('col-span-4', {
-                'lg:col-span-4': size === 'oneThird',
-                'lg:col-span-6': size === 'half',
-                'lg:col-span-8': size === 'twoThirds',
-                'lg:col-span-12': size === 'full',
-                'md:col-span-2': size !== 'full',
+                'lg:col-span-4': sizes === 'oneThird',
+                'lg:col-span-6': sizes === 'half',
+                'lg:col-span-8': sizes === 'twoThirds',
+                'lg:col-span-12': sizes === 'full',
+                'lg:col-span-5': sizes === 'fiveCols',
+                'md:col-span-2': sizes !== 'full',
               })}
               key={index}
             >
@@ -146,10 +147,10 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                 >
                   {col.sectionHeading.eyebrow && (
                     <p
-                      className={cn('text-accent mb-4 tracking-wider uppercase', {
+                      className={cn('text-accent mb-4 tracking-wider', {
                         'text-xs': col.sectionHeading.size === 'base',
                         'mb-4 text-sm tracking-wider': col.sectionHeading.size === 'lg',
-                        'text-2xl': col.sectionHeading.size === 'xl',
+                        'text-sm md:text-base': col.sectionHeading.size === 'xl',
                       })}
                     >
                       {col.sectionHeading.eyebrow}
@@ -157,13 +158,20 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                   )}
                   {col.sectionHeading.content && (
                     <div
-                      className={cn({
+                      className={cn('font-light', {
                         'text-base': col.sectionHeading.size === 'base',
                         'text-lg md:text-2xl': col.sectionHeading.size === 'lg',
-                        'text-2xl md:text-3xl': col.sectionHeading.size === 'xl',
+                        'text-xl leading-16 md:text-5xl': col.sectionHeading.size === 'xl',
+                        'font-light': effectiveTheme === 'dark',
                       })}
                     >
-                      <RichText data={col.sectionHeading.content} enableGutter={false} />
+                      <RichText
+                        data={col.sectionHeading.content}
+                        enableGutter={false}
+                        className={cn({
+                          'font-light': effectiveTheme === 'dark',
+                        })}
+                      />
                     </div>
                   )}
                 </div>
@@ -174,12 +182,12 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                   blockType="mediaBlock"
                   media={col.media.media as Media}
                   aspectRatio={col.media.aspectRatio || undefined}
-                  fullWidth={isFullWidth && size === 'full'}
+                  fullWidth={isFullWidth && sizes === 'full'}
                 />
               )}
 
               {content === 'slider' && col.slider?.slides && (
-                <div className={size === 'full' ? 'w-full' : undefined}>
+                <div className={sizes === 'full' ? 'w-full' : undefined}>
                   <SliderBlock
                     blockType="slider"
                     slides={col.slider.slides as any}
@@ -187,7 +195,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                     className="py-0"
                     theme={effectiveTheme}
                     introContent={filterIntroContent(col.slider.introContent)}
-                    fullWidth={isFullWidth && size === 'full'}
+                    fullWidth={isFullWidth && sizes === 'full'}
                   />
                 </div>
               )}
