@@ -25,10 +25,14 @@ export const usePageAnimationStore = create<PageAnimationStore>((set) => ({
     const horiz = '#site-frame .frame-bar-horizontal'
     const vert = '#site-frame .frame-bar-vertical'
 
-    // expand back to full size
-    gsap.to(horiz, { height: '40px', duration: 0.3, ease: 'power2.out' })
+    // Check if we're on mobile
+    const isMobile = window.innerWidth < 768
+    const frameSize = isMobile ? '16px' : '40px'
+
+    // expand back to full size respecting responsive sizes
+    gsap.to(horiz, { height: frameSize, duration: 0.3, ease: 'power2.out' })
     gsap.to(vert, {
-      width: '40px',
+      width: frameSize,
       duration: 0.3,
       ease: 'power2.out',
       onComplete,

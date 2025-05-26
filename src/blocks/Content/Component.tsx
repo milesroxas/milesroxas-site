@@ -161,7 +161,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                       className={cn('font-light', {
                         'text-base': col.sectionHeading.size === 'base',
                         'text-lg md:text-2xl': col.sectionHeading.size === 'lg',
-                        'text-xl leading-16 md:text-5xl': col.sectionHeading.size === 'xl',
+                        'text-xl md:text-5xl md:leading-16': col.sectionHeading.size === 'xl',
                         'font-light': effectiveTheme === 'dark',
                       })}
                     >
