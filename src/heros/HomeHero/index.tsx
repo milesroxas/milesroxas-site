@@ -11,7 +11,7 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
 
-export const HomeHero: React.FC<Page['hero']> = ({ links, media, richText }) => {
+export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
   const { setHeaderTheme } = useHeaderTheme()
   const setHeroAnimationComplete = useAnimationStore((state) => state.setHeroAnimationComplete)
 
