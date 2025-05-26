@@ -128,6 +128,9 @@ importers:
       gsap:
         specifier: ^3.13.0
         version: 3.13.0
+      hamo:
+        specifier: 1.0.0-dev.6
+        version: 1.0.0-dev.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       leva:
         specifier: ^0.9.36
         version: 0.9.36(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -188,6 +191,9 @@ importers:
       tailwindcss-utilities:
         specifier: ^1.0.14
         version: 1.0.14
+      tempus:
+        specifier: 1.0.0-dev.11
+        version: 1.0.0-dev.11(react@19.1.0)
       three:
         specifier: ^0.175.0
         version: 0.175.0
@@ -4032,6 +4038,12 @@ packages:
   gsap@3.13.0:
     resolution: {integrity: sha512-QL7MJ2WMjm1PHWsoFrAQH/J8wUeqZvMtHO58qdekHpCfhvhSL4gSiz6vJf5EeMP0LOn3ZCprL2ki/gjED8ghVw==}
 
+  hamo@1.0.0-dev.6:
+    resolution: {integrity: sha512-82eKdDqXLVI9c2ZoIjR44AmKtniX7Md54Do35v52t6dgjCw5tzhwEzdB09CTV0Pu5CvDOWuZPOseutri3xnrRg==}
+    peerDependencies:
+      react: '>=17.0.0'
+      react-dom: '>=17.0.0'
+
   has-bigints@1.1.0:
     resolution: {integrity: sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg==}
     engines: {node: '>= 0.4'}
@@ -5805,6 +5817,14 @@ packages:
   tar@7.4.3:
     resolution: {integrity: sha512-5S7Va8hKfV7W5U6g3aYxXmlPoZVAwUMy9AOKyF2fVuZa2UD3qZjg578OrLRt8PcNN1PleVaL/5/yYATNL0ICUw==}
     engines: {node: '>=18'}
+
+  tempus@1.0.0-dev.11:
+    resolution: {integrity: sha512-ZZ8Oli3m8csNbKsXi2pLQvm4tRfHvTI5ZDjknrQlatRg30mVnBm17L3PvP+h2OGvRdYTlTYfKYMXhWyx0JgM8w==}
+    peerDependencies:
+      react: '>=17.0.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   terser-webpack-plugin@5.3.14:
     resolution: {integrity: sha512-vkZjpUjb6OMS7dhV+tILUW6BhpDR7P2L/aQSAv+Uwk+m8KATX9EccViHTJR2qDtACKPIYndLGCyl3FMo+r2LMw==}
@@ -10925,6 +10945,13 @@ snapshots:
 
   gsap@3.13.0: {}
 
+  hamo@1.0.0-dev.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      just-debounce-it: 3.2.0
+      nanoevents: 9.1.0
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
   has-bigints@1.1.0: {}
 
   has-flag@4.0.0: {}
@@ -12878,6 +12905,10 @@ snapshots:
       minizlib: 3.0.2
       mkdirp: 3.0.1
       yallist: 5.0.0
+
+  tempus@1.0.0-dev.11(react@19.1.0):
+    optionalDependencies:
+      react: 19.1.0
 
   terser-webpack-plugin@5.3.14(esbuild@0.19.12)(webpack@5.99.6(esbuild@0.19.12)):
     dependencies:

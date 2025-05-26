@@ -99,8 +99,8 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
       data-theme={activeTheme}
     >
       <div className="container">
-        <Tabs defaultValue={tabs[0]?.id}>
-          <div className="basis-4/12">
+        <Tabs defaultValue={tabs[0]?.id} className="flex flex-col md:flex-row">
+          <div className="basis-full md:basis-4/12">
             <div className="mb-8">
               {heading?.eyebrow && (
                 <p className={'text-muted-foreground font-mono text-sm/tight'}>
@@ -130,7 +130,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
             </TabsList>
           </div>
 
-          <div className="basis-8/12">
+          <div className="basis-full md:basis-8/12">
             {tabs &&
               tabs.length > 0 &&
               tabs.map((tab) => (
