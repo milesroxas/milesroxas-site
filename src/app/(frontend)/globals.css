@@ -127,44 +127,12 @@ html[data-theme='light'] {
   opacity: initial;
 }
 
-html[data-theme='dark'] {
-  --background: 240 10% 2%;
-  --foreground: 0 0% 98%;
-  --card: 0 0% 98%;
-  --card-foreground: 224 71% 4%;
-  --popover: 240 10% 4%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 6% 2%;
-  --secondary: 240 4% 16%;
-  --secondary-foreground: 0 0% 90%;
-  --muted: 240 4% 16%;
-  --muted-foreground: 240 5% 65%;
-  --accent: 142 71% 45%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 0 86% 97%;
-  --border: 240 4% 16%;
-  --input: 240 4% 16%;
-  --ring: 240 5% 84%;
-  --radius: 0.5rem;
-  --chart-1: 220 70% 50%;
-  --chart-2: 340 75% 55%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 160 60% 45%;
-  --sidebar-background: 240 6% 10%;
-  --sidebar-foreground: 240 5% 96%;
-  --sidebar-primary: 224 76% 48%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 240 4% 16%;
-  --sidebar-accent-foreground: 240 5% 96%;
-  --sidebar-border: 240 4% 16%;
-  --sidebar-ring: 240 5% 84%;
-}
-
 html[data-theme='light'] {
   color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 /* Theme transition handling */
