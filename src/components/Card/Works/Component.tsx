@@ -12,7 +12,6 @@ import { cn } from '@/utilities/ui'
 import type { Work } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 gsap.registerPlugin(Flip, useGSAP)
 
@@ -45,7 +44,6 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
   const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
   const setMouseUV = useSceneStore((s) => s.setMouseUV)
-  const { collapseFrame } = usePageAnimationStore()
 
   const localImageRef = useRef<HTMLDivElement>(null)
   const imageRef = imageRefProp ?? localImageRef
