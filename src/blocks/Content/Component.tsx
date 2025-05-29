@@ -15,11 +15,9 @@ import { useTheme } from '@/providers/Theme'
 
 import RichText from '@/components/RichText'
 
-// Helper function to filter out null values from introContent
 const filterIntroContent = (introContent: any): SliderBlockProps['introContent'] | undefined => {
   if (!introContent) return undefined
 
-  // Create a new object with non-null values
   const filtered: Record<string, any> = {}
 
   if (introContent.heading) filtered.heading = introContent.heading
@@ -34,7 +32,6 @@ const filterIntroContent = (introContent: any): SliderBlockProps['introContent']
 
 export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
   const { columns, theme, space, containerWidth } = props
-  console.log('ContentBlock props:', { columns, theme, space, containerWidth })
   const { theme: siteTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -43,13 +40,9 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
     setMounted(true)
   }, [])
 
-  // Determine effective theme:
-  // 1. If theme is 'system' or undefined, use the site theme
-  // 2. Otherwise use the specified theme
   const effectiveTheme = (() => {
     if (!mounted) return 'light' // Default for SSR
     if (theme === 'system' || !theme) {
-      // Make sure we handle null/undefined theme properly
       return (siteTheme || 'light') as Theme
     }
     return theme as Theme

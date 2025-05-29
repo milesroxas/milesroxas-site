@@ -12,6 +12,8 @@ import {
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { Banner } from '@/blocks/Banner/config'
+import { hero } from '@/heros/config'
+
 import { Code } from '@/blocks/Code/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { generatePreviewPath } from '@/utilities/generatePreviewPath'
@@ -41,6 +43,9 @@ export const Posts: CollectionConfig<'posts'> = {
   defaultPopulate: {
     title: true,
     slug: true,
+    hero: {
+      media: true,
+    },
     categories: true,
     meta: {
       image: true,
@@ -78,12 +83,11 @@ export const Posts: CollectionConfig<'posts'> = {
       type: 'tabs',
       tabs: [
         {
+          fields: [hero],
+          label: 'Hero',
+        },
+        {
           fields: [
-            {
-              name: 'heroImage',
-              type: 'upload',
-              relationTo: 'media',
-            },
             {
               name: 'content',
               type: 'richText',

@@ -1,4 +1,3 @@
-// components/WorkCard.tsx
 'use client'
 
 import React, { useRef } from 'react'
@@ -12,11 +11,10 @@ import { cn } from '@/utilities/ui'
 import type { Post } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 gsap.registerPlugin(Flip, useGSAP)
 
-export type CardPostData = Pick<Post, 'slug' | 'meta' | 'title' | 'heroImage'>
+export type CardPostData = Pick<Post, 'slug' | 'meta' | 'title' | 'hero'>
 
 interface PostCardProps {
   className?: string
@@ -37,21 +35,20 @@ export const PostCard: React.FC<PostCardProps> = ({
   aspect = 'wide',
   imageRef: imageRefProp,
 }) => {
-  const { slug, meta, title, heroImage } = doc || {}
+  const { slug, meta, title, hero } = doc || {}
   const description = meta?.description
   const sanitizedDescription = description?.replace(/\s+/g, ' ')
   const href = `/${relationTo}/${slug}`
   const router = useRouter()
 
+  console.log(doc, 'doc')
+
   const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
   const setMouseUV = useSceneStore((s) => s.setMouseUV)
-  const { collapseFrame } = usePageAnimationStore()
 
   const localImageRef = useRef<HTMLDivElement>(null)
   const imageRef = imageRefProp ?? localImageRef
   const containerRef = useRef<HTMLDivElement>(null)
-
-  console.log(heroImage)
 
   const { contextSafe } = useGSAP({ scope: containerRef })
 
@@ -128,19 +125,19 @@ export const PostCard: React.FC<PostCardProps> = ({
             setMouseUV([x, y])
           }}
         >
-          {heroImage && typeof heroImage !== 'string' && (
+          {hero && (
             <Media
-              fill
-              priority
-              imgClassName="h-full w-full object-cover object-cover"
-              resource={heroImage}
+              resource={hero.media}
+              priority={index === 0}
+              loading={index === 0 ? 'eager' : 'lazy'}
+              className="h-full w-full object-cover"
             />
           )}
         </div>
 
         {(titleFromProps || title) && (
           <div className="prose">
-            <h3 className="text-2xl font-light">{titleFromProps || title}</h3>
+            <h3 className="text-xl font-light">{titleFromProps || title}</h3>
           </div>
         )}
 
