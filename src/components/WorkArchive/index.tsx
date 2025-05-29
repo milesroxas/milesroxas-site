@@ -1,7 +1,7 @@
 import { cn } from '@/utilities/ui'
 import React from 'react'
 
-import { Card, CardPostData, CardWorkData } from '@/components/Card'
+import { CardWorkData, WorkCard } from '@/components/Card/Works/Component'
 
 export type Props = {
   works: CardWorkData[]
@@ -18,7 +18,7 @@ export const WorkArchive: React.FC<Props> = (props) => {
             if (typeof result === 'object' && result !== null) {
               return (
                 <div className="col-span-4" key={index}>
-                  <Card className="h-full" doc={result} relationTo="works" />
+                  <WorkCard doc={result} relationTo="works" />
                 </div>
               )
             }
