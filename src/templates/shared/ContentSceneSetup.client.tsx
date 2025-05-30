@@ -42,7 +42,7 @@ export default function ContentSceneSetup({ layout }: { layout: Page['layout'] }
             typeof col.post.posts !== 'number'
           ) {
             const postDoc = col.post.posts
-            const media = postDoc.heroImage
+            const media = postDoc.hero.media
             if (media && typeof media !== 'number' && media.url) {
               // determine variant from CMS aspect (wide, portrait, square)
               const aspectOpt = (col as any).aspect as string | undefined

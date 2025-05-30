@@ -4,7 +4,7 @@ import React from 'react'
 import { CardWorkData, WorkCard } from '@/components/Card/Works/Component'
 
 export type Props = {
-  works: CardWorkData[]
+  works?: CardWorkData[]
 }
 
 export const WorkArchive: React.FC<Props> = (props) => {
