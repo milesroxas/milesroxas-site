@@ -52,7 +52,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 4%;
-    --primary: 240 6% 5%;
+    --primary: 240 6% 0%;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 5% 96%;
     --secondary-foreground: 240 6% 30%;
@@ -200,7 +200,7 @@ html.theme-transition *::after {
   --color-warning: hsl(var(--warning));
 
   /* Font families */
-  --font-family-sans: var(--font-geist-sans);
+  --font-family-sans: 'area-normal-light', sans-serif;
   --font-family-mono: var(--font-geist-mono);
 }
 
@@ -261,7 +261,7 @@ html.theme-transition *::after {
   }
 
   .prose-custom p {
-    @apply text-xl leading-tight font-normal;
+    @apply text-xl leading-tight font-light;
   }
 
   .prose-blocks h1 {
@@ -274,7 +274,7 @@ html.theme-transition *::after {
     @apply mb-4 text-2xl;
   }
   .prose-blocks p {
-    @apply max-w-[480px] text-lg;
+    @apply max-w-[480px] text-lg font-extralight;
   }
 }
 

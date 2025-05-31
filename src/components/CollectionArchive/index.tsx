@@ -2,15 +2,13 @@ import { cn } from '@/utilities/ui'
 import React from 'react'
 
 import { CardPostData, PostCard } from '@/components/Card/Posts/Component'
-import { CardWorkData, WorkCard } from '@/components/Card/Works/Component'
 
 export type Props = {
   posts?: CardPostData[]
-  works?: CardWorkData[]
 }
 
 export const CollectionArchive: React.FC<Props> = (props) => {
-  const { posts, works } = props
+  const { posts } = props
 
   return (
     <div className={cn('container')}>
@@ -21,18 +19,6 @@ export const CollectionArchive: React.FC<Props> = (props) => {
               return (
                 <div className="col-span-4" key={index}>
                   <PostCard className="h-full" doc={result} relationTo="posts" />
-                </div>
-              )
-            }
-
-            return null
-          })}
-
-          {works?.map((result, index) => {
-            if (typeof result === 'object' && result !== null) {
-              return (
-                <div className="col-span-4" key={index}>
-                  <WorkCard className="h-full" doc={result} relationTo="works" />
                 </div>
               )
             }

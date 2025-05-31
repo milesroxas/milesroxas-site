@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
 import { IBM_Plex_Sans } from 'next/font/google'
+
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'

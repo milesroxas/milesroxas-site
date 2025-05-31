@@ -50,7 +50,7 @@ export default async function Post({ params: paramsPromise }: Args) {
   if (!post) return <PayloadRedirects url={url} />
 
   return (
-    <article className="">
+    <article className="bg-primary">
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
@@ -61,7 +61,11 @@ export default async function Post({ params: paramsPromise }: Args) {
       <div className="flex flex-col items-start gap-4 pt-8 pb-32">
         <div className="container">
           <div className="max-w-3xl md:pl-32">
-            <RichText data={post.content} enableGutter={false} />
+            <RichText
+              data={post.content}
+              enableGutter={false}
+              className="text-primary-foreground"
+            />
           </div>
         </div>
       </div>
