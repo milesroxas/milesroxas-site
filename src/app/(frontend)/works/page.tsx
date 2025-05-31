@@ -25,6 +25,7 @@ export default async function Page() {
       title: true,
       slug: true,
       meta: true,
+      hero: true,
     },
   })
 
@@ -41,7 +42,7 @@ export default async function Page() {
         />
       </div>
 
-      <WorkArchive works={works.docs.map((work) => ({ ...work, hero: { type: 'none' } }))} />
+      <WorkArchive works={works.docs} />
 
       <div className="container">
         {works.totalPages > 1 && works.page && (

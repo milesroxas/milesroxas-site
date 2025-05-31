@@ -28,12 +28,6 @@ export default async function Page() {
     },
   })
 
-  const works = await payload.find({
-    collection: 'works',
-    depth: 1,
-    limit: 12,
-  })
-
   return (
     <div className="pt-24 pb-24">
       <PageClient />
@@ -52,7 +46,7 @@ export default async function Page() {
         />
       </div>
 
-      <CollectionArchive posts={posts.docs} works={works.docs} />
+      <CollectionArchive posts={posts.docs} />
 
       <div className="container">
         {posts.totalPages > 1 && posts.page && (
