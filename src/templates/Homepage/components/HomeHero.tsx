@@ -58,6 +58,7 @@ export default function HomeHero() {
             className="w-[30vh] rounded-sm object-cover"
             src="/media/home-hero.mp4"
             poster="/media/intro-test-poster.jpg"
+            preload="true"
             autoPlay
             muted
             loop
