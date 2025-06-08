@@ -85,24 +85,6 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText,
           resource={media}
         />
       )}
-
-      {/* your overlayed text + links */}
-      {showContent && (
-        <div className="relative z-10 container mx-auto flex min-h-[78vh] flex-col items-center justify-center px-4">
-          {richText && (
-            <RichText className="mb-6 text-center" data={richText} enableGutter={false} />
-          )}
-          {Array.isArray(links) && links.length > 0 && (
-            <ul className="flex gap-4">
-              {links.map(({ link }, i) => (
-                <li key={i}>
-                  <CMSLink {...link} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
     </section>
   )
 }

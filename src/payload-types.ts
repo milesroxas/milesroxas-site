@@ -518,6 +518,7 @@ export interface ContentBlock {
             };
             [k: string]: unknown;
           } | null;
+          textSize?: ('sm' | 'base' | 'lg' | 'xl' | '2xl') | null;
           enableLink?: boolean | null;
           link?: {
             type?: ('reference' | 'custom') | null;
@@ -1417,6 +1418,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
           | T
           | {
               richText?: T;
+              textSize?: T;
               enableLink?: T;
               link?:
                 | T

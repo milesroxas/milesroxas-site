@@ -109,7 +109,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
           className={cn({
             'w-full': true,
             'overflow-hidden': true,
-            'px-8 md:px-14 lg:px-16': !fullWidth,
+            container: !fullWidth,
           })}
         >
           <Media
@@ -134,7 +134,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
             className={cn(
               'mt-6',
               {
-                'px-8 md:px-14 lg:px-16': !fullWidth,
+                container: !fullWidth,
                 'mx-auto': fullWidth && !disableInnerContainer,
                 'max-w-[80ch]': fullWidth && !disableInnerContainer,
               },

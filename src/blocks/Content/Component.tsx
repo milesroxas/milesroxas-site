@@ -90,8 +90,8 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
     >
       <div
         className={cn(
-          'grid grid-cols-4 gap-x-10 gap-y-4 px-8 md:grid-cols-4 md:px-14 lg:grid-cols-12 lg:px-16',
-          isFullWidth ? 'w-full' : 'container mx-auto',
+          'grid grid-cols-4 gap-x-10 gap-y-4 md:grid-cols-2 lg:grid-cols-12',
+          isFullWidth ? 'w-full' : 'container',
         )}
       >
         {columns?.map((col, index) => {
@@ -106,7 +106,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                 'lg:col-span-8': sizes === 'twoThirds',
                 'lg:col-span-12': sizes === 'full',
                 'lg:col-span-5': sizes === 'fiveCols',
-                'md:col-span-2': sizes !== 'full',
+                'md:col-span-4': sizes !== 'full' && sizes !== 'twoThirds',
               })}
               key={index}
             >
@@ -129,43 +129,50 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
               )}
 
               {content === 'text' && col.text?.richText && (
-                <RichText data={col.text.richText} enableGutter={false} className="prose-blocks" />
+                <RichText
+                  data={col.text.richText}
+                  enableGutter={false}
+                  className={cn('prose-blocks', {
+                    'text-size-sm': col.text.textSize === 'sm',
+                    'text-size-base': col.text.textSize === 'base' || !col.text.textSize,
+                    'text-size-lg': col.text.textSize === 'lg',
+                    'text-size-xl': col.text.textSize === 'xl',
+                    'text-size-2xl': col.text.textSize === '2xl',
+                  })}
+                />
               )}
 
               {content === 'sectionHeading' && col.sectionHeading?.content && (
                 <div
-                  className={cn('px-8 text-center md:px-14 lg:px-16', {
+                  className={cn('section-heading-wrapper', {
                     'text-left': col.sectionHeading.align === 'left',
+                    'text-center': col.sectionHeading.align === 'center',
                   })}
                 >
                   {col.sectionHeading.eyebrow && (
                     <p
-                      className={cn('text-accent mb-4 tracking-wider', {
-                        'text-xs': col.sectionHeading.size === 'base',
-                        'mb-4 text-sm tracking-wider': col.sectionHeading.size === 'lg',
-                        'text-sm md:text-base': col.sectionHeading.size === 'xl',
+                      className={cn('text-accent mb-4', {
+                        'section-heading-base':
+                          col.sectionHeading.size === 'base' || !col.sectionHeading.size,
+                        'section-heading-lg': col.sectionHeading.size === 'lg',
+                        'section-heading-xl': col.sectionHeading.size === 'xl',
                       })}
                     >
                       {col.sectionHeading.eyebrow}
                     </p>
                   )}
                   {col.sectionHeading.content && (
-                    <div
-                      className={cn('font-light', {
-                        'text-base': col.sectionHeading.size === 'base',
-                        'text-lg md:text-2xl': col.sectionHeading.size === 'lg',
-                        'text-xl md:text-5xl md:leading-16': col.sectionHeading.size === 'xl',
-                        'font-light': effectiveTheme === 'dark',
+                    <RichText
+                      data={col.sectionHeading.content}
+                      enableGutter={false}
+                      className={cn('prose-blocks', {
+                        'text-primary-foreground': effectiveTheme === 'dark',
+                        'section-heading-base':
+                          col.sectionHeading.size === 'base' || !col.sectionHeading.size,
+                        'section-heading-lg': col.sectionHeading.size === 'lg',
+                        'section-heading-xl': col.sectionHeading.size === 'xl',
                       })}
-                    >
-                      <RichText
-                        data={col.sectionHeading.content}
-                        enableGutter={false}
-                        className={cn({
-                          'font-light': effectiveTheme === 'dark',
-                        })}
-                      />
-                    </div>
+                    />
                   )}
                 </div>
               )}

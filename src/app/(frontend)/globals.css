@@ -155,9 +155,9 @@ html.theme-transition *::after {
   --container-padding-DEFAULT: 1rem;
   --container-padding-sm: 1rem;
   --container-padding-md: 2rem;
-  --container-padding-lg: 4rem;
-  --container-padding-xl: 6rem;
-  --container-padding-2xl: 6rem;
+  --container-padding-lg: 8rem;
+  --container-padding-xl: 12rem;
+  --container-padding-2xl: 16rem;
 
   --container-screens-sm: 40rem;
   --container-screens-md: 52rem;
@@ -210,37 +210,37 @@ html.theme-transition *::after {
 
 /* Define container utility explicitly */
 @utility container {
-  @apply mx-auto px-4;
+  @apply mx-auto px-8;
   max-width: 100%;
 
   @media (min-width: 640px) {
     max-width: var(--container-screens-sm);
-    padding-left: var(--container-padding-sm);
-    padding-right: var(--container-padding-sm);
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 
   @media (min-width: 768px) {
     max-width: var(--container-screens-md);
-    padding-left: var(--container-padding-md);
-    padding-right: var(--container-padding-md);
+    padding-left: 3.5rem; /* md:px-14 */
+    padding-right: 3.5rem;
   }
 
   @media (min-width: 1024px) {
     max-width: var(--container-screens-lg);
-    padding-left: var(--container-padding-lg);
-    padding-right: var(--container-padding-lg);
+    padding-left: 4rem; /* lg:px-16 */
+    padding-right: 4rem;
   }
 
   @media (min-width: 1280px) {
     max-width: var(--container-screens-xl);
-    padding-left: var(--container-padding-xl);
-    padding-right: var(--container-padding-xl);
+    padding-left: 6rem;
+    padding-right: 6rem;
   }
 
   @media (min-width: 1536px) {
     max-width: var(--container-screens-2xl);
-    padding-left: var(--container-padding-2xl);
-    padding-right: var(--container-padding-2xl);
+    padding-left: 6rem;
+    padding-right: 6rem;
   }
 }
 
@@ -254,12 +254,15 @@ html.theme-transition *::after {
 }
 
 @layer utilities {
+  /* Base RichText Styles - Used for standard article content */
   .prose-custom h1 {
     @apply text-5xl leading-normal;
   }
+
   .prose-custom h2 {
     @apply text-4xl leading-normal font-light;
   }
+
   .prose-custom h3 {
     @apply mb-2 text-2xl font-light;
   }
@@ -268,17 +271,293 @@ html.theme-transition *::after {
     @apply text-xl leading-tight font-light;
   }
 
-  .prose-blocks h1 {
+  /* Standard Content Block RichText Styles */
+  .prose-blocks:not([class*='text-size-']) h1 {
     @apply text-4xl;
   }
-  .prose-blocks h2 {
+
+  .prose-blocks:not([class*='text-size-']) h2 {
     @apply mb-4 text-3xl font-light;
   }
-  .prose-blocks h3 {
+
+  .prose-blocks:not([class*='text-size-']) h3 {
     @apply mb-4 text-2xl;
   }
-  .prose-blocks p {
-    @apply max-w-[480px] text-lg font-extralight;
+
+  .prose-blocks:not([class*='text-size-']) p {
+    @apply font-extralight;
+  }
+
+  /* Size-based rich text styles - Used for standard content blocks */
+  .prose-blocks.text-size-sm p {
+    @apply text-sm leading-normal;
+  }
+
+  .prose-blocks.text-size-sm h3 {
+    @apply text-base font-medium;
+  }
+
+  .prose-blocks.text-size-sm h2 {
+    @apply text-lg font-medium;
+  }
+
+  .prose-blocks.text-size-sm h1 {
+    @apply text-xl font-medium;
+  }
+
+  .prose-blocks.text-size-base p {
+    @apply text-xl leading-normal;
+  }
+
+  .prose-blocks.text-size-base h3 {
+    @apply text-xl;
+  }
+
+  .prose-blocks.text-size-base h2 {
+    @apply text-xl;
+  }
+
+  .prose-blocks.text-size-base h1 {
+    @apply text-2xl;
+  }
+
+  .prose-blocks.text-size-lg p {
+    @apply text-2xl leading-relaxed;
+  }
+
+  .prose-blocks.text-size-lg h3 {
+    @apply text-2xl leading-normal;
+  }
+
+  .prose-blocks.text-size-lg h2 {
+    @apply mb-2 text-xl leading-normal;
+  }
+
+  .prose-blocks.text-size-lg h1 {
+    @apply text-3xl leading-normal;
+  }
+
+  .prose-blocks.text-size-xl p {
+    @apply text-4xl leading-relaxed;
+  }
+
+  .prose-blocks.text-size-xl h3 {
+    @apply text-2xl;
+  }
+
+  .prose-blocks.text-size-xl h2 {
+    @apply text-2xl;
+  }
+
+  .prose-blocks.text-size-xl h1 {
+    @apply text-3xl;
+  }
+
+  .prose-blocks.text-size-2xl p {
+    @apply text-6xl leading-relaxed;
+  }
+
+  .prose-blocks.text-size-2xl h3 {
+    @apply text-2xl;
+  }
+
+  .prose-blocks.text-size-2xl h2 {
+    @apply text-2xl;
+  }
+
+  .prose-blocks.text-size-2xl h1 {
+    @apply text-4xl;
+  }
+
+  /* Override section heading styles with direct and specific selectors */
+  /* Base size */
+  p.section-heading-base {
+    @apply text-base font-normal;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-base p {
+    @apply text-2xl;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-base h3 {
+    @apply text-2xl;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-base h2 {
+    @apply text-2xl;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-base h1 {
+    @apply text-3xl;
+  }
+
+  /* Large size */
+  p.section-heading-lg {
+    @apply text-base font-normal;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-lg p {
+    @apply text-3xl;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-lg h3 {
+    @apply text-2xl;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-lg h2 {
+    @apply text-3xl;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-lg h1 {
+    @apply text-4xl;
+  }
+
+  /* Extra large size */
+  p.section-heading-xl {
+    @apply w-full max-w-none text-3xl;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-xl p {
+    @apply w-full text-5xl;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-xl h3 {
+    @apply text-base;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-xl h2 {
+    @apply text-xl;
+  }
+
+  .section-heading-wrapper .prose-blocks.section-heading-xl h1 {
+    @apply text-2xl;
+  }
+
+  /* Lists and other elements */
+  .prose-blocks ul {
+    @apply mb-4 list-disc pl-5;
+  }
+
+  .prose-blocks ol {
+    @apply mb-4 list-decimal pl-5;
+  }
+
+  .prose-blocks a {
+    @apply text-accent hover:underline;
+  }
+
+  .prose-blocks blockquote {
+    @apply border-accent/20 border-l-4 pl-4 italic;
+  }
+
+  .prose-blocks code {
+    @apply bg-muted rounded px-1 py-0.5 font-mono text-sm;
+  }
+
+  .prose-blocks pre {
+    @apply bg-muted mb-4 overflow-x-auto rounded p-4 font-mono text-sm;
+  }
+
+  /* ==============================
+     Tablet (≤1024px) Overrides
+     ============================== */
+  @media (max-width: 1024px) {
+    /* Article content */
+    .prose-custom h1 {
+      @apply text-4xl leading-normal;
+    }
+    .prose-custom h2 {
+      @apply text-3xl leading-normal;
+    }
+    .prose-custom h3 {
+      @apply mb-1 text-xl font-light;
+    }
+    .prose-custom p {
+      @apply text-lg leading-tight;
+    }
+
+    /* Content blocks - base styles */
+    .prose-blocks h1 {
+      @apply text-3xl;
+    }
+    .prose-blocks h2 {
+      @apply text-2xl;
+    }
+    .prose-blocks h3 {
+      @apply text-xl;
+    }
+
+    /* Size-specific overrides for tablet */
+    .prose-blocks.text-size-sm p {
+      @apply text-sm leading-normal;
+    }
+    .prose-blocks.text-size-base p {
+      @apply text-base leading-normal;
+    }
+    .prose-blocks.text-size-lg p {
+      @apply text-xl leading-relaxed;
+    }
+    .prose-blocks.text-size-xl p {
+      @apply text-3xl leading-relaxed;
+    }
+    .prose-blocks.text-size-2xl p {
+      @apply text-5xl leading-relaxed;
+    }
+  }
+
+  /* ==============================
+       Mobile (≤640px) Overrides
+       ============================== */
+  @media (max-width: 640px) {
+    /* Article content */
+    .prose-custom h1 {
+      @apply text-3xl leading-snug;
+    }
+    .prose-custom h2 {
+      @apply text-2xl leading-snug;
+    }
+    .prose-custom h3 {
+      @apply mb-1 text-xl font-light;
+    }
+    .prose-custom p {
+      @apply text-base leading-snug;
+    }
+
+    /* Content blocks - base styles */
+    .prose-blocks h1 {
+      @apply text-2xl;
+    }
+    .prose-blocks h2 {
+      @apply text-xl;
+    }
+    .prose-blocks h3 {
+      @apply text-lg;
+    }
+
+    /* Size-specific overrides for mobile */
+    .prose-blocks.text-size-sm p {
+      @apply text-xs leading-normal;
+    }
+    .prose-blocks.text-size-base p {
+      @apply text-sm leading-normal;
+    }
+    .prose-blocks.text-size-lg p {
+      @apply text-base leading-normal;
+    }
+    .prose-blocks.text-size-xl p {
+      @apply text-2xl leading-relaxed;
+    }
+    .prose-blocks.text-size-2xl p {
+      @apply text-4xl leading-relaxed;
+    }
+
+    .section-heading-wrapper .prose-blocks.section-heading-xl p {
+      @apply text-2xl;
+    }
+
+    .section-heading-wrapper .prose-blocks.section-heading-lg p {
+      @apply text-3xl;
+    }
   }
 }
 
@@ -308,3 +587,8 @@ html.theme-transition *::after {
 }
 
 @source "lg:col-span-4 lg:col-span-6 lg:col-span-8 lg:col-span-12 border-border bg-card border-error bg-error/30 border-success bg-success/30 border-warning bg-warning/30";
+
+/* RichText Component Styles
+ * This file contains all styling related to rich text content
+ * Following Tailwind v4 best practices with component-specific styles
+ */
