@@ -10,9 +10,9 @@ type Props = {
 
 export const BannerBlock: React.FC<Props> = ({ className, content, style }) => {
   return (
-    <div className={cn('mx-auto my-8 w-full', className)}>
+    <div className={cn('mx-auto my-8 w-full px-8 md:px-14 lg:px-16', className)}>
       <div
-        className={cn('border py-3 px-6 flex items-center rounded', {
+        className={cn('flex items-center rounded border px-6 py-3', {
           'border-border bg-card': style === 'info',
           'border-error bg-error/30': style === 'error',
           'border-success bg-success/30': style === 'success',

@@ -26,7 +26,7 @@ export default function BottomSection() {
     return () => clearInterval(interval)
   }, [])
   return (
-    <div className="flex w-full items-center justify-between px-[40px] align-middle">
+    <div className="flex w-full items-center justify-between px-2 align-middle">
       <div className="w-30 text-left font-mono text-xs text-slate-700 uppercase md:text-sm">
         {currentTime}
       </div>

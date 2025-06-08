@@ -1,11 +1,13 @@
 'use client'
 import { formatDateTime } from 'src/utilities/formatDateTime'
 import React, { useEffect, useRef } from 'react'
+import gsap from 'gsap'
 
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
+import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 export const PostHero: React.FC<{
   post: Post
@@ -13,62 +15,105 @@ export const PostHero: React.FC<{
   const { setHeaderTheme } = useHeaderTheme()
   const { categories, hero, publishedAt, title } = post
   const heroRef = useRef<HTMLDivElement>(null)
+  const restoreFrame = usePageAnimationStore((s) => s.restoreFrame)
 
   useEffect(() => {
     setHeaderTheme('dark')
 
-    const clone = window.__PAGE_TRANSITION_CLONE as HTMLElement | undefined
-    const heroEl = heroRef.current
-    if (!clone || !heroEl) return
+    // Wait for the DOM to fully render before trying to access the clone
+    setTimeout(() => {
+      const clone = window.__PAGE_TRANSITION_CLONE as HTMLElement | undefined
+      if (!clone) return
 
-    // anchor transforms from the page top‑left
-    clone.style.transformOrigin = 'top left'
-
-    // find the real <img> so we get its exact position & size
-    const mediaEl = heroEl.querySelector('img, video') as HTMLElement | null
-    if (!mediaEl) {
-      // if no hero media, just fade clone out
-      gsap.to(clone, {
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power3.out',
-        onComplete: () => {
-          clone.remove()
-          window.__PAGE_TRANSITION_CLONE = undefined
-        },
+      // Make sure the clone is visible
+      Object.assign(clone.style, {
+        visibility: 'visible',
+        opacity: 1,
+        zIndex: '10000',
       })
-      return
-    }
 
-    const { top, left, width, height } = mediaEl.getBoundingClientRect()
+      const heroEl = heroRef.current
+      if (!heroEl) {
+        // No hero element, just fade out the clone after restoring frame
+        restoreFrame(() => {
+          gsap.to(clone, {
+            opacity: 0,
+            duration: 0.5,
+            ease: 'power3.out',
+            onComplete: () => {
+              clone.remove()
+              window.__PAGE_TRANSITION_CLONE = undefined
+            },
+          })
+        })
+        return
+      }
 
-    gsap
-      .timeline({
-        onComplete: () => {
-          clone.remove()
-          window.__PAGE_TRANSITION_CLONE = undefined
-        },
-      })
-      // 1) shrink/move the clone into place
-      .to(clone, {
-        top,
-        left,
-        width,
-        height,
-        duration: 0.8,
-        ease: 'power3.inOut',
-      })
-      // 2) then fade it out
-      .to(
-        clone,
-        {
-          opacity: 0,
-          duration: 0.3,
-          ease: 'power1.out',
-        },
-        '>-0.1',
-      )
-  }, [])
+      // Find the media element in the hero
+      const mediaEl = heroEl.querySelector('img, video') as HTMLElement | null
+      if (!mediaEl) {
+        // No media element, just fade out the clone after restoring frame
+        restoreFrame(() => {
+          gsap.to(clone, {
+            opacity: 0,
+            duration: 0.5,
+            ease: 'power3.out',
+            onComplete: () => {
+              clone.remove()
+              window.__PAGE_TRANSITION_CLONE = undefined
+            },
+          })
+        })
+        return
+      }
+
+      // Wait a moment for the image to load properly
+      setTimeout(() => {
+        // Get the final position of the media element
+        const { top, left, width, height } = mediaEl.getBoundingClientRect()
+
+        // Ensure the clone is still visible and on top
+        Object.assign(clone.style, {
+          zIndex: '10000',
+          visibility: 'visible',
+          opacity: 1,
+        })
+
+        // First restore the site frame
+        restoreFrame(() => {
+          // Then animate the image to its final position
+          gsap
+            .timeline({
+              onComplete: () => {
+                clone.remove()
+                window.__PAGE_TRANSITION_CLONE = undefined
+                // Make sure the original media is visible
+                mediaEl.style.visibility = 'visible'
+              },
+            })
+            // Animate to the final position
+            .to(clone, {
+              top,
+              left,
+              width,
+              height,
+              duration: 0.8,
+              ease: 'power3.inOut',
+            })
+            // Then fade it out
+            .to(
+              clone,
+              {
+                opacity: 0,
+                duration: 0.3,
+                ease: 'power1.out',
+              },
+              '>-0.1',
+            )
+        })
+      }, 100) // Small delay to ensure all elements are properly rendered
+    }, 100) // Initial delay to ensure component is mounted
+  }, [restoreFrame, setHeaderTheme])
 
   return (
     <div className="relative -mt-[10.4rem] flex items-end" ref={heroRef}>

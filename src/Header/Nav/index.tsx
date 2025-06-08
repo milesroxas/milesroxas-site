@@ -63,8 +63,8 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
 
   return (
     <>
-      <button onClick={openModal} className="fixed top-5 right-5 z-50 md:top-16 md:right-16">
-        <span className="text-secondary flex h-auto items-center justify-center rounded-xs bg-gray-700/40 px-3 font-medium tracking-[0.25em] uppercase backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg lg:rounded-sm">
+      <button onClick={openModal} className="fixed top-6 right-6 z-50 md:top-16 md:right-16">
+        <span className="text-secondary flex h-auto items-center justify-center rounded-xs bg-gray-700/40 px-4 py-1 font-medium backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg lg:rounded-sm">
           Menu
         </span>
       </button>
@@ -76,18 +76,18 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
           style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
         >
           <div className="flex h-full flex-col items-start justify-start gap-8 pt-12">
-            <div className="absolute top-6 left-6 md:top-16 md:right-16">
+            <div className="absolute top-8 left-6 md:top-16 md:right-16">
               <Link href="/" onClick={closeModal}>
                 <Logo className="h-4 w-auto" />
               </Link>
             </div>
-            <div className="fixed top-5 right-5 z-50 md:top-16 md:right-16">
+            <div className="fixed top-6 right-6 z-50 md:top-16 md:right-16">
               <button
-                className="flex h-auto items-center justify-center rounded-xs bg-gray-300/40 px-3 font-medium tracking-[0.25em] text-gray-700 uppercase backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg lg:rounded-sm"
+                className="flex h-auto items-center justify-center rounded-xs bg-gray-300/40 px-4 py-1 font-medium text-gray-700 backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg lg:rounded-sm"
                 onClick={closeModal}
                 tabIndex={isOpen ? 0 : -1}
               >
-                CLOSE
+                Close
               </button>
             </div>
             <div className="container flex flex-1 flex-col items-center justify-center pl-6">

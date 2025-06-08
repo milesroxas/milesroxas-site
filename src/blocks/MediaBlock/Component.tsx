@@ -90,9 +90,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
         spacingClasses,
         {
           'w-full': true,
-          'px-0': fullWidth,
-          'mx-0': fullWidth,
-          container: enableGutter && !fullWidth,
+          'mx-0': true,
           'text-primary-foreground': effectiveTheme === 'dark',
         },
         effectiveTheme === 'dark'
@@ -101,12 +99,17 @@ export const MediaBlock: React.FC<Props> = (props) => {
         className,
       )}
     >
-      {(media || staticImage) && (
+      <div
+        className={cn({
+          'container mx-auto': !fullWidth,
+          'w-full': true,
+        })}
+      >
         <div
           className={cn({
             'w-full': true,
-            'max-w-none': fullWidth,
             'overflow-hidden': true,
+            'px-8 md:px-14 lg:px-16': !fullWidth,
           })}
         >
           <Media
@@ -126,22 +129,22 @@ export const MediaBlock: React.FC<Props> = (props) => {
             priority={true}
           />
         </div>
-      )}
-      {caption && (
-        <div
-          className={cn(
-            'mt-6',
-            {
-              container: fullWidth && !disableInnerContainer,
-              'mx-auto': fullWidth && !disableInnerContainer,
-              'max-w-[80ch]': fullWidth && !disableInnerContainer,
-            },
-            captionClassName,
-          )}
-        >
-          <RichText data={caption} enableGutter={false} />
-        </div>
-      )}
+        {caption && (
+          <div
+            className={cn(
+              'mt-6',
+              {
+                'px-8 md:px-14 lg:px-16': !fullWidth,
+                'mx-auto': fullWidth && !disableInnerContainer,
+                'max-w-[80ch]': fullWidth && !disableInnerContainer,
+              },
+              captionClassName,
+            )}
+          >
+            <RichText data={caption} enableGutter={false} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -140,7 +140,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
       id={`block-${id}`}
     >
       {introContent && (
-        <div className={cn({ container: !fullWidth, 'px-4 md:px-6 lg:px-8': fullWidth }, 'mb-12')}>
+        <div className={cn({ container: !fullWidth, 'px-8 md:px-14': fullWidth }, 'mb-12')}>
           {introContent.heading && (
             <h2
               className={cn('mb-2', {
@@ -156,7 +156,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
           )}
           {introContent.subheading && (
             <p
-              className={cn('text-muted-foreground', {
+              className={cn('text-muted-foreground px-8 md:px-14', {
                 'text-left': introContent.align === 'left' || !introContent.align,
                 'text-center': introContent.align === 'center',
               })}
@@ -168,7 +168,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
       )}
 
       {style === 'single' ? (
-        <div className={cn({ 'mx-auto max-w-4xl px-4': !fullWidth, 'w-full': fullWidth })}>
+        <div className={cn({ 'mx-auto max-w-4xl': !fullWidth, 'w-full': fullWidth })}>
           <Carousel
             className="w-full"
             style={{ transition: 'none' }}

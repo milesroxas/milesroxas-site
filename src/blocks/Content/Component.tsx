@@ -81,7 +81,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
     <div
       data-theme={effectiveTheme}
       className={cn(
-        'theme-transition',
+        'theme-transition w-full',
         spacingClasses,
         effectiveTheme === 'dark'
           ? 'bg-primary text-primary-foreground font-light'
@@ -90,8 +90,8 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
     >
       <div
         className={cn(
-          'grid grid-cols-4 gap-x-10 gap-y-4 md:grid-cols-4 lg:grid-cols-12',
-          isFullWidth ? 'w-full px-[0.5rem] md:px-6 lg:px-8' : 'container',
+          'grid grid-cols-4 gap-x-10 gap-y-4 px-8 md:grid-cols-4 md:px-14 lg:grid-cols-12 lg:px-16',
+          isFullWidth ? 'w-full' : 'container mx-auto',
         )}
       >
         {columns?.map((col, index) => {
@@ -134,7 +134,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
 
               {content === 'sectionHeading' && col.sectionHeading?.content && (
                 <div
-                  className={cn('text-center', {
+                  className={cn('px-8 text-center md:px-14 lg:px-16', {
                     'text-left': col.sectionHeading.align === 'left',
                   })}
                 >
