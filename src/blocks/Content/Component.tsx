@@ -91,7 +91,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
       <div
         className={cn(
           'grid grid-cols-4 gap-x-10 gap-y-4 md:grid-cols-4 lg:grid-cols-12',
-          isFullWidth ? 'w-full px-4 md:px-6 lg:px-8' : 'container',
+          isFullWidth ? 'w-full px-[0.5rem] md:px-6 lg:px-8' : 'container',
         )}
       >
         {columns?.map((col, index) => {

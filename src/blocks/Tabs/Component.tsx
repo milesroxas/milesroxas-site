@@ -119,7 +119,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
                 <p className={'text-muted-foreground'}>{heading?.subheading}</p>
               )}
             </div>
-            <TabsList>
+            <TabsList className="w-full">
               {tabs &&
                 tabs.length > 0 &&
                 tabs.map((tab) => (

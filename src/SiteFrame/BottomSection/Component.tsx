@@ -16,7 +16,7 @@ export default function BottomSection() {
       }
 
       const nyTime = new Intl.DateTimeFormat('en-US', options).format(new Date())
-      setCurrentTime(nyTime + ' EST')
+      setCurrentTime(nyTime)
     }
 
     // Update time immediately and then every minute
@@ -26,17 +26,17 @@ export default function BottomSection() {
     return () => clearInterval(interval)
   }, [])
   return (
-    <div className="fixed right-0 bottom-0 z-50 w-full">
-      <div className="flex h-[40px] items-center justify-between px-[40px] align-middle">
-        <div className="w-30 font-mono text-xs text-slate-700 uppercase">{currentTime}</div>
-        <Link href="/">
-          <div className="w-40 md:w-50">
-            <Logo className="dark:invert-0" />
-          </div>
-        </Link>
-        <div className="w-30 text-right font-mono text-xs tracking-wider text-slate-700 uppercase">
-          Contact
+    <div className="flex w-full items-center justify-between px-[40px] align-middle">
+      <div className="w-30 text-left font-mono text-xs text-slate-700 uppercase md:text-sm">
+        {currentTime}
+      </div>
+      <Link href="/">
+        <div className="w-40 md:w-30 lg:!w-40">
+          <Logo className="dark:invert-0" />
         </div>
+      </Link>
+      <div className="w-30 text-right font-mono text-xs tracking-wider text-slate-700 uppercase">
+        Contact
       </div>
     </div>
   )
