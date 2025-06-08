@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 export default function BottomSection() {
   const [currentTime, setCurrentTime] = useState('')
+
   useEffect(() => {
     // Function to update the current time in New York
     const updateTime = () => {
@@ -23,21 +24,40 @@ export default function BottomSection() {
     updateTime()
     const interval = setInterval(updateTime, 60000)
 
-    return () => clearInterval(interval)
+    // Handle viewport height for mobile browsers
+    const setViewportHeight = () => {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`)
+    }
+
+    // Set initial viewport height
+    setViewportHeight()
+
+    // Update on resize and orientation change
+    window.addEventListener('resize', setViewportHeight)
+    window.addEventListener('orientationchange', setViewportHeight)
+
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('resize', setViewportHeight)
+      window.removeEventListener('orientationchange', setViewportHeight)
+    }
   }, [])
+
   return (
     <div className="flex w-full items-center justify-between px-2 align-middle">
       <div className="w-30 text-left font-mono text-xs text-slate-700 uppercase md:text-sm">
         {currentTime}
       </div>
-      <Link href="/">
+      <Link href="/" className="pointer-events-auto z-50">
         <div className="w-40 md:w-30 lg:!w-40">
           <Logo className="dark:invert-0" />
         </div>
       </Link>
-      <div className="w-30 text-right font-mono text-xs tracking-wider text-slate-700 uppercase">
-        Contact
-      </div>
+      <Link href="/contact" className="pointer-events-auto z-50">
+        <div className="w-30 text-right font-mono text-xs tracking-wider text-slate-700 uppercase">
+          Contact
+        </div>
+      </Link>
     </div>
   )
 }

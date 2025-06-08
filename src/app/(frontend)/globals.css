@@ -23,6 +23,10 @@
 }
 
 @layer base {
+  :root {
+    --vh: 1vh;
+  }
+
   h1,
   h2,
   h3,
