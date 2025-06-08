@@ -98,7 +98,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
       id={`block-${id}`}
       data-theme={activeTheme}
     >
-      <div className="container">
+      <div className="container px-8 md:px-14 lg:px-16">
         <Tabs defaultValue={tabs[0]?.id} className="flex flex-col md:flex-row">
           <div className="basis-full md:basis-4/12">
             <div className="mb-8">
