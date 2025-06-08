@@ -17,6 +17,8 @@ import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import CanvasLayout from '@/r3f/canvas/CanvasLayout'
 import { SiteFrame } from '@/SiteFrame/Component'
+import FrameRestorer from '@/SiteFrame/FrameRestorer'
+
 // Initialize the font at the module scope
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ['300', '400', '600', '700'],
@@ -45,6 +47,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           />
           <CanvasLayout />
           <Footer />
+          <FrameRestorer />
         </Providers>
       </body>
     </html>
