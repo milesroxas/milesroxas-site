@@ -99,25 +99,23 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
       data-theme={activeTheme}
     >
       <div className="container px-8 md:px-14 lg:px-16">
-        <Tabs defaultValue={tabs[0]?.id} className="flex flex-col md:flex-row">
+        <Tabs defaultValue={tabs[0]?.id} className="flex flex-col items-start gap-8 md:flex-row">
           <div className="basis-full md:basis-4/12">
-            <div className="mb-8">
+            <div className="mb-12">
               {heading?.eyebrow && (
-                <p className={'text-muted-foreground font-mono text-sm/tight'}>
+                <p className={'text-muted-foreground mb-4 font-mono text-sm/tight'}>
                   {heading?.eyebrow}
                 </p>
               )}
               <h3
                 className={cn(
-                  'mb-4 text-4xl/relaxed',
+                  'mb-4 text-4xl/relaxed leading-tight',
                   heading?.style === 'center' && 'text-center',
                 )}
               >
                 {heading?.heading}
               </h3>
-              {heading?.subheading && (
-                <p className={'text-muted-foreground'}>{heading?.subheading}</p>
-              )}
+              {heading?.subheading && <p className={'text-lg'}>{heading?.subheading}</p>}
             </div>
             <TabsList className="w-full">
               {tabs &&
@@ -130,13 +128,17 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
             </TabsList>
           </div>
 
-          <div className="basis-full md:basis-8/12">
+          <div className="basis-full gap-6 md:basis-8/12">
             {tabs &&
               tabs.length > 0 &&
               tabs.map((tab) => (
                 <TabsContent key={tab.id} value={tab.id}>
                   {tab.contentType === 'richText' && tab.richText && (
-                    <RichText data={tab.richText} enableGutter={false} />
+                    <RichText
+                      data={tab.richText}
+                      enableGutter={false}
+                      className="prose-blocks text-base"
+                    />
                   )}
                   {tab.contentType === 'slider' && tab.slider && (
                     <div className="w-full">

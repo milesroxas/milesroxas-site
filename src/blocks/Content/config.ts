@@ -27,6 +27,12 @@ const richTextFields: Field[] = [
     }),
     label: false,
   },
+  {
+    name: 'textSize',
+    type: 'select',
+    defaultValue: 'base',
+    options: ['sm', 'base', 'lg', 'xl', '2xl'],
+  },
 
   {
     name: 'enableLink',

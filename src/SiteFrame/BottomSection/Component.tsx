@@ -44,12 +44,12 @@ export default function BottomSection() {
   }, [])
 
   return (
-    <div className="flex w-full items-center justify-between px-2 align-middle">
+    <div className="container flex w-full items-center justify-between align-middle">
       <div className="w-30 text-left font-mono text-xs text-slate-700 uppercase md:text-sm">
         {currentTime}
       </div>
       <Link href="/" className="pointer-events-auto z-50">
-        <div className="w-40 md:w-30 lg:!w-40">
+        <div className="w-40 md:w-30 lg:w-60">
           <Logo className="dark:invert-0" />
         </div>
       </Link>

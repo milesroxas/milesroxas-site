@@ -250,7 +250,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                   <CarouselItem
                     key={index}
                     className={cn(
-                      'md:basis-3/4 lg:basis-2/3',
+                      'md:basis-3/4 lg:basis-2/3 2xl:basis-1/2',
                       currentIndex === index ? 'z-20' : 'opacity-30',
                     )}
                   >
@@ -271,7 +271,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                               size={
                                 fullWidth
                                   ? '100vw'
-                                  : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 80vw'
+                                  : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, (max-width: 2000px) 80vw, 65vw'
                               }
                             />
                           )}
@@ -292,7 +292,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                               size={
                                 fullWidth
                                   ? '100vw'
-                                  : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 80vw'
+                                  : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, (max-width: 2000px) 80vw, 65vw'
                               }
                             />
                           )}
