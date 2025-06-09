@@ -86,10 +86,13 @@ export const WorkCard: React.FC<WorkCardProps> = ({
       zIndex: '10000',
     })
 
+    // Hide original immediately
     mediaEl.style.visibility = 'hidden'
 
-    // FLIP to full-screen
+    // FLIP to full-screen - get initial state first
     const state = Flip.getState(clone)
+
+    // Set target position and dimensions
     Object.assign(clone.style, {
       top: '0',
       left: '0',
@@ -97,6 +100,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
       height: '100vh',
     })
 
+    // Animate from initial to target state
     Flip.from(state, {
       duration: 0.8,
       ease: 'power3.inOut',
