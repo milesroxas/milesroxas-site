@@ -21,6 +21,7 @@ export default async function Page() {
     depth: 1,
     limit: 12,
     overrideAccess: false,
+    sort: 'order',
     select: {
       title: true,
       slug: true,
@@ -32,15 +33,20 @@ export default async function Page() {
   return (
     <div className="pt-16 pb-24">
       <PageClient />
+      <div className="container mb-16">
+        <div className="prose dark:prose-invert max-w-none">
+          <h1 className="text-center text-7xl font-light">Work</h1>
+        </div>
+      </div>
 
-      <div className="container mb-8">
+      {/* <div className="container mb-8">
         <PageRange
           collection="works"
           currentPage={works.page}
           limit={12}
           totalDocs={works.totalDocs}
         />
-      </div>
+      </div> */}
 
       <WorkArchive works={works.docs} />
 
