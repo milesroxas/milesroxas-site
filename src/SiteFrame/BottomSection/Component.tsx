@@ -45,7 +45,7 @@ export default function BottomSection() {
 
   return (
     <div className="container flex w-full items-center justify-between align-middle">
-      <div className="w-30 text-left font-mono text-xs text-slate-700 uppercase md:text-sm">
+      <div className="text-left font-mono text-xs text-slate-700 uppercase md:text-sm">
         {currentTime}
       </div>
       <Link href="/" className="pointer-events-auto z-50">
@@ -54,7 +54,7 @@ export default function BottomSection() {
         </div>
       </Link>
       <Link href="/contact" className="pointer-events-auto z-50">
-        <div className="w-30 text-right font-mono text-xs tracking-wider text-slate-700 uppercase">
+        <div className="text-right font-mono text-xs tracking-wider text-slate-700 uppercase">
           Contact
         </div>
       </Link>
