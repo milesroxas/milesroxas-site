@@ -13,12 +13,12 @@ export const WorkArchive: React.FC<Props> = (props) => {
   return (
     <div className={cn('container')}>
       <div>
-        <div className="grid grid-cols-4 gap-x-4 gap-y-4 sm:grid-cols-8 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-8 xl:gap-x-8">
+        <div className="grid grid-cols-4 gap-x-4 gap-y-4 sm:grid-cols-8 md:grid-cols-8 lg:gap-x-8 lg:gap-y-8 xl:gap-x-8">
           {works?.map((result, index) => {
             if (typeof result === 'object' && result !== null) {
               return (
                 <div className="col-span-4" key={index}>
-                  <WorkCard doc={result} relationTo="works" />
+                  <WorkCard doc={result} relationTo="works" showDescription={true} />
                 </div>
               )
             }

@@ -12,6 +12,7 @@ import { cn } from '@/utilities/ui'
 import type { Work } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
+import { RichText } from '@payloadcms/richtext-lexical/react'
 
 gsap.registerPlugin(Flip, useGSAP)
 
@@ -25,6 +26,7 @@ interface WorkCardProps {
   index?: number
   aspect?: 'wide' | 'portrait' | 'square'
   imageRef?: React.RefObject<HTMLDivElement | null>
+  showDescription?: boolean
 }
 
 export const WorkCard: React.FC<WorkCardProps> = ({
@@ -35,10 +37,10 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   index,
   aspect = 'wide',
   imageRef: imageRefProp,
+  showDescription = false,
 }) => {
   const { slug, meta, title, hero } = doc || {}
-  const description = meta?.description
-  const sanitizedDescription = description?.replace(/\s+/g, ' ')
+  const description = hero?.richText
   const href = `/${relationTo}/${slug}`
   const router = useRouter()
 
@@ -144,9 +146,9 @@ export const WorkCard: React.FC<WorkCardProps> = ({
           </div>
         )}
 
-        {description && (
+        {description && showDescription && (
           <div className="mt-2">
-            <p>{sanitizedDescription}</p>
+            <RichText data={description} />
           </div>
         )}
       </Link>

@@ -46,7 +46,7 @@ export const Works: CollectionConfig<'works'> = {
     },
   },
   admin: {
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'order', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) => {
         const path = generatePreviewPath({
@@ -194,10 +194,11 @@ export const Works: CollectionConfig<'works'> = {
     beforeChange: [populatePublishedAt],
     afterDelete: [revalidateDelete],
   },
+  orderable: true,
   versions: {
     drafts: {
       autosave: {
-        interval: 100,
+        interval: 1000,
       },
       schedulePublish: true,
     },

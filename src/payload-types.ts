@@ -620,6 +620,7 @@ export interface ContentBlock {
  */
 export interface Work {
   id: number;
+  _order?: string;
   title: string;
   hero: {
     type: 'none' | 'home' | 'highImpact' | 'mediumImpact' | 'lowImpact';
@@ -1642,6 +1643,7 @@ export interface PostsSelect<T extends boolean = true> {
  * via the `definition` "works_select".
  */
 export interface WorksSelect<T extends boolean = true> {
+  _order?: T;
   title?: T;
   hero?:
     | T
