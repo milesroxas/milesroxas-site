@@ -145,13 +145,12 @@ export const WorkCard: React.FC<WorkCardProps> = ({
             <h3 className="text-3xl font-light">{titleFromProps || title}</h3>
           </div>
         )}
-
-        {description && showDescription && (
-          <div className="mt-2">
-            <RichText data={description} />
-          </div>
-        )}
       </Link>
+      {description && showDescription && (
+        <div className="mt-2">
+          <RichText data={description} />
+        </div>
+      )}
     </article>
   )
 }

@@ -140,13 +140,12 @@ export const PostCard: React.FC<PostCardProps> = ({
             <h3 className="text-xl font-light">{titleFromProps || title}</h3>
           </div>
         )}
-
-        {description && (
-          <div className="mt-2">
-            <p>{sanitizedDescription}</p>
-          </div>
-        )}
       </Link>
+      {description && (
+        <div className="mt-2">
+          <p>{sanitizedDescription}</p>
+        </div>
+      )}
     </article>
   )
 }
