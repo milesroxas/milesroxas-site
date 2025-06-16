@@ -2,9 +2,11 @@
 import styles from '../styles/home.module.css'
 import { cn } from '@/utilities/ui'
 import { useEffect, useRef, useState } from 'react'
+import { Suspense } from 'react'
 
 export default function HomeHero() {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false)
 
   const experienceText = [
     'Co-Founder',
@@ -41,16 +43,22 @@ export default function HomeHero() {
 
       {/* Video */}
       <div className="relative z-10 flex justify-center py-24">
+        {!isVideoLoaded && (
+          <div className="flex h-[30vh] w-[30vh] items-center justify-center rounded-sm bg-gray-100">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-gray-800"></div>
+          </div>
+        )}
         <video
           ref={videoRef}
-          className="w-[30vh] rounded-sm object-cover"
+          className={cn('w-[30vh] rounded-sm object-cover', !isVideoLoaded && 'hidden')}
           src="/media/home-hero.mp4"
           poster="/media/intro-test-poster.jpg"
-          preload="auto"
+          preload="metadata"
           autoPlay
           muted
           loop
           playsInline
+          onLoadedData={() => setIsVideoLoaded(true)}
         />
       </div>
 
