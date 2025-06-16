@@ -72,7 +72,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText,
   return (
     <section
       ref={heroRef}
-      className="relative min-h-[65vh] w-full overflow-hidden text-white md:min-h-[78vh]"
+      className="relative min-h-[65vh] w-full overflow-hidden text-white md:min-h-[83vh]"
       data-theme="dark"
     >
       {/* full‑bleed background image or video */}

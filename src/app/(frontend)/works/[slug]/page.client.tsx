@@ -6,8 +6,6 @@ import { useLenis } from '@/hooks/useLenis'
 import { Work } from '@/payload-types'
 
 const PageClient: React.FC<{ work: Work }> = ({ work }) => {
-  /* Force the header to be dark mode while we have an image behind it */
-  const { setHeaderTheme } = useHeaderTheme()
   const { restoreFrame } = usePageAnimationStore()
   const lenis = useLenis()
 
