@@ -109,20 +109,23 @@ export const MediaBlock: React.FC<Props> = (props) => {
           className={cn({
             'w-full': true,
             'overflow-hidden': true,
+            relative: useAspectRatio,
             container: !fullWidth,
+            'aspect-square': useAspectRatio && aspectRatio === 'square',
+            'aspect-[4/5]': useAspectRatio && aspectRatio === 'portrait',
+            'aspect-[16/10]': useAspectRatio && aspectRatio === 'landscape',
           })}
         >
           <Media
             imgClassName={cn(imgClassName, {
-              'aspect-square': useAspectRatio && aspectRatio === 'square',
-              'aspect-[4/5]': useAspectRatio && aspectRatio === 'portrait',
-              'aspect-[16/9]': useAspectRatio && aspectRatio === 'landscape',
               'rounded-[0.2rem]': !fullWidth,
-              'w-full': true,
+              'w-full h-full': useAspectRatio,
+              'w-full': !useAspectRatio,
               'h-auto': !useAspectRatio,
               'object-cover': useAspectRatio,
               'object-contain': !useAspectRatio,
             })}
+            fill={useAspectRatio}
             resource={media}
             src={staticImage}
             size={fullWidth ? '100vw' : '(max-width: 768px) 100vw, 80vw'}
