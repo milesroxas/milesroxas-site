@@ -15,10 +15,12 @@ import { useTheme } from '@/providers/Theme'
 
 import RichText from '@/components/RichText'
 
-const filterIntroContent = (introContent: any): SliderBlockProps['introContent'] | undefined => {
+const filterIntroContent = (
+  introContent: Record<string, unknown>,
+): SliderBlockProps['introContent'] | undefined => {
   if (!introContent) return undefined
 
-  const filtered: Record<string, any> = {}
+  const filtered: Record<string, unknown> = {}
 
   if (introContent.heading) filtered.heading = introContent.heading
   if (introContent.subheading) filtered.subheading = introContent.subheading
@@ -182,7 +184,9 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                   blockType="mediaBlock"
                   media={col.media.media as Media}
                   aspectRatio={col.media.aspectRatio || undefined}
-                  fullWidth={isFullWidth && sizes === 'full'}
+                  fullWidth={col.media.fullWidth || (isFullWidth && sizes === 'full')}
+                  captionSize={col.media.captionSize || 'normal'}
+                  theme={effectiveTheme}
                 />
               )}
 
@@ -190,11 +194,11 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                 <div className={sizes === 'full' ? 'w-full' : undefined}>
                   <SliderBlock
                     blockType="slider"
-                    slides={col.slider.slides as any}
+                    slides={col.slider.slides as SliderBlockProps['slides']}
                     style={col.slider.style || undefined}
                     className="py-0"
                     theme={effectiveTheme}
-                    introContent={filterIntroContent(col.slider.introContent)}
+                    introContent={filterIntroContent(col.slider.introContent || {})}
                     fullWidth={isFullWidth && sizes === 'full'}
                   />
                 </div>
