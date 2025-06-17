@@ -15,18 +15,19 @@ type Props = MediaBlockProps & {
   breakout?: boolean
   captionClassName?: string
   className?: string
-  enableGutter?: boolean
+  _enableGutter?: boolean
   imgClassName?: string
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
   theme?: 'system' | 'light' | 'dark' | null
+  captionSize?: 'normal' | 'large' | 'xl'
 }
 
 export const MediaBlock: React.FC<Props> = (props) => {
   const {
     captionClassName,
     className,
-    enableGutter = true,
+    _enableGutter = true,
     imgClassName,
     media,
     staticImage,
@@ -35,6 +36,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
     fullWidth = false,
     space,
     theme = 'system',
+    captionSize = 'normal',
   } = props
 
   let caption
@@ -140,6 +142,9 @@ export const MediaBlock: React.FC<Props> = (props) => {
                 container: !fullWidth,
                 'mx-auto': fullWidth && !disableInnerContainer,
                 'max-w-[80ch]': fullWidth && !disableInnerContainer,
+                'text-base': captionSize === 'normal',
+                'text-lg': captionSize === 'large',
+                'text-xl': captionSize === 'xl',
               },
               captionClassName,
             )}
