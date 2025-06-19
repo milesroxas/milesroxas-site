@@ -119,12 +119,12 @@ export const enum_pages_blocks_content_columns_slider_space_mb = pgEnum(
   'enum_pages_blocks_content_columns_slider_space_mb',
   ['none', 'sm', 'md', 'lg', 'xl'],
 )
-export const enum_pages_blocks_content_columns_media_aspect_ratio = pgEnum(
-  'enum_pages_blocks_content_columns_media_aspect_ratio',
+export const enum_pages_blocks_content_columns_media_media_aspect_ratio = pgEnum(
+  'enum_pages_blocks_content_columns_media_media_aspect_ratio',
   ['square', 'landscape', 'portrait'],
 )
-export const enum_pages_blocks_content_columns_media_caption_size = pgEnum(
-  'enum_pages_blocks_content_columns_media_caption_size',
+export const enum_pages_blocks_content_columns_media_media_caption_size = pgEnum(
+  'enum_pages_blocks_content_columns_media_media_caption_size',
   ['normal', 'large', 'xl'],
 )
 export const enum_pages_blocks_content_theme = pgEnum('enum_pages_blocks_content_theme', [
@@ -355,12 +355,12 @@ export const enum__pages_v_blocks_content_columns_slider_space_mb = pgEnum(
   'enum__pages_v_blocks_content_columns_slider_space_mb',
   ['none', 'sm', 'md', 'lg', 'xl'],
 )
-export const enum__pages_v_blocks_content_columns_media_aspect_ratio = pgEnum(
-  'enum__pages_v_blocks_content_columns_media_aspect_ratio',
+export const enum__pages_v_blocks_content_columns_media_media_aspect_ratio = pgEnum(
+  'enum__pages_v_blocks_content_columns_media_media_aspect_ratio',
   ['square', 'landscape', 'portrait'],
 )
-export const enum__pages_v_blocks_content_columns_media_caption_size = pgEnum(
-  'enum__pages_v_blocks_content_columns_media_caption_size',
+export const enum__pages_v_blocks_content_columns_media_media_caption_size = pgEnum(
+  'enum__pages_v_blocks_content_columns_media_media_caption_size',
   ['normal', 'large', 'xl'],
 )
 export const enum__pages_v_blocks_content_theme = pgEnum('enum__pages_v_blocks_content_theme', [
@@ -616,12 +616,12 @@ export const enum_works_blocks_content_columns_slider_space_mb = pgEnum(
   'enum_works_blocks_content_columns_slider_space_mb',
   ['none', 'sm', 'md', 'lg', 'xl'],
 )
-export const enum_works_blocks_content_columns_media_aspect_ratio = pgEnum(
-  'enum_works_blocks_content_columns_media_aspect_ratio',
+export const enum_works_blocks_content_columns_media_media_aspect_ratio = pgEnum(
+  'enum_works_blocks_content_columns_media_media_aspect_ratio',
   ['square', 'landscape', 'portrait'],
 )
-export const enum_works_blocks_content_columns_media_caption_size = pgEnum(
-  'enum_works_blocks_content_columns_media_caption_size',
+export const enum_works_blocks_content_columns_media_media_caption_size = pgEnum(
+  'enum_works_blocks_content_columns_media_media_caption_size',
   ['normal', 'large', 'xl'],
 )
 export const enum_works_blocks_content_theme = pgEnum('enum_works_blocks_content_theme', [
@@ -901,12 +901,12 @@ export const enum__works_v_blocks_content_columns_slider_space_mb = pgEnum(
   'enum__works_v_blocks_content_columns_slider_space_mb',
   ['none', 'sm', 'md', 'lg', 'xl'],
 )
-export const enum__works_v_blocks_content_columns_media_aspect_ratio = pgEnum(
-  'enum__works_v_blocks_content_columns_media_aspect_ratio',
+export const enum__works_v_blocks_content_columns_media_media_aspect_ratio = pgEnum(
+  'enum__works_v_blocks_content_columns_media_media_aspect_ratio',
   ['square', 'landscape', 'portrait'],
 )
-export const enum__works_v_blocks_content_columns_media_caption_size = pgEnum(
-  'enum__works_v_blocks_content_columns_media_caption_size',
+export const enum__works_v_blocks_content_columns_media_media_caption_size = pgEnum(
+  'enum__works_v_blocks_content_columns_media_media_caption_size',
   ['normal', 'large', 'xl'],
 )
 export const enum__works_v_blocks_content_theme = pgEnum('enum__works_v_blocks_content_theme', [
@@ -1270,13 +1270,13 @@ export const pages_blocks_content_columns = pgTable(
     media_media: integer('media_media_id').references(() => media.id, {
       onDelete: 'set null',
     }),
-    media_aspectRatio:
-      enum_pages_blocks_content_columns_media_aspect_ratio('media_aspect_ratio').default(
-        'landscape',
-      ),
-    media_captionSize:
-      enum_pages_blocks_content_columns_media_caption_size('media_caption_size').default('normal'),
-    media_fullWidth: boolean('media_full_width').default(false),
+    media_media_aspect_ratio: enum_pages_blocks_content_columns_media_media_aspect_ratio(
+      'media_media_aspect_ratio',
+    ).default('landscape'),
+    media_media_caption_size: enum_pages_blocks_content_columns_media_media_caption_size(
+      'media_media_caption_size',
+    ).default('normal'),
+    media_media_full_width: boolean('media_media_full_width').default(false),
   },
   (columns) => ({
     _orderIdx: index('pages_blocks_content_columns_order_idx').on(columns._order),
@@ -1728,15 +1728,13 @@ export const _pages_v_blocks_content_columns = pgTable(
     media_media: integer('media_media_id').references(() => media.id, {
       onDelete: 'set null',
     }),
-    media_aspectRatio:
-      enum__pages_v_blocks_content_columns_media_aspect_ratio('media_aspect_ratio').default(
-        'landscape',
-      ),
-    media_captionSize:
-      enum__pages_v_blocks_content_columns_media_caption_size('media_caption_size').default(
-        'normal',
-      ),
-    media_fullWidth: boolean('media_full_width').default(false),
+    media_media_aspect_ratio: enum__pages_v_blocks_content_columns_media_media_aspect_ratio(
+      'media_media_aspect_ratio',
+    ).default('landscape'),
+    media_media_caption_size: enum__pages_v_blocks_content_columns_media_media_caption_size(
+      'media_media_caption_size',
+    ).default('normal'),
+    media_media_full_width: boolean('media_media_full_width').default(false),
     _uuid: varchar('_uuid'),
   },
   (columns) => ({
@@ -2525,13 +2523,13 @@ export const works_blocks_content_columns = pgTable(
     media_media: integer('media_media_id').references(() => media.id, {
       onDelete: 'set null',
     }),
-    media_aspectRatio:
-      enum_works_blocks_content_columns_media_aspect_ratio('media_aspect_ratio').default(
-        'landscape',
-      ),
-    media_captionSize:
-      enum_works_blocks_content_columns_media_caption_size('media_caption_size').default('normal'),
-    media_fullWidth: boolean('media_full_width').default(false),
+    media_media_aspect_ratio: enum_works_blocks_content_columns_media_media_aspect_ratio(
+      'media_media_aspect_ratio',
+    ).default('landscape'),
+    media_media_caption_size: enum_works_blocks_content_columns_media_media_caption_size(
+      'media_media_caption_size',
+    ).default('normal'),
+    media_media_full_width: boolean('media_media_full_width').default(false),
   },
   (columns) => ({
     _orderIdx: index('works_blocks_content_columns_order_idx').on(columns._order),
@@ -3066,15 +3064,13 @@ export const _works_v_blocks_content_columns = pgTable(
     media_media: integer('media_media_id').references(() => media.id, {
       onDelete: 'set null',
     }),
-    media_aspectRatio:
-      enum__works_v_blocks_content_columns_media_aspect_ratio('media_aspect_ratio').default(
-        'landscape',
-      ),
-    media_captionSize:
-      enum__works_v_blocks_content_columns_media_caption_size('media_caption_size').default(
-        'normal',
-      ),
-    media_fullWidth: boolean('media_full_width').default(false),
+    media_media_aspect_ratio: enum__works_v_blocks_content_columns_media_media_aspect_ratio(
+      'media_media_aspect_ratio',
+    ).default('landscape'),
+    media_media_caption_size: enum__works_v_blocks_content_columns_media_media_caption_size(
+      'media_media_caption_size',
+    ).default('normal'),
+    media_media_full_width: boolean('media_media_full_width').default(false),
     _uuid: varchar('_uuid'),
   },
   (columns) => ({
@@ -6003,8 +5999,8 @@ type DatabaseSchema = {
   enum_pages_blocks_content_columns_slider_space_pb: typeof enum_pages_blocks_content_columns_slider_space_pb
   enum_pages_blocks_content_columns_slider_space_mt: typeof enum_pages_blocks_content_columns_slider_space_mt
   enum_pages_blocks_content_columns_slider_space_mb: typeof enum_pages_blocks_content_columns_slider_space_mb
-  enum_pages_blocks_content_columns_media_aspect_ratio: typeof enum_pages_blocks_content_columns_media_aspect_ratio
-  enum_pages_blocks_content_columns_media_caption_size: typeof enum_pages_blocks_content_columns_media_caption_size
+  enum_pages_blocks_content_columns_media_media_aspect_ratio: typeof enum_pages_blocks_content_columns_media_media_aspect_ratio
+  enum_pages_blocks_content_columns_media_media_caption_size: typeof enum_pages_blocks_content_columns_media_media_caption_size
   enum_pages_blocks_content_theme: typeof enum_pages_blocks_content_theme
   enum_pages_blocks_content_container_width: typeof enum_pages_blocks_content_container_width
   enum_pages_blocks_content_space_pt: typeof enum_pages_blocks_content_space_pt
@@ -6055,8 +6051,8 @@ type DatabaseSchema = {
   enum__pages_v_blocks_content_columns_slider_space_pb: typeof enum__pages_v_blocks_content_columns_slider_space_pb
   enum__pages_v_blocks_content_columns_slider_space_mt: typeof enum__pages_v_blocks_content_columns_slider_space_mt
   enum__pages_v_blocks_content_columns_slider_space_mb: typeof enum__pages_v_blocks_content_columns_slider_space_mb
-  enum__pages_v_blocks_content_columns_media_aspect_ratio: typeof enum__pages_v_blocks_content_columns_media_aspect_ratio
-  enum__pages_v_blocks_content_columns_media_caption_size: typeof enum__pages_v_blocks_content_columns_media_caption_size
+  enum__pages_v_blocks_content_columns_media_media_aspect_ratio: typeof enum__pages_v_blocks_content_columns_media_media_aspect_ratio
+  enum__pages_v_blocks_content_columns_media_media_caption_size: typeof enum__pages_v_blocks_content_columns_media_media_caption_size
   enum__pages_v_blocks_content_theme: typeof enum__pages_v_blocks_content_theme
   enum__pages_v_blocks_content_container_width: typeof enum__pages_v_blocks_content_container_width
   enum__pages_v_blocks_content_space_pt: typeof enum__pages_v_blocks_content_space_pt
@@ -6115,8 +6111,8 @@ type DatabaseSchema = {
   enum_works_blocks_content_columns_slider_space_pb: typeof enum_works_blocks_content_columns_slider_space_pb
   enum_works_blocks_content_columns_slider_space_mt: typeof enum_works_blocks_content_columns_slider_space_mt
   enum_works_blocks_content_columns_slider_space_mb: typeof enum_works_blocks_content_columns_slider_space_mb
-  enum_works_blocks_content_columns_media_aspect_ratio: typeof enum_works_blocks_content_columns_media_aspect_ratio
-  enum_works_blocks_content_columns_media_caption_size: typeof enum_works_blocks_content_columns_media_caption_size
+  enum_works_blocks_content_columns_media_media_aspect_ratio: typeof enum_works_blocks_content_columns_media_media_aspect_ratio
+  enum_works_blocks_content_columns_media_media_caption_size: typeof enum_works_blocks_content_columns_media_media_caption_size
   enum_works_blocks_content_theme: typeof enum_works_blocks_content_theme
   enum_works_blocks_content_container_width: typeof enum_works_blocks_content_container_width
   enum_works_blocks_content_space_pt: typeof enum_works_blocks_content_space_pt
@@ -6176,8 +6172,8 @@ type DatabaseSchema = {
   enum__works_v_blocks_content_columns_slider_space_pb: typeof enum__works_v_blocks_content_columns_slider_space_pb
   enum__works_v_blocks_content_columns_slider_space_mt: typeof enum__works_v_blocks_content_columns_slider_space_mt
   enum__works_v_blocks_content_columns_slider_space_mb: typeof enum__works_v_blocks_content_columns_slider_space_mb
-  enum__works_v_blocks_content_columns_media_aspect_ratio: typeof enum__works_v_blocks_content_columns_media_aspect_ratio
-  enum__works_v_blocks_content_columns_media_caption_size: typeof enum__works_v_blocks_content_columns_media_caption_size
+  enum__works_v_blocks_content_columns_media_media_aspect_ratio: typeof enum__works_v_blocks_content_columns_media_media_aspect_ratio
+  enum__works_v_blocks_content_columns_media_media_caption_size: typeof enum__works_v_blocks_content_columns_media_media_caption_size
   enum__works_v_blocks_content_theme: typeof enum__works_v_blocks_content_theme
   enum__works_v_blocks_content_container_width: typeof enum__works_v_blocks_content_container_width
   enum__works_v_blocks_content_space_pt: typeof enum__works_v_blocks_content_space_pt
