@@ -605,9 +605,9 @@ export interface ContentBlock {
         };
         media?: {
           media: number | Media;
-          media_aspect_ratio?: ('square' | 'landscape' | 'portrait') | null;
-          media_caption_size?: ('normal' | 'large' | 'xl') | null;
-          media_full_width?: boolean | null;
+          aspectRatio?: ('square' | 'landscape' | 'portrait' | 'original') | null;
+          fullWidth?: boolean | null;
+          captionSize?: ('normal' | 'large' | 'xl') | null;
         };
         id?: string | null;
       }[]
@@ -695,7 +695,7 @@ export interface Work {
  */
 export interface MediaBlock {
   media: number | Media;
-  aspectRatio?: ('landscape' | 'square' | 'portrait') | null;
+  aspectRatio?: ('landscape' | 'square' | 'portrait' | 'original') | null;
   /**
    * Makes the media span the full width of its container. Note: For true edge-to-edge display, set both this option AND use "Full Width" in the parent Content Block settings.
    */
@@ -1495,9 +1495,9 @@ export interface ContentBlockSelect<T extends boolean = true> {
           | T
           | {
               media?: T;
-              media_aspect_ratio?: T;
-              media_caption_size?: T;
-              media_full_width?: T;
+              aspectRatio?: T;
+              fullWidth?: T;
+              captionSize?: T;
             };
         id?: T;
       };
