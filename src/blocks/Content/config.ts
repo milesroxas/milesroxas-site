@@ -169,7 +169,22 @@ const mediaFields: Field[] = [
         label: 'Portrait',
         value: 'portrait',
       },
+      {
+        label: 'Original',
+        value: 'original',
+      },
     ],
+  },
+  {
+    name: 'fullWidth',
+    type: 'checkbox',
+    defaultValue: false,
+  },
+  {
+    name: 'captionSize',
+    type: 'select',
+    defaultValue: 'normal',
+    options: ['normal', 'large', 'xl'],
   },
 ]
 
