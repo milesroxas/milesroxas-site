@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
 import { useTheme } from '@/providers/Theme'
+import { useSectionSpacing } from '@/hooks/useSectionSpacing'
 
 export type SliderBlockProps = {
   theme?: 'light' | 'dark' | 'system'
@@ -60,31 +61,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
   const { theme: systemTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  const getSpacingClasses = (space?: SliderBlockProps['space']) => {
-    if (!space) return {}
-    return {
-      'pt-0': space.pt === 'none',
-      'pt-12': space.pt === 'sm',
-      'pt-40': space.pt === 'md',
-      'pt-64': space.pt === 'lg',
-      'pt-80': space.pt === 'xl',
-      'pb-0': space.pb === 'none',
-      'pb-12': space.pb === 'sm',
-      'pb-40': space.pb === 'md',
-      'pb-64': space.pb === 'lg',
-      'pb-80': space.pb === 'xl',
-      'mt-0': space.mt === 'none',
-      'mt-12': space.mt === 'sm',
-      'mt-40': space.mt === 'md',
-      'mt-64': space.mt === 'lg',
-      'mt-80': space.mt === 'xl',
-      'mb-0': space.mb === 'none',
-      'mb-12': space.mb === 'sm',
-      'mb-40': space.mb === 'md',
-      'mb-64': space.mb === 'lg',
-      'mb-80': space.mb === 'xl',
-    }
-  }
+  const spacingClasses = useSectionSpacing(space)
 
   const getHref = (link: { relationTo: string; value: string | number | Record<string, any> }) => {
     if (!link) return '#'
@@ -135,7 +112,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
           'bg-background text-foreground': activeTheme === 'light',
         },
         className,
-        getSpacingClasses(space),
+        spacingClasses,
       )}
       id={`block-${id}`}
     >

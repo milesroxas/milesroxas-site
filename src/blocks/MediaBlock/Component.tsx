@@ -8,14 +8,14 @@ import RichText from '@/components/RichText'
 
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
 
-import { Media } from '../../components/Media'
+import { Media } from '@/components/Media'
 import { Theme, useTheme } from '@/providers/Theme'
+import { useSectionSpacing } from '@/hooks/useSectionSpacing'
 
 type Props = MediaBlockProps & {
   breakout?: boolean
   captionClassName?: string
   className?: string
-  _enableGutter?: boolean
   imgClassName?: string
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
@@ -27,7 +27,6 @@ export const MediaBlock: React.FC<Props> = (props) => {
   const {
     captionClassName,
     className,
-    _enableGutter = true,
     imgClassName,
     media,
     staticImage,
@@ -42,35 +41,6 @@ export const MediaBlock: React.FC<Props> = (props) => {
   let caption
   if (media && typeof media === 'object') caption = media.caption
 
-  const getSpacingClasses = (space?: MediaBlockProps['space']) => {
-    if (!space) return {}
-    return {
-      'pt-0': space.pt === 'none',
-      'pt-12': space.pt === 'sm',
-      'pt-40': space.pt === 'md',
-      'pt-64': space.pt === 'lg',
-      'pt-80': space.pt === 'xl',
-      'pb-0': space.pb === 'none',
-      'pb-12': space.pb === 'sm',
-      'pb-40': space.pb === 'md',
-      'pb-64': space.pb === 'lg',
-      'pb-80': space.pb === 'xl',
-      'mt-0': space.mt === 'none',
-      'mt-12': space.mt === 'sm',
-      'mt-40': space.mt === 'md',
-      'mt-64': space.mt === 'lg',
-      'mt-80': space.mt === 'xl',
-      'mb-0': space.mb === 'none',
-      'mb-12': space.mb === 'sm',
-      'mb-40': space.mb === 'md',
-      'mb-64': space.mb === 'lg',
-      'mb-80': space.mb === 'xl',
-    }
-  }
-
-  const spacingClasses = getSpacingClasses(space)
-
-  // Determine if we should use aspect ratio or let the image maintain its original dimensions
   const useAspectRatio = aspectRatio !== 'original'
   const { theme: siteTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -80,16 +50,16 @@ export const MediaBlock: React.FC<Props> = (props) => {
   const effectiveTheme = (() => {
     if (!mounted) return 'light' // Default for SSR
     if (theme === 'system' || !theme) {
-      // Make sure we handle null/undefined theme properly
       return (siteTheme || 'light') as Theme
     }
     return theme as Theme
   })()
 
+  const spacingClasses = useSectionSpacing(space)
+
   return (
     <div
       className={cn(
-        spacingClasses,
         {
           'w-full': true,
           'mx-0': true,
@@ -98,6 +68,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
         effectiveTheme === 'dark'
           ? 'bg-primary text-primary-foreground font-light'
           : 'bg-background text-foreground',
+        spacingClasses,
         className,
       )}
     >
