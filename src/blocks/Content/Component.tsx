@@ -12,6 +12,7 @@ import { SliderBlock, type SliderBlockProps } from '../Slider/Component'
 import { WorkCard } from '@/components/Card/Works/Component'
 import { PostCard } from '@/components/Card/Posts/Component'
 import { useTheme } from '@/providers/Theme'
+import { useSectionSpacing } from '@/hooks/useSectionSpacing'
 
 import RichText from '@/components/RichText'
 
@@ -50,33 +51,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
     return theme as Theme
   })()
 
-  const getSpacingClasses = (space?: ContentBlockProps['space']) => {
-    if (!space) return {}
-    return {
-      'pt-0': space.pt === 'none',
-      'pt-12': space.pt === 'sm',
-      'pt-40': space.pt === 'md',
-      'pt-64': space.pt === 'lg',
-      'pt-80': space.pt === 'xl',
-      'pb-0': space.pb === 'none',
-      'pb-12': space.pb === 'sm',
-      'pb-40': space.pb === 'md',
-      'pb-64': space.pb === 'lg',
-      'pb-80': space.pb === 'xl',
-      'mt-0': space.mt === 'none',
-      'mt-12': space.mt === 'sm',
-      'mt-40': space.mt === 'md',
-      'mt-64': space.mt === 'lg',
-      'mt-80': space.mt === 'xl',
-      'mb-0': space.mb === 'none',
-      'mb-12': space.mb === 'sm',
-      'mb-40': space.mb === 'md',
-      'mb-64': space.mb === 'lg',
-      'mb-80': space.mb === 'xl',
-    }
-  }
-
-  const spacingClasses = getSpacingClasses(space)
+  const spacingClasses = useSectionSpacing(space)
   const isFullWidth = containerWidth === 'fullWidth'
 
   return (

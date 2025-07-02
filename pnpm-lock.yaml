@@ -17,6 +17,9 @@ importers:
       '@payloadcms/db-vercel-postgres':
         specifier: ^3.37.0
         version: 3.37.0(@neondatabase/serverless@0.9.5)(@types/pg@8.15.1)(@types/react@19.1.1)(payload@3.37.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5))(postgres@3.4.5)(react@19.1.0)
+      '@payloadcms/email-nodemailer':
+        specifier: ^3.43.0
+        version: 3.43.0(payload@3.37.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5))
       '@payloadcms/live-preview-react':
         specifier: latest
         version: 3.37.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1500,6 +1503,12 @@ packages:
     engines: {node: ^18.20.2 || >=20.9.0}
     peerDependencies:
       payload: 3.37.0
+
+  '@payloadcms/email-nodemailer@3.43.0':
+    resolution: {integrity: sha512-JrdMnvL/Y5f2+bjIPFSlkpwj+FwhMzNP37jYuQylERot84m6x80LS0wFuW8pEMxETj76TE8GEkmcJdNNcldvlA==}
+    engines: {node: ^18.20.2 || >=20.9.0}
+    peerDependencies:
+      payload: 3.43.0
 
   '@payloadcms/graphql@3.37.0':
     resolution: {integrity: sha512-Z+fEQR4NoCFGWkR3lTlw+1agsVn2LpxXJyeojORb8ZjZMwI8RlTEMa0llBQF5YeoabQao4Bkg2iG7fC9BZSZSw==}
@@ -7880,6 +7889,11 @@ snapshots:
       - sqlite3
 
   '@payloadcms/email-nodemailer@3.37.0(payload@3.37.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5))':
+    dependencies:
+      nodemailer: 6.9.16
+      payload: 3.37.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5)
+
+  '@payloadcms/email-nodemailer@3.43.0(payload@3.37.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5))':
     dependencies:
       nodemailer: 6.9.16
       payload: 3.37.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5)

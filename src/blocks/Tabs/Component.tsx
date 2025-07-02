@@ -6,6 +6,7 @@ import { cn } from '@/utilities/ui'
 import { SliderBlock, type SliderBlockProps as SliderDataProps } from '@/blocks/Slider/Component'
 import { useTheme } from '@/providers/Theme'
 import { useEffect, useState } from 'react'
+import { useSectionSpacing } from '@/hooks/useSectionSpacing'
 
 type Tab = {
   id: string
@@ -41,38 +42,10 @@ type TabsBlockProps = {
 
 export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
   const { tabs, space, className, id, heading, theme = 'system' } = props
-  const getSpacingClasses = (space?: TabsBlockProps['space']) => {
-    if (!space) return {}
-
-    return {
-      'pt-0': space.pt === 'none',
-      'pt-12': space.pt === 'sm',
-      'pt-16': space.pt === 'md',
-      'pt-32': space.pt === 'lg',
-      'pt-64': space.pt === 'xl',
-
-      'pb-0': space.pb === 'none',
-      'pb-12': space.pb === 'sm',
-      'pb-16': space.pb === 'md',
-      'pb-32': space.pb === 'lg',
-      'pb-64': space.pb === 'xl',
-
-      'mt-0': space.mt === 'none',
-      'mt-12': space.mt === 'sm',
-      'mt-16': space.mt === 'md',
-      'mt-32': space.mt === 'lg',
-      'mt-64': space.mt === 'xl',
-
-      'mb-0': space.mb === 'none',
-      'mb-12': space.mb === 'sm',
-      'mb-16': space.mb === 'md',
-      'mb-32': space.mb === 'lg',
-      'mb-64': space.mb === 'xl',
-    }
-  }
   const [currentIndex, setCurrentIndex] = useState(0)
   const { theme: systemTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const spacingClasses = useSectionSpacing(space)
 
   useEffect(() => {
     setMounted(true)
@@ -93,7 +66,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
           'bg-primary text-primary-foreground font-light': activeTheme === 'dark',
           'bg-background text-foreground': activeTheme === 'light',
         },
-        getSpacingClasses(space),
+        spacingClasses,
       )}
       id={`block-${id}`}
       data-theme={activeTheme}
