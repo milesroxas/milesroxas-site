@@ -49,7 +49,6 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
           imgClassName="m-0"
           {...otherFields}
           captionClassName="mx-auto max-w-[48rem]"
-          _enableGutter={false}
           disableInnerContainer={true}
           captionSize={captionSize || undefined}
         />
