@@ -2,24 +2,33 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 import redirects from './redirects.js'
 
-const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+const vercelHost = process.env.VERCEL_URL // e.g. "feature-branch--project.vercel.app" or "milesroxas.vercel.app"
+const isDev = process.env.NODE_ENV !== 'production'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    remotePatterns: [
-      ...[NEXT_PUBLIC_SERVER_URL].map((item) => {
-        const url = new URL(item)
-        return { hostname: url.hostname, protocol: url.protocol.replace(':', '') }
-      }),
-    ],
-  },
   reactStrictMode: true,
   redirects,
 
-  // Turbopack loader rules for dev (optional)
+  images: {
+    remotePatterns: [
+      // Preview & Production on Vercel
+      vercelHost && {
+        protocol: 'https',
+        hostname: vercelHost,
+        port: '',
+        pathname: '/api/media/file/**',
+      },
+      // Local development
+      isDev && {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/media/file/**',
+      },
+    ].filter(Boolean),
+  },
+
   turbopack: {
     rules: {
       '*.{glsl,vs,fs,vert,frag}': {
@@ -29,7 +38,6 @@ const nextConfig = {
     },
   },
 
-  // Webpack override for production builds
   webpack: (config, { webpack }) => {
     // ignore certain modules
     config.plugins.push(

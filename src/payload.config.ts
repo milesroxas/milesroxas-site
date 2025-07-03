@@ -2,7 +2,7 @@
 import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
-import sharp from 'sharp' // sharp-import
+import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, CollectionSlug, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'

@@ -406,7 +406,7 @@ html.theme-transition *::after {
   }
 
   .section-heading-wrapper .prose-blocks.section-heading-base p {
-    @apply text-2xl;
+    @apply text-xs;
   }
 
   .section-heading-wrapper .prose-blocks.section-heading-base h3 {
