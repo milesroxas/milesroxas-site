@@ -17,6 +17,7 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { getEnv } from './utilities/getEnv'
 
 import { resendAdapter } from '@payloadcms/email-resend'
 import { generatePreviewPath } from './utilities/generatePreviewPath'
@@ -24,8 +25,9 @@ import { generatePreviewPath } from './utilities/generatePreviewPath'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const isDev = process.env.NODE_ENV === 'development' && process.env.USE_PRODUCTION_DB !== 'true'
-const dbConnectionString = isDev
+const { isPreview } = getEnv()
+
+const dbConnectionString = isPreview
   ? process.env.POSTGRES_URL_STAGING || process.env.POSTGRES_URL || ''
   : process.env.POSTGRES_URL || ''
 

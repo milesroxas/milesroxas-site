@@ -26,10 +26,12 @@ const ibmPlexSans = IBM_Plex_Sans({
   variable: '--font-ibm-plex-sans',
 })
 
-const isDev = process.env.NODE_ENV === 'development' && process.env.USE_PRODUCTION_DB !== 'true'
+import { getEnv } from '@/utilities/getEnv'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+
+  const { isPreview, isProduction } = getEnv()
 
   return (
     <html className={cn(ibmPlexSans.className)} lang="en" suppressHydrationWarning>
@@ -40,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="bg-background text-foreground min-h-screen">
         <Providers>
-          {isDev && <Header />}
+          {isPreview && <Header />}
           <SiteFrame>{children}</SiteFrame>
           <AdminBar
             adminBarProps={{
