@@ -17,12 +17,17 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
-import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+
 import { resendAdapter } from '@payloadcms/email-resend'
 import { generatePreviewPath } from './utilities/generatePreviewPath'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+const isDev = process.env.NODE_ENV === 'development'
+const dbConnectionString = isDev
+  ? process.env.POSTGRES_URL_STAGING || process.env.POSTGRES_URL || ''
+  : process.env.POSTGRES_URL || ''
 
 export default buildConfig({
   admin: {
@@ -71,19 +76,6 @@ export default buildConfig({
       ],
     },
   },
-  // email: nodemailerAdapter({
-  //   defaultFromAddress: 'miles.roxas@gmail.com',
-  //   defaultFromName: 'Miles Roxas',
-
-  //   transportOptions: {
-  //     host: process.env.SMTP_HOST,
-  //     port: 587,
-  //     auth: {
-  //       user: process.env.SMTP_USER,
-  //       pass: process.env.SMTP_PASS,
-  //     },
-  //   },
-  // }),
   email: resendAdapter({
     apiKey: process.env.RESEND_API_KEY || '',
     defaultFromAddress: 'miles.roxas@gmail.com',
@@ -92,7 +84,7 @@ export default buildConfig({
   editor: defaultLexical,
   db: vercelPostgresAdapter({
     pool: {
-      connectionString: process.env.POSTGRES_URL || '',
+      connectionString: dbConnectionString,
     },
   }),
   collections: [Pages, Posts, Works, Media, Categories, Users],
@@ -101,8 +93,8 @@ export default buildConfig({
   plugins: [
     ...plugins,
     vercelBlobStorage({
-      enabled: true, // Optional, defaults to true
-      // Specify which collections should use Vercel Blob
+      enabled: true,
+
       collections: {
         media: true,
       },
