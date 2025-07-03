@@ -4,7 +4,7 @@ import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
-import { buildConfig, PayloadRequest } from 'payload'
+import { buildConfig, CollectionSlug, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
@@ -18,6 +18,7 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { generatePreviewPath } from './utilities/generatePreviewPath'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -38,6 +39,15 @@ export default buildConfig({
     user: Users.slug,
 
     livePreview: {
+      collections: ['pages', 'posts', 'works'],
+      url: ({ collectionConfig, data, req }) => {
+        const path = generatePreviewPath({
+          slug: typeof data?.slug === 'string' ? data.slug : '',
+          collection: collectionConfig?.slug as CollectionSlug,
+          req,
+        })
+        return path
+      },
       breakpoints: [
         {
           label: 'Mobile',
