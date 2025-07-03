@@ -31,7 +31,7 @@ import { getEnv } from '@/utilities/getEnv'
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
 
-  const { isPreview, isProduction } = getEnv()
+  const { isPreview } = getEnv()
 
   return (
     <html className={cn(ibmPlexSans.className)} lang="en" suppressHydrationWarning>
