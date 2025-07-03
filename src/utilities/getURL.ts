@@ -7,11 +7,8 @@ export const getServerSideURL = () => {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   }
 
-  if (!url) {
-    url = 'http://localhost:3000'
-  }
-
-  return url
+  // Always return a valid URL with a fallback
+  return url || 'http://localhost:3000'
 }
 
 export const getClientSideURL = () => {
@@ -27,5 +24,5 @@ export const getClientSideURL = () => {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   }
 
-  return process.env.NEXT_PUBLIC_SERVER_URL || ''
+  return process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 }
