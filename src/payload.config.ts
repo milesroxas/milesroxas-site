@@ -78,7 +78,7 @@ export default buildConfig({
   },
   email: resendAdapter({
     apiKey: process.env.RESEND_API_KEY || '',
-    defaultFromAddress: 'miles.roxas@gmail.com',
+    defaultFromAddress: 'noreply@milesroxas.com',
     defaultFromName: 'Miles Roxas',
   }),
   editor: defaultLexical,
