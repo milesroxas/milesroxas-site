@@ -58,7 +58,7 @@ export default async function Post({ params: paramsPromise }: Args) {
       <PageClient post={post} />
       {post.hero && <RenderHero {...post.hero} />}
 
-      <div className="flex flex-col items-start gap-4 pt-8 pb-32">
+      <div className="flex flex-col items-start gap-4 pt-8 pb-32 md:pt-12 lg:pt-32">
         <div className="container">
           <div className="max-w-3xl md:pl-32">
             <RichText

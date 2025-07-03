@@ -26,7 +26,7 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
 
   return (
     <div
-      className="w-full items-center font-light md:pt-32 md:pb-6"
+      className="mb-8 w-full items-center font-light md:mb-12 md:pt-40"
       {...(theme ? { 'data-theme': theme } : {})}
     >
       <div className="container">
