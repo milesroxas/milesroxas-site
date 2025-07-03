@@ -20,6 +20,9 @@ importers:
       '@payloadcms/email-nodemailer':
         specifier: latest
         version: 3.45.0(payload@3.45.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5))
+      '@payloadcms/email-resend':
+        specifier: ^3.45.0
+        version: 3.45.0(payload@3.45.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5))
       '@payloadcms/live-preview-react':
         specifier: latest
         version: 3.45.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1503,6 +1506,12 @@ packages:
 
   '@payloadcms/email-nodemailer@3.45.0':
     resolution: {integrity: sha512-af78THkBPgfMT4HShOl8jrLlKhmrmmhnNTctHezlXC90lbjyEG7unaLl7vVRKKHRPXqsMG7XQ+I6X6nLJKh/zg==}
+    engines: {node: ^18.20.2 || >=20.9.0}
+    peerDependencies:
+      payload: 3.45.0
+
+  '@payloadcms/email-resend@3.45.0':
+    resolution: {integrity: sha512-jq9Gnbz89UnUyXZlI2/GNf4N5PQambWhH/jUOwuE76LLFLB6FIMHi8KJKcqjq8NuuoRUdKfJIwixylibvxLgrA==}
     engines: {node: ^18.20.2 || >=20.9.0}
     peerDependencies:
       payload: 3.45.0
@@ -7688,6 +7697,10 @@ snapshots:
   '@payloadcms/email-nodemailer@3.45.0(payload@3.45.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5))':
     dependencies:
       nodemailer: 6.9.16
+      payload: 3.45.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5)
+
+  '@payloadcms/email-resend@3.45.0(payload@3.45.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5))':
+    dependencies:
       payload: 3.45.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5)
 
   '@payloadcms/graphql@3.45.0(graphql@16.11.0)(payload@3.45.0(bufferutil@4.0.9)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@6.0.5))(typescript@5.8.3)':
