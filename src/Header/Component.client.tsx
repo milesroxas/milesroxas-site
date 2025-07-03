@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react'
 import type { Header } from '@/payload-types'
 
 import { HeaderNav } from './Nav'
-import { Button } from '@/components/ui/button'
 
 interface HeaderClientProps {
   data: Header

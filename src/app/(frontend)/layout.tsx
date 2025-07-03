@@ -26,6 +26,8 @@ const ibmPlexSans = IBM_Plex_Sans({
   variable: '--font-ibm-plex-sans',
 })
 
+const isDev = process.env.NODE_ENV === 'development' && process.env.USE_PRODUCTION_DB !== 'true'
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
 
@@ -38,7 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="bg-background text-foreground min-h-screen">
         <Providers>
-          <Header />
+          {isDev && <Header />}
           <SiteFrame>{children}</SiteFrame>
           <AdminBar
             adminBarProps={{
