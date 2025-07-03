@@ -61,7 +61,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
   const { theme: systemTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  const spacingStyles = useSpacing(space as SpaceProps)
+  const spacingStyles = useSpacing(space)
 
   const getHref = (link: { relationTo: string; value: string | number | Record<string, any> }) => {
     if (!link) return '#'
@@ -227,7 +227,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                     <CarouselItem
                       key={index}
                       className={cn(
-                        'md:basis-3/4 lg:basis-2/3 2xl:basis-1/2',
+                        'basis-4/6 md:basis-3/4 lg:basis-2/3 2xl:basis-1/2',
                         currentIndex === index ? 'z-20' : 'opacity-30',
                       )}
                     >
@@ -244,7 +244,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                                 resource={slide.image}
                                 priority={index === 0}
                                 loading={index === 0 ? 'eager' : 'lazy'}
-                                className="h-full w-full object-cover"
+                                className="w-full object-cover"
                                 size={
                                   fullWidth
                                     ? '100vw'
@@ -265,7 +265,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                                 resource={slide.image}
                                 priority={index === 0}
                                 loading={index === 0 ? 'eager' : 'lazy'}
-                                className="h-full w-full object-cover"
+                                className="w-full object-cover"
                                 size={
                                   fullWidth
                                     ? '100vw'

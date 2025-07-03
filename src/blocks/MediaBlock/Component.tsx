@@ -85,7 +85,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
             })}
           >
             <div
-              className={cn({
+              className={cn('mx-auto', {
                 'w-full': true,
                 'overflow-hidden': true,
                 relative: useAspectRatio,
@@ -93,6 +93,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
                 'aspect-square': useAspectRatio && aspectRatio === 'square',
                 'aspect-[4/5]': useAspectRatio && aspectRatio === 'portrait',
                 'aspect-[16/10]': useAspectRatio && aspectRatio === 'landscape',
+                'flex max-w-full justify-center': !useAspectRatio,
               })}
             >
               <Media
