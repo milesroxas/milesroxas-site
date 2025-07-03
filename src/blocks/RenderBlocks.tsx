@@ -46,10 +46,14 @@ export const RenderBlocks: React.FC<{
                 'containerWidth' in blockProps &&
                 blockProps.containerWidth === 'fullWidth'
 
+              // Add disableInnerContainer prop for MediaBlock
+              const additionalProps =
+                blockType === 'mediaBlock' ? { disableInnerContainer: false } : {}
+
               return (
                 <div key={index} className={`block-wrapper ${isFullWidth ? 'w-full' : ''}`}>
                   {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...blockProps} disableInnerContainer />
+                  <Block {...blockProps} {...additionalProps} />
                 </div>
               )
             }

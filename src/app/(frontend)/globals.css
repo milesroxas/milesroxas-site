@@ -1,5 +1,69 @@
 @import 'tailwindcss';
 
+@theme {
+  /* Container configuration */
+  --container-center: true;
+  --container-padding-DEFAULT: 1rem;
+  --container-padding-sm: 1rem;
+  --container-padding-md: 2rem;
+  --container-padding-lg: 8rem;
+  --container-padding-xl: 12rem;
+  --container-padding-2xl: 16rem;
+
+  --container-screens-sm: 40rem;
+  --container-screens-md: 52rem;
+  --container-screens-lg: 72rem;
+  --container-screens-xl: 90rem;
+  --container-screens-2xl: 100rem;
+
+  /* Border radius */
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+
+  /* Colors */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsla(var(--border));
+  --color-ring: hsl(var(--ring));
+  --color-input: hsl(var(--input));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-success: hsl(var(--success));
+  --color-error: hsl(var(--error));
+  --color-warning: hsl(var(--warning));
+
+  /* Font families */
+  --font-family-sans: 'area-normal-light', sans-serif;
+  --font-family-mono: var(--font-geist-mono);
+
+  --spacing-sm: 4rem;
+  --spacing-md: 8rem;
+  --spacing-lg: 16rem;
+  --spacing-xl: 18rem;
+}
+
 @layer base {
   *,
   ::after,
@@ -146,66 +210,6 @@ html.theme-transition *::before,
 html.theme-transition *::after {
   transition: all 0.3s ease-out !important;
   transition-delay: 0 !important;
-}
-
-/* Base configuration */
-@theme {
-  /* Container configuration */
-  --container-center: true;
-  --container-padding-DEFAULT: 1rem;
-  --container-padding-sm: 1rem;
-  --container-padding-md: 2rem;
-  --container-padding-lg: 8rem;
-  --container-padding-xl: 12rem;
-  --container-padding-2xl: 16rem;
-
-  --container-screens-sm: 40rem;
-  --container-screens-md: 52rem;
-  --container-screens-lg: 72rem;
-  --container-screens-xl: 90rem;
-  --container-screens-2xl: 100rem;
-
-  /* Border radius */
-  --radius: 0.5rem;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-
-  /* Colors */
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-border: hsla(var(--border));
-  --color-ring: hsl(var(--ring));
-  --color-input: hsl(var(--input));
-
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-
-  --color-success: hsl(var(--success));
-  --color-error: hsl(var(--error));
-  --color-warning: hsl(var(--warning));
-
-  /* Font families */
-  --font-family-sans: 'area-normal-light', sans-serif;
-  --font-family-mono: var(--font-geist-mono);
 }
 
 /* Define container utility explicitly */
