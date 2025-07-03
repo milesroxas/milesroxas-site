@@ -24,7 +24,7 @@ import { generatePreviewPath } from './utilities/generatePreviewPath'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = process.env.NODE_ENV === 'development' && process.env.USE_PRODUCTION_DB !== 'true'
 const dbConnectionString = isDev
   ? process.env.POSTGRES_URL_STAGING || process.env.POSTGRES_URL || ''
   : process.env.POSTGRES_URL || ''
