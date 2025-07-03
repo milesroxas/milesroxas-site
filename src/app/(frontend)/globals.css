@@ -405,19 +405,19 @@ html.theme-transition *::after {
     @apply text-base font-normal;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-base p {
-    @apply text-xs;
+  .prose-blocks.section-heading-base p {
+    @apply text-xl;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-base h3 {
+  .prose-blocks.section-heading-base h3 {
     @apply text-2xl;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-base h2 {
+  .prose-blocks.section-heading-base h2 {
     @apply text-2xl;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-base h1 {
+  .prose-blocks.section-heading-base h1 {
     @apply text-3xl;
   }
 
@@ -426,19 +426,19 @@ html.theme-transition *::after {
     @apply text-base font-normal;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-lg p {
-    @apply text-3xl;
-  }
-
-  .section-heading-wrapper .prose-blocks.section-heading-lg h3 {
+  .prose-blocks.section-heading-lg p {
     @apply text-2xl;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-lg h2 {
+  .prose-blocks.section-heading-lg h3 {
+    @apply text-2xl;
+  }
+
+  .prose-blocks.section-heading-lg h2 {
     @apply text-3xl;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-lg h1 {
+  .prose-blocks.section-heading-lg h1 {
     @apply text-4xl;
   }
 
@@ -447,19 +447,19 @@ html.theme-transition *::after {
     @apply w-full max-w-none text-3xl;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-xl p {
-    @apply w-full text-5xl;
+  .prose-blocks.section-heading-xl p {
+    @apply w-full text-4xl;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-xl h3 {
+  .prose-blocks.section-heading-xl h3 {
     @apply text-base;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-xl h2 {
+  .prose-blocks.section-heading-xl h2 {
     @apply text-xl;
   }
 
-  .section-heading-wrapper .prose-blocks.section-heading-xl h1 {
+  .prose-blocks.section-heading-xl h1 {
     @apply text-2xl;
   }
 

@@ -105,7 +105,10 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                           'section-heading-base':
                             col.sectionHeading.size === 'base' || !col.sectionHeading.size,
                           'section-heading-lg': col.sectionHeading.size === 'lg',
-                          'section-heading-xl': col.sectionHeading.size === 'xl',
+
+                          'section-heading-xl':
+                            col.sectionHeading.size === 'xl' &&
+                            col.sectionHeading.align === 'center',
                         })}
                       >
                         {col.sectionHeading.eyebrow}
@@ -116,11 +119,14 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
                         data={col.sectionHeading.content}
                         enableGutter={false}
                         className={cn('prose-blocks', {
-                          'text-primary-foreground': effectiveTheme === 'dark',
+                          'text-primary-foreground font-light': effectiveTheme === 'dark',
                           'section-heading-base':
                             col.sectionHeading.size === 'base' || !col.sectionHeading.size,
                           'section-heading-lg': col.sectionHeading.size === 'lg',
                           'section-heading-xl': col.sectionHeading.size === 'xl',
+                          'section-heading-xl max-w-3xl text-center':
+                            col.sectionHeading.size === 'xl' &&
+                            col.sectionHeading.align === 'center',
                         })}
                       />
                     )}
