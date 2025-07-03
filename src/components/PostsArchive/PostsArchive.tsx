@@ -11,7 +11,7 @@ export const PostsArchive: React.FC<Props> = (props) => {
   const { posts } = props
 
   return (
-    <div className={cn('container')}>
+    <div className={cn('container px-8 md:px-14 lg:px-20')}>
       <div>
         <div className="grid grid-cols-4 gap-x-4 gap-y-4 sm:grid-cols-8 lg:gap-x-8 lg:gap-y-8 xl:gap-x-8">
           {posts?.map((result, index) => {

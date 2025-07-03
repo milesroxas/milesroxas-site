@@ -50,7 +50,7 @@ export default async function Post({ params: paramsPromise }: Args) {
   if (!post) return <PayloadRedirects url={url} />
 
   return (
-    <article className="bg-primary pt-24 md:pt-0">
+    <article className="bg-primary pt-24 pb-12 md:pt-0 md:pb-32">
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
@@ -71,9 +71,7 @@ export default async function Post({ params: paramsPromise }: Args) {
       </div>
       {post.relatedPosts && post.relatedPosts.length > 0 && (
         <section className="bg-primary py-12">
-          <h2 className="text-primary-foreground container mb-12 text-5xl font-light">
-            More posts
-          </h2>
+          <h2 className="text-primary-foreground container pb-4 text-5xl font-light">More posts</h2>
           <RelatedPosts docs={post.relatedPosts.filter((post) => typeof post === 'object')} />
         </section>
       )}
