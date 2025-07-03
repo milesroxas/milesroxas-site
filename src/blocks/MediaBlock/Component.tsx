@@ -10,7 +10,7 @@ import type { MediaBlock as MediaBlockProps } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 import { Theme, useTheme } from '@/providers/Theme'
-import { useSectionSpacing } from '@/hooks/useSectionSpacing'
+import { useSpacing, SpaceProps } from '@/hooks/useSpacing'
 
 type Props = MediaBlockProps & {
   breakout?: boolean
@@ -21,6 +21,7 @@ type Props = MediaBlockProps & {
   disableInnerContainer?: boolean
   theme?: 'system' | 'light' | 'dark' | null
   captionSize?: 'normal' | 'large' | 'xl'
+  id?: string
 }
 
 export const MediaBlock: React.FC<Props> = (props) => {
@@ -36,6 +37,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
     space,
     theme = 'system',
     captionSize = 'normal',
+    id,
   } = props
 
   let caption
@@ -55,74 +57,80 @@ export const MediaBlock: React.FC<Props> = (props) => {
     return theme as Theme
   })()
 
-  const spacingClasses = useSectionSpacing(space)
+  const spacingStyles = useSpacing(space as SpaceProps)
 
   return (
     <div
-      className={cn(
-        {
-          'w-full': true,
-          'mx-0': true,
-          'text-primary-foreground': effectiveTheme === 'dark',
-        },
-        effectiveTheme === 'dark'
-          ? 'bg-primary text-primary-foreground font-light'
-          : 'bg-background text-foreground',
-        spacingClasses,
-        className,
-      )}
+      data-theme={effectiveTheme}
+      className={cn('theme-transition w-full', {
+        'bg-primary text-primary-foreground font-light': effectiveTheme === 'dark',
+        'bg-background text-foreground': effectiveTheme !== 'dark',
+      })}
+      id={`block-${id}`}
     >
-      <div
-        className={cn({
-          'container mx-auto': !fullWidth,
-          'w-full': true,
-        })}
-      >
+      <div style={spacingStyles}>
         <div
-          className={cn({
-            'w-full': true,
-            'overflow-hidden': true,
-            relative: useAspectRatio,
-            container: !fullWidth,
-            'aspect-square': useAspectRatio && aspectRatio === 'square',
-            'aspect-[4/5]': useAspectRatio && aspectRatio === 'portrait',
-            'aspect-[16/10]': useAspectRatio && aspectRatio === 'landscape',
-          })}
+          className={cn(
+            {
+              'w-full': true,
+              'mx-0': true,
+            },
+            className,
+          )}
         >
-          <Media
-            imgClassName={cn(imgClassName, {
-              'rounded-[0.2rem]': !fullWidth,
-              'w-full h-full': useAspectRatio,
-              'w-full': !useAspectRatio,
-              'h-auto': !useAspectRatio,
-              'object-cover': useAspectRatio,
-              'object-contain': !useAspectRatio,
-            })}
-            fill={useAspectRatio}
-            resource={media}
-            src={staticImage}
-            size={fullWidth ? '100vw' : '(max-width: 768px) 100vw, 80vw'}
-            priority={true}
-          />
-        </div>
-        {caption && (
           <div
-            className={cn(
-              'mt-6',
-              {
-                container: !fullWidth,
-                'mx-auto': fullWidth && !disableInnerContainer,
-                'max-w-[80ch]': fullWidth && !disableInnerContainer,
-                'text-base': captionSize === 'normal',
-                'text-lg': captionSize === 'large',
-                'text-xl': captionSize === 'xl',
-              },
-              captionClassName,
-            )}
+            className={cn({
+              'container mx-auto': !fullWidth,
+              'w-full': true,
+            })}
           >
-            <RichText data={caption} enableGutter={false} />
+            <div
+              className={cn({
+                'w-full': true,
+                'overflow-hidden': true,
+                relative: useAspectRatio,
+                container: !fullWidth,
+                'aspect-square': useAspectRatio && aspectRatio === 'square',
+                'aspect-[4/5]': useAspectRatio && aspectRatio === 'portrait',
+                'aspect-[16/10]': useAspectRatio && aspectRatio === 'landscape',
+              })}
+            >
+              <Media
+                imgClassName={cn(imgClassName, {
+                  'rounded-[0.2rem]': !fullWidth,
+                  'w-full h-full': useAspectRatio,
+                  'w-full': !useAspectRatio,
+                  'h-auto': !useAspectRatio,
+                  'object-cover': useAspectRatio,
+                  'object-contain': !useAspectRatio,
+                })}
+                fill={useAspectRatio}
+                resource={media}
+                src={staticImage}
+                size={fullWidth ? '100vw' : '(max-width: 768px) 100vw, 80vw'}
+                priority={true}
+              />
+            </div>
+            {caption && (
+              <div
+                className={cn(
+                  'mt-6',
+                  {
+                    container: !fullWidth,
+                    'mx-auto': fullWidth && !disableInnerContainer,
+                    'max-w-[80ch]': fullWidth && !disableInnerContainer,
+                    'text-base': captionSize === 'normal',
+                    'text-lg': captionSize === 'large',
+                    'text-xl': captionSize === 'xl',
+                  },
+                  captionClassName,
+                )}
+              >
+                <RichText data={caption} enableGutter={false} />
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   )
