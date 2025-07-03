@@ -46,7 +46,7 @@ export const Works: CollectionConfig<'works'> = {
     },
   },
   admin: {
-    defaultColumns: ['title', 'slug', 'order', 'updatedAt'],
+    defaultColumns: ['title', 'slug', '_order', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) => {
         const path = generatePreviewPath({
@@ -54,6 +54,7 @@ export const Works: CollectionConfig<'works'> = {
           collection: 'works',
           req,
         })
+        console.log('Preview URL for works:', path)
 
         return path
       },
