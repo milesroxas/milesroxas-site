@@ -23,6 +23,11 @@ const nextConfig = {
         pathname: '/api/media/file/**',
       },
       {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+        pathname: '/**',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
         port: '3000',
