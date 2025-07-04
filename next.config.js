@@ -11,17 +11,17 @@ const nextConfig = {
   redirects,
 
   images: {
-    // allow your /api/media/file/* endpoint on Vercel
-    remotePatterns: [
-      vercelHost && {
-        protocol: 'https',
-        hostname: vercelHost,
-        port: '',
-        pathname: '/api/media/file/**',
-      },
-    ].filter(Boolean),
-
-    // disable the image optimizer in dev so we don't proxy to ourselves
+    remotePatterns: vercelHost
+      ? [
+          {
+            protocol: 'https',
+            hostname: vercelHost,
+            port: '',
+            pathname: '/api/media/file/**',
+          },
+        ]
+      : [],
+    // disable the image optimizer in dev to avoid self-referencing
     unoptimized: isDev,
   },
 
