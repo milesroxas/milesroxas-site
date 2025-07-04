@@ -9,6 +9,7 @@ import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { SliderBlock } from '@/blocks/Slider/Component'
 import { TabsBlock } from '@/blocks/Tabs/Component'
 import { AnimatedBlocksContainer } from './AnimatedBlocksContainer'
+import { CallOutBlock } from './CallOut/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -18,6 +19,7 @@ const blockComponents = {
   mediaBlock: MediaBlock,
   slider: SliderBlock,
   tabs: TabsBlock,
+  callout: CallOutBlock,
 }
 
 export const RenderBlocks: React.FC<{
