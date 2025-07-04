@@ -566,13 +566,13 @@ html.theme-transition *::after {
 
     /* Size-specific overrides for mobile */
     .prose-blocks.text-size-sm p {
-      @apply text-xs leading-normal;
-    }
-    .prose-blocks.text-size-base p {
       @apply text-sm leading-normal;
     }
-    .prose-blocks.text-size-lg p {
+    .prose-blocks.text-size-base p {
       @apply text-base leading-normal;
+    }
+    .prose-blocks.text-size-lg p {
+      @apply text-lg leading-normal;
     }
     .prose-blocks.text-size-xl p {
       @apply text-2xl leading-relaxed;

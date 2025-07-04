@@ -9,7 +9,7 @@ const PageClient: React.FC<{ work: Work }> = ({ work }) => {
   const { restoreFrame } = usePageAnimationStore()
   const lenis = useLenis()
 
-  const { industry, role, deliverables } = work
+  const { industry, role, deliverables, title } = work
 
   useEffect(() => {
     restoreFrame()
@@ -17,32 +17,41 @@ const PageClient: React.FC<{ work: Work }> = ({ work }) => {
   }, [restoreFrame, lenis])
 
   return (
-    <>
-      {(industry || role || deliverables) && (
-        <div className="bg-primary flex w-full flex-col items-center py-4 font-light text-white md:min-h-[12vh] md:flex-row md:py-0">
-          <div className="container flex flex-col gap-8 md:flex-row">
-            {industry && (
-              <div>
-                <h2 className="text-muted-foreground">Industry</h2>
-                <p className="text-xl">{industry}</p>
-              </div>
-            )}
-            {role && (
-              <div>
-                <h2 className="text-md text-muted-foreground">Role</h2>
-                <p className="text-xl">{role}</p>
-              </div>
-            )}
-            {deliverables && (
-              <div>
-                <h2 className="text-muted-foreground">Deliverables</h2>
-                <p className="text-xl">{deliverables}</p>
-              </div>
-            )}
+    <div className="bg-primary flex items-center py-8 md:h-full lg:h-[14vh] lg:py-0">
+      <div className="container flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+        {title && (
+          <div className="font-light text-white">
+            <div className="flex flex-col gap-8 md:flex-row">
+              <h1 className="text-5xl">{title}</h1>
+            </div>
           </div>
-        </div>
-      )}
-    </>
+        )}
+        {(industry || role || deliverables) && (
+          <div className="flex w-full flex-col font-light text-white md:min-h-[12vh] md:flex-row md:items-center md:justify-end">
+            <div className="flex flex-col gap-4 md:flex-row md:gap-8">
+              {industry && (
+                <div>
+                  <h2 className="text-muted-foreground text-sm md:text-base">Industry</h2>
+                  <p className="text-md">{industry}</p>
+                </div>
+              )}
+              {role && (
+                <div>
+                  <h2 className="text-muted-foreground text-sm md:text-base">Role</h2>
+                  <p className="text-md">{role}</p>
+                </div>
+              )}
+              {deliverables && (
+                <div>
+                  <h2 className="text-muted-foreground text-sm md:text-base">Deliverables</h2>
+                  <p className="text-md">{deliverables}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
