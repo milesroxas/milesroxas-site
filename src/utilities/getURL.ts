@@ -12,17 +12,16 @@ export const getServerSideURL = () => {
 }
 
 export const getClientSideURL = () => {
+  // For Vercel Blob storage URLs in preview environments
+  if (process.env.VERCEL_URL && !canUseDOM) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+
+  // For client-side rendering, use origin
   if (canUseDOM) {
-    const protocol = window.location.protocol
-    const domain = window.location.hostname
-    const port = window.location.port
-
-    return `${protocol}//${domain}${port ? `:${port}` : ''}`
+    return window.location.origin
   }
 
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  }
-
+  // Fallbacks
   return process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 }
