@@ -11,17 +11,24 @@ const nextConfig = {
   redirects,
 
   images: {
-    remotePatterns: vercelHost
-      ? [
-          {
-            protocol: 'https',
-            hostname: vercelHost,
-            port: '',
-            pathname: '/api/media/file/**',
-          },
-        ]
-      : [],
-    // disable the image optimizer in dev to avoid self-referencing
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.milesroxas.com', // Covers both www and non-www
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.vercel.app', // Covers all Vercel deployments
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/media/file/**',
+      },
+    ],
     unoptimized: isDev,
   },
 
