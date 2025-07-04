@@ -1,5 +1,5 @@
 {
-  "id": "fc0fc9ee-87ac-468f-81e1-281dedd8a14e",
+  "id": "04e0521f-9c99-4278-8cd6-632cb2f9f2e2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -711,6 +711,13 @@
           "notNull": false,
           "default": "'landscape'"
         },
+        "media_full_width": {
+          "name": "media_full_width",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "media_caption_size": {
           "name": "media_caption_size",
           "type": "enum_pages_blocks_content_columns_media_caption_size",
@@ -718,13 +725,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'normal'"
-        },
-        "media_full_width": {
-          "name": "media_full_width",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
         }
       },
       "indexes": {
@@ -2992,6 +2992,13 @@
           "notNull": false,
           "default": "'landscape'"
         },
+        "media_full_width": {
+          "name": "media_full_width",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "media_caption_size": {
           "name": "media_caption_size",
           "type": "enum__pages_v_blocks_content_columns_media_caption_size",
@@ -2999,13 +3006,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'normal'"
-        },
-        "media_full_width": {
-          "name": "media_full_width",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
         },
         "_uuid": {
           "name": "_uuid",
@@ -6859,6 +6859,13 @@
           "notNull": false,
           "default": "'landscape'"
         },
+        "media_full_width": {
+          "name": "media_full_width",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "media_caption_size": {
           "name": "media_caption_size",
           "type": "enum_works_blocks_content_columns_media_caption_size",
@@ -6866,13 +6873,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'normal'"
-        },
-        "media_full_width": {
-          "name": "media_full_width",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
         }
       },
       "indexes": {
@@ -8482,7 +8482,7 @@
               "nulls": "last"
             }
           ],
-          "isUnique": true,
+          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -9576,6 +9576,13 @@
           "notNull": false,
           "default": "'landscape'"
         },
+        "media_full_width": {
+          "name": "media_full_width",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "media_caption_size": {
           "name": "media_caption_size",
           "type": "enum__works_v_blocks_content_columns_media_caption_size",
@@ -9583,13 +9590,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'normal'"
-        },
-        "media_full_width": {
-          "name": "media_full_width",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
         },
         "_uuid": {
           "name": "_uuid",
@@ -12497,6 +12497,94 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.users_sessions": {
+      "name": "users_sessions",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "users_sessions_order_idx": {
+          "name": "users_sessions_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "users_sessions_parent_id_idx": {
+          "name": "users_sessions_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "users_sessions_parent_id_fk": {
+          "name": "users_sessions_parent_id_fk",
+          "tableFrom": "users_sessions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.users": {
       "name": "users",
       "schema": "",
@@ -14195,7 +14283,7 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": true,
-          "default": "'You''''ve received a new message.'"
+          "default": "'You''ve received a new message.'"
         },
         "message": {
           "name": "message",
@@ -16936,7 +17024,8 @@
       "values": [
         "square",
         "landscape",
-        "portrait"
+        "portrait",
+        "original"
       ]
     },
     "public.enum_pages_blocks_content_columns_media_caption_size": {
@@ -17015,7 +17104,8 @@
       "values": [
         "landscape",
         "square",
-        "portrait"
+        "portrait",
+        "original"
       ]
     },
     "public.enum_pages_blocks_media_block_theme": {
@@ -17429,7 +17519,8 @@
       "values": [
         "square",
         "landscape",
-        "portrait"
+        "portrait",
+        "original"
       ]
     },
     "public.enum__pages_v_blocks_content_columns_media_caption_size": {
@@ -17508,7 +17599,8 @@
       "values": [
         "landscape",
         "square",
-        "portrait"
+        "portrait",
+        "original"
       ]
     },
     "public.enum__pages_v_blocks_media_block_theme": {
@@ -17992,7 +18084,8 @@
       "values": [
         "square",
         "landscape",
-        "portrait"
+        "portrait",
+        "original"
       ]
     },
     "public.enum_works_blocks_content_columns_media_caption_size": {
@@ -18071,7 +18164,8 @@
       "values": [
         "landscape",
         "square",
-        "portrait"
+        "portrait",
+        "original"
       ]
     },
     "public.enum_works_blocks_media_block_theme": {
@@ -18572,7 +18666,8 @@
       "values": [
         "square",
         "landscape",
-        "portrait"
+        "portrait",
+        "original"
       ]
     },
     "public.enum__works_v_blocks_content_columns_media_caption_size": {
@@ -18651,7 +18746,8 @@
       "values": [
         "landscape",
         "square",
-        "portrait"
+        "portrait",
+        "original"
       ]
     },
     "public.enum__works_v_blocks_media_block_theme": {
