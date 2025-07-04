@@ -34,7 +34,6 @@ const nextConfig = {
         pathname: '/api/media/file/**',
       },
     ],
-    unoptimized: isDev,
   },
 
   turbopack: {
