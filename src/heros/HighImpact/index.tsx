@@ -6,8 +6,6 @@ import gsap from 'gsap'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import type { Page } from '@/payload-types'
 import { Media } from '@/components/Media'
-import { CMSLink } from '@/components/Link'
-import RichText from '@/components/RichText'
 
 export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText, showContent }) => {
   const { setHeaderTheme } = useHeaderTheme()
