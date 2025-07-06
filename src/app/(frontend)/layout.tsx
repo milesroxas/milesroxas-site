@@ -42,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="bg-background text-foreground min-h-screen">
         <Providers>
-          {isPreview && <Header />}
+          <Header />
           <SiteFrame>{children}</SiteFrame>
           <AdminBar
             adminBarProps={{
