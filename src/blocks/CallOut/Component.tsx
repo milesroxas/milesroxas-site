@@ -9,8 +9,11 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { SplitText } from 'gsap/SplitText'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { getEnv } from '@/utilities/getEnv'
 
 gsap.registerPlugin(SplitText, ScrollTrigger, useGSAP)
+
+const { isPreview } = getEnv()
 
 export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
   const container = useRef<HTMLDivElement>(null)
@@ -66,7 +69,7 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
               stagger: 0.1,
               scrollTrigger: {
                 trigger: container.current,
-                markers: true,
+                markers: isPreview,
                 scrub: true,
                 start: 'clamp(top center)',
                 end: 'clamp(bottom center)',
