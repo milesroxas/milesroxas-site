@@ -93,7 +93,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
                 'aspect-square': useAspectRatio && aspectRatio === 'square',
                 'aspect-[4/5]': useAspectRatio && aspectRatio === 'portrait',
                 'aspect-[16/10]': useAspectRatio && aspectRatio === 'landscape',
-                'flex max-w-full justify-center': !useAspectRatio,
+                'mx-auto flex max-w-full justify-center': !useAspectRatio,
               })}
             >
               <Media
