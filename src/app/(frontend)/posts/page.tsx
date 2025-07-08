@@ -1,12 +1,10 @@
 import type { Metadata } from 'next/types'
 
-import { PageRange } from '@/components/PageRange'
-import { Pagination } from '@/components/Pagination'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
-import PageClient from './page.client'
-import { PostsArchive } from '@/components/PostsArchive/PostsArchive'
+
+import PostsClient from './page.client'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -30,26 +28,19 @@ export default async function Page() {
 
   return (
     <div className="pt-24 pb-24">
-      <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none">
           <h1 className="text-center text-7xl font-light">Posts</h1>
         </div>
       </div>
 
-      <PostsArchive posts={posts.docs} />
-
-      <div className="container">
-        {posts.totalPages > 1 && posts.page && (
-          <Pagination page={posts.page} totalPages={posts.totalPages} />
-        )}
-      </div>
+      <PostsClient posts={posts.docs} />
     </div>
   )
 }
 
 export function generateMetadata(): Metadata {
   return {
-    title: `Payload Website Template Posts`,
+    title: `Posts`,
   }
 }

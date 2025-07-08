@@ -6,7 +6,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 import { Search } from '@/search/Component'
 import PageClient from './page.client'
-import { CardPostData, PostCard } from '@/components/Card/Posts/Component'
+import { CardPostData } from '@/components/Card/Posts/Component'
 
 type Args = {
   searchParams: Promise<{
@@ -58,12 +58,6 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
           },
         }
       : {}),
-  })
-
-  const works = await payload.find({
-    collection: 'works',
-    depth: 1,
-    limit: 12,
   })
 
   return (

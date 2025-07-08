@@ -6,20 +6,17 @@ import gsap from 'gsap'
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
+
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 export const PostHero: React.FC<{
   post: Post
 }> = ({ post }) => {
-  const { setHeaderTheme } = useHeaderTheme()
   const { categories, hero, publishedAt, title } = post
   const heroRef = useRef<HTMLDivElement>(null)
   const restoreFrame = usePageAnimationStore((s) => s.restoreFrame)
 
   useEffect(() => {
-    setHeaderTheme('dark')
-
     // Wait for the DOM to fully render before trying to access the clone
     setTimeout(() => {
       const clone = window.__PAGE_TRANSITION_CLONE as HTMLElement | undefined
@@ -113,7 +110,7 @@ export const PostHero: React.FC<{
         })
       }, 100) // Small delay to ensure all elements are properly rendered
     }, 100) // Initial delay to ensure component is mounted
-  }, [restoreFrame, setHeaderTheme])
+  }, [restoreFrame])
 
   return (
     <div className="relative -mt-[10.4rem] flex items-end" ref={heroRef}>

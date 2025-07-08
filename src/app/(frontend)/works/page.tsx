@@ -1,14 +1,11 @@
 import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
-import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
-import { draftMode } from 'next/headers'
-import React, { cache } from 'react'
+import { getPayload } from 'payload'
 
-import PageClient from './page.client'
-import { PageRange } from '@/components/PageRange'
+import React from 'react'
+
 import { WorkArchive } from '@/components/WorkArchive'
-import { Pagination } from '@/components/Pagination'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -32,29 +29,13 @@ export default async function Page() {
 
   return (
     <div className="pt-16 pb-24">
-      <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none">
           <h1 className="text-center text-7xl font-light">Work</h1>
         </div>
       </div>
 
-      {/* <div className="container mb-8">
-        <PageRange
-          collection="works"
-          currentPage={works.page}
-          limit={12}
-          totalDocs={works.totalDocs}
-        />
-      </div> */}
-
       <WorkArchive works={works.docs} />
-
-      <div className="container">
-        {works.totalPages > 1 && works.page && (
-          <Pagination page={works.page} totalPages={works.totalPages} />
-        )}
-      </div>
     </div>
   )
 }

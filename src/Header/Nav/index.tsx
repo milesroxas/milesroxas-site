@@ -82,7 +82,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   return (
     <>
       <button onClick={openModal} className="fixed top-6 right-6 z-50 md:top-16 md:right-16">
-        <span className="text-secondary flex items-center rounded-xs bg-gray-700/40 px-4 py-1 font-medium backdrop-blur-sm hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg lg:rounded-sm">
+        <span className="text-secondary flex items-center rounded-xs bg-gray-700/20 px-4 py-1 font-medium backdrop-blur-sm hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg lg:rounded-sm">
           Menu
         </span>
       </button>
@@ -90,7 +90,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
       {shouldRender && (
         <div
           ref={menuRef}
-          className="bg-background fixed inset-0 z-60 h-full w-full"
+          className="fixed inset-0 z-[9999] h-full w-full bg-white"
           style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
         >
           <div className="flex h-full flex-col pt-12 pl-8 md:pl-16">
@@ -118,16 +118,12 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
             <nav className="container flex flex-1 flex-col justify-center gap-12 pl-6">
               {navItems.map(({ link }, i) => (
                 <div key={i} ref={(el) => setNavItemRef(el, i)}>
-                  <Link
-                    href={link.url || ''}
+                  <CMSLink
+                    {...link}
+                    appearance="inline"
                     className="text-primary text-4xl"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      handleNavClick(link.url || '')
-                    }}
-                  >
-                    <CMSLink {...link} appearance="inline" className="text-primary text-4xl" />
-                  </Link>
+                    onClick={handleNavClick}
+                  />
                 </div>
               ))}
 

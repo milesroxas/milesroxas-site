@@ -1,6 +1,6 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
-import React, { useEffect, useState } from 'react'
+
+import React, { useEffect } from 'react'
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 import { useLenis } from '@/hooks/useLenis'
 import { Post } from '@/payload-types'
@@ -9,8 +9,6 @@ import { formatDateTime } from 'src/utilities/formatDateTime'
 const PageClient: React.FC<{ post: Post }> = ({ post }) => {
   const { categories, publishedAt, title } = post
 
-  const { setHeaderTheme } = useHeaderTheme()
-  const [theme, setTheme] = useState<string | null>(null)
   const { restoreFrame } = usePageAnimationStore()
   const lenis = useLenis()
 
@@ -19,16 +17,8 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
     lenis?.scrollTo(0, { immediate: true })
   }, [restoreFrame, lenis])
 
-  useEffect(() => {
-    setHeaderTheme('dark')
-    setTheme('dark')
-  }, [setHeaderTheme, setTheme])
-
   return (
-    <div
-      className="mb-8 w-full items-center font-light md:mb-12 md:pt-40"
-      {...(theme ? { 'data-theme': theme } : {})}
-    >
+    <div className="mb-8 w-full items-center font-light md:mb-12 md:pt-40">
       <div className="container">
         <div className="flex max-w-2xl flex-col gap-4">
           {title && (

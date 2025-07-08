@@ -3,10 +3,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
-import { SliderBlock, type SliderBlockProps as SliderDataProps } from '@/blocks/Slider/Component'
-import { useTheme } from '@/providers/Theme'
+import { SliderBlock } from '@/blocks/Slider/Component'
+import { useBlockTheme } from '@/hooks/useBlockTheme'
 import { useEffect, useState } from 'react'
 import { useSpacing, SpaceProps } from '@/hooks/useSpacing'
+import type { SliderBlock as SliderBlockType } from '@/payload-types'
 
 type Tab = {
   id: string
@@ -14,7 +15,8 @@ type Tab = {
   className?: string
   contentType: 'richText' | 'slider'
   richText?: any
-  slider?: Omit<SliderDataProps, 'introContent' | 'space' | 'blockType' | 'className'>
+  slider?: SliderBlockType
+  theme?: 'light' | 'dark' | 'system'
 }
 
 type TabsBlockProps = {
@@ -43,7 +45,7 @@ type TabsBlockProps = {
 export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
   const { tabs, space, className, id, heading, theme = 'system' } = props
   const [currentIndex, setCurrentIndex] = useState(0)
-  const { theme: systemTheme } = useTheme()
+  const appliedTheme = useBlockTheme(theme)
   const [mounted, setMounted] = useState(false)
   const spacingStyles = useSpacing(space as SpaceProps)
 
@@ -51,22 +53,9 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
     setMounted(true)
   }, [])
 
-  const activeTheme =
-    theme === 'dark'
-      ? 'dark'
-      : mounted && (theme === 'system' || !theme)
-        ? systemTheme
-        : theme || 'light'
-
   return (
-    <div
-      data-theme={activeTheme}
-      className={cn('theme-transition w-full', {
-        'bg-primary text-primary-foreground font-light': activeTheme === 'dark',
-        'bg-background text-foreground': activeTheme !== 'dark',
-      })}
-    >
-      <div style={spacingStyles}>
+    <div data-theme={appliedTheme} className={cn('w-full', {})}>
+      <div style={spacingStyles} className="bg-background text-foreground">
         <div className="container px-8 md:px-14 lg:px-16">
           <Tabs defaultValue={tabs[0]?.id} className="flex flex-col items-start gap-8 md:flex-row">
             <div className="basis-full md:basis-4/12">
@@ -113,7 +102,13 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
                     )}
                     {tab.contentType === 'slider' && tab.slider && (
                       <div className="w-full">
-                        <SliderBlock {...tab.slider} blockType="slider" theme="dark" />
+                        <SliderBlock
+                          {...tab.slider}
+                          blockType="slider"
+                          theme="dark"
+                          slides={tab.slider.slides}
+                          id={tab.id}
+                        />
                       </div>
                     )}
                   </TabsContent>
