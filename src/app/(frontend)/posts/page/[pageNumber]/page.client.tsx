@@ -1,15 +1,15 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
-import React, { useEffect } from 'react'
 
-const PageClient: React.FC = () => {
-  /* Force the header to be dark mode while we have an image behind it */
-  const { setHeaderTheme } = useHeaderTheme()
+import React from 'react'
+import { CardPostData } from '@/components/Card/Posts/Component'
+import { PostsArchive } from '@/components/PostsArchive/PostsArchive'
 
-  useEffect(() => {
-    setHeaderTheme('light')
-  }, [setHeaderTheme])
-  return <React.Fragment />
+interface PostsClientProps {
+  posts: CardPostData[]
 }
 
-export default PageClient
+const PageNumberClient: React.FC<PostsClientProps> = ({ posts }) => {
+  return <PostsArchive posts={posts} />
+}
+
+export default PageNumberClient

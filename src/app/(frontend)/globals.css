@@ -1,6 +1,87 @@
 @import 'tailwindcss';
 
-@theme {
+:root {
+  /* Color variables converted to HSL */
+  --background: hsl(60 5% 96%);
+  --foreground: hsl(240 6% 5%);
+  --card: hsl(0 0% 0%);
+  --card-foreground: hsl(0 0% 98%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(240 10% 4%);
+  --primary: hsl(240 6% 0%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(240 5% 96%);
+  --secondary-foreground: hsl(240 6% 30%);
+  --muted: hsl(240 5% 96%);
+  --muted-foreground: hsl(240 4% 46%);
+  --accent: hsl(21 90% 48%);
+  --accent-foreground: hsl(240 6% 10%);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 86% 97%);
+  --border: hsl(240 6% 90%);
+  --input: hsl(240 6% 90%);
+  --ring: hsl(240 6% 10%);
+
+  --chart-1: hsl(173 58% 39%);
+  --chart-2: hsl(12 76% 61%);
+  --chart-3: hsl(197 37% 24%);
+  --chart-4: hsl(43 74% 66%);
+  --chart-5: hsl(27 87% 67%);
+
+  --sidebar-background: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5% 26%);
+  --sidebar-primary: hsl(240 6% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 5% 96%);
+  --sidebar-accent-foreground: hsl(240 6% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(240 5% 65%);
+
+  /* Non-color variables remain unchanged */
+  --radius: 0.5rem;
+  --space-none: 0;
+  --space-sm: 2rem;
+  --space-md: 4rem;
+  --space-lg: 6rem;
+  --space-xl: 8rem;
+}
+
+[data-theme='dark'] {
+  --background: hsl(240 10% 4%);
+  --foreground: hsl(0 0% 98%);
+  --card: hsl(0 0% 98%);
+  --card-foreground: hsl(224 71% 4%);
+  --popover: hsl(240 10% 4%);
+  --popover-foreground: hsl(0 0% 98%);
+  --primary: hsl(0 0% 98%);
+  --primary-foreground: hsl(240 6% 10%);
+  --secondary: hsl(240 4% 16%);
+  --secondary-foreground: hsl(0 0% 98%);
+  --muted: hsl(240 4% 16%);
+  --muted-foreground: hsl(240 5% 65%);
+  --accent: hsl(142 71% 45%);
+  --accent-foreground: hsl(0 0% 98%);
+  --destructive: hsl(0 63% 31%);
+  --destructive-foreground: hsl(0 86% 97%);
+  --border: hsl(240 4% 16%);
+  --input: hsl(240 4% 16%);
+  --ring: hsl(240 5% 84%);
+  --chart-1: hsl(220 70% 50%);
+  --chart-2: hsl(340 75% 55%);
+  --chart-3: hsl(30 80% 55%);
+  --chart-4: hsl(280 65% 60%);
+  --chart-5: hsl(160 60% 45%);
+  --sidebar-background: hsl(240 6% 10%);
+  --sidebar-foreground: hsl(240 5% 96%);
+  --sidebar-primary: hsl(224 76% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 4% 16%);
+  --sidebar-accent-foreground: hsl(240 5% 96%);
+  --sidebar-border: hsl(240 4% 16%);
+  --sidebar-ring: hsl(240 5% 84%);
+}
+
+@theme inline {
   /* Container configuration */
   --container-center: true;
   --container-padding-DEFAULT: 1rem;
@@ -23,36 +104,32 @@
   --radius-lg: var(--radius);
 
   /* Colors */
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-border: hsla(var(--border));
-  --color-ring: hsl(var(--ring));
-  --color-input: hsl(var(--input));
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
 
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
 
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
 
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
 
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-
-  --color-success: hsl(var(--success));
-  --color-error: hsl(var(--error));
-  --color-warning: hsl(var(--warning));
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
 
   /* Font families */
   --font-family-sans: 'area-normal-light', sans-serif;
@@ -112,109 +189,6 @@
       transition: none;
     }
   }
-
-  :root {
-    --background: 60 5% 96%;
-    --foreground: 240 6% 5%;
-    --card: 0 0% 0%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 4%;
-    --primary: 240 6% 0%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 6% 30%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
-    --accent: 21 90% 48%;
-    --accent-foreground: 240 6% 10%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 86% 97%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 240 6% 10%;
-    --radius: 0.5rem;
-    --chart-1: 173 58% 39%;
-    --chart-2: 12 76% 61%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5% 26%;
-    --sidebar-primary: 240 6% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 5% 96%;
-    --sidebar-accent-foreground: 240 6% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 240 5% 65%;
-    --space-none: 0;
-    --space-sm: 2rem;
-    --space-md: 4rem;
-    --space-lg: 6rem;
-    --space-xl: 8rem;
-  }
-
-  .dark {
-    --background: 240 10% 2%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 98%;
-    --card-foreground: 224 71% 4%;
-    --popover: 240 10% 4%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 6% 2%;
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 0 0% 90%;
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 142 71% 45%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 86% 97%;
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 240 5% 84%;
-    --radius: 0.5rem;
-    --chart-1: 220 70% 50%;
-    --chart-2: 340 75% 55%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 160 60% 45%;
-    --sidebar-background: 240 6% 10%;
-    --sidebar-foreground: 240 5% 96%;
-    --sidebar-primary: 224 76% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4% 16%;
-    --sidebar-accent-foreground: 240 5% 96%;
-    --sidebar-border: 240 4% 16%;
-    --sidebar-ring: 240 5% 84%;
-  }
-}
-
-html {
-  opacity: 0;
-}
-
-html[data-theme='dark'],
-html[data-theme='light'] {
-  opacity: initial;
-}
-
-html[data-theme='light'] {
-  color-scheme: light;
-}
-
-html[data-theme='dark'] {
-  color-scheme: dark;
-}
-
-/* Theme transition handling */
-html.theme-transition,
-html.theme-transition *,
-html.theme-transition *::before,
-html.theme-transition *::after {
-  transition: all 0.3s ease-out !important;
-  transition-delay: 0 !important;
 }
 
 /* at medium screens and up */
@@ -272,15 +246,6 @@ html.theme-transition *::after {
     padding-left: 6rem;
     padding-right: 6rem;
   }
-}
-
-/* Define theme-transition utility explicitly */
-@utility theme-transition {
-  transition:
-    background-color 0.3s ease-out,
-    color 0.3s ease-out,
-    border-color 0.3s ease-out,
-    box-shadow 0.3s ease-out;
 }
 
 @layer utilities {
@@ -528,10 +493,10 @@ html.theme-transition *::after {
       @apply text-xl leading-relaxed;
     }
     .prose-blocks.text-size-xl p {
-      @apply text-3xl leading-relaxed;
+      @apply text-2xl leading-relaxed;
     }
     .prose-blocks.text-size-2xl p {
-      @apply text-5xl leading-relaxed;
+      @apply text-3xl leading-relaxed;
     }
   }
 
@@ -581,7 +546,7 @@ html.theme-transition *::after {
       @apply text-4xl leading-relaxed;
     }
 
-    .section-heading-wrapper .prose-blocks.section-heading-xl p {
+    .prose-blocks.section-heading-xl p {
       @apply text-2xl;
     }
 

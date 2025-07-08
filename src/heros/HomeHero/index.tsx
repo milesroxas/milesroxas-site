@@ -1,18 +1,16 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
+
 import React, { useEffect, useRef } from 'react'
 import styles from './homeHero.module.css'
 import type { Page } from '@/payload-types'
 import { gsap } from 'gsap'
 import { useAnimationStore } from '@/stores/animationStore'
 
-import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
-import RichText from '@/components/RichText'
+
 import { cn } from '@/utilities/ui'
 
 export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
-  const { setHeaderTheme } = useHeaderTheme()
   const setHeroAnimationComplete = useAnimationStore((state) => state.setHeroAnimationComplete)
 
   // Create refs for animation targets
@@ -42,7 +40,6 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
   ]
 
   useEffect(() => {
-    setHeaderTheme('light')
     setHeroAnimationComplete(false)
 
     // Create timeline for animations
@@ -96,7 +93,7 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
       tl.kill()
       setHeroAnimationComplete(false)
     }
-  }, [setHeaderTheme, setHeroAnimationComplete])
+  }, [setHeroAnimationComplete])
 
   // Create a serializable media object
   const safeMedia =
@@ -109,7 +106,11 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
       : media
 
   return (
-    <div ref={containerRef} className="relative w-full overflow-hidden">
+    <div
+      data-theme="light"
+      ref={containerRef}
+      className="bg-background relative w-full overflow-hidden"
+    >
       {/* Top marquee */}
       <div ref={topMarqueeRef} className="absolute top-[40vh] z-0 w-full opacity-0">
         <div className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-black')}>

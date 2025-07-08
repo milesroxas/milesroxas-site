@@ -39,7 +39,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   imageRef: imageRefProp,
   showDescription = false,
 }) => {
-  const { slug, meta, title, hero } = doc || {}
+  const { slug, title, hero } = doc || {}
   const description = hero?.richText
   const href = `/${relationTo}/${slug}`
   const router = useRouter()

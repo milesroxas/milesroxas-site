@@ -19,7 +19,7 @@ export async function generateStaticParams() {
   const works = await payload.find({
     collection: 'works',
     draft: false,
-    limit: 1000,
+    limit: 10,
     overrideAccess: false,
     pagination: false,
     select: {
@@ -27,6 +27,7 @@ export async function generateStaticParams() {
       industry: true,
       role: true,
       deliverables: true,
+      title: true,
     },
   })
 

@@ -1,53 +1,20 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
-} from '@/components/ui/carousel'
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel'
 
 import Link from 'next/link'
+import { useBlockTheme } from '@/hooks/useBlockTheme'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
-import { useTheme } from '@/providers/Theme'
-import { useSpacing, SpaceProps } from '@/hooks/useSpacing'
 
-export type SliderBlockProps = {
-  theme?: 'light' | 'dark' | 'system'
-  introContent?: {
-    heading?: string
-    subheading?: string
-    size?: 'base' | 'lg' | 'xl'
-    align?: 'left' | 'center'
-  }
-  space?: {
-    pt?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
-    pb?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
-    mt?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
-    mb?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
-  }
-  slides: {
-    slide: {
-      image: any
-      caption?: string
-      link?: {
-        relationTo: 'works' | 'posts'
-        value: string | number | Record<string, any>
-      }
-    }
-  }[]
-  style?: 'default' | 'single' | 'cropped'
-  blockType: 'slider'
-  className?: string
-  fullWidth?: boolean
-}
+import { useSpacing } from '@/hooks/useSpacing'
+import type { SliderBlock as SliderBlockType } from '@/payload-types'
 
-export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
-  theme: propTheme,
+type SliderBlockProps = SliderBlockType & { id?: string; className?: string; fullWidth?: boolean }
+
+export const SliderBlock: React.FC<SliderBlockProps> = ({
+  theme,
   id,
   introContent,
   slides,
@@ -58,10 +25,10 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
 }) => {
   const [api, setApi] = useState<CarouselApi>()
   const [currentIndex, setCurrentIndex] = useState(0)
-  const { theme: systemTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
 
   const spacingStyles = useSpacing(space)
+
+  const appliedTheme = useBlockTheme(theme)
 
   const getHref = (link: { relationTo: string; value: string | number | Record<string, any> }) => {
     if (!link) return '#'
@@ -90,32 +57,9 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
     }
   }, [api])
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  // Determine the active theme based on the prop and system theme
-  const activeTheme =
-    propTheme === 'dark'
-      ? 'dark'
-      : mounted && (propTheme === 'system' || !propTheme)
-        ? systemTheme
-        : propTheme || 'light'
-
   return (
-    <div
-      data-theme={activeTheme}
-      className={cn(
-        'theme-transition w-full',
-        {
-          'bg-primary text-primary-foreground font-light': activeTheme === 'dark',
-          'bg-background text-foreground': activeTheme === 'light',
-        },
-        className,
-      )}
-      id={`block-${id}`}
-    >
-      <div style={spacingStyles}>
+    <div data-theme={appliedTheme} className={cn('w-full', className)} id={`block-${id}`}>
+      <div style={spacingStyles} className="bg-background text-foreground">
         {introContent && (
           <div className={cn({ container: !fullWidth, 'px-8 md:px-14': fullWidth }, 'mb-12')}>
             {introContent.heading && (
@@ -123,9 +67,9 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
                 className={cn('mb-2', {
                   'text-left': introContent.align === 'left' || !introContent.align,
                   'text-center': introContent.align === 'center',
-                  'text-2xl font-bold': introContent.size === 'base' || !introContent.size,
-                  'text-3xl font-bold': introContent.size === 'lg',
-                  'text-4xl font-bold': introContent.size === 'xl',
+                  'text-xl font-medium': introContent.size === 'base' || !introContent.size,
+                  'text-2xl font-medium': introContent.size === 'lg',
+                  'text-3xl font-medium': introContent.size === 'xl',
                 })}
               >
                 {introContent.heading}
@@ -151,7 +95,7 @@ export const SliderBlock: React.FC<SliderBlockProps & { id?: string }> = ({
               style={{ transition: 'none' }}
               setApi={setApi}
               opts={{
-                loop: true,
+                loop: false,
                 align: 'center',
                 containScroll: false,
                 skipSnaps: false,

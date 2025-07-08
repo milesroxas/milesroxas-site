@@ -3,13 +3,13 @@
 import type { StaticImageData } from 'next/image'
 
 import { cn } from '@/utilities/ui'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import RichText from '@/components/RichText'
 
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
 
 import { Media } from '@/components/Media'
-import { Theme, useTheme } from '@/providers/Theme'
+
 import { useSpacing, SpaceProps } from '@/hooks/useSpacing'
 
 type Props = MediaBlockProps & {
@@ -35,7 +35,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
     aspectRatio = 'landscape',
     fullWidth = false,
     space,
-    theme = 'system',
+    theme = 'dark',
     captionSize = 'normal',
     id,
   } = props
@@ -44,33 +44,15 @@ export const MediaBlock: React.FC<Props> = (props) => {
   if (media && typeof media === 'object') caption = media.caption
 
   const useAspectRatio = aspectRatio !== 'original'
-  const { theme: siteTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-  const effectiveTheme = (() => {
-    if (!mounted) return 'light' // Default for SSR
-    if (theme === 'system' || !theme) {
-      return (siteTheme || 'light') as Theme
-    }
-    return theme as Theme
-  })()
 
   const spacingStyles = useSpacing(space as SpaceProps)
 
   return (
-    <div
-      data-theme={effectiveTheme}
-      className={cn('theme-transition w-full', {
-        'bg-primary text-primary-foreground font-light': effectiveTheme === 'dark',
-        'bg-background text-foreground': effectiveTheme !== 'dark',
-      })}
-      id={`block-${id}`}
-    >
-      <div style={spacingStyles}>
+    <div data-theme={theme} className={cn('w-full font-light', {})} id={`block-${id}`}>
+      <div style={spacingStyles} className="bg-background text-foreground">
         <div
           className={cn(
+            'bg-background text-foreground',
             {
               'w-full': true,
               'mx-0': true,
