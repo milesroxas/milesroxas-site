@@ -751,6 +751,10 @@ export interface MediaBlock {
  * via the `definition` "ArchiveBlock".
  */
 export interface ArchiveBlock {
+  /**
+   * Override the site theme for this content block.
+   */
+  theme?: ('system' | 'light' | 'dark') | null;
   cardStyle?: ('card' | 'featured') | null;
   introContent?: {
     root: {
@@ -1571,6 +1575,7 @@ export interface MediaBlockSelect<T extends boolean = true> {
  * via the `definition` "ArchiveBlock_select".
  */
 export interface ArchiveBlockSelect<T extends boolean = true> {
+  theme?: T;
   cardStyle?: T;
   introContent?: T;
   populateBy?: T;
