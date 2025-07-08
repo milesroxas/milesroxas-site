@@ -41,8 +41,6 @@ export const PostCard: React.FC<PostCardProps> = ({
   const href = `/${relationTo}/${slug}`
   const router = useRouter()
 
-  console.log(doc, 'doc')
-
   const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
   const setMouseUV = useSceneStore((s) => s.setMouseUV)
 
