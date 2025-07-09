@@ -1,27 +1,31 @@
 import canUseDOM from './canUseDOM'
 
 export const getServerSideURL = () => {
-  const url = process.env.NEXT_PUBLIC_SERVER_URL
+  let url = process.env.NEXT_PUBLIC_SERVER_URL
 
   if (!url && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   }
 
-  // Always return a valid URL with a fallback
-  return url || 'http://localhost:3000'
+  if (!url) {
+    url = 'http://localhost:3000'
+  }
+
+  return url
 }
 
 export const getClientSideURL = () => {
-  // For Vercel Blob storage URLs in preview environments
-  if (process.env.VERCEL_URL && !canUseDOM) {
-    return `https://${process.env.VERCEL_URL}`
-  }
-
-  // For client-side rendering, use origin
   if (canUseDOM) {
-    return window.location.origin
+    const protocol = window.location.protocol
+    const domain = window.location.hostname
+    const port = window.location.port
+
+    return `${protocol}//${domain}${port ? `:${port}` : ''}`
   }
 
-  // Fallbacks
-  return process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  }
+
+  return process.env.NEXT_PUBLIC_SERVER_URL || ''
 }
