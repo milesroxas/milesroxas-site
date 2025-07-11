@@ -117,6 +117,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
                     aspectRatio={col.media.aspectRatio}
                     fullWidth={col.media.fullWidth || (isFullWidth && sizes === 'full')}
                     theme={appliedTheme}
+                    imgClassName="rounded-md overflow-hidden"
                   />
                 )}
 

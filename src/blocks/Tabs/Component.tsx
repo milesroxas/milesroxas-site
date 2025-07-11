@@ -43,15 +43,11 @@ type TabsBlockProps = {
 }
 
 export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
-  const { tabs, space, className, id, heading, theme = 'system' } = props
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const appliedTheme = useBlockTheme(theme)
-  const [mounted, setMounted] = useState(false)
-  const spacingStyles = useSpacing(space as SpaceProps)
+  const { tabs, space, heading, theme = 'system' } = props
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const appliedTheme = useBlockTheme(theme)
+
+  const spacingStyles = useSpacing(space as SpaceProps)
 
   return (
     <div data-theme={appliedTheme} className={cn('w-full', {})}>
@@ -88,7 +84,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
               </TabsList>
             </div>
 
-            <div className="basis-full gap-6 md:basis-8/12">
+            <div className="basis-full gap-6 overflow-hidden rounded-md md:basis-8/12">
               {tabs &&
                 tabs.length > 0 &&
                 tabs.map((tab) => (
@@ -101,7 +97,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
                       />
                     )}
                     {tab.contentType === 'slider' && tab.slider && (
-                      <div className="w-full">
+                      <div className="w-full overflow-hidden rounded-md">
                         <SliderBlock
                           {...tab.slider}
                           blockType="slider"

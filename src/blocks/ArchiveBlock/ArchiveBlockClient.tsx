@@ -23,8 +23,12 @@ export default function ArchiveBlockClient({
   return (
     <div data-theme={appliedTheme} className="bg-background text-foreground pt-32 pb-36">
       {introContent && (
-        <div className="container mb-16">
-          <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
+        <div className="container mb-16 px-8 md:px-20">
+          <RichText
+            className="text-muted-foreground ms-0 max-w-[48rem]"
+            data={introContent}
+            enableGutter={false}
+          />
         </div>
       )}
       <CollectionArchive posts={posts} works={works} />

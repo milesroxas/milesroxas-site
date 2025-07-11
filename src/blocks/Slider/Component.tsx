@@ -91,7 +91,7 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
         {style === 'single' ? (
           <div className={cn({ 'mx-auto max-w-4xl': !fullWidth, 'w-full': fullWidth })}>
             <Carousel
-              className="w-full"
+              className="w-full overflow-hidden rounded-md"
               style={{ transition: 'none' }}
               setApi={setApi}
               opts={{
@@ -110,7 +110,7 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
                         {slide.link ? (
                           <Link
                             href={getHref(slide.link)}
-                            className="block aspect-[16/9] w-full overflow-hidden"
+                            className="block aspect-[16/9] w-full overflow-hidden rounded-md"
                           >
                             {slide.image && (
                               <Media
@@ -118,6 +118,7 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
                                 priority={index === 0}
                                 loading={index === 0 ? 'eager' : 'lazy'}
                                 className="h-full w-full object-cover"
+                                imgClassName="rounded-md overflow-hidden"
                                 size={fullWidth ? '100vw' : '(max-width: 1024px) 100vw, 1024px'}
                               />
                             )}
@@ -128,13 +129,14 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
                             )}
                           </Link>
                         ) : (
-                          <div className="flex aspect-[16/9] w-full flex-col items-center justify-center">
+                          <div className="flex aspect-[16/9] w-full flex-col items-center justify-center overflow-hidden rounded-md">
                             {slide.image && (
                               <Media
                                 resource={slide.image}
                                 priority={index === 0}
                                 loading={index === 0 ? 'eager' : 'lazy'}
                                 className="h-full w-full object-cover"
+                                imgClassName="rounded-md overflow-hidden"
                                 size={fullWidth ? '100vw' : '(max-width: 1024px) 100vw, 1024px'}
                               />
                             )}
@@ -182,13 +184,17 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
                         )}
                       >
                         {slide.link ? (
-                          <Link href={getHref(slide.link)} className="block w-full overflow-hidden">
+                          <Link
+                            href={getHref(slide.link)}
+                            className="block w-full overflow-hidden rounded-md"
+                          >
                             {slide.image && (
                               <Media
                                 resource={slide.image}
                                 priority={index === 0}
                                 loading={index === 0 ? 'eager' : 'lazy'}
-                                className="w-full object-cover"
+                                className="w-full overflow-hidden rounded-md object-cover"
+                                imgClassName="rounded-md overflow-hidden"
                                 size={
                                   fullWidth
                                     ? '100vw'
@@ -203,13 +209,14 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
                             )}
                           </Link>
                         ) : (
-                          <div className="flex aspect-[4/3] flex-col items-center justify-center">
+                          <div className="flex aspect-[4/3] flex-col items-center justify-center overflow-hidden rounded-md">
                             {slide.image && (
                               <Media
                                 resource={slide.image}
                                 priority={index === 0}
                                 loading={index === 0 ? 'eager' : 'lazy'}
                                 className="w-full object-cover"
+                                imgClassName="rounded-md overflow-hidden"
                                 size={
                                   fullWidth
                                     ? '100vw'

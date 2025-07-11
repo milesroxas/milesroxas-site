@@ -11,6 +11,7 @@ import { cn } from '@/utilities/ui'
 import type { Post } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
+import { Badge } from '@/components/ui/badge'
 
 gsap.registerPlugin(Flip, useGSAP)
 
@@ -129,13 +130,17 @@ export const PostCard: React.FC<PostCardProps> = ({
               priority={index === 0}
               loading={index === 0 ? 'eager' : 'lazy'}
               className="h-full w-full object-cover"
+              imgClassName="rounded-sm overflow-hidden"
             />
           )}
         </div>
 
         {(titleFromProps || title) && (
-          <div className="prose">
-            <h3 className="text-xl font-light">{titleFromProps || title}</h3>
+          <div className="prose flex flex-col-reverse items-start justify-between gap-2 md:flex-row">
+            <h3 className="text-lg font-light">{titleFromProps || title}</h3>
+            <Badge variant="post" className="mt-1">
+              Post
+            </Badge>
           </div>
         )}
       </Link>
