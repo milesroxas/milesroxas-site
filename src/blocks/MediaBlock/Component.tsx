@@ -67,7 +67,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
             })}
           >
             <div
-              className={cn('mx-auto', {
+              className={cn('mx-auto overflow-hidden rounded-md', {
                 'w-full': true,
                 'overflow-hidden': true,
                 relative: useAspectRatio,
@@ -80,13 +80,14 @@ export const MediaBlock: React.FC<Props> = (props) => {
             >
               <Media
                 imgClassName={cn(imgClassName, {
-                  'rounded-[0.2rem]': !fullWidth,
-                  'w-full h-full': useAspectRatio,
+                  'rounded-md overflow-hidden': !fullWidth,
+                  'w-full h-full overflow-hidden rounded-md': useAspectRatio,
                   'w-full': !useAspectRatio,
                   'h-auto': !useAspectRatio,
                   'object-cover': useAspectRatio,
                   'object-contain': !useAspectRatio,
                 })}
+                videoClassName="rounded-md overflow-hidden"
                 fill={useAspectRatio}
                 resource={media}
                 src={staticImage}

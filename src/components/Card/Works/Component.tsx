@@ -13,6 +13,7 @@ import type { Work } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
 import { RichText } from '@payloadcms/richtext-lexical/react'
+import { Badge } from '@/components/ui/badge'
 
 gsap.registerPlugin(Flip, useGSAP)
 
@@ -136,13 +137,15 @@ export const WorkCard: React.FC<WorkCardProps> = ({
               priority={index === 0}
               loading={index === 0 ? 'eager' : 'lazy'}
               className="h-full w-full object-cover"
+              imgClassName="rounded-sm overflow-hidden"
             />
           )}
         </div>
 
         {(titleFromProps || title) && (
-          <div className="prose">
+          <div className="flex items-start justify-between gap-2">
             <h3 className="text-3xl font-light">{titleFromProps || title}</h3>
+            <Badge variant="work">Work</Badge>
           </div>
         )}
       </Link>
