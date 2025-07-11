@@ -73,7 +73,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "7.45.4",
-    "sharp": "0.32.6",
+    "sharp": "0.34.3",
     "split-type": "^0.3.4",
     "swiper": "^11.2.10",
     "tailwind-merge": "3.3.1",
