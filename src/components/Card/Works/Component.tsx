@@ -138,6 +138,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
               loading={index === 0 ? 'eager' : 'lazy'}
               className="h-full w-full object-cover"
               imgClassName="rounded-sm overflow-hidden"
+              videoClassName="rounded-sm overflow-hidden"
             />
           )}
         </div>
