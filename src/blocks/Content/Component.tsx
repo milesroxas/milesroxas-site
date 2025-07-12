@@ -37,7 +37,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
       <div style={spacingStyles} className="bg-background text-foreground font-light">
         <div
           className={cn(
-            'grid grid-cols-4 gap-x-10 gap-y-4 md:grid-cols-2 lg:grid-cols-12',
+            'grid grid-cols-4 gap-x-10 md:grid-cols-2 lg:grid-cols-12',
             isFullWidth ? 'w-full' : 'container',
           )}
         >
