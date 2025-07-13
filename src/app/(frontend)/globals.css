@@ -285,7 +285,7 @@
 
   /* Size-based rich text styles - Used for standard content blocks */
   .prose-blocks.text-size-sm p {
-    @apply text-sm leading-normal;
+    @apply text-base leading-normal;
   }
 
   .prose-blocks.text-size-sm h3 {
