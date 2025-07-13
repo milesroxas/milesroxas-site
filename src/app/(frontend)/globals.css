@@ -301,11 +301,11 @@
   }
 
   .prose-blocks.text-size-base p {
-    @apply text-xl leading-normal;
+    @apply text-lg leading-normal;
   }
 
   .prose-blocks.text-size-base h3 {
-    @apply text-xl;
+    @apply text-lg font-medium;
   }
 
   .prose-blocks.text-size-base h2 {
