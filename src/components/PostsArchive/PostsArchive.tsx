@@ -18,7 +18,7 @@ export const PostsArchive: React.FC<Props> = (props) => {
             if (typeof result === 'object' && result !== null) {
               return (
                 <div className="col-span-4" key={index}>
-                  <PostCard doc={result} relationTo="posts" />
+                  <PostCard doc={result} relationTo="posts" index={index} />
                 </div>
               )
             }
