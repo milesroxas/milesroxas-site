@@ -113,12 +113,41 @@ export const FormBlock: React.FC<
     [router, formID, redirect, confirmationType],
   )
 
+  // Function to group fields into rows based on width
+  const groupFieldsIntoRows = (fields: FormFieldBlock[]) => {
+    const rows: FormFieldBlock[][] = []
+    let currentRow: FormFieldBlock[] = []
+    let currentRowWidth = 0
+
+    fields.forEach((field) => {
+      const fieldWidth = 'width' in field && field.width ? Number(field.width) : 100
+
+      // If adding this field would exceed 100%, start a new row
+      if (currentRowWidth + fieldWidth > 100) {
+        rows.push([...currentRow])
+        currentRow = [field]
+        currentRowWidth = fieldWidth
+      } else {
+        // Add to current row
+        currentRow.push(field)
+        currentRowWidth += fieldWidth
+      }
+    })
+
+    // Add the last row if it has any fields
+    if (currentRow.length > 0) {
+      rows.push(currentRow)
+    }
+
+    return rows
+  }
+
   return (
-    <div className="container px-8 md:px-14 lg:max-w-[48rem] lg:px-16">
+    <div className="container flex h-screen w-screen flex-col items-center justify-center px-8 md:px-14 lg:max-w-[40rem] lg:px-16">
       {enableIntro && introContent && !hasSubmitted && (
         <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
       )}
-      <div className="border-border rounded-[0.8rem] border p-4 lg:p-6">
+      <div className="border-border bg-background w-full rounded-md border p-4 lg:p-6">
         <FormProvider {...formMethods}>
           {!isLoading && hasSubmitted && confirmationType === 'message' && (
             <RichText data={confirmationMessage} />
@@ -128,30 +157,48 @@ export const FormBlock: React.FC<
           {!hasSubmitted && (
             <form id={formID} onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4 last:mb-0">
-                {formFromProps &&
-                  formFromProps.fields &&
-                  formFromProps.fields?.map((field, index) => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
-                    if (Field) {
-                      return (
-                        <div className="mb-6 last:mb-0" key={index}>
-                          <Field
-                            form={formFromProps}
-                            {...field}
-                            {...formMethods}
-                            control={control}
-                            errors={errors}
-                            register={register}
-                          />
-                        </div>
-                      )
-                    }
-                    return null
-                  })}
+                {formFromProps && formFromProps.fields && (
+                  <>
+                    {groupFieldsIntoRows(formFromProps.fields).map((row, rowIndex) => (
+                      <div
+                        key={`row-${rowIndex}`}
+                        className="mb-6 grid grid-cols-2 gap-4 last:mb-0"
+                      >
+                        {row.map((field, fieldIndex) => {
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          const Field: React.FC<any> =
+                            fields?.[field.blockType as keyof typeof fields]
+                          if (Field) {
+                            const isFullWidth =
+                              !('width' in field) ||
+                              !field.width ||
+                              field.width === 100 ||
+                              field.width > 50
+
+                            return (
+                              <div
+                                key={`field-${rowIndex}-${fieldIndex}`}
+                                className={isFullWidth ? 'col-span-2' : 'col-span-1'}
+                              >
+                                <Field
+                                  form={formFromProps}
+                                  {...field}
+                                  control={control}
+                                  errors={errors}
+                                  register={register}
+                                />
+                              </div>
+                            )
+                          }
+                          return null
+                        })}
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
 
-              <Button form={formID} type="submit" variant="default">
+              <Button form={formID} type="submit" variant="default" className="w-full">
                 {submitButtonLabel}
               </Button>
             </form>

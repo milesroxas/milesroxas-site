@@ -4,10 +4,7 @@ export const Width: React.FC<{
   children: React.ReactNode
   className?: string
   width?: number | string
-}> = ({ children, className, width }) => {
-  return (
-    <div className={className} style={{ maxWidth: width ? `${width}%` : undefined }}>
-      {children}
-    </div>
-  )
+}> = ({ children, className }) => {
+  // Don't apply width styles here as they're handled by the parent container
+  return <div className={className}>{children}</div>
 }
