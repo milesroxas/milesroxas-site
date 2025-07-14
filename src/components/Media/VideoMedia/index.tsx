@@ -5,8 +5,12 @@ import React, { useRef } from 'react'
 
 import type { Props as MediaProps } from '../types'
 
-export const VideoMedia: React.FC<MediaProps> = (props) => {
-  const { onClick, resource, videoClassName } = props
+export interface VideoMediaProps extends MediaProps {
+  onLoadedData?: () => void
+}
+
+export const VideoMedia: React.FC<VideoMediaProps> = (props) => {
+  const { onClick, resource, videoClassName, onLoadedData } = props
 
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -21,6 +25,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
         loop
         muted
         onClick={onClick}
+        onLoadedData={onLoadedData}
         playsInline
         ref={videoRef}
       >

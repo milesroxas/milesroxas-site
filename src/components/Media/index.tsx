@@ -5,16 +5,29 @@ import type { Props } from './types'
 import { ImageMedia } from './ImageMedia'
 import { VideoMedia } from './VideoMedia'
 
-export const Media: React.FC<Props> = (props) => {
-  const { className, htmlElement = 'div', resource } = props
+export interface MediaProps extends Props {
+  onLoad?: () => void
+  onLoadedData?: () => void
+}
+
+export const Media: React.FC<MediaProps> = (props) => {
+  const { className, htmlElement = 'div', resource, onLoad, onLoadedData } = props
 
   const isVideo = typeof resource === 'object' && resource?.mimeType?.includes('video')
 
   if (htmlElement === null) {
-    return isVideo ? <VideoMedia {...props} /> : <ImageMedia {...props} />
+    return isVideo ? (
+      <VideoMedia {...props} onLoadedData={onLoadedData} />
+    ) : (
+      <ImageMedia {...props} onLoad={onLoad} />
+    )
   }
 
-  const content = isVideo ? <VideoMedia {...props} /> : <ImageMedia {...props} />
+  const content = isVideo ? (
+    <VideoMedia {...props} onLoadedData={onLoadedData} />
+  ) : (
+    <ImageMedia {...props} onLoad={onLoad} />
+  )
 
   return React.createElement(htmlElement, { className }, content)
 }
