@@ -1,13 +1,12 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import styles from './homeHero.module.css'
 import type { Page } from '@/payload-types'
 import { gsap } from 'gsap'
+import { useGSAP } from '@gsap/react'
 import { useAnimationStore } from '@/stores/animationStore'
-
 import { Media } from '@/components/Media'
-
 import { cn } from '@/utilities/ui'
 
 export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
@@ -18,6 +17,9 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
   const mediaMaskRef = useRef<HTMLDivElement>(null)
   const topMarqueeRef = useRef<HTMLDivElement>(null)
   const bottomMarqueeRef = useRef<HTMLDivElement>(null)
+
+  // Track media loading state
+  const [isMediaLoaded, setIsMediaLoaded] = useState(!media) // If no media, consider it "loaded"
 
   const experienceText = [
     'Co-Founder',
@@ -39,77 +41,73 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
     '3D Modeling & Rendering',
   ]
 
-  useEffect(() => {
-    setHeroAnimationComplete(false)
+  // Use useGSAP for animations
+  useGSAP(
+    () => {
+      // Debug: Log when useGSAP runs and the media loaded state
+      console.log('useGSAP running, isMediaLoaded:', isMediaLoaded)
 
-    // Create timeline for animations
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setHeroAnimationComplete(true)
-      },
-    })
+      // Only run animations if media is loaded
+      if (!isMediaLoaded) return
 
-    // Set initial states
-    if (mediaMaskRef.current) {
+      // Set initial states
       gsap.set(mediaMaskRef.current, { clipPath: 'inset(0 0 100% 0)' })
-    }
-    if (topMarqueeRef.current) {
       gsap.set(topMarqueeRef.current, { autoAlpha: 0 })
-    }
-    if (bottomMarqueeRef.current) {
       gsap.set(bottomMarqueeRef.current, { autoAlpha: 0 })
-    }
 
-    // Animation sequence
-    tl.to(mediaMaskRef.current, {
-      clipPath: 'inset(0 0 0% 0)',
-      duration: 1.2,
-      ease: 'power2.inOut',
-    })
-      .to(
-        topMarqueeRef.current,
-        {
-          autoAlpha: 1,
-          duration: 0.8,
+      // Create timeline for animations
+      const tl = gsap.timeline({
+        onComplete: () => {
+          console.log('Animation timeline complete')
+          setHeroAnimationComplete(true)
         },
-        '-=0.3',
-      )
-      .to(
-        bottomMarqueeRef.current,
-        {
-          autoAlpha: 1,
-          duration: 0.8,
-        },
-        '-=0.5',
-      )
+      })
 
-    // Safety timeout
-    const safetyTimeout = setTimeout(() => {
-      setHeroAnimationComplete(true)
-    }, 3000)
+      // Animation sequence
+      tl.to(mediaMaskRef.current, {
+        clipPath: 'inset(0 0 0% 0)',
+        duration: 1.2,
+        ease: 'power2.inOut',
+      })
+        .to(
+          topMarqueeRef.current,
+          {
+            autoAlpha: 1,
+            duration: 0.8,
+          },
+          '-=0.3',
+        )
+        .to(
+          bottomMarqueeRef.current,
+          {
+            autoAlpha: 1,
+            duration: 0.8,
+          },
+          '-=0.5',
+        )
 
-    return () => {
-      clearTimeout(safetyTimeout)
-      tl.kill()
-      setHeroAnimationComplete(false)
-    }
-  }, [setHeroAnimationComplete])
+      // Cleanup function
+      return () => {
+        setHeroAnimationComplete(false)
+      }
+    },
+    {
+      scope: containerRef,
+      dependencies: [isMediaLoaded, setHeroAnimationComplete],
+    },
+  )
 
-  // Create a serializable media object
-  const safeMedia =
-    media && typeof media === 'object'
-      ? {
-          ...media,
-          error: undefined,
-          metadata: undefined,
-        }
-      : media
+  // Handle media load
+  const handleMediaLoad = () => {
+    console.log('Media loaded event triggered!')
+    setIsMediaLoaded(true)
+  }
 
   return (
     <div
       data-theme="light"
       ref={containerRef}
-      className="bg-background relative w-full overflow-hidden"
+      className="bg-background relative h-[screen] w-full flex-col items-center overflow-hidden"
     >
       {/* Top marquee */}
       <div ref={topMarqueeRef} className="absolute top-[40vh] z-0 w-full opacity-0">
@@ -123,14 +121,26 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
       </div>
 
       {/* Media with mask animation */}
-      <div className="relative z-10 flex justify-center py-24">
+      <div className="relative z-10 flex h-[100vh] items-center justify-center">
         <div
           ref={mediaMaskRef}
           className="w-[30vh] overflow-hidden rounded-sm"
           style={{ clipPath: 'inset(0 0 100% 0)' }}
         >
-          {safeMedia && typeof safeMedia === 'object' ? (
-            <Media className="w-full object-cover" priority resource={safeMedia} />
+          {media ? (
+            <Media
+              className="h-full w-full object-cover"
+              priority
+              onLoad={() => {
+                console.log('onLoad callback triggered')
+                handleMediaLoad()
+              }}
+              onLoadedData={() => {
+                console.log('onLoadedData callback triggered')
+                handleMediaLoad()
+              }}
+              resource={media}
+            />
           ) : (
             <div className="h-[30vh] w-full bg-gray-200" />
           )}
