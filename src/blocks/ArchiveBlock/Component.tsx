@@ -6,7 +6,7 @@ import React from 'react'
 
 import { CardWorkData } from '@/components/Card/Works/Component'
 import { CardPostData } from '@/components/Card/Posts/Component'
-import { CollectionArchive } from '@/components/CollectionArchive'
+
 import ArchiveBlockClient from './ArchiveBlockClient'
 
 export const ArchiveBlock: React.FC<
@@ -88,7 +88,13 @@ export const ArchiveBlock: React.FC<
 
   return (
     <div id={`block-${id}`}>
-      <ArchiveBlockClient theme={theme} introContent={introContent} posts={posts} works={works} />
+      <ArchiveBlockClient
+        theme={theme}
+        introContent={introContent}
+        posts={posts}
+        works={works}
+        cardStyle="card"
+      />
     </div>
   )
 }
