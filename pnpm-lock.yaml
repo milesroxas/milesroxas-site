@@ -11,6 +11,9 @@ importers:
       '@gsap/react':
         specifier: ^2.1.2
         version: 2.1.2(gsap@3.13.0)(react@19.1.0)
+      '@microsoft/clarity':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@payloadcms/admin-bar':
         specifier: latest
         version: 3.45.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1399,6 +1402,9 @@ packages:
 
   '@mediapipe/tasks-vision@0.10.17':
     resolution: {integrity: sha512-CZWV/q6TTe8ta61cZXjfnnHsfWIdFhms03M9T7Cnd5y2mdpylJM0rF1qRq+wsQVRMLz1OYPVEBU9ph2Bx8cxrg==}
+
+  '@microsoft/clarity@1.0.0':
+    resolution: {integrity: sha512-2QY6SmXnqRj6dWhNY8NYCN3e53j4zCFebH4wGnNhdGV1mqAsQwql2fT0w8TISxCvwwfVp8idsWLIdrRHOms1PQ==}
 
   '@monaco-editor/loader@1.5.0':
     resolution: {integrity: sha512-hKoGSM+7aAc7eRTRjpqAZucPmoNOC4UUbknb/VNoTkEIkCPhqV8LfbsgM1webRM7S/z21eHEx9Fkwx8Z/C/+Xw==}
@@ -7427,6 +7433,8 @@ snapshots:
       yjs: 13.6.26
 
   '@mediapipe/tasks-vision@0.10.17': {}
+
+  '@microsoft/clarity@1.0.0': {}
 
   '@monaco-editor/loader@1.5.0':
     dependencies:

@@ -26,7 +26,10 @@ const ibmPlexSans = IBM_Plex_Sans({
   variable: '--font-ibm-plex-sans',
 })
 
+import Clarity from '@microsoft/clarity'
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  Clarity.init(process.env.CLARITY_ID as string)
   const { isEnabled } = await draftMode()
 
   return (
