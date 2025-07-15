@@ -19,7 +19,7 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
   const bottomMarqueeRef = useRef<HTMLDivElement>(null)
 
   // Track media loading state
-  const [isMediaLoaded, setIsMediaLoaded] = useState(!media) // If no media, consider it "loaded"
+  const [isMediaLoaded, setIsMediaLoaded] = useState(!media)
 
   const experienceText = [
     'Co-Founder',
@@ -44,9 +44,6 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
   // Use useGSAP for animations
   useGSAP(
     () => {
-      // Debug: Log when useGSAP runs and the media loaded state
-      console.log('useGSAP running, isMediaLoaded:', isMediaLoaded)
-
       // Only run animations if media is loaded
       if (!isMediaLoaded) return
 
@@ -55,7 +52,6 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
       gsap.set(topMarqueeRef.current, { autoAlpha: 0 })
       gsap.set(bottomMarqueeRef.current, { autoAlpha: 0 })
 
-      // Create timeline for animations
       const tl = gsap.timeline({
         onComplete: () => {
           console.log('Animation timeline complete')
@@ -107,7 +103,7 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
     <div
       data-theme="light"
       ref={containerRef}
-      className="bg-background relative h-[screen] w-full flex-col items-center overflow-hidden"
+      className="bg-background relative h-[90vh] w-full flex-col items-center overflow-hidden md:h-[screen] md:items-center"
     >
       {/* Top marquee */}
       <div ref={topMarqueeRef} className="absolute top-[40vh] z-0 w-full opacity-0">
@@ -121,7 +117,7 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
       </div>
 
       {/* Media with mask animation */}
-      <div className="relative z-10 flex h-[100vh] items-center justify-center">
+      <div className="relative z-10 flex h-[90vh] items-center justify-center md:h-[100vh]">
         <div
           ref={mediaMaskRef}
           className="w-[30vh] overflow-hidden rounded-sm"
