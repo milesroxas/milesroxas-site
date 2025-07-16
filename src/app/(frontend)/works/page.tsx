@@ -8,7 +8,7 @@ import React from 'react'
 import { WorkArchive } from '@/components/WorkArchive'
 
 export const dynamic = 'force-static'
-export const revalidate = 600
+export const revalidate = 0
 
 export default async function Page() {
   const payload = await getPayload({ config: configPromise })
@@ -17,13 +17,14 @@ export default async function Page() {
     collection: 'works',
     depth: 1,
     limit: 12,
-    overrideAccess: false,
-    sort: 'order',
+    overrideAccess: true,
+    sort: '_order',
     select: {
       title: true,
       slug: true,
       meta: true,
       hero: true,
+      _order: true,
     },
   })
 
