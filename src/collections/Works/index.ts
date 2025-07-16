@@ -125,6 +125,27 @@ export const Works: CollectionConfig<'works'> = {
         {
           fields: [
             {
+              name: 'status',
+              label: 'Status',
+              type: 'select',
+
+              options: [
+                {
+                  label: 'Coming Soon',
+                  value: 'coming-soon',
+                },
+                {
+                  label: 'Live',
+                  value: 'live',
+                },
+              ],
+            },
+          ],
+          label: 'Status',
+        },
+        {
+          fields: [
+            {
               name: 'relatedWorks',
               type: 'relationship',
               admin: {

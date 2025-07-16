@@ -703,6 +703,7 @@ export interface Work {
   industry?: string | null;
   role?: string | null;
   deliverables?: string | null;
+  status?: ('coming-soon' | 'live') | null;
   relatedWorks?: (number | Work)[] | null;
   categories?: (number | Category)[] | null;
   meta?: {
@@ -1732,6 +1733,7 @@ export interface WorksSelect<T extends boolean = true> {
   industry?: T;
   role?: T;
   deliverables?: T;
+  status?: T;
   relatedWorks?: T;
   categories?: T;
   meta?:
