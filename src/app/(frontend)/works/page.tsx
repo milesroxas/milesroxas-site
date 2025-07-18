@@ -4,8 +4,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
 import React from 'react'
-
-import { WorkArchive } from '@/components/WorkArchive'
+import WorksClient from './page.client'
 
 export const dynamic = 'force-static'
 export const revalidate = 0
@@ -36,7 +35,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <WorkArchive works={works.docs} />
+      <WorksClient works={works.docs} />
     </div>
   )
 }
