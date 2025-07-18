@@ -7,7 +7,7 @@ import React from 'react'
 import WorksClient from './page.client'
 
 export const dynamic = 'force-static'
-export const revalidate = 0
+export const revalidate = 600
 
 export default async function Page() {
   const payload = await getPayload({ config: configPromise })
@@ -16,7 +16,7 @@ export default async function Page() {
     collection: 'works',
     depth: 1,
     limit: 12,
-    overrideAccess: true,
+    overrideAccess: false,
     sort: '_order',
     select: {
       title: true,
