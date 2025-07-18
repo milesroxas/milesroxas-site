@@ -17,19 +17,12 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
-import { getEnv } from './utilities/getEnv'
 
 import { resendAdapter } from '@payloadcms/email-resend'
 import { generatePreviewPath } from './utilities/generatePreviewPath'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-
-const { isPreview } = getEnv()
-
-const dbConnectionString = isPreview
-  ? process.env.POSTGRES_URL_STAGING || process.env.POSTGRES_URL || ''
-  : process.env.POSTGRES_URL || ''
 
 export default buildConfig({
   admin: {
@@ -86,7 +79,7 @@ export default buildConfig({
   editor: defaultLexical,
   db: vercelPostgresAdapter({
     pool: {
-      connectionString: dbConnectionString,
+      connectionString: process.env.POSTGRES_URL,
     },
   }),
   collections: [Pages, Posts, Works, Media, Categories, Users],
