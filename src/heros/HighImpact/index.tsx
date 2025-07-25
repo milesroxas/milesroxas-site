@@ -6,9 +6,11 @@ import gsap from 'gsap'
 
 import type { Page } from '@/payload-types'
 import { Media } from '@/components/Media'
+import { useSiteFrameStore } from '@/stores/siteframeStore'
 
 export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
   const heroRef = useRef<HTMLDivElement>(null)
+  const { setIsSiteFrameVisible, setTransitionPhase, transitionPhase } = useSiteFrameStore()
 
   useEffect(() => {
     const clone = window.__PAGE_TRANSITION_CLONE as HTMLElement | undefined
@@ -24,11 +26,13 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
       // if no hero media, just fade clone out
       gsap.to(clone, {
         opacity: 0,
-        duration: 0.5,
+        duration: 0.8, // Increased from 0.5
         ease: 'power3.out',
         onComplete: () => {
           clone.remove()
           window.__PAGE_TRANSITION_CLONE = undefined
+          setIsSiteFrameVisible(true)
+          setTransitionPhase('frame-ready')
         },
       })
       return
@@ -36,33 +40,41 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
 
     const { top, left, width, height } = mediaEl.getBoundingClientRect()
 
-    gsap
-      .timeline({
-        onComplete: () => {
-          clone.remove()
-          window.__PAGE_TRANSITION_CLONE = undefined
-        },
-      })
-      // 1) shrink/move the clone into place
-      .to(clone, {
-        top,
-        left,
-        width,
-        height,
-        duration: 0.8,
-        ease: 'power3.inOut',
-      })
+    const tl = gsap.timeline({
+      onComplete: () => {
+        clone.remove()
+        window.__PAGE_TRANSITION_CLONE = undefined
+        setTransitionPhase('complete')
+      },
+    })
+
+    // 1) shrink/move the clone into place
+    tl.to(clone, {
+      top,
+      left,
+      width,
+      height,
+      duration: 1.2, // Increased from 0.8 to 1.2 for slower animation
+      ease: 'power2.inOut', // Changed to power2 for smoother motion
+      onUpdate: function () {
+        // Set site frame visible and update transition phase when animation is 70% complete
+        if (this.progress() > 0.7 && transitionPhase !== 'frame-ready') {
+          setIsSiteFrameVisible(true)
+          setTransitionPhase('frame-ready')
+        }
+      },
+    })
       // 2) then fade it out
       .to(
         clone,
         {
           opacity: 0,
-          duration: 0.3,
-          ease: 'power1.out',
+          duration: 0.6, // Increased from 0.3 to 0.6
+          ease: 'power1.inOut', // Changed to inOut for smoother fade
         },
-        '>-0.1',
+        '>-0.2', // Increased overlap for smoother transition
       )
-  }, [])
+  }, [setIsSiteFrameVisible, setTransitionPhase, transitionPhase])
 
   return (
     <section

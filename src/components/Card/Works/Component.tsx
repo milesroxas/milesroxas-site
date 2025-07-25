@@ -11,9 +11,11 @@ import { useGSAP } from '@gsap/react'
 import { cn } from '@/utilities/ui'
 import type { Work } from '@/payload-types'
 import { Media } from '@/components/Media'
-import { useSceneStore } from '@/r3f/store/useSceneStore'
+
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { Badge } from '@/components/ui/badge'
+
+import { useSiteFrameStore } from '@/stores/siteframeStore'
 
 gsap.registerPlugin(Flip, useGSAP)
 
@@ -45,12 +47,15 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   const href = `/${relationTo}/${slug}`
   const router = useRouter()
 
-  const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
-  const setMouseUV = useSceneStore((s) => s.setMouseUV)
-
   const localImageRef = useRef<HTMLDivElement>(null)
   const imageRef = imageRefProp ?? localImageRef
   const containerRef = useRef<HTMLDivElement>(null)
+
+  const { 
+    setIsSiteFrameVisible, 
+    setIsTransitioning, 
+    setTransitionPhase 
+  } = useSiteFrameStore()
 
   const { contextSafe } = useGSAP({ scope: containerRef })
 
@@ -71,6 +76,10 @@ export const WorkCard: React.FC<WorkCardProps> = ({
       router.push(href)
       return
     }
+
+    // Set transition state
+    setIsTransitioning(true)
+    setTransitionPhase('initial')
 
     // clone & stash
     const clone = mediaEl.cloneNode(true) as HTMLElement
@@ -105,10 +114,19 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
     // Animate from initial to target state
     Flip.from(state, {
-      duration: 0.8,
-      ease: 'power3.inOut',
-      onComplete: () => router.push(href),
-      onInterrupt: () => router.push(href),
+      duration: 1.2, // Increased from 0.8 to 1.2 for slower animation
+      ease: 'power2.inOut', // Changed to power2.inOut for smoother animation
+      onStart: () => {
+        setTransitionPhase('clone-animating')
+      },
+      onComplete: () => {
+        router.push(href)
+        setIsSiteFrameVisible(false)
+      },
+      onInterrupt: () => {
+        router.push(href)
+        setIsSiteFrameVisible(false)
+      },
     })
   })
 
@@ -118,19 +136,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   return (
     <article ref={containerRef} className={cn('h-full', className)}>
       <Link href={href} onClick={handleTransition} className="not-prose">
-        <div
-          ref={imageRef}
-          className="relative mb-6 w-full"
-          style={{ aspectRatio: aspectValue }}
-          onMouseEnter={() => setHoveredIndex?.(index ?? null)}
-          onMouseLeave={() => setHoveredIndex?.(null)}
-          onMouseMove={(e) => {
-            const r = e.currentTarget.getBoundingClientRect()
-            const x = (e.clientX - r.left) / r.width
-            const y = 1 - (e.clientY - r.top) / r.height
-            setMouseUV([x, y])
-          }}
-        >
+        <div ref={imageRef} className="relative mb-6 w-full" style={{ aspectRatio: aspectValue }}>
           {hero && (
             <Media
               resource={hero.media}

@@ -39,30 +39,39 @@ export const usePageAnimationStore = create<PageAnimationStore>((set) => ({
       return element.includes('horizontal') ? styles.height : styles.width
     }
 
-    // Animate each element to its computed size from the DOM
-    gsap.to(topHoriz, {
-      height: () => getComputedFrameSize(topHoriz) || '0px',
-      duration: 0.3,
-      ease: 'power2.out',
-    })
-
-    gsap.to(bottomHoriz, {
-      height: () => getComputedFrameSize(bottomHoriz) || '0px',
-      duration: 0.3,
-      ease: 'power2.out',
-    })
-
-    gsap.to(rightVert, {
-      width: () => getComputedFrameSize(rightVert) || '0px',
-      duration: 0.3,
-      ease: 'power2.out',
-    })
-
-    gsap.to(leftVert, {
-      width: () => getComputedFrameSize(leftVert) || '0px',
-      duration: 0.3,
-      ease: 'power2.out',
+    // Create a timeline for sequential animation
+    const tl = gsap.timeline({
+      defaults: {
+        ease: 'power2.inOut',
+        duration: 0.8, // Increased from 0.3 to 0.8 for slower animation
+      },
       onComplete,
     })
+
+    // Animate top horizontal bar first
+    tl.to(topHoriz, {
+      height: () => getComputedFrameSize(topHoriz) || '0px',
+    })
+
+    // Animate vertical bars next
+    tl.to(
+      [rightVert, leftVert],
+      {
+        width: (i, el) => {
+          const selector = el.matches(rightVert) ? rightVert : leftVert
+          return getComputedFrameSize(selector) || '0px'
+        },
+      },
+      '-=0.4', // Start slightly before the previous animation finishes
+    )
+
+    // Animate bottom horizontal bar last
+    tl.to(
+      bottomHoriz,
+      {
+        height: () => getComputedFrameSize(bottomHoriz) || '0px',
+      },
+      '-=0.4', // Start slightly before the previous animation finishes
+    )
   },
 }))
