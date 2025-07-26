@@ -1,11 +1,18 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Work } from '@/payload-types'
 import { useLenis } from '@/hooks/useLenis'
+import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 const PageClient: React.FC<{ work: Work }> = ({ work }) => {
+  const { restoreFrame } = usePageAnimationStore()
+  const lenis = useLenis()
   const { industry, role, deliverables, title } = work
+  useEffect(() => {
+    restoreFrame()
+    lenis?.scrollTo(0, { immediate: true })
+  }, [restoreFrame, lenis])
 
   return (
     <div
