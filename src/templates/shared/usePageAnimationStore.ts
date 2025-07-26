@@ -6,7 +6,7 @@ type PageAnimationStore = {
   restoreFrame: (onComplete?: () => void) => void
 }
 
-export const usePageAnimationStore = create<PageAnimationStore>((set) => ({
+export const usePageAnimationStore = create<PageAnimationStore>(() => ({
   collapseFrame: (onComplete) => {
     const topHoriz = '#site-frame .frame-bar-horizontal:first-child'
     const bottomHoriz = '#site-frame .frame-bar-horizontal:nth-child(3)'

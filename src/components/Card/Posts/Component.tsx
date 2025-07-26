@@ -12,6 +12,7 @@ import type { Post } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
 import { Badge } from '@/components/ui/badge'
+import { useSiteFrameStore } from '@/stores/siteframeStore'
 
 gsap.registerPlugin(Flip, useGSAP)
 
@@ -45,6 +46,8 @@ export const PostCard: React.FC<PostCardProps> = ({
   const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
   const setMouseUV = useSceneStore((s) => s.setMouseUV)
 
+  const { setIsSiteFrameVisible, setIsTransitioning, setTransitionPhase } = useSiteFrameStore()
+
   const localImageRef = useRef<HTMLDivElement>(null)
   const imageRef = imageRefProp ?? localImageRef
   const containerRef = useRef<HTMLDivElement>(null)
@@ -68,6 +71,10 @@ export const PostCard: React.FC<PostCardProps> = ({
       router.push(href)
       return
     }
+
+    // Set transition state
+    setIsTransitioning(true)
+    setTransitionPhase('initial')
 
     // clone & stash
     const clone = mediaEl.cloneNode(true) as HTMLElement
@@ -98,10 +105,19 @@ export const PostCard: React.FC<PostCardProps> = ({
     })
 
     Flip.from(state, {
-      duration: 0.8,
-      ease: 'power3.inOut',
-      onComplete: () => router.push(href),
-      onInterrupt: () => router.push(href),
+      duration: 1.2,
+      ease: 'power2.inOut',
+      onStart: () => {
+        setTransitionPhase('clone-animating')
+      },
+      onComplete: () => {
+        router.push(href)
+        setIsSiteFrameVisible(false)
+      },
+      onInterrupt: () => {
+        router.push(href)
+        setIsSiteFrameVisible(false)
+      },
     })
   })
 

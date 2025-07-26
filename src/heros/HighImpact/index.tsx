@@ -74,7 +74,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
         },
         '>-0.2', // Increased overlap for smoother transition
       )
-  }, [setIsSiteFrameVisible, setTransitionPhase, transitionPhase])
+  }, [setIsSiteFrameVisible, setTransitionPhase])
 
   return (
     <section

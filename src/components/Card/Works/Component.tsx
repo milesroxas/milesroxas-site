@@ -51,11 +51,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   const imageRef = imageRefProp ?? localImageRef
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const { 
-    setIsSiteFrameVisible, 
-    setIsTransitioning, 
-    setTransitionPhase 
-  } = useSiteFrameStore()
+  const { setIsSiteFrameVisible, setIsTransitioning, setTransitionPhase } = useSiteFrameStore()
 
   const { contextSafe } = useGSAP({ scope: containerRef })
 

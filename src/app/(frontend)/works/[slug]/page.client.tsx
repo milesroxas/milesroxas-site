@@ -1,29 +1,11 @@
 'use client'
 
-import React, { useEffect } from 'react'
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
-import { useLenis } from '@/hooks/useLenis'
+import React from 'react'
 import { Work } from '@/payload-types'
-import { useSiteFrameStore } from '@/stores/siteframeStore'
+import { useLenis } from '@/hooks/useLenis'
 
 const PageClient: React.FC<{ work: Work }> = ({ work }) => {
-  const { restoreFrame } = usePageAnimationStore()
-  const { transitionPhase, setTransitionPhase } = useSiteFrameStore()
-  const lenis = useLenis()
-
   const { industry, role, deliverables, title } = work
-
-  useEffect(() => {
-    // Scroll to top immediately
-    lenis?.scrollTo(0, { immediate: true })
-
-    // Only restore the frame when the hero animation has reached the appropriate phase
-    if (transitionPhase === 'frame-ready') {
-      restoreFrame(() => {
-        setTransitionPhase('complete')
-      })
-    }
-  }, [restoreFrame, lenis, transitionPhase, setTransitionPhase])
 
   return (
     <div
