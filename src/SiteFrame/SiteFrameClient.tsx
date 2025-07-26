@@ -13,11 +13,10 @@ interface SiteFrameClientProps {
 }
 
 export const SiteFrameClient = ({ children }: SiteFrameClientProps) => {
-  const { isSiteFrameVisible, transitionPhase, isTransitioning } = useSiteFrameStore()
+  const { isSiteFrameVisible, isTransitioning } = useSiteFrameStore()
 
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Handle the fade-in animation based on transition state
   useGSAP(
     () => {
       if (isSiteFrameVisible && containerRef.current) {

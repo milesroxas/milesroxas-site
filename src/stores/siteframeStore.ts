@@ -5,7 +5,7 @@ interface SiteFrameState {
   setIsSiteFrameVisible: (isVisible: boolean) => void
   isTransitioning: boolean
   setIsTransitioning: (isTransitioning: boolean) => void
-  transitionPhase: 'initial' | 'clone-animating' | 'frame-ready' | 'frame-animating' | 'complete'
+  transitionPhase: 'initial' | 'clone-animating' | 'frame-ready' | 'complete'
   setTransitionPhase: (phase: SiteFrameState['transitionPhase']) => void
 }
 

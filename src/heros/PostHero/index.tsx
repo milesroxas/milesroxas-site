@@ -8,6 +8,7 @@ import type { Post } from '@/payload-types'
 import { Media } from '@/components/Media'
 
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+import { useSiteFrameStore } from '@/stores/siteframeStore'
 
 export const PostHero: React.FC<{
   post: Post
@@ -15,6 +16,7 @@ export const PostHero: React.FC<{
   const { categories, hero, publishedAt, title } = post
   const heroRef = useRef<HTMLDivElement>(null)
   const restoreFrame = usePageAnimationStore((s) => s.restoreFrame)
+  const { setTransitionPhase } = useSiteFrameStore()
 
   useEffect(() => {
     // Wait for the DOM to fully render before trying to access the clone
@@ -40,6 +42,7 @@ export const PostHero: React.FC<{
             onComplete: () => {
               clone.remove()
               window.__PAGE_TRANSITION_CLONE = undefined
+              setTransitionPhase('complete')
             },
           })
         })
@@ -58,6 +61,7 @@ export const PostHero: React.FC<{
             onComplete: () => {
               clone.remove()
               window.__PAGE_TRANSITION_CLONE = undefined
+              setTransitionPhase('complete')
             },
           })
         })
@@ -78,6 +82,7 @@ export const PostHero: React.FC<{
 
         // First restore the site frame
         restoreFrame(() => {
+          setTransitionPhase('frame-ready')
           // Then animate the image to its final position
           gsap
             .timeline({
@@ -86,6 +91,7 @@ export const PostHero: React.FC<{
                 window.__PAGE_TRANSITION_CLONE = undefined
                 // Make sure the original media is visible
                 mediaEl.style.visibility = 'visible'
+                setTransitionPhase('complete')
               },
             })
             // Animate to the final position
@@ -110,7 +116,7 @@ export const PostHero: React.FC<{
         })
       }, 100) // Small delay to ensure all elements are properly rendered
     }, 100) // Initial delay to ensure component is mounted
-  }, [restoreFrame])
+  }, [restoreFrame, setTransitionPhase])
 
   return (
     <div className="relative -mt-[10.4rem] flex items-end" ref={heroRef}>
