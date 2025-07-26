@@ -110,11 +110,11 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
     // Animate from initial to target state
     Flip.from(state, {
-      duration: 1.2, // Increased from 0.8 to 1.2 for slower animation
+      duration: 1, // Increased from 0.8 to 1.2 for slower animation
       ease: 'power2.inOut', // Changed to power2.inOut for smoother animation
-      onStart: () => {
-        setTransitionPhase('clone-animating')
-      },
+      // onStart: () => {
+      //   setTransitionPhase('clone-animating')
+      // },
       onComplete: () => {
         router.push(href)
         setIsSiteFrameVisible(false)

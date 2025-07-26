@@ -54,7 +54,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
       left,
       width,
       height,
-      duration: 1.2, // Increased from 0.8 to 1.2 for slower animation
+      duration: 1, // Increased from 0.8 to 1.2 for slower animation
       ease: 'power2.inOut', // Changed to power2 for smoother motion
       onUpdate: function () {
         // Set site frame visible and update transition phase when animation is 70% complete
@@ -69,10 +69,10 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
         clone,
         {
           opacity: 0,
-          duration: 0.6, // Increased from 0.3 to 0.6
+          duration: 0.1, // Increased from 0.3 to 0.6
           ease: 'power1.inOut', // Changed to inOut for smoother fade
         },
-        '>-0.2', // Increased overlap for smoother transition
+        '>-0.1',
       )
   }, [setIsSiteFrameVisible, setTransitionPhase])
 
