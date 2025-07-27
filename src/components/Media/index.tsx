@@ -8,10 +8,11 @@ import { VideoMedia } from './VideoMedia'
 export interface MediaProps extends Props {
   onLoad?: () => void
   onLoadedData?: () => void
+  onError?: () => void
 }
 
 export const Media: React.FC<MediaProps> = (props) => {
-  const { className, htmlElement = 'div', resource, onLoad, onLoadedData } = props
+  const { className, htmlElement = 'div', resource, onLoad, onLoadedData, onError } = props
 
   const isVideo = typeof resource === 'object' && resource?.mimeType?.includes('video')
 
