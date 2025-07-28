@@ -21,6 +21,7 @@ type Props = MediaBlockProps & {
   disableInnerContainer?: boolean
   theme?: 'system' | 'light' | 'dark' | null
   captionSize?: 'normal' | 'large' | 'xl'
+  captionLayout?: 'center' | 'left' | 'right' | 'split-left' | 'split-right'
   id?: string
 }
 
@@ -37,6 +38,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
     space,
     theme = 'dark',
     captionSize = 'normal',
+    captionLayout = 'center',
     id,
   } = props
 
@@ -64,6 +66,12 @@ export const MediaBlock: React.FC<Props> = (props) => {
             className={cn({
               container: !fullWidth,
               'w-full': true,
+              'flex flex-col': captionLayout === 'split-left' || captionLayout === 'split-right',
+              'flex-row-reverse': captionLayout === 'split-right',
+              'flex-row': captionLayout === 'split-left',
+              'justify-center': captionLayout === 'center',
+              'justify-start': captionLayout === 'left',
+              'justify-end': captionLayout === 'right',
             })}
           >
             <div
@@ -71,7 +79,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
                 'w-full': true,
                 'overflow-hidden': true,
                 relative: useAspectRatio,
-                // Removed container class from here to prevent nesting
+
                 'aspect-square': useAspectRatio && aspectRatio === 'square',
                 'aspect-[4/5]': useAspectRatio && aspectRatio === 'portrait',
                 'aspect-[16/9]': useAspectRatio && aspectRatio === 'landscape',

@@ -76,6 +76,18 @@ export const MediaBlock: Block = {
         },
       ],
     },
+    {
+      name: 'captionLayout',
+      type: 'select',
+      defaultValue: 'center',
+      options: [
+        { label: 'Center', value: 'center' },
+        { label: 'Left', value: 'left' },
+        { label: 'Right', value: 'right' },
+        { label: 'Split Left', value: 'split-left' },
+        { label: 'Split Right', value: 'split-right' },
+      ],
+    },
     sectionSpacing(),
   ],
 }

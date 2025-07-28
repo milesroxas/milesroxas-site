@@ -737,6 +737,7 @@ export interface MediaBlock {
    */
   theme?: ('system' | 'light' | 'dark') | null;
   captionSize?: ('normal' | 'large' | 'xl') | null;
+  captionLayout?: ('center' | 'left' | 'right' | 'split-left' | 'split-right') | null;
   space?: {
     pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
@@ -1560,6 +1561,7 @@ export interface MediaBlockSelect<T extends boolean = true> {
   fullWidth?: T;
   theme?: T;
   captionSize?: T;
+  captionLayout?: T;
   space?:
     | T
     | {
