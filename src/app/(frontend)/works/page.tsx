@@ -4,7 +4,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
 import React from 'react'
-import WorksClient from './page.client'
+import WorksClient from '@/app/(frontend)/works/page.client'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
