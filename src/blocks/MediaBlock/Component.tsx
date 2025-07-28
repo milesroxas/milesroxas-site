@@ -62,7 +62,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
         >
           <div
             className={cn({
-              '': !fullWidth,
+              container: !fullWidth,
               'w-full': true,
             })}
           >
@@ -71,7 +71,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
                 'w-full': true,
                 'overflow-hidden': true,
                 relative: useAspectRatio,
-                container: !fullWidth,
+                // Removed container class from here to prevent nesting
                 'aspect-square': useAspectRatio && aspectRatio === 'square',
                 'aspect-[4/5]': useAspectRatio && aspectRatio === 'portrait',
                 'aspect-[16/9]': useAspectRatio && aspectRatio === 'landscape',
@@ -87,7 +87,14 @@ export const MediaBlock: React.FC<Props> = (props) => {
                   'object-cover': useAspectRatio,
                   'object-contain': !useAspectRatio,
                 })}
-                videoClassName="rounded-md overflow-hidden"
+                videoClassName={cn({
+                  'rounded-md overflow-hidden': !fullWidth,
+                  'w-full h-full overflow-hidden rounded-md': useAspectRatio,
+                  'w-full': !useAspectRatio,
+                  'h-auto': !useAspectRatio,
+                  'object-cover': useAspectRatio,
+                  'object-contain': !useAspectRatio,
+                })}
                 fill={useAspectRatio}
                 resource={media}
                 src={staticImage}
