@@ -5,7 +5,6 @@ import { cn } from '@/utilities/ui'
 import type {
   ContentBlock as ContentBlockProps,
   Work,
-  Media,
   Post,
   SliderBlock as SliderBlockType,
 } from '@/payload-types'
@@ -112,11 +111,11 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
                 {content === 'media' && col.media?.media && (
                   <MediaBlock
                     blockType="mediaBlock"
-                    media={col.media.media as Media}
+                    media={col.media.media}
                     aspectRatio={col.media.aspectRatio}
                     fullWidth={col.media.fullWidth || (isFullWidth && sizes === 'full')}
                     theme={appliedTheme}
-                    imgClassName="rounded-md overflow-hidden"
+                    space={{ pt: null, pb: null, mt: null, mb: null }}
                   />
                 )}
 

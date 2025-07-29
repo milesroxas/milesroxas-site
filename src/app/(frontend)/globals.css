@@ -134,11 +134,6 @@
   /* Font families */
   --font-family-sans: 'area-normal-light', sans-serif;
   --font-family-mono: var(--font-geist-mono);
-
-  --spacing-sm: 4rem;
-  --spacing-md: 8rem;
-  --spacing-lg: 16rem;
-  --spacing-xl: 18rem;
 }
 
 @layer base {
