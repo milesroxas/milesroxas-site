@@ -7,43 +7,25 @@ import React from 'react'
 import RichText from '@/components/RichText'
 
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
+import { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { Media } from '@/components/Media'
 
 import { useSpacing, SpaceProps } from '@/hooks/useSpacing'
 
-type Props = MediaBlockProps & {
-  breakout?: boolean
-  captionClassName?: string
-  className?: string
-  imgClassName?: string
-  staticImage?: StaticImageData
-  disableInnerContainer?: boolean
-  theme?: 'system' | 'light' | 'dark' | null
-  captionSize?: 'normal' | 'large' | 'xl'
-  captionLayout?: 'center' | 'left' | 'right' | 'split-left' | 'split-right'
-  id?: string
-}
-
-export const MediaBlock: React.FC<Props> = (props) => {
+export const MediaBlock: React.FC<MediaBlockProps> = (props) => {
   const {
-    captionClassName,
-    className,
-    imgClassName,
-    media,
-    staticImage,
-    disableInnerContainer,
     aspectRatio = 'landscape',
     fullWidth = false,
     space,
     theme = 'dark',
-    captionSize = 'normal',
+    showCaption,
     captionLayout = 'center',
     id,
+    richText,
+    textSize,
+    media,
   } = props
-
-  let caption
-  if (media && typeof media === 'object') caption = media.caption
 
   const useAspectRatio = aspectRatio !== 'original'
 
@@ -53,79 +35,123 @@ export const MediaBlock: React.FC<Props> = (props) => {
     <div data-theme={theme} className={cn('w-full font-light', {})} id={`block-${id}`}>
       <div style={spacingStyles} className="bg-background text-foreground">
         <div
-          className={cn(
-            'bg-background text-foreground',
-            {
-              'w-full': true,
-              'mx-0': true,
-            },
-            className,
-          )}
+          className={cn('bg-background text-foreground', {
+            'w-full': true,
+            'mx-0': true,
+          })}
         >
           <div
             className={cn({
               container: !fullWidth,
               'w-full': true,
-              'flex flex-col': captionLayout === 'split-left' || captionLayout === 'split-right',
-              'flex-row-reverse': captionLayout === 'split-right',
-              'flex-row': captionLayout === 'split-left',
-              'justify-center': captionLayout === 'center',
-              'justify-start': captionLayout === 'left',
-              'justify-end': captionLayout === 'right',
             })}
           >
             <div
               className={cn('mx-auto overflow-hidden rounded-md', {
-                'w-full': true,
+                'w-full': captionLayout !== 'split-left' && captionLayout !== 'split-right',
                 'overflow-hidden': true,
                 relative: useAspectRatio,
-
-                'aspect-square': useAspectRatio && aspectRatio === 'square',
-                'aspect-[4/5]': useAspectRatio && aspectRatio === 'portrait',
-                'aspect-[16/9]': useAspectRatio && aspectRatio === 'landscape',
-                'mx-auto flex max-w-full justify-center': !useAspectRatio,
+                'flex flex-col items-start gap-6 md:flex-row': captionLayout === 'split-left',
+                'flex flex-col items-start gap-6 md:flex-row-reverse':
+                  captionLayout === 'split-right',
+                'aspect-square':
+                  useAspectRatio &&
+                  aspectRatio === 'square' &&
+                  captionLayout !== 'split-left' &&
+                  captionLayout !== 'split-right',
+                'aspect-[4/5]':
+                  useAspectRatio &&
+                  aspectRatio === 'portrait' &&
+                  captionLayout !== 'split-left' &&
+                  captionLayout !== 'split-right',
+                'aspect-[16/9]':
+                  useAspectRatio &&
+                  aspectRatio === 'landscape' &&
+                  captionLayout !== 'split-left' &&
+                  captionLayout !== 'split-right',
+                'mx-auto flex max-w-full justify-center':
+                  !useAspectRatio &&
+                  captionLayout !== 'split-left' &&
+                  captionLayout !== 'split-right',
               })}
             >
               <Media
-                imgClassName={cn(imgClassName, {
+                imgClassName={cn({
                   'rounded-md overflow-hidden': !fullWidth,
-                  'w-full h-full overflow-hidden rounded-md': useAspectRatio,
-                  'w-full': !useAspectRatio,
+                  'w-full h-full overflow-hidden rounded-md':
+                    useAspectRatio &&
+                    captionLayout !== 'split-left' &&
+                    captionLayout !== 'split-right',
+                  'w-full':
+                    !useAspectRatio &&
+                    captionLayout !== 'split-left' &&
+                    captionLayout !== 'split-right',
+                  'flex-1': captionLayout === 'split-left' || captionLayout === 'split-right',
                   'h-auto': !useAspectRatio,
                   'object-cover': useAspectRatio,
                   'object-contain': !useAspectRatio,
                 })}
                 videoClassName={cn({
                   'rounded-md overflow-hidden': !fullWidth,
-                  'w-full h-full overflow-hidden rounded-md': useAspectRatio,
-                  'w-full': !useAspectRatio,
+                  'w-full h-full overflow-hidden rounded-md':
+                    useAspectRatio &&
+                    captionLayout !== 'split-left' &&
+                    captionLayout !== 'split-right',
+                  'w-full md:min-w-0 md:flex-grow':
+                    captionLayout === 'split-left' || captionLayout === 'split-right',
                   'h-auto': !useAspectRatio,
                   'object-cover': useAspectRatio,
                   'object-contain': !useAspectRatio,
                 })}
-                fill={useAspectRatio}
+                fill={
+                  useAspectRatio &&
+                  captionLayout !== 'split-left' &&
+                  captionLayout !== 'split-right'
+                }
                 resource={media}
-                src={staticImage}
                 size={fullWidth ? '100vw' : '(max-width: 768px) 100vw, 80vw'}
                 priority={true}
               />
-            </div>
-            {caption && (
-              <div
-                className={cn(
-                  'mt-6',
-                  {
-                    container: !fullWidth,
-                    'mx-auto': fullWidth && !disableInnerContainer,
-                    'max-w-[80ch]': fullWidth && !disableInnerContainer,
-                    'text-base': captionSize === 'normal',
-                    'text-lg': captionSize === 'large',
-                    'text-xl': captionSize === 'xl',
-                  },
-                  captionClassName,
+
+              {showCaption &&
+                (captionLayout === 'split-left' || captionLayout === 'split-right') && (
+                  <div className="mt-6 w-full self-start md:mt-0 md:w-80 md:shrink-0">
+                    <RichText
+                      data={richText as DefaultTypedEditorState}
+                      enableProse={false}
+                      enableGutter={false}
+                      className={cn('prose-blocks w-full', {
+                        'text-lg': textSize === 'lg',
+                        'text-xl': textSize === 'xl',
+                        'text-2xl': textSize === '2xl',
+                        'text-sm': textSize === 'sm',
+                        'text-base': textSize === 'base',
+                      })}
+                    />
+                  </div>
                 )}
+            </div>
+
+            {showCaption && captionLayout !== 'split-left' && captionLayout !== 'split-right' && (
+              <div
+                className={cn('mt-6 max-w-xl', {
+                  'text-left': captionLayout === 'left',
+                  'mr-0 ml-auto': captionLayout === 'right',
+                  'mx-auto text-center': captionLayout === 'center',
+                })}
               >
-                <RichText data={caption} enableGutter={false} />
+                <RichText
+                  data={richText as DefaultTypedEditorState}
+                  enableProse={false}
+                  enableGutter={false}
+                  className={cn('prose-blocks w-full', {
+                    'text-lg': textSize === 'lg',
+                    'text-xl': textSize === 'xl',
+                    'text-2xl': textSize === '2xl',
+                    'text-sm': textSize === 'sm',
+                    'text-base': textSize === 'base',
+                  })}
+                />
               </div>
             )}
           </div>

@@ -736,8 +736,24 @@ export interface MediaBlock {
    * Override the site theme for this content block.
    */
   theme?: ('system' | 'light' | 'dark') | null;
-  captionSize?: ('normal' | 'large' | 'xl') | null;
+  showCaption?: boolean | null;
   captionLayout?: ('center' | 'left' | 'right' | 'split-left' | 'split-right') | null;
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  textSize?: ('sm' | 'base' | 'lg' | 'xl' | '2xl') | null;
   space?: {
     pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
@@ -1560,8 +1576,10 @@ export interface MediaBlockSelect<T extends boolean = true> {
   aspectRatio?: T;
   fullWidth?: T;
   theme?: T;
-  captionSize?: T;
+  showCaption?: T;
   captionLayout?: T;
+  richText?: T;
+  textSize?: T;
   space?:
     | T
     | {

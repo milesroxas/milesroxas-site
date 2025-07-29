@@ -1,5 +1,11 @@
 import type { Block } from 'payload'
 import { sectionSpacing } from '@/fields/sectionSpacing'
+import {
+  FixedToolbarFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 
 export const MediaBlock: Block = {
   slug: 'mediaBlock',
@@ -58,28 +64,17 @@ export const MediaBlock: Block = {
       ],
     },
     {
-      name: 'captionSize',
-      type: 'select',
-      defaultValue: 'normal',
-      options: [
-        {
-          label: 'Normal',
-          value: 'normal',
-        },
-        {
-          label: 'Large',
-          value: 'large',
-        },
-        {
-          label: 'Extra Large',
-          value: 'xl',
-        },
-      ],
+      name: 'showCaption',
+      type: 'checkbox',
+      defaultValue: true,
     },
     {
       name: 'captionLayout',
       type: 'select',
       defaultValue: 'center',
+      admin: {
+        condition: (_, siblingData) => siblingData.showCaption === true,
+      },
       options: [
         { label: 'Center', value: 'center' },
         { label: 'Left', value: 'left' },
@@ -87,6 +82,28 @@ export const MediaBlock: Block = {
         { label: 'Split Left', value: 'split-left' },
         { label: 'Split Right', value: 'split-right' },
       ],
+    },
+    {
+      name: 'richText',
+      type: 'richText',
+      label: false,
+      admin: {
+        condition: (_, siblingData) => siblingData.showCaption === true,
+      },
+      editor: lexicalEditor({
+        features: ({ rootFeatures }) => {
+          return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]
+        },
+      }),
+    },
+    {
+      name: 'textSize',
+      type: 'select',
+      defaultValue: 'base',
+      admin: {
+        condition: (_, siblingData) => siblingData.showCaption === true,
+      },
+      options: ['sm', 'base', 'lg', 'xl', '2xl'],
     },
     sectionSpacing(),
   ],

@@ -41,18 +41,9 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
   blocks: {
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => {
-      const { captionSize, ...otherFields } = node.fields
+      const { ...otherFields } = node.fields
 
-      return (
-        <MediaBlock
-          className="col-span-3 col-start-1"
-          imgClassName="m-0"
-          {...otherFields}
-          captionClassName="mx-auto max-w-[48rem]"
-          disableInnerContainer={true}
-          captionSize={captionSize || undefined}
-        />
-      )
+      return <MediaBlock aspectRatio={'landscape'} {...otherFields} />
     },
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
