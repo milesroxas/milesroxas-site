@@ -362,11 +362,11 @@
   /* Override section heading styles with direct and specific selectors */
   /* Base size */
   p.section-heading-base {
-    @apply text-base font-normal;
+    @apply text-base leading-normal font-normal;
   }
 
   .prose-blocks.section-heading-base p {
-    @apply text-xl;
+    @apply text-xl leading-normal;
   }
 
   .prose-blocks.section-heading-base h3 {
@@ -383,11 +383,11 @@
 
   /* Large size */
   p.section-heading-lg {
-    @apply text-base font-normal;
+    @apply text-base leading-normal font-normal;
   }
 
   .prose-blocks.section-heading-lg p {
-    @apply text-2xl;
+    @apply text-2xl leading-normal;
   }
 
   .prose-blocks.section-heading-lg h3 {
@@ -404,11 +404,11 @@
 
   /* Extra large size */
   p.section-heading-xl {
-    @apply w-full max-w-none text-3xl;
+    @apply w-full max-w-none text-3xl leading-normal;
   }
 
   .prose-blocks.section-heading-xl p {
-    @apply w-full text-4xl;
+    @apply w-full text-4xl leading-normal;
   }
 
   .prose-blocks.section-heading-xl h3 {
