@@ -134,24 +134,31 @@ export const MediaBlock: React.FC<MediaBlockProps> = (props) => {
 
             {showCaption && captionLayout !== 'split-left' && captionLayout !== 'split-right' && (
               <div
-                className={cn('mt-6 max-w-xl', {
-                  'text-left': captionLayout === 'left',
-                  'mr-0 ml-auto': captionLayout === 'right',
-                  'mx-auto text-center': captionLayout === 'center',
+                className={cn({
+                  'container mx-auto': fullWidth,
+                  'w-full': true,
                 })}
               >
-                <RichText
-                  data={richText as DefaultTypedEditorState}
-                  enableProse={false}
-                  enableGutter={false}
-                  className={cn('prose-blocks w-full', {
-                    'text-lg': textSize === 'lg',
-                    'text-xl': textSize === 'xl',
-                    'text-2xl': textSize === '2xl',
-                    'text-sm': textSize === 'sm',
-                    'text-base': textSize === 'base',
+                <div
+                  className={cn('mt-6 max-w-lg', {
+                    'text-left': captionLayout === 'left',
+                    'mr-0 ml-auto': captionLayout === 'right',
+                    'mx-auto text-center': captionLayout === 'center',
                   })}
-                />
+                >
+                  <RichText
+                    data={richText as DefaultTypedEditorState}
+                    enableProse={false}
+                    enableGutter={false}
+                    className={cn('prose-blocks w-full', {
+                      'text-lg': textSize === 'lg',
+                      'text-xl': textSize === 'xl',
+                      'text-2xl': textSize === '2xl',
+                      'text-sm': textSize === 'sm',
+                      'text-base': textSize === 'base',
+                    })}
+                  />
+                </div>
               </div>
             )}
           </div>
