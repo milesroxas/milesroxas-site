@@ -1,5 +1,5 @@
 {
-  "id": "6c313f39-4c71-4a9e-932f-7ee447c09339",
+  "id": "356ac707-591f-48c0-b5c6-7a74b187c8fa",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1181,13 +1181,34 @@
           "notNull": false,
           "default": "'system'"
         },
-        "caption_size": {
-          "name": "caption_size",
-          "type": "enum_pages_blocks_media_block_caption_size",
+        "show_caption": {
+          "name": "show_caption",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "caption_layout": {
+          "name": "caption_layout",
+          "type": "enum_pages_blocks_media_block_caption_layout",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": "'normal'"
+          "default": "'center'"
+        },
+        "rich_text": {
+          "name": "rich_text",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text_size": {
+          "name": "text_size",
+          "type": "enum_pages_blocks_media_block_text_size",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'base'"
         },
         "space_pt": {
           "name": "space_pt",
@@ -3597,13 +3618,34 @@
           "notNull": false,
           "default": "'system'"
         },
-        "caption_size": {
-          "name": "caption_size",
-          "type": "enum__pages_v_blocks_media_block_caption_size",
+        "show_caption": {
+          "name": "show_caption",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "caption_layout": {
+          "name": "caption_layout",
+          "type": "enum__pages_v_blocks_media_block_caption_layout",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": "'normal'"
+          "default": "'center'"
+        },
+        "rich_text": {
+          "name": "rich_text",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text_size": {
+          "name": "text_size",
+          "type": "enum__pages_v_blocks_media_block_text_size",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'base'"
         },
         "space_pt": {
           "name": "space_pt",
@@ -7460,13 +7502,34 @@
           "notNull": false,
           "default": "'system'"
         },
-        "caption_size": {
-          "name": "caption_size",
-          "type": "enum_works_blocks_media_block_caption_size",
+        "show_caption": {
+          "name": "show_caption",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "caption_layout": {
+          "name": "caption_layout",
+          "type": "enum_works_blocks_media_block_caption_layout",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": "'normal'"
+          "default": "'center'"
+        },
+        "rich_text": {
+          "name": "rich_text",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text_size": {
+          "name": "text_size",
+          "type": "enum_works_blocks_media_block_text_size",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'base'"
         },
         "space_pt": {
           "name": "space_pt",
@@ -8656,6 +8719,13 @@
         "deliverables": {
           "name": "deliverables",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "enum_works_status",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
@@ -10197,13 +10267,34 @@
           "notNull": false,
           "default": "'system'"
         },
-        "caption_size": {
-          "name": "caption_size",
-          "type": "enum__works_v_blocks_media_block_caption_size",
+        "show_caption": {
+          "name": "show_caption",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "caption_layout": {
+          "name": "caption_layout",
+          "type": "enum__works_v_blocks_media_block_caption_layout",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": "'normal'"
+          "default": "'center'"
+        },
+        "rich_text": {
+          "name": "rich_text",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text_size": {
+          "name": "text_size",
+          "type": "enum__works_v_blocks_media_block_text_size",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'base'"
         },
         "space_pt": {
           "name": "space_pt",
@@ -11447,6 +11538,13 @@
         "version_deliverables": {
           "name": "version_deliverables",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_status": {
+          "name": "version_status",
+          "type": "enum__works_v_version_status",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
@@ -17373,13 +17471,26 @@
         "dark"
       ]
     },
-    "public.enum_pages_blocks_media_block_caption_size": {
-      "name": "enum_pages_blocks_media_block_caption_size",
+    "public.enum_pages_blocks_media_block_caption_layout": {
+      "name": "enum_pages_blocks_media_block_caption_layout",
       "schema": "public",
       "values": [
-        "normal",
-        "large",
-        "xl"
+        "center",
+        "left",
+        "right",
+        "split-left",
+        "split-right"
+      ]
+    },
+    "public.enum_pages_blocks_media_block_text_size": {
+      "name": "enum_pages_blocks_media_block_text_size",
+      "schema": "public",
+      "values": [
+        "sm",
+        "base",
+        "lg",
+        "xl",
+        "2xl"
       ]
     },
     "public.enum_pages_blocks_media_block_space_pt": {
@@ -17877,13 +17988,26 @@
         "dark"
       ]
     },
-    "public.enum__pages_v_blocks_media_block_caption_size": {
-      "name": "enum__pages_v_blocks_media_block_caption_size",
+    "public.enum__pages_v_blocks_media_block_caption_layout": {
+      "name": "enum__pages_v_blocks_media_block_caption_layout",
       "schema": "public",
       "values": [
-        "normal",
-        "large",
-        "xl"
+        "center",
+        "left",
+        "right",
+        "split-left",
+        "split-right"
+      ]
+    },
+    "public.enum__pages_v_blocks_media_block_text_size": {
+      "name": "enum__pages_v_blocks_media_block_text_size",
+      "schema": "public",
+      "values": [
+        "sm",
+        "base",
+        "lg",
+        "xl",
+        "2xl"
       ]
     },
     "public.enum__pages_v_blocks_media_block_space_pt": {
@@ -18451,13 +18575,26 @@
         "dark"
       ]
     },
-    "public.enum_works_blocks_media_block_caption_size": {
-      "name": "enum_works_blocks_media_block_caption_size",
+    "public.enum_works_blocks_media_block_caption_layout": {
+      "name": "enum_works_blocks_media_block_caption_layout",
       "schema": "public",
       "values": [
-        "normal",
-        "large",
-        "xl"
+        "center",
+        "left",
+        "right",
+        "split-left",
+        "split-right"
+      ]
+    },
+    "public.enum_works_blocks_media_block_text_size": {
+      "name": "enum_works_blocks_media_block_text_size",
+      "schema": "public",
+      "values": [
+        "sm",
+        "base",
+        "lg",
+        "xl",
+        "2xl"
       ]
     },
     "public.enum_works_blocks_media_block_space_pt": {
@@ -19042,13 +19179,26 @@
         "dark"
       ]
     },
-    "public.enum__works_v_blocks_media_block_caption_size": {
-      "name": "enum__works_v_blocks_media_block_caption_size",
+    "public.enum__works_v_blocks_media_block_caption_layout": {
+      "name": "enum__works_v_blocks_media_block_caption_layout",
       "schema": "public",
       "values": [
-        "normal",
-        "large",
-        "xl"
+        "center",
+        "left",
+        "right",
+        "split-left",
+        "split-right"
+      ]
+    },
+    "public.enum__works_v_blocks_media_block_text_size": {
+      "name": "enum__works_v_blocks_media_block_text_size",
+      "schema": "public",
+      "values": [
+        "sm",
+        "base",
+        "lg",
+        "xl",
+        "2xl"
       ]
     },
     "public.enum__works_v_blocks_media_block_space_pt": {

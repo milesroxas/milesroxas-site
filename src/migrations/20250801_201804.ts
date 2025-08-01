@@ -36,11 +36,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "public"."enum_pages_blocks_content_space_mb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum_pages_blocks_media_block_aspect_ratio" AS ENUM('landscape', 'square', 'portrait', 'original');
   CREATE TYPE "public"."enum_pages_blocks_media_block_theme" AS ENUM('system', 'light', 'dark');
-  CREATE TYPE "public"."enum_pages_blocks_media_block_caption_size" AS ENUM('normal', 'large', 'xl');
+  CREATE TYPE "public"."enum_pages_blocks_media_block_caption_layout" AS ENUM('center', 'left', 'right', 'split-left', 'split-right');
+  CREATE TYPE "public"."enum_pages_blocks_media_block_text_size" AS ENUM('sm', 'base', 'lg', 'xl', '2xl');
   CREATE TYPE "public"."enum_pages_blocks_media_block_space_pt" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum_pages_blocks_media_block_space_pb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum_pages_blocks_media_block_space_mt" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum_pages_blocks_media_block_space_mb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
+  CREATE TYPE "public"."enum_pages_blocks_archive_theme" AS ENUM('system', 'light', 'dark');
   CREATE TYPE "public"."enum_pages_blocks_archive_card_style" AS ENUM('card', 'featured');
   CREATE TYPE "public"."enum_pages_blocks_archive_populate_by" AS ENUM('collection', 'selection');
   CREATE TYPE "public"."enum_pages_blocks_archive_relation_to" AS ENUM('posts', 'works');
@@ -88,11 +90,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "public"."enum__pages_v_blocks_content_space_mb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum__pages_v_blocks_media_block_aspect_ratio" AS ENUM('landscape', 'square', 'portrait', 'original');
   CREATE TYPE "public"."enum__pages_v_blocks_media_block_theme" AS ENUM('system', 'light', 'dark');
-  CREATE TYPE "public"."enum__pages_v_blocks_media_block_caption_size" AS ENUM('normal', 'large', 'xl');
+  CREATE TYPE "public"."enum__pages_v_blocks_media_block_caption_layout" AS ENUM('center', 'left', 'right', 'split-left', 'split-right');
+  CREATE TYPE "public"."enum__pages_v_blocks_media_block_text_size" AS ENUM('sm', 'base', 'lg', 'xl', '2xl');
   CREATE TYPE "public"."enum__pages_v_blocks_media_block_space_pt" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum__pages_v_blocks_media_block_space_pb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum__pages_v_blocks_media_block_space_mt" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum__pages_v_blocks_media_block_space_mb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
+  CREATE TYPE "public"."enum__pages_v_blocks_archive_theme" AS ENUM('system', 'light', 'dark');
   CREATE TYPE "public"."enum__pages_v_blocks_archive_card_style" AS ENUM('card', 'featured');
   CREATE TYPE "public"."enum__pages_v_blocks_archive_populate_by" AS ENUM('collection', 'selection');
   CREATE TYPE "public"."enum__pages_v_blocks_archive_relation_to" AS ENUM('posts', 'works');
@@ -148,11 +152,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "public"."enum_works_blocks_content_space_mb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum_works_blocks_media_block_aspect_ratio" AS ENUM('landscape', 'square', 'portrait', 'original');
   CREATE TYPE "public"."enum_works_blocks_media_block_theme" AS ENUM('system', 'light', 'dark');
-  CREATE TYPE "public"."enum_works_blocks_media_block_caption_size" AS ENUM('normal', 'large', 'xl');
+  CREATE TYPE "public"."enum_works_blocks_media_block_caption_layout" AS ENUM('center', 'left', 'right', 'split-left', 'split-right');
+  CREATE TYPE "public"."enum_works_blocks_media_block_text_size" AS ENUM('sm', 'base', 'lg', 'xl', '2xl');
   CREATE TYPE "public"."enum_works_blocks_media_block_space_pt" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum_works_blocks_media_block_space_pb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum_works_blocks_media_block_space_mt" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum_works_blocks_media_block_space_mb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
+  CREATE TYPE "public"."enum_works_blocks_archive_theme" AS ENUM('system', 'light', 'dark');
   CREATE TYPE "public"."enum_works_blocks_archive_card_style" AS ENUM('card', 'featured');
   CREATE TYPE "public"."enum_works_blocks_archive_populate_by" AS ENUM('collection', 'selection');
   CREATE TYPE "public"."enum_works_blocks_archive_relation_to" AS ENUM('posts', 'works');
@@ -209,11 +215,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "public"."enum__works_v_blocks_content_space_mb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum__works_v_blocks_media_block_aspect_ratio" AS ENUM('landscape', 'square', 'portrait', 'original');
   CREATE TYPE "public"."enum__works_v_blocks_media_block_theme" AS ENUM('system', 'light', 'dark');
-  CREATE TYPE "public"."enum__works_v_blocks_media_block_caption_size" AS ENUM('normal', 'large', 'xl');
+  CREATE TYPE "public"."enum__works_v_blocks_media_block_caption_layout" AS ENUM('center', 'left', 'right', 'split-left', 'split-right');
+  CREATE TYPE "public"."enum__works_v_blocks_media_block_text_size" AS ENUM('sm', 'base', 'lg', 'xl', '2xl');
   CREATE TYPE "public"."enum__works_v_blocks_media_block_space_pt" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum__works_v_blocks_media_block_space_pb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum__works_v_blocks_media_block_space_mt" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
   CREATE TYPE "public"."enum__works_v_blocks_media_block_space_mb" AS ENUM('none', 'sm', 'md', 'lg', 'xl');
+  CREATE TYPE "public"."enum__works_v_blocks_archive_theme" AS ENUM('system', 'light', 'dark');
   CREATE TYPE "public"."enum__works_v_blocks_archive_card_style" AS ENUM('card', 'featured');
   CREATE TYPE "public"."enum__works_v_blocks_archive_populate_by" AS ENUM('collection', 'selection');
   CREATE TYPE "public"."enum__works_v_blocks_archive_relation_to" AS ENUM('posts', 'works');
@@ -266,6 +274,15 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   CREATE TABLE "pages_blocks_cta" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_path" text NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"rich_text" jsonb,
+  	"block_name" varchar
+  );
+  
+  CREATE TABLE "pages_blocks_callout" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"_path" text NOT NULL,
@@ -346,7 +363,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"aspect_ratio" "enum_pages_blocks_media_block_aspect_ratio" DEFAULT 'landscape',
   	"full_width" boolean DEFAULT false,
   	"theme" "enum_pages_blocks_media_block_theme" DEFAULT 'system',
-  	"caption_size" "enum_pages_blocks_media_block_caption_size" DEFAULT 'normal',
+  	"show_caption" boolean DEFAULT true,
+  	"caption_layout" "enum_pages_blocks_media_block_caption_layout" DEFAULT 'center',
+  	"rich_text" jsonb,
+  	"text_size" "enum_pages_blocks_media_block_text_size" DEFAULT 'base',
   	"space_pt" "enum_pages_blocks_media_block_space_pt" DEFAULT 'md',
   	"space_pb" "enum_pages_blocks_media_block_space_pb" DEFAULT 'md',
   	"space_mt" "enum_pages_blocks_media_block_space_mt" DEFAULT 'none',
@@ -359,6 +379,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_parent_id" integer NOT NULL,
   	"_path" text NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
+  	"theme" "enum_pages_blocks_archive_theme" DEFAULT 'system',
   	"card_style" "enum_pages_blocks_archive_card_style" DEFAULT 'card',
   	"intro_content" jsonb,
   	"populate_by" "enum_pages_blocks_archive_populate_by" DEFAULT 'collection',
@@ -467,6 +488,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"block_name" varchar
   );
   
+  CREATE TABLE "_pages_v_blocks_callout" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"_path" text NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"rich_text" jsonb,
+  	"_uuid" varchar,
+  	"block_name" varchar
+  );
+  
   CREATE TABLE "_pages_v_blocks_content_columns_slider_slides" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
@@ -542,7 +573,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"aspect_ratio" "enum__pages_v_blocks_media_block_aspect_ratio" DEFAULT 'landscape',
   	"full_width" boolean DEFAULT false,
   	"theme" "enum__pages_v_blocks_media_block_theme" DEFAULT 'system',
-  	"caption_size" "enum__pages_v_blocks_media_block_caption_size" DEFAULT 'normal',
+  	"show_caption" boolean DEFAULT true,
+  	"caption_layout" "enum__pages_v_blocks_media_block_caption_layout" DEFAULT 'center',
+  	"rich_text" jsonb,
+  	"text_size" "enum__pages_v_blocks_media_block_text_size" DEFAULT 'base',
   	"space_pt" "enum__pages_v_blocks_media_block_space_pt" DEFAULT 'md',
   	"space_pb" "enum__pages_v_blocks_media_block_space_pb" DEFAULT 'md',
   	"space_mt" "enum__pages_v_blocks_media_block_space_mt" DEFAULT 'none',
@@ -556,6 +590,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_parent_id" integer NOT NULL,
   	"_path" text NOT NULL,
   	"id" serial PRIMARY KEY NOT NULL,
+  	"theme" "enum__pages_v_blocks_archive_theme" DEFAULT 'system',
   	"card_style" "enum__pages_v_blocks_archive_card_style" DEFAULT 'card',
   	"intro_content" jsonb,
   	"populate_by" "enum__pages_v_blocks_archive_populate_by" DEFAULT 'collection',
@@ -845,7 +880,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"aspect_ratio" "enum_works_blocks_media_block_aspect_ratio" DEFAULT 'landscape',
   	"full_width" boolean DEFAULT false,
   	"theme" "enum_works_blocks_media_block_theme" DEFAULT 'system',
-  	"caption_size" "enum_works_blocks_media_block_caption_size" DEFAULT 'normal',
+  	"show_caption" boolean DEFAULT true,
+  	"caption_layout" "enum_works_blocks_media_block_caption_layout" DEFAULT 'center',
+  	"rich_text" jsonb,
+  	"text_size" "enum_works_blocks_media_block_text_size" DEFAULT 'base',
   	"space_pt" "enum_works_blocks_media_block_space_pt" DEFAULT 'md',
   	"space_pb" "enum_works_blocks_media_block_space_pb" DEFAULT 'md',
   	"space_mt" "enum_works_blocks_media_block_space_mt" DEFAULT 'none',
@@ -858,6 +896,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_parent_id" integer NOT NULL,
   	"_path" text NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
+  	"theme" "enum_works_blocks_archive_theme" DEFAULT 'system',
   	"card_style" "enum_works_blocks_archive_card_style" DEFAULT 'card',
   	"intro_content" jsonb,
   	"populate_by" "enum_works_blocks_archive_populate_by" DEFAULT 'collection',
@@ -950,6 +989,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"industry" varchar,
   	"role" varchar,
   	"deliverables" varchar,
+  	"status" "enum_works_status",
   	"meta_title" varchar,
   	"meta_image_id" integer,
   	"meta_description" varchar,
@@ -1081,7 +1121,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"aspect_ratio" "enum__works_v_blocks_media_block_aspect_ratio" DEFAULT 'landscape',
   	"full_width" boolean DEFAULT false,
   	"theme" "enum__works_v_blocks_media_block_theme" DEFAULT 'system',
-  	"caption_size" "enum__works_v_blocks_media_block_caption_size" DEFAULT 'normal',
+  	"show_caption" boolean DEFAULT true,
+  	"caption_layout" "enum__works_v_blocks_media_block_caption_layout" DEFAULT 'center',
+  	"rich_text" jsonb,
+  	"text_size" "enum__works_v_blocks_media_block_text_size" DEFAULT 'base',
   	"space_pt" "enum__works_v_blocks_media_block_space_pt" DEFAULT 'md',
   	"space_pb" "enum__works_v_blocks_media_block_space_pb" DEFAULT 'md',
   	"space_mt" "enum__works_v_blocks_media_block_space_mt" DEFAULT 'none',
@@ -1095,6 +1138,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_parent_id" integer NOT NULL,
   	"_path" text NOT NULL,
   	"id" serial PRIMARY KEY NOT NULL,
+  	"theme" "enum__works_v_blocks_archive_theme" DEFAULT 'system',
   	"card_style" "enum__works_v_blocks_archive_card_style" DEFAULT 'card',
   	"intro_content" jsonb,
   	"populate_by" "enum__works_v_blocks_archive_populate_by" DEFAULT 'collection',
@@ -1195,6 +1239,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"version_industry" varchar,
   	"version_role" varchar,
   	"version_deliverables" varchar,
+  	"version_status" "enum__works_v_version_status",
   	"version_meta_title" varchar,
   	"version_meta_image_id" integer,
   	"version_meta_description" varchar,
@@ -1656,6 +1701,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "pages_hero_links" ADD CONSTRAINT "pages_hero_links_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "pages_blocks_cta_links" ADD CONSTRAINT "pages_blocks_cta_links_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages_blocks_cta"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "pages_blocks_cta" ADD CONSTRAINT "pages_blocks_cta_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "pages_blocks_callout" ADD CONSTRAINT "pages_blocks_callout_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "pages_blocks_content_columns_slider_slides" ADD CONSTRAINT "pages_blocks_content_columns_slider_slides_slide_image_id_media_id_fk" FOREIGN KEY ("slide_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "pages_blocks_content_columns_slider_slides" ADD CONSTRAINT "pages_blocks_content_columns_slider_slides_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."pages_blocks_content_columns"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "pages_blocks_content_columns" ADD CONSTRAINT "pages_blocks_content_columns_work_works_id_works_id_fk" FOREIGN KEY ("work_works_id") REFERENCES "public"."works"("id") ON DELETE set null ON UPDATE no action;
@@ -1681,6 +1727,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "_pages_v_version_hero_links" ADD CONSTRAINT "_pages_v_version_hero_links_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_pages_v"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "_pages_v_blocks_cta_links" ADD CONSTRAINT "_pages_v_blocks_cta_links_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_pages_v_blocks_cta"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "_pages_v_blocks_cta" ADD CONSTRAINT "_pages_v_blocks_cta_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_pages_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "_pages_v_blocks_callout" ADD CONSTRAINT "_pages_v_blocks_callout_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_pages_v"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "_pages_v_blocks_content_columns_slider_slides" ADD CONSTRAINT "_pages_v_blocks_content_columns_slider_slides_slide_image_id_media_id_fk" FOREIGN KEY ("slide_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_pages_v_blocks_content_columns_slider_slides" ADD CONSTRAINT "_pages_v_blocks_content_columns_slider_slides_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."_pages_v_blocks_content_columns"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "_pages_v_blocks_content_columns" ADD CONSTRAINT "_pages_v_blocks_content_columns_work_works_id_works_id_fk" FOREIGN KEY ("work_works_id") REFERENCES "public"."works"("id") ON DELETE set null ON UPDATE no action;
@@ -1836,6 +1883,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "pages_blocks_cta_order_idx" ON "pages_blocks_cta" USING btree ("_order");
   CREATE INDEX "pages_blocks_cta_parent_id_idx" ON "pages_blocks_cta" USING btree ("_parent_id");
   CREATE INDEX "pages_blocks_cta_path_idx" ON "pages_blocks_cta" USING btree ("_path");
+  CREATE INDEX "pages_blocks_callout_order_idx" ON "pages_blocks_callout" USING btree ("_order");
+  CREATE INDEX "pages_blocks_callout_parent_id_idx" ON "pages_blocks_callout" USING btree ("_parent_id");
+  CREATE INDEX "pages_blocks_callout_path_idx" ON "pages_blocks_callout" USING btree ("_path");
   CREATE INDEX "pages_blocks_content_columns_slider_slides_order_idx" ON "pages_blocks_content_columns_slider_slides" USING btree ("_order");
   CREATE INDEX "pages_blocks_content_columns_slider_slides_parent_id_idx" ON "pages_blocks_content_columns_slider_slides" USING btree ("_parent_id");
   CREATE INDEX "pages_blocks_content_columns_slider_slides_slide_slide_image_idx" ON "pages_blocks_content_columns_slider_slides" USING btree ("slide_image_id");
@@ -1884,6 +1934,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_pages_v_blocks_cta_order_idx" ON "_pages_v_blocks_cta" USING btree ("_order");
   CREATE INDEX "_pages_v_blocks_cta_parent_id_idx" ON "_pages_v_blocks_cta" USING btree ("_parent_id");
   CREATE INDEX "_pages_v_blocks_cta_path_idx" ON "_pages_v_blocks_cta" USING btree ("_path");
+  CREATE INDEX "_pages_v_blocks_callout_order_idx" ON "_pages_v_blocks_callout" USING btree ("_order");
+  CREATE INDEX "_pages_v_blocks_callout_parent_id_idx" ON "_pages_v_blocks_callout" USING btree ("_parent_id");
+  CREATE INDEX "_pages_v_blocks_callout_path_idx" ON "_pages_v_blocks_callout" USING btree ("_path");
   CREATE INDEX "_pages_v_blocks_content_columns_slider_slides_order_idx" ON "_pages_v_blocks_content_columns_slider_slides" USING btree ("_order");
   CREATE INDEX "_pages_v_blocks_content_columns_slider_slides_parent_id_idx" ON "_pages_v_blocks_content_columns_slider_slides" USING btree ("_parent_id");
   CREATE INDEX "_pages_v_blocks_content_columns_slider_slides_slide_slide_image_idx" ON "_pages_v_blocks_content_columns_slider_slides" USING btree ("slide_image_id");
@@ -2224,6 +2277,7 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
    DROP TABLE "pages_hero_links" CASCADE;
   DROP TABLE "pages_blocks_cta_links" CASCADE;
   DROP TABLE "pages_blocks_cta" CASCADE;
+  DROP TABLE "pages_blocks_callout" CASCADE;
   DROP TABLE "pages_blocks_content_columns_slider_slides" CASCADE;
   DROP TABLE "pages_blocks_content_columns" CASCADE;
   DROP TABLE "pages_blocks_content" CASCADE;
@@ -2237,6 +2291,7 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "_pages_v_version_hero_links" CASCADE;
   DROP TABLE "_pages_v_blocks_cta_links" CASCADE;
   DROP TABLE "_pages_v_blocks_cta" CASCADE;
+  DROP TABLE "_pages_v_blocks_callout" CASCADE;
   DROP TABLE "_pages_v_blocks_content_columns_slider_slides" CASCADE;
   DROP TABLE "_pages_v_blocks_content_columns" CASCADE;
   DROP TABLE "_pages_v_blocks_content" CASCADE;
@@ -2358,11 +2413,13 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "public"."enum_pages_blocks_content_space_mb";
   DROP TYPE "public"."enum_pages_blocks_media_block_aspect_ratio";
   DROP TYPE "public"."enum_pages_blocks_media_block_theme";
-  DROP TYPE "public"."enum_pages_blocks_media_block_caption_size";
+  DROP TYPE "public"."enum_pages_blocks_media_block_caption_layout";
+  DROP TYPE "public"."enum_pages_blocks_media_block_text_size";
   DROP TYPE "public"."enum_pages_blocks_media_block_space_pt";
   DROP TYPE "public"."enum_pages_blocks_media_block_space_pb";
   DROP TYPE "public"."enum_pages_blocks_media_block_space_mt";
   DROP TYPE "public"."enum_pages_blocks_media_block_space_mb";
+  DROP TYPE "public"."enum_pages_blocks_archive_theme";
   DROP TYPE "public"."enum_pages_blocks_archive_card_style";
   DROP TYPE "public"."enum_pages_blocks_archive_populate_by";
   DROP TYPE "public"."enum_pages_blocks_archive_relation_to";
@@ -2410,11 +2467,13 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "public"."enum__pages_v_blocks_content_space_mb";
   DROP TYPE "public"."enum__pages_v_blocks_media_block_aspect_ratio";
   DROP TYPE "public"."enum__pages_v_blocks_media_block_theme";
-  DROP TYPE "public"."enum__pages_v_blocks_media_block_caption_size";
+  DROP TYPE "public"."enum__pages_v_blocks_media_block_caption_layout";
+  DROP TYPE "public"."enum__pages_v_blocks_media_block_text_size";
   DROP TYPE "public"."enum__pages_v_blocks_media_block_space_pt";
   DROP TYPE "public"."enum__pages_v_blocks_media_block_space_pb";
   DROP TYPE "public"."enum__pages_v_blocks_media_block_space_mt";
   DROP TYPE "public"."enum__pages_v_blocks_media_block_space_mb";
+  DROP TYPE "public"."enum__pages_v_blocks_archive_theme";
   DROP TYPE "public"."enum__pages_v_blocks_archive_card_style";
   DROP TYPE "public"."enum__pages_v_blocks_archive_populate_by";
   DROP TYPE "public"."enum__pages_v_blocks_archive_relation_to";
@@ -2470,11 +2529,13 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "public"."enum_works_blocks_content_space_mb";
   DROP TYPE "public"."enum_works_blocks_media_block_aspect_ratio";
   DROP TYPE "public"."enum_works_blocks_media_block_theme";
-  DROP TYPE "public"."enum_works_blocks_media_block_caption_size";
+  DROP TYPE "public"."enum_works_blocks_media_block_caption_layout";
+  DROP TYPE "public"."enum_works_blocks_media_block_text_size";
   DROP TYPE "public"."enum_works_blocks_media_block_space_pt";
   DROP TYPE "public"."enum_works_blocks_media_block_space_pb";
   DROP TYPE "public"."enum_works_blocks_media_block_space_mt";
   DROP TYPE "public"."enum_works_blocks_media_block_space_mb";
+  DROP TYPE "public"."enum_works_blocks_archive_theme";
   DROP TYPE "public"."enum_works_blocks_archive_card_style";
   DROP TYPE "public"."enum_works_blocks_archive_populate_by";
   DROP TYPE "public"."enum_works_blocks_archive_relation_to";
@@ -2531,11 +2592,13 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "public"."enum__works_v_blocks_content_space_mb";
   DROP TYPE "public"."enum__works_v_blocks_media_block_aspect_ratio";
   DROP TYPE "public"."enum__works_v_blocks_media_block_theme";
-  DROP TYPE "public"."enum__works_v_blocks_media_block_caption_size";
+  DROP TYPE "public"."enum__works_v_blocks_media_block_caption_layout";
+  DROP TYPE "public"."enum__works_v_blocks_media_block_text_size";
   DROP TYPE "public"."enum__works_v_blocks_media_block_space_pt";
   DROP TYPE "public"."enum__works_v_blocks_media_block_space_pb";
   DROP TYPE "public"."enum__works_v_blocks_media_block_space_mt";
   DROP TYPE "public"."enum__works_v_blocks_media_block_space_mb";
+  DROP TYPE "public"."enum__works_v_blocks_archive_theme";
   DROP TYPE "public"."enum__works_v_blocks_archive_card_style";
   DROP TYPE "public"."enum__works_v_blocks_archive_populate_by";
   DROP TYPE "public"."enum__works_v_blocks_archive_relation_to";
