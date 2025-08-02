@@ -16,6 +16,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import { Badge } from '@/components/ui/badge'
 
 import { useSiteFrameStore } from '@/stores/siteframeStore'
+import { CursorButton } from '@/providers/Cursor/components/CursorInteractions'
 
 gsap.registerPlugin(Flip, useGSAP)
 
@@ -131,32 +132,34 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
   return (
     <article ref={containerRef} className={cn('h-full', className)}>
-      <Link href={href} onClick={handleTransition} className="not-prose">
-        <div ref={imageRef} className="relative mb-6 w-full" style={{ aspectRatio: aspectValue }}>
-          {hero && (
-            <Media
-              resource={hero.media}
-              priority={index === 0}
-              loading={index === 0 ? 'eager' : 'lazy'}
-              className="h-full w-full object-cover"
-              imgClassName="rounded-sm overflow-hidden"
-              videoClassName="rounded-sm overflow-hidden"
-            />
-          )}
-        </div>
+      <CursorButton>
+        <Link href={href} onClick={handleTransition} className="not-prose">
+          <div ref={imageRef} className="relative mb-6 w-full" style={{ aspectRatio: aspectValue }}>
+            {hero && (
+              <Media
+                resource={hero.media}
+                priority={index === 0}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                className="h-full w-full object-cover"
+                imgClassName="rounded-sm overflow-hidden"
+                videoClassName="rounded-sm overflow-hidden"
+              />
+            )}
+          </div>
 
-        {(titleFromProps || title) && (
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="text-3xl font-light">{titleFromProps || title}</h3>
-            <Badge variant="work">Work</Badge>
+          {(titleFromProps || title) && (
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-3xl font-light">{titleFromProps || title}</h3>
+              <Badge variant="work">Work</Badge>
+            </div>
+          )}
+        </Link>
+        {description && showDescription && (
+          <div className="mt-2">
+            <RichText data={description} />
           </div>
         )}
-      </Link>
-      {description && showDescription && (
-        <div className="mt-2">
-          <RichText data={description} />
-        </div>
-      )}
+      </CursorButton>
     </article>
   )
 }

@@ -10,6 +10,13 @@
   transition: opacity 0.2s ease;
   will-change: transform;
   border: 1px solid white;
+  mix-blend-mode: difference;
+  opacity: 0.8;
+}
+.cursorOuterBlurred {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.2); /* More transparent for better blur effect */
 }
 
 .cursorInner {
@@ -23,6 +30,8 @@
   z-index: 9999;
   background-color: white;
   will-change: transform;
+  opacity: 1;
+  mix-blend-mode: difference;
 }
 
 .cursorText {
@@ -35,8 +44,20 @@
   pointer-events: none;
   z-index: 9999;
   mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
+  text-align: center;
   white-space: nowrap;
-  letter-spacing: 3px;
+  letter-spacing: 0; /* Reduce letter spacing to help with centering */
   text-transform: uppercase;
   will-change: transform;
+  width: 40px; /* Match the width of the outer cursor */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 2px;
+}
+
+.cursorTextDark {
+  mix-blend-mode: normal;
+  color: black;
 }
