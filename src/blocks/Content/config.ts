@@ -5,11 +5,13 @@ import {
   HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  BlocksFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { link } from '@/fields/link'
 import { SliderBlock } from '@/blocks/Slider/config'
 import { sectionSpacing } from '@/fields/sectionSpacing'
+import { MediaBlock } from '@/blocks/MediaBlock/config'
 
 const richTextFields: Field[] = [
   {
@@ -22,6 +24,9 @@ const richTextFields: Field[] = [
           HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
           FixedToolbarFeature(),
           InlineToolbarFeature(),
+          BlocksFeature({
+            blocks: [MediaBlock],
+          }),
         ]
       },
     }),

@@ -42,3 +42,13 @@ export const CursorMedia = ({ children }: { children: ReactNode }) => {
     </div>
   )
 }
+
+export const CursorSlider = ({ children }: { children: ReactNode }) => {
+  const { setVariant } = useCursor()
+
+  return (
+    <div onMouseEnter={() => setVariant('slider')} onMouseLeave={() => setVariant('default')}>
+      {children}
+    </div>
+  )
+}
