@@ -11,7 +11,7 @@ import { useContext } from 'react'
 gsap.registerPlugin(useGSAP)
 
 const Cursor = () => {
-  const { variant } = useContext(CursorContext)
+  const { variant, customText } = useContext(CursorContext)
   const cursorOuterRef = useRef<HTMLDivElement>(null)
   const cursorInnerRef = useRef<HTMLDivElement>(null)
   const cursorTextRef = useRef<HTMLDivElement>(null)
@@ -36,6 +36,13 @@ const Cursor = () => {
     y: gsap.QuickToFunc
   } | null>(null)
 
+  // Define text content for different variants
+  const variantText: Record<string, string> = {
+    slider: 'Drag',
+  }
+
+  const showText = variant === 'slider'
+
   const isMobile =
     typeof window !== 'undefined' &&
     ('ontouchstart' in window ||
@@ -46,26 +53,22 @@ const Cursor = () => {
   useGSAP(() => {
     if (!cursorOuterRef.current || !cursorInnerRef.current || !cursorTextRef.current) return
 
-    // Set initial properties
+    // Set initial properties with proper centering offsets
     gsap.set(cursorOuterRef.current, {
-      xPercent: -50,
-      yPercent: -50,
-      x: mousePos.current.x,
-      y: mousePos.current.y,
+      x: mousePos.current.x - 20, // Half of 40px width
+      y: mousePos.current.y - 20, // Half of 40px height
     })
 
     gsap.set(cursorInnerRef.current, {
-      xPercent: -50,
-      yPercent: -50,
-      x: mousePos.current.x,
-      y: mousePos.current.y,
+      x: mousePos.current.x - 6, // Half of 12px width
+      y: mousePos.current.y - 6, // Half of 12px height
     })
 
     gsap.set(cursorTextRef.current, {
-      xPercent: -50,
-      yPercent: -50,
       x: mousePos.current.x,
       y: mousePos.current.y,
+      xPercent: -50, // Center horizontally
+      yPercent: -50, // Center vertically
     })
 
     // Create quickTo functions for smooth cursor movement
@@ -113,7 +116,7 @@ const Cursor = () => {
         default: {
           backgroundColor: 'transparent',
           borderColor: 'white',
-          borderWidth: 0.8,
+          borderWidth: 1,
           scale: 1,
           duration: 0.2,
           ease: 'power2.out',
@@ -121,23 +124,22 @@ const Cursor = () => {
         text: {
           backgroundColor: 'transparent',
           borderColor: 'white',
-          borderWidth: 0.8,
+          borderWidth: 1,
           scale: 1.5,
           duration: 0.2,
           ease: 'power2.out',
         },
         button: {
-          backgroundColor: 'white',
-          borderColor: 'transparent',
           borderWidth: 0.8,
-          scale: 1.4,
+          scale: 1.5,
+          borderColor: '#white',
           duration: 0.2,
           ease: 'power2.out',
         },
         link: {
           backgroundColor: 'white',
           borderColor: 'transparent',
-          borderWidth: 0.8,
+          borderWidth: 0,
           scale: 1.2,
           duration: 0.2,
           ease: 'power2.out',
@@ -145,16 +147,16 @@ const Cursor = () => {
         media: {
           backgroundColor: 'transparent',
           borderColor: 'white',
-          borderWidth: 0.8,
+          borderWidth: 1,
           scale: 2,
           duration: 0.2,
           ease: 'power2.out',
         },
         slider: {
           backgroundColor: 'transparent',
-          borderColor: '#09C8BD',
-          borderWidth: 0.8,
-          scale: 1.8,
+          borderColor: 'white',
+          borderWidth: 1,
+          scale: 1.5, // Adjusted for 40px base size
           duration: 0.2,
           ease: 'power2.out',
         },
@@ -167,35 +169,58 @@ const Cursor = () => {
         ...style,
         overwrite: 'auto', // Prevent animation conflicts
       })
-
-      // Handle text visibility and content for slider variant
-      if (variant === 'slider') {
-        gsap.to(cursorTextRef.current, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.3,
-          ease: 'power2.out',
-        })
+      if (!showText) {
+        // For variants without text, scale up the inner cursor
         gsap.to(cursorInnerRef.current, {
-          scale: 0,
-          duration: 0.3,
-          ease: 'power2.in',
+          scale: variant === 'default' ? 1 : 1.5, // Scale to 2x when hovering (non-default), 1x when not
+          opacity: 1,
+          backgroundColor: variant === 'default' ? 'white' : 'white',
+          visibility: 'visible',
+          duration: 0.2,
+          ease: 'power2.out',
+          overwrite: 'auto',
         })
-      } else {
-        gsap.to(cursorTextRef.current, {
+      }
+
+      // Handle text visibility and content for variants with text
+      if (showText) {
+        // First animate the inner cursor to shrink and fade out
+        gsap.to(cursorInnerRef.current, {
           opacity: 0,
-          scale: 0.8,
+          scale: 0.5, // Reduce size more dramatically
           duration: 0.2,
           ease: 'power2.in',
+          onComplete: () => {
+            // After inner cursor animation completes, show the text
+            gsap.to(cursorTextRef.current, {
+              opacity: 1,
+              scale: 1,
+              duration: 0.3,
+              ease: 'power2.out',
+            })
+            // Hide the inner cursor after animation
+            gsap.set(cursorInnerRef.current, { visibility: 'hidden' })
+          },
         })
-        gsap.to(cursorInnerRef.current, {
-          scale: 1,
-          duration: 0.3,
-          ease: 'power2.out',
+      } else {
+        // Hide text first
+        gsap.to(cursorTextRef.current, {
+          opacity: 0,
+          duration: 0.2,
+          ease: 'power2.in',
+          onComplete: () => {
+            // After text is hidden, show the inner cursor
+            gsap.to(cursorInnerRef.current, {
+              scale: variant === 'default' ? 1 : 1.5, // Keep the same scale logic
+              visibility: 'visible',
+              duration: 0.2,
+              ease: 'power2.out',
+            })
+          },
         })
       }
     },
-    { dependencies: [variant, isVisible] },
+    { dependencies: [variant, isVisible, showText] },
   )
 
   // Mouse event handlers
@@ -209,12 +234,20 @@ const Cursor = () => {
 
       // Update cursor positions using quickTo
       if (outerQuickToRef.current && innerQuickToRef.current && textQuickToRef.current) {
-        outerQuickToRef.current.x(e.clientX)
-        outerQuickToRef.current.y(e.clientY)
-        innerQuickToRef.current.x(e.clientX)
-        innerQuickToRef.current.y(e.clientY)
+        outerQuickToRef.current.x(e.clientX - 20)
+        outerQuickToRef.current.y(e.clientY - 20)
+        innerQuickToRef.current.x(e.clientX - 6)
+        innerQuickToRef.current.y(e.clientY - 6)
+
+        // Set the text position without any offset, since we're using xPercent/yPercent
         textQuickToRef.current.x(e.clientX)
         textQuickToRef.current.y(e.clientY)
+
+        // Make sure to apply the centering percentages
+        gsap.set(cursorTextRef.current, {
+          xPercent: -50,
+          yPercent: -50,
+        })
       }
     }
 
@@ -253,8 +286,8 @@ const Cursor = () => {
         ease: 'power2.inOut',
       })
 
-      // Text element only visible when slider variant is active
-      if (variant === 'slider' && isVisible) {
+      // Text element only visible when variants with text are active
+      if (showText && isVisible) {
         gsap.to(cursorTextRef.current, {
           opacity: 1,
           duration: 0.3,
@@ -268,7 +301,7 @@ const Cursor = () => {
         })
       }
     },
-    { dependencies: [isVisible, variant] },
+    { dependencies: [isVisible, variant, showText] },
   )
 
   if (isMobile) return null
@@ -277,10 +310,9 @@ const Cursor = () => {
     <>
       <div
         ref={cursorOuterRef}
-        className={styles.cursorOuter}
+        className={`${styles.cursorOuter} ${variant === 'button' ? styles.cursorOuterBlurred : ''}`}
         style={{
           visibility: isVisible ? 'visible' : 'hidden',
-          border: '1px solid white',
         }}
       />
       <div
@@ -292,13 +324,13 @@ const Cursor = () => {
       />
       <div
         ref={cursorTextRef}
-        className={styles.cursorText}
+        className={`${styles.cursorText} ${variant === 'button' ? styles.cursorTextDark : ''}`}
         style={{
-          visibility: isVisible && variant === 'slider' ? 'visible' : 'hidden',
+          visibility: isVisible && showText ? 'visible' : 'hidden',
           opacity: 0,
         }}
       >
-        Drag
+        {customText || variantText[variant] || ''}
       </div>
     </>
   )
