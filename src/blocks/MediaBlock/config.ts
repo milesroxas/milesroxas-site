@@ -92,7 +92,7 @@ export const MediaBlock: Block = {
       },
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
-          return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]
+          return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature(), HeadingFeature()]
         },
       }),
     },

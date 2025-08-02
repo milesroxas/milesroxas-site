@@ -7,7 +7,6 @@
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  mix-blend-mode: difference;
   transition: opacity 0.2s ease;
   will-change: transform;
   border: 1px solid white;
@@ -23,5 +22,21 @@
   pointer-events: none;
   z-index: 9999;
   background-color: white;
+  will-change: transform;
+}
+
+.cursorText {
+  position: fixed;
+  top: 0;
+  left: 0;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  white-space: nowrap;
+  letter-spacing: 3px;
+  text-transform: uppercase;
   will-change: transform;
 }

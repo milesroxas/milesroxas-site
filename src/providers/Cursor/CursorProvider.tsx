@@ -4,7 +4,7 @@ import { createContext, useContext, useState, ReactNode } from 'react'
 import Cursor from './Component'
 
 // Types
-export type CursorVariant = 'default' | 'text' | 'button' | 'link' | 'media'
+export type CursorVariant = 'default' | 'text' | 'button' | 'link' | 'media' | 'slider'
 
 interface CursorContextType {
   variant: CursorVariant
