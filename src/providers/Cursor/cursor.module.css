@@ -16,7 +16,8 @@
 .cursorOuterBlurred {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background-color: rgba(255, 255, 255, 0.2); /* More transparent for better blur effect */
+  background-color: rgba(255, 255, 255, 0.2);
+  mix-blend-mode: normal;
 }
 
 .cursorInner {

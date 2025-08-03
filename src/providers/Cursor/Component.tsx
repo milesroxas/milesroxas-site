@@ -132,7 +132,7 @@ const Cursor = () => {
         button: {
           borderWidth: 0.8,
           scale: 1.5,
-          borderColor: '#white',
+          borderColor: '#EA580C',
           duration: 0.2,
           ease: 'power2.out',
         },
@@ -172,7 +172,7 @@ const Cursor = () => {
       if (!showText) {
         // For variants without text, scale up the inner cursor
         gsap.to(cursorInnerRef.current, {
-          scale: variant === 'default' ? 1 : 1.5, // Scale to 2x when hovering (non-default), 1x when not
+          scale: variant === 'default' ? 1 : 1.25, // Scale to 2x when hovering (non-default), 1x when not
           opacity: 1,
           backgroundColor: variant === 'default' ? 'white' : 'white',
           visibility: 'visible',
