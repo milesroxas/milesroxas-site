@@ -83,9 +83,9 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
     <>
       <button
         onClick={openModal}
-        className="fixed top-6 right-6 z-50 mix-blend-difference md:top-16 md:right-16"
+        className="hover:bg-accent fixed top-6 right-6 z-50 rounded-xs bg-gray-400/60 shadow-xs backdrop-blur-md transition-colors duration-250 ease-in-out md:top-16 md:right-16"
       >
-        <span className="flex items-center rounded-xs bg-white/30 px-4 py-1 font-medium text-white shadow-sm backdrop-blur-md hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg md:bg-white/40 md:font-semibold md:text-white lg:rounded-sm">
+        <span className="z-20 flex items-center px-4 py-1 text-sm tracking-widest text-white uppercase">
           Menu
         </span>
       </button>
@@ -111,10 +111,12 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
             <div className="absolute top-6 right-6 md:top-16 md:right-16">
               <button
                 onClick={closeModal}
-                className="flex items-center rounded-xs bg-gray-300/40 px-4 py-1 font-medium text-gray-700 backdrop-blur-sm hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg lg:rounded-sm"
+                className="hover:bg-accent fixed top-6 right-6 z-50 rounded-xs bg-gray-800/10 shadow-xs backdrop-blur-sm transition-colors duration-250 ease-in-out md:top-16 md:right-16"
                 tabIndex={isOpen ? 0 : -1}
               >
-                Close
+                <span className="z-20 flex items-center px-4 py-1 text-sm tracking-widest text-white uppercase">
+                  Close
+                </span>
               </button>
             </div>
 
