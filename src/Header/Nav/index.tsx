@@ -85,7 +85,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
         onClick={openModal}
         className="fixed top-6 right-6 z-50 mix-blend-difference md:top-16 md:right-16"
       >
-        <span className="flex items-center rounded-xs bg-white/20 px-4 py-1 font-medium text-white backdrop-blur-md hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg lg:rounded-sm">
+        <span className="flex items-center rounded-xs bg-white/30 px-4 py-1 font-medium text-white shadow-sm backdrop-blur-md hover:bg-slate-200/80 hover:text-slate-900 hover:shadow-lg md:bg-white/40 md:font-semibold md:text-white lg:rounded-sm">
           Menu
         </span>
       </button>
