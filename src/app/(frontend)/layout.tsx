@@ -21,7 +21,6 @@ import { SiteFrame } from '@/SiteFrame/Component'
 import FrameRestorer from '@/SiteFrame/FrameRestorer'
 import Script from 'next/script'
 
-// Initialize the font at the module scope
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ['300', '400', '600', '700'],
   subsets: ['latin'],
