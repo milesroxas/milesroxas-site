@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/next'
 
 import { cn } from '@/utilities/ui'
 import { IBM_Plex_Sans } from 'next/font/google'
@@ -59,6 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Footer />
           <FrameRestorer />
         </Providers>
+        <Analytics />
       </body>
     </html>
   )
