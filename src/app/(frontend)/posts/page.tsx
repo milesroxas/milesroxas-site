@@ -1,4 +1,5 @@
 import type { Metadata } from 'next/types'
+import { unstable_cache } from 'next/cache'
 
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -6,25 +7,34 @@ import React from 'react'
 
 import PostsClient from './page.client'
 
-export const dynamic = 'force-static'
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
+
+const getPosts = unstable_cache(
+  async () => {
+    const payload = await getPayload({ config: configPromise })
+
+    const posts = await payload.find({
+      collection: 'posts',
+      depth: 1,
+      limit: 12,
+      overrideAccess: false,
+      select: {
+        title: true,
+        slug: true,
+        categories: true,
+        meta: true,
+        hero: true,
+      },
+    })
+
+    return posts
+  },
+  ['posts-archive'],
+  { revalidate: 600, tags: ['posts'] },
+)
 
 export default async function Page() {
-  const payload = await getPayload({ config: configPromise })
-
-  const posts = await payload.find({
-    collection: 'posts',
-    depth: 1,
-    limit: 12,
-    overrideAccess: false,
-    select: {
-      title: true,
-      slug: true,
-      categories: true,
-      meta: true,
-      hero: true,
-    },
-  })
+  const posts = await getPosts()
 
   return (
     <div className="pt-24 pb-24">

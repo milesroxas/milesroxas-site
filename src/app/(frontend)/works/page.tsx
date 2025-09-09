@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -6,26 +7,35 @@ import { getPayload } from 'payload'
 import React from 'react'
 import WorksClient from '@/app/(frontend)/works/page.client'
 
-export const dynamic = 'force-static'
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
+
+const getWorks = unstable_cache(
+  async () => {
+    const payload = await getPayload({ config: configPromise })
+
+    const works = await payload.find({
+      collection: 'works',
+      depth: 1,
+      limit: 12,
+      overrideAccess: false,
+      sort: '_order',
+      select: {
+        title: true,
+        slug: true,
+        meta: true,
+        hero: true,
+        _order: true,
+      },
+    })
+
+    return works
+  },
+  ['works-archive'],
+  { revalidate: 600, tags: ['works'] },
+)
 
 export default async function Page() {
-  const payload = await getPayload({ config: configPromise })
-
-  const works = await payload.find({
-    collection: 'works',
-    depth: 1,
-    limit: 12,
-    overrideAccess: false,
-    sort: '_order',
-    select: {
-      title: true,
-      slug: true,
-      meta: true,
-      hero: true,
-      _order: true,
-    },
-  })
+  const works = await getWorks()
 
   return (
     <div className="pt-16 pb-24">

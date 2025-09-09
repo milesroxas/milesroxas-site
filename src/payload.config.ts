@@ -24,6 +24,22 @@ import { generatePreviewPath } from './utilities/generatePreviewPath'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const resendApiKey = process.env.RESEND_API_KEY
+if (!resendApiKey) {
+  console.warn('[payload] RESEND_API_KEY is not set; email sending is disabled in this environment.')
+}
+
+// Avoid initializing the Resend adapter without an API key.
+// When no key is present, some providers perform a lightweight request
+// that can show up as repeated 401s in provider logs.
+const emailAdapter = resendApiKey
+  ? resendAdapter({
+      apiKey: resendApiKey,
+      defaultFromAddress: 'miles@milesroxas.com',
+      defaultFromName: 'Miles Roxas',
+    })
+  : undefined
+
 export default buildConfig({
   admin: {
     components: {
@@ -71,11 +87,7 @@ export default buildConfig({
       ],
     },
   },
-  email: resendAdapter({
-    apiKey: process.env.RESEND_API_KEY || '',
-    defaultFromAddress: 'noreply@milesroxas.com',
-    defaultFromName: 'Miles Roxas',
-  }),
+  email: emailAdapter,
   editor: defaultLexical,
   db: vercelPostgresAdapter({
     pool: {
