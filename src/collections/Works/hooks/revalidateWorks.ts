@@ -17,6 +17,7 @@ export const revalidateWork: CollectionAfterChangeHook<Work> = ({
 
       revalidatePath(path)
       revalidateTag('works-sitemap')
+      revalidateTag('works')
     }
 
     // If the work was previously published, we need to revalidate the old path
@@ -27,6 +28,7 @@ export const revalidateWork: CollectionAfterChangeHook<Work> = ({
 
       revalidatePath(oldPath)
       revalidateTag('works-sitemap')
+      revalidateTag('works')
     }
   }
   return doc
@@ -38,6 +40,7 @@ export const revalidateDelete: CollectionAfterDeleteHook<Work> = ({ doc, req: { 
 
     revalidatePath(path)
     revalidateTag('works-sitemap')
+    revalidateTag('works')
   }
 
   return doc
