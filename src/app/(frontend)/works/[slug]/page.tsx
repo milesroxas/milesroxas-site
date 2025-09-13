@@ -69,7 +69,7 @@ export default async function Work({ params: paramsPromise }: Args) {
 
         {hero && <RenderHero {...hero} />}
         <PageClient work={work} />
-        <RenderBlocks blocks={layout as any} />
+        <RenderBlocks blocks={layout} />
       </article>
     </>
   )

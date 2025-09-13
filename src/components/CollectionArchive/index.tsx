@@ -20,7 +20,7 @@ export const CollectionArchive: React.FC<Props> = (props) => {
             if (typeof result === 'object' && result !== null) {
               return (
                 <div className="col-span-4" key={index}>
-                  <PostCard className="h-full" doc={result} relationTo="posts" />
+                  <PostCard className="h-full" doc={result} relationTo="posts" index={index} />
                 </div>
               )
             }
@@ -30,8 +30,8 @@ export const CollectionArchive: React.FC<Props> = (props) => {
           {works?.map((result, index) => {
             if (typeof result === 'object' && result !== null) {
               return (
-                <div className="col-span-4" key={index}>
-                  <WorkCard doc={result} relationTo="works" />
+                <div className="col-span-4" key={index + (posts?.length || 0)}>
+                  <WorkCard doc={result} relationTo="works" index={index + (posts?.length || 0)} />
                 </div>
               )
             }

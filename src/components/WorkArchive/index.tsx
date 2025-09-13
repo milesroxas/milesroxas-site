@@ -18,7 +18,7 @@ export const WorkArchive: React.FC<Props> = (props) => {
             if (typeof result === 'object' && result !== null) {
               return (
                 <div className="col-span-4" key={index}>
-                  <WorkCard doc={result} relationTo="works" showDescription={true} />
+                  <WorkCard doc={result} relationTo="works" index={index} showDescription={true} />
                 </div>
               )
             }

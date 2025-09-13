@@ -1,5 +1,5 @@
 import React from 'react'
-import type { Page } from '@/payload-types'
+import type { Page, Work } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
@@ -22,8 +22,10 @@ const blockComponents = {
   callout: CallOutBlock,
 }
 
+type Block = Page['layout'][0] | Work['layout'][0]
+
 export const RenderBlocks: React.FC<{
-  blocks: Page['layout'][0][]
+  blocks: Block[]
 }> = (props) => {
   const { blocks } = props
 

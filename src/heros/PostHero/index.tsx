@@ -19,29 +19,31 @@ export const PostHero: React.FC<{
   const { setTransitionPhase } = useSiteFrameStore()
 
   useEffect(() => {
-    // Wait for the DOM to fully render before trying to access the clone
-    setTimeout(() => {
+    const handleTransition = () => {
       const clone = window.__PAGE_TRANSITION_CLONE as HTMLElement | undefined
+      const heroEl = heroRef.current
+      
       if (!clone) return
 
-      // Make sure the clone is visible
+      // Ensure clone is visible and properly positioned
       Object.assign(clone.style, {
         visibility: 'visible',
-        opacity: 1,
+        opacity: '1',
         zIndex: '10000',
+        transformOrigin: 'center center',
       })
 
-      const heroEl = heroRef.current
       if (!heroEl) {
-        // No hero element, just fade out the clone after restoring frame
+        // No hero element, restore frame and fade out
         restoreFrame(() => {
           gsap.to(clone, {
             opacity: 0,
-            duration: 0.5,
-            ease: 'power3.out',
+            duration: 0.6,
+            ease: 'power2.out',
             onComplete: () => {
               clone.remove()
               window.__PAGE_TRANSITION_CLONE = undefined
+              window.__PAGE_TRANSITION_SCROLL_DATA = undefined
               setTransitionPhase('complete')
             },
           })
@@ -49,18 +51,20 @@ export const PostHero: React.FC<{
         return
       }
 
-      // Find the media element in the hero
+      // Find the target media element
       const mediaEl = heroEl.querySelector('img, video') as HTMLElement | null
+      
       if (!mediaEl) {
-        // No media element, just fade out the clone after restoring frame
+        // No media element, restore frame and fade out
         restoreFrame(() => {
           gsap.to(clone, {
             opacity: 0,
-            duration: 0.5,
-            ease: 'power3.out',
+            duration: 0.6,
+            ease: 'power2.out',
             onComplete: () => {
               clone.remove()
               window.__PAGE_TRANSITION_CLONE = undefined
+              window.__PAGE_TRANSITION_SCROLL_DATA = undefined
               setTransitionPhase('complete')
             },
           })
@@ -68,54 +72,57 @@ export const PostHero: React.FC<{
         return
       }
 
-      // Wait a moment for the image to load properly
-      setTimeout(() => {
-        // Get the final position of the media element
-        const { top, left, width, height } = mediaEl.getBoundingClientRect()
+      // Wait for layout to stabilize before getting target position
+      requestAnimationFrame(() => {
+        // Get target element position (new page is at scroll 0)
+        const targetRect = mediaEl.getBoundingClientRect()
+        
+        // Target coordinates are viewport-relative (new page starts at scroll 0)
+        const targetTop = targetRect.top
+        const targetLeft = targetRect.left
 
-        // Ensure the clone is still visible and on top
-        Object.assign(clone.style, {
-          zIndex: '10000',
-          visibility: 'visible',
-          opacity: 1,
-        })
-
-        // First restore the site frame
+        // Restore frame first, then animate
         restoreFrame(() => {
           setTransitionPhase('frame-ready')
-          // Then animate the image to its final position
-          gsap
-            .timeline({
-              onComplete: () => {
-                clone.remove()
-                window.__PAGE_TRANSITION_CLONE = undefined
-                // Make sure the original media is visible
-                mediaEl.style.visibility = 'visible'
-                setTransitionPhase('complete')
-              },
-            })
-            // Animate to the final position
+          
+          const tl = gsap.timeline({
+            onComplete: () => {
+              clone.remove()
+              window.__PAGE_TRANSITION_CLONE = undefined
+              window.__PAGE_TRANSITION_SCROLL_DATA = undefined
+              // Ensure original media is visible
+              mediaEl.style.visibility = 'visible'
+              setTransitionPhase('complete')
+            },
+          })
+          // Reset any transforms from the source animation
+          tl.set(clone, { scale: 1 })
+            // Animate to target position with consistent timing
             .to(clone, {
-              top,
-              left,
-              width,
-              height,
-              duration: 0.8,
-              ease: 'power3.inOut',
+              top: `${targetTop}px`,
+              left: `${targetLeft}px`,
+              width: `${targetRect.width}px`,
+              height: `${targetRect.height}px`,
+              duration: 0.7,
+              ease: 'power2.inOut',
             })
-            // Then fade it out
+            // Fade out clone smoothly
             .to(
               clone,
               {
                 opacity: 0,
                 duration: 0.3,
-                ease: 'power1.out',
+                ease: 'power2.out',
               },
               '>-0.1',
             )
         })
-      }, 100) // Small delay to ensure all elements are properly rendered
-    }, 100) // Initial delay to ensure component is mounted
+      })
+    }
+
+    // Small delay to ensure component is mounted
+    const timeoutId = setTimeout(handleTransition, 50)
+    return () => clearTimeout(timeoutId)
   }, [restoreFrame, setTransitionPhase])
 
   return (
