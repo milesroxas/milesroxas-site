@@ -11,7 +11,17 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.milesroxas.com', // Covers both www and non-www
+        hostname: '**.milesroxas.com', // subdomains
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'milesroxas.com', // apex domain
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.milesroxas.com', // common www
         pathname: '/api/media/file/**',
       },
       {
