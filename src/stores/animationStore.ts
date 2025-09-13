@@ -35,7 +35,6 @@ export function useResetAnimationOnRouteChange() {
     // Only reset on actual route changes, not initial load
     if (prevPathname !== null && prevPathname !== pathname) {
       // Reset animations when navigating between routes
-      console.log('Route changed, resetting animations')
       resetAnimations()
     }
 
@@ -60,7 +59,6 @@ export function ensureAnimationsComplete(timeoutMs = 3000) {
   setTimeout(() => {
     const store = useAnimationStore.getState()
     if (!store.isHeroAnimationComplete) {
-      console.log('Forcing animation completion after timeout')
       store.setHeroAnimationComplete(true)
     }
   }, timeoutMs)

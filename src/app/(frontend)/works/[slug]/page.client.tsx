@@ -3,10 +3,10 @@
 import React, { useEffect } from 'react'
 import { Work } from '@/payload-types'
 import { useLenis } from '@/hooks/useLenis'
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+import { useFrameAnimation } from '@/hooks/useFrameAnimation'
 
 const PageClient: React.FC<{ work: Work }> = ({ work }) => {
-  const { restoreFrame } = usePageAnimationStore()
+  const { restoreFrame } = useFrameAnimation()
   const lenis = useLenis()
   const { industry, role, deliverables, title } = work
   useEffect(() => {

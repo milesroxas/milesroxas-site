@@ -1,6 +1,6 @@
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
-import Link from 'next/link'
+import { TransitionLink } from './TransitionLink'
 import React from 'react'
 
 import type { Page, Post } from '@/payload-types'
@@ -60,7 +60,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
-      <Link
+      <TransitionLink
         className={cn(className)}
         href={href || url || ''}
         {...newTabProps}
@@ -68,13 +68,13 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
       >
         {label && label}
         {children && children}
-      </Link>
+      </TransitionLink>
     )
   }
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link
+      <TransitionLink
         className={cn(className)}
         href={href || url || ''}
         {...newTabProps}
@@ -82,7 +82,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
       >
         {label && label}
         {children && children}
-      </Link>
+      </TransitionLink>
     </Button>
   )
 }
