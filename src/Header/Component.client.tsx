@@ -1,7 +1,5 @@
 'use client'
 
-import Link from 'next/link'
-
 import type { Header } from '@/payload-types'
 
 import { HeaderNav } from './Nav'

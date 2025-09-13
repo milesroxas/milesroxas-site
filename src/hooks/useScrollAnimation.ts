@@ -1,11 +1,14 @@
 'use client'
 
 import { useGSAP } from '@gsap/react'
-import { useEffect } from 'react'
+import { useEffect, type DependencyList } from 'react'
 import { ScrollTrigger } from '@/lib/gsap/plugins'
 
 // Small helper to ensure ScrollTriggers are cleaned up when scopes unmount
-export const useScrollAnimation = (setup: () => void | (() => void), deps: any[] = []) => {
+export const useScrollAnimation = (
+  setup: () => void | (() => void),
+  deps: DependencyList = [],
+) => {
   useGSAP(() => {
     const cleanup = setup()
     return () => {
@@ -13,8 +16,7 @@ export const useScrollAnimation = (setup: () => void | (() => void), deps: any[]
       ScrollTrigger.getAll().forEach((st) => st.kill(true))
       if (typeof cleanup === 'function') cleanup()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, { dependencies: deps })
+  }, { dependencies: [...deps] as unknown[] })
 
   // Defensive: refresh triggers after mount
   useEffect(() => {
@@ -23,4 +25,3 @@ export const useScrollAnimation = (setup: () => void | (() => void), deps: any[]
 }
 
 export default useScrollAnimation
-

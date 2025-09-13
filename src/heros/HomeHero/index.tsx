@@ -1,10 +1,9 @@
 'use client'
 
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import styles from './homeHero.module.css'
 import type { Page, Media as MediaType } from '@/payload-types'
 import { gsap } from 'gsap'
-import { useGSAP } from '@gsap/react'
 import { useAnimationStore } from '@/stores/animationStore'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
@@ -49,7 +48,6 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
   useEffect(() => {
     // If no media, consider it loaded
     if (!media) {
-      console.log('No media provided, proceeding with animation')
       setIsMediaLoaded(true)
       return
     }
@@ -65,13 +63,11 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
       // Listen for immediate ready state
       if (tempVideo.readyState >= 3) {
         // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
-        console.log('Video already cached, triggering animation immediately')
         setIsMediaLoaded(true)
       }
 
       // Also listen for loaded data event
       tempVideo.addEventListener('loadeddata', () => {
-        console.log('Video loaded data event fired')
         setIsMediaLoaded(true)
       })
 
@@ -82,34 +78,15 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
     // Set a timeout as fallback to ensure animation proceeds
     const timeoutId = setTimeout(() => {
       if (!isMediaLoaded) {
-        console.log('Media load timeout - forcing loaded state')
         setIsMediaLoaded(true)
       }
     }, 2000) // Reduced to 2 seconds for better UX
 
     return () => clearTimeout(timeoutId)
-  }, [media])
-
-  // Separate effect to trigger animation once media is loaded
-  useEffect(() => {
-    if ((isMediaLoaded || isMediaError) && !animationTriggered) {
-      console.log('Media loaded or error occurred, triggering animation')
-      setAnimationTriggered(true)
-
-      // Force animation to run by manually triggering GSAP timeline
-      if (
-        containerRef.current &&
-        mediaMaskRef.current &&
-        topMarqueeRef.current &&
-        bottomMarqueeRef.current
-      ) {
-        runAnimation()
-      }
-    }
-  }, [isMediaLoaded, isMediaError, animationTriggered])
+  }, [media, isMediaLoaded])
 
   // Function to run the animation manually
-  const runAnimation = () => {
+  const runAnimation = useCallback(() => {
     // Set initial states
     gsap.set(mediaMaskRef.current, { clipPath: 'inset(0 0 100% 0)' })
     gsap.set(topMarqueeRef.current, { autoAlpha: 0 })
@@ -117,7 +94,6 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
 
     const tl = gsap.timeline({
       onComplete: () => {
-        console.log('Animation timeline complete')
         setHeroAnimationComplete(true)
       },
     })
@@ -144,17 +120,32 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
         },
         '-=0.5',
       )
-  }
+  }, [setHeroAnimationComplete])
+
+  // Separate effect to trigger animation once media is loaded
+  useEffect(() => {
+    if ((isMediaLoaded || isMediaError) && !animationTriggered) {
+      setAnimationTriggered(true)
+
+      // Force animation to run by manually triggering GSAP timeline
+      if (
+        containerRef.current &&
+        mediaMaskRef.current &&
+        topMarqueeRef.current &&
+        bottomMarqueeRef.current
+      ) {
+        runAnimation()
+      }
+    }
+  }, [isMediaLoaded, isMediaError, animationTriggered, runAnimation])
 
   // Handle media load
   const handleMediaLoad = () => {
-    console.log('Media loaded successfully')
     setIsMediaLoaded(true)
   }
 
   // Handle media error
   const handleMediaError = () => {
-    console.error('Media failed to load')
     setIsMediaError(true)
   }
 
@@ -165,18 +156,19 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
 
       // Check if video is already ready
       if (element.readyState >= 3) {
-        console.log('Video element already has data, triggering load')
         handleMediaLoad()
       }
     }
   }
 
   // Helper to check if media is a video
-  const isMediaVideo = (mediaItem: any): boolean => {
+  const isMediaVideo = (mediaItem: unknown): mediaItem is MediaType => {
     return (
-      mediaItem &&
+      !!mediaItem &&
       typeof mediaItem === 'object' &&
-      (mediaItem as MediaType)?.mimeType?.includes('video')
+      'mimeType' in mediaItem &&
+      typeof (mediaItem as { mimeType?: string }).mimeType === 'string' &&
+      ((mediaItem as { mimeType?: string }).mimeType ?? '').includes('video')
     )
   }
 

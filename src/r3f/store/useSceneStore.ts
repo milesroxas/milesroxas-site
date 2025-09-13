@@ -1,10 +1,11 @@
 import { create } from 'zustand'
+import type { SceneTrackRefs } from '@/r3f/types/r3f'
 
 type SceneState = {
   currentScene: 'home' | 'about' | undefined
   setScene: (scene: SceneState['currentScene']) => void
-  trackedRefs?: any
-  setTrackedRefs: (refs: any) => void
+  trackedRefs?: SceneTrackRefs
+  setTrackedRefs: (refs: SceneTrackRefs) => void
   resources?: { url: string; variant: 'wide' | 'portrait' | 'square' }[]
   setResources: (resources: { url: string; variant: 'wide' | 'portrait' | 'square' }[]) => void
   collections?: { variant: 'post' | 'work' }[]

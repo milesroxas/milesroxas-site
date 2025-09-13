@@ -5,16 +5,16 @@ import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
 import { SliderBlock } from '@/blocks/Slider/Component'
 import { useBlockTheme } from '@/hooks/useBlockTheme'
-import { useEffect, useState } from 'react'
 import { useSpacing, SpaceProps } from '@/hooks/useSpacing'
 import type { SliderBlock as SliderBlockType } from '@/payload-types'
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 type Tab = {
   id: string
   tabTitle?: string
   className?: string
   contentType: 'richText' | 'slider'
-  richText?: any
+  richText?: DefaultTypedEditorState
   slider?: SliderBlockType
   theme?: 'light' | 'dark' | 'system'
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import { useSiteFrameStore } from '@/stores/siteframeStore'
 import { ReactNode } from 'react'
 import BottomSection from './BottomSection/Component'
