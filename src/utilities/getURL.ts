@@ -1,31 +1,40 @@
 import canUseDOM from './canUseDOM'
 
-export const getServerSideURL = () => {
-  let url = process.env.NEXT_PUBLIC_SERVER_URL
+/**
+ * Resolves a canonical site URL using environment-first detection.
+ * Priority:
+ * 1) NEXT_PUBLIC_SERVER_URL (explicit, recommended; must include protocol)
+ * 2) VERCEL_URL (runtime for preview/prod; protocol is always https)
+ * 3) VERCEL_PROJECT_PRODUCTION_URL (production canonical domain from Vercel projects)
+ * 4) http://localhost:3000 (development default)
+ */
+function resolveSiteURL(): string {
+  // 1) Explicit override
+  const explicit = process.env.NEXT_PUBLIC_SERVER_URL
+  if (explicit && typeof explicit === 'string') return explicit
 
-  if (!url && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  }
+  // 2) Vercel runtime URL (no protocol)
+  const vercelRuntime = process.env.VERCEL_URL
+  if (vercelRuntime && typeof vercelRuntime === 'string') return `https://${vercelRuntime}`
 
-  if (!url) {
-    url = 'http://localhost:3000'
-  }
+  // 3) Vercel project production URL (no protocol)
+  const vercelProd = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  if (vercelProd && typeof vercelProd === 'string') return `https://${vercelProd}`
 
-  return url
+  // 4) Local default
+  return 'http://localhost:3000'
 }
 
-export const getClientSideURL = () => {
+export const getServerSideURL = (): string => {
+  return resolveSiteURL()
+}
+
+export const getClientSideURL = (): string => {
   if (canUseDOM) {
     const protocol = window.location.protocol
     const domain = window.location.hostname
     const port = window.location.port
-
     return `${protocol}//${domain}${port ? `:${port}` : ''}`
   }
-
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  }
-
-  return process.env.NEXT_PUBLIC_SERVER_URL || ''
+  return resolveSiteURL()
 }
