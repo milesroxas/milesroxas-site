@@ -8,6 +8,7 @@ import { useGSAP } from '@gsap/react'
 import { useAnimationStore } from '@/stores/animationStore'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
+import { getMediaUrl } from '@/utilities/getMediaURL'
 
 export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
   const setHeroAnimationComplete = useAnimationStore((state) => state.setHeroAnimationComplete)
@@ -58,7 +59,7 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
       // Create a video element to check cache status
       const tempVideo = document.createElement('video')
       tempVideo.muted = true
-      tempVideo.src = (media as MediaType).url || ''
+      tempVideo.src = getMediaUrl(media as MediaType) || ''
       tempVideo.preload = 'auto'
 
       // Listen for immediate ready state
@@ -208,8 +209,7 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
               <video
                 ref={handleVideoRef}
                 className="h-full w-full object-cover"
-                src={(media as MediaType).url || ''}
-                poster={(media as MediaType).alt || ''}
+                src={getMediaUrl(media as MediaType) || ''}
                 preload="auto"
                 autoPlay
                 muted

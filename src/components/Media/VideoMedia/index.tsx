@@ -4,6 +4,7 @@ import { cn } from '@/utilities/ui'
 import React, { useRef } from 'react'
 
 import type { Props as MediaProps } from '../types'
+import { getMediaUrl } from '@/utilities/getMediaURL'
 
 export interface VideoMediaProps extends MediaProps {
   onLoadedData?: () => void
@@ -15,7 +16,7 @@ export const VideoMedia: React.FC<VideoMediaProps> = (props) => {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   if (resource && typeof resource === 'object') {
-    const videoUrl = resource.url || ''
+    const videoUrl = getMediaUrl(resource) || ''
 
     return (
       <video
@@ -24,6 +25,7 @@ export const VideoMedia: React.FC<VideoMediaProps> = (props) => {
         controls={false}
         loop
         muted
+        preload="auto"
         onClick={onClick}
         onLoadedData={onLoadedData}
         playsInline

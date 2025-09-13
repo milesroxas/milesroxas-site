@@ -95,7 +95,20 @@ export default buildConfig({
     },
   }),
   collections: [Pages, Posts, Works, Media, Categories, Users],
-  cors: [getServerSideURL()].filter(Boolean),
+  cors: (() => {
+    const origins = new Set<string>()
+    const base = getServerSideURL()
+    if (base) origins.add(base)
+
+    const vercelRuntime = process.env.VERCEL_URL
+    if (vercelRuntime) origins.add(`https://${vercelRuntime}`)
+
+    if (process.env.NODE_ENV !== 'production') {
+      origins.add('http://localhost:3000')
+    }
+
+    return Array.from(origins)
+  })(),
   globals: [Header, Footer],
   plugins: [
     ...plugins,
