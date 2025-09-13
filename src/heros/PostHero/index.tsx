@@ -7,7 +7,7 @@ import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+import { useFrameAnimation } from '@/hooks/useFrameAnimation'
 import { useSiteFrameStore } from '@/stores/siteframeStore'
 
 export const PostHero: React.FC<{
@@ -15,7 +15,7 @@ export const PostHero: React.FC<{
 }> = ({ post }) => {
   const { categories, hero, publishedAt, title } = post
   const heroRef = useRef<HTMLDivElement>(null)
-  const restoreFrame = usePageAnimationStore((s) => s.restoreFrame)
+  const { restoreFrame } = useFrameAnimation()
   const { setTransitionPhase } = useSiteFrameStore()
 
   useEffect(() => {
