@@ -13,98 +13,68 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
   const { setIsSiteFrameVisible, setTransitionPhase, transitionPhase } = useSiteFrameStore()
 
   useEffect(() => {
-    // Delay to ensure DOM is fully rendered and media elements are positioned
-    const handleTransition = () => {
-      const clone = window.__PAGE_TRANSITION_CLONE as HTMLElement | undefined
-      const heroEl = heroRef.current
-      
-      if (!clone || !heroEl) return
+    const clone = window.__PAGE_TRANSITION_CLONE as HTMLElement | undefined
+    const heroEl = heroRef.current
+    if (!clone || !heroEl) return
 
-      // Ensure clone is visible and properly positioned
-      Object.assign(clone.style, {
-        transformOrigin: 'center center',
-        visibility: 'visible',
-        opacity: '1',
-        zIndex: '10000',
+    // anchor transforms from the page top‑left
+    clone.style.transformOrigin = 'top left'
+
+    // find the real <img> so we get its exact position & size
+    const mediaEl = heroEl.querySelector('img, video') as HTMLElement | null
+    if (!mediaEl) {
+      // if no hero media, just fade clone out
+      gsap.to(clone, {
+        opacity: 0,
+        duration: 0.8, // Increased from 0.5
+        ease: 'power3.out',
+        onComplete: () => {
+          clone.remove()
+          window.__PAGE_TRANSITION_CLONE = undefined
+          setIsSiteFrameVisible(true)
+          setTransitionPhase('frame-ready')
+        },
       })
-
-      // Find the target media element
-      const mediaEl = heroEl.querySelector('img, video') as HTMLElement | null
-      
-      if (!mediaEl) {
-        // No hero media, fade out clone and restore frame
-        gsap.to(clone, {
-          opacity: 0,
-          duration: 0.6,
-          ease: 'power2.out',
-          onComplete: () => {
-            clone.remove()
-            window.__PAGE_TRANSITION_CLONE = undefined
-            window.__PAGE_TRANSITION_SCROLL_DATA = undefined
-            setIsSiteFrameVisible(true)
-            setTransitionPhase('complete')
-          },
-        })
-        return
-      }
-
-      // Wait for layout to stabilize before getting target position
-      requestAnimationFrame(() => {
-        // Get target element position (new page is at scroll 0)
-        const targetRect = mediaEl.getBoundingClientRect()
-        
-        // Target coordinates are viewport-relative (new page starts at scroll 0)
-        const targetTop = targetRect.top
-        const targetLeft = targetRect.left
-        
-        // The clone is in fixed position, so target coordinates are viewport-relative
-        // No scroll adjustment needed for target since new page starts at scroll 0
-
-        const tl = gsap.timeline({
-          onComplete: () => {
-            clone.remove()
-            window.__PAGE_TRANSITION_CLONE = undefined
-            window.__PAGE_TRANSITION_SCROLL_DATA = undefined
-            setTransitionPhase('complete')
-          },
-        })
-
-        // Reset any transforms from the source animation
-        gsap.set(clone, { scale: 1 })
-        
-        // Animate clone to target position with consistent timing
-        tl.to(clone, {
-          top: `${targetTop}px`,
-          left: `${targetLeft}px`,
-          width: `${targetRect.width}px`,
-          height: `${targetRect.height}px`,
-          duration: 0.7,
-          ease: 'power2.inOut',
-          onUpdate: function () {
-            // Restore site frame when animation is 30% complete
-            if (this.progress() > 0.3 && transitionPhase !== 'frame-ready') {
-              setIsSiteFrameVisible(true)
-              setTransitionPhase('frame-ready')
-            }
-          },
-        })
-        // Fade out clone smoothly
-        .to(
-          clone,
-          {
-            opacity: 0,
-            duration: 0.3,
-            ease: 'power2.out',
-          },
-          '>-0.1',
-        )
-      })
+      return
     }
 
-    // Small delay to ensure component is mounted and media is loaded
-    const timeoutId = setTimeout(handleTransition, 50)
-    return () => clearTimeout(timeoutId)
-  }, [setIsSiteFrameVisible, setTransitionPhase, transitionPhase])
+    const { top, left, width, height } = mediaEl.getBoundingClientRect()
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        clone.remove()
+        window.__PAGE_TRANSITION_CLONE = undefined
+        setTransitionPhase('complete')
+      },
+    })
+
+    // 1) shrink/move the clone into place
+    tl.to(clone, {
+      top,
+      left,
+      width,
+      height,
+      duration: 1, // Increased from 0.8 to 1.2 for slower animation
+      ease: 'power2.inOut', // Changed to power2 for smoother motion
+      onUpdate: function () {
+        // Set site frame visible and update transition phase when animation is 70% complete
+        if (this.progress() > 0.7 && transitionPhase !== 'frame-ready') {
+          setIsSiteFrameVisible(true)
+          setTransitionPhase('frame-ready')
+        }
+      },
+    })
+      // 2) then fade it out
+      .to(
+        clone,
+        {
+          opacity: 0,
+          duration: 0.1, // Increased from 0.3 to 0.6
+          ease: 'power1.inOut', // Changed to inOut for smoother fade
+        },
+        '>-0.1',
+      )
+  }, [setIsSiteFrameVisible, setTransitionPhase])
 
   return (
     <section

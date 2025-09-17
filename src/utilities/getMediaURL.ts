@@ -1,3 +1,4 @@
+import { getServerSideURL } from '@/utilities/getURL'
 import type { Media } from '@/payload-types'
 
 /**
@@ -7,7 +8,7 @@ import type { Media } from '@/payload-types'
  * @returns Properly formatted URL with cache tag if provided
  */
 export const getMediaUrl = (
-  url: string | null | undefined | Media | { url?: string; updatedAt?: string },
+  url: string | null | undefined | Media | Record<string, any>,
   cacheTag?: string | null,
 ): string | null => {
   // Handle null/undefined
@@ -20,7 +21,7 @@ export const getMediaUrl = (
   if (typeof url === 'object') {
     // Extract URL and use object's updatedAt as cache tag if not provided
     urlStr = url.url || ''
-    cacheSuffix = cacheSuffix || url.updatedAt || null
+    cacheSuffix = cacheSuffix || url.updatedAt
   } else {
     urlStr = url
   }
@@ -34,7 +35,7 @@ export const getMediaUrl = (
     try {
       const urlObj = new URL(urlStr)
       urlStr = urlObj.pathname + urlObj.search + urlObj.hash
-    } catch (_ignore) {
+    } catch (e) {
       // If URL parsing fails, just use the original
     }
   }

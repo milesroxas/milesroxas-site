@@ -1,3 +1,5 @@
+import * as THREE from 'three'
+
 export type SceneTrackRefs = {
   heroSection?: React.RefObject<HTMLDivElement | null>
   cards?: React.RefObject<HTMLDivElement | null>[]

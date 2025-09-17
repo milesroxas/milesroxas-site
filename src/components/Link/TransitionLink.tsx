@@ -26,18 +26,14 @@ export const TransitionLink: React.FC<TransitionLinkProps> = ({
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
       // Call any consumer onClick first to allow preventDefault
+      // @ts-expect-error onClick exists in anchor props
       linkProps?.onClick?.(e)
 
       if (e.defaultPrevented) return
       if (onNavigate) return // Let consumer control navigation
 
       e.preventDefault()
-      const to =
-        typeof href === 'string'
-          ? href
-          : href && typeof href === 'object' && 'pathname' in href
-            ? (href.pathname as string) || ''
-            : ''
+      const to = typeof href === 'string' ? href : (href as any)?.href ?? ''
       if (to) navigate(to)
     },
     [href, navigate, onNavigate, linkProps],

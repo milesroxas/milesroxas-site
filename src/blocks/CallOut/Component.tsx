@@ -57,12 +57,13 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
         // Set initial opacity
         gsap.set(textElement, { opacity: 1 })
 
-        SplitText.create(textElement, {
+        const split = SplitText.create(textElement, {
           type: 'words,lines',
           mask: 'lines',
           linesClass: 'line',
           autoSplit: true,
           onSplit: (instance) => {
+            console.log('split')
             return gsap.from(instance.lines, {
               yPercent: 120,
               stagger: 0.1,

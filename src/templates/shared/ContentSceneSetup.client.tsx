@@ -28,7 +28,7 @@ export default function ContentSceneSetup({ layout }: { layout: Page['layout'] }
             const workDoc = col.work.works
             const media = workDoc.hero.media
             if (media && typeof media !== 'number' && media.url) {
-              const aspectOpt = col.work?.aspect ?? undefined
+              const aspectOpt = (col as any).aspect as string | undefined
               const variant =
                 aspectOpt === 'portrait' ? 'portrait' : aspectOpt === 'square' ? 'square' : 'wide'
               resources.push({ url: `${base}${media.url}`, variant })
@@ -45,7 +45,7 @@ export default function ContentSceneSetup({ layout }: { layout: Page['layout'] }
             const media = postDoc.hero.media
             if (media && typeof media !== 'number' && media.url) {
               // determine variant from CMS aspect (wide, portrait, square)
-              const aspectOpt = col.post?.aspect ?? undefined
+              const aspectOpt = (col as any).aspect as string | undefined
               const variant =
                 aspectOpt === 'portrait' ? 'portrait' : aspectOpt === 'square' ? 'square' : 'wide'
               resources.push({ url: `${base}${media.url}`, variant })
