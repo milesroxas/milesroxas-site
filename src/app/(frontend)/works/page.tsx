@@ -10,15 +10,14 @@ import WorksClient from '@/app/(frontend)/works/page.client'
 
 export const dynamic = 'force-dynamic'
 
-// Cache published results
 const getWorksPublished = unstable_cache(
   async () => {
     const payload = await getPayload({ config: configPromise })
 
     const works = await payload.find({
       collection: 'works',
-      depth: 1,
-      pagination: false, // return all published works
+      depth: 2,
+      pagination: false,
       overrideAccess: false,
       sort: '_order',
       select: {
@@ -44,7 +43,7 @@ const getWorksDraft = unstable_cache(
     const works = await payload.find({
       collection: 'works',
       depth: 1,
-      pagination: false, // return all works in preview
+      pagination: false,
       draft: true,
       overrideAccess: true,
       sort: '_order',
