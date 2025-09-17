@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { useFrameAnimation } from '@/hooks/useFrameAnimation'
+import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 import { useLenis } from '@/hooks/useLenis'
 import { Post } from '@/payload-types'
 import { formatDateTime } from 'src/utilities/formatDateTime'
@@ -9,7 +9,7 @@ import { formatDateTime } from 'src/utilities/formatDateTime'
 const PageClient: React.FC<{ post: Post }> = ({ post }) => {
   const { categories, publishedAt, title } = post
 
-  const { restoreFrame } = useFrameAnimation()
+  const { restoreFrame } = usePageAnimationStore()
   const lenis = useLenis()
 
   useEffect(() => {

@@ -1,9 +1,8 @@
 'use client'
 
-import React, { useCallback } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import type { LinkProps } from 'next/link'
-import { usePageTransition } from '@/hooks/usePageTransition'
 
 // Define the correct type for onNavigate
 type OnNavigateEventHandler = (event: { preventDefault: () => void }) => void
@@ -21,32 +20,8 @@ export const TransitionLink: React.FC<TransitionLinkProps> = ({
   onNavigate,
   ...linkProps
 }) => {
-  const { navigate } = usePageTransition()
-
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
-      // Call any consumer onClick first to allow preventDefault
-      // @ts-expect-error onClick exists in anchor props
-      linkProps?.onClick?.(e)
-
-      if (e.defaultPrevented) return
-      if (onNavigate) return // Let consumer control navigation
-
-      e.preventDefault()
-      const to = typeof href === 'string' ? href : (href as any)?.href ?? ''
-      if (to) navigate(to)
-    },
-    [href, navigate, onNavigate, linkProps],
-  )
-
   return (
-    <Link
-      href={href}
-      className={className}
-      onNavigate={onNavigate}
-      onClick={handleClick}
-      {...linkProps}
-    >
+    <Link href={href} className={className} onNavigate={onNavigate} {...linkProps}>
       {children}
     </Link>
   )
