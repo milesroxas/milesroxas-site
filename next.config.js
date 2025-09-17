@@ -6,9 +6,6 @@ import redirects from './redirects.js'
 const nextConfig = {
   reactStrictMode: true,
   redirects,
-  experimental: {
-    viewTransition: true,
-  },
 
   images: {
     remotePatterns: [

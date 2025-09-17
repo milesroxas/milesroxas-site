@@ -2,10 +2,10 @@
 'use client'
 import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { useFrameAnimation } from '@/hooks/useFrameAnimation'
+import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 export default function FrameRestorer() {
-  const { restoreFrame } = useFrameAnimation()
+  const restoreFrame = usePageAnimationStore((s) => s.restoreFrame)
   const pathname = usePathname()
 
   useEffect(() => {
