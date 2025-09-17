@@ -1,7 +1,8 @@
 'use client'
 import styles from '../styles/home.module.css'
 import { cn } from '@/utilities/ui'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Suspense } from 'react'
 
 export default function HomeHero() {
   const videoRef = useRef<HTMLVideoElement>(null)

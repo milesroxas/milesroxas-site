@@ -4,7 +4,7 @@
 import React from 'react'
 import { useBlockTheme, ThemeOption } from '@/hooks/useBlockTheme'
 
-type AnyBlock = Record<string, unknown>
+type AnyBlock = Record<string, any>
 
 type Props<P> = {
   Component: React.ComponentType<P>
@@ -16,7 +16,7 @@ export function ClientBlockWrapper<P extends AnyBlock>({ Component, block }: Pro
   const applied = useBlockTheme(block.theme ?? 'system')
 
   // full-width or other wrapper-level logic
-  const isFull = (block as { containerWidth?: string }).containerWidth === 'fullWidth'
+  const isFull = (block as any).containerWidth === 'fullWidth'
 
   return (
     <div data-theme={applied} className={`block-wrapper ${isFull ? 'w-full' : ''}`}>

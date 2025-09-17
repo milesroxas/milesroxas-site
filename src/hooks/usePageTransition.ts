@@ -11,12 +11,7 @@ export interface TransitionOptions {
   onComplete?: () => void
 }
 
-type StartViewTransition = (cb: () => void | Promise<void>) => Promise<void>
-const getDocWithViewTransitions = () =>
-  document as Document & { startViewTransition?: StartViewTransition }
-
-const supportsViewTransitions = () =>
-  typeof getDocWithViewTransitions().startViewTransition === 'function'
+const supportsViewTransitions = () => typeof (document as any).startViewTransition === 'function'
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export const usePageTransition = (options?: TransitionOptions) => {
@@ -38,12 +33,11 @@ export const usePageTransition = (options?: TransitionOptions) => {
       if (supportsViewTransitions()) {
         setPhase('preparing')
         start?.()
-        await getDocWithViewTransitions().startViewTransition!(
-          () => {
+        // @ts-expect-error startViewTransition is experimental
+        await (document as any).startViewTransition(() => {
           setPhase('animating')
           router.push(href)
-          },
-        )
+        })
         setPhase('complete')
         complete?.()
       } else {
@@ -62,3 +56,4 @@ export const usePageTransition = (options?: TransitionOptions) => {
 }
 
 export default usePageTransition
+

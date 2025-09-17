@@ -76,27 +76,13 @@ export const PostCard: React.FC<PostCardProps> = ({
     setIsTransitioning(true)
     setTransitionPhase('initial')
 
-    // Store current scroll position for transition calculations
-    const currentScrollY = window.scrollY
-    const currentScrollX = window.scrollX
-
-    // Clone and prepare for transition
+    // clone & stash
     const clone = mediaEl.cloneNode(true) as HTMLElement
     clone.classList.add('page-transition-clone')
-    
-    // Store scroll position data for receiving hero
     window.__PAGE_TRANSITION_CLONE = clone
-    window.__PAGE_TRANSITION_SCROLL_DATA = {
-      scrollY: currentScrollY,
-      scrollX: currentScrollX,
-    }
-    
     document.body.appendChild(clone)
 
-    // Get viewport-relative position
     const rect = mediaEl.getBoundingClientRect()
-
-    // Position clone exactly at the card's current viewport position
     Object.assign(clone.style, {
       position: 'fixed',
       top: `${rect.top}px`,
@@ -105,43 +91,33 @@ export const PostCard: React.FC<PostCardProps> = ({
       height: `${rect.height}px`,
       objectFit: 'cover',
       zIndex: '10000',
-      transformOrigin: 'center center',
-      visibility: 'visible',
-      opacity: '1',
     })
 
-    // Hide original after clone is positioned
     mediaEl.style.visibility = 'hidden'
 
-    // Create a smooth transition: first animate to center, then navigate
-    // This ensures the animation looks consistent regardless of scroll position
-    const viewportCenterX = window.innerWidth / 2
-    const viewportCenterY = window.innerHeight / 2
-    const targetSize = Math.min(window.innerWidth, window.innerHeight) * 0.8
-    
-    gsap.timeline({
-      onComplete: () => {
-        // Navigate after centering animation completes
-        router.push(href)
-        setIsSiteFrameVisible(false)
-      },
+    // FLIP to full-screen
+    const state = Flip.getState(clone)
+    Object.assign(clone.style, {
+      top: '0',
+      left: '0',
+      width: '100vw',
+      height: '100vh',
     })
-    .to(clone, {
-      top: `${viewportCenterY - targetSize / 2}px`,
-      left: `${viewportCenterX - targetSize / 2}px`,
-      width: `${targetSize}px`,
-      height: `${targetSize}px`,
-      duration: 0.6,
+
+    Flip.from(state, {
+      duration: 1.2,
       ease: 'power2.inOut',
       onStart: () => {
         setTransitionPhase('clone-animating')
       },
-    })
-    .to(clone, {
-      scale: 1.2,
-      opacity: 0.95,
-      duration: 0.4,
-      ease: 'power2.inOut',
+      onComplete: () => {
+        router.push(href)
+        setIsSiteFrameVisible(false)
+      },
+      onInterrupt: () => {
+        router.push(href)
+        setIsSiteFrameVisible(false)
+      },
     })
   })
 

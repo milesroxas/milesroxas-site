@@ -1,5 +1,7 @@
 'use client'
 
+import type { StaticImageData } from 'next/image'
+
 import { cn } from '@/utilities/ui'
 import React from 'react'
 import RichText from '@/components/RichText'

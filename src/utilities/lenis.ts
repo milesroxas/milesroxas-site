@@ -3,12 +3,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-type LenisLike = {
-  on: (event: 'scroll', cb: () => void) => void
-  off?: (event: 'scroll', cb?: () => void) => void
-  raf: (time: number) => void
-}
-
 /**
  * Creates a scroll integration between Lenis and GSAP ScrollTrigger
  * Call this in a component using useEffect when you want to integrate both libraries
@@ -28,16 +22,15 @@ type LenisLike = {
  *   }
  * }, [lenis])
  */
-export const createLenisScrollTriggerIntegration = (lenis: LenisLike) => {
-  const instance = lenis
+export const createLenisScrollTriggerIntegration = (lenis: any) => {
   if (typeof window === 'undefined') return
 
   gsap.registerPlugin(ScrollTrigger)
 
-  instance.on('scroll', ScrollTrigger.update)
+  lenis.on('scroll', ScrollTrigger.update)
 
   gsap.ticker.add((time) => {
-    instance.raf(time * 1000)
+    lenis.raf(time * 1000)
   })
 
   gsap.ticker.lagSmoothing(0)

@@ -54,9 +54,9 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
 
             return (
               <div className={colClass} key={idx}>
-                {content === 'work' && col.work?.works && <WorkCard doc={col.work.works as Work} index={idx} />}
+                {content === 'work' && col.work?.works && <WorkCard doc={col.work.works as Work} />}
 
-                {content === 'post' && col.post?.posts && <PostCard doc={col.post.posts as Post} index={idx} />}
+                {content === 'post' && col.post?.posts && <PostCard doc={col.post.posts as Post} />}
 
                 {content === 'text' && col.text?.richText && (
                   <RichText

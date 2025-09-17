@@ -11,7 +11,7 @@ export default function SceneManager() {
 
   return (
     <>
-      {scene === 'home' && resources && collections && trackedRefs && (
+      {scene === 'home' && resources && collections && (
         <SceneHome trackedRefs={trackedRefs} resources={resources} collections={collections} />
       )}
     </>

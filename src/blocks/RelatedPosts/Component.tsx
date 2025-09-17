@@ -24,7 +24,7 @@ export const RelatedPosts: React.FC<RelatedPostsProps> = (props) => {
         {docs?.map((doc, index) => {
           if (typeof doc === 'string') return null
 
-          return <PostCard key={index} doc={doc} relationTo="posts" index={index} />
+          return <PostCard key={index} doc={doc} relationTo="posts" />
         })}
       </div>
     </div>

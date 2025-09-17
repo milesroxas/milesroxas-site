@@ -72,7 +72,7 @@ export default function PlaneWithImage({
       u.u_mouse.value.set(mouseX, mouseY)
       texture.needsUpdate = true
     }
-  }, [texture, aspect, mouseX, mouseY])
+  }, [texture, aspect])
 
   useFrame(({ clock, size: canvasSize }) => {
     if (!matRef.current) return
@@ -89,7 +89,7 @@ export default function PlaneWithImage({
 
   return (
     <Plane args={[width, height]}>
-      {/* @ts-expect-error R3F extends intrinsic elements via extend; JSX typing may lag */}
+      {/* @ts-ignore */}
       <cardMaterial ref={matRef} transparent />
     </Plane>
   )
