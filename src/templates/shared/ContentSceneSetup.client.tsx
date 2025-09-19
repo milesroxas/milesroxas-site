@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
-import { getClientSideURL } from '@/utilities/getURL'
+import { getMediaUrl } from '@/utilities/getMediaURL'
 import type { Page, ContentBlock } from '@/payload-types'
 
 export default function ContentSceneSetup({ layout }: { layout: Page['layout'] }) {
@@ -10,7 +10,6 @@ export default function ContentSceneSetup({ layout }: { layout: Page['layout'] }
   const setCollections = useSceneStore((s) => s.setCollections)
 
   useEffect(() => {
-    const base = getClientSideURL()
     const resources: { url: string; variant: 'wide' | 'portrait' | 'square' }[] = []
     const collections: { variant: 'work' | 'post' }[] = []
 
@@ -31,7 +30,7 @@ export default function ContentSceneSetup({ layout }: { layout: Page['layout'] }
               const aspectOpt = (col as any).aspect as string | undefined
               const variant =
                 aspectOpt === 'portrait' ? 'portrait' : aspectOpt === 'square' ? 'square' : 'wide'
-              resources.push({ url: `${base}${media.url}`, variant })
+              resources.push({ url: getMediaUrl(media) || '', variant })
               collections.push({ variant: 'work' })
             }
           }
@@ -48,7 +47,7 @@ export default function ContentSceneSetup({ layout }: { layout: Page['layout'] }
               const aspectOpt = (col as any).aspect as string | undefined
               const variant =
                 aspectOpt === 'portrait' ? 'portrait' : aspectOpt === 'square' ? 'square' : 'wide'
-              resources.push({ url: `${base}${media.url}`, variant })
+              resources.push({ url: getMediaUrl(media) || '', variant })
               collections.push({ variant: 'post' })
             }
           }
