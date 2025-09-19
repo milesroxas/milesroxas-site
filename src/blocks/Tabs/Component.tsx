@@ -5,44 +5,17 @@ import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
 import { SliderBlock } from '@/blocks/Slider/Component'
 import { useBlockTheme } from '@/hooks/useBlockTheme'
-import { useEffect, useState } from 'react'
 import { useSpacing, SpaceProps } from '@/hooks/useSpacing'
-import type { SliderBlock as SliderBlockType } from '@/payload-types'
+import type { TabsBlock as TabsBlockProps } from '@/payload-types'
 
-type Tab = {
-  id: string
-  tabTitle?: string
-  className?: string
-  contentType: 'richText' | 'slider'
-  richText?: any
-  slider?: SliderBlockType
-  theme?: 'light' | 'dark' | 'system'
-}
-
-type TabsBlockProps = {
-  tabs: Tab[]
-  space?: {
-    pt?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
-    pb?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
-    mt?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
-    mb?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
-  }
-  theme?: 'light' | 'dark' | 'system'
-
+type TabsBlockLocalProps = TabsBlockProps & {
   className?: string
   tabsListClassName?: string
   tabsTriggerClassName?: string
   tabsContentClassName?: string
-  id: number
-  heading?: {
-    style: 'default' | 'center'
-    eyebrow?: string
-    heading?: string
-    subheading?: string
-  }
 }
 
-export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
+export const TabsBlock: React.FC<TabsBlockLocalProps> = (props) => {
   const { tabs, space, heading, theme = 'system' } = props
 
   const appliedTheme = useBlockTheme(theme)
@@ -53,7 +26,10 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
     <div data-theme={appliedTheme} className={cn('w-full', {})}>
       <div style={spacingStyles} className="bg-background text-foreground">
         <div className="container px-8 md:px-14 lg:px-16">
-          <Tabs defaultValue={tabs[0]?.id} className="flex flex-col items-start gap-8 md:flex-row">
+          <Tabs
+            defaultValue={tabs?.[0]?.id != null ? String(tabs[0].id) : undefined}
+            className="flex flex-col items-start gap-8 md:flex-row"
+          >
             <div className="basis-full md:basis-4/12">
               {heading && (
                 <div className="mb-12">
@@ -77,7 +53,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
                 {tabs &&
                   tabs.length > 0 &&
                   tabs.map((tab) => (
-                    <TabsTrigger key={tab.id} value={tab.id}>
+                    <TabsTrigger key={tab.id} value={String(tab.id)}>
                       <span className="text-sm">{tab.tabTitle}</span>
                     </TabsTrigger>
                   ))}
@@ -88,7 +64,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
               {tabs &&
                 tabs.length > 0 &&
                 tabs.map((tab) => (
-                  <TabsContent key={tab.id} value={tab.id}>
+                  <TabsContent key={tab.id} value={String(tab.id)}>
                     {tab.contentType === 'richText' && tab.richText && (
                       <RichText
                         data={tab.richText}

@@ -12,7 +12,7 @@ import { useSpacing } from '@/hooks/useSpacing'
 import type { SliderBlock as SliderBlockType } from '@/payload-types'
 import { CursorSlider } from '@/providers/Cursor/components/CursorInteractions'
 
-type SliderBlockProps = SliderBlockType & { id?: string; className?: string; fullWidth?: boolean }
+type SliderBlockProps = SliderBlockType & { className?: string; fullWidth?: boolean }
 
 export const SliderBlock: React.FC<SliderBlockProps> = ({
   theme,
