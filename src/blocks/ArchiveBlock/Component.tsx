@@ -9,12 +9,7 @@ import { CardPostData } from '@/components/Card/Posts/Component'
 
 import ArchiveBlockClient from './ArchiveBlockClient'
 
-export const ArchiveBlock: React.FC<
-  ArchiveBlockProps & {
-    id?: string
-    cardStyle: 'card' | 'featured'
-  }
-> = async (props) => {
+export const ArchiveBlock: React.FC<ArchiveBlockProps> = async (props) => {
   const {
     id,
     categories,

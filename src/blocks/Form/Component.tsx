@@ -1,5 +1,5 @@
 'use client'
-import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
+import type { FormFieldBlock } from '@payloadcms/plugin-form-builder/types'
 
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useState } from 'react'
@@ -7,32 +7,32 @@ import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import type { FormBlock as PayloadFormBlock, Form as GeneratedForm } from '@/payload-types'
 
 import { fields } from './fields'
 import { getClientSideURL } from '@/utilities/getURL'
 
-export type FormBlockType = {
-  blockName?: string
-  blockType?: 'formBlock'
-  enableIntro: boolean
-  form: FormType
-  introContent?: SerializedEditorState
-}
+export const FormBlock: React.FC<PayloadFormBlock> = (props) => {
+  const { enableIntro = false, form: formFromProps, introContent } = props
 
-export const FormBlock: React.FC<
-  {
-    id?: string
-  } & FormBlockType
-> = (props) => {
-  const {
-    enableIntro,
-    form: formFromProps,
-    form: { id: formID, confirmationMessage, confirmationType, redirect, submitButtonLabel } = {},
-    introContent,
-  } = props
+  const formObject =
+    typeof formFromProps === 'object' && formFromProps
+      ? (formFromProps as GeneratedForm)
+      : undefined
+
+  const formID =
+    typeof formFromProps === 'object'
+      ? (formFromProps as GeneratedForm).id
+      : (formFromProps as number | undefined)
+  const confirmationMessage = formObject?.confirmationMessage as DefaultTypedEditorState | undefined
+  const confirmationType = formObject?.confirmationType as 'message' | 'redirect' | undefined
+  const redirect = formObject?.redirect
+  const submitButtonLabel = formObject?.submitButtonLabel
 
   const formMethods = useForm({
-    defaultValues: formFromProps.fields,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    defaultValues: (formObject?.fields as any) || undefined,
   })
   const {
     control,
@@ -149,56 +149,63 @@ export const FormBlock: React.FC<
       )}
       <div className="border-border bg-background w-full rounded-md border p-4 lg:p-6">
         <FormProvider {...formMethods}>
-          {!isLoading && hasSubmitted && confirmationType === 'message' && (
+          {!isLoading && hasSubmitted && confirmationType === 'message' && confirmationMessage && (
             <RichText data={confirmationMessage} />
           )}
           {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
           {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
           {!hasSubmitted && (
-            <form id={formID} onSubmit={handleSubmit(onSubmit)}>
+            <form id={formID ? String(formID) : undefined} onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4 last:mb-0">
-                {formFromProps && formFromProps.fields && (
+                {formObject && formObject.fields && (
                   <>
-                    {groupFieldsIntoRows(formFromProps.fields).map((row, rowIndex) => (
-                      <div
-                        key={`row-${rowIndex}`}
-                        className="mb-6 grid grid-cols-2 gap-4 last:mb-0"
-                      >
-                        {row.map((field, fieldIndex) => {
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          const Field: React.FC<any> =
-                            fields?.[field.blockType as keyof typeof fields]
-                          if (Field) {
-                            const isFullWidth =
-                              !('width' in field) ||
-                              !field.width ||
-                              field.width === 100 ||
-                              field.width > 50
+                    {groupFieldsIntoRows(formObject.fields as unknown as FormFieldBlock[]).map(
+                      (row, rowIndex) => (
+                        <div
+                          key={`row-${rowIndex}`}
+                          className="mb-6 grid grid-cols-2 gap-4 last:mb-0"
+                        >
+                          {row.map((field, fieldIndex) => {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            const Field: React.FC<any> =
+                              fields?.[field.blockType as keyof typeof fields]
+                            if (Field) {
+                              const isFullWidth =
+                                !('width' in field) ||
+                                !field.width ||
+                                field.width === 100 ||
+                                field.width > 50
 
-                            return (
-                              <div
-                                key={`field-${rowIndex}-${fieldIndex}`}
-                                className={isFullWidth ? 'col-span-2' : 'col-span-1'}
-                              >
-                                <Field
-                                  form={formFromProps}
-                                  {...field}
-                                  control={control}
-                                  errors={errors}
-                                  register={register}
-                                />
-                              </div>
-                            )
-                          }
-                          return null
-                        })}
-                      </div>
-                    ))}
+                              return (
+                                <div
+                                  key={`field-${rowIndex}-${fieldIndex}`}
+                                  className={isFullWidth ? 'col-span-2' : 'col-span-1'}
+                                >
+                                  <Field
+                                    form={formFromProps}
+                                    {...field}
+                                    control={control}
+                                    errors={errors}
+                                    register={register}
+                                  />
+                                </div>
+                              )
+                            }
+                            return null
+                          })}
+                        </div>
+                      ),
+                    )}
                   </>
                 )}
               </div>
 
-              <Button form={formID} type="submit" variant="default" className="w-full">
+              <Button
+                form={formID ? String(formID) : undefined}
+                type="submit"
+                variant="default"
+                className="w-full"
+              >
                 {submitButtonLabel}
               </Button>
             </form>
