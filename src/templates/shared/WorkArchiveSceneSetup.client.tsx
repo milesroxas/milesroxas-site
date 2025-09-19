@@ -4,6 +4,7 @@ import React, { useRef, useEffect } from 'react'
 import { useSceneStore } from '@/r3f/store/useSceneStore'
 import SceneSetter from '@/r3f/canvas/SceneSetter'
 import type { Work } from '@/payload-types'
+import { getMediaUrl } from '@/utilities/getMediaURL'
 
 export default function WorkArchiveSceneSetup({ works }: { works: Work[] }) {
   // create refs for each card image container
@@ -18,7 +19,8 @@ export default function WorkArchiveSceneSetup({ works }: { works: Work[] }) {
     // map works to resource entries
     const resources = works.map((w) => {
       const media = typeof w.hero.media !== 'number' ? w.hero.media : undefined
-      return { url: media?.url || '', variant: 'wide' as const }
+      const url = media ? getMediaUrl(media) || '' : ''
+      return { url, variant: 'wide' as const }
     })
     // all variants are 'work'
     const collections = works.map(() => ({ variant: 'work' as const }))

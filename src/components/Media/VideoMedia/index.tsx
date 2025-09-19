@@ -20,6 +20,7 @@ export const VideoMedia: React.FC<VideoMediaProps> = (props) => {
 
     return (
       <video
+        src={videoUrl}
         autoPlay
         className={cn(videoClassName)}
         controls={false}
@@ -30,9 +31,7 @@ export const VideoMedia: React.FC<VideoMediaProps> = (props) => {
         onLoadedData={onLoadedData}
         playsInline
         ref={videoRef}
-      >
-        <source src={videoUrl} />
-      </video>
+      />
     )
   }
 
