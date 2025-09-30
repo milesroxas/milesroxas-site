@@ -172,7 +172,7 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
     'Visual Identity Design',
     'Web Design',
     'Web Development',
-    'Product Stategy',
+    'Product Strategy',
     'Product Design',
     'Design Engineer',
     '3D Modeling & Rendering',
