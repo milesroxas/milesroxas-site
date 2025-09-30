@@ -31,15 +31,18 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
 
   const appliedTheme = useBlockTheme(theme)
 
-  const getHref = (link: {
-    relationTo: string
-    value: string | number | Record<string, unknown>
-  }) => {
+  type SliderLink = NonNullable<SliderBlockType['slides']>[number]['slide']['link']
+
+  const hasSlug = (value: unknown): value is { slug: string } =>
+    typeof value === 'object' && value !== null && 'slug' in value
+
+  const getHref = (link?: SliderLink | null) => {
     if (!link) return '#'
-    if (typeof link.value === 'object' && link.value !== null && link.value.slug) {
-      return `${link.relationTo !== 'pages' ? `/${link.relationTo}` : ''}/${link.value.slug}`
+    const { relationTo, value } = link as { relationTo: string; value: unknown }
+    if (hasSlug(value)) {
+      return `${relationTo !== 'pages' ? `/${relationTo}` : ''}/${value.slug}`
     }
-    return `/${link.relationTo}/${link.value}`
+    return `/${relationTo}/${String(value)}`
   }
 
   useEffect(() => {
