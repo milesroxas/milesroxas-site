@@ -16,7 +16,7 @@ import { Header } from '@/Header/Component'
 import './globals.css'
 
 import { getServerSideURL } from '@/utilities/getURL'
-import CanvasLayout from '@/r3f/canvas/CanvasLayout'
+
 import { SiteFrame } from '@/SiteFrame/Component'
 import FrameRestorer from '@/SiteFrame/FrameRestorer'
 import Script from 'next/script'
@@ -55,7 +55,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               preview: isEnabled,
             }}
           />
-          <CanvasLayout />
           <Footer />
           <FrameRestorer />
         </Providers>

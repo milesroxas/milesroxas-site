@@ -6,7 +6,7 @@ import React, { useCallback, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
-import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { FormBlock as PayloadFormBlock, Form as GeneratedForm } from '@/payload-types'
 

@@ -10,7 +10,7 @@ import { useGSAP } from '@gsap/react'
 import { cn } from '@/utilities/ui'
 import type { Post } from '@/payload-types'
 import { Media } from '@/components/Media'
-import { useSceneStore } from '@/r3f/store/useSceneStore'
+
 import { Badge } from '@/components/ui/badge'
 import { useSiteFrameStore } from '@/stores/siteframeStore'
 
@@ -42,9 +42,6 @@ export const PostCard: React.FC<PostCardProps> = ({
   const sanitizedDescription = description?.replace(/\s+/g, ' ')
   const href = `/${relationTo}/${slug}`
   const router = useRouter()
-
-  const setHoveredIndex = useSceneStore((s) => s.setHoveredIndex)
-  const setMouseUV = useSceneStore((s) => s.setMouseUV)
 
   const { setIsSiteFrameVisible, setIsTransitioning, setTransitionPhase } = useSiteFrameStore()
 
@@ -131,13 +128,9 @@ export const PostCard: React.FC<PostCardProps> = ({
           ref={imageRef}
           className="relative mb-6 w-full"
           style={{ aspectRatio: aspectValue }}
-          onMouseEnter={() => setHoveredIndex?.(index ?? null)}
-          onMouseLeave={() => setHoveredIndex?.(null)}
           onMouseMove={(e) => {
             const r = e.currentTarget.getBoundingClientRect()
-            const x = (e.clientX - r.left) / r.width
-            const y = 1 - (e.clientY - r.top) / r.height
-            setMouseUV([x, y])
+            void r
           }}
         >
           {hero && (

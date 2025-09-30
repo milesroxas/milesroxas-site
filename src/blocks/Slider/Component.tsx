@@ -31,7 +31,10 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
 
   const appliedTheme = useBlockTheme(theme)
 
-  const getHref = (link: { relationTo: string; value: string | number | Record<string, any> }) => {
+  const getHref = (link: {
+    relationTo: string
+    value: string | number | Record<string, unknown>
+  }) => {
     if (!link) return '#'
     if (typeof link.value === 'object' && link.value !== null && link.value.slug) {
       return `${link.relationTo !== 'pages' ? `/${link.relationTo}` : ''}/${link.value.slug}`
