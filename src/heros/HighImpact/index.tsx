@@ -74,7 +74,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
         },
         '>-0.1',
       )
-  }, [setIsSiteFrameVisible, setTransitionPhase])
+  }, [setIsSiteFrameVisible, setTransitionPhase, transitionPhase])
 
   return (
     <section

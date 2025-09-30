@@ -22,14 +22,28 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
  *   }
  * }, [lenis])
  */
-export const createLenisScrollTriggerIntegration = (lenis: any) => {
+type LenisLike = {
+  on: (event: string, cb: (...args: unknown[]) => void) => void
+  raf: (time: number) => void
+}
+
+const isLenisLike = (value: unknown): value is LenisLike => {
+  return (
+    !!value &&
+    typeof (value as { on?: unknown }).on === 'function' &&
+    typeof (value as { raf?: unknown }).raf === 'function'
+  )
+}
+
+export const createLenisScrollTriggerIntegration = (lenis: unknown): void => {
   if (typeof window === 'undefined') return
+  if (!isLenisLike(lenis)) return
 
   gsap.registerPlugin(ScrollTrigger)
 
   lenis.on('scroll', ScrollTrigger.update)
 
-  gsap.ticker.add((time) => {
+  gsap.ticker.add((time: number) => {
     lenis.raf(time * 1000)
   })
 

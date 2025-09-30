@@ -12,7 +12,14 @@ export interface MediaProps extends Props {
 }
 
 export const Media: React.FC<MediaProps> = (props) => {
-  const { className, htmlElement = 'div', resource, onLoad, onLoadedData, onError } = props
+  const {
+    className,
+    htmlElement = 'div',
+    resource,
+    onLoad,
+    onLoadedData,
+    onError: _onError,
+  } = props
 
   const isVideo = typeof resource === 'object' && resource?.mimeType?.includes('video')
 

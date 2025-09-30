@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import styles from './homeHero.module.css'
 import type { Page, Media as MediaType } from '@/payload-types'
 import { gsap } from 'gsap'
-import { useGSAP } from '@gsap/react'
+
 import { useAnimationStore } from '@/stores/animationStore'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
@@ -88,28 +88,10 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
     }, 2000) // Reduced to 2 seconds for better UX
 
     return () => clearTimeout(timeoutId)
-  }, [media])
-
-  // Separate effect to trigger animation once media is loaded
-  useEffect(() => {
-    if ((isMediaLoaded || isMediaError) && !animationTriggered) {
-      console.log('Media loaded or error occurred, triggering animation')
-      setAnimationTriggered(true)
-
-      // Force animation to run by manually triggering GSAP timeline
-      if (
-        containerRef.current &&
-        mediaMaskRef.current &&
-        topMarqueeRef.current &&
-        bottomMarqueeRef.current
-      ) {
-        runAnimation()
-      }
-    }
-  }, [isMediaLoaded, isMediaError, animationTriggered])
+  }, [media, isMediaLoaded])
 
   // Function to run the animation manually
-  const runAnimation = () => {
+  const runAnimation = useCallback(() => {
     // Set initial states
     gsap.set(mediaMaskRef.current, { clipPath: 'inset(0 0 100% 0)' })
     gsap.set(topMarqueeRef.current, { autoAlpha: 0 })
@@ -144,7 +126,25 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
         },
         '-=0.5',
       )
-  }
+  }, [setHeroAnimationComplete])
+
+  // Separate effect to trigger animation once media is loaded
+  useEffect(() => {
+    if ((isMediaLoaded || isMediaError) && !animationTriggered) {
+      console.log('Media loaded or error occurred, triggering animation')
+      setAnimationTriggered(true)
+
+      // Force animation to run by manually triggering GSAP timeline
+      if (
+        containerRef.current &&
+        mediaMaskRef.current &&
+        topMarqueeRef.current &&
+        bottomMarqueeRef.current
+      ) {
+        runAnimation()
+      }
+    }
+  }, [isMediaLoaded, isMediaError, animationTriggered, runAnimation])
 
   // Handle media load
   const handleMediaLoad = () => {
@@ -172,7 +172,7 @@ export const HomeHero: React.FC<Page['hero']> = ({ media }) => {
   }
 
   // Helper to check if media is a video
-  const isMediaVideo = (mediaItem: any): boolean => {
+  const isMediaVideo = (mediaItem: unknown): boolean => {
     return (
       mediaItem &&
       typeof mediaItem === 'object' &&
