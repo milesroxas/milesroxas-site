@@ -4,7 +4,7 @@ import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 import sharp from 'sharp'
 import path from 'path'
-import { buildConfig, CollectionSlug, PayloadRequest } from 'payload'
+import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
@@ -19,58 +19,11 @@ import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 
 import { resendAdapter } from '@payloadcms/email-resend'
-import { generatePreviewPath } from './utilities/generatePreviewPath'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const resendApiKey = process.env.RESEND_API_KEY
-if (!resendApiKey) {
-  console.warn(
-    '[payload] RESEND_API_KEY is not set; email sending is disabled in this environment.',
-  )
-}
-
-// Avoid initializing the Resend adapter without an API key.
-// When no key is present, some providers perform a lightweight request
-// that can show up as repeated 401s in provider logs.
-const emailAdapter = resendApiKey
-  ? resendAdapter({
-      apiKey: resendApiKey,
-      defaultFromAddress: 'miles@milesroxas.com',
-      defaultFromName: 'Miles Roxas',
-    })
-  : undefined
-
-// Environment-aware server URL configuration
-const getPayloadServerURL = (): string => {
-  const isProduction = process.env.NODE_ENV === 'production'
-  const isVercel = !!process.env.VERCEL_URL
-
-  if (isProduction || isVercel) {
-    // In production or on Vercel, use the standard URL resolution
-    return getServerSideURL()
-  } else {
-    // In local development, use the actual running port
-    // Check for PORT environment variable (Next.js default) or use 3000 as fallback
-    const port = process.env.PORT || '3000'
-    return `http://localhost:${port}`
-  }
-}
-
-const serverURL = getPayloadServerURL()
-console.log('[payload] Environment:', process.env.NODE_ENV)
-console.log('[payload] Server URL:', serverURL)
-console.log('[payload] RESEND_API_KEY configured:', !!resendApiKey)
-
 export default buildConfig({
-  serverURL: serverURL,
-  routes: {
-    admin: '/admin',
-    api: '/api',
-    graphQL: '/api/graphql',
-    graphQLPlayground: '/api/graphql-playground',
-  },
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
@@ -86,15 +39,6 @@ export default buildConfig({
     user: Users.slug,
 
     livePreview: {
-      collections: ['pages', 'posts', 'works'],
-      url: ({ collectionConfig, data, req }) => {
-        const path = generatePreviewPath({
-          slug: typeof data?.slug === 'string' ? data.slug : '',
-          collection: collectionConfig?.slug as CollectionSlug,
-          req,
-        })
-        return path
-      },
       breakpoints: [
         {
           label: 'Mobile',
@@ -117,7 +61,11 @@ export default buildConfig({
       ],
     },
   },
-  email: emailAdapter,
+  email: resendAdapter({
+    apiKey: process.env.RESEND_API_KEY,
+    defaultFromAddress: 'miles@milesroxas.com',
+    defaultFromName: 'Miles Roxas',
+  }),
   editor: defaultLexical,
   db: vercelPostgresAdapter({
     pool: {
@@ -125,20 +73,7 @@ export default buildConfig({
     },
   }),
   collections: [Pages, Posts, Works, Media, Categories, Users],
-  cors: (() => {
-    const origins = new Set<string>()
-    const base = getServerSideURL()
-    if (base) origins.add(base)
-
-    const vercelRuntime = process.env.VERCEL_URL
-    if (vercelRuntime) origins.add(`https://${vercelRuntime}`)
-
-    if (process.env.NODE_ENV !== 'production') {
-      origins.add('http://localhost:3000')
-    }
-
-    return Array.from(origins)
-  })(),
+  cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [
     ...plugins,

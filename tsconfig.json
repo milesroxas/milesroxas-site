@@ -2,8 +2,6 @@
   "compilerOptions": {
     /* Strictness */
     "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
     
     "baseUrl": ".",
     "esModuleInterop": true,
