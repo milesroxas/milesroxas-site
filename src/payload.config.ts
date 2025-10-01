@@ -26,7 +26,9 @@ const dirname = path.dirname(filename)
 
 const resendApiKey = process.env.RESEND_API_KEY
 if (!resendApiKey) {
-  console.warn('[payload] RESEND_API_KEY is not set; email sending is disabled in this environment.')
+  console.warn(
+    '[payload] RESEND_API_KEY is not set; email sending is disabled in this environment.',
+  )
 }
 
 // Avoid initializing the Resend adapter without an API key.
@@ -39,6 +41,11 @@ const emailAdapter = resendApiKey
       defaultFromName: 'Miles Roxas',
     })
   : undefined
+
+// Ensure serverURL is properly configured for production
+const serverURL = getServerSideURL()
+console.log('[payload] Server URL:', serverURL)
+console.log('[payload] RESEND_API_KEY configured:', !!resendApiKey)
 
 export default buildConfig({
   serverURL: getServerSideURL(),
