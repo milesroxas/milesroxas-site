@@ -1,37 +1,44 @@
 'use client'
 
 import { cn } from '@/utilities/ui'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import type { Props as MediaProps } from '../types'
-import { getMediaUrl } from '@/utilities/getMediaURL'
 
-export interface VideoMediaProps extends MediaProps {
-  onLoadedData?: () => void
-}
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
-export const VideoMedia: React.FC<VideoMediaProps> = (props) => {
-  const { onClick, resource, videoClassName, onLoadedData } = props
+export const VideoMedia: React.FC<MediaProps> = (props) => {
+  const { onClick, resource, videoClassName } = props
 
   const videoRef = useRef<HTMLVideoElement>(null)
+  // const [showFallback] = useState<boolean>()
+
+  useEffect(() => {
+    const { current: video } = videoRef
+    if (video) {
+      video.addEventListener('suspend', () => {
+        // setShowFallback(true);
+        // console.warn('Video was suspended, rendering fallback image.')
+      })
+    }
+  }, [])
 
   if (resource && typeof resource === 'object') {
-    const videoUrl = getMediaUrl(resource) || ''
+    const { filename } = resource
 
     return (
       <video
-        src={videoUrl}
         autoPlay
         className={cn(videoClassName)}
         controls={false}
         loop
         muted
-        preload="auto"
         onClick={onClick}
-        onLoadedData={onLoadedData}
         playsInline
         ref={videoRef}
-      />
+      >
+        <source src={getMediaUrl(`/api/media/file/${filename}`)} />
+      </video>
     )
   }
 

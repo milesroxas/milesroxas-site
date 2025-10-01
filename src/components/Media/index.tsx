@@ -1,41 +1,24 @@
-import React from 'react'
-
+import React, { Fragment } from 'react'
 import type { Props } from './types'
-
 import { ImageMedia } from './ImageMedia'
 import { VideoMedia } from './VideoMedia'
 
-export interface MediaProps extends Props {
-  onLoad?: () => void
-  onLoadedData?: () => void
-  onError?: () => void
-}
-
-export const Media: React.FC<MediaProps> = (props) => {
-  const {
-    className,
-    htmlElement = 'div',
-    resource,
-    onLoad,
-    onLoadedData,
-    onError: _onError,
-  } = props
+export const Media: React.FC<Props & { className?: string }> = (props) => {
+  const { className, htmlElement = 'div', resource } = props
 
   const isVideo = typeof resource === 'object' && resource?.mimeType?.includes('video')
 
-  if (htmlElement === null) {
-    return isVideo ? (
-      <VideoMedia {...props} onLoadedData={onLoadedData} />
-    ) : (
-      <ImageMedia {...props} onLoad={onLoad} />
-    )
-  }
-
+  // Always pass className down to the concrete media element so utilities like object-cover apply
   const content = isVideo ? (
-    <VideoMedia {...props} onLoadedData={onLoadedData} />
+    <VideoMedia {...props} className={className} />
   ) : (
-    <ImageMedia {...props} onLoad={onLoad} />
+    <ImageMedia {...props} className={className} />
   )
 
-  return React.createElement(htmlElement, { className }, content)
+  // If an element tag is provided, wrap; otherwise render bare media
+  if (htmlElement) {
+    return React.createElement(htmlElement, undefined, content)
+  }
+
+  return <Fragment>{content}</Fragment>
 }

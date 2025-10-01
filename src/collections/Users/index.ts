@@ -1,25 +1,22 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '../../access/authenticated'
+import { anyone } from '@/access/anyone'
 
 export const Users: CollectionConfig = {
   slug: 'users',
   access: {
     admin: authenticated,
-    create: authenticated,
+    create: anyone, // Allow user registration
     delete: authenticated,
-    read: authenticated,
-    update: authenticated,
+    read: anyone, // Allow reading users for registration
+    update: authenticated, // Allow authenticated users to update (Payload handles password reset internally)
   },
   admin: {
     defaultColumns: ['name', 'email'],
     useAsTitle: 'name',
   },
-  auth: {
-    forgotPassword: {
-      expiration: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-    },
-  },
+  auth: true,
   fields: [
     {
       name: 'name',
