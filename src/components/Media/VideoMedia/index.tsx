@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from 'react'
 
 import type { Props as MediaProps } from '../types'
 
-import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { getMediaUrl } from '@/utilities/getMediaURL'
 
 export const VideoMedia: React.FC<MediaProps> = (props) => {
   const { onClick, resource, videoClassName } = props
