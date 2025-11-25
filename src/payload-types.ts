@@ -704,6 +704,14 @@ export interface Work {
   role?: string | null;
   deliverables?: string | null;
   status?: ('coming-soon' | 'live') | null;
+  /**
+   * Enable password protection for this work
+   */
+  isPasswordProtected?: boolean | null;
+  /**
+   * Set a password to access this work
+   */
+  password?: string | null;
   relatedWorks?: (number | Work)[] | null;
   categories?: (number | Category)[] | null;
   meta?: {
@@ -1754,6 +1762,8 @@ export interface WorksSelect<T extends boolean = true> {
   role?: T;
   deliverables?: T;
   status?: T;
+  isPasswordProtected?: T;
+  password?: T;
   relatedWorks?: T;
   categories?: T;
   meta?:
