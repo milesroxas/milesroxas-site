@@ -146,6 +146,32 @@ export const Works: CollectionConfig<'works'> = {
         {
           fields: [
             {
+              name: 'isPasswordProtected',
+              type: 'checkbox',
+              label: 'Password Protected',
+              defaultValue: false,
+              admin: {
+                description: 'Enable password protection for this work',
+              },
+            },
+            {
+              name: 'password',
+              type: 'text',
+              label: 'Access Password',
+              admin: {
+                condition: (data) => data?.isPasswordProtected === true,
+                description: 'Set a password to access this work',
+              },
+              access: {
+                read: ({ req: { user } }) => Boolean(user),
+              },
+            },
+          ],
+          label: 'Password Protection',
+        },
+        {
+          fields: [
+            {
               name: 'relatedWorks',
               type: 'relationship',
               admin: {

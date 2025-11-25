@@ -26,6 +26,7 @@ const getWorksPublished = unstable_cache(
         meta: true,
         hero: true,
         _order: true,
+        isPasswordProtected: true,
       },
     })
 
@@ -53,6 +54,7 @@ const getWorksDraft = unstable_cache(
         meta: true,
         hero: true,
         _order: true,
+        isPasswordProtected: true,
       },
     })
 

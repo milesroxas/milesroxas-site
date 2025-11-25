@@ -13,6 +13,7 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
+import { PasswordProtectedWorkWrapper } from '@/components/PasswordProtectedWork/PasswordProtectedWorkWrapper'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -62,15 +63,16 @@ export default async function Work({ params: paramsPromise }: Args) {
 
   return (
     <>
-      <article className="relative z-10">
-        <PayloadRedirects disableNotFound url={url} />
+      <PayloadRedirects disableNotFound url={url} />
+      {draft && <LivePreviewListener />}
 
-        {draft && <LivePreviewListener />}
-
-        {hero && <RenderHero {...hero} />}
-        <PageClient work={work} />
-        <RenderBlocks blocks={layout} />
-      </article>
+      <PasswordProtectedWorkWrapper work={work}>
+        <article className="relative z-10">
+          {hero && <RenderHero {...hero} />}
+          <PageClient work={work} />
+          <RenderBlocks blocks={layout} />
+        </article>
+      </PasswordProtectedWorkWrapper>
     </>
   )
 }
