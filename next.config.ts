@@ -65,15 +65,35 @@ const nextConfig: NextConfig = {
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.mjs': ['.mts', '.mjs'],
     }
+
+    // Exclude test files from bundling
+    webpackConfig.module.rules.push({
+      test: /\.(test|spec)\.(js|jsx|ts|tsx)$/,
+      loader: 'ignore-loader',
+    })
+
     return webpackConfig
   },
 
   reactStrictMode: true,
   redirects,
+
+  // External packages that should not be bundled by server components
+  serverExternalPackages: [
+    'pino',
+    'thread-stream',
+    'drizzle-kit',
+    'esbuild',
+    '@payloadcms/drizzle',
+    '@payloadcms/db-vercel-postgres',
+  ],
+
   // Optional experimental cache for Turbopack. Test before adopting widely.
   experimental: {
-    // comment out if it creates instability on your project
-    // turbopackPersistentCaching: true,
+    // Turbopack filesystem caching for better performance (Next.js 16+)
+    // Enable after testing to ensure stability
+    // turbopackFileSystemCacheForDev: true,
+    // turbopackFileSystemCacheForBuild: true,
   },
 }
 
