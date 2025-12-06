@@ -16,8 +16,8 @@ export const revalidateWork: CollectionAfterChangeHook<Work> = ({
       payload.logger.info(`Revalidating work at path: ${path}`)
 
       revalidatePath(path)
-      revalidateTag('works-sitemap')
-      revalidateTag('works')
+      revalidateTag('works-sitemap', 'max')
+      revalidateTag('works', 'max')
     }
 
     // If the work was previously published, we need to revalidate the old path
@@ -27,8 +27,8 @@ export const revalidateWork: CollectionAfterChangeHook<Work> = ({
       payload.logger.info(`Revalidating old work at path: ${oldPath}`)
 
       revalidatePath(oldPath)
-      revalidateTag('works-sitemap')
-      revalidateTag('works')
+      revalidateTag('works-sitemap', 'max')
+      revalidateTag('works', 'max')
     }
   }
   return doc
@@ -39,8 +39,8 @@ export const revalidateDelete: CollectionAfterDeleteHook<Work> = ({ doc, req: { 
     const path = `/works/${doc?.slug}`
 
     revalidatePath(path)
-    revalidateTag('works-sitemap')
-    revalidateTag('works')
+    revalidateTag('works-sitemap', 'max')
+    revalidateTag('works', 'max')
   }
 
   return doc
