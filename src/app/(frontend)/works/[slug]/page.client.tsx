@@ -21,14 +21,14 @@ const PageClient: React.FC<{ work: Work }> = ({ work }) => {
     >
       <div className="container flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         {title && (
-          <div className="font-light">
+          <div className="font-light md:flex-1">
             <div className="flex flex-col gap-8 md:flex-row">
-              <h1 className="text-5xl">{title}</h1>
+              <h1 className="w-full text-4xl">{title}</h1>
             </div>
           </div>
         )}
         {(industry || role || deliverables) && (
-          <div className="flex w-full flex-col font-light md:min-h-[12vh] md:flex-row md:items-center md:justify-end">
+          <div className="flex w-full flex-col font-light md:w-auto md:min-h-[12vh] md:flex-row md:items-center md:justify-end md:shrink-0">
             <div className="flex flex-col gap-4 md:flex-row md:gap-8">
               {industry && (
                 <div>
