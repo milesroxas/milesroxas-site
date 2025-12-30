@@ -112,6 +112,7 @@ export const Archive: Block = {
       type: 'relationship',
       admin: {
         condition: (_, siblingData) => siblingData.populateBy === 'selection',
+        description: 'The order of items here will be preserved in the display',
       },
       hasMany: true,
       label: 'Selection',

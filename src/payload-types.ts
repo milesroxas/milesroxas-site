@@ -834,6 +834,9 @@ export interface ArchiveBlock {
   relationTo?: ('posts' | 'works') | null;
   categories?: (number | Category)[] | null;
   limit?: number | null;
+  /**
+   * The order of items here will be preserved in the display
+   */
   selectedDocs?:
     | (
         | {
