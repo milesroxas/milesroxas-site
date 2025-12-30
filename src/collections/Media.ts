@@ -69,4 +69,6 @@ export const Media: CollectionConfig = {
     ],
     mimeTypes: ['image/*', 'video/*', 'application/pdf'],
   },
+  // Enable folders for media organization
+  folders: true,
 }
