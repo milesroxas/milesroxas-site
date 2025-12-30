@@ -1,11 +1,11 @@
-import type { Block } from 'payload'
-import { sectionSpacing } from '@/fields/sectionSpacing'
 import {
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import type { Block } from 'payload'
+import { sectionSpacing } from '@/fields/sectionSpacing'
 
 export const MediaBlock: Block = {
   slug: 'mediaBlock',

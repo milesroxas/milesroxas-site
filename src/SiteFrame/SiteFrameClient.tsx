@@ -1,12 +1,10 @@
 'use client'
 
-import { useRef } from 'react'
-import { useSiteFrameStore } from '@/stores/siteframeStore'
-import { ReactNode } from 'react'
-import BottomSection from './BottomSection/Component'
-
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
+import { type ReactNode, useRef } from 'react'
+import { useSiteFrameStore } from '@/stores/siteframeStore'
+import BottomSection from './BottomSection/Component'
 
 interface SiteFrameClientProps {
   children: ReactNode

@@ -1,11 +1,4 @@
-import React from 'react'
-import type {
-  Page,
-  Work,
-  FormBlock as PayloadFormBlock,
-  SliderBlock as PayloadSliderBlock,
-} from '@/payload-types'
-
+import type React from 'react'
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
@@ -13,6 +6,12 @@ import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { SliderBlock } from '@/blocks/Slider/Component'
 import { TabsBlock } from '@/blocks/Tabs/Component'
+import type {
+  Page,
+  FormBlock as PayloadFormBlock,
+  SliderBlock as PayloadSliderBlock,
+  Work,
+} from '@/payload-types'
 import { AnimatedBlocksContainer } from './AnimatedBlocksContainer'
 import { CallOutBlock } from './CallOut/Component'
 

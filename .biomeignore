@@ -1,0 +1,17 @@
+# Build outputs
+.next/
+build/
+dist/
+
+# Dependencies
+node_modules/
+
+# Generated files
+**/payload-types.ts
+
+# Temporary files
+.tmp/
+temp/
+
+# Documentation
+docs/

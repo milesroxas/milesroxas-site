@@ -1,7 +1,7 @@
 // components/FrameRestorer.tsx
 'use client'
-import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 export default function FrameRestorer() {

@@ -1,4 +1,4 @@
-import { AspectRatio } from '@/hooks/useImageCropMaterial'
+import type { AspectRatio } from '@/hooks/useImageCropMaterial'
 
 /**
  * Calculate mesh scale for proper image display with Three.js

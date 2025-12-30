@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import { type NextRequest, NextResponse } from 'next/server'
+import { getPayload } from 'payload'
 
 interface VerifyPasswordRequest {
   workId: number
@@ -48,9 +48,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<VerifyPas
     return NextResponse.json({ verified: isCorrect })
   } catch (error) {
     console.error('Password verification error:', error)
-    return NextResponse.json(
-      { verified: false, error: 'Verification failed' },
-      { status: 500 },
-    )
+    return NextResponse.json({ verified: false, error: 'Verification failed' }, { status: 500 })
   }
 }

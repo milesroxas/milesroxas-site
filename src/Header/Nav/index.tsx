@@ -1,14 +1,14 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
 import gsap from 'gsap'
-
-import type { Header as HeaderType } from '@/payload-types'
-import { CMSLink } from '@/components/Link'
-import Link from 'next/link'
 import { SearchIcon } from 'lucide-react'
-import { Logo } from '@/components/Logo/Logo'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import type React from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { CMSLink } from '@/components/Link'
+import { Logo } from '@/components/Logo/Logo'
+import type { Header as HeaderType } from '@/payload-types'
 
 export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const router = useRouter()

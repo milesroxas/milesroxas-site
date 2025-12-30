@@ -1,11 +1,9 @@
-import type { CollectionSlug, PayloadRequest } from 'payload'
-import { getPayload } from 'payload'
-
+import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { NextRequest } from 'next/server'
-
-import configPromise from '@payload-config'
+import type { CollectionSlug, PayloadRequest } from 'payload'
+import { getPayload } from 'payload'
 
 export async function GET(req: NextRequest): Promise<Response> {
   const payload = await getPayload({ config: configPromise })

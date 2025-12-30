@@ -1,24 +1,21 @@
-import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
-
-import { cn } from '@/utilities/ui'
+import type { Metadata } from 'next'
 import { IBM_Plex_Sans } from 'next/font/google'
+import { draftMode } from 'next/headers'
 
-import React from 'react'
+import type React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'
-import { Providers } from '@/providers'
-
-import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import { draftMode } from 'next/headers'
 import { Header } from '@/Header/Component'
+import { Providers } from '@/providers'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { cn } from '@/utilities/ui'
 import './globals.css'
-
-import { getServerSideURL } from '@/utilities/getURL'
 
 import { SiteFrame } from '@/SiteFrame/Component'
 import FrameRestorer from '@/SiteFrame/FrameRestorer'
+import { getServerSideURL } from '@/utilities/getURL'
 
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ['300', '400', '600', '700'],

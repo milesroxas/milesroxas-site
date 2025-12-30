@@ -1,9 +1,8 @@
 import React from 'react'
-
-import HomeTemplateClient from './HomeTemplate.client'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
-import { Page } from '@/payload-types'
+import type { Page } from '@/payload-types'
+import HomeTemplateClient from './HomeTemplate.client'
 
 export default async function HomeTemplate({
   hero,

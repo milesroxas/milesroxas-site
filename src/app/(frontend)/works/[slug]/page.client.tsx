@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useEffect } from 'react'
-import { Work } from '@/payload-types'
+import type React from 'react'
+import { useEffect } from 'react'
 import { useLenis } from '@/hooks/useLenis'
+import type { Work } from '@/payload-types'
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 const PageClient: React.FC<{ work: Work }> = ({ work }) => {

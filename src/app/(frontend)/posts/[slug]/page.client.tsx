@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
-import { useLenis } from '@/hooks/useLenis'
-import { Post } from '@/payload-types'
 import { formatDateTime } from 'src/utilities/formatDateTime'
+import { useLenis } from '@/hooks/useLenis'
+import type { Post } from '@/payload-types'
+import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 const PageClient: React.FC<{ post: Post }> = ({ post }) => {
   const { categories, publishedAt, title } = post

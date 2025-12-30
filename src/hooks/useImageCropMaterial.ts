@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useEffect, useMemo } from 'react'
-import * as THREE from 'three'
+import { useEffect, useMemo, useRef } from 'react'
+import type * as THREE from 'three'
 
 import '@/utilities/shaders/imageCropShader'
 

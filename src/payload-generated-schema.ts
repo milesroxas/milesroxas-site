@@ -6,23 +6,23 @@
  * and re-run `payload generate:db-schema` to regenerate this file.
  */
 
+import { relations, sql } from '@payloadcms/db-vercel-postgres/drizzle'
 import {
-  pgTable,
-  index,
-  uniqueIndex,
-  foreignKey,
-  integer,
-  varchar,
+  type AnyPgColumn,
   boolean,
-  text,
+  foreignKey,
+  index,
+  integer,
   jsonb,
   numeric,
-  serial,
-  timestamp,
-  type AnyPgColumn,
   pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  uniqueIndex,
+  varchar,
 } from '@payloadcms/db-vercel-postgres/drizzle/pg-core'
-import { sql, relations } from '@payloadcms/db-vercel-postgres/drizzle'
 export const enum_pages_hero_links_link_type = pgEnum('enum_pages_hero_links_link_type', [
   'reference',
   'custom',

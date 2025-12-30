@@ -1,5 +1,5 @@
-import { create } from 'zustand'
 import { gsap } from 'gsap'
+import { create } from 'zustand'
 
 type PageAnimationStore = {
   collapseFrame: (onComplete?: () => void) => void

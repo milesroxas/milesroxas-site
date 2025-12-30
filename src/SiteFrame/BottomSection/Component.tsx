@@ -1,7 +1,7 @@
 'use client'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Logo } from '@/components/Logo/Logo'
-import Link from 'next/link'
 
 export default function BottomSection() {
   const [currentTime, setCurrentTime] = useState('')

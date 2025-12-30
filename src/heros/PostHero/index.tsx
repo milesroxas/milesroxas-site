@@ -1,14 +1,11 @@
 'use client'
-import { formatDateTime } from 'src/utilities/formatDateTime'
-import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-
-import type { Post } from '@/payload-types'
-
+import React, { useEffect, useRef } from 'react'
+import { formatDateTime } from 'src/utilities/formatDateTime'
 import { Media } from '@/components/Media'
-
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+import type { Post } from '@/payload-types'
 import { useSiteFrameStore } from '@/stores/siteframeStore'
+import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 export const PostHero: React.FC<{
   post: Post

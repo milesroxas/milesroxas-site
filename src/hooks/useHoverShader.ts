@@ -1,8 +1,8 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
-import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
+import { useEffect, useRef, useState } from 'react'
+import * as THREE from 'three'
 
 import '@/utilities/shaders/hoverShader'
 

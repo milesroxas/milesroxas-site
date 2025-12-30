@@ -1,11 +1,10 @@
-import type { ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
-
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import React from 'react'
+import type React from 'react'
+import type { CardPostData } from '@/components/Card/Posts/Component'
 
-import { CardWorkData } from '@/components/Card/Works/Component'
-import { CardPostData } from '@/components/Card/Posts/Component'
+import type { CardWorkData } from '@/components/Card/Works/Component'
+import type { ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 
 import ArchiveBlockClient from './ArchiveBlockClient'
 

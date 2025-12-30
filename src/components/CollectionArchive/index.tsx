@@ -1,8 +1,7 @@
+import type React from 'react'
+import { type CardPostData, PostCard } from '@/components/Card/Posts/Component'
 import { cn } from '@/utilities/ui'
-import React from 'react'
-
-import { CardPostData, PostCard } from '@/components/Card/Posts/Component'
-import { CardWorkData, WorkCard } from '../Card/Works/Component'
+import { type CardWorkData, WorkCard } from '../Card/Works/Component'
 
 export type Props = {
   posts?: CardPostData[]

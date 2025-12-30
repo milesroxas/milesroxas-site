@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useRef, useEffect, ReactNode } from 'react'
 import { gsap } from 'gsap'
+import { usePathname } from 'next/navigation'
+import type React from 'react'
+import { type ReactNode, useEffect, useRef } from 'react'
 import { useAnimationStore } from '@/stores/animationStore'
 import { cn } from '@/utilities/ui'
-import { usePathname } from 'next/navigation'
 
 interface AnimatedBlocksContainerProps {
   children: ReactNode

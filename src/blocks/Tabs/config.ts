@@ -1,15 +1,13 @@
-import type { Block, Field } from 'payload'
-
 import {
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-
-import { sectionSpacing } from '@/fields/sectionSpacing'
-import { sectionHeading } from '@/fields/sectionHeading'
+import type { Block, Field } from 'payload'
 import { SliderBlock } from '@/blocks/Slider/config'
+import { sectionHeading } from '@/fields/sectionHeading'
+import { sectionSpacing } from '@/fields/sectionSpacing'
 
 // Extract slider fields, excluding layout-related ones if necessary
 // For now, let's just take all fields from SliderBlock for simplicity,

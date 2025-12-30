@@ -1,8 +1,8 @@
 'use client'
 
-import React from 'react'
-import { WorkArchive } from '@/components/WorkArchive'
+import type React from 'react'
 import type { CardWorkData } from '@/components/Card/Works/Component'
+import { WorkArchive } from '@/components/WorkArchive'
 
 interface WorksClientProps {
   works: CardWorkData[]

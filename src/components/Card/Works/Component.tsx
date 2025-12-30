@@ -1,22 +1,21 @@
 // components/WorkCard.tsx
 'use client'
 
-import React, { useRef } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useGSAP } from '@gsap/react'
+import { RichText } from '@payloadcms/richtext-lexical/react'
 import gsap from 'gsap'
 import Flip from 'gsap/Flip'
-import { useGSAP } from '@gsap/react'
-
-import { cn } from '@/utilities/ui'
-import type { Work } from '@/payload-types'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import type React from 'react'
+import { useRef } from 'react'
 import { Media } from '@/components/Media'
-
-import { RichText } from '@payloadcms/richtext-lexical/react'
 import { Badge } from '@/components/ui/badge'
+import type { Work } from '@/payload-types'
+import { CursorButton } from '@/providers/Cursor/components/CursorInteractions'
 
 import { useSiteFrameStore } from '@/stores/siteframeStore'
-import { CursorButton } from '@/providers/Cursor/components/CursorInteractions'
+import { cn } from '@/utilities/ui'
 
 gsap.registerPlugin(Flip, useGSAP)
 

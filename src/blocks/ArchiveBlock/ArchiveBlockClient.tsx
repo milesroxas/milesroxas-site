@@ -1,13 +1,12 @@
 'use client'
 
 import React from 'react'
-import { useBlockTheme } from '@/hooks/useBlockTheme'
-import RichText from '@/components/RichText'
-
-import type { ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
+import type { CardPostData } from '@/components/Card/Posts/Component'
+import type { CardWorkData } from '@/components/Card/Works/Component'
 import { CollectionArchive } from '@/components/CollectionArchive'
-import { CardWorkData } from '@/components/Card/Works/Component'
-import { CardPostData } from '@/components/Card/Posts/Component'
+import RichText from '@/components/RichText'
+import { useBlockTheme } from '@/hooks/useBlockTheme'
+import type { ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 export default function ArchiveBlockClient({
   theme,

@@ -1,8 +1,8 @@
 // components/ClientBlockWrapper.tsx
 'use client'
 
-import React from 'react'
-import { useBlockTheme, ThemeOption } from '@/hooks/useBlockTheme'
+import type React from 'react'
+import { type ThemeOption, useBlockTheme } from '@/hooks/useBlockTheme'
 
 type AnyBlock = Record<string, unknown>
 

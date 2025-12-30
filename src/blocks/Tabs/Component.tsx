@@ -1,12 +1,12 @@
 'use client'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import RichText from '@/components/RichText'
-import { cn } from '@/utilities/ui'
 import { SliderBlock } from '@/blocks/Slider/Component'
+import RichText from '@/components/RichText'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useBlockTheme } from '@/hooks/useBlockTheme'
-import { useSpacing, SpaceProps } from '@/hooks/useSpacing'
+import { type SpaceProps, useSpacing } from '@/hooks/useSpacing'
 import type { TabsBlock as TabsBlockProps } from '@/payload-types'
+import { cn } from '@/utilities/ui'
 
 type TabsBlockLocalProps = TabsBlockProps & {
   className?: string

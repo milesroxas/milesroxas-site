@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { useWorkPasswordStore } from '@/stores/workPasswordStore'
-import { PasswordPrompt } from './PasswordPrompt'
+import gsap from 'gsap'
+import type React from 'react'
+import { useEffect, useState } from 'react'
 import type { Work } from '@/payload-types'
 import { useSiteFrameStore } from '@/stores/siteframeStore'
-import gsap from 'gsap'
+import { useWorkPasswordStore } from '@/stores/workPasswordStore'
+import { PasswordPrompt } from './PasswordPrompt'
 
 interface PasswordProtectedWorkWrapperProps {
   work: Work

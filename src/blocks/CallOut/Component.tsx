@@ -1,14 +1,12 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
-
-import { CallOutBlock as CallOutBlockProps } from '@/payload-types'
-import { RichText } from '@payloadcms/richtext-lexical/react'
-
-import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-import { SplitText } from 'gsap/SplitText'
+import { RichText } from '@payloadcms/richtext-lexical/react'
+import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { SplitText } from 'gsap/SplitText'
+import { useEffect, useRef, useState } from 'react'
+import type { CallOutBlock as CallOutBlockProps } from '@/payload-types'
 import { getEnv } from '@/utilities/getEnv'
 
 gsap.registerPlugin(SplitText, ScrollTrigger, useGSAP)

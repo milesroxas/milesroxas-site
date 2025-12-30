@@ -1,6 +1,6 @@
-import { create } from 'zustand'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { create } from 'zustand'
 
 interface AnimationState {
   // State

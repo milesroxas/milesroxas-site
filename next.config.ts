@@ -1,6 +1,7 @@
 // next.config.ts
-import type { NextConfig } from 'next'
+
 import { withPayload } from '@payloadcms/next/withPayload'
+import type { NextConfig } from 'next'
 import redirects from './redirects.js'
 
 const NEXT_PUBLIC_SERVER_URL =

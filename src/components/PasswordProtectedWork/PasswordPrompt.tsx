@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { useWorkPasswordStore } from '@/stores/workPasswordStore'
 import { Lock } from 'lucide-react'
+import type React from 'react'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useWorkPasswordStore } from '@/stores/workPasswordStore'
 
 interface PasswordPromptProps {
   workId: number
@@ -77,9 +78,7 @@ export const PasswordPrompt: React.FC<PasswordPromptProps> = ({ workId, onUnlock
           </div>
 
           {error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
           )}
 
           <Button type="submit" disabled={isLoading || !password} className="w-full">

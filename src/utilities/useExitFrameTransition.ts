@@ -1,10 +1,10 @@
 // utilities/useExitFrameTransition.ts
 'use client'
 
-import { useCallback, type RefObject } from 'react'
-import { useRouter } from 'next/navigation'
-import type { LinkProps } from 'next/link'
 import gsap from 'gsap'
+import type { LinkProps } from 'next/link'
+import { useRouter } from 'next/navigation'
+import { type RefObject, useCallback } from 'react'
 
 // extract the correct event type from LinkProps:
 type NavigateEvent = Parameters<NonNullable<LinkProps['onNavigate']>>[0]

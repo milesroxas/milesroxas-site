@@ -1,18 +1,17 @@
 'use client'
 
-import React, { useRef } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import Flip from 'gsap/Flip'
-import { useGSAP } from '@gsap/react'
-
-import { cn } from '@/utilities/ui'
-import type { Post } from '@/payload-types'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import type React from 'react'
+import { useRef } from 'react'
 import { Media } from '@/components/Media'
-
 import { Badge } from '@/components/ui/badge'
+import type { Post } from '@/payload-types'
 import { useSiteFrameStore } from '@/stores/siteframeStore'
+import { cn } from '@/utilities/ui'
 
 gsap.registerPlugin(Flip, useGSAP)
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { Lenis as ReactLenis } from '@studio-freight/react-lenis'
-import React from 'react'
+import type React from 'react'
 
 type LenisProviderProps = {
   children: React.ReactNode

@@ -1,7 +1,7 @@
 'use client'
 
-import React from 'react'
-import { CardPostData } from '@/components/Card/Posts/Component'
+import type React from 'react'
+import type { CardPostData } from '@/components/Card/Posts/Component'
 import { PostsArchive } from '@/components/PostsArchive/PostsArchive'
 
 interface PostsClientProps {

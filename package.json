@@ -12,8 +12,12 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
-    "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
-    "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation next lint --fix",
+    "lint": "biome lint --write .",
+    "lint:check": "biome lint .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "biome check --write .",
+    "ci": "biome ci .",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
@@ -60,7 +64,7 @@
     "glslify": "^7.1.1",
     "glslify-import": "^3.1.0",
     "graphql": "^16.12.0",
-    "gsap": "^3.13.0",
+    "gsap": "^3.14.2",
     "hamo": "1.0.0-dev.6",
     "leva": "^0.9.36",
     "lucide-react": "^0.525.0",
@@ -72,8 +76,8 @@
     "pg": "^8.16.3",
     "postgres": "^3.4.7",
     "prism-react-renderer": "^2.4.1",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "react-hook-form": "7.45.4",
     "sharp": "0.34.3",
     "split-type": "^0.3.4",
@@ -92,28 +96,21 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
-    "@next/eslint-plugin-next": "15.2.2",
-    "@tailwindcss/postcss": "^4.1.17",
+    "@biomejs/biome": "2.3.10",
+    "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/typography": "^0.5.19",
     "@types/escape-html": "^1.0.4",
     "@types/node": "22.5.4",
-    "@types/pg": "^8.15.6",
+    "@types/pg": "^8.16.0",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "@types/three": "^0.170.0",
     "copyfiles": "^2.4.1",
     "dotenv-cli": "^8.0.0",
-    "eslint": "^9.39.1",
-    "eslint-config-next": "15.4.4",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-tailwindcss": "^3.18.2",
     "glslify-loader": "^2.0.0",
     "postcss": "^8.5.6",
-    "prettier": "^3.7.4",
-    "prettier-plugin-tailwindcss": "^0.6.14",
     "raw-loader": "^4.0.2",
-    "tailwindcss": "^4.1.17",
+    "tailwindcss": "^4.1.18",
     "ts-node": "^10.9.2",
     "typescript": "5.8.3",
     "vite-tsconfig-paths": "5.1.4",
@@ -127,10 +124,6 @@
     "pnpm": "^9 || ^10"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp",
-      "esbuild",
-      "unrs-resolver"
-    ]
+    "onlyBuiltDependencies": ["sharp", "esbuild", "unrs-resolver"]
   }
 }

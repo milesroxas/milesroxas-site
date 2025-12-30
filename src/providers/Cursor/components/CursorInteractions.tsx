@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { useCursor } from '../CursorProvider'
 
 export const CursorText = ({ children }: { children: ReactNode }) => {

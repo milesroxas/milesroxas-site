@@ -1,21 +1,19 @@
 'use client'
 
-import React from 'react'
-import { cn } from '@/utilities/ui'
-import type {
-  ContentBlock as ContentBlockProps,
-  Work,
-  Post,
-  SliderBlock as SliderBlockType,
-} from '@/payload-types'
-
+import type React from 'react'
+import { PostCard } from '@/components/Card/Posts/Component'
+import { WorkCard } from '@/components/Card/Works/Component'
+import { CMSLink } from '@/components/Link'
+import RichText from '@/components/RichText'
 import { useBlockTheme } from '@/hooks/useBlockTheme'
 import { useSpacing } from '@/hooks/useSpacing'
-
-import RichText from '@/components/RichText'
-import { CMSLink } from '@/components/Link'
-import { WorkCard } from '@/components/Card/Works/Component'
-import { PostCard } from '@/components/Card/Posts/Component'
+import type {
+  ContentBlock as ContentBlockProps,
+  Post,
+  SliderBlock as SliderBlockType,
+  Work,
+} from '@/payload-types'
+import { cn } from '@/utilities/ui'
 import { MediaBlock } from '../MediaBlock/Component'
 import { SliderBlock } from '../Slider/Component'
 

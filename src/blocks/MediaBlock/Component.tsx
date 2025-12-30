@@ -1,15 +1,12 @@
 'use client'
 
-import { cn } from '@/utilities/ui'
-import React from 'react'
-import RichText from '@/components/RichText'
-
-import type { MediaBlock as MediaBlockProps } from '@/payload-types'
-import { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
-
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import type React from 'react'
 import { Media } from '@/components/Media'
-
-import { useSpacing, SpaceProps } from '@/hooks/useSpacing'
+import RichText from '@/components/RichText'
+import { type SpaceProps, useSpacing } from '@/hooks/useSpacing'
+import type { MediaBlock as MediaBlockProps } from '@/payload-types'
+import { cn } from '@/utilities/ui'
 
 export const MediaBlock: React.FC<MediaBlockProps> = (props) => {
   const {

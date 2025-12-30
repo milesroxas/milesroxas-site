@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useAnimationStore, ensureAnimationsComplete } from '@/stores/animationStore'
+import { ensureAnimationsComplete, useAnimationStore } from '@/stores/animationStore'
 
 const HomeTemplateClient = () => {
   const resetAnimations = useAnimationStore((state) => state.resetAnimations)

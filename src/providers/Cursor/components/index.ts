@@ -1,1 +1,1 @@
-export { CursorText, CursorButton, CursorLink, CursorMedia } from './CursorInteractions'
+export { CursorButton, CursorLink, CursorMedia, CursorText } from './CursorInteractions'

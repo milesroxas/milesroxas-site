@@ -1,19 +1,16 @@
-import type { Metadata } from 'next'
-
-import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
+import { getPayload } from 'payload'
 import React, { cache } from 'react'
-
+import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { PasswordProtectedWorkWrapper } from '@/components/PasswordProtectedWork/PasswordProtectedWorkWrapper'
+import { PayloadRedirects } from '@/components/PayloadRedirects'
+import { RenderHero } from '@/heros/RenderHero'
 import type { Work } from '@/payload-types'
-
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
-import { RenderBlocks } from '@/blocks/RenderBlocks'
-import { RenderHero } from '@/heros/RenderHero'
-import { PasswordProtectedWorkWrapper } from '@/components/PasswordProtectedWork/PasswordProtectedWorkWrapper'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })

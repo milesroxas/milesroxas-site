@@ -1,7 +1,6 @@
+import type React from 'react'
+import { type CardWorkData, WorkCard } from '@/components/Card/Works/Component'
 import { cn } from '@/utilities/ui'
-import React from 'react'
-
-import { CardWorkData, WorkCard } from '@/components/Card/Works/Component'
 
 export type Props = {
   works?: CardWorkData[]

@@ -1,8 +1,8 @@
 'use client'
 
-import React from 'react'
-import Link from 'next/link'
 import type { LinkProps } from 'next/link'
+import Link from 'next/link'
+import type React from 'react'
 
 // Define the correct type for onNavigate
 type OnNavigateEventHandler = (event: { preventDefault: () => void }) => void

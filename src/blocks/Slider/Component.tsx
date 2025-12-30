@@ -1,16 +1,15 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel'
-
 import Link from 'next/link'
-import { useBlockTheme } from '@/hooks/useBlockTheme'
+import type React from 'react'
+import { useEffect, useState } from 'react'
 import { Media } from '@/components/Media'
-import { cn } from '@/utilities/ui'
-
+import { Carousel, type CarouselApi, CarouselContent, CarouselItem } from '@/components/ui/carousel'
+import { useBlockTheme } from '@/hooks/useBlockTheme'
 import { useSpacing } from '@/hooks/useSpacing'
 import type { SliderBlock as SliderBlockType } from '@/payload-types'
 import { CursorSlider } from '@/providers/Cursor/components/CursorInteractions'
+import { cn } from '@/utilities/ui'
 
 type SliderBlockProps = SliderBlockType & { className?: string; fullWidth?: boolean }
 

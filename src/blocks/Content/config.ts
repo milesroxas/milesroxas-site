@@ -1,17 +1,15 @@
-import type { Block, Field } from 'payload'
-
 import {
+  BlocksFeature,
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
-  BlocksFeature,
 } from '@payloadcms/richtext-lexical'
-
-import { link } from '@/fields/link'
-import { SliderBlock } from '@/blocks/Slider/config'
-import { sectionSpacing } from '@/fields/sectionSpacing'
+import type { Block, Field } from 'payload'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
+import { SliderBlock } from '@/blocks/Slider/config'
+import { link } from '@/fields/link'
+import { sectionSpacing } from '@/fields/sectionSpacing'
 
 const richTextFields: Field[] = [
   {

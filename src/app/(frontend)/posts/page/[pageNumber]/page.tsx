@@ -1,11 +1,10 @@
-import type { Metadata } from 'next/types'
-import { PageRange } from '@/components/PageRange'
-import { Pagination } from '@/components/Pagination'
 import configPromise from '@payload-config'
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
 import React from 'react'
-
-import { notFound } from 'next/navigation'
+import { PageRange } from '@/components/PageRange'
+import { Pagination } from '@/components/Pagination'
 import PageNumberClient from './page.client'
 
 export const revalidate = 600
