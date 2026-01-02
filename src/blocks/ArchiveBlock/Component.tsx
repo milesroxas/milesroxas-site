@@ -7,6 +7,56 @@ import type { CardWorkData } from '@/components/Card/Works/Component'
 import type { ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 
 import ArchiveBlockClient from './ArchiveBlockClient'
+import { flattenCategories, getCategoryFilter } from './utils'
+
+async function fetchPostsByCollection(
+  limit: number,
+  categoryFilter: ReturnType<typeof getCategoryFilter>,
+) {
+  const payload = await getPayload({ config: configPromise })
+  const fetchedPosts = await payload.find({
+    collection: 'posts',
+    depth: 2,
+    limit,
+    ...categoryFilter,
+  })
+  return fetchedPosts.docs
+}
+
+async function fetchWorksByCollection(
+  limit: number,
+  categoryFilter: ReturnType<typeof getCategoryFilter>,
+) {
+  const payload = await getPayload({ config: configPromise })
+  const fetchedWorks = await payload.find({
+    collection: 'works',
+    depth: 2,
+    limit,
+    ...categoryFilter,
+  })
+  return fetchedWorks.docs
+}
+
+function extractSelectedDocs(selectedDocs: ArchiveBlockProps['selectedDocs']) {
+  const posts: CardPostData[] = []
+  const works: CardWorkData[] = []
+
+  if (!selectedDocs?.length) {
+    return { posts, works }
+  }
+
+  for (const doc of selectedDocs) {
+    if (typeof doc.value === 'object') {
+      if (doc.relationTo === 'posts') {
+        posts.push(doc.value as CardPostData)
+      } else if (doc.relationTo === 'works') {
+        works.push(doc.value as CardWorkData)
+      }
+    }
+  }
+
+  return { posts, works }
+}
 
 export const ArchiveBlock: React.FC<ArchiveBlockProps> = async (props) => {
   const {
@@ -26,58 +76,18 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps> = async (props) => {
   let works: CardWorkData[] = []
 
   if (populateBy === 'collection') {
-    const payload = await getPayload({ config: configPromise })
-
-    const flattenedCategories = categories?.map((category) => {
-      if (typeof category === 'object') return category.id
-      else return category
-    })
+    const flattenedCategories = flattenCategories(categories)
+    const categoryFilter = getCategoryFilter(flattenedCategories)
 
     if (relationTo === 'posts') {
-      const fetchedPosts = await payload.find({
-        collection: 'posts',
-        depth: 2,
-        limit,
-        ...(flattenedCategories && flattenedCategories.length > 0
-          ? {
-              where: {
-                categories: {
-                  in: flattenedCategories,
-                },
-              },
-            }
-          : {}),
-      })
-
-      posts = fetchedPosts.docs
+      posts = await fetchPostsByCollection(limit, categoryFilter)
     } else if (relationTo === 'works') {
-      const fetchedWorks = await payload.find({
-        collection: 'works',
-        depth: 2,
-        limit,
-        ...(flattenedCategories && flattenedCategories.length > 0
-          ? {
-              where: {
-                categories: {
-                  in: flattenedCategories,
-                },
-              },
-            }
-          : {}),
-      })
-
-      works = fetchedWorks.docs
+      works = await fetchWorksByCollection(limit, categoryFilter)
     }
-  } else if (populateBy === 'selection' && selectedDocs?.length) {
-    selectedDocs.forEach((doc) => {
-      if (typeof doc.value === 'object') {
-        if (doc.relationTo === 'posts') {
-          posts.push(doc.value as CardPostData)
-        } else if (doc.relationTo === 'works') {
-          works.push(doc.value as CardWorkData)
-        }
-      }
-    })
+  } else if (populateBy === 'selection') {
+    const extractedDocs = extractSelectedDocs(selectedDocs)
+    posts = extractedDocs.posts
+    works = extractedDocs.works
   }
 
   return (

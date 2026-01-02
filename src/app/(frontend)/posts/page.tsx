@@ -2,7 +2,6 @@ import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
-import React from 'react'
 
 import PostsClient from './page.client'
 

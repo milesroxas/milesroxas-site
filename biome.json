@@ -41,7 +41,8 @@
         "recommended": true
       },
       "security": {
-        "recommended": true
+        "recommended": true,
+        "noDangerouslySetInnerHtml": "warn"
       },
       "style": {
         "recommended": true,
@@ -53,7 +54,8 @@
         "recommended": true,
         "noExplicitAny": "warn",
         "noArrayIndexKey": "warn",
-        "noCommentText": "warn"
+        "noCommentText": "warn",
+        "noShadowRestrictedNames": "warn"
       }
     }
   },
@@ -123,6 +125,20 @@
             "noUnusedVariables": "off"
           }
         }
+      }
+    },
+    {
+      "includes": [
+        "src/payload-types.ts",
+        "src/payload-generated-schema.ts",
+        "src/migrations/**/*",
+        "next-env.d.ts"
+      ],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
       }
     }
   ]

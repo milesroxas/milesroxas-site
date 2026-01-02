@@ -37,7 +37,7 @@ export const useHoverShader = (
 
   // Animate hover strength and update time uniform for wave effect
   useFrame(({ clock }) => {
-    if (materialRef.current && materialRef.current.uniforms) {
+    if (materialRef.current?.uniforms) {
       // Update time uniform for animation
       if (materialRef.current.uniforms.time) {
         materialRef.current.uniforms.time.value = clock.getElapsedTime()

@@ -63,7 +63,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
     return () => {
       tl.kill()
     }
-  }, [isOpen, shouldRender, navItems.length, router])
+  }, [isOpen, shouldRender, router])
 
   // helper to assign refs to each nav item for staggered animation
   const setNavItemRef = (el: HTMLDivElement | null, idx: number) => {

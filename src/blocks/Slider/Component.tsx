@@ -110,53 +110,52 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
                 }}
               >
                 <CarouselContent className="gap-4">
-                  {slides &&
-                    slides.map(({ slide }, index) => (
-                      <CarouselItem key={index} className="w-full basis-full">
-                        <div className="mx-auto aspect-[16/9] w-full">
-                          {slide.link ? (
-                            <Link
-                              href={getHref(slide.link)}
-                              className="block aspect-[16/9] w-full overflow-hidden rounded-md"
-                            >
-                              {slide.image && (
-                                <Media
-                                  resource={slide.image}
-                                  priority={index === 0}
-                                  loading={index === 0 ? 'eager' : 'lazy'}
-                                  className="h-full w-full object-cover"
-                                  imgClassName="rounded-md overflow-hidden"
-                                  size={fullWidth ? '100vw' : '(max-width: 1024px) 100vw, 1024px'}
-                                />
-                              )}
-                              {slide.caption && (
-                                <div className="mt-2">
-                                  <p className="text-muted-foreground text-sm">{slide.caption}</p>
-                                </div>
-                              )}
-                            </Link>
-                          ) : (
-                            <div className="flex aspect-[16/9] w-full flex-col items-center justify-center overflow-hidden rounded-md">
-                              {slide.image && (
-                                <Media
-                                  resource={slide.image}
-                                  priority={index === 0}
-                                  loading={index === 0 ? 'eager' : 'lazy'}
-                                  className="h-full w-full object-cover"
-                                  imgClassName="rounded-md overflow-hidden"
-                                  size={fullWidth ? '100vw' : '(max-width: 1024px) 100vw, 1024px'}
-                                />
-                              )}
-                              {slide.caption && (
-                                <div className="mt-2">
-                                  <p className="text-muted-foreground text-sm">{slide.caption}</p>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </CarouselItem>
-                    ))}
+                  {slides?.map(({ slide }, index) => (
+                    <CarouselItem key={index} className="w-full basis-full">
+                      <div className="mx-auto aspect-[16/9] w-full">
+                        {slide.link ? (
+                          <Link
+                            href={getHref(slide.link)}
+                            className="block aspect-[16/9] w-full overflow-hidden rounded-md"
+                          >
+                            {slide.image && (
+                              <Media
+                                resource={slide.image}
+                                priority={index === 0}
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                className="h-full w-full object-cover"
+                                imgClassName="rounded-md overflow-hidden"
+                                size={fullWidth ? '100vw' : '(max-width: 1024px) 100vw, 1024px'}
+                              />
+                            )}
+                            {slide.caption && (
+                              <div className="mt-2">
+                                <p className="text-muted-foreground text-sm">{slide.caption}</p>
+                              </div>
+                            )}
+                          </Link>
+                        ) : (
+                          <div className="flex aspect-[16/9] w-full flex-col items-center justify-center overflow-hidden rounded-md">
+                            {slide.image && (
+                              <Media
+                                resource={slide.image}
+                                priority={index === 0}
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                className="h-full w-full object-cover"
+                                imgClassName="rounded-md overflow-hidden"
+                                size={fullWidth ? '100vw' : '(max-width: 1024px) 100vw, 1024px'}
+                              />
+                            )}
+                            {slide.caption && (
+                              <div className="mt-2">
+                                <p className="text-muted-foreground text-sm">{slide.caption}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </CarouselItem>
+                  ))}
                 </CarouselContent>
               </Carousel>
             </CursorSlider>
@@ -177,72 +176,71 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
                 }}
               >
                 <CarouselContent className="gap-2">
-                  {slides &&
-                    slides.map(({ slide }, index) => (
-                      <CarouselItem
-                        key={index}
+                  {slides?.map(({ slide }, index) => (
+                    <CarouselItem
+                      key={index}
+                      className={cn(
+                        'basis-4/6 md:basis-3/4 lg:basis-2/3 2xl:basis-1/2',
+                        currentIndex === index ? 'z-20' : 'opacity-30',
+                      )}
+                    >
+                      <div
                         className={cn(
-                          'basis-4/6 md:basis-3/4 lg:basis-2/3 2xl:basis-1/2',
-                          currentIndex === index ? 'z-20' : 'opacity-30',
+                          'transition-all duration-300 ease-out',
+                          currentIndex === index ? 'scale-110' : 'scale-90',
                         )}
                       >
-                        <div
-                          className={cn(
-                            'transition-all duration-300 ease-out',
-                            currentIndex === index ? 'scale-110' : 'scale-90',
-                          )}
-                        >
-                          {slide.link ? (
-                            <Link
-                              href={getHref(slide.link)}
-                              className="block w-full overflow-hidden rounded-md"
-                            >
-                              {slide.image && (
-                                <Media
-                                  resource={slide.image}
-                                  priority={index === 0}
-                                  loading={index === 0 ? 'eager' : 'lazy'}
-                                  className="w-full overflow-hidden rounded-md object-cover"
-                                  imgClassName="rounded-md overflow-hidden"
-                                  size={
-                                    fullWidth
-                                      ? '100vw'
-                                      : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, (max-width: 2000px) 80vw, 65vw'
-                                  }
-                                />
-                              )}
-                              {slide.caption && (
-                                <div className="mt-2">
-                                  <p className="text-muted-foreground text-sm">{slide.caption}</p>
-                                </div>
-                              )}
-                            </Link>
-                          ) : (
-                            <div className="flex aspect-[4/3] flex-col items-center justify-center overflow-hidden rounded-md">
-                              {slide.image && (
-                                <Media
-                                  resource={slide.image}
-                                  priority={index === 0}
-                                  loading={index === 0 ? 'eager' : 'lazy'}
-                                  className="w-full object-cover"
-                                  imgClassName="rounded-md overflow-hidden"
-                                  size={
-                                    fullWidth
-                                      ? '100vw'
-                                      : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, (max-width: 2000px) 80vw, 65vw'
-                                  }
-                                />
-                              )}
-                              {slide.caption && (
-                                <div className="mt-2">
-                                  <p className="text-muted-foreground text-sm">{slide.caption}</p>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </CarouselItem>
-                    ))}
+                        {slide.link ? (
+                          <Link
+                            href={getHref(slide.link)}
+                            className="block w-full overflow-hidden rounded-md"
+                          >
+                            {slide.image && (
+                              <Media
+                                resource={slide.image}
+                                priority={index === 0}
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                className="w-full overflow-hidden rounded-md object-cover"
+                                imgClassName="rounded-md overflow-hidden"
+                                size={
+                                  fullWidth
+                                    ? '100vw'
+                                    : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, (max-width: 2000px) 80vw, 65vw'
+                                }
+                              />
+                            )}
+                            {slide.caption && (
+                              <div className="mt-2">
+                                <p className="text-muted-foreground text-sm">{slide.caption}</p>
+                              </div>
+                            )}
+                          </Link>
+                        ) : (
+                          <div className="flex aspect-[4/3] flex-col items-center justify-center overflow-hidden rounded-md">
+                            {slide.image && (
+                              <Media
+                                resource={slide.image}
+                                priority={index === 0}
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                className="w-full object-cover"
+                                imgClassName="rounded-md overflow-hidden"
+                                size={
+                                  fullWidth
+                                    ? '100vw'
+                                    : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, (max-width: 2000px) 80vw, 65vw'
+                                }
+                              />
+                            )}
+                            {slide.caption && (
+                              <div className="mt-2">
+                                <p className="text-muted-foreground text-sm">{slide.caption}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </CarouselItem>
+                  ))}
                 </CarouselContent>
               </Carousel>
             </CursorSlider>

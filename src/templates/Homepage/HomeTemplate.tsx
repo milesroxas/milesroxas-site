@@ -1,4 +1,3 @@
-import React from 'react'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import type { Page } from '@/payload-types'

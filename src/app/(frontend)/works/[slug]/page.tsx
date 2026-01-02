@@ -2,13 +2,12 @@ import configPromise from '@payload-config'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
-import React, { cache } from 'react'
+import { cache } from 'react'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PasswordProtectedWorkWrapper } from '@/components/PasswordProtectedWork/PasswordProtectedWorkWrapper'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { RenderHero } from '@/heros/RenderHero'
-import type { Work } from '@/payload-types'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
@@ -49,7 +48,7 @@ type Args = {
 export default async function Work({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
-  const url = '/works/' + slug
+  const url = `/works/${slug}`
 
   const work = await queryWorkBySlug({ slug })
 

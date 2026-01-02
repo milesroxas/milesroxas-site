@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import type { CardPostData } from '@/components/Card/Posts/Component'
 import type { CardWorkData } from '@/components/Card/Works/Component'
 import { CollectionArchive } from '@/components/CollectionArchive'

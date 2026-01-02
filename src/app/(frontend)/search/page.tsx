@@ -1,7 +1,6 @@
 import configPromise from '@payload-config'
 import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
-import React from 'react'
 import type { CardPostData } from '@/components/Card/Posts/Component'
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { Search } from '@/search/Component'

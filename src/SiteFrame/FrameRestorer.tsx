@@ -6,11 +6,11 @@ import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
 
 export default function FrameRestorer() {
   const restoreFrame = usePageAnimationStore((s) => s.restoreFrame)
-  const pathname = usePathname()
+  const _pathname = usePathname()
 
   useEffect(() => {
     restoreFrame()
-  }, [restoreFrame, pathname])
+  }, [restoreFrame])
 
   return null
 }

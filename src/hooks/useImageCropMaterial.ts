@@ -63,10 +63,10 @@ export const useImageCropMaterial = (
   // Update all shader uniforms whenever inputs change
   useEffect(() => {
     if (materialRef.current && texture) {
-      if (materialRef.current.uniforms && materialRef.current.uniforms.map) {
+      if (materialRef.current.uniforms?.map) {
         materialRef.current.uniforms.map.value = texture
       }
-      if (materialRef.current.uniforms && materialRef.current.uniforms.imageAspect) {
+      if (materialRef.current.uniforms?.imageAspect) {
         // Special adjustment for portrait mode to ensure proper coverage
         if (aspectRatio === 'portrait') {
           // Slightly increase the aspect ratio for portrait mode to ensure full width coverage
@@ -75,10 +75,10 @@ export const useImageCropMaterial = (
           materialRef.current.uniforms.imageAspect.value = imgAspect / containerAspect
         }
       }
-      if (materialRef.current.uniforms && materialRef.current.uniforms.coverMode) {
+      if (materialRef.current.uniforms?.coverMode) {
         materialRef.current.uniforms.coverMode.value = coverMode
       }
-      if (materialRef.current.uniforms && materialRef.current.uniforms.brightness) {
+      if (materialRef.current.uniforms?.brightness) {
         materialRef.current.uniforms.brightness.value = brightness
       }
     }

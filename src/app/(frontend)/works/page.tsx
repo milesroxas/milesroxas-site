@@ -4,7 +4,6 @@ import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 
-import React from 'react'
 import WorksClient from '@/app/(frontend)/works/page.client'
 
 export const dynamic = 'force-dynamic'

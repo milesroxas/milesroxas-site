@@ -57,7 +57,7 @@ export const usePageAnimationStore = create<PageAnimationStore>(() => ({
     tl.to(
       [rightVert, leftVert],
       {
-        width: (i, el) => {
+        width: (_i, el) => {
           const selector = el.matches(rightVert) ? rightVert : leftVert
           return getComputedFrameSize(selector) || '0px'
         },

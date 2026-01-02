@@ -6,7 +6,7 @@
  * and re-run `payload generate:db-schema` to regenerate this file.
  */
 
-import { relations, sql } from '@payloadcms/db-vercel-postgres/drizzle'
+import { relations } from '@payloadcms/db-vercel-postgres/drizzle'
 import {
   type AnyPgColumn,
   boolean,
@@ -1122,7 +1122,7 @@ export const pages_hero_links = pgTable(
     _orderIdx: index('pages_hero_links_order_idx').on(columns._order),
     _parentIDIdx: index('pages_hero_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages.id],
       name: 'pages_hero_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -1146,7 +1146,7 @@ export const pages_blocks_cta_links = pgTable(
     _orderIdx: index('pages_blocks_cta_links_order_idx').on(columns._order),
     _parentIDIdx: index('pages_blocks_cta_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages_blocks_cta.id],
       name: 'pages_blocks_cta_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -1168,7 +1168,7 @@ export const pages_blocks_cta = pgTable(
     _parentIDIdx: index('pages_blocks_cta_parent_id_idx').on(columns._parentID),
     _pathIdx: index('pages_blocks_cta_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages.id],
       name: 'pages_blocks_cta_parent_id_fk',
     }).onDelete('cascade'),
@@ -1195,7 +1195,7 @@ export const pages_blocks_content_columns_slider_slides = pgTable(
       'pages_blocks_content_columns_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages_blocks_content_columns.id],
       name: 'pages_blocks_content_columns_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -1291,7 +1291,7 @@ export const pages_blocks_content_columns = pgTable(
       'pages_blocks_content_columns_media_media_media_idx',
     ).on(columns.media_media),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages_blocks_content.id],
       name: 'pages_blocks_content_columns_parent_id_fk',
     }).onDelete('cascade'),
@@ -1319,7 +1319,7 @@ export const pages_blocks_content = pgTable(
     _parentIDIdx: index('pages_blocks_content_parent_id_idx').on(columns._parentID),
     _pathIdx: index('pages_blocks_content_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages.id],
       name: 'pages_blocks_content_parent_id_fk',
     }).onDelete('cascade'),
@@ -1354,7 +1354,7 @@ export const pages_blocks_media_block = pgTable(
       columns.media,
     ),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages.id],
       name: 'pages_blocks_media_block_parent_id_fk',
     }).onDelete('cascade'),
@@ -1380,7 +1380,7 @@ export const pages_blocks_archive = pgTable(
     _parentIDIdx: index('pages_blocks_archive_parent_id_idx').on(columns._parentID),
     _pathIdx: index('pages_blocks_archive_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages.id],
       name: 'pages_blocks_archive_parent_id_fk',
     }).onDelete('cascade'),
@@ -1407,7 +1407,7 @@ export const pages_blocks_form_block = pgTable(
     _pathIdx: index('pages_blocks_form_block_path_idx').on(columns._path),
     pages_blocks_form_block_form_idx: index('pages_blocks_form_block_form_idx').on(columns.form),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages.id],
       name: 'pages_blocks_form_block_parent_id_fk',
     }).onDelete('cascade'),
@@ -1432,7 +1432,7 @@ export const pages_blocks_slider_slides = pgTable(
       'pages_blocks_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages_blocks_slider.id],
       name: 'pages_blocks_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -1465,7 +1465,7 @@ export const pages_blocks_slider = pgTable(
     _parentIDIdx: index('pages_blocks_slider_parent_id_idx').on(columns._parentID),
     _pathIdx: index('pages_blocks_slider_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [pages.id],
       name: 'pages_blocks_slider_parent_id_fk',
     }).onDelete('cascade'),
@@ -1530,27 +1530,27 @@ export const pages_rels = pgTable(
     pages_rels_works_id_idx: index('pages_rels_works_id_idx').on(columns.worksID),
     pages_rels_categories_id_idx: index('pages_rels_categories_id_idx').on(columns.categoriesID),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [pages.id],
       name: 'pages_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: 'pages_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: 'pages_rels_posts_fk',
     }).onDelete('cascade'),
     worksIdFk: foreignKey({
-      columns: [columns['worksID']],
+      columns: [columns.worksID],
       foreignColumns: [works.id],
       name: 'pages_rels_works_fk',
     }).onDelete('cascade'),
     categoriesIdFk: foreignKey({
-      columns: [columns['categoriesID']],
+      columns: [columns.categoriesID],
       foreignColumns: [categories.id],
       name: 'pages_rels_categories_fk',
     }).onDelete('cascade'),
@@ -1575,7 +1575,7 @@ export const _pages_v_version_hero_links = pgTable(
     _orderIdx: index('_pages_v_version_hero_links_order_idx').on(columns._order),
     _parentIDIdx: index('_pages_v_version_hero_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v.id],
       name: '_pages_v_version_hero_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -1600,7 +1600,7 @@ export const _pages_v_blocks_cta_links = pgTable(
     _orderIdx: index('_pages_v_blocks_cta_links_order_idx').on(columns._order),
     _parentIDIdx: index('_pages_v_blocks_cta_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v_blocks_cta.id],
       name: '_pages_v_blocks_cta_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -1623,7 +1623,7 @@ export const _pages_v_blocks_cta = pgTable(
     _parentIDIdx: index('_pages_v_blocks_cta_parent_id_idx').on(columns._parentID),
     _pathIdx: index('_pages_v_blocks_cta_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v.id],
       name: '_pages_v_blocks_cta_parent_id_fk',
     }).onDelete('cascade'),
@@ -1651,7 +1651,7 @@ export const _pages_v_blocks_content_columns_slider_slides = pgTable(
       '_pages_v_blocks_content_columns_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v_blocks_content_columns.id],
       name: '_pages_v_blocks_content_columns_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -1750,7 +1750,7 @@ export const _pages_v_blocks_content_columns = pgTable(
       '_pages_v_blocks_content_columns_media_media_media_idx',
     ).on(columns.media_media),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v_blocks_content.id],
       name: '_pages_v_blocks_content_columns_parent_id_fk',
     }).onDelete('cascade'),
@@ -1779,7 +1779,7 @@ export const _pages_v_blocks_content = pgTable(
     _parentIDIdx: index('_pages_v_blocks_content_parent_id_idx').on(columns._parentID),
     _pathIdx: index('_pages_v_blocks_content_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v.id],
       name: '_pages_v_blocks_content_parent_id_fk',
     }).onDelete('cascade'),
@@ -1815,7 +1815,7 @@ export const _pages_v_blocks_media_block = pgTable(
       columns.media,
     ),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v.id],
       name: '_pages_v_blocks_media_block_parent_id_fk',
     }).onDelete('cascade'),
@@ -1842,7 +1842,7 @@ export const _pages_v_blocks_archive = pgTable(
     _parentIDIdx: index('_pages_v_blocks_archive_parent_id_idx').on(columns._parentID),
     _pathIdx: index('_pages_v_blocks_archive_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v.id],
       name: '_pages_v_blocks_archive_parent_id_fk',
     }).onDelete('cascade'),
@@ -1872,7 +1872,7 @@ export const _pages_v_blocks_form_block = pgTable(
       columns.form,
     ),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v.id],
       name: '_pages_v_blocks_form_block_parent_id_fk',
     }).onDelete('cascade'),
@@ -1898,7 +1898,7 @@ export const _pages_v_blocks_slider_slides = pgTable(
       '_pages_v_blocks_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v_blocks_slider.id],
       name: '_pages_v_blocks_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -1932,7 +1932,7 @@ export const _pages_v_blocks_slider = pgTable(
     _parentIDIdx: index('_pages_v_blocks_slider_parent_id_idx').on(columns._parentID),
     _pathIdx: index('_pages_v_blocks_slider_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_pages_v.id],
       name: '_pages_v_blocks_slider_parent_id_fk',
     }).onDelete('cascade'),
@@ -2035,27 +2035,27 @@ export const _pages_v_rels = pgTable(
       columns.categoriesID,
     ),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [_pages_v.id],
       name: '_pages_v_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: '_pages_v_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: '_pages_v_rels_posts_fk',
     }).onDelete('cascade'),
     worksIdFk: foreignKey({
-      columns: [columns['worksID']],
+      columns: [columns.worksID],
       foreignColumns: [works.id],
       name: '_pages_v_rels_works_fk',
     }).onDelete('cascade'),
     categoriesIdFk: foreignKey({
-      columns: [columns['categoriesID']],
+      columns: [columns.categoriesID],
       foreignColumns: [categories.id],
       name: '_pages_v_rels_categories_fk',
     }).onDelete('cascade'),
@@ -2078,7 +2078,7 @@ export const posts_hero_links = pgTable(
     _orderIdx: index('posts_hero_links_order_idx').on(columns._order),
     _parentIDIdx: index('posts_hero_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [posts.id],
       name: 'posts_hero_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -2097,7 +2097,7 @@ export const posts_populated_authors = pgTable(
     _orderIdx: index('posts_populated_authors_order_idx').on(columns._order),
     _parentIDIdx: index('posts_populated_authors_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [posts.id],
       name: 'posts_populated_authors_parent_id_fk',
     }).onDelete('cascade'),
@@ -2163,27 +2163,27 @@ export const posts_rels = pgTable(
     posts_rels_categories_id_idx: index('posts_rels_categories_id_idx').on(columns.categoriesID),
     posts_rels_users_id_idx: index('posts_rels_users_id_idx').on(columns.usersID),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [posts.id],
       name: 'posts_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: 'posts_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: 'posts_rels_posts_fk',
     }).onDelete('cascade'),
     categoriesIdFk: foreignKey({
-      columns: [columns['categoriesID']],
+      columns: [columns.categoriesID],
       foreignColumns: [categories.id],
       name: 'posts_rels_categories_fk',
     }).onDelete('cascade'),
     usersIdFk: foreignKey({
-      columns: [columns['usersID']],
+      columns: [columns.usersID],
       foreignColumns: [users.id],
       name: 'posts_rels_users_fk',
     }).onDelete('cascade'),
@@ -2208,7 +2208,7 @@ export const _posts_v_version_hero_links = pgTable(
     _orderIdx: index('_posts_v_version_hero_links_order_idx').on(columns._order),
     _parentIDIdx: index('_posts_v_version_hero_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_posts_v.id],
       name: '_posts_v_version_hero_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -2228,7 +2228,7 @@ export const _posts_v_version_populated_authors = pgTable(
     _orderIdx: index('_posts_v_version_populated_authors_order_idx').on(columns._order),
     _parentIDIdx: index('_posts_v_version_populated_authors_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_posts_v.id],
       name: '_posts_v_version_populated_authors_parent_id_fk',
     }).onDelete('cascade'),
@@ -2332,27 +2332,27 @@ export const _posts_v_rels = pgTable(
     ),
     _posts_v_rels_users_id_idx: index('_posts_v_rels_users_id_idx').on(columns.usersID),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [_posts_v.id],
       name: '_posts_v_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: '_posts_v_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: '_posts_v_rels_posts_fk',
     }).onDelete('cascade'),
     categoriesIdFk: foreignKey({
-      columns: [columns['categoriesID']],
+      columns: [columns.categoriesID],
       foreignColumns: [categories.id],
       name: '_posts_v_rels_categories_fk',
     }).onDelete('cascade'),
     usersIdFk: foreignKey({
-      columns: [columns['usersID']],
+      columns: [columns.usersID],
       foreignColumns: [users.id],
       name: '_posts_v_rels_users_fk',
     }).onDelete('cascade'),
@@ -2375,7 +2375,7 @@ export const works_hero_links = pgTable(
     _orderIdx: index('works_hero_links_order_idx').on(columns._order),
     _parentIDIdx: index('works_hero_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works.id],
       name: 'works_hero_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -2399,7 +2399,7 @@ export const works_blocks_cta_links = pgTable(
     _orderIdx: index('works_blocks_cta_links_order_idx').on(columns._order),
     _parentIDIdx: index('works_blocks_cta_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works_blocks_cta.id],
       name: 'works_blocks_cta_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -2421,7 +2421,7 @@ export const works_blocks_cta = pgTable(
     _parentIDIdx: index('works_blocks_cta_parent_id_idx').on(columns._parentID),
     _pathIdx: index('works_blocks_cta_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works.id],
       name: 'works_blocks_cta_parent_id_fk',
     }).onDelete('cascade'),
@@ -2448,7 +2448,7 @@ export const works_blocks_content_columns_slider_slides = pgTable(
       'works_blocks_content_columns_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works_blocks_content_columns.id],
       name: 'works_blocks_content_columns_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -2544,7 +2544,7 @@ export const works_blocks_content_columns = pgTable(
       'works_blocks_content_columns_media_media_media_idx',
     ).on(columns.media_media),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works_blocks_content.id],
       name: 'works_blocks_content_columns_parent_id_fk',
     }).onDelete('cascade'),
@@ -2572,7 +2572,7 @@ export const works_blocks_content = pgTable(
     _parentIDIdx: index('works_blocks_content_parent_id_idx').on(columns._parentID),
     _pathIdx: index('works_blocks_content_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works.id],
       name: 'works_blocks_content_parent_id_fk',
     }).onDelete('cascade'),
@@ -2607,7 +2607,7 @@ export const works_blocks_media_block = pgTable(
       columns.media,
     ),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works.id],
       name: 'works_blocks_media_block_parent_id_fk',
     }).onDelete('cascade'),
@@ -2633,7 +2633,7 @@ export const works_blocks_archive = pgTable(
     _parentIDIdx: index('works_blocks_archive_parent_id_idx').on(columns._parentID),
     _pathIdx: index('works_blocks_archive_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works.id],
       name: 'works_blocks_archive_parent_id_fk',
     }).onDelete('cascade'),
@@ -2660,7 +2660,7 @@ export const works_blocks_form_block = pgTable(
     _pathIdx: index('works_blocks_form_block_path_idx').on(columns._path),
     works_blocks_form_block_form_idx: index('works_blocks_form_block_form_idx').on(columns.form),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works.id],
       name: 'works_blocks_form_block_parent_id_fk',
     }).onDelete('cascade'),
@@ -2685,7 +2685,7 @@ export const works_blocks_slider_slides = pgTable(
       'works_blocks_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works_blocks_slider.id],
       name: 'works_blocks_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -2718,7 +2718,7 @@ export const works_blocks_slider = pgTable(
     _parentIDIdx: index('works_blocks_slider_parent_id_idx').on(columns._parentID),
     _pathIdx: index('works_blocks_slider_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works.id],
       name: 'works_blocks_slider_parent_id_fk',
     }).onDelete('cascade'),
@@ -2743,7 +2743,7 @@ export const works_blocks_tabs_tabs_slider_slides = pgTable(
       'works_blocks_tabs_tabs_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works_blocks_tabs_tabs.id],
       name: 'works_blocks_tabs_tabs_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -2766,7 +2766,7 @@ export const works_blocks_tabs_tabs = pgTable(
     _orderIdx: index('works_blocks_tabs_tabs_order_idx').on(columns._order),
     _parentIDIdx: index('works_blocks_tabs_tabs_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works_blocks_tabs.id],
       name: 'works_blocks_tabs_tabs_parent_id_fk',
     }).onDelete('cascade'),
@@ -2796,7 +2796,7 @@ export const works_blocks_tabs = pgTable(
     _parentIDIdx: index('works_blocks_tabs_parent_id_idx').on(columns._parentID),
     _pathIdx: index('works_blocks_tabs_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [works.id],
       name: 'works_blocks_tabs_parent_id_fk',
     }).onDelete('cascade'),
@@ -2866,27 +2866,27 @@ export const works_rels = pgTable(
     works_rels_works_id_idx: index('works_rels_works_id_idx').on(columns.worksID),
     works_rels_categories_id_idx: index('works_rels_categories_id_idx').on(columns.categoriesID),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [works.id],
       name: 'works_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: 'works_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: 'works_rels_posts_fk',
     }).onDelete('cascade'),
     worksIdFk: foreignKey({
-      columns: [columns['worksID']],
+      columns: [columns.worksID],
       foreignColumns: [works.id],
       name: 'works_rels_works_fk',
     }).onDelete('cascade'),
     categoriesIdFk: foreignKey({
-      columns: [columns['categoriesID']],
+      columns: [columns.categoriesID],
       foreignColumns: [categories.id],
       name: 'works_rels_categories_fk',
     }).onDelete('cascade'),
@@ -2911,7 +2911,7 @@ export const _works_v_version_hero_links = pgTable(
     _orderIdx: index('_works_v_version_hero_links_order_idx').on(columns._order),
     _parentIDIdx: index('_works_v_version_hero_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v.id],
       name: '_works_v_version_hero_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -2936,7 +2936,7 @@ export const _works_v_blocks_cta_links = pgTable(
     _orderIdx: index('_works_v_blocks_cta_links_order_idx').on(columns._order),
     _parentIDIdx: index('_works_v_blocks_cta_links_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v_blocks_cta.id],
       name: '_works_v_blocks_cta_links_parent_id_fk',
     }).onDelete('cascade'),
@@ -2959,7 +2959,7 @@ export const _works_v_blocks_cta = pgTable(
     _parentIDIdx: index('_works_v_blocks_cta_parent_id_idx').on(columns._parentID),
     _pathIdx: index('_works_v_blocks_cta_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v.id],
       name: '_works_v_blocks_cta_parent_id_fk',
     }).onDelete('cascade'),
@@ -2987,7 +2987,7 @@ export const _works_v_blocks_content_columns_slider_slides = pgTable(
       '_works_v_blocks_content_columns_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v_blocks_content_columns.id],
       name: '_works_v_blocks_content_columns_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -3086,7 +3086,7 @@ export const _works_v_blocks_content_columns = pgTable(
       '_works_v_blocks_content_columns_media_media_media_idx',
     ).on(columns.media_media),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v_blocks_content.id],
       name: '_works_v_blocks_content_columns_parent_id_fk',
     }).onDelete('cascade'),
@@ -3115,7 +3115,7 @@ export const _works_v_blocks_content = pgTable(
     _parentIDIdx: index('_works_v_blocks_content_parent_id_idx').on(columns._parentID),
     _pathIdx: index('_works_v_blocks_content_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v.id],
       name: '_works_v_blocks_content_parent_id_fk',
     }).onDelete('cascade'),
@@ -3151,7 +3151,7 @@ export const _works_v_blocks_media_block = pgTable(
       columns.media,
     ),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v.id],
       name: '_works_v_blocks_media_block_parent_id_fk',
     }).onDelete('cascade'),
@@ -3178,7 +3178,7 @@ export const _works_v_blocks_archive = pgTable(
     _parentIDIdx: index('_works_v_blocks_archive_parent_id_idx').on(columns._parentID),
     _pathIdx: index('_works_v_blocks_archive_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v.id],
       name: '_works_v_blocks_archive_parent_id_fk',
     }).onDelete('cascade'),
@@ -3208,7 +3208,7 @@ export const _works_v_blocks_form_block = pgTable(
       columns.form,
     ),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v.id],
       name: '_works_v_blocks_form_block_parent_id_fk',
     }).onDelete('cascade'),
@@ -3234,7 +3234,7 @@ export const _works_v_blocks_slider_slides = pgTable(
       '_works_v_blocks_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v_blocks_slider.id],
       name: '_works_v_blocks_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -3268,7 +3268,7 @@ export const _works_v_blocks_slider = pgTable(
     _parentIDIdx: index('_works_v_blocks_slider_parent_id_idx').on(columns._parentID),
     _pathIdx: index('_works_v_blocks_slider_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v.id],
       name: '_works_v_blocks_slider_parent_id_fk',
     }).onDelete('cascade'),
@@ -3296,7 +3296,7 @@ export const _works_v_blocks_tabs_tabs_slider_slides = pgTable(
       '_works_v_blocks_tabs_tabs_slider_slides_slide_slide_image_idx',
     ).on(columns.slide_image),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v_blocks_tabs_tabs.id],
       name: '_works_v_blocks_tabs_tabs_slider_slides_parent_id_fk',
     }).onDelete('cascade'),
@@ -3320,7 +3320,7 @@ export const _works_v_blocks_tabs_tabs = pgTable(
     _orderIdx: index('_works_v_blocks_tabs_tabs_order_idx').on(columns._order),
     _parentIDIdx: index('_works_v_blocks_tabs_tabs_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v_blocks_tabs.id],
       name: '_works_v_blocks_tabs_tabs_parent_id_fk',
     }).onDelete('cascade'),
@@ -3351,7 +3351,7 @@ export const _works_v_blocks_tabs = pgTable(
     _parentIDIdx: index('_works_v_blocks_tabs_parent_id_idx').on(columns._parentID),
     _pathIdx: index('_works_v_blocks_tabs_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [_works_v.id],
       name: '_works_v_blocks_tabs_parent_id_fk',
     }).onDelete('cascade'),
@@ -3461,27 +3461,27 @@ export const _works_v_rels = pgTable(
       columns.categoriesID,
     ),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [_works_v.id],
       name: '_works_v_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: '_works_v_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: '_works_v_rels_posts_fk',
     }).onDelete('cascade'),
     worksIdFk: foreignKey({
-      columns: [columns['worksID']],
+      columns: [columns.worksID],
       foreignColumns: [works.id],
       name: '_works_v_rels_works_fk',
     }).onDelete('cascade'),
     categoriesIdFk: foreignKey({
-      columns: [columns['categoriesID']],
+      columns: [columns.categoriesID],
       foreignColumns: [categories.id],
       name: '_works_v_rels_categories_fk',
     }).onDelete('cascade'),
@@ -3597,7 +3597,7 @@ export const categories_breadcrumbs = pgTable(
     _parentIDIdx: index('categories_breadcrumbs_parent_id_idx').on(columns._parentID),
     categories_breadcrumbs_doc_idx: index('categories_breadcrumbs_doc_idx').on(columns.doc),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [categories.id],
       name: 'categories_breadcrumbs_parent_id_fk',
     }).onDelete('cascade'),
@@ -3697,17 +3697,17 @@ export const redirects_rels = pgTable(
     redirects_rels_pages_id_idx: index('redirects_rels_pages_id_idx').on(columns.pagesID),
     redirects_rels_posts_id_idx: index('redirects_rels_posts_id_idx').on(columns.postsID),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [redirects.id],
       name: 'redirects_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: 'redirects_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: 'redirects_rels_posts_fk',
     }).onDelete('cascade'),
@@ -3733,7 +3733,7 @@ export const forms_blocks_checkbox = pgTable(
     _parentIDIdx: index('forms_blocks_checkbox_parent_id_idx').on(columns._parentID),
     _pathIdx: index('forms_blocks_checkbox_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_blocks_checkbox_parent_id_fk',
     }).onDelete('cascade'),
@@ -3758,7 +3758,7 @@ export const forms_blocks_country = pgTable(
     _parentIDIdx: index('forms_blocks_country_parent_id_idx').on(columns._parentID),
     _pathIdx: index('forms_blocks_country_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_blocks_country_parent_id_fk',
     }).onDelete('cascade'),
@@ -3783,7 +3783,7 @@ export const forms_blocks_email = pgTable(
     _parentIDIdx: index('forms_blocks_email_parent_id_idx').on(columns._parentID),
     _pathIdx: index('forms_blocks_email_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_blocks_email_parent_id_fk',
     }).onDelete('cascade'),
@@ -3805,7 +3805,7 @@ export const forms_blocks_message = pgTable(
     _parentIDIdx: index('forms_blocks_message_parent_id_idx').on(columns._parentID),
     _pathIdx: index('forms_blocks_message_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_blocks_message_parent_id_fk',
     }).onDelete('cascade'),
@@ -3831,7 +3831,7 @@ export const forms_blocks_number = pgTable(
     _parentIDIdx: index('forms_blocks_number_parent_id_idx').on(columns._parentID),
     _pathIdx: index('forms_blocks_number_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_blocks_number_parent_id_fk',
     }).onDelete('cascade'),
@@ -3851,7 +3851,7 @@ export const forms_blocks_select_options = pgTable(
     _orderIdx: index('forms_blocks_select_options_order_idx').on(columns._order),
     _parentIDIdx: index('forms_blocks_select_options_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms_blocks_select.id],
       name: 'forms_blocks_select_options_parent_id_fk',
     }).onDelete('cascade'),
@@ -3878,7 +3878,7 @@ export const forms_blocks_select = pgTable(
     _parentIDIdx: index('forms_blocks_select_parent_id_idx').on(columns._parentID),
     _pathIdx: index('forms_blocks_select_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_blocks_select_parent_id_fk',
     }).onDelete('cascade'),
@@ -3903,7 +3903,7 @@ export const forms_blocks_state = pgTable(
     _parentIDIdx: index('forms_blocks_state_parent_id_idx').on(columns._parentID),
     _pathIdx: index('forms_blocks_state_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_blocks_state_parent_id_fk',
     }).onDelete('cascade'),
@@ -3929,7 +3929,7 @@ export const forms_blocks_text = pgTable(
     _parentIDIdx: index('forms_blocks_text_parent_id_idx').on(columns._parentID),
     _pathIdx: index('forms_blocks_text_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_blocks_text_parent_id_fk',
     }).onDelete('cascade'),
@@ -3955,7 +3955,7 @@ export const forms_blocks_textarea = pgTable(
     _parentIDIdx: index('forms_blocks_textarea_parent_id_idx').on(columns._parentID),
     _pathIdx: index('forms_blocks_textarea_path_idx').on(columns._path),
     _parentIdFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_blocks_textarea_parent_id_fk',
     }).onDelete('cascade'),
@@ -3980,7 +3980,7 @@ export const forms_emails = pgTable(
     _orderIdx: index('forms_emails_order_idx').on(columns._order),
     _parentIDIdx: index('forms_emails_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [forms.id],
       name: 'forms_emails_parent_id_fk',
     }).onDelete('cascade'),
@@ -4022,7 +4022,7 @@ export const form_submissions_submission_data = pgTable(
     _orderIdx: index('form_submissions_submission_data_order_idx').on(columns._order),
     _parentIDIdx: index('form_submissions_submission_data_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [form_submissions.id],
       name: 'form_submissions_submission_data_parent_id_fk',
     }).onDelete('cascade'),
@@ -4065,7 +4065,7 @@ export const search_categories = pgTable(
     _orderIdx: index('search_categories_order_idx').on(columns._order),
     _parentIDIdx: index('search_categories_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [search.id],
       name: 'search_categories_parent_id_fk',
     }).onDelete('cascade'),
@@ -4114,12 +4114,12 @@ export const search_rels = pgTable(
     pathIdx: index('search_rels_path_idx').on(columns.path),
     search_rels_posts_id_idx: index('search_rels_posts_id_idx').on(columns.postsID),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [search.id],
       name: 'search_rels_parent_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: 'search_rels_posts_fk',
     }).onDelete('cascade'),
@@ -4153,7 +4153,7 @@ export const payload_jobs_log = pgTable(
     _orderIdx: index('payload_jobs_log_order_idx').on(columns._order),
     _parentIDIdx: index('payload_jobs_log_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [payload_jobs.id],
       name: 'payload_jobs_log_parent_id_fk',
     }).onDelete('cascade'),
@@ -4275,47 +4275,47 @@ export const payload_locked_documents_rels = pgTable(
       'payload_locked_documents_rels_payload_jobs_id_idx',
     ).on(columns['payload-jobsID']),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [payload_locked_documents.id],
       name: 'payload_locked_documents_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: 'payload_locked_documents_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: 'payload_locked_documents_rels_posts_fk',
     }).onDelete('cascade'),
     worksIdFk: foreignKey({
-      columns: [columns['worksID']],
+      columns: [columns.worksID],
       foreignColumns: [works.id],
       name: 'payload_locked_documents_rels_works_fk',
     }).onDelete('cascade'),
     mediaIdFk: foreignKey({
-      columns: [columns['mediaID']],
+      columns: [columns.mediaID],
       foreignColumns: [media.id],
       name: 'payload_locked_documents_rels_media_fk',
     }).onDelete('cascade'),
     categoriesIdFk: foreignKey({
-      columns: [columns['categoriesID']],
+      columns: [columns.categoriesID],
       foreignColumns: [categories.id],
       name: 'payload_locked_documents_rels_categories_fk',
     }).onDelete('cascade'),
     usersIdFk: foreignKey({
-      columns: [columns['usersID']],
+      columns: [columns.usersID],
       foreignColumns: [users.id],
       name: 'payload_locked_documents_rels_users_fk',
     }).onDelete('cascade'),
     redirectsIdFk: foreignKey({
-      columns: [columns['redirectsID']],
+      columns: [columns.redirectsID],
       foreignColumns: [redirects.id],
       name: 'payload_locked_documents_rels_redirects_fk',
     }).onDelete('cascade'),
     formsIdFk: foreignKey({
-      columns: [columns['formsID']],
+      columns: [columns.formsID],
       foreignColumns: [forms.id],
       name: 'payload_locked_documents_rels_forms_fk',
     }).onDelete('cascade'),
@@ -4325,7 +4325,7 @@ export const payload_locked_documents_rels = pgTable(
       name: 'payload_locked_documents_rels_form_submissions_fk',
     }).onDelete('cascade'),
     searchIdFk: foreignKey({
-      columns: [columns['searchID']],
+      columns: [columns.searchID],
       foreignColumns: [search.id],
       name: 'payload_locked_documents_rels_search_fk',
     }).onDelete('cascade'),
@@ -4378,12 +4378,12 @@ export const payload_preferences_rels = pgTable(
       columns.usersID,
     ),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [payload_preferences.id],
       name: 'payload_preferences_rels_parent_fk',
     }).onDelete('cascade'),
     usersIdFk: foreignKey({
-      columns: [columns['usersID']],
+      columns: [columns.usersID],
       foreignColumns: [users.id],
       name: 'payload_preferences_rels_users_fk',
     }).onDelete('cascade'),
@@ -4428,7 +4428,7 @@ export const header_nav_items = pgTable(
     _orderIdx: index('header_nav_items_order_idx').on(columns._order),
     _parentIDIdx: index('header_nav_items_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [header.id],
       name: 'header_nav_items_parent_id_fk',
     }).onDelete('cascade'),
@@ -4458,17 +4458,17 @@ export const header_rels = pgTable(
     header_rels_pages_id_idx: index('header_rels_pages_id_idx').on(columns.pagesID),
     header_rels_posts_id_idx: index('header_rels_posts_id_idx').on(columns.postsID),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [header.id],
       name: 'header_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: 'header_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: 'header_rels_posts_fk',
     }).onDelete('cascade'),
@@ -4490,7 +4490,7 @@ export const footer_nav_items = pgTable(
     _orderIdx: index('footer_nav_items_order_idx').on(columns._order),
     _parentIDIdx: index('footer_nav_items_parent_id_idx').on(columns._parentID),
     _parentIDFk: foreignKey({
-      columns: [columns['_parentID']],
+      columns: [columns._parentID],
       foreignColumns: [footer.id],
       name: 'footer_nav_items_parent_id_fk',
     }).onDelete('cascade'),
@@ -4520,17 +4520,17 @@ export const footer_rels = pgTable(
     footer_rels_pages_id_idx: index('footer_rels_pages_id_idx').on(columns.pagesID),
     footer_rels_posts_id_idx: index('footer_rels_posts_id_idx').on(columns.postsID),
     parentFk: foreignKey({
-      columns: [columns['parent']],
+      columns: [columns.parent],
       foreignColumns: [footer.id],
       name: 'footer_rels_parent_fk',
     }).onDelete('cascade'),
     pagesIdFk: foreignKey({
-      columns: [columns['pagesID']],
+      columns: [columns.pagesID],
       foreignColumns: [pages.id],
       name: 'footer_rels_pages_fk',
     }).onDelete('cascade'),
     postsIdFk: foreignKey({
-      columns: [columns['postsID']],
+      columns: [columns.postsID],
       foreignColumns: [posts.id],
       name: 'footer_rels_posts_fk',
     }).onDelete('cascade'),

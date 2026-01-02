@@ -7,7 +7,7 @@ import { mergeOpenGraph } from './mergeOpenGraph'
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
 
-  let url = serverUrl + '/website-template-OG.webp'
+  let url = `${serverUrl}/website-template-OG.webp`
 
   if (image && typeof image === 'object' && 'url' in image) {
     const ogUrl = image.sizes?.og?.url
@@ -25,7 +25,7 @@ export const generateMeta = async (args: {
 
   const ogImage = getImageURL(doc?.meta?.image)
 
-  const title = doc?.meta?.title ? doc?.meta?.title + ' | Miles Roxas' : 'Miles Roxas'
+  const title = doc?.meta?.title ? `${doc?.meta?.title} | Miles Roxas` : 'Miles Roxas'
 
   return {
     description: doc?.meta?.description,

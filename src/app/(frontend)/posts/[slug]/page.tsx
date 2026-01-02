@@ -2,13 +2,12 @@ import configPromise from '@payload-config'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
-import React, { cache } from 'react'
+import { cache } from 'react'
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import RichText from '@/components/RichText'
 import { RenderHero } from '@/heros/RenderHero'
-import type { Post } from '@/payload-types'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
@@ -41,7 +40,7 @@ type Args = {
 export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
-  const url = '/posts/' + slug
+  const url = `/posts/${slug}`
   const post = await queryPostBySlug({ slug })
 
   if (!post) return <PayloadRedirects url={url} />
