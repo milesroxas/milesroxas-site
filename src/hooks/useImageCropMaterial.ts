@@ -60,29 +60,35 @@ export const useImageCropMaterial = (
     }
   }, [aspectRatio])
 
+  // Calculate image aspect ratio value with special handling for portrait mode
+  const imageAspectValue = useMemo(() => {
+    if (aspectRatio === 'portrait') {
+      // Slightly increase the aspect ratio for portrait mode to ensure full width coverage
+      return (imgAspect / containerAspect) * 1.05
+    }
+    return imgAspect / containerAspect
+  }, [imgAspect, containerAspect, aspectRatio])
+
   // Update all shader uniforms whenever inputs change
   useEffect(() => {
-    if (materialRef.current && texture) {
-      if (materialRef.current.uniforms?.map) {
-        materialRef.current.uniforms.map.value = texture
-      }
-      if (materialRef.current.uniforms?.imageAspect) {
-        // Special adjustment for portrait mode to ensure proper coverage
-        if (aspectRatio === 'portrait') {
-          // Slightly increase the aspect ratio for portrait mode to ensure full width coverage
-          materialRef.current.uniforms.imageAspect.value = (imgAspect / containerAspect) * 1.05
-        } else {
-          materialRef.current.uniforms.imageAspect.value = imgAspect / containerAspect
-        }
-      }
-      if (materialRef.current.uniforms?.coverMode) {
-        materialRef.current.uniforms.coverMode.value = coverMode
-      }
-      if (materialRef.current.uniforms?.brightness) {
-        materialRef.current.uniforms.brightness.value = brightness
-      }
+    if (!materialRef.current || !texture) return
+
+    const { uniforms } = materialRef.current
+    if (!uniforms) return
+
+    if (uniforms.map) {
+      uniforms.map.value = texture
     }
-  }, [texture, imgAspect, containerAspect, aspectRatio, coverMode, brightness])
+    if (uniforms.imageAspect) {
+      uniforms.imageAspect.value = imageAspectValue
+    }
+    if (uniforms.coverMode) {
+      uniforms.coverMode.value = coverMode
+    }
+    if (uniforms.brightness) {
+      uniforms.brightness.value = brightness
+    }
+  }, [texture, imageAspectValue, coverMode, brightness])
 
   // Return values needed by components using this hook
   return {

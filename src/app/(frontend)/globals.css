@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 :root {
   /* Color variables converted to HSL */
@@ -46,7 +46,7 @@
   --space-xl: 8rem;
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   --background: hsl(240 10% 4%);
   --foreground: hsl(0 0% 98%);
   --card: hsl(0 0% 98%);
@@ -132,7 +132,7 @@
   --color-popover-foreground: var(--popover-foreground);
 
   /* Font families */
-  --font-family-sans: 'area-normal-light', sans-serif;
+  --font-family-sans: "area-normal-light", sans-serif;
   --font-family-mono: var(--font-geist-mono);
 }
 
@@ -177,8 +177,8 @@
     .container,
     .grid,
     .flex,
-    [class*='w-'],
-    [class*='aspect-'],
+    [class*="w-"],
+    [class*="aspect-"],
     .content-card {
       transition: none;
     }
@@ -261,19 +261,19 @@
   }
 
   /* Standard Content Block RichText Styles */
-  .prose-blocks:not([class*='text-size-']) h1 {
+  .prose-blocks:not([class*="text-size-"]) h1 {
     @apply text-4xl;
   }
 
-  .prose-blocks:not([class*='text-size-']) h2 {
+  .prose-blocks:not([class*="text-size-"]) h2 {
     @apply mb-4 text-3xl font-light;
   }
 
-  .prose-blocks:not([class*='text-size-']) h3 {
+  .prose-blocks:not([class*="text-size-"]) h3 {
     @apply mb-4 text-2xl;
   }
 
-  .prose-blocks:not([class*='text-size-']) p {
+  .prose-blocks:not([class*="text-size-"]) p {
     @apply font-extralight;
   }
 
@@ -570,9 +570,12 @@
 }
 
 /* Custom animations */
-@utility animation {
-  accordion-down: accordion-down 0.2s ease-out;
-  accordion-up: accordion-up 0.2s ease-out;
+@utility animate-accordion-down {
+  animation: accordion-down 0.2s ease-out;
+}
+
+@utility animate-accordion-up {
+  animation: accordion-up 0.2s ease-out;
 }
 
 @source "lg:col-span-4 lg:col-span-6 lg:col-span-8 lg:col-span-12 border-border bg-card border-error bg-error/30 border-success bg-success/30 border-warning bg-warning/30";

@@ -162,6 +162,15 @@ export const Posts: CollectionConfig<'posts'> = {
               titlePath: 'meta.title',
               descriptionPath: 'meta.description',
             }),
+            {
+              name: 'noIndex',
+              type: 'checkbox',
+              label: 'No Index',
+              defaultValue: false,
+              admin: {
+                description: 'Prevent search engines from indexing this page',
+              },
+            },
           ],
         },
       ],

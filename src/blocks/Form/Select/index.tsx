@@ -1,6 +1,5 @@
 import type { SelectField } from '@payloadcms/plugin-form-builder/types'
 import type React from 'react'
-import type { Control, FieldErrorsImpl } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 import {
@@ -11,15 +10,19 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import { Error } from '../Error'
+import { FormError } from '../Error'
+import type { ControlledFieldProps } from '../types'
 import { Width } from '../Width'
 
-export const Select: React.FC<
-  SelectField & {
-    control: Control
-    errors: Partial<FieldErrorsImpl>
-  }
-> = ({ name, control, errors, label, options, required, width }) => {
+export const Select: React.FC<SelectField & ControlledFieldProps> = ({
+  name,
+  control,
+  errors,
+  label,
+  options,
+  required,
+  width,
+}) => {
   return (
     <Width width={width}>
       <Label htmlFor={name}>
@@ -56,7 +59,7 @@ export const Select: React.FC<
         }}
         rules={{ required }}
       />
-      {errors[name] && <Error name={name} />}
+      {errors[name] && <FormError name={name} />}
     </Width>
   )
 }

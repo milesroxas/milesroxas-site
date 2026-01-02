@@ -59,8 +59,8 @@ export const PasswordPrompt: React.FC<PasswordPromptProps> = ({ workId, onUnlock
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <Lock className="h-8 w-8 text-primary" />
           </div>
-          <h2 className="text-2xl font-bold">This work is password protected</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <h2 className="font-bold text-2xl">This work is password protected</h2>
+          <p className="mt-2 text-muted-foreground text-sm">
             Enter the password to view this content
           </p>
         </div>
@@ -78,7 +78,7 @@ export const PasswordPrompt: React.FC<PasswordPromptProps> = ({ workId, onUnlock
           </div>
 
           {error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+            <div className="rounded-md bg-destructive/10 p-3 text-destructive text-sm">{error}</div>
           )}
 
           <Button type="submit" disabled={isLoading || !password} className="w-full">

@@ -6,6 +6,7 @@ import { draftMode } from 'next/headers'
 import type React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
+import { Clarity } from '@/components/Clarity'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
@@ -32,7 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>
-      <body className="bg-background text-foreground min-h-screen">
+      <body className="min-h-screen bg-background text-foreground">
         <Providers>
           <Header />
           <SiteFrame>{children}</SiteFrame>
@@ -45,19 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <FrameRestorer />
         </Providers>
         <Analytics />
-        {process.env.NEXT_PUBLIC_CLARITY_ID && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function(c,l,a,r,i,t,y){
-                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                })(window, document, "clarity", "script", "${process.env.NEXT_PUBLIC_CLARITY_ID}");
-              `,
-            }}
-          />
-        )}
+        <Clarity />
       </body>
     </html>
   )

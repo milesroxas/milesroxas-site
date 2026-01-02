@@ -5,6 +5,9 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "explicit"
   },
+  // Enable Biome diagnostics
+  "biome.enabled": true,
+  "biome.lspBin": null,
   // Disable Prettier
   "prettier.enable": false,
   "[typescript]": {

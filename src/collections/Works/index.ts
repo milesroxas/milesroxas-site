@@ -222,6 +222,15 @@ export const Works: CollectionConfig<'works'> = {
               titlePath: 'meta.title',
               descriptionPath: 'meta.description',
             }),
+            {
+              name: 'noIndex',
+              type: 'checkbox',
+              label: 'No Index',
+              defaultValue: false,
+              admin: {
+                description: 'Prevent search engines from indexing this page',
+              },
+            },
           ],
         },
       ],

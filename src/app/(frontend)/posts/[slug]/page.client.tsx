@@ -5,6 +5,7 @@ import { formatDateTime } from 'src/utilities/formatDateTime'
 import { useLenis } from '@/hooks/useLenis'
 import type { Post } from '@/payload-types'
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+import { categoryKeys } from '@/utilities/reactKeyDomains'
 
 const PageClient: React.FC<{ post: Post }> = ({ post }) => {
   const { categories, publishedAt, title } = post
@@ -23,7 +24,7 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
         <div className="flex max-w-2xl flex-col gap-4">
           {title && (
             <div className="">
-              <h1 className="text-primary-foreground mb-2 text-2xl leading-tight md:text-3xl lg:text-4xl">
+              <h1 className="mb-2 text-2xl text-primary-foreground leading-tight md:text-3xl lg:text-4xl">
                 {title}
               </h1>
             </div>
@@ -31,17 +32,17 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
 
           <div className="flex flex-col gap-2 align-middle text-white/60 md:flex-row md:gap-4">
             {categories && categories.length > 0 && (
-              <div className="text-sm tracking-widest uppercase">
+              <div className="text-sm uppercase tracking-widest">
                 {categories?.map((category, index) => {
                   if (typeof category === 'object' && category !== null) {
-                    const { title: categoryTitle } = category
+                    const { title: categoryTitle, id } = category
 
                     const titleToUse = categoryTitle || 'Untitled category'
 
                     const isLast = index === categories.length - 1
 
                     return (
-                      <React.Fragment key={index}>
+                      <React.Fragment key={categoryKeys.fromCategory({ id }, index)}>
                         {titleToUse}
                         {!isLast && <React.Fragment>, &nbsp;</React.Fragment>}
                       </React.Fragment>
@@ -52,7 +53,7 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
               </div>
             )}
 
-            <span className="text-sm tracking-widest text-white/40 uppercase">–</span>
+            <span className="text-sm text-white/40 uppercase tracking-widest">–</span>
 
             {publishedAt && (
               <time dateTime={publishedAt} className="text-light text-sm">

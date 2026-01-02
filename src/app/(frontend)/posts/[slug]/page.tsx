@@ -67,7 +67,7 @@ export default async function Post({ params: paramsPromise }: Args) {
       </div>
       {post.relatedPosts && post.relatedPosts.length > 0 && (
         <section className="bg-primary py-12">
-          <h2 className="text-primary-foreground container pb-4 text-5xl font-light">More posts</h2>
+          <h2 className="container pb-4 font-light text-5xl text-primary-foreground">More posts</h2>
           <RelatedPosts docs={post.relatedPosts.filter((post) => typeof post === 'object')} />
         </section>
       )}

@@ -34,7 +34,7 @@ export const TabsBlock: React.FC<TabsBlockLocalProps> = (props) => {
               {heading && (
                 <div className="mb-12">
                   {heading?.eyebrow && (
-                    <p className={'text-muted-foreground mb-4 font-mono text-sm/tight'}>
+                    <p className={'mb-4 font-mono text-muted-foreground text-sm/tight'}>
                       {heading?.eyebrow}
                     </p>
                   )}

@@ -208,6 +208,10 @@ export interface Page {
      */
     image?: (number | null) | Media;
     description?: string | null;
+    /**
+     * Prevent search engines from indexing this page
+     */
+    noIndex?: boolean | null;
   };
   publishedAt?: string | null;
   slug?: string | null;
@@ -291,6 +295,10 @@ export interface Post {
      */
     image?: (number | null) | Media;
     description?: string | null;
+    /**
+     * Prevent search engines from indexing this page
+     */
+    noIndex?: boolean | null;
   };
   publishedAt?: string | null;
   authors?: (number | User)[] | null;
@@ -754,6 +762,10 @@ export interface Work {
      */
     image?: (number | null) | Media;
     description?: string | null;
+    /**
+     * Prevent search engines from indexing this page
+     */
+    noIndex?: boolean | null;
   };
   publishedAt?: string | null;
   slug?: string | null;
@@ -1467,6 +1479,7 @@ export interface PagesSelect<T extends boolean = true> {
         title?: T;
         image?: T;
         description?: T;
+        noIndex?: T;
       };
   publishedAt?: T;
   slug?: T;
@@ -1742,6 +1755,7 @@ export interface PostsSelect<T extends boolean = true> {
         title?: T;
         image?: T;
         description?: T;
+        noIndex?: T;
       };
   publishedAt?: T;
   authors?: T;
@@ -1812,6 +1826,7 @@ export interface WorksSelect<T extends boolean = true> {
         title?: T;
         image?: T;
         description?: T;
+        noIndex?: T;
       };
   publishedAt?: T;
   slug?: T;

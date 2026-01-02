@@ -1,5 +1,6 @@
 import type React from 'react'
 import { type CardPostData, PostCard } from '@/components/Card/Posts/Component'
+import { postKeys } from '@/utilities/reactKeyDomains'
 import { cn } from '@/utilities/ui'
 
 export type Props = {
@@ -16,7 +17,7 @@ export const PostsArchive: React.FC<Props> = (props) => {
           {posts?.map((result, index) => {
             if (typeof result === 'object' && result !== null) {
               return (
-                <div className="col-span-4" key={index}>
+                <div className="col-span-4" key={postKeys.fromPostArray(result, index)}>
                   <PostCard doc={result} relationTo="posts" index={index} />
                 </div>
               )

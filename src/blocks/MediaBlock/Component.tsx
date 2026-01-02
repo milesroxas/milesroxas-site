@@ -72,8 +72,8 @@ export const MediaBlock: React.FC<MediaBlockProps> = (props) => {
             >
               <Media
                 imgClassName={cn({
-                  'rounded-md overflow-hidden': !fullWidth,
-                  'w-full h-full overflow-hidden rounded-md':
+                  'overflow-hidden rounded-md': !fullWidth,
+                  'h-full w-full overflow-hidden rounded-md':
                     useAspectRatio &&
                     captionLayout !== 'split-left' &&
                     captionLayout !== 'split-right',
@@ -87,8 +87,8 @@ export const MediaBlock: React.FC<MediaBlockProps> = (props) => {
                   'object-contain': !useAspectRatio,
                 })}
                 videoClassName={cn({
-                  'rounded-md overflow-hidden': !fullWidth,
-                  'w-full h-full overflow-hidden rounded-md':
+                  'overflow-hidden rounded-md': !fullWidth,
+                  'h-full w-full overflow-hidden rounded-md':
                     useAspectRatio &&
                     captionLayout !== 'split-left' &&
                     captionLayout !== 'split-right',

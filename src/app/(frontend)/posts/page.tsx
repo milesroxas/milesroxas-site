@@ -38,7 +38,7 @@ export default async function Page() {
     <div className="pt-24 pb-24">
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none">
-          <h1 className="text-center text-7xl font-light">Posts</h1>
+          <h1 className="text-center font-light text-7xl">Posts</h1>
         </div>
       </div>
 

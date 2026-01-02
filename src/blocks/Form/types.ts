@@ -1,16 +1,17 @@
 import type { FormFieldBlock } from '@payloadcms/plugin-form-builder/types'
-import type { Control, FieldErrorsImpl, FieldValues, UseFormRegister } from 'react-hook-form'
+import type { Control, FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form'
 
-// Base field props that all form fields receive
-export interface BaseFieldProps {
-  errors: Partial<FieldErrorsImpl>
+// Props for fields using register (text, email, number, textarea, checkbox)
+export interface RegisterFieldProps {
+  errors: FieldErrors<FieldValues>
   register: UseFormRegister<FieldValues>
-  control?: Control<FieldValues>
-  form?: unknown
 }
 
-// Type for the fields object mapping block types to components
-export type FormFieldComponent = React.FC<FormFieldBlock & BaseFieldProps>
+// Props for fields using Controller (select, country, state)
+export interface ControlledFieldProps {
+  control: Control<FieldValues>
+  errors: FieldErrors<FieldValues>
+}
 
 // Submission data structure
 export interface FormSubmissionData {

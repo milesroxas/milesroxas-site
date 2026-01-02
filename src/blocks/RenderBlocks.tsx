@@ -12,6 +12,7 @@ import type {
   SliderBlock as PayloadSliderBlock,
   Work,
 } from '@/payload-types'
+import { blockKeys } from '@/utilities/reactKeyDomains'
 import { AnimatedBlocksContainer } from './AnimatedBlocksContainer'
 import { CallOutBlock } from './CallOut/Component'
 
@@ -23,10 +24,12 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] }> = ({ blocks }) =>
   return (
     <AnimatedBlocksContainer>
       {blocks.map((block, index) => {
+        const blockKey = blockKeys.fromBlock(block, index)
+
         switch (block.blockType) {
           case 'archive':
             return (
-              <div key={block.id ?? index} className="block-wrapper">
+              <div key={blockKey} className="block-wrapper">
                 <ArchiveBlock {...block} />
               </div>
             )
@@ -34,10 +37,7 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] }> = ({ blocks }) =>
           case 'content': {
             const isFullWidth = block.containerWidth === 'fullWidth'
             return (
-              <div
-                key={block.id ?? index}
-                className={`block-wrapper ${isFullWidth ? 'w-full' : ''}`}
-              >
+              <div key={blockKey} className={`block-wrapper ${isFullWidth ? 'w-full' : ''}`}>
                 <ContentBlock {...block} />
               </div>
             )
@@ -45,42 +45,42 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] }> = ({ blocks }) =>
 
           case 'cta':
             return (
-              <div key={block.id ?? index} className="block-wrapper">
+              <div key={blockKey} className="block-wrapper">
                 <CallToActionBlock {...block} />
               </div>
             )
 
           case 'formBlock':
             return (
-              <div key={block.id ?? index} className="block-wrapper">
+              <div key={blockKey} className="block-wrapper">
                 <FormBlock {...(block as PayloadFormBlock)} />
               </div>
             )
 
           case 'mediaBlock':
             return (
-              <div key={block.id ?? index} className="block-wrapper">
+              <div key={blockKey} className="block-wrapper">
                 <MediaBlock {...block} />
               </div>
             )
 
           case 'slider':
             return (
-              <div key={block.id ?? index} className="block-wrapper">
+              <div key={blockKey} className="block-wrapper">
                 <SliderBlock {...(block as PayloadSliderBlock)} />
               </div>
             )
 
           case 'tabs':
             return (
-              <div key={block.id ?? index} className="block-wrapper">
+              <div key={blockKey} className="block-wrapper">
                 <TabsBlock {...block} />
               </div>
             )
 
           case 'callout':
             return (
-              <div key={block.id ?? index} className="block-wrapper">
+              <div key={blockKey} className="block-wrapper">
                 <CallOutBlock {...block} />
               </div>
             )

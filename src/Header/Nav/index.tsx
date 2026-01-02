@@ -82,10 +82,11 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   return (
     <>
       <button
+        type="button"
         onClick={openModal}
-        className="hover:bg-accent fixed top-6 right-6 z-50 rounded-xs bg-gray-400/60 shadow-xs backdrop-blur-md transition-colors duration-250 ease-in-out md:top-16 md:right-16"
+        className="fixed top-6 right-6 z-50 rounded-xs bg-gray-400/60 shadow-xs backdrop-blur-md transition-colors duration-250 ease-in-out hover:bg-accent md:top-16 md:right-16"
       >
-        <span className="z-20 flex items-center px-4 py-1 text-sm tracking-widest text-white uppercase">
+        <span className="z-20 flex items-center px-4 py-1 text-sm text-white uppercase tracking-widest">
           Menu
         </span>
       </button>
@@ -93,7 +94,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
       {shouldRender && (
         <div
           ref={menuRef}
-          className="fixed inset-0 z-[9999] h-full w-full bg-white"
+          className="fixed inset-0 z-50 h-full w-full bg-white"
           style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
         >
           <div className="flex h-full flex-col pt-12 pl-8 md:pl-16">
@@ -110,11 +111,12 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
             </div>
             <div className="absolute top-6 right-6 md:top-16 md:right-16">
               <button
+                type="button"
                 onClick={closeModal}
-                className="hover:bg-accent fixed top-6 right-6 z-50 rounded-xs bg-gray-800/10 shadow-xs backdrop-blur-sm transition-colors duration-250 ease-in-out md:top-16 md:right-16"
+                className="fixed top-6 right-6 z-50 rounded-xs bg-gray-800/10 shadow-xs backdrop-blur-sm transition-colors duration-250 ease-in-out hover:bg-accent md:top-16 md:right-16"
                 tabIndex={isOpen ? 0 : -1}
               >
-                <span className="z-20 flex items-center px-4 py-1 text-sm tracking-widest text-white uppercase">
+                <span className="z-20 flex items-center px-4 py-1 text-sm text-white uppercase tracking-widest">
                   Close
                 </span>
               </button>
@@ -122,11 +124,14 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
 
             <nav className="container flex flex-1 flex-col justify-center gap-12 pl-6">
               {navItems.map(({ link }, i) => (
-                <div key={i} ref={(el) => setNavItemRef(el, i)}>
+                <div
+                  key={`nav-item-${link?.label || ''}-${link?.url || ''}-${i}`}
+                  ref={(el) => setNavItemRef(el, i)}
+                >
                   <CMSLink
                     {...link}
                     appearance="inline"
-                    className="text-primary text-4xl"
+                    className="text-4xl text-primary"
                     onClick={handleNavClick}
                   />
                 </div>
@@ -134,12 +139,13 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
 
               <div ref={(el) => setNavItemRef(el, navItems.length)}>
                 <button
+                  type="button"
                   onClick={() => handleNavClick('/search')}
                   className="flex items-center"
                   tabIndex={isOpen ? 0 : -1}
                 >
                   <span className="sr-only">Search</span>
-                  <SearchIcon className="text-primary w-5" />
+                  <SearchIcon className="w-5 text-primary" />
                 </button>
               </div>
             </nav>

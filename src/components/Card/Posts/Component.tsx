@@ -123,15 +123,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   return (
     <article ref={containerRef} className={cn('h-full', className)}>
       <Link href={href} onClick={handleTransition} className="not-prose">
-        <div
-          ref={imageRef}
-          className="relative mb-6 w-full"
-          style={{ aspectRatio: aspectValue }}
-          onMouseMove={(e) => {
-            const r = e.currentTarget.getBoundingClientRect()
-            void r
-          }}
-        >
+        <div ref={imageRef} className="relative mb-6 w-full" style={{ aspectRatio: aspectValue }}>
           {hero && (
             <Media
               resource={hero.media}
@@ -146,7 +138,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
         {(titleFromProps || title) && (
           <div className="prose flex flex-col-reverse items-start justify-between gap-2 md:flex-row">
-            <h3 className="text-lg font-light">{titleFromProps || title}</h3>
+            <h3 className="font-light text-lg">{titleFromProps || title}</h3>
             <Badge variant="post" className="mt-1">
               Post
             </Badge>

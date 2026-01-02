@@ -6,6 +6,7 @@ import { Media } from '@/components/Media'
 import type { Post } from '@/payload-types'
 import { useSiteFrameStore } from '@/stores/siteframeStore'
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+import { categoryKeys } from '@/utilities/reactKeyDomains'
 
 export const PostHero: React.FC<{
   post: Post
@@ -130,7 +131,7 @@ export const PostHero: React.FC<{
         <div className="pointer-events-none absolute bottom-0 left-0 h-1/2 w-full bg-linear-to-t from-black to-transparent" />
       </div>
 
-      <div className="relative z-10 container pb-24 text-white lg:grid lg:grid-cols-[1fr_48rem_1fr]">
+      <div className="container relative z-10 pb-24 text-white lg:grid lg:grid-cols-[1fr_48rem_1fr]">
         <div className="col-span-1 col-start-1 pb-12 md:col-span-2 md:col-start-2">
           <div className="mb-6 text-sm uppercase">
             {categories?.map((category, index) => {
@@ -142,7 +143,7 @@ export const PostHero: React.FC<{
                 const isLast = index === categories.length - 1
 
                 return (
-                  <React.Fragment key={index}>
+                  <React.Fragment key={categoryKeys.fromCategory(category, index)}>
                     {titleToUse}
                     {!isLast && <React.Fragment>, &nbsp;</React.Fragment>}
                   </React.Fragment>

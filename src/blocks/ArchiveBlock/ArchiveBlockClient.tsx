@@ -25,14 +25,14 @@ export default function ArchiveBlockClient({
     <div
       data-theme={appliedTheme}
       className={cn(
-        'bg-background text-foreground pt-32 pb-36',
+        'bg-background pt-32 pb-36 text-foreground',
         cardStyle === 'featured' && 'bg-red-500',
       )}
     >
       {introContent && (
         <div className="container mb-16 px-8 md:px-20">
           <RichText
-            className="text-muted-foreground ms-0 max-w-[48rem]"
+            className="ms-0 max-w-[48rem] text-muted-foreground"
             data={introContent}
             enableGutter={false}
           />

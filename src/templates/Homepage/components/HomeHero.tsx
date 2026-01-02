@@ -1,5 +1,6 @@
 'use client'
 import { useRef, useState } from 'react'
+import { marqueeKeys } from '@/utilities/reactKeyDomains'
 import { cn } from '@/utilities/ui'
 import styles from '../styles/home.module.css'
 
@@ -33,7 +34,14 @@ export default function HomeHero() {
       <div className="absolute top-[40vh] z-0 w-full">
         <div className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono')}>
           {[...skillsText, ...skillsText].map((text, index) => (
-            <div key={index} className={styles.marqueeItem}>
+            <div
+              key={marqueeKeys.fromItem(
+                text,
+                index % skillsText.length,
+                Math.floor(index / skillsText.length),
+              )}
+              className={styles.marqueeItem}
+            >
               {text}
             </div>
           ))}
@@ -65,7 +73,14 @@ export default function HomeHero() {
       <div className="absolute top-[50vh] z-20 w-full">
         <div className={cn(styles.marquee, 'flex flex-row items-center gap-12 font-mono')}>
           {[...experienceText, ...experienceText].map((text, index) => (
-            <div key={index} className={styles.marqueeItem}>
+            <div
+              key={marqueeKeys.fromItem(
+                text,
+                index % experienceText.length,
+                Math.floor(index / experienceText.length),
+              )}
+              className={styles.marqueeItem}
+            >
               {text}
             </div>
           ))}

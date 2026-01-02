@@ -9,7 +9,7 @@ import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
 import type { Form as GeneratedForm, FormBlock as PayloadFormBlock } from '@/payload-types'
 import { getClientSideURL } from '@/utilities/getURL'
-import { fields } from './fields'
+import { FieldRenderer } from './FieldRenderer'
 import type { FormErrorState, FormSubmissionResponse } from './types'
 import {
   generateFieldKey,
@@ -38,6 +38,7 @@ export const FormBlock: React.FC<PayloadFormBlock> = (props) => {
 
   const formMethods = useForm()
   const {
+    control,
     formState: { errors },
     handleSubmit,
     register,
@@ -113,11 +114,11 @@ export const FormBlock: React.FC<PayloadFormBlock> = (props) => {
   )
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center px-8 md:px-14 lg:max-w-[40rem] lg:px-16">
+    <div className="container flex h-screen w-screen flex-col items-center justify-center px-8 md:px-14 lg:max-w-screens-sm lg:px-16">
       {enableIntro && introContent && !hasSubmitted && (
         <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
       )}
-      <div className="border-border bg-background w-full rounded-md border p-4 lg:p-6">
+      <div className="w-full rounded-md border border-border bg-background p-4 lg:p-6">
         <FormProvider {...formMethods}>
           {!isLoading && hasSubmitted && confirmationType === 'message' && confirmationMessage && (
             <RichText data={confirmationMessage} />
@@ -135,24 +136,21 @@ export const FormBlock: React.FC<PayloadFormBlock> = (props) => {
                         className="mb-6 grid grid-cols-2 gap-4 last:mb-0"
                       >
                         {row.map((field, fieldIndex) => {
-                          const Field = fields?.[field.blockType as keyof typeof fields]
-                          if (Field) {
-                            const isFullWidth = isFieldFullWidth(field)
+                          const isFullWidth = isFieldFullWidth(field)
 
-                            return (
-                              <div
-                                key={generateFieldKey(field, rowIndex, fieldIndex)}
-                                className={isFullWidth ? 'col-span-2' : 'col-span-1'}
-                              >
-                                <Field
-                                  {...(field as any)}
-                                  errors={errors}
-                                  register={register}
-                                />
-                              </div>
-                            )
-                          }
-                          return null
+                          return (
+                            <div
+                              key={generateFieldKey(field, rowIndex, fieldIndex)}
+                              className={isFullWidth ? 'col-span-2' : 'col-span-1'}
+                            >
+                              <FieldRenderer
+                                field={field}
+                                control={control}
+                                errors={errors}
+                                register={register}
+                              />
+                            </div>
+                          )
                         })}
                       </div>
                     ),

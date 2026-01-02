@@ -148,7 +148,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
           {(titleFromProps || title) && (
             <div className="flex items-start justify-between gap-2">
-              <h3 className="text-3xl font-light">{titleFromProps || title}</h3>
+              <h3 className="font-light text-3xl">{titleFromProps || title}</h3>
               <Badge variant="work">Work</Badge>
             </div>
           )}

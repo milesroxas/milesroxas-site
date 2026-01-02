@@ -36,8 +36,12 @@ export const getMeUser = async (args?: {
   }
 
   // Token will exist here because if it doesn't the user will be redirected
+  if (!token) {
+    throw new Error('Token is required but was not found')
+  }
+
   return {
-    token: token!,
+    token,
     user,
   }
 }

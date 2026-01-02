@@ -55,20 +55,21 @@ function useClickableCard<T extends HTMLElement>({
 
   const handleMouseUp = useCallback(
     (e: MouseEvent) => {
-      if (link.current?.href) {
-        const timeNow = Date.now()
-        const difference = timeNow - timeDown.current
+      const href = link.current?.href
+      if (!href) return
 
-        if (link.current?.href && difference <= 250) {
-          if (!hasActiveParent.current && pressedButton.current === 0 && !e.ctrlKey) {
-            if (external) {
-              const target = newTab ? '_blank' : '_self'
-              window.open(link.current.href, target)
-            } else {
-              router.push(link.current.href, { scroll })
-            }
-          }
-        }
+      const timeNow = Date.now()
+      const difference = timeNow - timeDown.current
+      const isQuickClick = difference <= 250
+      const isValidClick = !hasActiveParent.current && pressedButton.current === 0 && !e.ctrlKey
+
+      if (!isQuickClick || !isValidClick) return
+
+      if (external) {
+        const target = newTab ? '_blank' : '_self'
+        window.open(href, target)
+      } else {
+        router.push(href, { scroll })
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

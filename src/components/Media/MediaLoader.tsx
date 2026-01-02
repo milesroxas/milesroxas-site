@@ -141,7 +141,7 @@ export const MediaLoader: React.FC<MediaLoaderProps> = ({
     >
       {/* Loading placeholder with blur effect - only for images */}
       {!isLoaded && enableAnimation && !hasTransitionClone && (
-        <div className="absolute inset-0 z-10 bg-muted/20 backdrop-blur-sm animate-pulse pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 z-10 animate-pulse bg-muted/20 backdrop-blur-sm" />
       )}
 
       {/* Render children with load handler injected */}

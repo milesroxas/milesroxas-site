@@ -1,5 +1,6 @@
 import type React from 'react'
 import { type CardWorkData, WorkCard } from '@/components/Card/Works/Component'
+import { workKeys } from '@/utilities/reactKeyDomains'
 import { cn } from '@/utilities/ui'
 
 export type Props = {
@@ -16,7 +17,7 @@ export const WorkArchive: React.FC<Props> = (props) => {
           {works?.map((result, index) => {
             if (typeof result === 'object' && result !== null) {
               return (
-                <div className="col-span-4" key={index}>
+                <div className="col-span-4" key={workKeys.fromWorkArray(result, index)}>
                   <WorkCard doc={result} relationTo="works" showDescription={true} />
                 </div>
               )

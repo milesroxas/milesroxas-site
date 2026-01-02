@@ -7,9 +7,13 @@ export const CursorText = ({ children }: { children: ReactNode }) => {
   const { setVariant } = useCursor()
 
   return (
-    <div onMouseEnter={() => setVariant('text')} onMouseLeave={() => setVariant('default')}>
+    <span
+      role="none"
+      onMouseEnter={() => setVariant('text')}
+      onMouseLeave={() => setVariant('default')}
+    >
       {children}
-    </div>
+    </span>
   )
 }
 
@@ -17,9 +21,13 @@ export const CursorButton = ({ children }: { children: ReactNode }) => {
   const { setVariant } = useCursor()
 
   return (
-    <div onMouseEnter={() => setVariant('button')} onMouseLeave={() => setVariant('default')}>
+    <span
+      role="none"
+      onMouseEnter={() => setVariant('button')}
+      onMouseLeave={() => setVariant('default')}
+    >
       {children}
-    </div>
+    </span>
   )
 }
 
@@ -27,9 +35,13 @@ export const CursorLink = ({ children }: { children: ReactNode }) => {
   const { setVariant } = useCursor()
 
   return (
-    <div onMouseEnter={() => setVariant('link')} onMouseLeave={() => setVariant('default')}>
+    <span
+      role="none"
+      onMouseEnter={() => setVariant('link')}
+      onMouseLeave={() => setVariant('default')}
+    >
       {children}
-    </div>
+    </span>
   )
 }
 
@@ -37,9 +49,13 @@ export const CursorMedia = ({ children }: { children: ReactNode }) => {
   const { setVariant } = useCursor()
 
   return (
-    <div onMouseEnter={() => setVariant('media')} onMouseLeave={() => setVariant('default')}>
+    <span
+      role="none"
+      onMouseEnter={() => setVariant('media')}
+      onMouseLeave={() => setVariant('default')}
+    >
       {children}
-    </div>
+    </span>
   )
 }
 
@@ -47,8 +63,12 @@ export const CursorSlider = ({ children }: { children: ReactNode }) => {
   const { setVariant } = useCursor()
 
   return (
-    <div onMouseEnter={() => setVariant('slider')} onMouseLeave={() => setVariant('default')}>
+    <span
+      role="none"
+      onMouseEnter={() => setVariant('slider')}
+      onMouseLeave={() => setVariant('default')}
+    >
       {children}
-    </div>
+    </span>
   )
 }

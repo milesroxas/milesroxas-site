@@ -7,6 +7,7 @@ import { Media } from '@/components/Media'
 import type { Page } from '@/payload-types'
 
 import { useAnimationStore } from '@/stores/animationStore'
+import { getCompositeKey } from '@/utilities/reactKeys'
 import { cn } from '@/utilities/ui'
 import styles from './homeHero.module.css'
 
@@ -115,16 +116,23 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
     <div
       data-theme="light"
       ref={containerRef}
-      className="bg-background relative flex h-[90vh] w-full flex-col items-center overflow-hidden md:h-screen"
+      className="relative flex h-[90vh] w-full flex-col items-center overflow-hidden bg-background md:h-screen"
     >
       {/* Top marquee */}
       <div ref={topMarqueeRef} className="absolute top-[40vh] z-0 w-full opacity-0">
         <div className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-black')}>
-          {[...skillsText, ...skillsText].map((text, idx) => (
-            <div key={idx} className={cn(styles.marqueeItem, 'whitespace-nowrap')}>
-              {text}
-            </div>
-          ))}
+          {[...skillsText, ...skillsText].map((text, idx) => {
+            const copyIndex = Math.floor(idx / skillsText.length)
+            const itemIndex = idx % skillsText.length
+            return (
+              <div
+                key={getCompositeKey('skill', text, copyIndex, itemIndex)}
+                className={cn(styles.marqueeItem, 'whitespace-nowrap')}
+              >
+                {text}
+              </div>
+            )
+          })}
         </div>
       </div>
 
@@ -145,11 +153,18 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
         <div
           className={cn(styles.marquee, 'flex flex-row items-center gap-12 font-mono text-black')}
         >
-          {[...experienceText, ...experienceText].map((text, idx) => (
-            <div key={idx} className={cn(styles.marqueeItem, 'whitespace-nowrap text-black')}>
-              {text}
-            </div>
-          ))}
+          {[...experienceText, ...experienceText].map((text, idx) => {
+            const copyIndex = Math.floor(idx / experienceText.length)
+            const itemIndex = idx % experienceText.length
+            return (
+              <div
+                key={getCompositeKey('experience', text, copyIndex, itemIndex)}
+                className={cn(styles.marqueeItem, 'whitespace-nowrap text-black')}
+              >
+                {text}
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>

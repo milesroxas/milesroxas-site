@@ -15,10 +15,10 @@ export const CollectionArchive: React.FC<Props> = (props) => {
     <div className={cn('container px-8 md:px-20')}>
       <div>
         <div className="grid grid-cols-4 gap-x-4 gap-y-20 sm:grid-cols-8 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-8 xl:gap-x-8">
-          {posts?.map((result, index) => {
-            if (typeof result === 'object' && result !== null) {
+          {posts?.map((result) => {
+            if (typeof result === 'object' && result !== null && result.slug) {
               return (
-                <div className="col-span-4" key={index}>
+                <div className="col-span-4" key={`post-${result.slug}`}>
                   <PostCard className="h-full" doc={result} relationTo="posts" />
                 </div>
               )
@@ -26,10 +26,10 @@ export const CollectionArchive: React.FC<Props> = (props) => {
 
             return null
           })}
-          {works?.map((result, index) => {
-            if (typeof result === 'object' && result !== null) {
+          {works?.map((result) => {
+            if (typeof result === 'object' && result !== null && result.slug) {
               return (
-                <div className="col-span-4" key={index}>
+                <div className="col-span-4" key={`work-${result.slug}`}>
                   <WorkCard doc={result} relationTo="works" />
                 </div>
               )

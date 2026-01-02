@@ -24,6 +24,95 @@ interface ColumnRendererProps {
   sizes: Column['sizes']
 }
 
+const renderWorkCard = (works: Work) => <WorkCard doc={works} />
+
+const renderPostCard = (posts: Post) => <PostCard doc={posts} />
+
+const renderRichText = (text: Column['text'], appliedTheme: string) => {
+  if (!text?.richText) return null
+
+  return (
+    <>
+      <RichText
+        data={text.richText}
+        enableGutter={false}
+        className={cn('prose-blocks', getTextSizeClasses(text.textSize))}
+      />
+      {text.enableLink && text.link && (
+        <CMSLink
+          {...text.link}
+          className={cn({
+            'text-primary-foreground hover:text-primary-foreground/80': appliedTheme === 'dark',
+          })}
+        />
+      )}
+    </>
+  )
+}
+
+const renderSectionHeading = (sectionHeading: Column['sectionHeading']) => {
+  if (!sectionHeading?.content) return null
+
+  const { align, eyebrow, size, content: sectionContent } = sectionHeading
+
+  return (
+    <div className={getSectionHeadingAlignClasses(align)}>
+      {eyebrow && (
+        <p className={cn('mb-4 text-accent', getSectionHeadingSizeClasses(size, align))}>
+          {eyebrow}
+        </p>
+      )}
+      <RichText
+        data={sectionContent}
+        enableGutter={false}
+        className={cn('prose-blocks', getSectionHeadingSizeClasses(size, align))}
+      />
+    </div>
+  )
+}
+
+const renderMedia = (
+  media: Column['media'],
+  appliedTheme: string,
+  isFullWidth: boolean,
+  sizes: Column['sizes'],
+) => {
+  if (!media?.media) return null
+
+  return (
+    <MediaBlock
+      blockType="mediaBlock"
+      media={media.media}
+      aspectRatio={media.aspectRatio}
+      fullWidth={media.fullWidth || (isFullWidth && sizes === 'full')}
+      theme={appliedTheme as 'system' | 'light' | 'dark' | null | undefined}
+      space={{ pt: null, pb: null, mt: null, mb: null }}
+    />
+  )
+}
+
+const renderSlider = (
+  slider: Column['slider'],
+  appliedTheme: string,
+  isFullWidth: boolean,
+  sizes: Column['sizes'],
+) => {
+  if (!slider?.slides) return null
+
+  return (
+    <div className={sizes === 'full' ? 'w-full' : undefined}>
+      <SliderBlock
+        blockType="slider"
+        slides={slider.slides as SliderBlockType['slides']}
+        style={slider.style}
+        className="py-0"
+        theme={appliedTheme as 'system' | 'light' | 'dark' | null | undefined}
+        fullWidth={isFullWidth && sizes === 'full'}
+      />
+    </div>
+  )
+}
+
 export const ColumnRenderer: React.FC<ColumnRendererProps> = ({
   column,
   appliedTheme,
@@ -32,85 +121,28 @@ export const ColumnRenderer: React.FC<ColumnRendererProps> = ({
 }) => {
   const { content } = column
 
-  // Render Work Card
   if (content === 'work' && column.work?.works) {
-    return <WorkCard doc={column.work.works as Work} />
+    return renderWorkCard(column.work.works as Work)
   }
 
-  // Render Post Card
   if (content === 'post' && column.post?.posts) {
-    return <PostCard doc={column.post.posts as Post} />
+    return renderPostCard(column.post.posts as Post)
   }
 
-  // Render Rich Text
-  if (content === 'text' && column.text?.richText) {
-    return (
-      <>
-        <RichText
-          data={column.text.richText}
-          enableGutter={false}
-          className={cn('prose-blocks', getTextSizeClasses(column.text.textSize))}
-        />
-        {column.text.enableLink && column.text.link && (
-          <CMSLink
-            {...column.text.link}
-            className={cn({
-              'text-primary-foreground hover:text-primary-foreground/80': appliedTheme === 'dark',
-            })}
-          />
-        )}
-      </>
-    )
+  if (content === 'text') {
+    return renderRichText(column.text, appliedTheme)
   }
 
-  // Render Section Heading
-  if (content === 'sectionHeading' && column.sectionHeading?.content) {
-    const { align, eyebrow, size, content: sectionContent } = column.sectionHeading
-
-    return (
-      <div className={getSectionHeadingAlignClasses(align)}>
-        {eyebrow && (
-          <p className={cn('text-accent mb-4', getSectionHeadingSizeClasses(size, align))}>
-            {eyebrow}
-          </p>
-        )}
-        <RichText
-          data={sectionContent}
-          enableGutter={false}
-          className={cn('prose-blocks', getSectionHeadingSizeClasses(size, align))}
-        />
-      </div>
-    )
+  if (content === 'sectionHeading') {
+    return renderSectionHeading(column.sectionHeading)
   }
 
-  // Render Media
-  if (content === 'media' && column.media?.media) {
-    return (
-      <MediaBlock
-        blockType="mediaBlock"
-        media={column.media.media}
-        aspectRatio={column.media.aspectRatio}
-        fullWidth={column.media.fullWidth || (isFullWidth && sizes === 'full')}
-        theme={appliedTheme as 'system' | 'light' | 'dark' | null | undefined}
-        space={{ pt: null, pb: null, mt: null, mb: null }}
-      />
-    )
+  if (content === 'media') {
+    return renderMedia(column.media, appliedTheme, isFullWidth, sizes)
   }
 
-  // Render Slider
-  if (content === 'slider' && column.slider?.slides) {
-    return (
-      <div className={sizes === 'full' ? 'w-full' : undefined}>
-        <SliderBlock
-          blockType="slider"
-          slides={column.slider.slides as SliderBlockType['slides']}
-          style={column.slider.style}
-          className="py-0"
-          theme={appliedTheme as 'system' | 'light' | 'dark' | null | undefined}
-          fullWidth={isFullWidth && sizes === 'full'}
-        />
-      </div>
-    )
+  if (content === 'slider') {
+    return renderSlider(column.slider, appliedTheme, isFullWidth, sizes)
   }
 
   return null

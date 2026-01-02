@@ -16,7 +16,7 @@ const MAX_CACHE_SIZE = 20
 export const preloadTexture = (url: string): Promise<THREE.Texture> => {
   // Return from cache if already loaded
   if (textureCache.has(url)) {
-    return Promise.resolve(textureCache.get(url)!)
+    return Promise.resolve(textureCache.get(url) as THREE.Texture)
   }
 
   // Limit cache size to prevent memory leaks

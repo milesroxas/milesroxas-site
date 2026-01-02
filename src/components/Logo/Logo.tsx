@@ -9,7 +9,15 @@ export const Logo = (props: Props) => {
   const { className, color = 'black' } = props
 
   return (
-    <svg viewBox="0 0 303 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <svg
+      viewBox="0 0 303 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-label="Miles Roxas Logo"
+      role="img"
+    >
+      <title>Miles Roxas Logo</title>
       <path
         d="M107.267 10.7912L97.0397 10.0859L95.1706 8.21685V5.00769L97.3924 2.78597H105.257L108.289 5.8188L110.37 3.73814L106.632 0H96.017L92.0673 3.94973V9.27481L95.6291 12.8366L105.856 13.5419L107.725 15.411V18.9728L105.503 21.1945H96.7223L93.5484 18.0206L91.4678 20.1013L95.347 23.9805H106.879L110.829 20.0308V14.353L107.267 10.7912Z"
         fill={color}

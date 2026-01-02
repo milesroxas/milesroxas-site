@@ -20,7 +20,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
 
   return (
     <div data-theme={appliedTheme} className="font-light">
-      <div style={spacingStyles} className="bg-background text-foreground font-light">
+      <div style={spacingStyles} className="bg-background font-light text-foreground">
         <div
           className={cn(
             'grid grid-cols-4 gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-12',
@@ -29,11 +29,11 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
         >
           {columns?.map((col, idx) => {
             if (!col) return null
-            const { sizes } = col
+            const { sizes, id } = col
             const colClass = getColumnClasses(sizes)
 
             return (
-              <div className={colClass} key={idx}>
+              <div className={colClass} key={id || `col-${idx}`}>
                 <ColumnRenderer
                   column={col}
                   appliedTheme={appliedTheme}
