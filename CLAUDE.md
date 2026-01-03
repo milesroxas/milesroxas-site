@@ -16,10 +16,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm generate:types` - Generate Payload types
 - `pnpm payload` - Access Payload CLI commands
 
-### Payload-specific Commands
+### Database Migration Commands
 
-- `pnpm payload migrate:create` - Create database migration
-- `pnpm payload migrate` - Run pending migrations
+- `pnpm migrate:create` - Create database migration
+- `pnpm migrate:status` - Check migration status
+- `pnpm migrate` - Run pending migrations
+
+**Important**: Migrations are manually triggered. See [MIGRATIONS.md](MIGRATIONS.md) for complete workflow.
 
 ## Architecture Overview
 
