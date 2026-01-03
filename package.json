@@ -5,8 +5,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --dns-result-order=ipv4first\" next build --webpack",
+    "build": "pnpm migrate:prod && cross-env NODE_OPTIONS=\"--no-deprecation --dns-result-order=ipv4first\" next build --webpack",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
+    "migrate:prod": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --turbopack",
     "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
