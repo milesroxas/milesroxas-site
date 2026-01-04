@@ -24,7 +24,7 @@ const PageClient: React.FC<{ work: Work }> = ({ work }) => {
         {title && (
           <div className="font-light md:flex-1">
             <div className="flex flex-col gap-8 md:flex-row">
-              <h1 className="w-full text-4xl">{title}</h1>
+              <h1 className="w-full text-2xl">{title}</h1>
             </div>
           </div>
         )}
