@@ -81,6 +81,6 @@ export default async function Page() {
 
 export function generateMetadata(): Metadata {
   return {
-    title: `Works`,
+    title: 'Works', description: 'Portfolio of selected works',
   }
 }
