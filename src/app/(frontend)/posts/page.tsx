@@ -5,7 +5,7 @@ import { getPayload } from 'payload'
 
 import PostsClient from './page.client'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600 // Revalidate every 10 minutes
 
 const getPosts = unstable_cache(
   async () => {

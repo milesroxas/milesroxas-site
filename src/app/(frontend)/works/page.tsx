@@ -6,7 +6,7 @@ import { getPayload } from 'payload'
 
 import WorksClient from '@/app/(frontend)/works/page.client'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600 // Revalidate every 10 minutes
 
 const getWorksPublished = unstable_cache(
   async () => {
