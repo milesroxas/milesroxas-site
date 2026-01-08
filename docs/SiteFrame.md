@@ -6,6 +6,8 @@ A sophisticated frame and page transition system for Next.js websites that provi
 
 The SiteFrame system consists of several interconnected components and stores that work together to create a cohesive visual experience:
 
+
+
 ```mermaid
 classDiagram
     class SiteFrameState {
