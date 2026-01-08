@@ -95,6 +95,21 @@ export const MediaBlock: Block = {
           return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature(), HeadingFeature()]
         },
       }),
+      defaultValue: {
+        root: {
+          type: 'root',
+          children: [
+            {
+              type: 'paragraph',
+              children: [],
+            },
+          ],
+          direction: 'ltr',
+          format: '',
+          indent: 0,
+          version: 1,
+        },
+      },
     },
     {
       name: 'textSize',
