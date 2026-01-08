@@ -30,6 +30,21 @@ export const Banner: Block = {
       }),
       label: false,
       required: true,
+      defaultValue: {
+        root: {
+          type: 'root',
+          children: [
+            {
+              type: 'paragraph',
+              children: [],
+            },
+          ],
+          direction: 'ltr',
+          format: '',
+          indent: 0,
+          version: 1,
+        },
+      },
     },
   ],
   interfaceName: 'BannerBlock',

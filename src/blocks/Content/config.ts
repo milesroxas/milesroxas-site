@@ -191,6 +191,42 @@ const mediaFields: Field[] = [
   },
 ]
 
+const youTubeFields: Field[] = [
+  {
+    name: 'url',
+    type: 'text',
+    required: true,
+    label: 'YouTube URL',
+    admin: {
+      description: 'Enter the full YouTube URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)',
+    },
+  },
+  {
+    name: 'aspectRatio',
+    type: 'select',
+    defaultValue: 'landscape',
+    options: [
+      {
+        label: 'Landscape (16:9)',
+        value: 'landscape',
+      },
+      {
+        label: 'Square (1:1)',
+        value: 'square',
+      },
+      {
+        label: 'Portrait (9:16)',
+        value: 'portrait',
+      },
+    ],
+  },
+  {
+    name: 'fullWidth',
+    type: 'checkbox',
+    defaultValue: false,
+  },
+]
+
 const columnFields: Field[] = [
   {
     name: 'sizes',
@@ -248,6 +284,10 @@ const columnFields: Field[] = [
         label: 'Slider',
         value: 'slider',
       },
+      {
+        label: 'YouTube',
+        value: 'youTube',
+      },
     ],
   },
   {
@@ -296,6 +336,14 @@ const columnFields: Field[] = [
     fields: mediaFields,
     admin: {
       condition: (_, siblingData) => siblingData.content === 'media',
+    },
+  },
+  {
+    name: 'youTube',
+    type: 'group',
+    fields: youTubeFields,
+    admin: {
+      condition: (_, siblingData) => siblingData.content === 'youTube',
     },
   },
 ]

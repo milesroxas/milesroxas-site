@@ -573,7 +573,7 @@ export interface ContentBlock {
   columns?:
     | {
         sizes?: ('oneThird' | 'half' | 'twoThirds' | 'fiveCols' | 'full') | null;
-        content?: ('text' | 'sectionHeading' | 'work' | 'post' | 'media' | 'slider') | null;
+        content?: ('text' | 'sectionHeading' | 'work' | 'post' | 'media' | 'slider' | 'youTube') | null;
         text?: {
           richText?: {
             root: {
@@ -680,6 +680,14 @@ export interface ContentBlock {
           aspectRatio?: ('square' | 'landscape' | 'portrait' | 'original') | null;
           fullWidth?: boolean | null;
           captionSize?: ('normal' | 'large' | 'xl') | null;
+        };
+        youTube?: {
+          /**
+           * Enter the full YouTube URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+           */
+          url: string;
+          aspectRatio?: ('landscape' | 'square' | 'portrait') | null;
+          fullWidth?: boolean | null;
         };
         id?: string | null;
       }[]
@@ -1622,6 +1630,13 @@ export interface ContentBlockSelect<T extends boolean = true> {
               aspectRatio?: T;
               fullWidth?: T;
               captionSize?: T;
+            };
+        youTube?:
+          | T
+          | {
+              url?: T;
+              aspectRatio?: T;
+              fullWidth?: T;
             };
         id?: T;
       };

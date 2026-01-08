@@ -9,6 +9,7 @@ import type { ContentBlock, Post, SliderBlock as SliderBlockType, Work } from '@
 import { cn } from '@/utilities/ui'
 import { MediaBlock } from '../MediaBlock/Component'
 import { SliderBlock } from '../Slider/Component'
+import { YouTubeBlock } from '../YouTube/Component'
 import {
   getSectionHeadingAlignClasses,
   getSectionHeadingSizeClasses,
@@ -113,6 +114,23 @@ const renderSlider = (
   )
 }
 
+const renderYouTube = (
+  youTube: Column['youTube'],
+  isFullWidth: boolean,
+  sizes: Column['sizes'],
+) => {
+  if (!youTube?.url) return null
+
+  return (
+    <YouTubeBlock
+      blockType="youTube"
+      url={youTube.url}
+      aspectRatio={youTube.aspectRatio}
+      fullWidth={youTube.fullWidth || (isFullWidth && sizes === 'full')}
+    />
+  )
+}
+
 export const ColumnRenderer: React.FC<ColumnRendererProps> = ({
   column,
   appliedTheme,
@@ -143,6 +161,10 @@ export const ColumnRenderer: React.FC<ColumnRendererProps> = ({
 
   if (content === 'slider') {
     return renderSlider(column.slider, appliedTheme, isFullWidth, sizes)
+  }
+
+  if (content === 'youTube') {
+    return renderYouTube(column.youTube, isFullWidth, sizes)
   }
 
   return null
