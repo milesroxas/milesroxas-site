@@ -253,7 +253,7 @@ export const Works: CollectionConfig<'works'> = {
   versions: {
     drafts: {
       autosave: {
-        interval: 1000,
+        interval: 2000, // Industry standard: autosave every 2 seconds
       },
       schedulePublish: true,
     },
