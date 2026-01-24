@@ -50,23 +50,41 @@ export default function HomeHero() {
 
       {/* Video */}
       <div className="relative z-10 flex justify-center py-24">
-        {!isVideoLoaded && (
-          <div className="flex h-[30vh] w-[30vh] items-center justify-center rounded-sm bg-gray-100">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-gray-800"></div>
-          </div>
-        )}
-        <video
-          ref={videoRef}
-          className={cn('w-[30vh] rounded-sm object-cover', !isVideoLoaded && 'hidden')}
-          src="/media/home-hero.mp4"
-          poster="/media/intro-test-poster.jpg"
-          preload="metadata"
-          autoPlay
-          muted
-          loop
-          playsInline
-          onLoadedData={() => setIsVideoLoaded(true)}
-        />
+        <div className="relative h-[30vh] w-[30vh]">
+          {!isVideoLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-sm bg-gray-100">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-gray-800"></div>
+            </div>
+          )}
+          <video
+            ref={videoRef}
+            className={cn(
+              'h-full w-full rounded-sm object-cover',
+              !isVideoLoaded && 'opacity-0',
+            )}
+            src="/media/home-hero.mp4"
+            poster="/media/intro-test-poster.jpg"
+            preload="metadata"
+            autoPlay
+            muted
+            loop
+            playsInline
+            onLoadedData={async () => {
+              setIsVideoLoaded(true)
+              const video = videoRef.current
+              if (!video) return
+              try {
+                await video.play()
+              } catch {
+                // Autoplay can be blocked in edge cases; keep poster visible.
+              }
+            }}
+            onError={() => {
+              // If the video fails to load, show poster (don’t leave users stuck on a spinner).
+              setIsVideoLoaded(true)
+            }}
+          />
+        </div>
       </div>
 
       {/* Experience text in front (higher z-index, slightly below the skills text) */}
