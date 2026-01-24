@@ -1,13 +1,13 @@
 import configPromise from '@payload-config'
 import type { Metadata } from 'next'
-import { draftMode } from 'next/headers'
+import { draftMode, headers } from 'next/headers'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import { PasswordProtectedWorkWrapper } from '@/components/PasswordProtectedWork/PasswordProtectedWorkWrapper'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { RenderHero } from '@/heros/RenderHero'
+import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
@@ -50,9 +50,30 @@ export default async function Work({ params: paramsPromise }: Args) {
   const { slug = '' } = await paramsPromise
   const url = `/works/${slug}`
 
-  const work = await queryWorkBySlug({ slug })
+  let work = await queryWorkBySlug({ slug })
 
   if (!work) return <PayloadRedirects url={url} />
+
+  // Check if user has access to protected works
+  const headersList = await headers()
+  const fullUrl = headersList.get('x-url') || ''
+  const urlObj = new URL(fullUrl, 'http://localhost')
+  const hasAccess = hasWorkAccess(urlObj.searchParams)
+
+  // If work is protected and user doesn't have access, redirect to fallback
+  if (work.isProtected && !hasAccess && work.fallbackWork) {
+    const payload = await getPayload({ config: configPromise })
+    const fallbackId = typeof work.fallbackWork === 'number' ? work.fallbackWork : work.fallbackWork.id
+    const fallbackWork = await payload.findByID({
+      collection: 'works',
+      id: fallbackId,
+      depth: 1,
+    })
+    
+    if (fallbackWork) {
+      work = fallbackWork
+    }
+  }
 
   const hero = work?.hero
   const layout = work?.layout || []
@@ -62,13 +83,11 @@ export default async function Work({ params: paramsPromise }: Args) {
       <PayloadRedirects disableNotFound url={url} />
       {draft && <LivePreviewListener />}
 
-      <PasswordProtectedWorkWrapper work={work}>
-        <article className="relative z-10">
-          {hero && <RenderHero {...hero} />}
-          <PageClient work={work} />
-          <RenderBlocks blocks={layout} />
-        </article>
-      </PasswordProtectedWorkWrapper>
+      <article className="relative z-10">
+        {hero && <RenderHero {...hero} />}
+        <PageClient work={work} />
+        <RenderBlocks blocks={layout} />
+      </article>
     </>
   )
 }

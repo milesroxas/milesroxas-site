@@ -144,28 +144,36 @@ export const Works: CollectionConfig<'works'> = {
         {
           fields: [
             {
-              name: 'isPasswordProtected',
+              name: 'isProtected',
               type: 'checkbox',
-              label: 'Password Protected',
+              label: 'Protected Work',
               defaultValue: false,
               admin: {
-                description: 'Enable password protection for this work',
+                description: 'Requires query param to access this work',
               },
             },
             {
-              name: 'password',
-              type: 'text',
-              label: 'Access Password',
+              name: 'fallbackWork',
+              type: 'relationship',
+              relationTo: 'works',
+              label: 'Fallback Work',
               admin: {
-                condition: (data) => data?.isPasswordProtected === true,
-                description: 'Set a password to access this work',
+                condition: (data) => data?.isProtected === true,
+                description: 'Public work to display when user does not have access',
               },
-              access: {
-                read: ({ req: { user } }) => Boolean(user),
+              filterOptions: ({ id }) => {
+                return {
+                  id: {
+                    not_in: [id],
+                  },
+                  isProtected: {
+                    not_equals: true,
+                  },
+                }
               },
             },
           ],
-          label: 'Password Protection',
+          label: 'Access Control',
         },
         {
           fields: [

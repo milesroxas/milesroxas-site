@@ -754,13 +754,13 @@ export interface Work {
   deliverables?: string | null;
   status?: ('coming-soon' | 'live') | null;
   /**
-   * Enable password protection for this work
+   * Requires query param to access this work
    */
-  isPasswordProtected?: boolean | null;
+  isProtected?: boolean | null;
   /**
-   * Set a password to access this work
+   * Public work to display when user does not have access
    */
-  password?: string | null;
+  fallbackWork?: (number | null) | Work;
   relatedWorks?: (number | Work)[] | null;
   categories?: (number | Category)[] | null;
   meta?: {
@@ -1831,8 +1831,8 @@ export interface WorksSelect<T extends boolean = true> {
   role?: T;
   deliverables?: T;
   status?: T;
-  isPasswordProtected?: T;
-  password?: T;
+  isProtected?: T;
+  fallbackWork?: T;
   relatedWorks?: T;
   categories?: T;
   meta?:

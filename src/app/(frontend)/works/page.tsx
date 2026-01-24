@@ -1,8 +1,9 @@
 import configPromise from '@payload-config'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
-import { draftMode } from 'next/headers'
+import { draftMode, headers } from 'next/headers'
 import { getPayload } from 'payload'
+import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 
 import WorksClient from '@/app/(frontend)/works/page.client'
 
@@ -24,7 +25,8 @@ const getWorksPublished = unstable_cache(
         meta: true,
         hero: true,
         _order: true,
-        isPasswordProtected: true,
+        isProtected: true,
+        fallbackWork: true,
       },
     })
 
@@ -52,7 +54,8 @@ const getWorksDraft = unstable_cache(
         meta: true,
         hero: true,
         _order: true,
-        isPasswordProtected: true,
+        isProtected: true,
+        fallbackWork: true,
       },
     })
 
@@ -66,6 +69,29 @@ export default async function Page() {
   const { isEnabled: draft } = await draftMode()
   const works = draft ? await getWorksDraft() : await getWorksPublished()
 
+  // Check if user has access to protected works
+  const headersList = await headers()
+  const url = headersList.get('x-url') || ''
+  const urlObj = new URL(url, 'http://localhost')
+  const hasAccess = hasWorkAccess(urlObj.searchParams)
+
+  // Replace protected works with fallback if user doesn't have access
+  const payload = await getPayload({ config: configPromise })
+  const processedWorks = await Promise.all(
+    works.docs.map(async (work) => {
+      if (work.isProtected && !hasAccess && work.fallbackWork) {
+        const fallbackId = typeof work.fallbackWork === 'number' ? work.fallbackWork : work.fallbackWork.id
+        const fallbackWork = await payload.findByID({
+          collection: 'works',
+          id: fallbackId,
+          depth: 2,
+        })
+        return fallbackWork
+      }
+      return work
+    })
+  )
+
   return (
     <div className="pt-16 pb-24">
       <div className="container mb-16">
@@ -74,7 +100,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <WorksClient works={works.docs} />
+      <WorksClient works={processedWorks} />
     </div>
   )
 }
