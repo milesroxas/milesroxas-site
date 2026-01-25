@@ -87,6 +87,12 @@ const nextConfig: NextConfig = {
       loader: 'ignore-loader',
     })
 
+    // Exclude test directories from node_modules
+    webpackConfig.module.rules.push({
+      test: /node_modules.*\/test\//,
+      loader: 'ignore-loader',
+    })
+
     return webpackConfig
   },
 
