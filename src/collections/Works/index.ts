@@ -42,6 +42,8 @@ export const Works: CollectionConfig<'works'> = {
       image: true,
       description: true,
     },
+    isProtected: true,
+    fallbackWork: true,
   },
   admin: {
     defaultColumns: ['title', 'slug', '_order', 'updatedAt'],
