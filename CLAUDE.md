@@ -22,7 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm migrate:status` - Check migration status
 - `pnpm migrate` - Run pending migrations
 
-**Important**: Migrations are manually triggered. See [MIGRATIONS.md](MIGRATIONS.md) for complete workflow.
+**Important**: Migrations are manually triggered and must be run **before** deploying. They do not run automatically during Vercel builds. See [MIGRATIONS.md](MIGRATIONS.md) for complete workflow.
 
 ## Architecture Overview
 

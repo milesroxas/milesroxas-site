@@ -9,6 +9,8 @@ Migrations are **manually triggered** and run on different databases depending o
 - **Dev branch** → Preview/Development database
 - **Local** → Your local development database
 
+> **Important:** Migrations do **NOT** run automatically during Vercel builds. You must run migrations manually **before** deploying. The build script (`pnpm build`) only runs `next build` - it does not execute migrations.
+
 ## Available Commands
 
 All commands are available in `package.json`:
@@ -115,7 +117,7 @@ git push origin dev
 
 ### 5. Run Migration on Preview Database
 
-After pushing to dev branch:
+**Before** pushing to dev branch, run migrations on the preview database:
 
 ```bash
 # Run migration on preview/dev database
@@ -123,34 +125,31 @@ POSTGRES_URL="<preview-url>" pnpm migrate:status
 POSTGRES_URL="<preview-url>" pnpm migrate
 ```
 
-### 6. Test on Preview Environment
+### 6. Push and Test on Preview Environment
+
+```bash
+git push origin dev
+```
 
 Visit your preview deployment and test thoroughly.
 
-### 7. Merge to Main
+### 7. Merge to Main and Run Production Migration
 
-Create a PR and merge to main:
+**Before** pushing to main, run migrations on the production database:
 
 ```bash
 git checkout main
 git merge dev
+
+# Run migration on production database BEFORE pushing
+POSTGRES_URL="<production-url>" pnpm migrate:status
+POSTGRES_URL="<production-url>" pnpm migrate
+
+# Now push to trigger deployment
 git push origin main
 ```
 
-### 8. Run Migration on Production
-
-After deploying to production:
-
-```bash
-# On main branch
-git checkout main
-
-# Run migration on production database
-POSTGRES_URL="<production-url>" pnpm migrate:status
-POSTGRES_URL="<production-url>" pnpm migrate
-```
-
-### 9. Verify Production
+### 8. Verify Production
 
 Visit your production site and verify everything works.
 
@@ -162,6 +161,7 @@ Visit your production site and verify everything works.
 - 🔒 **Keep database backups before running destructive migrations**
 - ✅ **Migrations are idempotent** - running them multiple times is safe (they won't re-run)
 - 📊 **Migration tracking** - All migrations are tracked in the `payload_migrations` table
+- 🚀 **Run migrations before deploying** - Migrations are not run during Vercel builds to avoid interactive prompts blocking automated deployments
 
 ### Branch Strategy
 
@@ -265,3 +265,18 @@ db: vercelPostgresAdapter({
 ```
 
 This ensures migrations are required for all schema changes.
+
+### Build Script
+
+The build script in `package.json` does **not** run migrations:
+
+```json
+"build": "cross-env NODE_OPTIONS=\"...\" next build --webpack"
+```
+
+Migrations are intentionally excluded from the build process because:
+1. They require manual review before running on production
+2. Interactive prompts would block automated Vercel deployments
+3. Running migrations during build could cause deployment failures if schema is out of sync
+
+Always run `pnpm migrate` manually against the target database before deploying.
