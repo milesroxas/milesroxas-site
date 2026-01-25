@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --dns-result-order=ipv4first\" payload migrate && next build --webpack",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --dns-result-order=ipv4first\" next build --webpack",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:status": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:status",
