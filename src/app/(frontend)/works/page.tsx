@@ -1,7 +1,7 @@
 import configPromise from '@payload-config'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
-import { draftMode, headers } from 'next/headers'
+import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import WorksClient from '@/app/(frontend)/works/page.client'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
@@ -69,11 +69,8 @@ export default async function Page() {
   const { isEnabled: draft } = await draftMode()
   const works = draft ? await getWorksDraft() : await getWorksPublished()
 
-  // Check if user has access to protected works
-  const headersList = await headers()
-  const url = headersList.get('x-url') || ''
-  const urlObj = new URL(url, 'http://localhost')
-  const hasAccess = hasWorkAccess(urlObj.searchParams)
+  // Check if user has access to protected works (cookie persists across navigation)
+  const hasAccess = await hasWorkAccess()
 
   // Filter out protected works if user doesn't have access (don't show fallback on archive)
   const processedWorks = works.docs.filter((work) => {

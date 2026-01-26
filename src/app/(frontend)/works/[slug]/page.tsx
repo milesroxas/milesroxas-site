@@ -1,6 +1,6 @@
 import configPromise from '@payload-config'
 import type { Metadata } from 'next'
-import { draftMode, headers } from 'next/headers'
+import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
@@ -57,11 +57,8 @@ export default async function Work({ params: paramsPromise }: Args) {
 
   if (!work) return <PayloadRedirects url={url} />
 
-  // Check if user has access to protected works
-  const headersList = await headers()
-  const fullUrl = headersList.get('x-url') || ''
-  const urlObj = new URL(fullUrl, 'http://localhost')
-  const hasAccess = hasWorkAccess(urlObj.searchParams)
+  // Check if user has access to protected works (cookie persists across navigation)
+  const hasAccess = await hasWorkAccess()
 
   // If work is protected and user doesn't have access, redirect to fallback
   if (work.isProtected && !hasAccess && work.fallbackWork) {

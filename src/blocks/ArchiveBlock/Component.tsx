@@ -1,5 +1,4 @@
 import configPromise from '@payload-config'
-import { headers } from 'next/headers'
 import { getPayload } from 'payload'
 import type React from 'react'
 import type { CardPostData } from '@/components/Card/Posts/Component'
@@ -125,11 +124,8 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps> = async (props) => {
 
   const limit = limitFromProps || 3
 
-  // Check if user has access to protected works
-  const headersList = await headers()
-  const url = headersList.get('x-url') || ''
-  const urlObj = new URL(url, 'http://localhost')
-  const hasAccess = hasWorkAccess(urlObj.searchParams)
+  // Check if user has access to protected works (cookie persists across navigation)
+  const hasAccess = await hasWorkAccess()
 
   let posts: CardPostData[] = []
   let works: CardWorkData[] = []

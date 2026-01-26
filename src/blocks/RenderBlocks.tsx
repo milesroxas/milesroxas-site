@@ -1,4 +1,3 @@
-import { headers } from 'next/headers'
 import type React from 'react'
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
@@ -24,11 +23,8 @@ type LayoutBlock = Page['layout'][number] | Work['layout'][number]
 export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] }> = async ({ blocks }) => {
   if (!Array.isArray(blocks) || blocks.length === 0) return null
 
-  // Check if user has access to protected works
-  const headersList = await headers()
-  const url = headersList.get('x-url') || ''
-  const urlObj = new URL(url, 'http://localhost')
-  const hasAccess = hasWorkAccess(urlObj.searchParams)
+  // Check if user has access to protected works (cookie persists across navigation)
+  const hasAccess = await hasWorkAccess()
 
   // Process blocks to replace protected works with fallbacks
   const processedBlocks = await processLayoutBlocks(blocks, hasAccess)

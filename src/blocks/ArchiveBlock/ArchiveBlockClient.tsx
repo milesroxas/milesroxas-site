@@ -32,7 +32,7 @@ export default function ArchiveBlockClient({
       {introContent && (
         <div className="container mb-16 px-8 md:px-20">
           <RichText
-            className="ms-0 max-w-[48rem] text-muted-foreground"
+            className="ms-0 max-w-3xl text-muted-foreground"
             data={introContent}
             enableGutter={false}
           />
