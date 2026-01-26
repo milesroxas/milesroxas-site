@@ -7,7 +7,8 @@ import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 
 import WorksClient from '@/app/(frontend)/works/page.client'
 
-export const revalidate = 600 // Revalidate every 10 minutes
+// Force dynamic rendering to support query param access control
+export const dynamic = 'force-dynamic'
 
 const getWorksPublished = unstable_cache(
   async () => {

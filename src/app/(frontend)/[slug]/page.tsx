@@ -10,6 +10,10 @@ import { RenderHero } from '@/heros/RenderHero'
 import HomeTemplate from '@/templates/Homepage/HomeTemplate'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
+
+// Force dynamic rendering to support query param access control
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const pages = await payload.find({

@@ -11,6 +11,9 @@ import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
+// Force dynamic rendering to support query param access control
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const works = await payload.find({
