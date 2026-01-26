@@ -3,9 +3,8 @@ import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { draftMode, headers } from 'next/headers'
 import { getPayload } from 'payload'
-import { hasWorkAccess } from '@/utilities/checkWorkAccess'
-
 import WorksClient from '@/app/(frontend)/works/page.client'
+import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 
 // Force dynamic rendering to support query param access control
 export const dynamic = 'force-dynamic'
@@ -76,22 +75,14 @@ export default async function Page() {
   const urlObj = new URL(url, 'http://localhost')
   const hasAccess = hasWorkAccess(urlObj.searchParams)
 
-  // Replace protected works with fallback if user doesn't have access
-  const payload = await getPayload({ config: configPromise })
-  const processedWorks = await Promise.all(
-    works.docs.map(async (work) => {
-      if (work.isProtected && !hasAccess && work.fallbackWork) {
-        const fallbackId = typeof work.fallbackWork === 'number' ? work.fallbackWork : work.fallbackWork.id
-        const fallbackWork = await payload.findByID({
-          collection: 'works',
-          id: fallbackId,
-          depth: 2,
-        })
-        return fallbackWork
-      }
-      return work
-    })
-  )
+  // Filter out protected works if user doesn't have access (don't show fallback on archive)
+  const processedWorks = works.docs.filter((work) => {
+    // If work is protected and user doesn't have access, hide it entirely
+    if (work.isProtected && !hasAccess) {
+      return false
+    }
+    return true
+  })
 
   return (
     <div className="pt-16 pb-24">
@@ -108,6 +99,7 @@ export default async function Page() {
 
 export function generateMetadata(): Metadata {
   return {
-    title: 'Works', description: 'Portfolio of selected works',
+    title: 'Works',
+    description: 'Portfolio of selected works',
   }
 }
