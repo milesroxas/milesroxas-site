@@ -4,10 +4,7 @@ const ACCESS_COOKIE = 'site_access'
 const ACCESS_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 
 export function middleware(request: NextRequest) {
-  // Clone the request headers
   const requestHeaders = new Headers(request.headers)
-
-  // Add the full URL to headers so we can access query params in server components
   requestHeaders.set('x-url', request.url)
 
   const response = NextResponse.next({
