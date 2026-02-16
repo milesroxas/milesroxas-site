@@ -10,6 +10,11 @@ declare global {
       CRON_SECRET: string
       PREVIEW_SECRET: string
       VERCEL_URL: string
+      CLOUDFLARE_ACCOUNT_ID: string
+      CLOUDFLARE_API_TOKEN: string
+      CLOUDFLARE_IMAGES_ACCOUNT_HASH: string
+      CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN: string
+      CLOUDFLARE_STREAM_WEBHOOK_SECRET: string
     }
   }
 }

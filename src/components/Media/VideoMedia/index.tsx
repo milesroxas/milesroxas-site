@@ -1,17 +1,26 @@
 'use client'
 
+import Hls from 'hls.js'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 
 import { getMediaUrl } from '@/utilities/getMediaURL'
 import { cn } from '@/utilities/ui'
 import { getVideoLoadingStrategy } from '@/utilities/videoOptimization'
+
 import type { Props as MediaProps } from '../types'
+
+/** Check if the browser natively supports HLS (Safari, iOS). */
+function supportsNativeHls(): boolean {
+  const video = document.createElement('video')
+  return video.canPlayType('application/vnd.apple.mpegurl') !== ''
+}
 
 export const VideoMedia: React.FC<MediaProps> = (props) => {
   const { onClick, onLoad, resource, videoClassName, priority = false } = props
 
   const videoRef = useRef<HTMLVideoElement>(null)
+  const hlsRef = useRef<Hls | null>(null)
   const hasRetriedRef = useRef(false)
   const [strategy, setStrategy] = useState<{
     preload: 'none' | 'metadata' | 'auto'
@@ -31,6 +40,39 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
     )
     setStrategy(result)
   }, [priority, resource])
+
+  // Set up HLS.js for Cloudflare Stream playback
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !resource || typeof resource !== 'object') return
+
+    const hlsUrl = resource.cloudflareStreamPlaybackUrl as string | undefined
+    const isReady = resource.cloudflareStreamReady as boolean | undefined
+    if (!hlsUrl || !isReady) return
+
+    // Safari supports HLS natively — just set the src
+    if (supportsNativeHls()) {
+      video.src = hlsUrl
+      return
+    }
+
+    // For other browsers, use HLS.js
+    if (!Hls.isSupported()) return
+
+    const hls = new Hls({
+      enableWorker: true,
+      startLevel: -1, // Auto quality selection
+    })
+
+    hls.loadSource(hlsUrl)
+    hls.attachMedia(video)
+    hlsRef.current = hls
+
+    return () => {
+      hls.destroy()
+      hlsRef.current = null
+    }
+  }, [resource])
 
   // For non-priority videos, start playback when the element becomes visible
   useEffect(() => {
@@ -53,6 +95,9 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
 
   if (resource && typeof resource === 'object') {
     const { filename } = resource
+    const hlsUrl = resource.cloudflareStreamPlaybackUrl as string | undefined
+    const isReady = resource.cloudflareStreamReady as boolean | undefined
+    const useCloudflare = hlsUrl && isReady
 
     return (
       <video
@@ -90,7 +135,9 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
           }
         }}
       >
-        <source src={getMediaUrl(`/api/media/file/${filename}`)} type="video/mp4" />
+        {!useCloudflare && (
+          <source src={getMediaUrl(`/api/media/file/${filename}`)} type="video/mp4" />
+        )}
       </video>
     )
   }

@@ -137,6 +137,9 @@ importers:
       hamo:
         specifier: 1.0.0-dev.6
         version: 1.0.0-dev.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      hls.js:
+        specifier: ^1.6.15
+        version: 1.6.15
       leva:
         specifier: ^0.9.36
         version: 0.9.36(@types/react@19.1.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)

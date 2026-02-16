@@ -5,8 +5,9 @@ import {
 } from '@payloadcms/richtext-lexical'
 import type { CollectionConfig } from 'payload'
 
-import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
+import { anyone } from '../../access/anyone'
+import { authenticated } from '../../access/authenticated'
+import { syncCloudflareDelete, syncCloudflareUpload } from './hooks/syncCloudflare'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -15,6 +16,10 @@ export const Media: CollectionConfig = {
     delete: authenticated,
     read: anyone,
     update: authenticated,
+  },
+  hooks: {
+    afterChange: [syncCloudflareUpload],
+    afterDelete: [syncCloudflareDelete],
   },
   fields: [
     {
@@ -29,6 +34,34 @@ export const Media: CollectionConfig = {
           return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]
         },
       }),
+    },
+    // Cloudflare Images fields (populated by hooks)
+    {
+      name: 'cloudflareImageId',
+      type: 'text',
+      admin: { hidden: true },
+    },
+    {
+      name: 'cloudflareImageUrl',
+      type: 'text',
+      admin: { hidden: true },
+    },
+    // Cloudflare Stream fields (populated by hooks)
+    {
+      name: 'cloudflareStreamUid',
+      type: 'text',
+      admin: { hidden: true },
+    },
+    {
+      name: 'cloudflareStreamPlaybackUrl',
+      type: 'text',
+      admin: { hidden: true },
+    },
+    {
+      name: 'cloudflareStreamReady',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { hidden: true },
     },
   ],
   upload: {

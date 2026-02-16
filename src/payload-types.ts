@@ -336,6 +336,11 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  cloudflareImageId?: string | null;
+  cloudflareImageUrl?: string | null;
+  cloudflareStreamUid?: string | null;
+  cloudflareStreamPlaybackUrl?: string | null;
+  cloudflareStreamReady?: boolean | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -1908,6 +1913,11 @@ export interface TabsBlockSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  cloudflareImageId?: T;
+  cloudflareImageUrl?: T;
+  cloudflareStreamUid?: T;
+  cloudflareStreamPlaybackUrl?: T;
+  cloudflareStreamReady?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
