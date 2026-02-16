@@ -58,13 +58,10 @@ export default function HomeHero() {
           )}
           <video
             ref={videoRef}
-            className={cn(
-              'h-full w-full rounded-sm object-cover',
-              !isVideoLoaded && 'opacity-0',
-            )}
+            className={cn('h-full w-full rounded-sm object-cover', !isVideoLoaded && 'opacity-0')}
             src="/media/home-hero.mp4"
             poster="/media/intro-test-poster.jpg"
-            preload="metadata"
+            preload="auto"
             autoPlay
             muted
             loop

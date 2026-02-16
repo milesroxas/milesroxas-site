@@ -99,6 +99,20 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   redirects,
 
+  async headers() {
+    return [
+      {
+        source: '/media/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ]
+  },
+
   // External packages that should not be bundled by server components
   serverExternalPackages: [
     'pino',
