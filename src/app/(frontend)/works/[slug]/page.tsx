@@ -63,13 +63,14 @@ export default async function Work({ params: paramsPromise }: Args) {
   // If work is protected and user doesn't have access, redirect to fallback
   if (work.isProtected && !hasAccess && work.fallbackWork) {
     const payload = await getPayload({ config: configPromise })
-    const fallbackId = typeof work.fallbackWork === 'number' ? work.fallbackWork : work.fallbackWork.id
+    const fallbackId =
+      typeof work.fallbackWork === 'number' ? work.fallbackWork : work.fallbackWork.id
     const fallbackWork = await payload.findByID({
       collection: 'works',
       id: fallbackId,
       depth: 1,
     })
-    
+
     if (fallbackWork) {
       work = fallbackWork
     }

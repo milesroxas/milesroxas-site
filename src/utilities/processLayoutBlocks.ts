@@ -28,10 +28,7 @@ async function processWork(work: Work, hasAccess: boolean): Promise<Work> {
 /**
  * Process content block columns, replacing protected works with fallbacks
  */
-async function processContentBlock(
-  block: ContentBlock,
-  hasAccess: boolean,
-): Promise<ContentBlock> {
+async function processContentBlock(block: ContentBlock, hasAccess: boolean): Promise<ContentBlock> {
   if (!block.columns?.length) {
     return block
   }
