@@ -21,6 +21,7 @@ config({ path: resolve(process.cwd(), '.env.local') })
 // Validate required env vars
 const required = [
   'POSTGRES_URL',
+  'BLOB_READ_WRITE_TOKEN',
   'CLOUDFLARE_ACCOUNT_ID',
   'CLOUDFLARE_API_TOKEN',
   'CLOUDFLARE_IMAGES_ACCOUNT_HASH',
@@ -31,6 +32,22 @@ for (const key of required) {
     console.error(`Missing required env var: ${key}`)
     process.exit(1)
   }
+}
+
+// Derive Vercel Blob base URL from token (format: vercel_blob_rw_<storeId>_...)
+// biome-ignore lint/style/noNonNullAssertion: validated above
+const blobStoreId = process.env.BLOB_READ_WRITE_TOKEN!.split('_')[3]
+const blobBaseUrl = `https://${blobStoreId}.public.blob.vercel-storage.com`
+
+/**
+ * Resolve the publicly-accessible Blob URL for a media row.
+ * The `url` column is often empty (Vercel Blob + clientUploads),
+ * so we reconstruct it from the filename.
+ */
+function resolveBlobUrl(row: { url?: string; filename?: string }): string | null {
+  if (row.url?.startsWith('http')) return row.url
+  if (!row.filename) return null
+  return `${blobBaseUrl}/${encodeURIComponent(row.filename)}`
 }
 
 const args = process.argv.slice(2)
@@ -106,19 +123,25 @@ async function migrateImages(images: postgres.Row[]): Promise<MigrateResult> {
     try {
       console.log(`  [${img.id}] ${img.filename}...`)
 
+      const imageUrl = resolveBlobUrl(img)
+      if (!imageUrl) {
+        console.log('    ⊘ Skipped (no URL or filename)')
+        continue
+      }
+
       if (dryRun) {
-        console.log('    [dry-run] Would upload to CF Images')
+        console.log(`    [dry-run] Would upload ${imageUrl} to CF Images`)
       } else {
         const { cfImageId, cfImageUrl } = await uploadImageToCF(
-          img.url,
+          imageUrl,
           img.id,
           img.filename ?? '',
         )
 
         await sql`
           UPDATE media
-          SET "cloudflareImageId" = ${cfImageId},
-              "cloudflareImageUrl" = ${cfImageUrl}
+          SET cloudflare_image_id = ${cfImageId},
+              cloudflare_image_url = ${cfImageUrl}
           WHERE id = ${img.id}
         `
 
@@ -146,16 +169,22 @@ async function migrateVideos(videos: postgres.Row[]): Promise<MigrateResult> {
     try {
       console.log(`  [${vid.id}] ${vid.filename}...`)
 
+      const videoUrl = resolveBlobUrl(vid)
+      if (!videoUrl) {
+        console.log('    ⊘ Skipped (no URL or filename)')
+        continue
+      }
+
       if (dryRun) {
-        console.log('    [dry-run] Would upload to CF Stream')
+        console.log(`    [dry-run] Would upload ${videoUrl} to CF Stream`)
       } else {
-        const { uid, playbackUrl } = await uploadVideoToCF(vid.url, vid.id, vid.filename ?? '')
+        const { uid, playbackUrl } = await uploadVideoToCF(videoUrl, vid.id, vid.filename ?? '')
 
         await sql`
           UPDATE media
-          SET "cloudflareStreamUid" = ${uid},
-              "cloudflareStreamPlaybackUrl" = ${playbackUrl},
-              "cloudflareStreamReady" = false
+          SET cloudflare_stream_uid = ${uid},
+              cloudflare_stream_playback_url = ${playbackUrl},
+              cloudflare_stream_ready = false
           WHERE id = ${vid.id}
         `
 
@@ -179,11 +208,11 @@ async function main() {
   console.log()
 
   const allMedia = await sql`
-    SELECT id, filename, "mimeType" as mime_type, url,
-           "cloudflareImageId" as cf_image_id,
-           "cloudflareStreamUid" as cf_stream_uid
+    SELECT id, filename, mime_type, url,
+           cloudflare_image_id as cf_image_id,
+           cloudflare_stream_uid as cf_stream_uid
     FROM media
-    WHERE url IS NOT NULL
+    WHERE filename IS NOT NULL
     ORDER BY id ASC
   `
 
