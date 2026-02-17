@@ -1,5 +1,31 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 
+/**
+ * Resolve the publicly-accessible URL for a media document.
+ *
+ * With Vercel Blob + clientUploads the `url` column in the DB is empty —
+ * the storage adapter generates URLs at read-time via an `afterRead` hook
+ * that hasn't run when our `afterChange` fires.
+ *
+ * We reconstruct the Blob URL from the filename, which is always present.
+ */
+function resolveMediaUrl(doc: Record<string, unknown>): string | null {
+  // Prefer an already-populated URL (e.g. non-client-upload flows)
+  const existing = doc.url as string | undefined
+  if (existing?.startsWith('http')) return existing
+
+  const filename = doc.filename as string | undefined
+  if (!filename) return null
+
+  // Derive Vercel Blob store URL from the token (format: vercel_blob_rw_<storeId>_...)
+  const token = process.env.BLOB_READ_WRITE_TOKEN
+  if (!token) return null
+  const storeId = token.split('_')[3]
+  if (!storeId) return null
+
+  return `https://${storeId}.public.blob.vercel-storage.com/${encodeURIComponent(filename)}`
+}
+
 export const syncCloudflareUpload: CollectionAfterChangeHook = async ({ doc, req, context }) => {
   // Skip if this update was triggered by the hook itself
   if (context?.skipCloudflareSync) return doc
@@ -12,6 +38,9 @@ export const syncCloudflareUpload: CollectionAfterChangeHook = async ({ doc, req
 
   if (!isImage && !isVideo) return doc
 
+  const fileUrl = resolveMediaUrl(doc)
+  if (!fileUrl) return doc
+
   // Lazily import to keep this server-only and avoid circular deps
   const { uploadImageToCloudflare, uploadVideoToStream, getImageDeliveryUrl } = await import(
     '../../../utilities/cloudflare'
@@ -19,10 +48,7 @@ export const syncCloudflareUpload: CollectionAfterChangeHook = async ({ doc, req
 
   try {
     if (isImage && !doc.cloudflareImageId) {
-      const imageUrl = doc.url as string
-      if (!imageUrl) return doc
-
-      const result = await uploadImageToCloudflare(imageUrl, {
+      const result = await uploadImageToCloudflare(fileUrl, {
         payloadId: String(doc.id),
         filename: doc.filename ?? '',
       })
@@ -42,10 +68,7 @@ export const syncCloudflareUpload: CollectionAfterChangeHook = async ({ doc, req
     }
 
     if (isVideo && !doc.cloudflareStreamUid) {
-      const videoUrl = doc.url as string
-      if (!videoUrl) return doc
-
-      const result = await uploadVideoToStream(videoUrl, {
+      const result = await uploadVideoToStream(fileUrl, {
         payloadId: String(doc.id),
         filename: doc.filename ?? '',
       })
