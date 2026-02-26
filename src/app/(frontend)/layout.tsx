@@ -10,6 +10,7 @@ import { Clarity } from '@/components/Clarity'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
+import { PostHogProvider } from '@/providers/PostHog'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { cn } from '@/utilities/ui'
 import './globals.css'
@@ -47,6 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </Providers>
         <Analytics />
         <Clarity />
+        <PostHogProvider />
       </body>
     </html>
   )
