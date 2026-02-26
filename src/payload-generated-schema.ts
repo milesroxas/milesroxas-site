@@ -771,9 +771,13 @@ export const enum_works_hero_type = pgEnum("enum_works_hero_type", [
   "mediumImpact",
   "lowImpact",
 ]);
-export const enum_works_status = pgEnum("enum_works_status", [
+export const enum_works_project_status = pgEnum("enum_works_project_status", [
   "coming-soon",
   "live",
+]);
+export const enum_works_status = pgEnum("enum_works_status", [
+  "draft",
+  "published",
 ]);
 export const enum__works_v_version_hero_links_link_type = pgEnum(
   "enum__works_v_version_hero_links_link_type",
@@ -1037,7 +1041,7 @@ export const enum__works_v_version_hero_type = pgEnum(
 );
 export const enum__works_v_version_status = pgEnum(
   "enum__works_v_version_status",
-  ["coming-soon", "live"],
+  ["draft", "published"],
 );
 export const enum_redirects_to_type = pgEnum("enum_redirects_to_type", [
   "reference",
@@ -3267,7 +3271,7 @@ export const works = pgTable(
     industry: varchar("industry"),
     role: varchar("role"),
     deliverables: varchar("deliverables"),
-    status: enum_works_status("status"),
+    status: enum_works_project_status("status"),
     isProtected: boolean("is_protected").default(false),
     fallbackWork: integer("fallback_work_id").references(
       (): AnyPgColumn => works.id,
@@ -3990,7 +3994,7 @@ export const _works_v = pgTable(
     version_industry: varchar("version_industry"),
     version_role: varchar("version_role"),
     version_deliverables: varchar("version_deliverables"),
-    version_status: enum__works_v_version_status("version_status"),
+    version_status: enum_works_project_status("version_status"),
     version_isProtected: boolean("version_is_protected").default(false),
     version_fallbackWork: integer("version_fallback_work_id").references(
       () => works.id,
@@ -7316,6 +7320,7 @@ type DatabaseSchema = {
   enum_works_blocks_tabs_space_mt: typeof enum_works_blocks_tabs_space_mt;
   enum_works_blocks_tabs_space_mb: typeof enum_works_blocks_tabs_space_mb;
   enum_works_hero_type: typeof enum_works_hero_type;
+  enum_works_project_status: typeof enum_works_project_status;
   enum_works_status: typeof enum_works_status;
   enum__works_v_version_hero_links_link_type: typeof enum__works_v_version_hero_links_link_type;
   enum__works_v_version_hero_links_link_appearance: typeof enum__works_v_version_hero_links_link_appearance;

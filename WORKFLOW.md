@@ -35,6 +35,8 @@ pnpm ci                     # Check only (no fixes, for CI)
 
 See [MIGRATIONS.md](MIGRATIONS.md) for full details.
 
+**Do not manually edit** `payload-generated-schema.ts` or `payload-types.ts` — regenerate with `pnpm generate:db-schema` or `pnpm generate:types`.
+
 ### Quick Reference
 
 ```bash

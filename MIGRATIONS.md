@@ -4,6 +4,8 @@ This guide explains how to manually manage database migrations across different 
 
 ## Overview
 
+**Do not manually edit auto-generated Payload files** (`src/payload-generated-schema.ts`, `src/payload-types.ts`). Regenerate with `pnpm generate:db-schema` or `pnpm generate:types` after schema/collection changes.
+
 Migrations are **manually triggered** and run on different databases depending on which branch you're working on:
 - **Main branch** → Production database
 - **Dev branch** → Preview/Development database

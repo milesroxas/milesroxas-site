@@ -128,7 +128,7 @@ export const Works: CollectionConfig<'works'> = {
               name: 'status',
               label: 'Status',
               type: 'select',
-
+              enumName: 'enum_works_project_status',
               options: [
                 {
                   label: 'Coming Soon',
