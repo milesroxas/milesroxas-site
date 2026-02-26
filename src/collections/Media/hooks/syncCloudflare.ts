@@ -42,11 +42,17 @@ export const resolveBlobUrl: CollectionAfterReadHook = async ({ doc }) => {
   const blobUrl = resolveMediaUrl(doc)
   if (blobUrl) doc.url = blobUrl
 
-  // Populate Cloudflare Stream thumbnail URL for video poster (computed at read time)
+  // Populate Cloudflare Stream thumbnail URL for video poster (computed at read time).
+  // Wrapped in try-catch: getStreamThumbnailUrl throws if CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN
+  // is missing (e.g. on Vercel preview). Never let this break the read — doc must be returned.
   const uid = doc.cloudflareStreamUid as string | undefined
   if (uid) {
-    const { getStreamThumbnailUrl } = await import('../../../utilities/cloudflare')
-    doc.cloudflareStreamThumbnailUrl = getStreamThumbnailUrl(uid)
+    try {
+      const { getStreamThumbnailUrl } = await import('../../../utilities/cloudflare')
+      doc.cloudflareStreamThumbnailUrl = getStreamThumbnailUrl(uid)
+    } catch {
+      // Env missing or cloudflare util failed; skip thumbnail, doc still valid
+    }
   }
 
   return doc

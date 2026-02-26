@@ -341,7 +341,6 @@ export interface Media {
   cloudflareStreamUid?: string | null;
   cloudflareStreamPlaybackUrl?: string | null;
   cloudflareStreamReady?: boolean | null;
-  cloudflareStreamThumbnailUrl?: string | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -1919,7 +1918,6 @@ export interface MediaSelect<T extends boolean = true> {
   cloudflareStreamUid?: T;
   cloudflareStreamPlaybackUrl?: T;
   cloudflareStreamReady?: T;
-  cloudflareStreamThumbnailUrl?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
