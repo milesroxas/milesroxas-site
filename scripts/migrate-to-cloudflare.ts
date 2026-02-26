@@ -104,7 +104,9 @@ async function uploadVideoToCF(videoUrl: string, payloadId: number, filename: st
   }
 
   const uid = json.result.uid as string
-  const playbackUrl = `https://customer-${process.env.CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN}.cloudflarestream.com/${uid}/manifest/video.m3u8`
+  let subdomain = process.env.CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN!
+  subdomain = subdomain.replace(/^customer-/, '').replace(/\.cloudflarestream\.com.*$/, '')
+  const playbackUrl = `https://customer-${subdomain}.cloudflarestream.com/${uid}/manifest/video.m3u8`
 
   return { uid, playbackUrl }
 }

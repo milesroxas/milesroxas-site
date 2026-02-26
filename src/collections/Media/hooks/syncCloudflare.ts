@@ -48,10 +48,13 @@ export const resolveBlobUrl: CollectionAfterReadHook = async ({ doc }) => {
   const uid = doc.cloudflareStreamUid as string | undefined
   if (uid) {
     try {
-      const { getStreamThumbnailUrl } = await import('../../../utilities/cloudflare')
+      const { getStreamPlaybackUrl, getStreamThumbnailUrl } = await import(
+        '../../../utilities/cloudflare'
+      )
+      doc.cloudflareStreamPlaybackUrl = getStreamPlaybackUrl(uid)
       doc.cloudflareStreamThumbnailUrl = getStreamThumbnailUrl(uid)
     } catch {
-      // Env missing or cloudflare util failed; skip thumbnail, doc still valid
+      // Env missing or cloudflare util failed; skip, doc still valid
     }
   }
 

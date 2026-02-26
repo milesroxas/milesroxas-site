@@ -24,8 +24,10 @@ function getImagesAccountHash(): string {
 }
 
 function getStreamCustomerSubdomain(): string {
-  const subdomain = process.env.CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN
+  let subdomain = process.env.CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN
   if (!subdomain) throw new Error('CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN is not set')
+  // Normalize: accept full hostname (customer-xxx.cloudflarestream.com) and extract subdomain
+  subdomain = subdomain.replace(/^customer-/, '').replace(/\.cloudflarestream\.com.*$/, '')
   return subdomain
 }
 
