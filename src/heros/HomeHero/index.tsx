@@ -144,7 +144,7 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
           style={{ clipPath: 'inset(0 0 100% 0)' }}
         >
           {/* Key change: render media without a wrapper and pass classes to the media node */}
-          <Media htmlElement={null} className="h-full w-full object-cover" resource={media} />
+          <Media htmlElement={null} className="h-full w-full object-cover" priority resource={media} />
         </div>
       </div>
 

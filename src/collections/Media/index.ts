@@ -7,7 +7,11 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../../access/anyone'
 import { authenticated } from '../../access/authenticated'
-import { syncCloudflareDelete, syncCloudflareUpload } from './hooks/syncCloudflare'
+import {
+  resolveBlobUrl,
+  syncCloudflareDelete,
+  syncCloudflareUpload,
+} from './hooks/syncCloudflare'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -20,6 +24,7 @@ export const Media: CollectionConfig = {
   hooks: {
     afterChange: [syncCloudflareUpload],
     afterDelete: [syncCloudflareDelete],
+    afterRead: [resolveBlobUrl],
   },
   fields: [
     {

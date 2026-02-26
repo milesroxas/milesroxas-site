@@ -183,3 +183,10 @@ export async function deleteStreamVideo(uid: string): Promise<void> {
 export function getStreamPlaybackUrl(uid: string): string {
   return `https://customer-${getStreamCustomerSubdomain()}.cloudflarestream.com/${uid}/manifest/video.m3u8`
 }
+
+/**
+ * Construct the thumbnail URL for a Stream video (for poster/placeholder).
+ */
+export function getStreamThumbnailUrl(uid: string): string {
+  return `https://customer-${getStreamCustomerSubdomain()}.cloudflarestream.com/${uid}/thumbnails/thumbnail.jpg`
+}

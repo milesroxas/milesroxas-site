@@ -36,7 +36,7 @@ export const MediaLoader: React.FC<MediaLoaderProps> = ({
 
   // Handle intersection observer for lazy loading
   useEffect(() => {
-    if (priority || !containerRef.current) return
+    if (priority || isIntersecting || !containerRef.current) return
 
     const observerOptions = {
       root: null,

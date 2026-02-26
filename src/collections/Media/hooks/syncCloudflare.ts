@@ -1,4 +1,8 @@
-import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
+import type {
+  CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
+  CollectionAfterReadHook,
+} from 'payload'
 
 /**
  * Resolve the publicly-accessible URL for a media document.
@@ -24,6 +28,28 @@ function resolveMediaUrl(doc: Record<string, unknown>): string | null {
   if (!storeId) return null
 
   return `https://${storeId}.public.blob.vercel-storage.com/${encodeURIComponent(filename)}`
+}
+
+/**
+ * Replace /api/media/file/ URLs with direct Vercel Blob URLs.
+ * Payload's static file handler serves from disk; with Vercel Blob, files live in the cloud
+ * so /api/media/file/ requests 404. Use direct Blob URLs instead.
+ */
+export const resolveBlobUrl: CollectionAfterReadHook = async ({ doc }) => {
+  const existing = doc.url as string | undefined
+  if (existing?.startsWith('http')) return doc
+
+  const blobUrl = resolveMediaUrl(doc)
+  if (blobUrl) doc.url = blobUrl
+
+  // Populate Cloudflare Stream thumbnail URL for video poster (computed at read time)
+  const uid = doc.cloudflareStreamUid as string | undefined
+  if (uid) {
+    const { getStreamThumbnailUrl } = await import('../../../utilities/cloudflare')
+    doc.cloudflareStreamThumbnailUrl = getStreamThumbnailUrl(uid)
+  }
+
+  return doc
 }
 
 export const syncCloudflareUpload: CollectionAfterChangeHook = async ({ doc, req, context }) => {

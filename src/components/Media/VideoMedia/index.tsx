@@ -1,6 +1,5 @@
 'use client'
 
-import Hls from 'hls.js'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -20,7 +19,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
   const { onClick, onLoad, resource, videoClassName, priority = false } = props
 
   const videoRef = useRef<HTMLVideoElement>(null)
-  const hlsRef = useRef<Hls | null>(null)
+  const hlsRef = useRef<{ destroy: () => void } | null>(null)
   const hasRetriedRef = useRef(false)
   const [strategy, setStrategy] = useState<{
     preload: 'none' | 'metadata' | 'auto'
@@ -32,8 +31,9 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
     shouldLoadSource: priority,
   }))
 
-  // Determine loading strategy on mount (needs navigator)
+  // Determine loading strategy on mount (needs navigator). Skip for priority — initial state is correct.
   useEffect(() => {
+    if (priority) return
     const result = getVideoLoadingStrategy(
       priority,
       resource && typeof resource === 'object' ? (resource.filesize ?? undefined) : undefined,
@@ -41,7 +41,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
     setStrategy(result)
   }, [priority, resource])
 
-  // Set up HLS.js for Cloudflare Stream playback
+  // Set up HLS.js for Cloudflare Stream playback (dynamic import to avoid blocking main bundle)
   useEffect(() => {
     const video = videoRef.current
     if (!video || !resource || typeof resource !== 'object') return
@@ -56,20 +56,25 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
       return
     }
 
-    // For other browsers, use HLS.js
-    if (!Hls.isSupported()) return
+    let cancelled = false
+    let hlsInstance: InstanceType<typeof import('hls.js').default> | null = null
 
-    const hls = new Hls({
-      enableWorker: true,
-      startLevel: -1, // Auto quality selection
+    import('hls.js').then(({ default: Hls }) => {
+      if (cancelled || !videoRef.current) return
+      if (!Hls.isSupported()) return
+
+      hlsInstance = new Hls({
+        enableWorker: true,
+        startLevel: -1,
+      })
+      hlsInstance.loadSource(hlsUrl)
+      hlsInstance.attachMedia(video)
+      hlsRef.current = hlsInstance
     })
 
-    hls.loadSource(hlsUrl)
-    hls.attachMedia(video)
-    hlsRef.current = hls
-
     return () => {
-      hls.destroy()
+      cancelled = true
+      hlsInstance?.destroy()
       hlsRef.current = null
     }
   }, [resource])
@@ -94,13 +99,21 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
   }, [priority, strategy.shouldAutoplay])
 
   if (resource && typeof resource === 'object') {
-    const { filename } = resource
+    const { filename, url } = resource
     const hlsUrl = resource.cloudflareStreamPlaybackUrl as string | undefined
     const isReady = resource.cloudflareStreamReady as boolean | undefined
     const useCloudflare = hlsUrl && isReady
+    const fallbackSrc = url && typeof url === 'string' ? getMediaUrl(url) : getMediaUrl(`/api/media/file/${filename}`)
+
+    // Poster improves FCP/LCP by showing an image immediately while video loads
+    const posterUrl =
+      (resource as { cloudflareStreamThumbnailUrl?: string }).cloudflareStreamThumbnailUrl ??
+      (resource.sizes?.thumbnail?.url ? getMediaUrl(resource.sizes.thumbnail.url) : undefined) ??
+      (resource.thumbnailURL ? getMediaUrl(resource.thumbnailURL) : undefined)
 
     return (
       <video
+        poster={posterUrl}
         autoPlay={strategy.shouldAutoplay}
         className={cn(videoClassName)}
         controls={false}
@@ -135,9 +148,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
           }
         }}
       >
-        {!useCloudflare && (
-          <source src={getMediaUrl(`/api/media/file/${filename}`)} type="video/mp4" />
-        )}
+        {!useCloudflare && <source src={fallbackSrc} type="video/mp4" />}
       </video>
     )
   }
