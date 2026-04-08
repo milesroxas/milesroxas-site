@@ -5,6 +5,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
+import { sectionSpacing } from '@/fields/sectionSpacing'
 
 export const FormBlock: Block = {
   slug: 'formBlock',
@@ -16,10 +17,24 @@ export const FormBlock: Block = {
       relationTo: 'forms',
       required: true,
     },
+    sectionSpacing(),
     {
       name: 'enableIntro',
       type: 'checkbox',
       label: 'Enable Intro Content',
+    },
+    {
+      name: 'introAlign',
+      type: 'select',
+      label: 'Intro alignment',
+      defaultValue: 'left',
+      options: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+      ],
+      admin: {
+        condition: (_, { enableIntro }) => Boolean(enableIntro),
+      },
     },
     {
       name: 'introContent',

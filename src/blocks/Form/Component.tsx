@@ -7,8 +7,10 @@ import { useCallback, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
+import { type SpaceProps, useSpacing } from '@/hooks/useSpacing'
 import type { Form as GeneratedForm, FormBlock as PayloadFormBlock } from '@/payload-types'
 import { getClientSideURL } from '@/utilities/getURL'
+import { cn } from '@/utilities/ui'
 import { FieldRenderer } from './FieldRenderer'
 import type { FormErrorState, FormSubmissionResponse } from './types'
 import {
@@ -20,7 +22,15 @@ import {
 } from './utils'
 
 export const FormBlock: React.FC<PayloadFormBlock> = (props) => {
-  const { enableIntro = false, form: formFromProps, introContent } = props
+  const {
+    enableIntro = false,
+    form: formFromProps,
+    introAlign = 'left',
+    introContent,
+    space,
+  } = props
+
+  const spacingStyles = useSpacing(space as SpaceProps | undefined)
 
   const formObject =
     typeof formFromProps === 'object' && formFromProps
@@ -114,60 +124,72 @@ export const FormBlock: React.FC<PayloadFormBlock> = (props) => {
   )
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center px-8 md:px-14 lg:max-w-screens-sm lg:px-16">
-      {enableIntro && introContent && !hasSubmitted && (
-        <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
-      )}
-      <div className="w-full rounded-md border border-border bg-background p-4 lg:p-6">
-        <FormProvider {...formMethods}>
-          {!isLoading && hasSubmitted && confirmationType === 'message' && confirmationMessage && (
-            <RichText data={confirmationMessage} />
+    <div className="w-full font-light">
+      <div style={spacingStyles} className="bg-background text-foreground">
+        <div className="container px-8 md:px-14 lg:px-16">
+          {enableIntro && introContent && !hasSubmitted && (
+            <div
+              className={cn('mb-8 lg:mb-12', {
+                'text-center': introAlign === 'center',
+                'text-left': introAlign === 'left',
+              })}
+            >
+              <RichText className="max-w-none" data={introContent} enableGutter={false} />
+            </div>
           )}
-          {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
-          {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
-          {!hasSubmitted && (
-            <form id={formID ? String(formID) : undefined} onSubmit={handleSubmit(onSubmit)}>
-              <div className="mb-4 last:mb-0">
-                {formObject?.fields &&
-                  groupFieldsIntoRows(formObject.fields as unknown as FormFieldBlock[]).map(
-                    (row, rowIndex) => (
-                      <div
-                        key={generateRowKey(row, rowIndex)}
-                        className="mb-6 grid grid-cols-2 gap-4 last:mb-0"
-                      >
-                        {row.map((field, fieldIndex) => {
-                          const isFullWidth = isFieldFullWidth(field)
+          <div className="mx-auto w-full max-w-lg rounded-md border border-border bg-background p-4 lg:p-6">
+            <FormProvider {...formMethods}>
+              {!isLoading &&
+                hasSubmitted &&
+                confirmationType === 'message' &&
+                confirmationMessage && <RichText data={confirmationMessage} />}
+              {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
+              {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
+              {!hasSubmitted && (
+                <form id={formID ? String(formID) : undefined} onSubmit={handleSubmit(onSubmit)}>
+                  <div className="mb-4 last:mb-0">
+                    {formObject?.fields &&
+                      groupFieldsIntoRows(formObject.fields as unknown as FormFieldBlock[]).map(
+                        (row, rowIndex) => (
+                          <div
+                            key={generateRowKey(row, rowIndex)}
+                            className="mb-6 grid grid-cols-2 gap-4 last:mb-0"
+                          >
+                            {row.map((field, fieldIndex) => {
+                              const isFullWidth = isFieldFullWidth(field)
 
-                          return (
-                            <div
-                              key={generateFieldKey(field, rowIndex, fieldIndex)}
-                              className={isFullWidth ? 'col-span-2' : 'col-span-1'}
-                            >
-                              <FieldRenderer
-                                field={field}
-                                control={control}
-                                errors={errors}
-                                register={register}
-                              />
-                            </div>
-                          )
-                        })}
-                      </div>
-                    ),
-                  )}
-              </div>
+                              return (
+                                <div
+                                  key={generateFieldKey(field, rowIndex, fieldIndex)}
+                                  className={isFullWidth ? 'col-span-2' : 'col-span-1'}
+                                >
+                                  <FieldRenderer
+                                    field={field}
+                                    control={control}
+                                    errors={errors}
+                                    register={register}
+                                  />
+                                </div>
+                              )
+                            })}
+                          </div>
+                        ),
+                      )}
+                  </div>
 
-              <Button
-                form={formID ? String(formID) : undefined}
-                type="submit"
-                variant="default"
-                className="w-full"
-              >
-                {submitButtonLabel}
-              </Button>
-            </form>
-          )}
-        </FormProvider>
+                  <Button
+                    form={formID ? String(formID) : undefined}
+                    type="submit"
+                    variant="default"
+                    className="w-full"
+                  >
+                    {submitButtonLabel}
+                  </Button>
+                </form>
+              )}
+            </FormProvider>
+          </div>
+        </div>
       </div>
     </div>
   )

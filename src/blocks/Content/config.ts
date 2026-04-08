@@ -6,15 +6,34 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { Block, Field } from 'payload'
+import { FormBlock } from '@/blocks/Form/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { SliderBlock } from '@/blocks/Slider/config'
 import { link } from '@/fields/link'
 import { sectionSpacing } from '@/fields/sectionSpacing'
 
+/** Prevents undefined Lexical values when toggling column content — avoids admin JSON.parse crash. */
+const emptyLexical = {
+  root: {
+    type: 'root' as const,
+    children: [
+      {
+        type: 'paragraph' as const,
+        children: [] as [],
+      },
+    ],
+    direction: 'ltr' as const,
+    format: '',
+    indent: 0,
+    version: 1,
+  },
+}
+
 const richTextFields: Field[] = [
   {
     name: 'richText',
     type: 'richText',
+    defaultValue: emptyLexical,
     editor: lexicalEditor({
       features: ({ rootFeatures }) => {
         return [
@@ -23,7 +42,7 @@ const richTextFields: Field[] = [
           FixedToolbarFeature(),
           InlineToolbarFeature(),
           BlocksFeature({
-            blocks: [MediaBlock],
+            blocks: [MediaBlock, FormBlock],
           }),
         ]
       },
@@ -61,6 +80,7 @@ const sectionHeadingFields: Field[] = [
   {
     name: 'content',
     type: 'richText',
+    defaultValue: emptyLexical,
     editor: lexicalEditor({
       features: ({ rootFeatures }) => [
         ...rootFeatures,

@@ -884,7 +884,14 @@ export interface ArchiveBlock {
  */
 export interface FormBlock {
   form: number | Form;
+  space?: {
+    pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  };
   enableIntro?: boolean | null;
+  introAlign?: ('left' | 'center') | null;
   introContent?: {
     root: {
       type: string;
@@ -1694,7 +1701,16 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
  */
 export interface FormBlockSelect<T extends boolean = true> {
   form?: T;
+  space?:
+    | T
+    | {
+        pt?: T;
+        pb?: T;
+        mt?: T;
+        mb?: T;
+      };
   enableIntro?: T;
+  introAlign?: T;
   introContent?: T;
   id?: T;
   blockName?: T;
