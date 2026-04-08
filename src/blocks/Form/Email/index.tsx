@@ -30,6 +30,7 @@ export const Email: React.FC<EmailField & RegisterFieldProps> = ({
       <Input
         defaultValue={defaultValue}
         id={name}
+        placeholder={label ?? ''}
         type="text"
         {...register(name, { pattern: /^\S[^\s@]*@\S+$/, required })}
       />

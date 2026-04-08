@@ -27,7 +27,7 @@ export const Text: React.FC<TextField & RegisterFieldProps> = ({
           </span>
         )}
       </Label>
-      <Input defaultValue={defaultValue} id={name} type="text" {...register(name, { required })} />
+      <Input defaultValue={defaultValue} id={name} placeholder={label ?? ''} type="text" {...register(name, { required })} />
       {errors[name] && <FormError name={name} />}
     </Width>
   )

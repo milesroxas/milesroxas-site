@@ -30,6 +30,7 @@ export const NumberField: React.FC<TextField & RegisterFieldProps> = ({
       <Input
         defaultValue={defaultValue}
         id={name}
+        placeholder={label ?? ''}
         type="number"
         {...register(name, { required })}
       />

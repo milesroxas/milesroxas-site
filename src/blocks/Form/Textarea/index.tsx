@@ -28,6 +28,7 @@ export const Textarea: React.FC<
       <TextAreaComponent
         defaultValue={defaultValue}
         id={name}
+        placeholder={label ?? ''}
         rows={rows}
         {...register(name, { required: required })}
       />
