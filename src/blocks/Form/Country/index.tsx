@@ -44,7 +44,7 @@ export const Country: React.FC<CountryField & ControlledFieldProps> = ({
           return (
             <Select onValueChange={(val) => onChange(val)} value={controlledValue?.value}>
               <SelectTrigger className="w-full" id={name}>
-                <SelectValue placeholder={label} />
+                <SelectValue placeholder="Select a country" />
               </SelectTrigger>
               <SelectContent>
                 {countryOptions.map(({ label, value }) => {

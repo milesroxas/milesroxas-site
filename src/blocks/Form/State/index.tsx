@@ -43,7 +43,7 @@ export const State: React.FC<StateField & ControlledFieldProps> = ({
           return (
             <Select onValueChange={(val) => onChange(val)} value={controlledValue?.value}>
               <SelectTrigger className="w-full" id={name}>
-                <SelectValue placeholder={label} />
+                <SelectValue placeholder="Select a state" />
               </SelectTrigger>
               <SelectContent>
                 {stateOptions.map(({ label, value }) => {

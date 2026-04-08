@@ -20,6 +20,7 @@ export const Select: React.FC<SelectField & ControlledFieldProps> = ({
   errors,
   label,
   options,
+  placeholder,
   required,
   width,
 }) => {
@@ -43,7 +44,7 @@ export const Select: React.FC<SelectField & ControlledFieldProps> = ({
           return (
             <SelectComponent onValueChange={(val) => onChange(val)} value={controlledValue?.value}>
               <SelectTrigger className="w-full" id={name}>
-                <SelectValue placeholder={label} />
+                <SelectValue placeholder={placeholder ?? 'Select an option'} />
               </SelectTrigger>
               <SelectContent>
                 {options.map(({ label, value }) => {
