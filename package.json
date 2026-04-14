@@ -133,9 +133,13 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "sharp",
+      "bufferutil",
+      "core-js",
       "esbuild",
-      "unrs-resolver"
+      "protobufjs",
+      "sharp",
+      "unrs-resolver",
+      "utf-8-validate"
     ]
   }
 }

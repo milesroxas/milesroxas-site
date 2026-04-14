@@ -1,284 +1,74 @@
 # Payload CMS Migration Workflow
 
-This guide explains how to manually manage database migrations across different environments for your Payload CMS application.
+This project uses `@payloadcms/db-vercel-postgres` with `push: false` in `src/payload.config.ts`.  
+All schema changes must go through migrations.
 
-## Overview
+## Important Rules
 
-**Do not manually edit auto-generated Payload files** (`src/payload-generated-schema.ts`, `src/payload-types.ts`). Regenerate with `pnpm generate:db-schema` or `pnpm generate:types` after schema/collection changes.
+- Never manually edit generated files:
+  - `src/payload-generated-schema.ts`
+  - `src/payload-types.ts`
+- Regenerate generated files with:
+  - `pnpm generate:db-schema`
+  - `pnpm generate:types`
+- Migrations do not run automatically in `pnpm build`; run them manually before deployment.
 
-Migrations are **manually triggered** and run on different databases depending on which branch you're working on:
-- **Main branch** → Production database
-- **Dev branch** → Preview/Development database
-- **Local** → Your local development database
-
-> **Important:** Migrations do **NOT** run automatically during Vercel builds. You must run migrations manually **before** deploying. The build script (`pnpm build`) only runs `next build` - it does not execute migrations.
-
-## Available Commands
-
-All commands are available in `package.json`:
+## Core Commands
 
 ```bash
-# Create a new migration after schema changes
 pnpm migrate:create
-
-# Check migration status (shows which migrations have/haven't run)
 pnpm migrate:status
-
-# Run pending migrations
 pnpm migrate
 ```
 
-## Environment Setup
+## Standard Schema Change Flow
 
-### Get Database URLs from Vercel
+1. Update schema files (collections/globals/fields/hooks as needed).
+2. Create migration:
+   ```bash
+   pnpm migrate:create
+   ```
+3. Verify and apply locally:
+   ```bash
+   pnpm migrate:status
+   pnpm migrate
+   ```
+4. Commit the new file(s) in `src/migrations/`.
+5. Run migration against preview DB:
+   ```bash
+   POSTGRES_URL="<preview-url>" pnpm migrate:status
+   POSTGRES_URL="<preview-url>" pnpm migrate
+   ```
+6. Run migration against production DB before prod deploy:
+   ```bash
+   POSTGRES_URL="<production-url>" pnpm migrate:status
+   POSTGRES_URL="<production-url>" pnpm migrate
+   ```
 
-You need the `POSTGRES_URL` for each environment:
+## Migration Utilities
 
-1. Go to: https://vercel.com/milesroxas-projects/milesroxas/settings/environment-variables
-2. Find and copy:
-   - `POSTGRES_URL` for **Production** (main branch deployments)
-   - `POSTGRES_URL` for **Preview** (dev branch deployments)
-
-## Running Migrations
-
-### Local Development
-
-When working locally (any branch):
-
-```bash
-# Check local migration status
-pnpm migrate:status
-
-# Run migrations on local database
-pnpm migrate
-```
-
-### Production Environment (Main Branch)
-
-When on the **main** branch and need to migrate production:
-
-```bash
-# Switch to main branch
-git checkout main
-
-# Check production migration status
-POSTGRES_URL="<production-url>" pnpm migrate:status
-
-# Run migrations on production
-POSTGRES_URL="<production-url>" pnpm migrate
-```
-
-### Preview/Dev Environment (Dev Branch)
-
-When on the **dev** branch and need to migrate preview:
+These scripts are available for recovery/debugging cases:
 
 ```bash
-# Switch to dev branch
-git checkout dev
-
-# Check preview migration status
-POSTGRES_URL="<preview-url>" pnpm migrate:status
-
-# Run migrations on preview database
-POSTGRES_URL="<preview-url>" pnpm migrate
-```
-
-## Complete Development Workflow
-
-### 1. Make Schema Changes
-
-Modify your Payload collections, globals, or fields in your codebase.
-
-### 2. Create Migration
-
-```bash
-# On dev branch
-git checkout dev
-pnpm migrate:create
-```
-
-This creates a new migration file in `src/migrations/` with a timestamp.
-
-### 3. Test Locally
-
-```bash
-# Run migration on your local database
-pnpm migrate:status  # Check what will run
-pnpm migrate         # Apply migration
-```
-
-Test your application locally to ensure the migration works correctly.
-
-### 4. Commit Migration Files
-
-```bash
-git add src/migrations/
-git commit -m "feat: add migration for [description]"
-git push origin dev
-```
-
-### 5. Run Migration on Preview Database
-
-**Before** pushing to dev branch, run migrations on the preview database:
-
-```bash
-# Run migration on preview/dev database
-POSTGRES_URL="<preview-url>" pnpm migrate:status
-POSTGRES_URL="<preview-url>" pnpm migrate
-```
-
-### 6. Push and Test on Preview Environment
-
-```bash
-git push origin dev
-```
-
-Visit your preview deployment and test thoroughly.
-
-### 7. Merge to Main and Run Production Migration
-
-**Before** pushing to main, run migrations on the production database:
-
-```bash
-git checkout main
-git merge dev
-
-# Run migration on production database BEFORE pushing
-POSTGRES_URL="<production-url>" pnpm migrate:status
-POSTGRES_URL="<production-url>" pnpm migrate
-
-# Now push to trigger deployment
-git push origin main
-```
-
-### 8. Verify Production
-
-Visit your production site and verify everything works.
-
-## Important Notes
-
-### Safety Guidelines
-
-- ⚠️ **Always test migrations on preview/dev before running on production**
-- 🔒 **Keep database backups before running destructive migrations**
-- ✅ **Migrations are idempotent** - running them multiple times is safe (they won't re-run)
-- 📊 **Migration tracking** - All migrations are tracked in the `payload_migrations` table
-- 🚀 **Run migrations before deploying** - Migrations are not run during Vercel builds to avoid interactive prompts blocking automated deployments
-
-### Branch Strategy
-
-- **Main branch** = Production migrations
-- **Dev branch** = Preview/Dev migrations
-- Migration scripts are available on both branches
-- Same commands work on both branches, just with different `POSTGRES_URL` values
-
-### Migration Files
-
-- Location: `src/migrations/`
-- Format: `YYYYMMDD_HHMMSS.ts` (e.g., `20260102_220803.ts`)
-- Each migration has `up()` and `down()` functions
-- Auto-generated based on schema changes
-
-## Advanced Operations
-
-### Mark Migration as Run (Without Executing)
-
-If you've manually applied schema changes or need to sync migration state:
-
-```bash
-POSTGRES_URL="<database-url>" npx tsx scripts/mark-migration.ts <migration-name>
-
-# Examples:
-# Production
-POSTGRES_URL="<production-url>" npx tsx scripts/mark-migration.ts 20260102_220803
-
-# Preview
-POSTGRES_URL="<preview-url>" npx tsx scripts/mark-migration.ts 20260102_220803
-```
-
-### Add Missing Columns Manually
-
-Emergency script to add columns if migrations fail:
-
-```bash
-# Edit scripts/add-missing-columns.ts with your column definitions
-POSTGRES_URL="<database-url>" npx tsx scripts/add-missing-columns.ts
-```
-
-### View Migration History
-
-```bash
-# Local
-pnpm migrate:status
-
-# Production
-POSTGRES_URL="<production-url>" pnpm migrate:status
-
-# Preview
-POSTGRES_URL="<preview-url>" pnpm migrate:status
+POSTGRES_URL="<database-url>" pnpm dlx tsx scripts/mark-migration.ts <migration-name>
+POSTGRES_URL="<database-url>" pnpm dlx tsx scripts/add-missing-columns.ts
+POSTGRES_URL="<database-url>" pnpm dlx tsx scripts/check-schema.ts
+POSTGRES_URL="<database-url>" pnpm dlx tsx scripts/check-indexes.ts
+POSTGRES_URL="<database-url>" pnpm dlx tsx scripts/fix-indexes.ts
 ```
 
 ## Troubleshooting
 
-### Migration Fails with "Type/Table Already Exists"
+### Migration Already Applied / Type Exists
 
-This happens when dev mode (`push: true`) was used instead of migrations. Solutions:
+- Check current state: `pnpm migrate:status` (or with `POSTGRES_URL` override)
+- Mark migration as run if schema was already applied manually:
+  - `POSTGRES_URL="<database-url>" pnpm dlx tsx scripts/mark-migration.ts <migration-name>`
 
-1. Mark the migration as run: `npx tsx scripts/mark-migration.ts <name>`
-2. Or manually create missing columns then mark migration as run
+### Missing Column / Schema Out of Sync
 
-### Column Does Not Exist Error
-
-Your code expects a column that hasn't been migrated yet:
-
-1. Check migration status: `pnpm migrate:status`
-2. Run pending migrations: `pnpm migrate`
-3. If migration fails, use `scripts/add-missing-columns.ts`
-
-### Migration Out of Sync Between Environments
-
-Each environment tracks migrations independently. To sync:
-
-1. Check status on each: `POSTGRES_URL="<url>" pnpm migrate:status`
-2. Run migrations where needed: `POSTGRES_URL="<url>" pnpm migrate`
-3. Or mark as run if already applied: `npx tsx scripts/mark-migration.ts <name>`
-
-## Quick Reference
-
-| Task | Command |
-|------|---------|
-| Create migration | `pnpm migrate:create` |
-| Check status (local) | `pnpm migrate:status` |
-| Run migration (local) | `pnpm migrate` |
-| Check status (remote) | `POSTGRES_URL="<url>" pnpm migrate:status` |
-| Run migration (remote) | `POSTGRES_URL="<url>" pnpm migrate` |
-| Mark as run | `POSTGRES_URL="<url>" npx tsx scripts/mark-migration.ts <name>` |
-
-## Configuration
-
-Your `payload.config.ts` is set up with:
-```typescript
-db: vercelPostgresAdapter({
-  pool: {
-    connectionString: process.env.POSTGRES_URL,
-  },
-  push: false, // Use migrations instead of auto-push
-}),
-```
-
-This ensures migrations are required for all schema changes.
-
-### Build Script
-
-The build script in `package.json` does **not** run migrations:
-
-```json
-"build": "cross-env NODE_OPTIONS=\"...\" next build --webpack"
-```
-
-Migrations are intentionally excluded from the build process because:
-1. They require manual review before running on production
-2. Interactive prompts would block automated Vercel deployments
-3. Running migrations during build could cause deployment failures if schema is out of sync
-
-Always run `pnpm migrate` manually against the target database before deploying.
+- Run pending migrations first:
+  - `pnpm migrate`
+- If still out of sync, use:
+  - `scripts/check-schema.ts`
+  - `scripts/add-missing-columns.ts`
