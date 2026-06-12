@@ -1,5 +1,6 @@
 'use client'
 import gsap from 'gsap'
+import { usePathname } from 'next/navigation'
 import React, { useEffect, useRef } from 'react'
 import { formatDateTime } from 'src/utilities/formatDateTime'
 import { Media } from '@/components/Media'
@@ -15,7 +16,11 @@ export const PostHero: React.FC<{
   const heroRef = useRef<HTMLDivElement>(null)
   const restoreFrame = usePageAnimationStore((s) => s.restoreFrame)
   const { setTransitionPhase } = useSiteFrameStore()
+  const pathname = usePathname()
 
+  // Pick up the page-transition clone only on arrival at this route (mount or
+  // pathname change) — see HighImpactHero.
+  // biome-ignore lint/correctness/useExhaustiveDependencies(pathname): pathname re-triggers the pickup when navigating between two pages that share this hero instance
   useEffect(() => {
     // Wait for the DOM to fully render before trying to access the clone
     setTimeout(() => {
@@ -114,7 +119,7 @@ export const PostHero: React.FC<{
         })
       }, 100) // Small delay to ensure all elements are properly rendered
     }, 100) // Initial delay to ensure component is mounted
-  }, [restoreFrame, setTransitionPhase])
+  }, [restoreFrame, setTransitionPhase, pathname])
 
   return (
     <div className="relative -mt-[10.4rem] flex items-end" ref={heroRef}>

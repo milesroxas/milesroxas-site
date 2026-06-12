@@ -2,6 +2,7 @@
 'use client'
 
 import gsap from 'gsap'
+import { usePathname } from 'next/navigation'
 import type React from 'react'
 import { useEffect, useRef } from 'react'
 import { Media } from '@/components/Media'
@@ -10,8 +11,13 @@ import { useSiteFrameStore } from '@/stores/siteframeStore'
 
 export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
   const heroRef = useRef<HTMLDivElement>(null)
-  const { setIsSiteFrameVisible, setTransitionPhase, transitionPhase } = useSiteFrameStore()
+  const { setIsSiteFrameVisible, setTransitionPhase } = useSiteFrameStore()
+  const pathname = usePathname()
 
+  // Pick up the page-transition clone only on arrival at this route (mount or
+  // pathname change). Keying this off transition state would re-run it on the
+  // source page while the card's exit animation is still in flight.
+  // biome-ignore lint/correctness/useExhaustiveDependencies(pathname): pathname re-triggers the pickup when navigating between two pages that share this hero instance
   useEffect(() => {
     const clone = window.__PAGE_TRANSITION_CLONE as HTMLElement | undefined
     const heroEl = heroRef.current
@@ -58,7 +64,10 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
       ease: 'power2.inOut', // Changed to power2 for smoother motion
       onUpdate: function () {
         // Set site frame visible and update transition phase when animation is 70% complete
-        if (this.progress() > 0.7 && transitionPhase !== 'frame-ready') {
+        if (
+          this.progress() > 0.7 &&
+          useSiteFrameStore.getState().transitionPhase !== 'frame-ready'
+        ) {
           setIsSiteFrameVisible(true)
           setTransitionPhase('frame-ready')
         }
@@ -74,7 +83,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ media }) => {
         },
         '>-0.1',
       )
-  }, [setIsSiteFrameVisible, setTransitionPhase, transitionPhase])
+  }, [setIsSiteFrameVisible, setTransitionPhase, pathname])
 
   return (
     <section
