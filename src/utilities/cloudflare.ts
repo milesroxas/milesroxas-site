@@ -77,7 +77,7 @@ export async function uploadImageToCloudflare(
 }
 
 /**
- * Delete an image from Cloudflare Images.
+ * Delete an image from Cloudflare Images. Throws on failure; callers log.
  */
 export async function deleteCloudflareImage(imageId: string): Promise<void> {
   const res = await fetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/images/v1/${imageId}`, {
@@ -87,7 +87,9 @@ export async function deleteCloudflareImage(imageId: string): Promise<void> {
 
   const json = await res.json()
   if (!json.success) {
-    console.error(`Cloudflare Images delete failed for ${imageId}:`, json.errors)
+    throw new Error(
+      `Cloudflare Images delete failed for ${imageId}: ${JSON.stringify(json.errors)}`,
+    )
   }
 }
 
@@ -143,30 +145,7 @@ export async function uploadVideoToStream(
 }
 
 /**
- * Check the processing status of a Stream video.
- */
-export async function getVideoStatus(
-  uid: string,
-): Promise<{ ready: boolean; duration: number; thumbnail: string }> {
-  const res = await fetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/stream/${uid}`, {
-    method: 'GET',
-    headers: authHeaders(),
-  })
-
-  const json = await res.json()
-  if (!json.success) {
-    throw new Error(`Cloudflare Stream status check failed: ${JSON.stringify(json.errors)}`)
-  }
-
-  return {
-    ready: json.result.readyToStream === true,
-    duration: json.result.duration ?? 0,
-    thumbnail: json.result.thumbnail ?? '',
-  }
-}
-
-/**
- * Delete a video from Cloudflare Stream.
+ * Delete a video from Cloudflare Stream. Throws on failure; callers log.
  */
 export async function deleteStreamVideo(uid: string): Promise<void> {
   const res = await fetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/stream/${uid}`, {
@@ -175,7 +154,7 @@ export async function deleteStreamVideo(uid: string): Promise<void> {
   })
 
   if (!res.ok) {
-    console.error(`Cloudflare Stream delete failed for ${uid}: ${res.statusText}`)
+    throw new Error(`Cloudflare Stream delete failed for ${uid}: ${res.statusText}`)
   }
 }
 

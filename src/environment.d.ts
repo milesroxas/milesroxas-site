@@ -15,6 +15,8 @@ declare global {
       CLOUDFLARE_IMAGES_ACCOUNT_HASH: string
       CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN: string
       CLOUDFLARE_STREAM_WEBHOOK_SECRET: string
+      WORK_ACCESS_KEYS: string
+      BLOB_BASE_URL?: string
     }
   }
 }

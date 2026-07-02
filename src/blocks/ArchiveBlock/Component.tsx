@@ -1,11 +1,12 @@
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import type React from 'react'
 import type { CardPostData } from '@/components/Card/Posts/Component'
 
 import type { CardWorkData } from '@/components/Card/Works/Component'
 import type { ArchiveBlock as ArchiveBlockProps, Work } from '@/payload-types'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
+import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
 
 import ArchiveBlockClient from './ArchiveBlockClient'
 import { flattenCategories, getCategoryFilter } from './utils'
@@ -19,6 +20,7 @@ async function fetchPostsByCollection(
     collection: 'posts',
     depth: 2,
     limit,
+    overrideAccess: false, // anonymous read: published posts only
     ...categoryFilter,
   })
   return fetchedPosts.docs
@@ -30,59 +32,26 @@ async function fetchWorksByCollection(
   hasAccess: boolean,
 ) {
   const payload = await getPayload({ config: configPromise })
+
+  const where: Where = {
+    ...('where' in categoryFilter ? categoryFilter.where : {}),
+    _status: { equals: 'published' },
+  }
+
+  // Trusted fetch so protected works can resolve to their fallbacks at render
+  // time; the public API is gated by the works read access rule.
   const fetchedWorks = await payload.find({
     collection: 'works',
     depth: 2,
     limit,
-    ...categoryFilter,
+    where,
   })
 
-  // Replace protected works with fallback if user doesn't have access
   const processedWorks = await Promise.all(
-    fetchedWorks.docs.map(async (work) => {
-      if (work.isProtected && !hasAccess && work.fallbackWork) {
-        // Fetch the fallback work
-        const fallbackId =
-          typeof work.fallbackWork === 'number' ? work.fallbackWork : work.fallbackWork.id
-        const fallbackWork = await payload.findByID({
-          collection: 'works',
-          id: fallbackId,
-          depth: 2,
-        })
-        return fallbackWork as CardWorkData
-      }
-      return work as CardWorkData
-    }),
+    fetchedWorks.docs.map((work) => resolveVisibleWork(work, hasAccess)),
   )
 
-  return processedWorks
-}
-
-async function getFallbackWork(work: Work): Promise<CardWorkData | null> {
-  if (!work.fallbackWork) return null
-
-  const payload = await getPayload({ config: configPromise })
-  const fallbackId =
-    typeof work.fallbackWork === 'number' ? work.fallbackWork : work.fallbackWork.id
-
-  const fallbackWork = await payload.findByID({
-    collection: 'works',
-    id: fallbackId,
-    depth: 2,
-  })
-
-  return fallbackWork as CardWorkData
-}
-
-async function processWork(work: Work, hasAccess: boolean): Promise<CardWorkData> {
-  const needsFallback = work.isProtected && !hasAccess && work.fallbackWork
-
-  if (needsFallback) {
-    const fallback = await getFallbackWork(work)
-    return fallback || (work as CardWorkData)
-  }
-
-  return work as CardWorkData
+  return processedWorks.filter((work): work is Work => work !== null) as CardWorkData[]
 }
 
 async function extractSelectedDocs(
@@ -102,8 +71,10 @@ async function extractSelectedDocs(
     if (doc.relationTo === 'posts') {
       posts.push(doc.value as CardPostData)
     } else if (doc.relationTo === 'works') {
-      const processedWork = await processWork(doc.value as Work, hasAccess)
-      works.push(processedWork)
+      const visibleWork = await resolveVisibleWork(doc.value as Work, hasAccess)
+      if (visibleWork) {
+        works.push(visibleWork as CardWorkData)
+      }
     }
   }
 

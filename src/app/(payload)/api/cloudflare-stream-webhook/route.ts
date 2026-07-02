@@ -3,6 +3,9 @@ import configPromise from '@payload-config'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 
+// Reject webhooks whose signature timestamp is older than this (replay protection)
+const SIGNATURE_TOLERANCE_SECONDS = 5 * 60
+
 /**
  * Verify the Cloudflare Stream webhook signature.
  * See: https://developers.cloudflare.com/stream/manage-video-library/using-webhooks/
@@ -18,12 +21,22 @@ function verifyWebhookSignature(body: string, signatureHeader: string, secret: s
   const time = timePart.replace('time=', '')
   const signature = sigPart.replace('sig1=', '')
 
+  const timestamp = Number(time)
+  if (!Number.isFinite(timestamp)) return false
+  if (Math.abs(Date.now() / 1000 - timestamp) > SIGNATURE_TOLERANCE_SECONDS) return false
+
   // Build source string: time.body
   const sourceString = `${time}.${body}`
 
   const expectedSignature = crypto.createHmac('sha256', secret).update(sourceString).digest('hex')
 
-  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))
+  const signatureBuffer = Buffer.from(signature)
+  const expectedBuffer = Buffer.from(expectedSignature)
+
+  // timingSafeEqual throws on length mismatch — check first
+  if (signatureBuffer.length !== expectedBuffer.length) return false
+
+  return crypto.timingSafeEqual(signatureBuffer, expectedBuffer)
 }
 
 export async function POST(request: Request) {
@@ -58,7 +71,7 @@ export async function POST(request: Request) {
   })
 
   if (docs.length === 0) {
-    console.warn(`[Cloudflare Webhook] No media found for Stream UID: ${uid}`)
+    payload.logger.warn(`[Cloudflare Webhook] No media found for Stream UID: ${uid}`)
     return NextResponse.json({ ok: true })
   }
 

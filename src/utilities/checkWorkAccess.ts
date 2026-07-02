@@ -1,18 +1,28 @@
-import { cookies, headers } from 'next/headers'
+import { cookies, draftMode, headers } from 'next/headers'
 
 const ACCESS_COOKIE = 'site_access'
 
 /**
- * Valid access keys - add your secret keys here
- * Share links like: yoursite.com?access=portfolio
+ * Valid access keys, comma-separated in the WORK_ACCESS_KEYS env var.
+ * Share links like: yoursite.com?access=<key>
  */
-const VALID_ACCESS_KEYS = ['portfolio']
+const VALID_ACCESS_KEYS = (process.env.WORK_ACCESS_KEYS ?? '')
+  .split(',')
+  .map((key) => key.trim())
+  .filter(Boolean)
 
 /**
- * Check if user has access to protected works
- * Checks URL query param (for initial visit) and cookie (for subsequent navigation)
+ * Check if the visitor may see protected works.
+ * Draft mode counts as access (it is only enabled for authenticated preview),
+ * otherwise the URL query param (initial visit) and cookie (subsequent
+ * navigation) are checked against the configured access keys.
  */
 export async function hasWorkAccess(): Promise<boolean> {
+  const { isEnabled: draft } = await draftMode()
+  if (draft) return true
+
+  if (VALID_ACCESS_KEYS.length === 0) return false
+
   const accessValue = await getAccessValue()
   return accessValue !== null && VALID_ACCESS_KEYS.includes(accessValue)
 }

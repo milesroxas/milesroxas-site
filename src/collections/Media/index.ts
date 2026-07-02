@@ -7,11 +7,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../../access/anyone'
 import { authenticated } from '../../access/authenticated'
-import {
-  resolveBlobUrl,
-  syncCloudflareDelete,
-  syncCloudflareUpload,
-} from './hooks/syncCloudflare'
+import { resolveBlobUrl, syncCloudflareDelete, syncCloudflareUpload } from './hooks/syncCloudflare'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -60,6 +56,13 @@ export const Media: CollectionConfig = {
     {
       name: 'cloudflareStreamPlaybackUrl',
       type: 'text',
+      admin: { hidden: true },
+    },
+    {
+      // Computed at read time in the resolveBlobUrl afterRead hook
+      name: 'cloudflareStreamThumbnailUrl',
+      type: 'text',
+      virtual: true,
       admin: { hidden: true },
     },
     {

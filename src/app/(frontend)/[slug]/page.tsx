@@ -90,17 +90,20 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
 
   const payload = await getPayload({ config: configPromise })
 
+  // Trusted fetch so protected works referenced in blocks stay populated for
+  // render-time gating (RenderBlocks → processLayoutBlocks). depth 3 is
+  // required to populate media on works nested inside blocks.
   const result = await payload.find({
     collection: 'pages',
     draft,
     depth: 3,
     limit: 1,
     pagination: false,
-    overrideAccess: draft,
     where: {
-      slug: {
-        equals: slug,
-      },
+      and: [
+        { slug: { equals: slug } },
+        ...(draft ? [] : [{ _status: { equals: 'published' as const } }]),
+      ],
     },
   })
 

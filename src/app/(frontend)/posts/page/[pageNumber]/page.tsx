@@ -8,6 +8,8 @@ import PageNumberClient from './page.client'
 
 export const revalidate = 600
 
+const POSTS_PER_PAGE = 12
+
 type Args = {
   params: Promise<{
     pageNumber: string
@@ -25,7 +27,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   const posts = await payload.find({
     collection: 'posts',
     depth: 1,
-    limit: 12,
+    limit: POSTS_PER_PAGE,
     page: sanitizedPageNumber,
     overrideAccess: false,
   })
@@ -42,7 +44,7 @@ export default async function Page({ params: paramsPromise }: Args) {
         <PageRange
           collection="posts"
           currentPage={posts.page}
-          limit={12}
+          limit={POSTS_PER_PAGE}
           totalDocs={posts.totalDocs}
         />
       </div>
@@ -61,7 +63,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { pageNumber } = await paramsPromise
   return {
-    title: `Payload Website Template Posts Page ${pageNumber || ''}`,
+    title: `Posts Page ${pageNumber || ''} | Miles Roxas`,
   }
 }
 
@@ -72,7 +74,7 @@ export async function generateStaticParams() {
     overrideAccess: false,
   })
 
-  const totalPages = Math.ceil(totalDocs / 10)
+  const totalPages = Math.ceil(totalDocs / POSTS_PER_PAGE)
 
   const pages: { pageNumber: string }[] = []
 

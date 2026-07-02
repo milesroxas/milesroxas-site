@@ -103,11 +103,12 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
     const hlsUrl = resource.cloudflareStreamPlaybackUrl as string | undefined
     const isReady = resource.cloudflareStreamReady as boolean | undefined
     const useCloudflare = hlsUrl && isReady
-    const fallbackSrc = url && typeof url === 'string' ? getMediaUrl(url) : getMediaUrl(`/api/media/file/${filename}`)
+    const fallbackSrc =
+      url && typeof url === 'string' ? getMediaUrl(url) : getMediaUrl(`/api/media/file/${filename}`)
 
     // Poster improves FCP/LCP by showing an image immediately while video loads
     const posterUrl =
-      (resource as { cloudflareStreamThumbnailUrl?: string }).cloudflareStreamThumbnailUrl ??
+      resource.cloudflareStreamThumbnailUrl ??
       (resource.sizes?.thumbnail?.url ? getMediaUrl(resource.sizes.thumbnail.url) : undefined) ??
       (resource.thumbnailURL ? getMediaUrl(resource.thumbnailURL) : undefined)
 

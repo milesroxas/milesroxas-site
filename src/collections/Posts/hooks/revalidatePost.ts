@@ -3,6 +3,14 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'paylo
 
 import type { Post } from '../../../payload-types'
 
+// The paginated posts index is ISR-cached; bust it alongside the tags
+const revalidatePostsIndex = () => {
+  revalidatePath('/posts')
+  revalidatePath('/posts/page/[pageNumber]', 'page')
+  revalidateTag('posts-sitemap', 'max')
+  revalidateTag('posts', 'max')
+}
+
 export const revalidatePost: CollectionAfterChangeHook<Post> = ({
   doc,
   previousDoc,
@@ -15,8 +23,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
       payload.logger.info(`Revalidating post at path: ${path}`)
 
       revalidatePath(path)
-      revalidateTag('posts-sitemap', 'max')
-      revalidateTag('posts', 'max')
+      revalidatePostsIndex()
     }
 
     // If the post was previously published, we need to revalidate the old path
@@ -26,8 +33,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
       payload.logger.info(`Revalidating old post at path: ${oldPath}`)
 
       revalidatePath(oldPath)
-      revalidateTag('posts-sitemap', 'max')
-      revalidateTag('posts', 'max')
+      revalidatePostsIndex()
     }
   }
   return doc
@@ -38,8 +44,7 @@ export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { 
     const path = `/posts/${doc?.slug}`
 
     revalidatePath(path)
-    revalidateTag('posts-sitemap', 'max')
-    revalidateTag('posts', 'max')
+    revalidatePostsIndex()
   }
 
   return doc

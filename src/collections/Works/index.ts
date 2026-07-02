@@ -9,7 +9,6 @@ import type { CollectionConfig } from 'payload'
 import { slugField } from '@/fields/slug'
 import { hero } from '@/heros/config'
 import { authenticated } from '../../access/authenticated'
-import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '../../blocks/ArchiveBlock/config'
 import { CallToAction } from '../../blocks/CallToAction/config'
 import { Content } from '../../blocks/Content/config'
@@ -19,6 +18,7 @@ import { SliderBlock } from '../../blocks/Slider/config'
 import { TabsBlock } from '../../blocks/Tabs/config'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
+import { worksReadAccess } from './access'
 import { revalidateDelete, revalidateWork } from './hooks/revalidateWorks'
 
 export const Works: CollectionConfig<'works'> = {
@@ -26,7 +26,7 @@ export const Works: CollectionConfig<'works'> = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: authenticatedOrPublished,
+    read: worksReadAccess,
     update: authenticated,
   },
   // This config controls what's populated by default when a page is referenced
@@ -48,22 +48,16 @@ export const Works: CollectionConfig<'works'> = {
   admin: {
     defaultColumns: ['title', 'slug', '_order', 'updatedAt'],
     livePreview: {
-      url: ({ data, req }) => {
-        const path = generatePreviewPath({
+      url: ({ data }) =>
+        generatePreviewPath({
           slug: typeof data?.slug === 'string' ? data.slug : '',
           collection: 'works',
-          req,
-        })
-        console.log('Preview URL for works:', path)
-
-        return path
-      },
+        }),
     },
-    preview: (data, { req }) =>
+    preview: (data) =>
       generatePreviewPath({
         slug: typeof data?.slug === 'string' ? data.slug : '',
         collection: 'works',
-        req,
       }),
     useAsTitle: 'title',
   },

@@ -13,11 +13,13 @@ const getWorksPublished = unstable_cache(
   async () => {
     const payload = await getPayload({ config: configPromise })
 
+    // Trusted fetch (protected works included) — the render filter below hides
+    // them per-request; the public API is gated by the works read access rule.
     const works = await payload.find({
       collection: 'works',
       depth: 2,
       pagination: false,
-      overrideAccess: false,
+      where: { _status: { equals: 'published' } },
       sort: '_order',
       select: {
         title: true,
@@ -36,34 +38,29 @@ const getWorksPublished = unstable_cache(
   { revalidate: 600, tags: ['works'] },
 )
 
-// Cache draft-enabled results separately to avoid leaking caches across preview/public
-const getWorksDraft = unstable_cache(
-  async () => {
-    const payload = await getPayload({ config: configPromise })
+// Draft results are per-preview-session; never cache them
+const getWorksDraft = async () => {
+  const payload = await getPayload({ config: configPromise })
 
-    const works = await payload.find({
-      collection: 'works',
-      depth: 1,
-      pagination: false,
-      draft: true,
-      overrideAccess: true,
-      sort: '_order',
-      select: {
-        title: true,
-        slug: true,
-        meta: true,
-        hero: true,
-        _order: true,
-        isProtected: true,
-        fallbackWork: true,
-      },
-    })
+  const works = await payload.find({
+    collection: 'works',
+    depth: 1,
+    pagination: false,
+    draft: true,
+    sort: '_order',
+    select: {
+      title: true,
+      slug: true,
+      meta: true,
+      hero: true,
+      _order: true,
+      isProtected: true,
+      fallbackWork: true,
+    },
+  })
 
-    return works
-  },
-  ['works-archive', 'draft'],
-  { revalidate: 60, tags: ['works'] },
-)
+  return works
+}
 
 export default async function Page() {
   const { isEnabled: draft } = await draftMode()

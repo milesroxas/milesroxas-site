@@ -7,23 +7,23 @@
  */
 
 import type {} from "@payloadcms/db-vercel-postgres";
+import { relations, sql } from "@payloadcms/db-vercel-postgres/drizzle";
 import {
-  pgTable,
-  index,
-  uniqueIndex,
-  foreignKey,
-  integer,
-  varchar,
+  type AnyPgColumn,
   boolean,
-  text,
+  foreignKey,
+  index,
+  integer,
   jsonb,
   numeric,
-  serial,
-  timestamp,
-  type AnyPgColumn,
   pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  uniqueIndex,
+  varchar,
 } from "@payloadcms/db-vercel-postgres/drizzle/pg-core";
-import { sql, relations } from "@payloadcms/db-vercel-postgres/drizzle";
 export const enum_pages_hero_links_link_type = pgEnum(
   "enum_pages_hero_links_link_type",
   ["reference", "custom"],
@@ -1151,10 +1151,6 @@ export const enum_header_nav_items_link_type = pgEnum(
   "enum_header_nav_items_link_type",
   ["reference", "custom"],
 );
-export const enum_footer_nav_items_link_type = pgEnum(
-  "enum_footer_nav_items_link_type",
-  ["reference", "custom"],
-);
 
 export const pages_hero_links = pgTable(
   "pages_hero_links",
@@ -1296,7 +1292,9 @@ export const pages_blocks_content_columns = pgTable(
     sizes: enum_pages_blocks_content_columns_sizes("sizes").default("oneThird"),
     content:
       enum_pages_blocks_content_columns_content("content").default("text"),
-    text_richText: jsonb("text_rich_text"),
+    text_richText: jsonb("text_rich_text").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
     text_textSize:
       enum_pages_blocks_content_columns_text_text_size(
         "text_text_size",
@@ -1314,7 +1312,9 @@ export const pages_blocks_content_columns = pgTable(
         "text_link_appearance",
       ).default("default"),
     sectionHeading_eyebrow: varchar("section_heading_eyebrow"),
-    sectionHeading_content: jsonb("section_heading_content"),
+    sectionHeading_content: jsonb("section_heading_content").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
     sectionHeading_size: enum_pages_blocks_content_columns_section_heading_size(
       "section_heading_size",
     ).default("base"),
@@ -1910,7 +1910,9 @@ export const _pages_v_blocks_content_columns = pgTable(
       enum__pages_v_blocks_content_columns_sizes("sizes").default("oneThird"),
     content:
       enum__pages_v_blocks_content_columns_content("content").default("text"),
-    text_richText: jsonb("text_rich_text"),
+    text_richText: jsonb("text_rich_text").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
     text_textSize:
       enum__pages_v_blocks_content_columns_text_text_size(
         "text_text_size",
@@ -1928,7 +1930,9 @@ export const _pages_v_blocks_content_columns = pgTable(
         "text_link_appearance",
       ).default("default"),
     sectionHeading_eyebrow: varchar("section_heading_eyebrow"),
-    sectionHeading_content: jsonb("section_heading_content"),
+    sectionHeading_content: jsonb("section_heading_content").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
     sectionHeading_size:
       enum__pages_v_blocks_content_columns_section_heading_size(
         "section_heading_size",
@@ -2916,7 +2920,9 @@ export const works_blocks_content_columns = pgTable(
     sizes: enum_works_blocks_content_columns_sizes("sizes").default("oneThird"),
     content:
       enum_works_blocks_content_columns_content("content").default("text"),
-    text_richText: jsonb("text_rich_text"),
+    text_richText: jsonb("text_rich_text").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
     text_textSize:
       enum_works_blocks_content_columns_text_text_size(
         "text_text_size",
@@ -2934,7 +2940,9 @@ export const works_blocks_content_columns = pgTable(
         "text_link_appearance",
       ).default("default"),
     sectionHeading_eyebrow: varchar("section_heading_eyebrow"),
-    sectionHeading_content: jsonb("section_heading_content"),
+    sectionHeading_content: jsonb("section_heading_content").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
     sectionHeading_size: enum_works_blocks_content_columns_section_heading_size(
       "section_heading_size",
     ).default("base"),
@@ -3617,7 +3625,9 @@ export const _works_v_blocks_content_columns = pgTable(
       enum__works_v_blocks_content_columns_sizes("sizes").default("oneThird"),
     content:
       enum__works_v_blocks_content_columns_content("content").default("text"),
-    text_richText: jsonb("text_rich_text"),
+    text_richText: jsonb("text_rich_text").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
     text_textSize:
       enum__works_v_blocks_content_columns_text_text_size(
         "text_text_size",
@@ -3635,7 +3645,9 @@ export const _works_v_blocks_content_columns = pgTable(
         "text_link_appearance",
       ).default("default"),
     sectionHeading_eyebrow: varchar("section_heading_eyebrow"),
-    sectionHeading_content: jsonb("section_heading_content"),
+    sectionHeading_content: jsonb("section_heading_content").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
     sectionHeading_size:
       enum__works_v_blocks_content_columns_section_heading_size(
         "section_heading_size",
@@ -5542,81 +5554,6 @@ export const header_rels = pgTable(
   }),
 );
 
-export const footer_nav_items = pgTable(
-  "footer_nav_items",
-  {
-    _order: integer("_order").notNull(),
-    _parentID: integer("_parent_id").notNull(),
-    id: varchar("id").primaryKey(),
-    link_type:
-      enum_footer_nav_items_link_type("link_type").default("reference"),
-    link_newTab: boolean("link_new_tab"),
-    link_url: varchar("link_url"),
-    link_label: varchar("link_label").notNull(),
-  },
-  (columns) => ({
-    _orderIdx: index("footer_nav_items_order_idx").on(columns._order),
-    _parentIDIdx: index("footer_nav_items_parent_id_idx").on(columns._parentID),
-    _parentIDFk: foreignKey({
-      columns: [columns["_parentID"]],
-      foreignColumns: [footer.id],
-      name: "footer_nav_items_parent_id_fk",
-    }).onDelete("cascade"),
-  }),
-);
-
-export const footer = pgTable("footer", {
-  id: serial("id").primaryKey(),
-  updatedAt: timestamp("updated_at", {
-    mode: "string",
-    withTimezone: true,
-    precision: 3,
-  }),
-  createdAt: timestamp("created_at", {
-    mode: "string",
-    withTimezone: true,
-    precision: 3,
-  }),
-});
-
-export const footer_rels = pgTable(
-  "footer_rels",
-  {
-    id: serial("id").primaryKey(),
-    order: integer("order"),
-    parent: integer("parent_id").notNull(),
-    path: varchar("path").notNull(),
-    pagesID: integer("pages_id"),
-    postsID: integer("posts_id"),
-  },
-  (columns) => ({
-    order: index("footer_rels_order_idx").on(columns.order),
-    parentIdx: index("footer_rels_parent_idx").on(columns.parent),
-    pathIdx: index("footer_rels_path_idx").on(columns.path),
-    footer_rels_pages_id_idx: index("footer_rels_pages_id_idx").on(
-      columns.pagesID,
-    ),
-    footer_rels_posts_id_idx: index("footer_rels_posts_id_idx").on(
-      columns.postsID,
-    ),
-    parentFk: foreignKey({
-      columns: [columns["parent"]],
-      foreignColumns: [footer.id],
-      name: "footer_rels_parent_fk",
-    }).onDelete("cascade"),
-    pagesIdFk: foreignKey({
-      columns: [columns["pagesID"]],
-      foreignColumns: [pages.id],
-      name: "footer_rels_pages_fk",
-    }).onDelete("cascade"),
-    postsIdFk: foreignKey({
-      columns: [columns["postsID"]],
-      foreignColumns: [posts.id],
-      name: "footer_rels_posts_fk",
-    }).onDelete("cascade"),
-  }),
-);
-
 export const relations_pages_hero_links = relations(
   pages_hero_links,
   ({ one }) => ({
@@ -7218,41 +7155,6 @@ export const relations_header = relations(header, ({ many }) => ({
     relationName: "_rels",
   }),
 }));
-export const relations_footer_nav_items = relations(
-  footer_nav_items,
-  ({ one }) => ({
-    _parentID: one(footer, {
-      fields: [footer_nav_items._parentID],
-      references: [footer.id],
-      relationName: "navItems",
-    }),
-  }),
-);
-export const relations_footer_rels = relations(footer_rels, ({ one }) => ({
-  parent: one(footer, {
-    fields: [footer_rels.parent],
-    references: [footer.id],
-    relationName: "_rels",
-  }),
-  pagesID: one(pages, {
-    fields: [footer_rels.pagesID],
-    references: [pages.id],
-    relationName: "pages",
-  }),
-  postsID: one(posts, {
-    fields: [footer_rels.postsID],
-    references: [posts.id],
-    relationName: "posts",
-  }),
-}));
-export const relations_footer = relations(footer, ({ many }) => ({
-  navItems: many(footer_nav_items, {
-    relationName: "navItems",
-  }),
-  _rels: many(footer_rels, {
-    relationName: "_rels",
-  }),
-}));
 
 type DatabaseSchema = {
   enum_pages_hero_links_link_type: typeof enum_pages_hero_links_link_type;
@@ -7529,7 +7431,6 @@ type DatabaseSchema = {
   enum_payload_jobs_task_slug: typeof enum_payload_jobs_task_slug;
   enum_payload_folders_folder_type: typeof enum_payload_folders_folder_type;
   enum_header_nav_items_link_type: typeof enum_header_nav_items_link_type;
-  enum_footer_nav_items_link_type: typeof enum_footer_nav_items_link_type;
   pages_hero_links: typeof pages_hero_links;
   pages_blocks_cta_links: typeof pages_blocks_cta_links;
   pages_blocks_cta: typeof pages_blocks_cta;
@@ -7634,9 +7535,6 @@ type DatabaseSchema = {
   header_nav_items: typeof header_nav_items;
   header: typeof header;
   header_rels: typeof header_rels;
-  footer_nav_items: typeof footer_nav_items;
-  footer: typeof footer;
-  footer_rels: typeof footer_rels;
   relations_pages_hero_links: typeof relations_pages_hero_links;
   relations_pages_blocks_cta_links: typeof relations_pages_blocks_cta_links;
   relations_pages_blocks_cta: typeof relations_pages_blocks_cta;
@@ -7741,9 +7639,6 @@ type DatabaseSchema = {
   relations_header_nav_items: typeof relations_header_nav_items;
   relations_header_rels: typeof relations_header_rels;
   relations_header: typeof relations_header;
-  relations_footer_nav_items: typeof relations_footer_nav_items;
-  relations_footer_rels: typeof relations_footer_rels;
-  relations_footer: typeof relations_footer;
 };
 
 declare module "@payloadcms/db-vercel-postgres" {

@@ -6,10 +6,10 @@ export const Users: CollectionConfig = {
   slug: 'users',
   access: {
     admin: authenticated,
-    create: authenticated, // Allow user registration
+    create: authenticated,
     delete: authenticated,
-    read: authenticated, // Allow reading users for registration
-    update: authenticated, // Allow authenticated users to update (Payload handles password reset internally)
+    read: authenticated,
+    update: authenticated,
   },
   admin: {
     defaultColumns: ['name', 'email'],

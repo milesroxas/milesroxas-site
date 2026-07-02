@@ -1,6 +1,7 @@
 import configPromise from '@payload-config'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
+import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
@@ -9,6 +10,7 @@ import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { RenderHero } from '@/heros/RenderHero'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
+import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
 import PageClient from './page.client'
 
 // Force dynamic rendering to support query param access control
@@ -53,31 +55,18 @@ export default async function Work({ params: paramsPromise }: Args) {
   const { slug = '' } = await paramsPromise
   const url = `/works/${slug}`
 
-  let work = await queryWorkBySlug({ slug })
+  const work = await queryWorkBySlug({ slug })
 
   if (!work) return <PayloadRedirects url={url} />
 
-  // Check if user has access to protected works (cookie persists across navigation)
+  // Protected works resolve to their fallback (or 404 without one)
   const hasAccess = await hasWorkAccess()
+  const visibleWork = await resolveVisibleWork(work, hasAccess)
 
-  // If work is protected and user doesn't have access, redirect to fallback
-  if (work.isProtected && !hasAccess && work.fallbackWork) {
-    const payload = await getPayload({ config: configPromise })
-    const fallbackId =
-      typeof work.fallbackWork === 'number' ? work.fallbackWork : work.fallbackWork.id
-    const fallbackWork = await payload.findByID({
-      collection: 'works',
-      id: fallbackId,
-      depth: 1,
-    })
+  if (!visibleWork) notFound()
 
-    if (fallbackWork) {
-      work = fallbackWork
-    }
-  }
-
-  const hero = work?.hero
-  const layout = work?.layout || []
+  const hero = visibleWork.hero
+  const layout = visibleWork.layout || []
 
   return (
     <>
@@ -86,7 +75,7 @@ export default async function Work({ params: paramsPromise }: Args) {
 
       <article className="relative z-10">
         {hero && <RenderHero {...hero} />}
-        <PageClient work={work} />
+        <PageClient work={visibleWork} />
         <RenderBlocks blocks={layout} />
       </article>
     </>
@@ -97,7 +86,11 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { slug = '' } = await paramsPromise
   const work = await queryWorkBySlug({ slug })
 
-  return generateMeta({ doc: work })
+  // Never leak protected-work meta: resolve to the fallback (or nothing)
+  const hasAccess = await hasWorkAccess()
+  const visibleWork = work ? await resolveVisibleWork(work, hasAccess) : null
+
+  return generateMeta({ doc: visibleWork })
 }
 
 const queryWorkBySlug = cache(async ({ slug }: { slug: string }) => {
@@ -105,16 +98,19 @@ const queryWorkBySlug = cache(async ({ slug }: { slug: string }) => {
 
   const payload = await getPayload({ config: configPromise })
 
+  // Trusted server fetch (overrideAccess default) so protected works stay
+  // resolvable for keyed visitors; rendering is gated via resolveVisibleWork
+  // and the public API is protected by the works read access rule.
   const result = await payload.find({
     collection: 'works',
     draft,
     limit: 1,
-    overrideAccess: draft,
     pagination: false,
     where: {
-      slug: {
-        equals: slug,
-      },
+      and: [
+        { slug: { equals: slug } },
+        ...(draft ? [] : [{ _status: { equals: 'published' as const } }]),
+      ],
     },
   })
   return result.docs?.[0] || null
