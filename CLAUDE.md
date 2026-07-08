@@ -27,6 +27,19 @@ This file documents the working conventions for AI assistants in this repository
 - `pnpm generate:db-schema` - Generate `src/payload-generated-schema.ts`
 - `pnpm payload` - Run Payload CLI
 
+### Storybook Commands
+
+- `pnpm storybook` - Start Storybook dev server (port 6006)
+- `pnpm build-storybook` - Build static Storybook
+- `pnpm test:storybook` - Run all stories as Vitest browser tests (Playwright/Chromium)
+
+Storybook conventions:
+
+- Stories are colocated with components as `*.stories.tsx` (CSF3, `satisfies Meta`).
+- Payload-shaped fixtures live in `src/stories/fixtures.ts` and must mirror `src/payload-types.ts`.
+- Config lives in `.storybook/` (`@storybook/nextjs-vite` framework); theme switching drives the site's `data-theme` attribute.
+- Components tied to the live app shell (page-transition GSAP flow, SiteFrame, server-only Payload access, R3F scenes) are intentionally not storied — see the Overview page in Storybook.
+
 ### Database Commands
 
 - `pnpm migrate:create` - Create migration

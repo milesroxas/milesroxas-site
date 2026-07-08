@@ -18,3 +18,7 @@ public/robots.txt
 public/sitemap*.xml
 public/raw
 .env*.local
+
+# Storybook
+storybook-static
+*storybook.log

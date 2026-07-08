@@ -1,0 +1,48 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Overview" />
+
+# milesroxas.com — Component Library
+
+Storybook for the site's design system and CMS-driven components. Built on
+`@storybook/nextjs-vite`, so `next/image`, `next/font`, and the App Router
+context work out of the box.
+
+## Structure
+
+- **UI** — shadcn/Radix primitives from `src/components/ui`. Pure, presentational,
+  fully controlled via args.
+- **Components** — site-level components (`Logo`, `CMSLink`, `Media`, `RichText`,
+  cards, pagination). Payload-shaped data comes from `src/stories/fixtures.ts`.
+- **Blocks** — CMS layout blocks from `src/blocks`, rendered with the same
+  fixture data the live site would receive from Payload.
+- **Heros** — hero configurations from `src/heros`.
+
+## Conventions
+
+- Stories are colocated with their component as `*.stories.tsx` (CSF3,
+  `satisfies Meta`).
+- Payload document fixtures live in `src/stories/fixtures.ts` and mirror
+  `src/payload-types.ts`. Keep them minimal: only fields components read.
+- The light/dark toggle in the toolbar drives the site's `data-theme`
+  attribute, matching the production theming mechanism.
+- Every story runs as a browser test via the Vitest addon
+  (`pnpm test:storybook`); interaction coverage lives in `play` functions.
+- Accessibility checks run through the a11y addon in `todo` mode — violations
+  surface in the panel without failing tests. Tighten to `error` once clean.
+
+## Deliberately not covered
+
+Components that require the live app shell — the page-transition GSAP flow,
+`SiteFrame`, scroll choreography, or server-only Payload access — are out of
+scope for isolated stories:
+
+- `HomeHero`, `HighImpactHero`, `PostHero` (mount-time GSAP timelines, page
+  transition clone handoff, zustand site-frame store)
+- `CallOutBlock` (ScrollTrigger + SplitText tied to viewport scroll)
+- `Header` / `Footer` server components (Payload DB fetch via `getPayload`);
+  `Form` block (submits to the Payload API)
+- Three.js / R3F scenes
+
+Cards and heros that *reference* the transition system still render here —
+only the click-driven transition itself is a no-op in isolation.

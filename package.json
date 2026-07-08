@@ -25,7 +25,10 @@
     "ci": "biome ci .",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "test:storybook": "vitest run --project storybook"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -105,6 +108,11 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
+    "@storybook/addon-a11y": "10.4.6",
+    "@storybook/addon-docs": "10.4.6",
+    "@storybook/addon-themes": "10.4.6",
+    "@storybook/addon-vitest": "10.4.6",
+    "@storybook/nextjs-vite": "10.4.6",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/typography": "^0.5.19",
     "@types/escape-html": "^1.0.4",
@@ -113,14 +121,18 @@
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "@types/three": "^0.170.0",
+    "@vitest/browser": "3.2.3",
     "copyfiles": "^2.4.1",
     "dotenv-cli": "^8.0.0",
     "glslify-loader": "^2.0.0",
+    "playwright": "^1.61.1",
     "postcss": "^8.5.6",
     "raw-loader": "^4.0.2",
+    "storybook": "10.4.6",
     "tailwindcss": "^4.1.18",
     "ts-node": "^10.9.2",
     "typescript": "5.8.3",
+    "vite": "^7.3.1",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.3"
   },
