@@ -14,7 +14,8 @@ This file documents the working conventions for AI assistants in this repository
 
 ## Development Commands
 
-- `pnpm dev` - Start development server (Turbopack)
+- `pnpm dev` - Start development server (Turbopack, local Docker DB, schema push)
+- `pnpm dev:tui` - Interactive dev menu (dev against local/prod DB, pull production content, db/payload/quality)
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Lint and auto-fix with Biome
@@ -22,7 +23,8 @@ This file documents the working conventions for AI assistants in this repository
 - `pnpm format` - Format and auto-fix with Biome
 - `pnpm format:check` - Format check only
 - `pnpm check` - Lint + format with fixes
-- `pnpm ci` - Lint + format check mode (no fixes)
+- `pnpm lint:ci` - Lint + format check mode (no fixes)
+- `pnpm ci` - Vercel build command (preview-DB guard, `payload migrate`, build). Never run locally
 - `pnpm generate:types` - Generate `src/payload-types.ts`
 - `pnpm generate:db-schema` - Generate `src/payload-generated-schema.ts`
 - `pnpm payload` - Run Payload CLI
@@ -42,11 +44,13 @@ Storybook conventions:
 
 ### Database Commands
 
-- `pnpm migrate:create` - Create migration
-- `pnpm migrate:status` - Migration status
-- `pnpm migrate` - Run pending migrations
+- `pnpm db:up` / `pnpm db:down` / `pnpm db:reset` - Local Docker Postgres (`127.0.0.1:54330/payload`)
+- `pnpm migrate:create <name>` - Create migration (ask first, see below)
+- `pnpm check:migrations` - Enum safety check on migrations
+- `pnpm check:migrations:drift` - Newest migration snapshot against the current config
+- `pnpm migrate:status` - Production ledger only (reads `.env.production.pulled`)
 
-Migrations are manual and must run before deployment. See `MIGRATIONS.md`.
+**Push in dev, migrations in CI.** Same workflow as sas-site. Human docs: `MIGRATIONS.md`. Conductor: `docs/conductor.md`.
 
 ## Codebase Conventions
 
@@ -65,9 +69,15 @@ Migrations are manual and must run before deployment. See `MIGRATIONS.md`.
   - `src/payload-generated-schema.ts`
 - For schema changes:
   1. Update collection/global/field definitions.
-  2. Run `pnpm migrate:create`.
-  3. Run `pnpm migrate` against the target database.
-  4. Commit migration files in `src/migrations/`.
+  2. Local schema syncs via Drizzle push on `pnpm dev` (push runs only against a local `POSTGRES_URL`).
+  3. Regenerate types/import maps (`pnpm generate:types`, `pnpm generate:importmap`) without asking.
+  4. Ask before `pnpm migrate:create`. On approval, review the SQL and commit the `.ts` + `.json` together. The Vercel build (`pnpm ci`) applies it.
+  5. Run `pnpm check:migrations` and `pnpm check:migrations:drift`. The migration must cover every schema change in the branch; if a field was added after it was generated, regenerate it (ask first).
+- Hard prohibitions:
+  - Do not run `pnpm migrate:create` unless the user asks in this conversation. Say a migration is needed and wait.
+  - Never run `payload migrate` locally or against Neon by hand. Mixing push and migrations corrupts the ledger.
+  - Never create `.env.local` / `.env.production`; Next.js loads them over `.env` and would point dev at Neon.
+- Whenever your work would make `migrate:create` ask create-vs-rename questions, end with an answer sheet: the suggested command, each expected prompt with the option to pick (renamed entity → **rename** from the old name; brand-new → **create**), and a one-line reason. `scripts/migrate-create.exp` takes the same answers (see `MIGRATIONS.md`).
 
 ## Architecture Pointers
 

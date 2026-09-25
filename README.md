@@ -16,24 +16,28 @@ frontend.
 
 ## Requirements
 
-- Node.js `^18.20.2 || >=20.9.0`
-- pnpm `^9 || ^10`
+- Node.js `>=20.9.0`
+- pnpm
+- Docker Desktop (local Postgres)
+- Vercel CLI, logged in (pulling production content)
 
 ## Local Development
 
-1. Install dependencies: `pnpm install`
-2. Copy env template: `cp .env.example .env.local`
-3. Fill required environment variables
-4. Start dev server: `pnpm dev`
-5. Open `http://localhost:3000`
+1. Install dependencies: `pnpm install` (also wires `.githooks`)
+2. Copy env template: `cp .env.example .env` and fill the secrets
+3. Start Postgres: `pnpm db:up`
+4. `pnpm dev:tui` → **Pull production content → local Docker DB**
+5. `pnpm dev`, then open `http://localhost:3000`
 
-On first run, create the initial Payload admin user from the in-app prompt.
+Skip step 4 for an empty database: `pnpm dev` pushes the schema and the admin prompts for a first user. Database workflow: [MIGRATIONS.md](MIGRATIONS.md). Parallel workspaces: [docs/conductor.md](docs/conductor.md).
 
 ## Commands
 
 | Command | Description |
 | --- | --- |
-| `pnpm dev` | Start development server (Turbopack) |
+| `pnpm dev` | Start development server (Turbopack, local DB, schema push) |
+| `pnpm dev:tui` | Dev TUI: dev server against local or production DB, pull production content, db/payload/quality menus |
+| `pnpm db:up` / `db:down` / `db:reset` | Local Docker Postgres |
 | `pnpm dev:prod` | Build and run production mode locally |
 | `pnpm build` | Build for production (`next build --webpack`) |
 | `pnpm start` | Start production server |
@@ -42,10 +46,12 @@ On first run, create the initial Payload admin user from the in-app prompt.
 | `pnpm format` | Format with auto-fix (Biome) |
 | `pnpm format:check` | Check formatting without fixes |
 | `pnpm check` | Lint + format with auto-fix |
-| `pnpm ci` | Lint + format check mode (no fixes) |
+| `pnpm lint:ci` | Lint + format check mode (no fixes) |
+| `pnpm ci` | Vercel build: preview-DB guard, `payload migrate`, build. Never run locally |
 | `pnpm migrate:create` | Create a migration |
-| `pnpm migrate:status` | Check migration status |
-| `pnpm migrate` | Run pending migrations |
+| `pnpm migrate:status` | Production migration ledger |
+| `pnpm check:migrations` | Migration enum safety |
+| `pnpm check:migrations:drift` | Newest migration snapshot against the config |
 | `pnpm generate:types` | Regenerate `src/payload-types.ts` |
 | `pnpm generate:db-schema` | Regenerate `src/payload-generated-schema.ts` |
 | `pnpm payload` | Run Payload CLI |
@@ -133,6 +139,6 @@ Main directories inside `src/`:
 
 ## Migrations and Deployment
 
-- Migrations are manual and must be run before deployment.
+- Push in development, migrations in CI: the Vercel build runs `payload migrate`.
 - See `MIGRATIONS.md` for migration workflow.
 - See `WORKFLOW.md` for branch and release flow.

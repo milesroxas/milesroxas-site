@@ -1,0 +1,14 @@
+# pnpm project settings (https://pnpm.io/settings). pnpm 11+ reads build-script
+# approval from here; package.json `pnpm.onlyBuiltDependencies` stays for the
+# older pnpm Vercel may pick from the lockfile version.
+
+allowBuilds:
+  sharp: true
+  esbuild: true
+  # Optional native accelerators for ws; the JS fallback is fine.
+  bufferutil: false
+  utf-8-validate: false
+  # Postinstall only prints a funding message.
+  core-js: false
+  # Postinstall only checks versions.
+  protobufjs: false

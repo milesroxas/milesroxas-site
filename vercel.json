@@ -1,4 +1,14 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm run ci",
+  "ignoreCommand": "bash scripts/vercel-ignore-build.sh",
+  "git": {
+    "deploymentEnabled": {
+      "*": false,
+      "main": true,
+      "dev": true
+    }
+  },
   "functions": {
     "src/app/**/*": {
       "memory": 2048,

@@ -21,6 +21,16 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+/** Drizzle push only ever targets the local Docker DB, never Neon. */
+const isLocalDatabase = (url: string | undefined): boolean => {
+  try {
+    const { hostname } = new URL(url ?? '')
+    return hostname === '127.0.0.1' || hostname === 'localhost'
+  } catch {
+    return false
+  }
+}
+
 export default buildConfig({
   admin: {
     components: {
@@ -64,7 +74,10 @@ export default buildConfig({
     pool: {
       connectionString: process.env.POSTGRES_URL,
     },
-    push: false, // Use migrations instead of auto-push
+    // Push in local dev, migrations in CI (see MIGRATIONS.md). Payload forbids
+    // mixing the two on one database, so push is limited to a local URL, and
+    // PAYLOAD_DB_PUSH=false opts out (the dev TUI's "dev against prod" mode).
+    push: process.env.PAYLOAD_DB_PUSH !== 'false' && isLocalDatabase(process.env.POSTGRES_URL),
   }),
   collections: [Pages, Posts, Works, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),

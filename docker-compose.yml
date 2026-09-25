@@ -1,0 +1,37 @@
+# Local Postgres for development. App runs on the host: pnpm dev
+# Connection: postgresql://postgres@127.0.0.1:54330/payload (see .env.example)
+# Bump POSTGRES_DOCKER_IMAGE in scripts/dev-tui/constants.ts and .conductor/lib.sh together with `image:` below.
+# Major/minor jumps usually need a fresh volume: pnpm db:reset
+#
+# Port 54330, not 5432/54320: sas-site's container owns 54320 and Supabase
+# local stacks take 54321-54324, so each project keeps its own port.
+
+# Fixed project name so every checkout (main repo, Conductor workspaces) targets the
+# same container/volume. Compose otherwise derives the project from the directory
+# name, and `docker compose exec` in a workspace can't see the running container.
+name: milesroxas
+
+services:
+  postgres:
+    # Same major as Neon production (17). Payload 3.58's drizzle-kit misreads
+    # PG 18's named NOT NULL constraints, so on 18 every push would drop them.
+    image: postgres:17
+    restart: unless-stopped
+    ports:
+      - '54330:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: payload
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      # PG 17 keeps PGDATA here; PG 18+ images moved it under
+      # /var/lib/postgresql/<major>/, so a major bump changes this mount too.
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

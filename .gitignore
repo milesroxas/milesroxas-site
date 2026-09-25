@@ -3,6 +3,7 @@ node_modules
 .DS_Store
 .env
 .env.*
+!.env.example
 .env.local
 .env.development
 .env.production
@@ -22,3 +23,10 @@ public/raw
 # Storybook
 storybook-static
 *storybook.log
+
+# Local tooling (dev TUI dumps/backups)
+.dev-tui/
+.claude/worktrees/
+
+# Conductor — personal overrides (https://www.conductor.build/docs/reference/settings)
+.conductor/settings.local.toml

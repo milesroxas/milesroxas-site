@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+#
+# Pre-push migration guard.
+#
+# 1) Fails the push when schema-defining Payload source changed in the pushed
+#    commits but no new migration file was added alongside it. This is the exact
+#    failure mode that keeps breaking prod: a field/collection is committed, dev's
+#    drizzle `push` masks it locally, the Neon DB never gets the column, and
+#    the Vercel `ci` build crashes querying a column that does not exist.
+# 2) Runs scripts/check-migration-enum-safety.ts on changed migration .ts files so
+#    ALTER TYPE ... ADD VALUE + use of that label in the same up() never reaches CI.
+# 3) Runs scripts/check-migration-drift.ts whenever schema source or migrations
+#    changed: `migrate:create` diffs the config against the newest snapshot file,
+#    so a field added after the migration was generated, or a migration generated
+#    in a parallel workspace before main gained another one, leaves the newest
+#    snapshot out of step with the config — and the next migrate:create re-emits
+#    statements CI already applied. See docs/conductor.md.
+#
+# Matching is an allowlist of files that define Drizzle/Payload schema (fields,
+# collections, globals, block configs, plugin field overrides) — not whole
+# trees. UI, hooks, endpoints, and tests under the same folders must not trip
+# this guard, or developers learn to bypass it.
+#
+# When you add a new schema-owning path (e.g. a field factory or global config),
+# add it to SCHEMA_RES below.
+#
+# Bypass (use only when you are certain the change needs no migration):
+#   SKIP_MIGRATION_GUARD=1 git push
+#   git push --no-verify
+#
+set -euo pipefail
+
+if [[ "${SKIP_MIGRATION_GUARD:-}" == "1" ]]; then
+  exit 0
+fi
+
+# Files whose changes imply a schema diff (Drizzle table/column changes).
+SCHEMA_RES=(
+  '^src/payload\.config\.ts$'
+  # Flat collection configs (e.g. Categories.ts) and folder entrypoints.
+  '^src/collections/[^/]+\.ts$'
+  '^src/collections/[^/]+/index\.ts$'
+  # Block field configs only — not Component.tsx / stories / styles.
+  '^src/blocks/.*/(config\.ts|fields\.ts)$'
+  '^src/blocks/.*/fields/.*\.ts$'
+  '^src/fields/.*\.ts$'
+  '^src/heros/config\.ts$'
+  '^src/Header/config\.ts$'
+  # Plugin field overrides (form builder, SEO, search, redirects) that reshape tables.
+  '^src/plugins/index\.ts$'
+)
+# A migration was added if a numbered migration file (not index.ts) is added.
+MIGRATION_RE='^src/migrations/[0-9].*\.(ts|json)$'
+MIGRATION_TS_RE='^src/migrations/[0-9].*\.ts$'
+
+zero='0000000000000000000000000000000000000000'
+fail=0
+need_drift_check=0
+
+is_schema_path() {
+  local f="$1"
+  local re
+  for re in "${SCHEMA_RES[@]}"; do
+    if [[ "$f" =~ $re ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+check_range() {
+  local base="$1" local_sha="$2"
+
+  local changed added
+  changed="$(git diff --name-only "$base" "$local_sha" 2>/dev/null || true)"
+  added="$(git diff --diff-filter=A --name-only "$base" "$local_sha" 2>/dev/null || true)"
+
+  [[ -z "$changed" ]] && return 0
+
+  # Did a new migration file land in this range?
+  local has_migration=0
+  if grep -qE "$MIGRATION_RE" <<<"$added"; then
+    has_migration=1
+  fi
+
+  # Collect schema-affecting changes.
+  local schema_hits=""
+  local f
+  while IFS= read -r f; do
+    [[ -z "$f" ]] && continue
+    if is_schema_path "$f"; then
+      schema_hits+="  $f"$'\n'
+    fi
+  done <<<"$changed"
+
+  if [[ -n "$schema_hits" || "$has_migration" == 1 ]]; then
+    need_drift_check=1
+  fi
+
+  if [[ -n "$schema_hits" && "$has_migration" == 0 ]]; then
+    echo "✖ pre-push migration guard: schema-defining files changed but no migration was added." >&2
+    echo "" >&2
+    echo "  Changed schema source:" >&2
+    printf '%s' "$schema_hits" >&2
+    echo "" >&2
+    echo "  Dev's drizzle push hides missing columns locally; the shared prod DB will not" >&2
+    echo "  have them and the Vercel build will crash. Create a migration first:" >&2
+    echo "    pnpm migrate:create <name>" >&2
+    echo "" >&2
+    echo "  If this change genuinely alters no DB schema, bypass with:" >&2
+    echo "    SKIP_MIGRATION_GUARD=1 git push" >&2
+    fail=1
+  fi
+
+  # Postgres forbids using a newly ADD VALUE'd enum label in the same transaction.
+  # Payload wraps each migration in a transaction — catch generated ADD VALUE +
+  # SET DEFAULT (etc.) before CI fails on Neon.
+  # Deletions are excluded: a removed migration has no contents to check, and
+  # passing its path crashes the checker on ENOENT.
+  local changed_existing
+  changed_existing="$(git diff --diff-filter=d --name-only "$base" "$local_sha" 2>/dev/null || true)"
+  local migration_ts=()
+  while IFS= read -r f; do
+    [[ -z "$f" ]] && continue
+    if [[ "$f" =~ $MIGRATION_TS_RE ]]; then
+      migration_ts+=("$f")
+    fi
+  done <<<"$changed_existing"
+
+  if ((${#migration_ts[@]} > 0)); then
+    need_drift_check=1
+    if ! pnpm exec tsx scripts/check-migration-enum-safety.ts "${migration_ts[@]}" >&2; then
+      fail=1
+    fi
+  fi
+}
+
+# Newest snapshot vs current config — no DB connection, but Payload needs the
+# env (PAYLOAD_SECRET) to build its config, so this needs a local .env.
+run_drift_check() {
+  if [[ ! -f .env ]]; then
+    echo "pre-push: no .env — skipping migration drift check (run pnpm check:migrations:drift where one exists)" >&2
+    return 0
+  fi
+  if ! pnpm exec tsx --env-file=.env scripts/check-migration-drift.ts </dev/null >&2; then
+    fail=1
+  fi
+}
+
+while read -r _local_ref local_sha _remote_ref remote_sha; do
+  [[ "$local_sha" == "$zero" ]] && continue  # branch deletion
+
+  local_base=""
+  if [[ "$remote_sha" == "$zero" ]]; then
+    # New branch on remote: diff against origin/main if available.
+    if git rev-parse --verify --quiet origin/main >/dev/null; then
+      local_base="$(git merge-base origin/main "$local_sha" 2>/dev/null || true)"
+    fi
+    [[ -z "$local_base" ]] && continue  # nothing to compare against
+  else
+    local_base="$remote_sha"
+  fi
+
+  check_range "$local_base" "$local_sha"
+done
+
+if [[ "$need_drift_check" == 1 ]]; then
+  run_drift_check
+fi
+
+exit "$fail"
