@@ -37,6 +37,10 @@ import { getPayload } from 'payload'
 import config from '../src/payload.config'
 
 async function main(): Promise<void> {
+  // Outside production, getPayload opens an HMR websocket to a running dev
+  // server (localhost:3000) that keeps this process alive forever — the
+  // pre-push hook then hangs whenever `pnpm dev` is up.
+  process.env.DISABLE_PAYLOAD_HMR = 'true'
   // No DB connection, no onInit hooks — only the adapter's schema build runs.
   const payload = await getPayload({ config, disableDBConnect: true, disableOnInit: true })
   const db = payload.db as unknown as VercelPostgresAdapter
@@ -60,7 +64,7 @@ async function main(): Promise<void> {
 
   if (statements.length === 0) {
     console.info(`✓ Migration drift check passed — schema matches ${label}`)
-    return
+    process.exit(0)
   }
 
   console.error(`✖ Migration drift: the Payload schema differs from the newest snapshot ${label}.`)
