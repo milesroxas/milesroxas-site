@@ -4,16 +4,16 @@ Same setup as sas-site. [Conductor](https://www.conductor.build/docs) runs sever
 
 ## First-time setup
 
-1. Add this repo in Conductor. It clones to `~/conductor/repos/milesroxas`.
-2. `cp .env ~/conductor/repos/milesroxas/.env` from your main checkout.
+1. Add this repo in Conductor. It clones to `~/conductor/repos/milesroxas-site`.
+2. `cp .env ~/conductor/repos/milesroxas-site/.env` from your main checkout.
 3. Make sure the main dev DB `payload` has content (dev TUI → Pull production content). New workspaces clone it.
 
 ## What a workspace gets
 
 | Thing | Where it comes from |
 |-------|---------------------|
-| Worktree | `~/conductor/workspaces/milesroxas/<city>` — Conductor also adds a `<branch-name>` symlink beside it once the branch is renamed |
-| `.env` | Copied from the Conductor root checkout (`$CONDUCTOR_ROOT_PATH` = `~/conductor/repos/milesroxas`, Conductor's own clone — **not** your main checkout). Keep that `.env` in sync with your main one; only `POSTGRES_URL` and `NEXT_PUBLIC_SERVER_URL` are rewritten per workspace |
+| Worktree | `~/conductor/workspaces/milesroxas-site/<city>` — Conductor also adds a `<branch-name>` symlink beside it once the branch is renamed |
+| `.env` | Copied from the Conductor root checkout (`$CONDUCTOR_ROOT_PATH` = `~/conductor/repos/milesroxas-site`, Conductor's own clone — **not** your main checkout). Keep that `.env` in sync with your main one; only `POSTGRES_URL` and `NEXT_PUBLIC_SERVER_URL` are rewritten per workspace |
 | Ports | `$CONDUCTOR_PORT` for Next, `+1` for Storybook (Conductor reserves `CONDUCTOR_PORT..+9`) |
 | Database | `payload_<city>` in the one shared `milesroxas-postgres-1` container (port 54330), cloned from the main dev DB `payload` |
 | Vercel Blob, Cloudflare, Resend, … | Shared with your main checkout — same keys, same stores |
@@ -52,7 +52,7 @@ bash .conductor/setup.sh --reseed                    # fresh clone of payload
 bash .conductor/setup.sh --reseed --from production  # pg_dump straight from Neon
 ```
 
-`--from production` needs `.env.production.pulled` in the Conductor root (`~/conductor/repos/milesroxas`) or a logged-in `vercel` CLI; it falls back to the local clone otherwise, and sets `PAYLOAD_SECRET` to production's so encrypted fields decrypt.
+`--from production` needs `.env.production.pulled` in the Conductor root (`~/conductor/repos/milesroxas-site`) or a logged-in `vercel` CLI; it falls back to the local clone otherwise, and sets `PAYLOAD_SECRET` to production's so encrypted fields decrypt.
 
 ### Shared container, never re-created from a workspace
 
@@ -93,7 +93,7 @@ A hand-made worktree (`git worktree add …`) that copies the main `.env` shares
 | `Docker is not running` | Start Docker Desktop; Run re-ensures the container |
 | Dev server reads/writes the shared `payload` DB although `.env` names `payload_<city>` | Launcher injected `POSTGRES_URL` into the process env (Next.js prefers process env over `.env`). `lib.sh` exports the workspace URL explicitly; restart Run ▶ |
 | `.env.local sets POSTGRES_URL to a database other than …` | `vercel env pull` ran in the workspace. `mv .env.local .env.local.neon-bak`, restart |
-| `$CONDUCTOR_ROOT_PATH/.env not found` | Copy your main checkout's `.env` to `~/conductor/repos/milesroxas/.env` |
+| `$CONDUCTOR_ROOT_PATH/.env not found` | Copy your main checkout's `.env` to `~/conductor/repos/milesroxas-site/.env` |
 | Setup slow (~30 s) on "creating database" | Something is connected to `payload` (main dev server), so `TEMPLATE` was refused and it fell back to dump/restore. Normal |
 | Dev server exits right after a schema change | Drizzle push asked to confirm data loss and got no TTY. Run `pnpm dev` once in the workspace terminal and answer, or `setup.sh --reseed` |
 | Disk filling with `payload_*` DBs | `bash .conductor/prune-dbs.sh --yes` |
