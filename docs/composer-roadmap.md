@@ -1,6 +1,6 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
-Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6 is specified as a script (D15, D16). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
+Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6 is built and proven on the local copy of production; its production run waits for `main` (runbook under Phase 6). Phase 7: the code-only bullets are done, the content ones wait for Phase 6 to soak. Phase 8 not started. Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
@@ -501,8 +501,10 @@ Checklist:
 - [ ] Theme enums on the five legacy blocks: `UPDATE ... WHERE theme = 'system'` → `light`, then recreate as `light | dark | neutral | brand`; components read `sectionThemeClass`; `useBlockTheme.ts` and `ClientBlockWrapper.tsx` deleted; hardcoded `data-theme` on heroes, CallOut and the work title strip become band classes. Prompt: none (enum recreate); hand-check normalize-before-cast; `pnpm check:migrations`.
 - [ ] Retire legacy blocks from the drawer once no document uses them (config only, no schema). Tables stay until a later drop.
 - [ ] Posts `content`: drop the field only if every post has moved; otherwise leave it optional forever.
-- [ ] Remove dormant dependencies and config (D13): `glslify`, `glslify-import`, `glslify-loader`, `glsl-canvas-js`, `glsl-noise`, `glsl-easings`, `glsl-fast-gaussian-blur`, `raw-loader`, `shader.d.ts`, the Turbopack `.glsl/.vert/.frag` rules, `src/hooks/useHoverShader.ts`, `useImageCropMaterial.ts`, `src/utilities/texturePreloader.ts`, `calculateMeshScale.ts`, `src/animations/*` (unused), `swiper`, `next-view-transitions`, `payloadcms-lexical-ext`, `hamo`, `split-type`, `leva` (no demo playgrounds here).
-- [ ] Delete `src/blocks/YouTube` (done in Phase 3) and the orphan `src/global.d.ts` import of `./r3f/components/CardPlane/PlaneWithImage`.
+- [x] Remove dormant dependencies and config (D13), done 2026-09-27 (no consumers, no schema): `glslify`, `glslify-import`, `glslify-loader`, `glsl-canvas-js`, `glsl-noise`, `glsl-easings`, `glsl-fast-gaussian-blur`, `raw-loader`, `shader.d.ts`, the Turbopack `.glsl/.vert/.frag` rules, `src/hooks/useHoverShader.ts`, `useImageCropMaterial.ts`, `src/utilities/texturePreloader.ts`, `calculateMeshScale.ts`, `src/animations/*` (unused), `swiper`, `next-view-transitions`, `payloadcms-lexical-ext`, `hamo`, `split-type`, `leva` (no demo playgrounds here).
+- [x] Delete `src/blocks/YouTube` (Phase 3: its config and story; the component lives on as `blocks/Content/YouTubeColumn.tsx`, which the Columns block renders) and the orphan `src/global.d.ts` import of `./r3f/components/CardPlane/PlaneWithImage`, done 2026-09-27.
+
+The first three bullets stay open on purpose: each changes or retires production content, and waits for Phase 6 to have run on production and soaked.
 
 ### Phase 8: optional, in any order
 

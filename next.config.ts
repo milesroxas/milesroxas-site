@@ -68,22 +68,12 @@ const nextConfig: NextConfig = {
     },
 
     // Only needed if you relied on custom webpack loaders in dev
-    // Example: import .svg as React components and .glsl as raw strings
+    // Import .svg as React components. (The .glsl / .vert / .frag raw-loader
+    // rules went with the dormant shader tooling, composer roadmap D13: the
+    // Studio effects keep their GLSL inline.)
     rules: {
       '*.svg': {
         loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-      '*.glsl': {
-        loaders: ['raw-loader'],
-        as: '*.js',
-      },
-      '*.vert': {
-        loaders: ['raw-loader'],
-        as: '*.js',
-      },
-      '*.frag': {
-        loaders: ['raw-loader'],
         as: '*.js',
       },
     },
