@@ -60,7 +60,10 @@ export default async function Post({ params: paramsPromise }: Args) {
         <WorkIntro body={post.intro.body} eyebrow={post.intro.eyebrow} title={post.intro.title} />
       )}
 
-      {post.content && (
+      {/* The body renders until the post is composed: the composer's posts
+          transform (scripts/compose-layouts.ts) splits it into `layout`, and
+          both at once would print the article twice. */}
+      {post.content && !post.layout?.length && (
         <div className="flex flex-col items-start gap-4 pt-8 pb-32 md:pt-12 lg:pt-32">
           <div className="container">
             <div className="max-w-3xl md:pl-32">

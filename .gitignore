@@ -30,3 +30,6 @@ storybook-static
 
 # Conductor — personal overrides (https://www.conductor.build/docs/reference/settings)
 .conductor/settings.local.toml
+
+# Content snapshots written by scripts/compose-layouts.ts (local recovery artifacts)
+scripts/snapshots/

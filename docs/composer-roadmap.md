@@ -476,6 +476,26 @@ Checklist:
 - [ ] Take a Neon backup. Run against production with `.env.production.pulled` and `PAYLOAD_DB_PUSH=false`, check live preview, then `--publish` and redeploy.
 - [ ] `_v` history keeps the legacy shape; it stays restorable until Phase 7 drops columns.
 
+**Phase 6 as built (2026-09-27): the script, proven on the local copy of production. Nothing has been written to Neon.** Production does not have the Phase 3 and 4 tables yet (they are on `dev`), so the production run waits for `main`.
+
+- **Files**: `scripts/compose-layouts.ts` and `scripts/composer/{lexical,rules,transform,preserve,overrides}.ts`, tested by `scripts/composer/transform.test.ts` (every rule, grouping, posts, preservation; plus every work in the newest local snapshot when one exists). Snapshots go to `scripts/snapshots/` (gitignored).
+- **Dry run (local pull of production)**: 13 documents convert (9 works, 4 posts), 0 fail preservation; every page is unchanged (the three Columns blocks on `home` hold work cards and pass through, as planned). The rules produced H1-H3, T1-T4, C1-C5, M1-M5, S1, S2 and TB1 on real data. `overrides.ts` is empty.
+- **Round trip, local**: drafts written, `--publish` shipped 12 (`prospect-park` was never published and stays a draft), every converted work and post renders; `--restore` put the database back so exactly that a full read of every work, page and post, published and latest, matched the pre-run read field for field. A second run is a no-op.
+- **Departures from the plan above**:
+  - **Snapshots hold whole documents**, the published version and the latest draft, not the layout alone: `--publish` ships a pending draft, and only the whole published document can bring back what was live. `--restore` writes the published version, then the draft over it, and checks both.
+  - **Every write is read back.** A save can resolve and still roll back: the search sync failed inside the transaction for posts with a category (the category's id was stored as the search row's primary key, null at depth 0 and duplicated across posts), and Payload only logged it. `src/search/beforeSync.ts` now gives each row an id of its own and reads the titles; the CLI fails loudly when a document does not land.
+  - **Posts' body editor keeps `h5`**: one post uses it, and publishing revalidates the body. No schema change.
+  - **The post route renders `content` only while `layout` is empty**, so a composed post does not print its article twice.
+  - The preservation check follows only the column group a Columns column renders (`content` / `contentType`): the others are leftovers from an earlier choice ("hello" in a hidden text group) that no visitor sees.
+  - Legacy `blockName` ("Intro", "My Role") carries onto the first block each legacy block produces.
+
+**Production runbook for Phase 6** (after `dev` is merged to `main` and the Phase 2 to 5 migrations have run there):
+1. Decide the pending draft on `works/design-systems-for-organizational-scale` (June edits over the published version): publish or discard it in admin. Otherwise `--publish` ships it.
+2. Back up Neon (a `pg_dump` or a branch), and pull `.env.production.pulled`.
+3. `PAYLOAD_DB_PUSH=false pnpm exec tsx --env-file=.env.production.pulled scripts/compose-layouts.ts --dry-run`, read the report.
+4. Same command without `--dry-run`: drafts only, the site keeps rendering the legacy layouts. Check each work in live preview.
+5. `... --publish`, then redeploy (revalidation is skipped). To undo: `... --restore scripts/snapshots/<file>.json`.
+
 ### Phase 7: contract and normalize (one PR per bullet, each with its own migration, after Phase 6 has soaked)
 
 - [ ] Theme enums on the five legacy blocks: `UPDATE ... WHERE theme = 'system'` → `light`, then recreate as `light | dark | neutral | brand`; components read `sectionThemeClass`; `useBlockTheme.ts` and `ClientBlockWrapper.tsx` deleted; hardcoded `data-theme` on heroes, CallOut and the work title strip become band classes. Prompt: none (enum recreate); hand-check normalize-before-cast; `pnpm check:migrations`.
