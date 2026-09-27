@@ -12,7 +12,7 @@ export const PROJECT_ROOT = path.resolve(__dirname, '../..')
  * local catalog the way it reads production's.
  * Keep in sync with `docker-compose.yml` and `.conductor/lib.sh`.
  */
-export const POSTGRES_DOCKER_IMAGE = 'postgres:17'
+export const POSTGRES_DOCKER_IMAGE = 'pgvector/pgvector:pg17-trixie'
 
 export const LOCAL_POSTGRES_DB = 'postgresql://postgres@127.0.0.1:54330/payload'
 

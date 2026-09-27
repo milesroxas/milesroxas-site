@@ -72,6 +72,8 @@ export interface Config {
     works: Work;
     media: Media;
     categories: Category;
+    inquiries: Inquiry;
+    'ask-questions': AskQuestion;
     users: User;
     'streak-looks': StreakLook;
     redirects: Redirect;
@@ -96,6 +98,8 @@ export interface Config {
     works: WorksSelect<false> | WorksSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
+    'ask-questions': AskQuestionsSelect<false> | AskQuestionsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'streak-looks': StreakLooksSelect<false> | StreakLooksSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
@@ -115,9 +119,13 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     header: Header;
+    'site-info': SiteInfo;
+    'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
+    'site-info': SiteInfoSelect<false> | SiteInfoSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -126,6 +134,7 @@ export interface Config {
   user: User;
   jobs: {
     tasks: {
+      askQuestionRetention: TaskAskQuestionRetention;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -2274,6 +2283,143 @@ export interface CallOutBlock {
   blockType: 'callout';
 }
 /**
+ * Requests from the site. New ones are unread until someone opens them — assign an owner so nothing sits.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inquiries".
+ */
+export interface Inquiry {
+  id: number;
+  /**
+   * Quoted in the confirmation email — the visitor knows this code.
+   */
+  reference?: string | null;
+  type: 'project' | 'general';
+  /**
+   * Where this request has got to. "New" means nobody has picked it up yet.
+   */
+  status: 'new' | 'in-progress' | 'replied' | 'closed' | 'spam';
+  /**
+   * Who owns the reply. Assigning emails them.
+   */
+  assignedTo?: (number | null) | User;
+  /**
+   * The Ask chat this came from. What they asked is below the request.
+   */
+  askConversation?: string | null;
+  submittedAt?: string | null;
+  repliedAt?: string | null;
+  name: string;
+  email: string;
+  company?: string | null;
+  website?: string | null;
+  budget?: ('under-25k' | '25-50k' | '50-100k' | '100k-plus' | 'guidance') | null;
+  timeline?: ('asap' | '1-3-months' | '3-6-months' | 'exploring') | null;
+  message: string;
+  /**
+   * Page the form was on — useful when a campaign is running.
+   */
+  sourceUrl?: string | null;
+  /**
+   * What was said, decided, or is still outstanding.
+   */
+  notes?:
+    | {
+        note: string;
+        author?: (number | null) | User;
+        createdAt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Every question asked in Ask, with emails, phone numbers and keys removed, and the answer the visitor got. "No sources" is the content-gap list. Rows delete themselves after 90 days.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ask-questions".
+ */
+export interface AskQuestion {
+  id: number;
+  question: string;
+  /**
+   * What the model said, redacted. Empty when the reply was only a handoff.
+   */
+  answer?: string | null;
+  /**
+   * The pages the answer drew on, best match first, with the cosine similarity of their best chunk.
+   */
+  sources?:
+    | {
+        title: string;
+        url: string;
+        similarity?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Why it was triaged the way it was.
+   */
+  note?: string | null;
+  /**
+   * The draft that closes the gap.
+   */
+  plannedContent?:
+    | (
+        | {
+            relationTo: 'posts';
+            value: number | Post;
+          }
+        | {
+            relationTo: 'pages';
+            value: number | Page;
+          }
+      )[]
+    | null;
+  status: 'new' | 'reviewed' | 'content_planned' | 'ignored';
+  /**
+   * The site taxonomy, so gaps group by subject.
+   */
+  topic?: (number | null) | Category;
+  /**
+   * What the visitor got. Partial: an answer that ended in a handoff. No sources: nothing relevant was published. Chat only: a follow-up with no new facts.
+   */
+  outcome?: ('answered' | 'partial' | 'no_sources' | 'chat_only' | 'stopped' | 'error') | null;
+  rating?: ('up' | 'down') | null;
+  ratingReason?: ('wrong' | 'incomplete' | 'off_topic') | null;
+  /**
+   * How far the visitor went toward a person.
+   */
+  handoff?: ('clicked' | 'inquiry_sent') | null;
+  /**
+   * Why the reply offered a person, if it did.
+   */
+  handoffReason?: ('estimate' | 'project' | 'person' | 'contact_details' | 'no_answer' | 'case_study') | null;
+  /**
+   * The page the visitor was on.
+   */
+  pagePath?: string | null;
+  /**
+   * Asked after an earlier question in the same chat.
+   */
+  followUp?: boolean | null;
+  /**
+   * Which search found the sources.
+   */
+  retrieval?: ('embedding' | 'keyword' | 'none') | null;
+  latencyMs?: number | null;
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  /**
+   * Shared by every question from one open Ask box.
+   */
+  conversation?: string | null;
+  turn?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -2326,10 +2472,19 @@ export interface Search {
   id: number;
   title?: string | null;
   priority?: number | null;
-  doc: {
-    relationTo: 'posts';
-    value: number | Post;
-  };
+  doc:
+    | {
+        relationTo: 'pages';
+        value: number | Page;
+      }
+    | {
+        relationTo: 'works';
+        value: number | Work;
+      }
+    | {
+        relationTo: 'posts';
+        value: number | Post;
+      };
   slug?: string | null;
   meta?: {
     title?: string | null;
@@ -2415,7 +2570,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'schedulePublish';
+        taskSlug: 'inline' | 'askQuestionRetention' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -2448,10 +2603,19 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'askQuestionRetention' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2481,6 +2645,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'inquiries';
+        value: number | Inquiry;
+      } | null)
+    | ({
+        relationTo: 'ask-questions';
+        value: number | AskQuestion;
       } | null)
     | ({
         relationTo: 'users';
@@ -3606,6 +3778,72 @@ export interface CategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inquiries_select".
+ */
+export interface InquiriesSelect<T extends boolean = true> {
+  reference?: T;
+  type?: T;
+  status?: T;
+  assignedTo?: T;
+  askConversation?: T;
+  submittedAt?: T;
+  repliedAt?: T;
+  name?: T;
+  email?: T;
+  company?: T;
+  website?: T;
+  budget?: T;
+  timeline?: T;
+  message?: T;
+  sourceUrl?: T;
+  notes?:
+    | T
+    | {
+        note?: T;
+        author?: T;
+        createdAt?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ask-questions_select".
+ */
+export interface AskQuestionsSelect<T extends boolean = true> {
+  question?: T;
+  answer?: T;
+  sources?:
+    | T
+    | {
+        title?: T;
+        url?: T;
+        similarity?: T;
+        id?: T;
+      };
+  note?: T;
+  plannedContent?: T;
+  status?: T;
+  topic?: T;
+  outcome?: T;
+  rating?: T;
+  ratingReason?: T;
+  handoff?: T;
+  handoffReason?: T;
+  pagePath?: T;
+  followUp?: T;
+  retrieval?: T;
+  latencyMs?: T;
+  inputTokens?: T;
+  outputTokens?: T;
+  conversation?: T;
+  turn?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -3878,6 +4116,7 @@ export interface PayloadJobsSelect<T extends boolean = true> {
   queue?: T;
   waitUntil?: T;
   processing?: T;
+  meta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3955,6 +4194,96 @@ export interface Header {
   createdAt?: string | null;
 }
 /**
+ * Site-wide facts the Ask assistant answers from, and the Ask switch.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-info".
+ */
+export interface SiteInfo {
+  id: number;
+  name: string;
+  /**
+   * Registered legal name, if different from the name above.
+   */
+  legalName?: string | null;
+  /**
+   * One-sentence positioning.
+   */
+  tagline?: string | null;
+  /**
+   * A longer summary Ask can quote. Two to four sentences.
+   */
+  description?: string | null;
+  foundingYear?: number | null;
+  /**
+   * Where Ask handoffs are sent, and the address Ask gives when asked.
+   */
+  contactEmail?: string | null;
+  /**
+   * What the Ask handoff and its receipt email promise.
+   */
+  inquiries?: {
+    /**
+     * Completes the sentence "you will hear back ___".
+     */
+    responseTime?: string | null;
+    /**
+     * Booking link behind "Book a call". Leave empty to hide that action.
+     */
+    scheduleUrl?: string | null;
+  };
+  /**
+   * The grounded Q&A assistant at /ask.
+   */
+  ask?: {
+    /**
+     * Turn on to take Ask off the site: /ask returns not found.
+     */
+    hidden?: boolean | null;
+  };
+  address?: {
+    streetAddress?: string | null;
+    city?: string | null;
+    state?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+  };
+  /**
+   * Profile URLs Ask can point to (LinkedIn, GitHub, Dribbble).
+   */
+  socialProfiles?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional extra paragraph Ask can answer from (what you are known for).
+   */
+  llmsNotes?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: number;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -3979,6 +4308,59 @@ export interface HeaderSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-info_select".
+ */
+export interface SiteInfoSelect<T extends boolean = true> {
+  name?: T;
+  legalName?: T;
+  tagline?: T;
+  description?: T;
+  foundingYear?: T;
+  contactEmail?: T;
+  inquiries?:
+    | T
+    | {
+        responseTime?: T;
+        scheduleUrl?: T;
+      };
+  ask?:
+    | T
+    | {
+        hidden?: T;
+      };
+  address?:
+    | T
+    | {
+        streetAddress?: T;
+        city?: T;
+        state?: T;
+        postalCode?: T;
+        country?: T;
+      };
+  socialProfiles?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  llmsNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -3986,6 +4368,16 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAskQuestionRetention".
+ */
+export interface TaskAskQuestionRetention {
+  input?: unknown;
+  output: {
+    deleted?: number | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

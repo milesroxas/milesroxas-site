@@ -10,7 +10,10 @@ import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
 import type { Header as HeaderType } from '@/payload-types'
 
-export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
+export const HeaderNav: React.FC<{ askHidden?: boolean; data: HeaderType }> = ({
+  askHidden = false,
+  data,
+}) => {
   const router = useRouter()
   const navItems = data?.navItems || []
   const [isOpen, setIsOpen] = useState(false)
@@ -137,7 +140,25 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                 </div>
               ))}
 
-              <div ref={(el) => setNavItemRef(el, navItems.length)}>
+              {/* Ask (composer roadmap, Phase 5, D10): a code-owned entry, not a
+                  Header nav row, so it follows Site Info › Ask › Hide Ask. */}
+              {!askHidden && (
+                <div ref={(el) => setNavItemRef(el, navItems.length)}>
+                  <Link
+                    className="text-4xl text-primary"
+                    href="/ask"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleNavClick('/ask')
+                    }}
+                    tabIndex={isOpen ? 0 : -1}
+                  >
+                    Ask
+                  </Link>
+                </div>
+              )}
+
+              <div ref={(el) => setNavItemRef(el, navItems.length + 1)}>
                 <button
                   type="button"
                   onClick={() => handleNavClick('/search')}

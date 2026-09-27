@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Label } from './label'
-import { Textarea } from './textarea'
+import { Label } from './legacy-label'
+import { Textarea } from './legacy-textarea'
 
 const meta = {
-  title: 'UI/Textarea',
+  title: 'UI/Legacy/Textarea',
   component: Textarea,
   tags: ['autodocs'],
   args: {

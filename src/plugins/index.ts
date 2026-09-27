@@ -8,9 +8,11 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 import type { Plugin } from 'payload'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import type { Page, Post } from '@/payload-types'
+import { askIndexPlugin } from '@/plugins/ask-index'
 import { streakStudioPlugin } from '@/plugins/streak-studio'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 import { searchFields } from '@/search/fieldOverrides'
+import { SEARCH_COLLECTIONS } from '@/shared/content/surfaces'
 import { getServerSideURL } from '@/utilities/getURL'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
@@ -82,7 +84,9 @@ export const plugins: Plugin[] = [
     },
   }),
   searchPlugin({
-    collections: ['posts'],
+    // Every public surface (shared/content/surfaces.ts): the Ask keyword
+    // fallback reads this index. The /search page still lists posts only.
+    collections: SEARCH_COLLECTIONS,
     beforeSync: beforeSyncWithSearch,
     searchOverrides: {
       fields: ({ defaultFields }) => {
@@ -90,4 +94,6 @@ export const plugins: Plugin[] = [
       },
     },
   }),
+  // Last: it hooks the collections and globals every plugin above has added.
+  askIndexPlugin(),
 ]

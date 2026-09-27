@@ -1,7 +1,7 @@
 import type { TextAreaField } from '@payloadcms/plugin-form-builder/types'
 import type React from 'react'
 import { Label } from '@/components/ui/legacy-label'
-import { Textarea as TextAreaComponent } from '@/components/ui/textarea'
+import { Textarea as TextAreaComponent } from '@/components/ui/legacy-textarea'
 
 import { FormError } from '../Error'
 import type { RegisterFieldProps } from '../types'

@@ -1,6 +1,6 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
-Status: Phases 1 to 4 built 2026-09-27 on `dev` (notes under each phase). Phase 6 is specified as a script (D15, D16). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
+Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6 is specified as a script (D15, D16). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
@@ -387,6 +387,19 @@ Source of truth: `sas:src/features/ask/README.md`, then `sas:docs/ask-rag-roadma
 - Backfill once after deploy: `pnpm tsx --env-file=.env.production.pulled scripts/backfill-ask-index.ts` with `PAYLOAD_DB_PUSH=false`, or Site Info → Rebuild index.
 
 Schema added: `ask_embeddings` (drizzle, HNSW index), `ask_questions` + `_sources` + `_rels`, `inquiries` (+ `_rels`), `site_info`, `payload_locked_documents_rels` columns, the jobs task-slug enum value `askQuestionRetention` (added on its own; check `pnpm check:migrations`). Answer sheet: Appendix A, Phase 5.
+
+**Phase 5 as built (2026-09-27).** Migration `20260927_180824_ask`: `CREATE EXTENSION IF NOT EXISTS vector` hand-added first (Neon offers pgvector 0.8.0 and `neondb_owner` is in `neon_superuser`); `ask_embeddings` with its HNSW index; `ask_questions` (+ `_sources`, `_rels`), `inquiries` (+ `_notes`), `site_info` (+ `_social_profiles`); `ADD COLUMN` on `payload_jobs` (`meta`, for scheduled tasks), `payload_locked_documents_rels`, and `search_rels` (`pages_id`, `works_id`); the task-slug enums gain `askQuestionRetention` by `ADD VALUE`, used by nothing in the same `up()` (`check:migrations` passes). Nothing dropped or renamed. `tsc`, `pnpm test:unit` (33 files, 282 tests, Ask's included), `pnpm test:storybook` (63 files, 340 tests), `pnpm build`, both checks green; locally `/api/ask` answers 503 with no key and the inquiry, Ask-question and Site Info collections round-trip through the Local API. Where the build departs from the plan above:
+
+- **Local image is `pgvector/pgvector:pg17-trixie`**, not `pg17`: the plain tag is Debian 12, the old `postgres:17` image Debian 13, and the glibc change raises a collation version mismatch on the existing volume. Trixie keeps glibc 2.41, so the volume carried over with no `db:reset`; `CREATE EXTENSION vector` was run once by hand and the compose `initdb` config covers fresh volumes.
+- **Corpus**: Pages (`home` is `/`), Works (`/works`), Posts (`/posts`, the body plus the walk), and Site Info. No relationship is hydrated (the Content Hub collections do not exist); the works' Work Details (`industry`, `role`, `deliverables`) are text keys. `journeyPages.ts` is ported (its subject pages are works and posts); `storyBrief.ts` is a stub that never returns a brief.
+- **Voice**: "Speak for Miles Roxas's design practice ("we")", sas-site's plain-voice rules inlined in `prompts.ts`. Inquiry references read `MR-XXXX`.
+- **Inquiries**: sas-site's collection and intake minus the `capabilities` relation and BotID (honeypot and the dedupe window remain). Emails are plain HTML through the Resend adapter (`collections/Inquiries/emails.ts`), to the assigned owner or else Site Info's contact email (default `miles@milesroxas.com`), plus the visitor's receipt.
+- **Site Info** is new and trimmed to what Ask reads: name, tagline, description, founding year, contact email, inquiry promises, the Ask group (hide, rebuild index, usage), address, social profiles, notes.
+- **Search**: the plugin now indexes pages and works too (the keyword fallback); the `/search` page filters to posts so it lists what it always has. Existing works and pages enter the index when re-saved or reindexed.
+- **Cron** is daily (`10 5 * * *`), not every ten minutes: a Hobby plan allows one run a day, and retention is the only task.
+- **Header**: an "Ask" entry in the menu, code-owned and hidden with Site Info › Ask › Hide Ask. `AskSessionProvider` wraps the site in `providers/index.tsx`.
+- **Storybook**: the handoff plays wait for the form's settle focus and give the receipt five seconds (sas-site never ran them as browser tests). New primitives: `bubble`, `field`, `input-group`, `message`, `message-scroller`, sas-site's `card` and `textarea` (this site's textarea moved to `legacy-textarea.tsx`).
+- **Not done here**: `OPENAI_API_KEY` (and optionally `OPENAI_ADMIN_API_KEY`, `TYPESAFE_API_KEY`) must be added in Vercel before `/api/ask` answers; then run the backfill (`pnpm exec tsx --env-file=.env scripts/backfill-ask-index.ts`, or Site Info › Ask › Rebuild index). The int specs (`tests/int/ask*.int.spec.ts`) were not ported: they boot Payload against a database.
 
 ### Phase 6: content migration (scripted, no admin re-authoring)
 

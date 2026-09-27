@@ -28,9 +28,12 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
     },
     // pagination: false reduces overhead if you don't need totalDocs
     pagination: false,
+    // The index also holds pages and works since the Ask keyword fallback
+    // reads it (composer Phase 5); this page lists posts, as it always has.
     ...(query
       ? {
           where: {
+            'doc.relationTo': { equals: 'posts' },
             or: [
               {
                 title: {
@@ -55,7 +58,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
             ],
           },
         }
-      : {}),
+      : { where: { 'doc.relationTo': { equals: 'posts' } } }),
   })
 
   return (
