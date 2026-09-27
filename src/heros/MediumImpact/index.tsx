@@ -1,7 +1,7 @@
 import type React from 'react'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
-import RichText from '@/components/RichText'
+import RichText from '@/components/RichText/Legacy'
 import type { Page } from '@/payload-types'
 import { linkKeys } from '@/utilities/reactKeyDomains'
 

@@ -1,7 +1,7 @@
 'use client'
 import { CopyIcon } from '@payloadcms/ui/icons/Copy'
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/legacy-button'
 
 export function CopyButton({ code }: { code: string }) {
   const [text, setText] = useState('Copy')

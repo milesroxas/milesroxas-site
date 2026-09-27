@@ -2,7 +2,7 @@ import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import clsx from 'clsx'
 import type React from 'react'
 import { PostCard } from '@/components/Card/Posts/Component'
-import RichText from '@/components/RichText'
+import RichText from '@/components/RichText/Legacy'
 import type { Post } from '@/payload-types'
 import { postKeys } from '@/utilities/reactKeyDomains'
 

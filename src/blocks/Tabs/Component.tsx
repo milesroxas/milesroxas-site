@@ -1,7 +1,7 @@
 'use client'
 
 import { SliderBlock } from '@/blocks/Slider/Component'
-import RichText from '@/components/RichText'
+import RichText from '@/components/RichText/Legacy'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useBlockTheme } from '@/hooks/useBlockTheme'
 import { type SpaceProps, useSpacing } from '@/hooks/useSpacing'

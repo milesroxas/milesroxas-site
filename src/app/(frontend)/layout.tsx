@@ -1,4 +1,5 @@
 import { Analytics } from '@vercel/analytics/next'
+import { GeistMono } from 'geist/font/mono'
 import type { Metadata } from 'next'
 import { IBM_Plex_Sans } from 'next/font/google'
 import { draftMode } from 'next/headers'
@@ -29,7 +30,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { isEnabled } = await draftMode()
 
   return (
-    <html className={cn(ibmPlexSans.className)} lang="en" suppressHydrationWarning>
+    <html
+      className={cn(ibmPlexSans.className, ibmPlexSans.variable, GeistMono.variable)}
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />

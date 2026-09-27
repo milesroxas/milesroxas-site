@@ -61,7 +61,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         </div>
 
         {(titleFromProps || title) && (
-          <div className="prose flex flex-col-reverse items-start justify-between gap-2 md:flex-row">
+          <div className="flex flex-col-reverse items-start justify-between gap-2 md:flex-row">
             <h3 className="font-light text-lg">{titleFromProps || title}</h3>
             <Badge variant="post" className="mt-1">
               Post

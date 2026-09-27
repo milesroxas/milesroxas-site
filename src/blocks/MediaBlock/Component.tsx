@@ -3,7 +3,7 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type React from 'react'
 import { Media } from '@/components/Media'
-import RichText from '@/components/RichText'
+import RichText from '@/components/RichText/Legacy'
 import { type SpaceProps, useSpacing } from '@/hooks/useSpacing'
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
 import { cn } from '@/utilities/ui'

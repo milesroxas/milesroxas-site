@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { lexicalState, simpleRichText } from '@/stories/fixtures'
-import RichText from './index'
+import RichText from './Legacy'
 
 const meta = {
-  title: 'Components/RichText',
+  title: 'Components/RichText/Legacy',
   component: RichText,
   tags: ['autodocs'],
 } satisfies Meta<typeof RichText>

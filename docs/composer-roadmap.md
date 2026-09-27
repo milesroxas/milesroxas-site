@@ -1,6 +1,6 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
-Status: proposed 2026-09-27. Nothing below has shipped. Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
+Status: Phase 1 built 2026-09-27 (uncommitted on `dev`; notes under Phase 1). Nothing else has shipped. Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
@@ -210,6 +210,19 @@ Everything the run blocks and their entrances import, ported first so Phase 3 is
 **Storybook.** Port `sas:src/blocks/fixtures.ts` builders (`text`, `paragraph`, `heading`, `richText`, `mediaFixture`, `insightMarkFixtures`) into `src/stories/fixtures.ts`. Titles follow sas-site: `Blocks/SectionHeading/*`, `Blocks/MediaAndContent/*`, `Blocks/Media/*`, `Blocks/Text/*`, `Blocks/Interactive/*`, `Blocks/Lists/*`, `Blocks/Section`.
 
 Definition of done: `tsc --noEmit`, `pnpm lint:ci`, `pnpm test:storybook` clean; no file under `src/fields/`, `src/collections/` or a block `config.ts` changed (so the pre-push migration guard stays quiet); site renders byte-identical; a throwaway story renders `Section` in all four bands over `RevealSection` and `ScrollReveal` with the tuning constants unchanged.
+
+**Phase 1 as built (2026-09-27).** `tsc`, `biome ci` (warnings only, all in verbatim class strings), `pnpm test:storybook` (38 files, 143 tests) and the new `pnpm test:unit` are green; `/`, `/works`, a work page, `/posts` and `/contact` render on `pnpm dev`. A compiled-CSS diff against `HEAD` shows every legacy rule unchanged except the three listed under "Visible changes". Where the build departs from the plan above:
+
+- **Tailwind Typography was never loaded here.** `prose` on legacy markup was inert. The plugin is now on for the ported blocks, so the old renderer moved to `components/RichText/Legacy.tsx` (all legacy blocks, heroes and the post body import it). It drops the inert `prose md:prose-md` and the `payload-richtext` marker, which the ported bare rich-text flow keys on. Inert `prose` / `dark:prose-invert` also came off five index pages and the post card. `components/RichText/index.tsx` is sas-site's renderer with this site's block converters.
+- **Button and Carousel.** sas-site's primitives sit at `components/ui/button.tsx` and `carousel.tsx` so ported code imports them unchanged; this site's moved to `legacy-button.tsx` and `legacy-carousel.tsx` (CMSLink, Form, Code copy button, pagination, not-found, Slider). Reconcile in Phase 7.
+- **`dark` variant keyed on `data-theme`** (`src/styles/shadcn-theme.css`), against "take the tokens, not the variant". Without it Tailwind's default `dark:` follows the visitor's OS setting, so ported primitives would half-darken for OS-dark visitors on a light site. With it they read dark inside a legacy forced-dark block, which is right.
+- **Token map** leaves out sidebar, success, warning, error and active (undefined here; mapping them would activate the inert `border-error` safelist). `.band-dark` does not remap `--accent`: this site's accent is the orange ink, not a selected-surface tint.
+- **Band values (O7):** `dark` = the legacy forced-dark background, so Phase 7's conversion is visually a no-op; `neutral` a 4% stripe off the page; `brand` the orange with dark ink.
+- **Deferred:** `BlocksDrawerTabs` registration to Phase 3 (`payload.config.ts` trips the pre-push guard, and the tabs only mount once blocks carry `admin.group`); `visual-surface.ts` to Phase 2 (imports the immersive visual); the `sectionChildComponents` map, the rich-text toolbar converters and the code converter switch to Phase 3, with the blocks they import; `tw-animate-css` until a consumer needs it (it would also start animating the legacy form Select).
+- **Media spike:** `<Media size>` already passed through, so no `sizes` prop was needed. The real gap was the `<picture>` wrapper: a `fill` image sat in a static `picture`. It now takes sas-site's `absolute inset-0` when `fill` is set; legacy `fill` callers keep the same box.
+- **Tests:** a `unit` Vitest project (jsdom) runs `src/**/*.test.ts`; `scroll-reveal.test.ts` passes. The Phase 1 story is `Foundation/Section band` (`src/blocks/shared/section.stories.tsx`); `Blocks/Section` stays free for the Phase 3 block.
+- **Visible changes:** `font-mono` is Geist Mono (SiteFrame clock and Contact label, legacy code styling); `dark:` utilities no longer follow OS dark mode (Footer, Logo, Badge: nothing visible on the light site); Radix `data-disabled` variant form (same match for Radix attributes).
+- **Dependencies:** `radix-ui`, `@tabler/icons-react`, `prismjs` 1.30.0; dev `jsdom`.
 
 ### Phase 2: Studio shader plugin (additive schema)
 

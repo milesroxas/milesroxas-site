@@ -1,0 +1,21 @@
+/*
+ * Storybook stand-in for `geist/font/mono` (ported from sas-site).
+ *
+ * The app loads Geist Mono through next/font (see RootLayout), which
+ * Storybook's Vite builder cannot transform for imports made inside
+ * node_modules (geist/dist/*.js). The same variable font file is declared
+ * here and exposed under the CSS variable RootLayout would provide, so
+ * `--font-mono` in globals.css resolves identically.
+ */
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("../node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-geist-mono: "Geist Mono", ui-monospace, monospace;
+}
