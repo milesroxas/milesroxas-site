@@ -1,4 +1,5 @@
 import type { Block, Field } from 'payload'
+import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 
 import { sectionSpacing } from '@/fields/sectionSpacing'
 
@@ -46,6 +47,7 @@ const introFields: Field[] = [
 
 export const SliderBlock: Block = {
   slug: 'slider',
+  admin: { group: BLOCK_GROUPS.interactive },
   interfaceName: 'SliderBlock',
   fields: [
     {

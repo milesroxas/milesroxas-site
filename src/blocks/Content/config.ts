@@ -9,6 +9,7 @@ import type { Block, Field } from 'payload'
 import { FormBlock } from '@/blocks/Form/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { SliderBlock } from '@/blocks/Slider/config'
+import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { link } from '@/fields/link'
 import { sectionSpacing } from '@/fields/sectionSpacing'
 
@@ -370,6 +371,8 @@ const columnFields: Field[] = [
 
 export const Content: Block = {
   slug: 'content',
+  admin: { group: BLOCK_GROUPS.custom },
+  labels: { singular: 'Columns', plural: 'Columns' },
   interfaceName: 'ContentBlock',
   fields: [
     {

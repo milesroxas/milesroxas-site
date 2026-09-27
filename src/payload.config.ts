@@ -35,6 +35,9 @@ export default buildConfig({
   admin: {
     components: {
       beforeLogin: ['@/components/BeforeLogin'],
+      // All / group filter over Payload's blocks drawer (composer roadmap,
+      // Phase 3). Reads group labels from the drawer, so it needs no wiring.
+      providers: ['@/components/admin/BlocksDrawerTabs#BlocksDrawerTabs'],
     },
     importMap: {
       baseDir: path.resolve(dirname),

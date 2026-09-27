@@ -12,3 +12,10 @@ allowBuilds:
   core-js: false
   # Postinstall only checks versions.
   protobufjs: false
+
+# Ported from sas-site. `@payloadcms/drizzle`: a virtual field (the Rich text
+# block's write-only `markdown` sibling) must not fail the "identical block"
+# check, or a block used both at the top level and inside a Section gets a
+# second, suffixed table (`<table>_2`).
+patchedDependencies:
+  '@payloadcms/drizzle': patches/@payloadcms__drizzle.patch

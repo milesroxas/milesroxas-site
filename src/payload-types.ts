@@ -204,7 +204,32 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | CallOutBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | SliderBlock)[];
+  layout: (
+    | PageSectionBlock
+    | RichTransitionBlock
+    | FeatureHeadingOffsetBlock
+    | FullMediaBlock
+    | MediaContentSplitBlock
+    | SplitContentNarrowBlock
+    | ImagePairBlock
+    | SplitImageOffsetBlock
+    | FeatureImageStatementBlock
+    | CaptionBlock
+    | YouTubeBlock
+    | RichTextBlock
+    | CodeBlock
+    | FaqBlock
+    | CarouselBlock
+    | FeatureTabsBlock
+    | InsightListBlock
+    | SliderBlock
+    | CallOutBlock
+    | ArchiveBlock
+    | CallToActionBlock
+    | FormBlock
+    | MediaBlock
+    | ContentBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -275,7 +300,7 @@ export interface Post {
       | null;
     media?: (number | null) | Media;
   };
-  content: {
+  content?: {
     root: {
       type: string;
       children: {
@@ -289,7 +314,31 @@ export interface Post {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
+  /**
+   * Sections after the article body. The route renders the body, then these.
+   */
+  layout?:
+    | (
+        | PostSectionBlock
+        | RichTransitionBlock
+        | FeatureHeadingOffsetBlock
+        | FullMediaBlock
+        | MediaContentSplitBlock
+        | SplitContentNarrowBlock
+        | ImagePairBlock
+        | SplitImageOffsetBlock
+        | FeatureImageStatementBlock
+        | CaptionBlock
+        | YouTubeBlock
+        | RichTextBlock
+        | CodeBlock
+        | FaqBlock
+        | CarouselBlock
+        | FeatureTabsBlock
+        | InsightListBlock
+      )[]
+    | null;
   relatedPosts?: (number | Post)[] | null;
   categories?: (number | Category)[] | null;
   meta?: {
@@ -550,79 +599,70 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
+ * via the `definition` "PostSectionBlock".
  */
-export interface Category {
-  id: number;
-  title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  parent?: (number | null) | Category;
-  breadcrumbs?:
-    | {
-        doc?: (number | null) | Category;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CallToActionBlock".
- */
-export interface CallToActionBlock {
-  richText?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  links?:
-    | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-          /**
-           * Choose how the link should be rendered.
-           */
-          appearance?: ('default' | 'outline') | null;
-        };
-        id?: string | null;
-      }[]
+export interface PostSectionBlock {
+  /**
+   * Override the surface, band padding, and space between blocks. Off uses the page surface and default rhythm.
+   */
+  customize?: boolean | null;
+  /**
+   * Surface within the visitor's site theme. "Inherit" is the page surface; "Inverted" is a contrasted band, not a forced dark mode.
+   */
+  theme?: ('inherit' | 'secondary' | 'accent' | 'inverted') | null;
+  /**
+   * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
+   */
+  spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
+  /**
+   * Space between nested blocks. Independent of Band. "None" sits them flush.
+   */
+  stack?: ('default' | 'tight' | 'loose' | 'none') | null;
+  blocks?:
+    | (
+        | RichTransitionBlock
+        | FeatureHeadingOffsetBlock
+        | FullMediaBlock
+        | MediaContentSplitBlock
+        | SplitContentNarrowBlock
+        | ImagePairBlock
+        | SplitImageOffsetBlock
+        | FeatureImageStatementBlock
+        | CaptionBlock
+        | YouTubeBlock
+        | RichTextBlock
+        | CodeBlock
+        | FaqBlock
+        | CarouselBlock
+        | FeatureTabsBlock
+        | InsightListBlock
+        | ContentBlock
+      )[]
     | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'cta';
+  blockType: 'section';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CallOutBlock".
+ * via the `definition` "RichTransitionBlock".
  */
-export interface CallOutBlock {
-  richText?: {
+export interface RichTransitionBlock {
+  eyebrow?: string | null;
+  heading: string;
+  /**
+   * How the copy sits on the band.
+   */
+  layout?: ('offset' | 'left' | 'centered' | 'split' | 'statement' | 'prose') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  /**
+   * Outline level and type size for the Prose layout, set against the article body rather than the page headings.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h4') | null;
+  body?: {
     root: {
       type: string;
       children: {
@@ -639,7 +679,696 @@ export interface CallOutBlock {
   } | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'callout';
+  blockType: 'richTransition';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureHeadingOffsetBlock".
+ */
+export interface FeatureHeadingOffsetBlock {
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading: string;
+  /**
+   * Supporting copy in the offset right column. Leave empty to pull the source.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Type size of the supporting copy.
+   */
+  bodySize?: ('small' | 'medium' | 'large') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureHeadingOffset';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FullMediaBlock".
+ */
+export interface FullMediaBlock {
+  /**
+   * Off renders the media on its own, with no copy beneath it.
+   */
+  showContent?: boolean | null;
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Contained uses the aspect ratio below. Full width crops to 16:9 on small screens and 21:9 from md up.
+   */
+  media?: (number | null) | Media;
+  /**
+   * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
+   */
+  visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+  shader?: PlacedVisualConfig;
+  /**
+   * Contained keeps the media in the page column. Full width bleeds edge to edge.
+   */
+  width?: ('contained' | 'full-width') | null;
+  /**
+   * Crop for contained media.
+   */
+  aspectRatio?: ('16-9' | '3-2' | '21-9') | null;
+  /**
+   * Arrange the content row on the left or the right below the media (desktop only; smaller screens always sit left).
+   */
+  contentPosition?: ('left' | 'right') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'fullMedia';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PlacedVisualConfig".
+ */
+export interface PlacedVisualConfig {
+  studio?: (number | null) | StreakLook;
+  preset?: string | null;
+  /**
+   * Lays out the field. The same seed always draws the same composition; leave empty to have one assigned when saved.
+   */
+  seed?: number | null;
+  /**
+   * Playback rate as a fraction of the look, 0 to 1. Empty is the look as shipped.
+   */
+  speed?: number | null;
+  /**
+   * Brightness multiplier, 0.5 to 1.25. Empty is the look as shipped.
+   */
+  intensity?: number | null;
+  /**
+   * Off, the effect is clipped to the media frame. On, it leaves the frame and washes across the whole block, edge to edge of the browser.
+   */
+  bleed?: boolean | null;
+  /**
+   * The corner the light is pinned to, of the frame or, bleeding, of the block.
+   */
+  origin?: ('top-right' | 'top-left' | 'bottom-right' | 'bottom-left') | null;
+  /**
+   * Off, the effect fills the frame on its own. On, the media upload shows under it.
+   */
+  showMedia?: boolean | null;
+  /**
+   * Which face of the effect shows. Following, it is light for a visitor in the light theme and dark for one in the dark theme, or the palette of the band it sits in. Always light or always dark holds that face for every visitor, on its own ground: a hero takes the same palette so its copy stays legible.
+   */
+  surface?: ('auto' | 'dark' | 'light') | null;
+  /**
+   * Let the pointer move and light the effect on devices that run it live. Off, nothing below runs and the effect never listens.
+   */
+  pointerInteraction?: boolean | null;
+  /**
+   * What lights the effect on hover, within the section it sits in. Links and buttons need no marking; marked elements are the ones the design calls out in code. Empty is the look as shipped.
+   */
+  hoverTargets?: ('interactive' | 'marked') | null;
+  /**
+   * How far the effect answers the pointer merely crossing the section, as a fraction of a full flare. 0 waits for a link or a marked element. Empty is the look as shipped.
+   */
+  sectionHover?: number | null;
+  /**
+   * Optional still shown before the effect runs, and wherever it cannot (reduced motion, no WebGL, menus, social). Images only. Empty uses the look’s built-in poster.
+   */
+  posterMedia?: (number | null) | Media;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaContentSplitBlock".
+ */
+export interface MediaContentSplitBlock {
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  media?: (number | null) | Media;
+  /**
+   * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
+   */
+  visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+  shader?: PlacedVisualConfig;
+  /**
+   * Arrange the media on the left or the right of the content.
+   */
+  layout?: ('left' | 'right') | null;
+  /**
+   * Crop for the media column.
+   */
+  aspectRatio?: ('16-9' | '3-2' | '21-9') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaContentSplit';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitContentNarrowBlock".
+ */
+export interface SplitContentNarrowBlock {
+  /**
+   * Short kicker above the text.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  media?: (number | null) | Media;
+  /**
+   * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
+   */
+  visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+  shader?: PlacedVisualConfig;
+  /**
+   * Arrange the image on the left or the right of the text.
+   */
+  imagePosition?: ('left' | 'right') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'splitContentNarrow';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImagePairBlock".
+ */
+export interface ImagePairBlock {
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Cropped to 4:5.
+   */
+  portraitMedia: number | Media;
+  /**
+   * Cropped to 16:10.
+   */
+  landscapeMedia: number | Media;
+  /**
+   * Arrange the portrait on the left or the right; the landscape fills the other column. On small screens the left image stacks first.
+   */
+  portraitPosition?: ('left' | 'right') | null;
+  /**
+   * Which image the text sits under. Under the portrait it stays compact; under the landscape it runs larger and wider.
+   */
+  textPosition?: ('under-portrait' | 'under-landscape') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imagePair';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitImageOffsetBlock".
+ */
+export interface SplitImageOffsetBlock {
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Cropped to 5:4.
+   */
+  largeMedia: number | Media;
+  /**
+   * Cropped to 3:2. Shown above the caption.
+   */
+  smallMedia: number | Media;
+  /**
+   * Place the small image and caption on the left or the right of the large image.
+   */
+  captionPosition?: ('left' | 'right') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'splitImageOffset';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureImageStatementBlock".
+ */
+export interface FeatureImageStatementBlock {
+  media: number | Media;
+  /**
+   * Large statement set beneath the image. Leave empty to pull the source.
+   */
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Which edge the statement aligns to beneath the image.
+   */
+  textPosition?: ('left' | 'right') | null;
+  /**
+   * Small steps the statement down one type size.
+   */
+  textSize?: ('default' | 'small') | null;
+  /**
+   * Contained keeps the image in the site container; full bleeds edge to edge.
+   */
+  imageWidth?: ('contained' | 'full') | null;
+  /**
+   * Crop for the image, at both widths. Responsive keeps the taller small-screen crop that widens to 21:9 from md up.
+   */
+  aspectRatio?: ('responsive' | '16-9' | '3-2' | '21-9') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureImageStatement';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CaptionBlock".
+ */
+export interface CaptionBlock {
+  media: number | Media;
+  /**
+   * Presentation for this placement only; the media document itself stays layout-neutral.
+   */
+  size?: ('full' | 'inset' | 'small') | null;
+  /**
+   * Optional. Replaces the media document's canonical caption for this placement only.
+   */
+  captionOverride?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'caption';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "YouTubeBlock".
+ */
+export interface YouTubeBlock {
+  /**
+   * Paste any YouTube link. A start time in the link (the "Start at" box on YouTube's share panel) is kept.
+   */
+  url: string;
+  /**
+   * Optional. Shown over the poster the way YouTube shows it, and read out as the play button's label.
+   */
+  title?: string | null;
+  /**
+   * Presentation for this placement, matching the Caption block.
+   */
+  size?: ('full' | 'inset' | 'small') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'youtube';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock".
+ */
+export interface RichTextBlock {
+  /**
+   * Write-only. Markdown for `body`: converted to rich text on save and never stored. Syntax the field cannot hold is refused with what to use instead.
+   */
+  markdown?: string | null;
+  /**
+   * Write-only. Send true beside `markdown` to overwrite `body` when it already has content.
+   */
+  replace?: boolean | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'richText';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock".
+ */
+export interface CodeBlock {
+  language?: ('typescript' | 'tsx' | 'javascript' | 'css' | 'json' | 'glsl' | 'bash') | null;
+  code: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'code';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqBlock".
+ */
+export interface FaqBlock {
+  /**
+   * Short kicker above the heading, e.g. "Questions".
+   */
+  eyebrow?: string | null;
+  heading: string;
+  items: {
+    question: string;
+    /**
+     * Shown when the question is opened.
+     */
+    answer: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    id?: string | null;
+  }[];
+  enableLink?: boolean | null;
+  /**
+   * Sits beside the link, e.g. "Did not find your answer?"
+   */
+  prompt?: string | null;
+  link?: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    url?: string | null;
+    label: string;
+  };
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselBlock".
+ */
+export interface CarouselBlock {
+  slides: {
+    media: number | Media;
+    /**
+     * Optional. Renders below the slide.
+     */
+    caption?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Full width runs edge to edge of the browser window.
+   */
+  width?: ('contained' | 'full-width') | null;
+  /**
+   * Previous/next buttons. Contained places them beside the slides; full width overlays them on the slides.
+   */
+  showArrows?: boolean | null;
+  /**
+   * Slides visible at once from tablet up. Phones always show one slide plus a sliver of its neighbours, whichever size is picked.
+   */
+  slideSize?: ('full' | 'half' | 'third') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'carousel';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureTabsBlock".
+ */
+export interface FeatureTabsBlock {
+  tabs: {
+    title: string;
+    /**
+     * Lead statement for this tab.
+     */
+    heading: string;
+    /**
+     * Tab body copy. Leave empty to pull the source.
+     */
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    subheading?: string | null;
+    items?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    media?: (number | null) | Media;
+    /**
+     * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
+     */
+    visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+    shader?: PlacedVisualConfig;
+    /**
+     * Short note shown as a card over the media.
+     */
+    caption?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.
+   */
+  tabSize?: ('default' | 'small') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureTabs';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InsightListBlock".
+ */
+export interface InsightListBlock {
+  /**
+   * Short kicker above the heading, e.g. "Where clarity breaks down".
+   */
+  eyebrow?: string | null;
+  heading: string;
+  /**
+   * Short supporting line under the heading.
+   */
+  summary?: string | null;
+  /**
+   * Side by side keeps the heading beside two insights per row. Stacked sets it above three per row. Ledger keeps the heading beside one ruled row per insight, title and description side by side.
+   */
+  layout?: ('side' | 'stacked' | 'ledger') | null;
+  /**
+   * Size of the SVG mark on every insight.
+   */
+  markSize?: ('small' | 'medium' | 'large') | null;
+  items: {
+    /**
+     * An SVG mark. It renders in the text color of the band, so use a single-color line or fill mark.
+     */
+    media?: (number | null) | Media;
+    title: string;
+    description: string;
+    id?: string | null;
+  }[];
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'insightList';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -838,7 +1567,32 @@ export interface Work {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | SliderBlock | TabsBlock)[];
+  layout: (
+    | WorkSectionBlock
+    | RichTransitionBlock
+    | FeatureHeadingOffsetBlock
+    | FullMediaBlock
+    | MediaContentSplitBlock
+    | SplitContentNarrowBlock
+    | ImagePairBlock
+    | SplitImageOffsetBlock
+    | FeatureImageStatementBlock
+    | CaptionBlock
+    | YouTubeBlock
+    | RichTextBlock
+    | CodeBlock
+    | FaqBlock
+    | CarouselBlock
+    | FeatureTabsBlock
+    | InsightListBlock
+    | SliderBlock
+    | TabsBlock
+    | ArchiveBlock
+    | CallToActionBlock
+    | FormBlock
+    | MediaBlock
+    | ContentBlock
+  )[];
   industry?: string | null;
   role?: string | null;
   deliverables?: string | null;
@@ -874,46 +1628,155 @@ export interface Work {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MediaBlock".
+ * via the `definition` "WorkSectionBlock".
  */
-export interface MediaBlock {
-  media: number | Media;
-  aspectRatio?: ('landscape' | 'square' | 'portrait' | 'original') | null;
+export interface WorkSectionBlock {
   /**
-   * Makes the media span the full width of its container. Note: For true edge-to-edge display, set both this option AND use "Full Width" in the parent Content Block settings.
+   * Override the surface, band padding, and space between blocks. Off uses the page surface and default rhythm.
    */
-  fullWidth?: boolean | null;
+  customize?: boolean | null;
   /**
-   * Override the site theme for this content block.
+   * Surface within the visitor's site theme. "Inherit" is the page surface; "Inverted" is a contrasted band, not a forced dark mode.
    */
+  theme?: ('inherit' | 'secondary' | 'accent' | 'inverted') | null;
+  /**
+   * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
+   */
+  spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
+  /**
+   * Space between nested blocks. Independent of Band. "None" sits them flush.
+   */
+  stack?: ('default' | 'tight' | 'loose' | 'none') | null;
+  blocks?:
+    | (
+        | RichTransitionBlock
+        | FeatureHeadingOffsetBlock
+        | FullMediaBlock
+        | MediaContentSplitBlock
+        | SplitContentNarrowBlock
+        | ImagePairBlock
+        | SplitImageOffsetBlock
+        | FeatureImageStatementBlock
+        | CaptionBlock
+        | YouTubeBlock
+        | RichTextBlock
+        | CodeBlock
+        | FaqBlock
+        | CarouselBlock
+        | FeatureTabsBlock
+        | InsightListBlock
+        | ContentBlock
+      )[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'section';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SliderBlock".
+ */
+export interface SliderBlock {
   theme?: ('system' | 'light' | 'dark') | null;
-  showCaption?: boolean | null;
-  captionLayout?: ('center' | 'left' | 'right' | 'split-left' | 'split-right') | null;
-  richText?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  textSize?: ('sm' | 'base' | 'lg' | 'xl' | '2xl') | null;
+  introContent?: {
+    heading?: string | null;
+    subheading?: string | null;
+    size?: ('base' | 'lg' | 'xl') | null;
+    align?: ('left' | 'center') | null;
+  };
+  style?: ('default' | 'cropped' | 'single') | null;
   space?: {
     pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
   };
+  slides: {
+    slide: {
+      image: number | Media;
+      caption?: string | null;
+      link?:
+        | ({
+            relationTo: 'works';
+            value: number | Work;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+    };
+    id?: string | null;
+  }[];
   id?: string | null;
   blockName?: string | null;
-  blockType: 'mediaBlock';
+  blockType: 'slider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TabsBlock".
+ */
+export interface TabsBlock {
+  theme?: ('system' | 'light' | 'dark') | null;
+  heading?: {
+    style?: ('default' | 'center') | null;
+    eyebrow?: string | null;
+    heading?: string | null;
+    subheading?: string | null;
+  };
+  space?: {
+    pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  };
+  tabs?:
+    | {
+        tabTitle: string;
+        /**
+         * Choose the type of content for this tab.
+         */
+        contentType: 'richText' | 'slider';
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        slider?: {
+          theme?: ('system' | 'light' | 'dark') | null;
+          style?: ('default' | 'cropped' | 'single') | null;
+          slides: {
+            slide: {
+              image: number | Media;
+              caption?: string | null;
+              link?:
+                | ({
+                    relationTo: 'works';
+                    value: number | Work;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+            };
+            id?: string | null;
+          }[];
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'tabs';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -962,6 +1825,75 @@ export interface ArchiveBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'archive';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  parent?: (number | null) | Category;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Category;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock".
+ */
+export interface CallToActionBlock {
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1163,109 +2095,116 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "SliderBlock".
+ * via the `definition` "MediaBlock".
  */
-export interface SliderBlock {
+export interface MediaBlock {
+  media: number | Media;
+  aspectRatio?: ('landscape' | 'square' | 'portrait' | 'original') | null;
+  /**
+   * Makes the media span the full width of its container. Note: For true edge-to-edge display, set both this option AND use "Full Width" in the parent Content Block settings.
+   */
+  fullWidth?: boolean | null;
+  /**
+   * Override the site theme for this content block.
+   */
   theme?: ('system' | 'light' | 'dark') | null;
-  introContent?: {
-    heading?: string | null;
-    subheading?: string | null;
-    size?: ('base' | 'lg' | 'xl') | null;
-    align?: ('left' | 'center') | null;
-  };
-  style?: ('default' | 'cropped' | 'single') | null;
+  showCaption?: boolean | null;
+  captionLayout?: ('center' | 'left' | 'right' | 'split-left' | 'split-right') | null;
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  textSize?: ('sm' | 'base' | 'lg' | 'xl' | '2xl') | null;
   space?: {
     pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
   };
-  slides: {
-    slide: {
-      image: number | Media;
-      caption?: string | null;
-      link?:
-        | ({
-            relationTo: 'works';
-            value: number | Work;
-          } | null)
-        | ({
-            relationTo: 'posts';
-            value: number | Post;
-          } | null);
-    };
-    id?: string | null;
-  }[];
   id?: string | null;
   blockName?: string | null;
-  blockType: 'slider';
+  blockType: 'mediaBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TabsBlock".
+ * via the `definition` "PageSectionBlock".
  */
-export interface TabsBlock {
-  theme?: ('system' | 'light' | 'dark') | null;
-  heading?: {
-    style?: ('default' | 'center') | null;
-    eyebrow?: string | null;
-    heading?: string | null;
-    subheading?: string | null;
-  };
-  space?: {
-    pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-    pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-    mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-    mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-  };
-  tabs?:
-    | {
-        tabTitle: string;
-        /**
-         * Choose the type of content for this tab.
-         */
-        contentType: 'richText' | 'slider';
-        richText?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        slider?: {
-          theme?: ('system' | 'light' | 'dark') | null;
-          style?: ('default' | 'cropped' | 'single') | null;
-          slides: {
-            slide: {
-              image: number | Media;
-              caption?: string | null;
-              link?:
-                | ({
-                    relationTo: 'works';
-                    value: number | Work;
-                  } | null)
-                | ({
-                    relationTo: 'posts';
-                    value: number | Post;
-                  } | null);
-            };
-            id?: string | null;
-          }[];
-        };
-        id?: string | null;
-      }[]
+export interface PageSectionBlock {
+  /**
+   * Override the surface, band padding, and space between blocks. Off uses the page surface and default rhythm.
+   */
+  customize?: boolean | null;
+  /**
+   * Surface within the visitor's site theme. "Inherit" is the page surface; "Inverted" is a contrasted band, not a forced dark mode.
+   */
+  theme?: ('inherit' | 'secondary' | 'accent' | 'inverted') | null;
+  /**
+   * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
+   */
+  spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
+  /**
+   * Space between nested blocks. Independent of Band. "None" sits them flush.
+   */
+  stack?: ('default' | 'tight' | 'loose' | 'none') | null;
+  blocks?:
+    | (
+        | RichTransitionBlock
+        | FeatureHeadingOffsetBlock
+        | FullMediaBlock
+        | MediaContentSplitBlock
+        | SplitContentNarrowBlock
+        | ImagePairBlock
+        | SplitImageOffsetBlock
+        | FeatureImageStatementBlock
+        | CaptionBlock
+        | YouTubeBlock
+        | RichTextBlock
+        | CodeBlock
+        | FaqBlock
+        | CarouselBlock
+        | FeatureTabsBlock
+        | InsightListBlock
+        | ContentBlock
+      )[]
     | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'tabs';
+  blockType: 'section';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallOutBlock".
+ */
+export interface CallOutBlock {
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'callout';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1578,13 +2517,30 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
-        cta?: T | CallToActionBlockSelect<T>;
-        callout?: T | CallOutBlockSelect<T>;
-        content?: T | ContentBlockSelect<T>;
-        mediaBlock?: T | MediaBlockSelect<T>;
-        archive?: T | ArchiveBlockSelect<T>;
-        formBlock?: T | FormBlockSelect<T>;
+        section?: T | PageSectionBlockSelect<T>;
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
+        callout?: T | CallOutBlockSelect<T>;
+        archive?: T | ArchiveBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
       };
   meta?:
     | T
@@ -1603,34 +2559,321 @@ export interface PagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CallToActionBlock_select".
+ * via the `definition` "PageSectionBlock_select".
  */
-export interface CallToActionBlockSelect<T extends boolean = true> {
-  richText?: T;
-  links?:
+export interface PageSectionBlockSelect<T extends boolean = true> {
+  customize?: T;
+  theme?: T;
+  spacing?: T;
+  stack?: T;
+  blocks?:
     | T
     | {
-        link?:
-          | T
-          | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-              label?: T;
-              appearance?: T;
-            };
-        id?: T;
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
       };
   id?: T;
   blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CallOutBlock_select".
+ * via the `definition` "RichTransitionBlock_select".
  */
-export interface CallOutBlockSelect<T extends boolean = true> {
-  richText?: T;
+export interface RichTransitionBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  layout?: T;
+  theme?: T;
+  headingLevel?: T;
+  body?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureHeadingOffsetBlock_select".
+ */
+export interface FeatureHeadingOffsetBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  bodySize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FullMediaBlock_select".
+ */
+export interface FullMediaBlockSelect<T extends boolean = true> {
+  showContent?: T;
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  media?: T;
+  visualType?: T;
+  shader?: T | PlacedVisualConfigSelect<T>;
+  width?: T;
+  aspectRatio?: T;
+  contentPosition?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PlacedVisualConfig_select".
+ */
+export interface PlacedVisualConfigSelect<T extends boolean = true> {
+  studio?: T;
+  preset?: T;
+  seed?: T;
+  speed?: T;
+  intensity?: T;
+  bleed?: T;
+  origin?: T;
+  showMedia?: T;
+  surface?: T;
+  pointerInteraction?: T;
+  hoverTargets?: T;
+  sectionHover?: T;
+  posterMedia?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaContentSplitBlock_select".
+ */
+export interface MediaContentSplitBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  media?: T;
+  visualType?: T;
+  shader?: T | PlacedVisualConfigSelect<T>;
+  layout?: T;
+  aspectRatio?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitContentNarrowBlock_select".
+ */
+export interface SplitContentNarrowBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  media?: T;
+  visualType?: T;
+  shader?: T | PlacedVisualConfigSelect<T>;
+  imagePosition?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImagePairBlock_select".
+ */
+export interface ImagePairBlockSelect<T extends boolean = true> {
+  heading?: T;
+  body?: T;
+  portraitMedia?: T;
+  landscapeMedia?: T;
+  portraitPosition?: T;
+  textPosition?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitImageOffsetBlock_select".
+ */
+export interface SplitImageOffsetBlockSelect<T extends boolean = true> {
+  heading?: T;
+  body?: T;
+  largeMedia?: T;
+  smallMedia?: T;
+  captionPosition?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureImageStatementBlock_select".
+ */
+export interface FeatureImageStatementBlockSelect<T extends boolean = true> {
+  media?: T;
+  caption?: T;
+  textPosition?: T;
+  textSize?: T;
+  imageWidth?: T;
+  aspectRatio?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CaptionBlock_select".
+ */
+export interface CaptionBlockSelect<T extends boolean = true> {
+  media?: T;
+  size?: T;
+  captionOverride?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "YouTubeBlock_select".
+ */
+export interface YouTubeBlockSelect<T extends boolean = true> {
+  url?: T;
+  title?: T;
+  size?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock_select".
+ */
+export interface RichTextBlockSelect<T extends boolean = true> {
+  markdown?: T;
+  replace?: T;
+  body?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock_select".
+ */
+export interface CodeBlockSelect<T extends boolean = true> {
+  language?: T;
+  code?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqBlock_select".
+ */
+export interface FaqBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  items?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  enableLink?: T;
+  prompt?: T;
+  link?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+      };
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselBlock_select".
+ */
+export interface CarouselBlockSelect<T extends boolean = true> {
+  slides?:
+    | T
+    | {
+        media?: T;
+        caption?: T;
+        id?: T;
+      };
+  width?: T;
+  showArrows?: T;
+  slideSize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureTabsBlock_select".
+ */
+export interface FeatureTabsBlockSelect<T extends boolean = true> {
+  tabs?:
+    | T
+    | {
+        title?: T;
+        heading?: T;
+        description?: T;
+        subheading?: T;
+        items?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        media?: T;
+        visualType?: T;
+        shader?: T | PlacedVisualConfigSelect<T>;
+        caption?: T;
+        id?: T;
+      };
+  tabSize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InsightListBlock_select".
+ */
+export interface InsightListBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  summary?: T;
+  layout?: T;
+  markSize?: T;
+  items?:
+    | T
+    | {
+        media?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  theme?: T;
   id?: T;
   blockName?: T;
 }
@@ -1750,66 +2993,6 @@ export interface ContentBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MediaBlock_select".
- */
-export interface MediaBlockSelect<T extends boolean = true> {
-  media?: T;
-  aspectRatio?: T;
-  fullWidth?: T;
-  theme?: T;
-  showCaption?: T;
-  captionLayout?: T;
-  richText?: T;
-  textSize?: T;
-  space?:
-    | T
-    | {
-        pt?: T;
-        pb?: T;
-        mt?: T;
-        mb?: T;
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ArchiveBlock_select".
- */
-export interface ArchiveBlockSelect<T extends boolean = true> {
-  theme?: T;
-  cardStyle?: T;
-  introContent?: T;
-  populateBy?: T;
-  relationTo?: T;
-  categories?: T;
-  limit?: T;
-  selectedDocs?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FormBlock_select".
- */
-export interface FormBlockSelect<T extends boolean = true> {
-  form?: T;
-  space?:
-    | T
-    | {
-        pt?: T;
-        pb?: T;
-        mt?: T;
-        mb?: T;
-      };
-  enableIntro?: T;
-  introAlign?: T;
-  introContent?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "SliderBlock_select".
  */
 export interface SliderBlockSelect<T extends boolean = true> {
@@ -1848,6 +3031,99 @@ export interface SliderBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallOutBlock_select".
+ */
+export interface CallOutBlockSelect<T extends boolean = true> {
+  richText?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ArchiveBlock_select".
+ */
+export interface ArchiveBlockSelect<T extends boolean = true> {
+  theme?: T;
+  cardStyle?: T;
+  introContent?: T;
+  populateBy?: T;
+  relationTo?: T;
+  categories?: T;
+  limit?: T;
+  selectedDocs?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock_select".
+ */
+export interface CallToActionBlockSelect<T extends boolean = true> {
+  richText?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlock_select".
+ */
+export interface FormBlockSelect<T extends boolean = true> {
+  form?: T;
+  space?:
+    | T
+    | {
+        pt?: T;
+        pb?: T;
+        mt?: T;
+        mb?: T;
+      };
+  enableIntro?: T;
+  introAlign?: T;
+  introContent?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaBlock_select".
+ */
+export interface MediaBlockSelect<T extends boolean = true> {
+  media?: T;
+  aspectRatio?: T;
+  fullWidth?: T;
+  theme?: T;
+  showCaption?: T;
+  captionLayout?: T;
+  richText?: T;
+  textSize?: T;
+  space?:
+    | T
+    | {
+        pt?: T;
+        pb?: T;
+        mt?: T;
+        mb?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -1876,6 +3152,27 @@ export interface PostsSelect<T extends boolean = true> {
         media?: T;
       };
   content?: T;
+  layout?:
+    | T
+    | {
+        section?: T | PostSectionBlockSelect<T>;
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
+      };
   relatedPosts?: T;
   categories?: T;
   meta?:
@@ -1899,6 +3196,39 @@ export interface PostsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostSectionBlock_select".
+ */
+export interface PostSectionBlockSelect<T extends boolean = true> {
+  customize?: T;
+  theme?: T;
+  spacing?: T;
+  stack?: T;
+  blocks?:
+    | T
+    | {
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+      };
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1933,13 +3263,30 @@ export interface WorksSelect<T extends boolean = true> {
   layout?:
     | T
     | {
-        cta?: T | CallToActionBlockSelect<T>;
-        content?: T | ContentBlockSelect<T>;
-        mediaBlock?: T | MediaBlockSelect<T>;
-        archive?: T | ArchiveBlockSelect<T>;
-        formBlock?: T | FormBlockSelect<T>;
+        section?: T | WorkSectionBlockSelect<T>;
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         tabs?: T | TabsBlockSelect<T>;
+        archive?: T | ArchiveBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
       };
   industry?: T;
   role?: T;
@@ -1963,6 +3310,39 @@ export interface WorksSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkSectionBlock_select".
+ */
+export interface WorkSectionBlockSelect<T extends boolean = true> {
+  customize?: T;
+  theme?: T;
+  spacing?: T;
+  stack?: T;
+  blocks?:
+    | T
+    | {
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+      };
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2550,6 +3930,75 @@ export interface TaskSchedulePublish {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextActionsBlock".
+ */
+export interface RichTextActionsBlock {
+  /**
+   * One or two links, set in a row. Default is the primary chip; Outline is the secondary action beside it.
+   */
+  links: {
+    link: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+      label: string;
+      /**
+       * Choose how the link should be rendered.
+       */
+      appearance?: ('default' | 'outline') | null;
+    };
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'actions';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextInsightsBlock".
+ */
+export interface RichTextInsightsBlock {
+  items: {
+    /**
+     * An SVG mark. It renders in the text color of the band, so use a single-color line or fill mark.
+     */
+    media?: (number | null) | Media;
+    title: string;
+    description: string;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'insights';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextPillListBlock".
+ */
+export interface RichTextPillListBlock {
+  /**
+   * Optional kicker above the pills.
+   */
+  eyebrow?: string | null;
+  items: {
+    label: string;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pillList';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "BannerBlock".
  */
 export interface BannerBlock {
@@ -2572,17 +4021,6 @@ export interface BannerBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CodeBlock".
- */
-export interface CodeBlock {
-  language?: ('typescript' | 'javascript' | 'css') | null;
-  code: string;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'code';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

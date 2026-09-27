@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@payloadcms/drizzle': 719f96ffe7312c1f56d9939d653968955ffec771611932314e96339e23ffa7d2
+
 importers:
 
   .:
@@ -143,6 +146,9 @@ importers:
       leva:
         specifier: ^0.10.1
         version: 0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      lite-youtube-embed:
+        specifier: ^0.3.4
+        version: 0.3.4
       lucide-react:
         specifier: ^1.48.0
         version: 1.48.0(react@19.3.0)
@@ -5107,6 +5113,9 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
+  lite-youtube-embed@0.3.4:
+    resolution: {integrity: sha512-aXgxpwK7AIW58GEbRzA8EYaY4LWvF3FKak6B9OtSJmuNyLhX2ouD4cMTxz/yR5HFInhknaYd2jLWOTRTvT8oAw==}
+
   loader-utils@1.4.2:
     resolution: {integrity: sha512-I5d00Pd/jwMD2QCduo657+YM/6L3KZu++pmX9VFncxaxvHcru9jx1lBaFft+r4Mt2jK0Yhp41XlRAihzPxHNCg==}
     engines: {node: '>=4.0.0'}
@@ -8280,7 +8289,7 @@ snapshots:
 
   '@payloadcms/db-vercel-postgres@3.90.2(@types/pg@8.23.1)(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(supports-color@8.1.1)(typescript@7.0.2))(postgres@3.4.9)(supports-color@8.1.1)':
     dependencies:
-      '@payloadcms/drizzle': 3.90.2(@types/pg@8.23.1)(@vercel/postgres@0.10.0)(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(supports-color@8.1.1)(typescript@7.0.2))(pg@8.20.0)(postgres@3.4.9)
+      '@payloadcms/drizzle': 3.90.2(patch_hash=719f96ffe7312c1f56d9939d653968955ffec771611932314e96339e23ffa7d2)(@types/pg@8.23.1)(@vercel/postgres@0.10.0)(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(supports-color@8.1.1)(typescript@7.0.2))(pg@8.20.0)(postgres@3.4.9)
       '@vercel/postgres': 0.10.0
       console-table-printer: 2.12.1
       drizzle-kit: 0.31.7(supports-color@8.1.1)
@@ -8322,7 +8331,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@payloadcms/drizzle@3.90.2(@types/pg@8.23.1)(@vercel/postgres@0.10.0)(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(supports-color@8.1.1)(typescript@7.0.2))(pg@8.20.0)(postgres@3.4.9)':
+  '@payloadcms/drizzle@3.90.2(patch_hash=719f96ffe7312c1f56d9939d653968955ffec771611932314e96339e23ffa7d2)(@types/pg@8.23.1)(@vercel/postgres@0.10.0)(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(supports-color@8.1.1)(typescript@7.0.2))(pg@8.20.0)(postgres@3.4.9)':
     dependencies:
       console-table-printer: 2.12.1
       dequal: 2.0.3
@@ -11528,6 +11537,8 @@ snapshots:
       lightningcss-win32-x64-msvc: 1.33.0
 
   lines-and-columns@1.2.4: {}
+
+  lite-youtube-embed@0.3.4: {}
 
   loader-utils@1.4.2:
     dependencies:

@@ -5,10 +5,12 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
+import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { sectionSpacing } from '@/fields/sectionSpacing'
 
 export const MediaBlock: Block = {
   slug: 'mediaBlock',
+  admin: { group: BLOCK_GROUPS.media },
   interfaceName: 'MediaBlock',
   fields: [
     {

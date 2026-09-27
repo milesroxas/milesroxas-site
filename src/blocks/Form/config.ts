@@ -5,10 +5,12 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
+import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { sectionSpacing } from '@/fields/sectionSpacing'
 
 export const FormBlock: Block = {
   slug: 'formBlock',
+  admin: { group: BLOCK_GROUPS.forms },
   interfaceName: 'FormBlock',
   fields: [
     {

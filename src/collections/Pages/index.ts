@@ -6,17 +6,11 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import type { CollectionConfig } from 'payload'
+import { pageLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
 import { hero } from '@/heros/config'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
-import { Archive } from '../../blocks/ArchiveBlock/config'
-import { CallOut } from '../../blocks/CallOut/config'
-import { CallToAction } from '../../blocks/CallToAction/config'
-import { Content } from '../../blocks/Content/config'
-import { FormBlock } from '../../blocks/Form/config'
-import { MediaBlock } from '../../blocks/MediaBlock/config'
-import { SliderBlock } from '../../blocks/Slider/config'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
@@ -63,21 +57,23 @@ export const Pages: CollectionConfig<'pages'> = {
       tabs: [
         {
           fields: [hero],
-          label: 'Hero',
+          label: 'Opening',
         },
         {
           fields: [
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, CallOut, Content, MediaBlock, Archive, FormBlock, SliderBlock],
+              label: 'Composition',
+              labels: { singular: 'Section', plural: 'Sections' },
+              blocks: pageLayoutBlocks,
               required: true,
               admin: {
                 initCollapsed: true,
               },
             },
           ],
-          label: 'Content',
+          label: 'Composition',
         },
         {
           name: 'meta',

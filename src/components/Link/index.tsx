@@ -3,6 +3,7 @@ import type React from 'react'
 import { Button, type ButtonProps } from '@/components/ui/legacy-button'
 import type { Page, Post } from '@/payload-types'
 import { cn } from '@/utilities/ui'
+import { resolveCmsLinkHref } from './resolve-href'
 
 // Export TransitionLink component
 export { default as TransitionLink } from './TransitionLink'
@@ -37,12 +38,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     onClick,
   } = props
 
-  const href =
-    type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
-      ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
-          reference.value.slug
-        }`
-      : url
+  const href = resolveCmsLinkHref({ type, reference, url })
 
   if (!href) return null
 

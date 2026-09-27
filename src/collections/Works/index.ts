@@ -6,16 +6,10 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import type { CollectionConfig } from 'payload'
+import { workLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
 import { hero } from '@/heros/config'
 import { authenticated } from '../../access/authenticated'
-import { Archive } from '../../blocks/ArchiveBlock/config'
-import { CallToAction } from '../../blocks/CallToAction/config'
-import { Content } from '../../blocks/Content/config'
-import { FormBlock } from '../../blocks/Form/config'
-import { MediaBlock } from '../../blocks/MediaBlock/config'
-import { SliderBlock } from '../../blocks/Slider/config'
-import { TabsBlock } from '../../blocks/Tabs/config'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { worksReadAccess } from './access'
@@ -72,29 +66,23 @@ export const Works: CollectionConfig<'works'> = {
       tabs: [
         {
           fields: [hero],
-          label: 'Hero',
+          label: 'Opening',
         },
         {
           fields: [
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [
-                CallToAction,
-                Content,
-                MediaBlock,
-                Archive,
-                FormBlock,
-                SliderBlock,
-                TabsBlock,
-              ],
+              label: 'Composition',
+              labels: { singular: 'Section', plural: 'Sections' },
+              blocks: workLayoutBlocks,
               required: true,
               admin: {
                 initCollapsed: true,
               },
             },
           ],
-          label: 'Content',
+          label: 'Composition',
         },
         {
           fields: [
@@ -199,7 +187,7 @@ export const Works: CollectionConfig<'works'> = {
               relationTo: 'categories',
             },
           ],
-          label: 'Meta',
+          label: 'Related & Categories',
         },
         {
           name: 'meta',

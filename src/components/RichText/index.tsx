@@ -17,11 +17,19 @@ import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { CodeBlock, type CodeBlockProps } from '@/blocks/Code/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
+import { RichTextActions } from '@/blocks/rich-text/actions/Component'
+import { RichTextInsights } from '@/blocks/rich-text/insights/Component'
+import { RichTextPillList } from '@/blocks/rich-text/pill-list/Component'
+import { YouTubeBlock } from '@/blocks/youtube/Component'
 import type {
   BannerBlock as BannerBlockProps,
   CallToActionBlock as CTABlockProps,
   FormBlock as FormBlockProps,
   MediaBlock as MediaBlockProps,
+  RichTextActionsBlock as RichTextActionsBlockProps,
+  RichTextInsightsBlock as RichTextInsightsBlockProps,
+  RichTextPillListBlock as RichTextPillListBlockProps,
+  YouTubeBlock as YouTubeBlockProps,
 } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 import { isTextStyle, TEXT_STYLE_STATE_KEY, TEXT_STYLES, type TextStyle } from './text-styles'
@@ -32,9 +40,10 @@ import { isTextStyle, TEXT_STYLE_STATE_KEY, TEXT_STYLES, type TextStyle } from '
  * body render through `./Legacy.tsx`, which keeps this site's own type rules.
  *
  * Seams against sas-site:
- * - Block converters are this site's (banner, mediaBlock, code, cta,
- *   formBlock). The composition toolbar blocks (youtube, insights, pillList,
- *   actions) join with the blocks that own them (roadmap Phase 3).
+ * - Block converters: this site's (banner, mediaBlock, cta, formBlock) plus
+ *   sas-site's composition toolbar blocks (youtube, insights, pillList,
+ *   actions) and its code block. No carousel or statement-links converters:
+ *   no editor here offers them inline.
  * - Internal links resolve the way this site's routes do; sas-site reads its
  *   content-surface registry, which arrives with Ask (Phase 5).
  */
@@ -42,7 +51,15 @@ import { isTextStyle, TEXT_STYLE_STATE_KEY, TEXT_STYLES, type TextStyle } from '
 type NodeTypes =
   | DefaultNodeTypes
   | SerializedBlockNode<
-      CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps | FormBlockProps
+      | CTABlockProps
+      | MediaBlockProps
+      | BannerBlockProps
+      | CodeBlockProps
+      | FormBlockProps
+      | RichTextActionsBlockProps
+      | RichTextInsightsBlockProps
+      | RichTextPillListBlockProps
+      | YouTubeBlockProps
     >
 
 type ParagraphNode = Extract<DefaultNodeTypes, { type: 'paragraph' }>
@@ -121,11 +138,22 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
     return <span className={TEXT_STYLES[style].className}>{rendered}</span>
   },
   blocks: {
+    actions: ({ node }) => <RichTextActions links={node.fields.links} />,
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => <MediaBlock aspectRatio={'landscape'} {...node.fields} />,
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
     formBlock: ({ node }) => <FormBlock {...node.fields} />,
+    // The Rich text block splits its own blocks out onto its grid before
+    // converting (rich-text/Component.tsx); these converters are the inline
+    // fallback for any other editor that enables them.
+    insights: ({ node }) => (
+      <RichTextInsights group={node.fields.id ?? 'insights'} items={node.fields.items} />
+    ),
+    pillList: ({ node }) => (
+      <RichTextPillList eyebrow={node.fields.eyebrow} items={node.fields.items} />
+    ),
+    youtube: ({ node }) => <YouTubeBlock {...node.fields} enableGutter={false} />,
   },
 })
 

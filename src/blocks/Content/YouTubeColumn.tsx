@@ -3,7 +3,13 @@
 import type React from 'react'
 import { cn } from '@/utilities/ui'
 
-interface YouTubeBlockProps {
+/**
+ * The Columns block's YouTube column (`column.youTube`). It was
+ * `blocks/YouTube/Component.tsx` until the composer port put sas-site's
+ * `youtube` block at `blocks/youtube`; it moved here unchanged so the column
+ * renders as it always has.
+ */
+interface YouTubeColumnProps {
   blockType: 'youTube'
   url: string
   aspectRatio?: 'landscape' | 'square' | 'portrait' | null
@@ -36,7 +42,7 @@ const getYouTubeEmbedUrl = (url: string): string | null => {
   }
 }
 
-export const YouTubeBlock: React.FC<YouTubeBlockProps> = (props) => {
+export const YouTubeColumn: React.FC<YouTubeColumnProps> = (props) => {
   const { url, aspectRatio = 'landscape', fullWidth = false } = props
 
   if (!url) return null

@@ -254,6 +254,23 @@ export const mediaFixture: Media = {
 }
 
 /**
+ * A video document: `Media` routes to `VideoMedia` when `mimeType` includes
+ * `video`. A tiny public-domain loop so stories render with no local upload.
+ */
+export const videoFixture: Media = {
+  id: 2,
+  alt: 'Flower loop',
+  url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+  filename: 'flower.mp4',
+  mimeType: 'video/mp4',
+  width: 1280,
+  height: 720,
+  caption: richText(paragraph(text('A caption for a video media document.'))),
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+}
+
+/**
  * A single-color SVG mark as the Insight list renders it (a mask over the
  * text color), inlined as a data URL so the story needs no upload and no
  * network. `updatedAt` is empty on purpose: `getMediaUrl` appends it as a

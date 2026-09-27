@@ -19,6 +19,9 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'jsdom',
+          // jsdom stubs (matchMedia, IntersectionObserver, ResizeObserver)
+          // that embla and the reveal components read on mount.
+          setupFiles: ['./vitest.setup.ts'],
           include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts'],
         },
       },

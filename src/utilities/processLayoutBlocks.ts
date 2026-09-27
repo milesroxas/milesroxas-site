@@ -1,7 +1,10 @@
-import type { ContentBlock, Page, Work } from '@/payload-types'
+import type { ContentBlock, Page, Post, Work } from '@/payload-types'
 import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
 
-type LayoutBlock = Page['layout'][number] | Work['layout'][number]
+type LayoutBlock =
+  | Page['layout'][number]
+  | Work['layout'][number]
+  | NonNullable<Post['layout']>[number]
 
 /**
  * Process content block columns, replacing protected works with fallbacks
@@ -63,6 +66,17 @@ export async function processLayoutBlocks(
       switch (block.blockType) {
         case 'content':
           return processContentBlock(block as ContentBlock, hasAccess)
+
+        // A Section nests Columns blocks too: their work entries hide the same way.
+        case 'section':
+          return {
+            ...block,
+            blocks: await Promise.all(
+              (block.blocks ?? []).map((child) =>
+                child.blockType === 'content' ? processContentBlock(child, hasAccess) : child,
+              ),
+            ),
+          }
 
         // Archive blocks handle their own access control
         // Other blocks don't contain work references

@@ -21,6 +21,7 @@ import { Banner } from '@/blocks/Banner/config'
 
 import { Code } from '@/blocks/Code/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
+import { postLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
 import { hero } from '@/heros/config'
 import { generatePreviewPath } from '@/utilities/generatePreviewPath'
@@ -77,7 +78,7 @@ export const Posts: CollectionConfig<'posts'> = {
       tabs: [
         {
           fields: [hero],
-          label: 'Hero',
+          label: 'Opening',
         },
         {
           fields: [
@@ -97,10 +98,28 @@ export const Posts: CollectionConfig<'posts'> = {
                 },
               }),
               label: false,
-              required: true,
+              // Optional since the composer port (docs/composer-roadmap.md,
+              // D5): a post can be composed from Sections alone.
             },
           ],
           label: 'Content',
+        },
+        {
+          fields: [
+            {
+              name: 'layout',
+              type: 'blocks',
+              label: 'Composition',
+              labels: { singular: 'Section', plural: 'Sections' },
+              blocks: postLayoutBlocks,
+              admin: {
+                initCollapsed: true,
+                description:
+                  'Sections after the article body. The route renders the body, then these.',
+              },
+            },
+          ],
+          label: 'Composition',
         },
         {
           fields: [
@@ -130,7 +149,7 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'categories',
             },
           ],
-          label: 'Meta',
+          label: 'Related & Categories',
         },
         {
           name: 'meta',

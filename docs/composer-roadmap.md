@@ -1,6 +1,6 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
-Status: Phase 1 built 2026-09-27 (`713a93e` on `dev`; notes under Phase 1). Phase 6 is specified as a script (D15, D16). Nothing else has shipped. Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
+Status: Phases 1 to 3 built 2026-09-27 on `dev` (notes under each phase). Phase 6 is specified as a script (D15, D16). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
@@ -327,6 +327,15 @@ Home keeps `AnimatedBlocksContainer` with the Phase 1 guard.
 **Schema added** (all `CREATE`): `{pages,works,posts}_section`, `*_transition`, `*_blocks_feature_heading_offset`, `*_full_media`, `*_media_split`, `*_split_narrow`, `*_image_pair`, `*_split_offset`, `*_image_statement`, `*_caption`, `*_youtube`, `*_rich_text`, `*_code`, `*_faq` + `_faq_items`, `*_blocks_carousel` + `_slides`, `*_blocks_feature_tabs` + `_tabs` + `_tabs_items`, `*_insight_list` + `_insight_list_items`, each with `shader_*` slot columns where the block has a slot, all `_v` twins, and `posts.layout` rows. Nesting under a Section only changes `_path` semantics; child tables keep their names (sas-site verified this in its Phase B; verify again with `check:migrations:drift` before generating).
 
 Definition of done: an editor can Add Section on a page, work or post, nest any run block, pick a Studio look on a media slot, and publish; existing pages render pixel-identical (Phase 0 screenshots); every ported story renders in Storybook; `pnpm test:storybook` green. Answer sheet: Appendix A, Phase 3.
+
+**Phase 3 as built (2026-09-27).** Migration `20260927_173548_sections_and_run`: no prompts; 138 `CREATE TABLE`, 366 `CREATE TYPE`, indexes and FKs on new tables, and two nullable `works_id` columns on `posts_rels` / `_posts_v_rels` (a Columns block nested in a post Section can hold a work). Zero `DROP`, `RENAME`, `ADD VALUE`; no new name collides with the production catalog, even after Postgres' 63-character truncation. `tsc`, `pnpm test:unit` (18 files, 153 tests), `pnpm test:storybook` (60 files, 316 tests), `pnpm build`, both migration checks green; a throwaway local page with a Section of every run block rendered, and a legacy work page renders as production does. Where the build departs from the plan above:
+
+- **`@payloadcms/drizzle` patch** (`patches/`, `pnpm-workspace.yaml`), copied from sas-site. The Rich text block's write-only `markdown` / `replace` fields are virtual; unpatched, Payload's "identical block" check counts them as missing columns, so a block used both at the top level and in a Section got a second table (`pages_rich_text_2`). A running `pnpm dev` keeps the unpatched module in memory: restart it after `pnpm install`.
+- **The old `blocks/YouTube` component was not orphaned**: the Columns block's YouTube column rendered through it. It moved unchanged to `blocks/Content/YouTubeColumn.tsx`; only its unregistered config and story were deleted.
+- **`content` is not in `sectionChildComponents`.** `RenderBlocks` renders every legacy block, including a Columns block inside a Section, through the unchanged `block-wrapper` branch; run blocks go through `renderContentBlock`. `processLayoutBlocks` also hides protected works in Columns nested in a Section.
+- **Carousel poster** is the video's `cloudflareStreamThumbnailUrl` (sas-site's Media has a generated `poster` upload; this site does not). `Media` gained `autoPlay` (default true) so the Carousel drives playback.
+- **Rich text Actions** render sas-site's `Button` directly (this site's `CMSLink` wears the legacy button), with `default` / `outline` (D8). `components/Link/resolve-href.ts` is the one href resolver for `CMSLink`, FAQ and Actions.
+- Not ported: `heading-dropdown` and `scramble-text` (only sas-site's IndustryWork uses them). Posts render `content` only when present, then `RenderBlocks(post.layout)`. Works' and Posts' "Meta" tab is "Related & Categories". `vitest.setup.ts` adds sas-site's jsdom stubs for the unit project.
 
 ### Phase 4: page furniture (additive schema)
 

@@ -4,6 +4,7 @@ import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
+import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import RichText from '@/components/RichText/Legacy'
@@ -54,17 +55,22 @@ export default async function Post({ params: paramsPromise }: Args) {
       <PageClient post={post} />
       {post.hero && <RenderHero {...post.hero} />}
 
-      <div className="flex flex-col items-start gap-4 pt-8 pb-32 md:pt-12 lg:pt-32">
-        <div className="container">
-          <div className="max-w-3xl md:pl-32">
-            <RichText
-              data={post.content}
-              enableGutter={false}
-              className="text-primary-foreground"
-            />
+      {post.content && (
+        <div className="flex flex-col items-start gap-4 pt-8 pb-32 md:pt-12 lg:pt-32">
+          <div className="container">
+            <div className="max-w-3xl md:pl-32">
+              <RichText
+                data={post.content}
+                enableGutter={false}
+                className="text-primary-foreground"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
+      {/* Composition (docs/composer-roadmap.md, Phase 3): Sections after the
+          article body. Each band paints its own surface. */}
+      <RenderBlocks blocks={post.layout} />
       {post.relatedPosts && post.relatedPosts.length > 0 && (
         <section className="bg-primary py-12">
           <h2 className="container pb-4 font-light text-5xl text-primary-foreground">More posts</h2>
