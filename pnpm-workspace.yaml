@@ -17,5 +17,9 @@ allowBuilds:
 # block's write-only `markdown` sibling) must not fail the "identical block"
 # check, or a block used both at the top level and inside a Section gets a
 # second, suffixed table (`<table>_2`).
+# Vercel installs with pnpm 10, which reads `pnpm.patchedDependencies` in
+# package.json and wants the lockfile entry as `{ hash, path }`; pnpm 12
+# reads it here and accepts that form. If a local pnpm rewrites the lockfile
+# entry to a bare hash, put the object form back before pushing.
 patchedDependencies:
   '@payloadcms/drizzle': patches/@payloadcms__drizzle.patch

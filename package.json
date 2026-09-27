@@ -171,6 +171,9 @@
       "sharp",
       "unrs-resolver",
       "utf-8-validate"
-    ]
+    ],
+    "patchedDependencies": {
+      "@payloadcms/drizzle": "patches/@payloadcms__drizzle.patch"
+    }
   }
 }
