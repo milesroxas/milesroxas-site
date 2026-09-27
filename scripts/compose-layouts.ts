@@ -16,8 +16,12 @@
  *   ... --only works/<slug>
  *
  * Against production: take a Neon backup first, then run with
- * `--env-file=.env.production.pulled` and `PAYLOAD_DB_PUSH=false`, and only
- * once Phases 3 and 4 are deployed there (the target tables must exist).
+ * `--env-file=.env.production.pulled`, `PAYLOAD_DB_PUSH=false` and
+ * `--production`, and only once Phases 3 and 4 are deployed there (the target
+ * tables must exist). Against the Neon preview branch: pull the Preview env
+ * for `dev` (`vercel env pull <file> --environment=preview --git-branch=dev`)
+ * and pass `--preview`. Without either flag the script refuses any database
+ * but the local Docker one.
  *
  * A write run converts the latest version of each document (a pending draft
  * included, which the report flags) and saves the result as a draft, so the
@@ -233,11 +237,46 @@ async function publish(payload: Payload, only: string | null) {
   if (failed.length) throw new Error(`${failed.length} did not publish: ${failed.join(', ')}`)
 }
 
+/**
+ * Refuses any database but the local Docker one unless the run names its
+ * remote target, so a stray env file or shell export cannot aim it at Neon.
+ * `--preview` also refuses the production endpoint (`PRODUCTION_DB_ENDPOINT`,
+ * as in `scripts/guard-preview-db.ts`); `--production` is the only way there.
+ */
+function assertTarget() {
+  let host = ''
+  try {
+    host = new URL(process.env.POSTGRES_URL ?? '').hostname
+  } catch {
+    throw new Error('POSTGRES_URL is missing or not a URL')
+  }
+  if (host === '127.0.0.1' || host === 'localhost') {
+    console.log(`Target database: ${host} (local)`)
+    return
+  }
+  if (process.argv.includes('--production')) {
+    console.log(`Target database: ${host} (PRODUCTION)`)
+    return
+  }
+  if (!process.argv.includes('--preview')) {
+    throw new Error(`Refusing to run against ${host}: pass --preview or --production`)
+  }
+  const productionEndpoint = process.env.PRODUCTION_DB_ENDPOINT
+  if (!productionEndpoint) {
+    throw new Error('--preview needs PRODUCTION_DB_ENDPOINT to rule out the production database')
+  }
+  if (host.startsWith(`${productionEndpoint}.`) || host.startsWith(`${productionEndpoint}-`)) {
+    throw new Error(`Refusing --preview: ${host} is the production endpoint`)
+  }
+  console.log(`Target database: ${host} (preview, not ${productionEndpoint})`)
+}
+
 async function run() {
   const dryRun = process.argv.includes('--dry-run')
   const only = arg('--only')
   const restoreFile = arg('--restore')
 
+  assertTarget()
   const payload = await getPayload({ config })
   if (restoreFile) return restore(payload, restoreFile)
   if (process.argv.includes('--publish')) return publish(payload, only)
