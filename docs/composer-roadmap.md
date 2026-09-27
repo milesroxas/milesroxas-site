@@ -1,6 +1,6 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
-Status: Phase 1 built 2026-09-27 (uncommitted on `dev`; notes under Phase 1). Nothing else has shipped. Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
+Status: Phase 1 built 2026-09-27 (`713a93e` on `dev`; notes under Phase 1). Phase 6 is specified as a script (D15, D16). Nothing else has shipped. Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
@@ -102,7 +102,7 @@ Consequence: the real migration surface is about 140 block rows on 10 works and 
 | D2 | Replace `filterOptions: publicApprovedMediaWhere` with no filter on every ported upload field. | Media here has no `usageStatus` |
 | D3 | Colliding slugs keep the milesroxas block (Section 4). sas-site's Caption ships as slug **`caption`**; sas-site's Content, Archive, CTA, Form and Banner are not imported. | 61 + 53 + 8 + 4 + 6 rows would otherwise sit under a block whose fields changed underneath them |
 | D4 | The Closing tab and Footer global are **not** part of the core port. | Removed here in July on purpose. Listed under Phase 8 for when it is wanted |
-| D5 | Posts keep `content` (made optional) and gain `layout`. The route renders hero → intro → content → composition → related. Moving existing bodies into Sections is a Phase 6 script with dry-run and snapshot, or a manual re-author (6 posts). | No content is touched by schema work |
+| D5 | Posts keep `content` (made optional) and gain `layout`. The route renders hero → intro → content → composition → related. Moving existing bodies into Sections is the Phase 6 posts transform (D15), with dry-run and snapshot. | No content is touched by schema work |
 | D6 | Works keep `layout` required and keep every legacy block in the drawer under its group, relabelled where a ported block takes the same name (`tabs` becomes "Tab slider", `mediaBlock` stays "Media"). | Zero re-authoring pressure; Phase 7 retires legacy blocks from the drawer only after Phase 6 |
 | D7 | The Studio plugin (Phase 2) lands **before** the block run (Phase 3). | The run's block configs spread `blockVisualSlotFields`, whose `studio` relationship needs the `streak-looks` collection. Porting the configs twice (plain upload, then slot) would generate two migrations on the same tables. Phases 1 and 2 can run in parallel Conductor workspaces |
 | D8 | The `link()` field stays milesroxas's (`reference | custom`, appearance `default | outline`). Ported blocks that ask for the `text` appearance (Rich text Actions) are configured with `['default', 'outline']`. | Adding `text` is an `ADD VALUE` on every `*_link_appearance` enum (14 of them plus `_v` twins) for one toolbar block |
@@ -112,6 +112,8 @@ Consequence: the real migration surface is about 140 block rows on 10 works and 
 | D12 | The existing hero group stays; `hero.media` becomes a visual slot (`heroVisualSlotFields`) so an effect can ground the opening band. `HighImpact` keeps the FLIP clone pickup and already fades the clone out when there is no `img`/`video`. | Keeps the SiteFrame transition; adds the shader where sas-site has it |
 | D13 | Remove the dormant shader dependencies and Turbopack loader rules in Phase 7. | Nothing imports them; the ported effects are inline GLSL |
 | D14 | The fluid type scale, grid gap token, `text-stack`, `stack-binds-opener`, band tokens and `BlockGrid` are added **beside** the current tokens, not in place of them. Existing components keep their classes. | The ported blocks read `text-heading-2`, `text-display`, `gap-grid`, `text-stack`, `font-mono`; nothing else does yet |
+| D15 | Phase 6 is **scripted end to end**. Works, Pages and Posts are converted by `scripts/compose-layouts.ts`; mapping changes go in `scripts/composer/overrides.ts`, never in admin. | Payload admin cannot move a block between fields, so a manual wrap means rebuilding about 130 blocks by hand |
+| D16 | Legacy blocks map onto **sas-site's variants**. Legacy presentation fields with no sas-site equivalent are dropped, not emulated or added to the ported configs. | Parity with sas-site is the goal; carrying `textSize`, `captionLayout` or `space` forward would fork the ported blocks. Copy and media are preserved by a check, not by keeping fields |
 
 ---
 
@@ -356,37 +358,80 @@ Source of truth: `sas:src/features/ask/README.md`, then `sas:docs/ask-rag-roadma
 
 Schema added: `ask_embeddings` (drizzle, HNSW index), `ask_questions` + `_sources` + `_rels`, `inquiries` (+ `_rels`), `site_info`, `payload_locked_documents_rels` columns, the jobs task-slug enum value `askQuestionRetention` (added on its own; check `pnpm check:migrations`). Answer sheet: Appendix A, Phase 5.
 
-### Phase 6: content migration (manual first, script as fallback)
+### Phase 6: content migration (scripted, no admin re-authoring)
 
-Nothing before this phase changes what production renders. This phase is where editors, or a script, move copy onto the new blocks. Work in draft, check live preview, publish once per document.
+Nothing before this phase changes what production renders. This phase moves every legacy block onto the sas-site run with one script, `scripts/compose-layouts.ts` (D15). Nobody rebuilds a block in admin. The script writes drafts, so production changes only when `--publish` runs.
 
-**Works (10 documents, about 130 rows).** sas-site did this by hand and kept `sas:scripts/wrap-sections.ts` as the fallback; do the same. Constraint: Payload admin cannot move a block between fields, so a wrap is Add Section → recreate the block inside → delete the original → drag into place. Mapping from the legacy blocks:
+Mapping principle (D16): each legacy block becomes the sas-site block and variant that does the same job. Presentation fields with no sas-site equivalent are dropped, not emulated: `space`, column `sizes`, `textSize`, `captionLayout` type sizes, `sectionHeading.size` and `style` (`style` was never rendered), `aspectRatio` on Caption, and the legacy media `fullWidth` inside a column. The ported block's own variants decide the look. Copy and media are never dropped; the preservation check enforces that.
 
-| Legacy | Becomes | Section settings |
+**Audited usage (local pull 2026-09-27, works).** 61 `content` blocks with 89 columns: 38 section headings (all paragraphs, never heading nodes; 26 are over 80 characters, so they are statements, not headings; 17 carry an eyebrow), 44 text columns (paragraphs, h2 and h3 only; 3 contain links; several are empty spacer columns), 5 media, 1 YouTube, 1 slider. 53 `mediaBlock`: 24 are videos; 12 show a caption (6 `split-*`, 6 `left`/`right`, 0 `center`); 3 hide caption text behind `showCaption: false`; 7 are full width. 8 `slider` (4 with an intro heading; 6 `default`, 2 `cropped`; no slide links). 4 `tabs` with 13 tabs, every tab a `single` slider (73 slides, no captions). The `archive`, `cta` and `formBlock` rows pass through.
+
+**Grouping into Sections.** Walk each `layout` in order and keep one Section open:
+- A new Section opens when a block produces an opener (a Standard or an Offset, from any rule below), or when the band changes (legacy `dark` against `light`/`system`).
+- Band: `dark` → `customize: true`, `theme: 'inverted'`; `light` and `system` → Section defaults (`inherit`). Children keep their default `theme`, because the Section owns the band. Section `spacing` and `stack` stay `default`.
+- `archive`, `cta`, `formBlock`, `callout`, and any `content` block that holds a `work` or `post` column pass through untouched at top level and close the open Section. That covers all three `content` blocks on `pages/home`, so Pages need no conversion.
+
+**Rules.** Every rule has an id. The dry-run report prints the rule id and the legacy block id beside each output block.
+
+`content` columns are read left to right. Empty text columns (spacers) are dropped first. Section heading columns go through the H rules, and the columns that remain go through the C and T rules.
+
+| Id | When | Becomes |
 |---|---|---|
-| `content` column `sectionHeading` | Standard (`richTransition`), layout Offset or Left | theme dark → Customize on, Inverted; light/system → defaults |
-| `content` column `text` | Rich text | same Section as its heading |
-| `content` column `media` | Caption or Stacked (with copy) | Loose band for full-bleed media |
-| `content` column `work` / `post` | stays a Columns block (no run equivalent; Archive covers lists) | |
-| `mediaBlock` | Caption (`size` full / inset / small from `fullWidth` + `aspectRatio`) | Loose |
-| `slider` | Carousel | Loose |
-| `tabs` | Tabs (`featureTabs`) when each tab is copy + one image; else stays Tab slider | |
-| `archive`, `cta`, `formBlock`, `callout` | unchanged, top level | |
+| H1 | Section heading, first paragraph 80 characters or fewer | Standard (`richTransition`): `eyebrow`, `heading` = first paragraph, `body` = any further paragraphs; `layout` is `centered` when `align` is `center`, else `left` |
+| H2 | Section heading, longer, with an eyebrow | Offset (`featureHeadingOffset`): `heading` = the eyebrow, `body` = the statement paragraphs, `bodySize: 'large'` |
+| H3 | Section heading, longer, no eyebrow | Rich text: `body` = the statement paragraphs |
+| T1 | One text column | Rich text, body as is (`h4` → `h3`, where the Rich text editor stops) |
+| T2 | Two or more text columns, each made only of heading-then-paragraphs runs, no links | Rich text whose body is one Insights block (`insights`): one item per run, `title` = the heading, `description` = the paragraphs as plain text |
+| T3 | Two or more text columns, the first a lone heading (one heading node, or one paragraph of 80 characters or fewer) | Standard, `layout: 'split'`: `heading` = that text, `body` = the other columns in order |
+| T4 | Any other set of two or more text columns | Rich text, the columns concatenated in order |
+| C1 | One media column plus one text column | Split narrow (`splitContentNarrow`): `imagePosition` from the column order; a leading heading in the text becomes `heading`, and the rest becomes `body` (other headings → `h4`, the only level in the content-column editor) |
+| C2 | Two media columns | Pair (`imagePair`): the square or portrait image → `portraitMedia`, the other → `landscapeMedia`, `portraitPosition` from the column order |
+| C3 | A media column in any other combination | Caption (`caption`, `size: 'full'`) per media column, then the text columns by T1 to T4 |
+| C4 | YouTube column | YouTube (`youtube`): `url`, `size: 'full'` |
+| C5 | Slider column | Carousel by S1 |
 
-Script fallback: port `wrap-sections.ts` with this mapping, `--dry-run`, snapshot to `scripts/snapshots/`, `--restore`. Rehearse on the local pull before considering production.
+Legacy Media block (`mediaBlock`). A caption counts only when `showCaption` is on and its text is not empty.
 
-**Posts (6 documents).** Two routes, pick per post:
-1. Manual: paste the body into Rich text blocks under Sections, one Section per h2, with a Prose Standard heading opening each. Clear `content` after publishing.
-2. Script `scripts/posts-to-sections.ts`: split `content` at every `h2` node; each split becomes a Section holding a Standard (`layout: 'prose'`, `headingLevel: 'h2'`, heading = the h2 text) followed by a Rich text block with the nodes up to the next h2; inline `code` nodes become Code blocks, inline `mediaBlock` nodes become Caption blocks, `banner` stays inside the body (Phase 3 added it to the Rich text editor). Writes `layout` as a draft and leaves `content` untouched; the route prefers `layout` when it is non-empty. `--dry-run`, snapshot, `--restore`.
+| Id | When | Becomes |
+|---|---|---|
+| M1 | No caption, not full width | Caption (`caption`), `size: 'full'` (the page container, as today) |
+| M2 | No caption, full width | Stacked (`fullMedia`): `showContent: false`, `width: 'full-width'` (sas-site's only edge-to-edge media; it crops to 16:9, then 21:9 from `md`) |
+| M3 | Caption, `captionLayout` `left` or `right` | Stacked: `showContent: true`, `body` = caption, `contentPosition` = `left` or `right`, `width` from `fullWidth`, `aspectRatio: '16-9'` when contained |
+| M4 | Caption, `split-left` or `split-right` | Split narrow: `body` = caption, `imagePosition` `left` for `split-left` (the media came first) and `right` for `split-right` |
+| M5 | Caption, `center` | Caption with `captionOverride` = caption (no rows today) |
 
-**Home** (`pages/home`): no wrap needed; its 6 `work` columns stay Columns. Add Sections only if the editor wants to.
+Slider and Tab slider:
+
+| Id | When | Becomes |
+|---|---|---|
+| S1 | Any slider | Carousel (`carousel`): each slide `media` = `slide.image`, `caption` = `slide.caption`; `slideSize` is `full` for `single` and `half` for `default` and `cropped`; `width: 'contained'` |
+| S2 | Slider with `introContent.heading` | A Standard before the Carousel, opening a Section: `heading` = intro heading, `body` = subheading; `layout` is `centered` when `align` is `center`, else `left` |
+| TB1 | Tab slider (see O9) | A new Section: a Standard (`eyebrow`, `heading` and `body` from the block's heading group), then, per tab, a Standard (`layout: 'left'`, `heading` = tab title) and a Carousel of that tab's slides (`slideSize: 'full'`) |
+
+**Overrides.** `scripts/composer/overrides.ts` maps a legacy block id to another rule id, or to `keep` (leave the legacy block in place). To change a mapping, edit this file and run the script again. Nothing is done in admin.
+
+**Preservation check.** Before any write, the script collects every media id and every non-empty text string from the legacy layout: text nodes, eyebrows, captions, slide captions, intro and tab headings, YouTube URLs. It asserts that each one appears in the output. The declared drops are only these: captions hidden by `showCaption: false` (3 today), empty spacer columns, and inline formatting on text that moves into a plain-text field (a Standard heading, an Insight description). A document that fails the check is skipped and reported, and nothing is written for it.
+
+**CLI** (`scripts/compose-layouts.ts`). The flags, snapshot and restore follow `sas:scripts/wrap-sections.ts`; the transform is new.
+- `--dry-run`: per document, the before and after tree with rule ids, the dropped fields, and the warnings. Writes nothing.
+- No flag: writes each converted document as a **draft** (`draft: true`), so live pages keep rendering the published legacy layout. Every input `layout` goes to `scripts/snapshots/compose-layouts-<timestamp>.json` first.
+- `--publish`: re-reads each converted document's latest draft and publishes it. Revalidation is skipped, as in sas-site, so redeploy afterwards.
+- `--restore <snapshot>`: writes the snapshot layouts back.
+- `--only <collection>/<slug>`: one document. Documents with no legacy blocks left report `unchanged`, so a second run is a no-op.
+
+Files: `scripts/composer/{transform.ts, rules.ts, lexical.ts, preserve.ts, overrides.ts}` and `transform.test.ts`. The test runs under `pnpm test:unit` against fixtures from the Phase 0 snapshot. It asserts that every work converts, that preservation passes, that no Section nests a Section, and that every output block slug is in its collection's block list.
+
+**Pending draft.** `design-systems-for-organizational-scale` has an unpublished draft from 2026-06-12 that is newer than its published version. The script converts the latest draft and flags the document, so `--publish` would also ship those June edits. Publish or discard that draft before Phase 6.
+
+**Posts (6 documents).** The same CLI runs a posts transform with the same flags: split `content` at every `h2` node. Each split becomes a Section holding a Standard (`layout: 'prose'`, `headingLevel: 'h2'`, heading = the h2 text) followed by a Rich text block with the nodes up to the next h2. Inline `code` nodes become Code blocks, inline `mediaBlock` nodes become Caption blocks, and `banner` stays inside the body (Phase 3 added it to the Rich text editor). It writes `layout` as a draft and leaves `content` untouched; the route prefers `layout` when it is not empty.
 
 Checklist:
-- [ ] Re-pull production, back up, re-run the inventory.
-- [ ] Rehearse the works script on the local pull; diff a dry run against the Phase 0 snapshot.
-- [ ] Wrap works in admin (or run the script against production with `.env.production.pulled` and `PAYLOAD_DB_PUSH=false`, after a Neon backup).
-- [ ] Posts: manual or script, one at a time, publish after live-preview check.
-- [ ] `_v` history keeps the flat shape; restorable until Phase 7 drops columns.
+- [ ] Phases 3 and 4 are deployed, so every target block exists in production.
+- [ ] Resolve the pending draft on `design-systems-for-organizational-scale`.
+- [ ] Re-pull production, back up, re-run the inventory, then `--dry-run` locally and read the report. Adjust `overrides.ts` and repeat until the report reads right.
+- [ ] Run locally, check every work in live preview, `--publish` locally, and take screenshots.
+- [ ] Take a Neon backup. Run against production with `.env.production.pulled` and `PAYLOAD_DB_PUSH=false`, check live preview, then `--publish` and redeploy.
+- [ ] `_v` history keeps the legacy shape; it stays restorable until Phase 7 drops columns.
 
 ### Phase 7: contract and normalize (one PR per bullet, each with its own migration, after Phase 6 has soaked)
 
@@ -448,7 +493,8 @@ Integration rules here:
 
 | Risk | Mitigation |
 |---|---|
-| Content loss during Phase 6 | Additive-first sequencing; Neon backup plus Phase 0 JSON snapshot; dry-run diff; per-document publish; `_v` history until Phase 7 |
+| Content loss during Phase 6 | Additive-first sequencing; Neon backup plus Phase 0 JSON snapshot; the script's preservation check (every legacy text string and media id must appear in the output, or the document is skipped); drafts before `--publish`; `--restore`; `_v` history until Phase 7 |
+| A Phase 6 rule maps a block onto the wrong variant | Rule id per block in the dry-run report; `overrides.ts` re-maps one block without touching the rules; live preview of drafts before `--publish` |
 | A ported block's slug collides with a legacy table | Section 4 register; `check:migrations:drift` must show only `CREATE` in Phases 2 to 5; a `rename` prompt aborts the run |
 | Double entrance on `home` (AnimatedBlocksContainer + reveal) | Phase 1 guard, verified in Storybook and on `/` |
 | Studio publish endpoint writes Media fields we do not have | Seam listed in Phase 2; int test on `/publish` |
@@ -476,6 +522,8 @@ Integration rules here:
 | O6 | Figures in the run? | Phase 8, if long-form technical posts need charts |
 | O7 | Band token values | Start from sas-site's oklch values; retune against IBM Plex and the orange accent on `/demo`-style stories before Phase 3 ships |
 | O8 | Work Details tab (industry, role, deliverables) as a hero facts row like `CaseStudyHero`? | Yes, in Phase 4, read from the existing text fields; no schema |
+| O9 | Tab slider in Phase 6: every tab holds a slider (3 to 12 slides). sas-site's Tabs (`featureTabs`) holds one media per tab, so it would keep 13 of 73 images | TB1: each tab becomes a Standard plus a Carousel, which keeps every image but stacks them instead of tabbing. The alternative is `keep` in `overrides.ts`, which leaves the legacy Tab slider in place and blocks its Phase 7 retirement |
+| O10 | Move each work's opening statement (7 of 9 works open with one, 103 to 377 characters) into the Phase 4 intro band? | Not by default. sas-site's intro needs a short statement title, which the legacy data does not have. The statements go through H2 or H3 instead |
 
 ---
 
@@ -509,6 +557,9 @@ Never run without asking. Every phase below is additive, so **no create/rename p
 
 **Phase 5**
 Everything under "Files to copy for a port" in the Ask agent map, minus `storyBrief.ts`, `journeyPages.ts`, `MenuAsk.tsx`, `Footer/Closing/*`, `Header/Menu/*`, `ContactPages/*`, `mcp.ts`, `botid/*` (optional).
+
+**Phase 6**
+`scripts/wrap-sections.ts` (CLI shape, snapshot and `--restore` only; the transform is new).
 
 **Docs to copy into `docs/`** (trim to what ships): `blocks-reorg-roadmap.md` (history), `block-grid-roadmap.md`, `animations.md`, `cms-naming.md`, `streak-field.md`, `streak-field-studio.md`, `studio-effects.md`, `immersive-effects.md`, `src/features/ask/README.md`, `editorial/voice.md` (adapt the voice to this site).
 
