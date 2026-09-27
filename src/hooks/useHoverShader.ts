@@ -4,8 +4,6 @@ import { useFrame } from '@react-three/fiber'
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 
-import '@/utilities/shaders/hoverShader'
-
 /**
  * Hook to manage hover shader effects
  *

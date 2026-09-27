@@ -2,11 +2,11 @@
 import gsap from 'gsap'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useRef } from 'react'
-import { formatDateTime } from 'src/utilities/formatDateTime'
 import { Media } from '@/components/Media'
 import type { Post } from '@/payload-types'
 import { useSiteFrameStore } from '@/stores/siteframeStore'
 import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+import { formatDateTime } from '@/utilities/formatDateTime'
 import { categoryKeys } from '@/utilities/reactKeyDomains'
 
 export const PostHero: React.FC<{

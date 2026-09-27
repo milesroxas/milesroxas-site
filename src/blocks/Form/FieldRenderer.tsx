@@ -52,6 +52,7 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
     case 'date':
     case 'radio':
     case 'payment':
+    case 'upload':
       // These field types are defined in FormFieldBlock but not implemented yet
       console.warn(`Field type "${field.blockType}" is not yet implemented`)
       return null

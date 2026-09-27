@@ -7,7 +7,7 @@ frontend.
 ## Tech Stack
 
 - Next.js 16 + React 19 + TypeScript
-- Payload CMS 3.58 (`@payloadcms/next`)
+- Payload CMS 3.90 (`@payloadcms/next`)
 - Postgres via `@payloadcms/db-vercel-postgres`
 - Vercel Blob storage with Cloudflare media sync hooks
 - Tailwind CSS 4, Radix UI, shadcn/ui

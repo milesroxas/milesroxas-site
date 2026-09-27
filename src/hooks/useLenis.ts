@@ -1,6 +1,6 @@
 'use client'
 
-import { useLenis as useReactLenis } from '@studio-freight/react-lenis'
+import { useLenis as useReactLenis } from 'lenis/react'
 
 /**
  * Hook to access the Lenis instance for smooth scrolling operations

@@ -3,8 +3,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import type * as THREE from 'three'
 
-import '@/utilities/shaders/imageCropShader'
-
 /**
  * Supported aspect ratio modes for the image display
  * - square: 1:1 aspect ratio
@@ -42,8 +40,9 @@ export const useImageCropMaterial = (
 
   // Calculate the source image aspect ratio (width/height)
   const imgAspect = useMemo(() => {
-    if (!texture || !texture.image) return 1
-    return texture.image.width / texture.image.height
+    if (!texture?.image) return 1
+    const { width, height } = texture.image as { width: number; height: number }
+    return width / height
   }, [texture])
 
   // Calculate the target container aspect ratio based on the selected mode

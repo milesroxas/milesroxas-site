@@ -126,7 +126,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
         preload={strategy.preload}
         onCanPlay={async () => {
           const video = videoRef.current
-          if (!video || !video.paused) return
+          if (!video?.paused) return
           if (!strategy.shouldAutoplay) return
           try {
             await video.play()

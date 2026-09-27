@@ -14,8 +14,7 @@ const config: StorybookConfig = {
   },
   staticDirs: ['../public'],
   async viteFinal(viteConfig) {
-    const { default: tsconfigPaths } = await import('vite-tsconfig-paths')
-    viteConfig.plugins = [...(viteConfig.plugins ?? []), tsconfigPaths()]
+    viteConfig.resolve = { ...viteConfig.resolve, tsconfigPaths: true }
     // Pre-bundle heavy CJS/ESM-mixed deps so mid-run optimization reloads
     // don't abort story imports (Vitest browser mode is sensitive to these).
     viteConfig.optimizeDeps = {

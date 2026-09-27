@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -24,28 +24,28 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "a11y": {
-        "recommended": true
+        "preset": "recommended"
       },
       "complexity": {
-        "recommended": true,
+        "preset": "recommended",
         "noExcessiveCognitiveComplexity": "warn"
       },
       "correctness": {
-        "recommended": true,
+        "preset": "recommended",
         "noUnusedVariables": "warn",
         "noUnusedImports": "warn"
       },
       "performance": {
-        "recommended": true
+        "preset": "recommended"
       },
       "security": {
-        "recommended": true,
+        "preset": "recommended",
         "noDangerouslySetInnerHtml": "warn"
       },
       "style": {
-        "recommended": true,
+        "preset": "recommended",
         "noNonNullAssertion": "warn",
         "useImportType": "warn",
         "useConst": "warn",
@@ -53,7 +53,7 @@
         "useFilenamingConvention": "off"
       },
       "suspicious": {
-        "recommended": true,
+        "preset": "recommended",
         "noExplicitAny": "warn",
         "noArrayIndexKey": "warn",
         "noCommentText": "warn",
@@ -176,6 +176,15 @@
         "enabled": false
       },
       "formatter": {
+        "enabled": false
+      },
+      "assist": {
+        "enabled": false
+      }
+    },
+    {
+      "includes": ["public/**/*.svg"],
+      "linter": {
         "enabled": false
       }
     },

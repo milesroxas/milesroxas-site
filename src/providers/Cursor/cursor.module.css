@@ -48,7 +48,6 @@
   transform: translate(-50%, -50%);
   text-align: center;
   white-space: nowrap;
-  letter-spacing: 0; /* Reduce letter spacing to help with centering */
   text-transform: uppercase;
   will-change: transform;
   width: 40px; /* Match the width of the outer cursor */
