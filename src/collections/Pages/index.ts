@@ -6,9 +6,10 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import type { CollectionConfig } from 'payload'
+import { contentsButtonField } from '@/fields/pageFields'
 import { pageLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
-import { hero } from '@/heros/config'
+import { heroField } from '@/heros/config'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -56,7 +57,7 @@ export const Pages: CollectionConfig<'pages'> = {
       type: 'tabs',
       tabs: [
         {
-          fields: [hero],
+          fields: [heroField()],
           label: 'Opening',
         },
         {
@@ -72,6 +73,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 initCollapsed: true,
               },
             },
+            contentsButtonField(),
           ],
           label: 'Composition',
         },

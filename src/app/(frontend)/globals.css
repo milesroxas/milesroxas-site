@@ -2,6 +2,10 @@
 /* shadcn token map, state variants, `dark` on data-theme, press recipe
    (ported from sas-site; see the file header for the seams). */
 @import "../../styles/shadcn-theme.css";
+/* Enter/exit utilities for the ported sheet the Contents button opens on
+   phones (composer Phase 4). The legacy form select's inert shadcn animation
+   classes were removed first, so nothing that shipped before starts to move. */
+@import "tw-animate-css";
 
 /* Tailwind Typography for the ported composition blocks (Rich text, Standard
    prose layout). Legacy components never carried a working `prose` class
@@ -1365,4 +1369,220 @@
 [data-visual-host]:has(> [data-visual-bleed]) {
   position: relative;
   isolation: isolate;
+}
+
+/* Fixed chrome heights, ported from sas-site for the blocks and features that
+   offset by them (the full-viewport intro band, the Contents button and its
+   heading scroll margin). Here the chrome is the SiteFrame's bars
+   (src/SiteFrame/SiteFrameClient.tsx): 8px top and 40px bottom on phones,
+   30px from md, 40px from lg. */
+:root {
+  --header-height: 0.5rem;
+  --footer-height: 2.5rem;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --header-height: 30px;
+    --footer-height: 30px;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --header-height: 40px;
+    --footer-height: 40px;
+  }
+}
+
+/* Floating-surface radii (sas-site): the Contents card and sheet. A plain
+   `@theme`, not `inline`: the Contents clip reads `--radius-menu-card`
+   through `var()`, and an inline token is never emitted as a variable. */
+@theme {
+  --radius-menu-card: 0.75rem;
+  --radius-sheet: 1rem;
+}
+
+/* Contents button (src/features/contents): the index card grows out of the
+   button and returns into it. The card is laid out at full size from the
+   start and revealed by a clip that opens from the button's own circle (the
+   seed), the brand's mask reveal, so nothing inside scales or reflows. A clip
+   cuts off the element's own box-shadow, so the edge comes from a
+   `drop-shadow` on the parent, which follows the clipped shape, and the wide
+   ambient shadow is a separate layer that only fades. Both directions are the
+   site's settle curve, an `ease-out` strong enough that most of the travel is
+   over in the first third: this is a popover, so it stays inside the 300ms a
+   popover gets, and a critically damped spring's long tail (500ms, the last
+   13% dribbling out after the eye has called it arrived) is what made it read
+   slow. Enter is `@starting-style` at 300ms, orchestrated: the content leads
+   (it is what the reader came for), the ambient shadow waits for a shape
+   that has all but arrived. Exit is one clock instead — 200ms, the same
+   200ms the button's own surface and glyph run — so the shape, its content
+   and the button read as a single object being drawn back in rather than
+   five sub-animations ending at five different moments; only the ambient
+   shadow leads out, since it belongs to a card that is no longer there.
+   Enter and exit are both plain transitions, so a reversal mid-flight
+   retargets from where it is. `data-animating` (use-presence) holds
+   `will-change` for exactly the length of a run. */
+.contents-card-layer {
+  --contents-seed: inset(calc(100% - 4rem) 0.5rem 0.5rem calc(100% - 4rem) round 1.75rem);
+  /* The card stays between the bars; past that the list scrolls inside it. */
+  --contents-list-max: calc(100svh - var(--header-height) - var(--footer-height) - 11rem);
+}
+
+.contents-sheet {
+  --contents-list-max: calc(100svh - 16rem);
+}
+
+.contents-shape-shadow {
+  --contents-edge: drop-shadow(0 0 1px color-mix(in oklab, var(--foreground) 22%, transparent))
+    drop-shadow(0 2px 6px rgb(0 0 0 / 0.08));
+  filter: var(--contents-edge);
+}
+
+/* The pill has no ambient layer of its own, so it carries the button's lift. */
+.contents-shape-shadow[data-lift] {
+  filter: var(--contents-edge) drop-shadow(0 8px 24px rgb(0 0 0 / 0.12));
+}
+
+.contents-card {
+  clip-path: var(--contents-seed);
+  transition: clip-path 200ms var(--ease-out-quint);
+}
+
+/* The body dims on the shape's own clock, so the text is wiped back into the
+   button with the card instead of blinking out ahead of it. */
+.contents-card-body {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-out-quint);
+}
+
+.contents-card-ambient {
+  opacity: 0;
+  transition: opacity 120ms var(--ease-out-quint);
+}
+
+.contents-card-layer[data-animating] .contents-card {
+  will-change: clip-path;
+}
+
+.contents-card-layer[data-open="true"] {
+  .contents-card {
+    clip-path: inset(0 round var(--radius-menu-card));
+    transition: clip-path 300ms var(--ease-out-quint);
+  }
+
+  .contents-card-body,
+  .contents-card-ambient {
+    opacity: 1;
+    transition: opacity 180ms var(--ease-out-quint) 40ms;
+  }
+
+  /* The ambient shadow is drawn for the finished card, so it waits until the
+     shape has all but arrived; any sooner and it outlines a card that is not
+     there yet. */
+  .contents-card-ambient {
+    transition: opacity 160ms var(--ease-out-quint) 180ms;
+  }
+
+  @starting-style {
+    .contents-card {
+      clip-path: var(--contents-seed);
+    }
+
+    .contents-card-body,
+    .contents-card-ambient {
+      opacity: 0;
+    }
+  }
+}
+
+/* Arrival: the first showing of a visit is a labeled pill, swept back into
+   the button's circle from its far edge. Same clip and parent-shadow pair. */
+.contents-arrival {
+  clip-path: inset(0 0 0 calc(100% - 3.5rem) round 1.75rem);
+  transition: clip-path 500ms var(--ease-spring) 100ms;
+}
+
+.contents-arrival > * {
+  opacity: 0;
+  transition: opacity 150ms var(--ease-out-quint);
+}
+
+.contents-arrival[data-open="true"] {
+  clip-path: inset(0 round 1.75rem);
+}
+
+.contents-arrival[data-open="true"] > * {
+  opacity: 1;
+}
+
+.contents-arrival[data-animating] {
+  will-change: clip-path;
+}
+
+/* The anchor rises 12px as it fades in and leaves the same way; visibility
+   flips after the fade out so the hidden button is out of the tab order. */
+.contents-anchor {
+  visibility: hidden;
+  opacity: 0;
+  translate: 0 0.75rem;
+  transition:
+    opacity 200ms var(--ease-out-quint),
+    translate 200ms var(--ease-out-quint),
+    visibility 0s 200ms;
+}
+
+.contents-anchor[data-visible="true"] {
+  visibility: visible;
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 300ms var(--ease-out-quint),
+    translate 300ms var(--ease-out-quint),
+    visibility 0s;
+}
+
+@media (min-width: 48rem) {
+  /* The admin bar lifts the footer bar (below); the button sits on it. */
+  html[data-admin-bar] .contents-anchor {
+    bottom: calc(var(--footer-height) + var(--admin-bar-height) + 1rem);
+  }
+}
+
+/* Reduced motion: the card and the pill cross-fade in 150ms with no growth,
+   the anchor fades in place. The ring still fills, since it tracks scroll 1:1. */
+@media (prefers-reduced-motion: reduce) {
+  .contents-card-layer .contents-card,
+  .contents-card-layer[data-open="true"] .contents-card {
+    clip-path: inset(0 round var(--radius-menu-card));
+    transition: none;
+  }
+
+  .contents-card-layer .contents-shape-shadow {
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  .contents-card-layer[data-open="true"] .contents-shape-shadow {
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  .contents-card-layer .contents-card-body,
+  .contents-card-layer .contents-card-ambient {
+    transition: opacity 150ms ease;
+  }
+
+  .contents-arrival {
+    transition: none;
+  }
+
+  .contents-anchor,
+  .contents-anchor[data-visible="true"] {
+    translate: 0 0;
+  }
 }

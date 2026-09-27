@@ -11,6 +11,7 @@ import * as migration_20260702_221932_remove_footer_global from './20260702_2219
 import * as migration_20260926_213954_payload_3_90_upgrade from './20260926_213954_payload_3_90_upgrade';
 import * as migration_20260927_171656_streak_studio from './20260927_171656_streak_studio';
 import * as migration_20260927_173548_sections_and_run from './20260927_173548_sections_and_run';
+import * as migration_20260927_175225_opening_intro_contents from './20260927_175225_opening_intro_contents';
 
 export const migrations = [
   {
@@ -76,6 +77,11 @@ export const migrations = [
   {
     up: migration_20260927_173548_sections_and_run.up,
     down: migration_20260927_173548_sections_and_run.down,
-    name: '20260927_173548_sections_and_run'
+    name: '20260927_173548_sections_and_run',
+  },
+  {
+    up: migration_20260927_175225_opening_intro_contents.up,
+    down: migration_20260927_175225_opening_intro_contents.down,
+    name: '20260927_175225_opening_intro_contents'
   },
 ];

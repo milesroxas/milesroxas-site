@@ -21,9 +21,11 @@ import { Banner } from '@/blocks/Banner/config'
 
 import { Code } from '@/blocks/Code/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
+import { contentsButtonField } from '@/fields/pageFields'
+import { pageIntroField } from '@/fields/pageHero'
 import { postLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
-import { hero } from '@/heros/config'
+import { heroField } from '@/heros/config'
 import { generatePreviewPath } from '@/utilities/generatePreviewPath'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
@@ -77,11 +79,12 @@ export const Posts: CollectionConfig<'posts'> = {
       type: 'tabs',
       tabs: [
         {
-          fields: [hero],
+          fields: [heroField(), pageIntroField()],
           label: 'Opening',
         },
         {
           fields: [
+            contentsButtonField(),
             {
               name: 'content',
               type: 'richText',
@@ -138,6 +141,16 @@ export const Posts: CollectionConfig<'posts'> = {
               },
               hasMany: true,
               relationTo: 'posts',
+            },
+            {
+              name: 'hideRelatedPosts',
+              type: 'checkbox',
+              label: 'Hide related posts',
+              defaultValue: false,
+              admin: {
+                position: 'sidebar',
+                description: 'Leaves the "More posts" rail off the end of this post.',
+              },
             },
             {
               name: 'categories',

@@ -203,6 +203,11 @@ export interface Page {
         }[]
       | null;
     media?: (number | null) | Media;
+    /**
+     * Leave empty for the media alone. An effect grounds the whole opening band behind the copy; the media upload, when one is set, still shows in its own frame.
+     */
+    visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+    shader?: PlacedVisualConfig;
   };
   layout: (
     | PageSectionBlock
@@ -230,6 +235,10 @@ export interface Page {
     | MediaBlock
     | ContentBlock
   )[];
+  /**
+   * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
+   */
+  showContents?: boolean | null;
   meta?: {
     title?: string | null;
     /**
@@ -299,7 +308,17 @@ export interface Post {
         }[]
       | null;
     media?: (number | null) | Media;
+    /**
+     * Leave empty for the media alone. An effect grounds the whole opening band behind the copy; the media upload, when one is set, still shows in its own frame.
+     */
+    visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+    shader?: PlacedVisualConfig;
   };
+  intro?: WorkIntro;
+  /**
+   * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
+   */
+  showContents?: boolean | null;
   content?: {
     root: {
       type: string;
@@ -340,6 +359,10 @@ export interface Post {
       )[]
     | null;
   relatedPosts?: (number | Post)[] | null;
+  /**
+   * Leaves the "More posts" rail off the end of this post.
+   */
+  hideRelatedPosts?: boolean | null;
   categories?: (number | Category)[] | null;
   meta?: {
     title?: string | null;
@@ -599,6 +622,92 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PlacedVisualConfig".
+ */
+export interface PlacedVisualConfig {
+  studio?: (number | null) | StreakLook;
+  preset?: string | null;
+  /**
+   * Lays out the field. The same seed always draws the same composition; leave empty to have one assigned when saved.
+   */
+  seed?: number | null;
+  /**
+   * Playback rate as a fraction of the look, 0 to 1. Empty is the look as shipped.
+   */
+  speed?: number | null;
+  /**
+   * Brightness multiplier, 0.5 to 1.25. Empty is the look as shipped.
+   */
+  intensity?: number | null;
+  /**
+   * Off, the effect is clipped to the media frame. On, it leaves the frame and washes across the whole block, edge to edge of the browser.
+   */
+  bleed?: boolean | null;
+  /**
+   * The corner the light is pinned to, of the frame or, bleeding, of the block.
+   */
+  origin?: ('top-right' | 'top-left' | 'bottom-right' | 'bottom-left') | null;
+  /**
+   * Off, the effect fills the frame on its own. On, the media upload shows under it.
+   */
+  showMedia?: boolean | null;
+  /**
+   * Which face of the effect shows. Following, it is light for a visitor in the light theme and dark for one in the dark theme, or the palette of the band it sits in. Always light or always dark holds that face for every visitor, on its own ground: a hero takes the same palette so its copy stays legible.
+   */
+  surface?: ('auto' | 'dark' | 'light') | null;
+  /**
+   * Let the pointer move and light the effect on devices that run it live. Off, nothing below runs and the effect never listens.
+   */
+  pointerInteraction?: boolean | null;
+  /**
+   * What lights the effect on hover, within the section it sits in. Links and buttons need no marking; marked elements are the ones the design calls out in code. Empty is the look as shipped.
+   */
+  hoverTargets?: ('interactive' | 'marked') | null;
+  /**
+   * How far the effect answers the pointer merely crossing the section, as a fraction of a full flare. 0 waits for a link or a marked element. Empty is the look as shipped.
+   */
+  sectionHover?: number | null;
+  /**
+   * Optional still shown before the effect runs, and wherever it cannot (reduced motion, no WebGL, menus, social). Images only. Empty uses the look’s built-in poster.
+   */
+  posterMedia?: (number | null) | Media;
+}
+/**
+ * Full-screen introduction band rendered right after the hero. Shown when it has a title.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkIntro".
+ */
+export interface WorkIntro {
+  /**
+   * Short label above the introduction copy, e.g. "Introduction".
+   */
+  eyebrow?: string | null;
+  /**
+   * Statement headline for the section.
+   */
+  title?: string | null;
+  /**
+   * The introduction copy, offset beside the title.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "PostSectionBlock".
  */
 export interface PostSectionBlock {
@@ -781,58 +890,6 @@ export interface FullMediaBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'fullMedia';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "PlacedVisualConfig".
- */
-export interface PlacedVisualConfig {
-  studio?: (number | null) | StreakLook;
-  preset?: string | null;
-  /**
-   * Lays out the field. The same seed always draws the same composition; leave empty to have one assigned when saved.
-   */
-  seed?: number | null;
-  /**
-   * Playback rate as a fraction of the look, 0 to 1. Empty is the look as shipped.
-   */
-  speed?: number | null;
-  /**
-   * Brightness multiplier, 0.5 to 1.25. Empty is the look as shipped.
-   */
-  intensity?: number | null;
-  /**
-   * Off, the effect is clipped to the media frame. On, it leaves the frame and washes across the whole block, edge to edge of the browser.
-   */
-  bleed?: boolean | null;
-  /**
-   * The corner the light is pinned to, of the frame or, bleeding, of the block.
-   */
-  origin?: ('top-right' | 'top-left' | 'bottom-right' | 'bottom-left') | null;
-  /**
-   * Off, the effect fills the frame on its own. On, the media upload shows under it.
-   */
-  showMedia?: boolean | null;
-  /**
-   * Which face of the effect shows. Following, it is light for a visitor in the light theme and dark for one in the dark theme, or the palette of the band it sits in. Always light or always dark holds that face for every visitor, on its own ground: a hero takes the same palette so its copy stays legible.
-   */
-  surface?: ('auto' | 'dark' | 'light') | null;
-  /**
-   * Let the pointer move and light the effect on devices that run it live. Off, nothing below runs and the effect never listens.
-   */
-  pointerInteraction?: boolean | null;
-  /**
-   * What lights the effect on hover, within the section it sits in. Links and buttons need no marking; marked elements are the ones the design calls out in code. Empty is the look as shipped.
-   */
-  hoverTargets?: ('interactive' | 'marked') | null;
-  /**
-   * How far the effect answers the pointer merely crossing the section, as a fraction of a full flare. 0 waits for a link or a marked element. Empty is the look as shipped.
-   */
-  sectionHover?: number | null;
-  /**
-   * Optional still shown before the effect runs, and wherever it cannot (reduced motion, no WebGL, menus, social). Images only. Empty uses the look’s built-in poster.
-   */
-  posterMedia?: (number | null) | Media;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1566,7 +1623,13 @@ export interface Work {
         }[]
       | null;
     media?: (number | null) | Media;
+    /**
+     * Leave empty for the media alone. An effect grounds the whole opening band behind the copy; the media upload, when one is set, still shows in its own frame.
+     */
+    visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+    shader?: PlacedVisualConfig;
   };
+  intro?: WorkIntro;
   layout: (
     | WorkSectionBlock
     | RichTransitionBlock
@@ -1593,6 +1656,10 @@ export interface Work {
     | MediaBlock
     | ContentBlock
   )[];
+  /**
+   * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
+   */
+  showContents?: boolean | null;
   industry?: string | null;
   role?: string | null;
   deliverables?: string | null;
@@ -2513,6 +2580,8 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        visualType?: T;
+        shader?: T | PlacedVisualConfigSelect<T>;
       };
   layout?:
     | T
@@ -2542,6 +2611,7 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
+  showContents?: T;
   meta?:
     | T
     | {
@@ -2556,6 +2626,25 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PlacedVisualConfig_select".
+ */
+export interface PlacedVisualConfigSelect<T extends boolean = true> {
+  studio?: T;
+  preset?: T;
+  seed?: T;
+  speed?: T;
+  intensity?: T;
+  bleed?: T;
+  origin?: T;
+  showMedia?: T;
+  surface?: T;
+  pointerInteraction?: T;
+  hoverTargets?: T;
+  sectionHover?: T;
+  posterMedia?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2635,25 +2724,6 @@ export interface FullMediaBlockSelect<T extends boolean = true> {
   theme?: T;
   id?: T;
   blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "PlacedVisualConfig_select".
- */
-export interface PlacedVisualConfigSelect<T extends boolean = true> {
-  studio?: T;
-  preset?: T;
-  seed?: T;
-  speed?: T;
-  intensity?: T;
-  bleed?: T;
-  origin?: T;
-  showMedia?: T;
-  surface?: T;
-  pointerInteraction?: T;
-  hoverTargets?: T;
-  sectionHover?: T;
-  posterMedia?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3150,7 +3220,11 @@ export interface PostsSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        visualType?: T;
+        shader?: T | PlacedVisualConfigSelect<T>;
       };
+  intro?: T | WorkIntroSelect<T>;
+  showContents?: T;
   content?: T;
   layout?:
     | T
@@ -3174,6 +3248,7 @@ export interface PostsSelect<T extends boolean = true> {
         insightList?: T | InsightListBlockSelect<T>;
       };
   relatedPosts?: T;
+  hideRelatedPosts?: T;
   categories?: T;
   meta?:
     | T
@@ -3196,6 +3271,15 @@ export interface PostsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkIntro_select".
+ */
+export interface WorkIntroSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  body?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3259,7 +3343,10 @@ export interface WorksSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        visualType?: T;
+        shader?: T | PlacedVisualConfigSelect<T>;
       };
+  intro?: T | WorkIntroSelect<T>;
   layout?:
     | T
     | {
@@ -3288,6 +3375,7 @@ export interface WorksSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
+  showContents?: T;
   industry?: T;
   role?: T;
   deliverables?: T;

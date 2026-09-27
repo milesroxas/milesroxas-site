@@ -1,6 +1,6 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
-Status: Phases 1 to 3 built 2026-09-27 on `dev` (notes under each phase). Phase 6 is specified as a script (D15, D16). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
+Status: Phases 1 to 4 built 2026-09-27 on `dev` (notes under each phase). Phase 6 is specified as a script (D15, D16). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
@@ -349,6 +349,16 @@ Turns a composed Work or Post into the sas-site page shape.
 - Preview map (`generatePreviewPath`) unchanged.
 
 Schema added: `hero_visual_type` + `hero_shader_*` columns on pages, posts, works and `_v` twins; `intro_*` columns on posts and works; `show_contents` and `hide_related_posts` booleans. Answer sheet: Appendix A, Phase 4.
+
+**Phase 4 as built (2026-09-27).** Migration `20260927_175225_opening_intro_contents`: no prompts; `ADD COLUMN` (nullable, or with a default) on `pages`, `posts`, `works` and their `_v` tables, their enums, indexes and FKs; nothing dropped or renamed. `tsc`, `pnpm test:unit` (19 files, 158 tests), `pnpm test:storybook` (62 files, 324 tests), `pnpm build` and both migration checks green; a throwaway local post with a light-leak hero ground, an intro band, three Sections and the Contents button rendered and indexed its four headings. Where the build departs from the plan above:
+
+- **`hero` is a factory** (`heroField()`), as in sas-site: Payload mutates field configs while sanitizing, and the visual slot must not be shared by three collections. The effect choice shows for High and Medium Impact; the Home hero keeps a plain upload (it draws its own scene), so the upload keeps its own `highImpact | mediumImpact | home` condition.
+- **Heroes with no effect render exactly as before.** With one, `HighImpact` adds `isolate bg-background`, blends its media over the ground the way sas-site's does (`-z-20 opacity-85 mix-blend-soft-light`), keeps the media first in the DOM so the FLIP clone still lands on it, and takes a pinned surface for its `data-theme` (dark otherwise). `MediumImpact` grounds through `pinnedOpening`.
+- **Intro band**: `intro.eyebrow`, `intro.title`, `intro.body` on Works and Posts (Opening tab), rendered by `sections/WorkIntro` when it has a title, after the work title strip or the post hero.
+- **Contents**: `features/contents` verbatim; the takeover-menu focus helper is `utilities/input-modality.ts` and `components/SiteChrome/chrome-scroll.ts` came with it (there is no page frame to freeze here, so it only reads `scrollY`). `--header-height` / `--footer-height` are defined from the SiteFrame bars (8px / 40px on phones, 30px from md, 40px from lg), plus `--radius-menu-card` and `--radius-sheet`. Mounted inside each route's `<article>`.
+- **`tw-animate-css` now loads on the site** for the Contents sheet. The legacy form select's shadcn enter/exit classes, inert until now, were removed first so it opens as it always has. Only ported primitives animate; the Dialog story waits for its fade.
+- **`cn`** is sas-site's `extendTailwindMerge` (the fluid type tokens are font sizes, tw-animate groups merge), so `text-heading-2` is never dropped as a colour.
+- `hideRelatedPosts` sits in the Posts sidebar. O8 (hero facts row) needs nothing: the work title strip already shows industry, role and deliverables.
 
 ### Phase 5: Ask (additive schema, new infrastructure)
 

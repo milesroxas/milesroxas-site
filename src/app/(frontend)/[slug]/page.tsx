@@ -6,6 +6,7 @@ import { cache } from 'react'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
+import { ContentsButton } from '@/features/contents'
 import { RenderHero } from '@/heros/RenderHero'
 import HomeTemplate from '@/templates/Homepage/HomeTemplate'
 import { generateMeta } from '@/utilities/generateMeta'
@@ -63,7 +64,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     return <HomeTemplate hero={hero} layout={layout} />
   }
 
-  const { hero, layout } = page
+  const { hero, layout, showContents } = page
 
   return (
     <article className="pb-24">
@@ -73,6 +74,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
       <RenderHero {...hero} />
       <RenderBlocks blocks={layout} />
+      {showContents && <ContentsButton />}
     </article>
   )
 }

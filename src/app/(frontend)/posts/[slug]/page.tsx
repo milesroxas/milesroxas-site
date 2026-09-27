@@ -8,7 +8,9 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import RichText from '@/components/RichText/Legacy'
+import { ContentsButton } from '@/features/contents'
 import { RenderHero } from '@/heros/RenderHero'
+import { WorkIntro } from '@/sections/WorkIntro'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
@@ -54,6 +56,9 @@ export default async function Post({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
       <PageClient post={post} />
       {post.hero && <RenderHero {...post.hero} />}
+      {post.intro?.title && (
+        <WorkIntro body={post.intro.body} eyebrow={post.intro.eyebrow} title={post.intro.title} />
+      )}
 
       {post.content && (
         <div className="flex flex-col items-start gap-4 pt-8 pb-32 md:pt-12 lg:pt-32">
@@ -71,12 +76,13 @@ export default async function Post({ params: paramsPromise }: Args) {
       {/* Composition (docs/composer-roadmap.md, Phase 3): Sections after the
           article body. Each band paints its own surface. */}
       <RenderBlocks blocks={post.layout} />
-      {post.relatedPosts && post.relatedPosts.length > 0 && (
+      {!post.hideRelatedPosts && post.relatedPosts && post.relatedPosts.length > 0 && (
         <section className="bg-primary py-12">
           <h2 className="container pb-4 font-light text-5xl text-primary-foreground">More posts</h2>
           <RelatedPosts docs={post.relatedPosts.filter((post) => typeof post === 'object')} />
         </section>
       )}
+      {post.showContents && <ContentsButton />}
     </article>
   )
 }

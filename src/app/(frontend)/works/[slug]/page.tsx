@@ -7,7 +7,9 @@ import { cache } from 'react'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
+import { ContentsButton } from '@/features/contents'
 import { RenderHero } from '@/heros/RenderHero'
+import { WorkIntro } from '@/sections/WorkIntro'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
 import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
@@ -76,7 +78,15 @@ export default async function Work({ params: paramsPromise }: Args) {
       <article className="relative z-10">
         {hero && <RenderHero {...hero} />}
         <PageClient work={visibleWork} />
+        {visibleWork.intro?.title && (
+          <WorkIntro
+            body={visibleWork.intro.body}
+            eyebrow={visibleWork.intro.eyebrow}
+            title={visibleWork.intro.title}
+          />
+        )}
         <RenderBlocks blocks={layout} />
+        {visibleWork.showContents && <ContentsButton />}
       </article>
     </>
   )
