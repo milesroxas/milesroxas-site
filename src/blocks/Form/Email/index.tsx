@@ -1,7 +1,7 @@
 import type { EmailField } from '@payloadcms/plugin-form-builder/types'
 import type React from 'react'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/legacy-input'
+import { Label } from '@/components/ui/legacy-label'
 
 import { FormError } from '../Error'
 import type { RegisterFieldProps } from '../types'

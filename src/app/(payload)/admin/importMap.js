@@ -36,6 +36,12 @@ import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e
 import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
 import { SlugComponent as SlugComponent_92cc057d0a2abb4f6cf0307edf59f986 } from '@/fields/slug/SlugComponent'
 import { RowLabel as RowLabel_ec255a65fa6fa8d1faeb09cf35284224 } from '@/Header/RowLabel'
+import { History as History_4be2a5fde2810193c74b9d93c9793bbd } from '@/plugins/streak-studio/components/History'
+import { Inspector as Inspector_c908c334a499ea35a5af24c62f06c61c } from '@/plugins/streak-studio/components/Inspector'
+import { PublishButton as PublishButton_5a35448d00732a2cb070b7da7922d784 } from '@/plugins/streak-studio/components/PublishButton'
+import { Stage as Stage_7b45ac79883b0d422de0bee16320128f } from '@/plugins/streak-studio/components/Stage'
+import { Thumbnail as Thumbnail_4f6b75b91ac41b6260620bec0703da81 } from '@/plugins/streak-studio/components/Thumbnail'
+import { Usage as Usage_5e194be06d689c8c93729d21ad0b750b } from '@/plugins/streak-studio/components/Usage'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
@@ -78,6 +84,15 @@ export const importMap = {
     HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   '@payloadcms/next/rsc#FolderTableCell': FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1,
   '@payloadcms/next/rsc#FolderField': FolderField_f9c02e79a4aed9a3924487c0cd4cafb1,
+  '@/plugins/streak-studio/components/Stage#Stage': Stage_7b45ac79883b0d422de0bee16320128f,
+  '@/plugins/streak-studio/components/Thumbnail#Thumbnail':
+    Thumbnail_4f6b75b91ac41b6260620bec0703da81,
+  '@/plugins/streak-studio/components/Usage#Usage': Usage_5e194be06d689c8c93729d21ad0b750b,
+  '@/plugins/streak-studio/components/History#History': History_4be2a5fde2810193c74b9d93c9793bbd,
+  '@/plugins/streak-studio/components/Inspector#Inspector':
+    Inspector_c908c334a499ea35a5af24c62f06c61c,
+  '@/plugins/streak-studio/components/PublishButton#PublishButton':
+    PublishButton_5a35448d00732a2cb070b7da7922d784,
   '@payloadcms/plugin-search/client#LinkToDoc': LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   '@payloadcms/plugin-search/client#ReindexButton': ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   '@payloadcms/next/client#FolderTypeField': FolderTypeField_2b8867833a34864a02ddf429b0728a40,

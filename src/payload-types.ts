@@ -73,6 +73,7 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    'streak-looks': StreakLook;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -86,7 +87,7 @@ export interface Config {
   };
   collectionsJoins: {
     'payload-folders': {
-      documentsAndFolders: 'payload-folders' | 'media';
+      documentsAndFolders: 'payload-folders' | 'media' | 'streak-looks';
     };
   };
   collectionsSelect: {
@@ -96,6 +97,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'streak-looks': StreakLooksSelect<false> | StreakLooksSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -434,34 +436,90 @@ export interface FolderInterface {
           relationTo?: 'media';
           value: number | Media;
         }
+      | {
+          relationTo?: 'streak-looks';
+          value: number | StreakLook;
+        }
     )[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  folderType?: 'media'[] | null;
+  folderType?: ('media' | 'streak-looks')[] | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Tune the recipe in the Inspector, watch it on the stage, then publish. Every place that uses the look shows what is published.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
+ * via the `definition` "streak-looks".
  */
-export interface Category {
+export interface StreakLook {
   id: number;
   title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  parent?: (number | null) | Category;
-  breadcrumbs?:
+  /**
+   * What this look draws. Chosen in Studio before the first publish.
+   */
+  effect: 'streakField' | 'lightLeak';
+  description?: string | null;
+  tags?: string[] | null;
+  /**
+   * Rendered on Publish. Also the library thumbnail.
+   */
+  thumbnail?: (number | null) | Media;
+  /**
+   * Rendered on Publish.
+   */
+  lightPoster?: (number | null) | Media;
+  /**
+   * Hides the look from the picker. Places that use it keep working.
+   */
+  archived?: boolean | null;
+  createdBy?: (number | null) | User;
+  updatedBy?: (number | null) | User;
+  /**
+   * What a Studio look draws. A draft can be written over the API; publishing happens in the admin Studio, where the posters are rendered.
+   */
+  recipe: {
+    version: 1;
+    /**
+     * Lays out a seeded effect: a different seed is a different arrangement of the same look. Send 0 for an effect no seed changes (Light leak).
+     */
+    seed: number;
+    /**
+     * The animation frame the posters are captured at.
+     */
+    frame: number;
+    /**
+     * Only the parameters that leave their default, by name. `{}` is the effect as it ships, and the `snapshot.dark` of any published look of the same effect shows every resolved value to start from. An unknown name or a value out of range is refused on save with the reason. When `effect` is "streakField" (Streak Field): Composition: layout: "rows" | "grid"; shape: "dash" | "dot"; count: 100 to 8000; columnPitch: 4 to 100; rowPitch: 4 to 100; rowJitter: 0 to 1; thickness: 0.2 to 4; minLength: 1 to 80; maxLength: 1 to 80; lengthBias: 1 to 10. Motion: motion: "drift" | "flow"; flowSpeed: 0 to 100; drift: -50 to 50; driftSpread: 0 to 1; timeScale: 0 to 1.5. Flow: noise: "none" | "value" | "simplex" | "fbm" | "ridged" | "curl" | "gradient"; noiseScale: 100 to 2000; noiseStrength: 0 to 200; noiseSpeed: 0 to 0.5; noiseGain: 0 to 0.6; noiseAxis: 0 to 1; orient: 0 to 1. Relief: relief: 0 to 1; reliefFloor: 0 to 1; reliefContrast: 0.5 to 5; reliefLength: 0 to 1. Color: ink: [r, g, b], each 0 to 1; paperInk: [r, g, b], each 0 to 1; brightness: 0 to 1.5; brightnessSpread: 0 to 1; flicker: 0 to 1; flickerRate: 0 to 2; tail: 0 to 1; cap: 0 to 8. Life: lifetime: 2 to 30; lifeSpread: 0 to 0.9; fadeIn: 0 to 0.4; fadeOut: 0 to 0.4. Interaction: pointerRadius: 0 to 500; pointerPush: -100 to 100; pointerSwirl: -100 to 100; pointerWake: 0 to 0.2; pointerAgitate: 0 to 4.2; pointerGlow: 0 to 3; pointerLift: -1 to 1; pointerEase: 1 to 20. When `effect` is "lightLeak" (Light leak): Light: blendMode: "plus-lighter" | "screen" | "lighten"; gain: 0 to 3; gainEnergy: 0 to 2; saturation: 0 to 3; vignette: 0 to 2; grain: 0 to 0.2; grainLuminance: 0 to 0.3. Field: blobWarm: 0 to 3; blobCool: 0 to 3; streak: 0 to 3; streakAngle: -3.14 to 3.14; streakSpread: 0.005 to 0.5; slats: 0 to 3; slatAngle: -3.14 to 3.14; slatTopSpread: 0.01 to 1.2; slatBottomSpread: 0.01 to 1.2; slatFrequency: 1 to 60; slatSharpness: 0.5 to 8. Color: coolTint: 3 numbers, each 0 to 2; warmTint: 3 numbers, each 0 to 2; amber: 3 numbers, each 0 to 1. Dispersion: dispersion: 0 to 0.08; dispersionEnergy: 0 to 0.2; dispersionDirection: 2 numbers, each -3 to 3. Motion: timeScale: 0 to 2; warpAmount: 0 to 1.5; warpScale: 0.1 to 8. Scroll: scrollSpeed: 100 to 3000; scrollCurve: 0.3 to 3; scrollDecay: 0.1 to 12; scrollIntensity: 0 to 1; scrollSmooth: 0.1 to 12; scrollDrift: 0 to 2; morph: 0 to 2; morphScale: 0.1 to 12. Paper: inkChroma: 0 to 3; inkDensity: 0 to 1.5. Interaction: excite: true | false; exciteTargets: "marked" | "interactive"; sectionExcite: 0 to 1; hoverBloom: 0 to 4; exciteEase: 0.5 to 12; pointerEase: 0.5 to 12; gainExcite: 0 to 2; saturationExcite: 0 to 2; dispersionExcite: 0 to 0.2; slatFrequencyExcite: 0 to 20.
+     */
+    deltas: {
+      [k: string]: unknown;
+    };
+  };
+  snapshot?:
     | {
-        doc?: (number | null) | Category;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
     | null;
+  posters?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sourceHash?: string | null;
+  folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -489,6 +547,27 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  parent?: (number | null) | Category;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Category;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1402,6 +1481,10 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'streak-looks';
+        value: number | StreakLook;
+      } | null)
+    | ({
         relationTo: 'redirects';
         value: number | Redirect;
       } | null)
@@ -2076,6 +2159,29 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "streak-looks_select".
+ */
+export interface StreakLooksSelect<T extends boolean = true> {
+  title?: T;
+  effect?: T;
+  description?: T;
+  tags?: T;
+  thumbnail?: T;
+  lightPoster?: T;
+  archived?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  recipe?: T;
+  snapshot?: T;
+  posters?: T;
+  sourceHash?: T;
+  folder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

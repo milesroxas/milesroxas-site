@@ -9,10 +9,10 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from './select'
+} from './legacy-select'
 
 const meta = {
-  title: 'UI/Select',
+  title: 'UI/Legacy/Select',
   component: Select,
   tags: ['autodocs'],
 } satisfies Meta<typeof Select>

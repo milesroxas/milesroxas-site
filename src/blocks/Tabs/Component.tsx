@@ -2,7 +2,7 @@
 
 import { SliderBlock } from '@/blocks/Slider/Component'
 import RichText from '@/components/RichText/Legacy'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/legacy-tabs'
 import { useBlockTheme } from '@/hooks/useBlockTheme'
 import { type SpaceProps, useSpacing } from '@/hooks/useSpacing'
 import type { TabsBlock as TabsBlockProps } from '@/payload-types'

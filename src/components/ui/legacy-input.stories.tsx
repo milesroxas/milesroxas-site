@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, userEvent, within } from 'storybook/test'
 
-import { Input } from './input'
-import { Label } from './label'
+import { Input } from './legacy-input'
+import { Label } from './legacy-label'
 
 const meta = {
-  title: 'UI/Input',
+  title: 'UI/Legacy/Input',
   component: Input,
   tags: ['autodocs'],
   args: {

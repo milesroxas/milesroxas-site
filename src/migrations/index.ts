@@ -9,6 +9,7 @@ import * as migration_20260408_182902 from './20260408_182902';
 import * as migration_20260408_202943 from './20260408_202943';
 import * as migration_20260702_221932_remove_footer_global from './20260702_221932_remove_footer_global';
 import * as migration_20260926_213954_payload_3_90_upgrade from './20260926_213954_payload_3_90_upgrade';
+import * as migration_20260927_171656_streak_studio from './20260927_171656_streak_studio';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20260926_213954_payload_3_90_upgrade.up,
     down: migration_20260926_213954_payload_3_90_upgrade.down,
-    name: '20260926_213954_payload_3_90_upgrade'
+    name: '20260926_213954_payload_3_90_upgrade',
+  },
+  {
+    up: migration_20260927_171656_streak_studio.up,
+    down: migration_20260927_171656_streak_studio.down,
+    name: '20260927_171656_streak_studio'
   },
 ];

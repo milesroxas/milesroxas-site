@@ -1340,3 +1340,29 @@
 @utility scroll-fade-none {
   --scroll-fade-mask: none;
 }
+
+/* Visual posters (src/features/immersive/visual/streak-visual.tsx), ported
+   from sas-site: an effect slot ships one still per ground polarity and the
+   ground decides which paints. Light is the page; a legacy forced-dark block
+   or a dark band flips the pair. Keyed here rather than on a hook so the
+   server HTML already shows the right still. */
+[data-visual-poster="dark"] {
+  display: none;
+}
+:is([data-theme="dark"], .band-dark) [data-visual-poster="light"] {
+  display: none;
+}
+:is([data-theme="dark"], .band-dark) [data-visual-poster="dark"] {
+  display: block;
+}
+
+/* Visual bleed (src/features/immersive/visual/leak-visual.tsx): a visual that
+   leaves its frame portals its layer onto the block root that spreads
+   `VISUAL_HOST`. Only while it holds one does the root become the layer's
+   containing block and its blend group, so the layer spans the band and its
+   blend lands on the band's own ground. Keyed on :has so every other block
+   keeps its stacking untouched. */
+[data-visual-host]:has(> [data-visual-bleed]) {
+  position: relative;
+  isolation: isolate;
+}

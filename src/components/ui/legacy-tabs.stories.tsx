@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, userEvent, within } from 'storybook/test'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './legacy-tabs'
 
 const meta = {
-  title: 'UI/Tabs',
+  title: 'UI/Legacy/Tabs',
   component: Tabs,
   tags: ['autodocs'],
 } satisfies Meta<typeof Tabs>

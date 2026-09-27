@@ -14,6 +14,17 @@ const url = new URL(NEXT_PUBLIC_SERVER_URL)
 
 const nextConfig: NextConfig = {
   images: {
+    localPatterns: [
+      // Every local path without a query string, as before this list existed.
+      { pathname: '/**', search: '' },
+      // Code-owned effect posters (src/features/immersive/visual/posters.ts),
+      // one entry per effect `posterDirectory`; the `?v=` query keys the
+      // transform to the look revision. A directory missing here ships a
+      // poster the optimizer answers with 400. The effect contract test holds
+      // the two lists together.
+      { pathname: '/images/streak-field/**' },
+      { pathname: '/images/light-leak/**' },
+    ],
     remotePatterns: [
       {
         protocol: url.protocol === 'https:' ? 'https' : 'http',

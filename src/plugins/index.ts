@@ -8,6 +8,7 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 import type { Plugin } from 'payload'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import type { Page, Post } from '@/payload-types'
+import { streakStudioPlugin } from '@/plugins/streak-studio'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 import { searchFields } from '@/search/fieldOverrides'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -23,6 +24,7 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
 }
 
 export const plugins: Plugin[] = [
+  streakStudioPlugin(),
   redirectsPlugin({
     collections: ['pages', 'posts'],
     overrides: {

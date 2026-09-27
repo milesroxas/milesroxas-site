@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Checkbox } from './checkbox'
-import { Label } from './label'
+import { Checkbox } from './legacy-checkbox'
+import { Label } from './legacy-label'
 
 const meta = {
-  title: 'UI/Label',
+  title: 'UI/Legacy/Label',
   component: Label,
   tags: ['autodocs'],
   args: {

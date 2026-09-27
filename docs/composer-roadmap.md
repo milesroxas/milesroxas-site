@@ -250,6 +250,17 @@ The plugin and the effect engine are one unit (`sas:docs/streak-field-studio.md`
 
 Definition of done: a look can be drafted in Admin → Assets → Studio Looks, previewed live, published (two captures land in Media), and `GET /api/streak-looks/:id/usage` answers. `pnpm check:migrations:drift` shows only creates. Answer sheet: Appendix A, Phase 2.
 
+**Phase 2 as built (2026-09-27).** Migration `20260927_171656_streak_studio` (no prompts; creates only, plus one additive `ALTER TYPE enum_payload_folders_folder_type ADD VALUE 'streak-looks'` that nothing in the same `up()` uses, because the looks collection has `folders: true`). `tsc`, `pnpm test:unit` (13 files, 110 tests), `pnpm test:storybook` (45 files, 186 tests), `check:migrations`, `check:migrations:drift` and a Local API create/find/delete of a draft look are green. Where the build departs from the plan above:
+
+- **UI primitives.** sas-site's `checkbox`, `input`, `label`, `select`, `tabs` now sit at their canonical paths for the Studio; this site's moved to `legacy-*.tsx` (form blocks, the legacy Tabs block, search), stories retitled `UI/Legacy/*`. Same pattern as Button and Carousel in Phase 1. New: `collapsible`, `kbd`, `slider`, `toggle-group`, `tooltip`.
+- **`tw-animate-css`** is a dependency now, imported only by the admin entry `plugins/streak-studio/components/studio.css`. The site stylesheet still does not load it.
+- **Status tokens.** The Studio reads `bg-success`, `bg-warning`, `text-warning`. The shared `shadcn-theme.css` still leaves them out (site safelist stays inert); `studio.css` maps `destructive`, `success`, `warning`, `error`, `active` for itself.
+- **Poster URLs.** `posters.ts` prefers the media's `cloudflareImageUrl`, else `getMediaUrl` (this site's `getMediaURL.ts`; no R2 CDN helper here).
+- **`next.config.ts` `localPatterns`**: `{ pathname: '/**', search: '' }` keeps every query-less local path optimizable as before, plus the two poster directories with their `?v=` query.
+- **`useSiteTheme`** is verbatim: `<html>` carries no `data-theme` here, so it reads light; `useGroundSurface` already reads the nearest `[data-theme]` / `.band-dark` ancestor, so no seam was needed.
+- Barrel `features/immersive/index.ts` and `presets.ts` trimmed to the two Studio effects. `StreakReleases`, `StreakRenders`, the slot `release` column and the legacy-release delete guard are gone.
+- CSS: the "Visual posters" and "Visual bleed" rules from sas-site's `globals.css`. `Section` spreads `VISUAL_HOST`. Docs copied: `streak-field.md`, `streak-field-studio.md`, `studio-effects.md`, `immersive-effects.md` (they describe sas-site surfaces this site does not ship: the takeover menu, index grounds, MCP, demo playgrounds).
+
 ### Phase 3: Sections and the shared run (additive schema)
 
 **Blocks** (config verbatim minus D1/D2; component, stories and motion files verbatim). Reveal is the value `reveal-variants.ts` assigns; it is what "same exact animation" means for each block.
