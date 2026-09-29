@@ -5,7 +5,7 @@ import gsap from 'gsap'
 import Flip from 'gsap/Flip'
 import { useRouter } from 'next/navigation'
 import type React from 'react'
-import { useSiteFrameStore } from '@/stores/siteframeStore'
+import { useChromeStore } from '@/stores/chromeStore'
 
 gsap.registerPlugin(Flip, useGSAP)
 
@@ -23,7 +23,8 @@ interface UseCardTransitionArgs {
  */
 export function useCardTransition({ href, imageRef, scope }: UseCardTransitionArgs) {
   const router = useRouter()
-  const { setIsSiteFrameVisible, setIsTransitioning, setTransitionPhase } = useSiteFrameStore()
+  const setChromeVisible = useChromeStore((s) => s.setVisible)
+  const setTransitionPhase = useChromeStore((s) => s.setTransitionPhase)
 
   const { contextSafe } = useGSAP({ scope })
 
@@ -38,7 +39,6 @@ export function useCardTransition({ href, imageRef, scope }: UseCardTransitionAr
       return
     }
 
-    setIsTransitioning(true)
     setTransitionPhase('initial')
 
     // clone & stash for the destination hero to pick up
@@ -79,11 +79,11 @@ export function useCardTransition({ href, imageRef, scope }: UseCardTransitionAr
       },
       onComplete: () => {
         router.push(href)
-        setIsSiteFrameVisible(false)
+        setChromeVisible(false)
       },
       onInterrupt: () => {
         router.push(href)
-        setIsSiteFrameVisible(false)
+        setChromeVisible(false)
       },
     })
   })

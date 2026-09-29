@@ -1,6 +1,7 @@
 import { revalidateTag } from 'next/cache.js'
 import type { GlobalAfterChangeHook, GlobalConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
+import { ASK_QUESTION_LENGTH } from '@/features/ask/vocabulary'
 
 const revalidateSiteInfo: GlobalAfterChangeHook = ({ doc, req: { payload, context } }) => {
   if (!context.disableRevalidate) {
@@ -79,12 +80,12 @@ export const SiteInfo: GlobalConfig = {
       ],
     },
     {
-      // Site-wide switch for Ask: /ask, the header entry and the endpoint all
-      // read this one flag (src/features/ask/README.md).
+      // Site-wide switch for Ask: /ask, the dock's Ask button and the endpoint
+      // all read this one flag (src/features/ask/README.md).
       name: 'ask',
       type: 'group',
       label: 'Ask',
-      admin: { description: 'The grounded Q&A assistant at /ask.' },
+      admin: { description: 'The grounded Q&A assistant in the dock and at /ask.' },
       fields: [
         {
           name: 'hidden',
@@ -92,8 +93,30 @@ export const SiteInfo: GlobalConfig = {
           defaultValue: false,
           label: 'Hide Ask',
           admin: {
-            description: 'Turn on to take Ask off the site: /ask returns not found.',
+            description:
+              'Turn on to take Ask off the site: the dock loses its Ask button and /ask returns not found.',
           },
+        },
+        {
+          // Read by the site chrome (src/components/SiteChrome/SiteChrome.tsx)
+          // for the Ask panel's empty state.
+          name: 'suggestions',
+          type: 'array',
+          label: 'Suggested questions',
+          labels: { singular: 'Question', plural: 'Questions' },
+          maxRows: 3,
+          admin: {
+            description:
+              'Shown when Ask opens with nothing asked yet; a tap sends it. Write questions the case studies and posts answer.',
+          },
+          fields: [
+            {
+              name: 'question',
+              type: 'text',
+              required: true,
+              maxLength: ASK_QUESTION_LENGTH.max,
+            },
+          ],
         },
         {
           // Action panel, no stored value. Rebuilds the embedding index.

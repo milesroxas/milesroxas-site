@@ -11,15 +11,17 @@ import {
   useRef,
   useState,
 } from 'react'
+import { createPortal } from 'react-dom'
 import { onChromeScroll } from '@/components/SiteChrome/chrome-scroll'
+import { useOverDarkBand } from '@/components/SiteChrome/use-over-dark-band'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { usePresence } from '@/hooks/use-presence'
 import { focusForKeyboard, trackInputModality } from '@/utilities/input-modality'
 import { cn } from '@/utilities/ui'
 import { whenIdle } from '@/utilities/whenIdle'
 import type { ContentsPanelProps } from './ContentsPanel'
 import { CONTENTS_MIN_ENTRIES, type ContentsEntry } from './headings'
 import { useContentsTracking } from './use-contents-tracking'
-import { usePresence } from './use-presence'
 
 type Panel = ComponentType<ContentsPanelProps>
 
@@ -100,13 +102,16 @@ function Arrival({ extended }: { extended: boolean }) {
 /**
  * The Contents button: a floating index of the page's section headings, for
  * the collections that opt in (`showContents`). Render it inside the page's
- * `<article>`; that is the scope it indexes.
+ * `<article>`; that is the scope it indexes. The button itself is portaled to
+ * the body, beside the site chrome, so it floats above the chrome's scroll
+ * edges rather than inside the article's stacking context under them.
  *
  * One button is both the trigger and the close control. It never moves: the
  * card grows out from under it and the button becomes the card's close slot,
  * so opening and closing are two presses on the same spot.
  */
 export function ContentsButton() {
+  const scopeRef = useRef<HTMLSpanElement>(null)
   const anchorRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const ringRef = useRef<SVGCircleElement>(null)
@@ -114,7 +119,10 @@ export function ContentsButton() {
   const lenis = useLenis()
   const sheet = useIsMobile()
 
-  const { entries, current, visible, overDark } = useContentsTracking(anchorRef, ringRef)
+  const { entries, current, visible } = useContentsTracking(scopeRef, ringRef)
+  const [host, setHost] = useState<HTMLElement | null>(null)
+  useEffect(() => setHost(document.body), [])
+  const overDark = useOverDarkBand(anchorRef, host !== null)
   const [open, setOpen] = useState(false)
   const [Panel, warmPanel] = useContentsPanel()
   const [arrival, setArrival] = useState<'pending' | 'extended' | 'done'>('pending')
@@ -180,10 +188,11 @@ export function ContentsButton() {
   const section = entries[current]
   const extended = arrival === 'extended' && !open
 
-  return (
+  const anchor = (
     <div
-      className="contents-anchor group fixed right-5 bottom-[calc(var(--footer-height)+1rem)] z-20 size-14 md:right-(--spacing-gutter)"
+      className="contents-anchor group"
       data-arrival={extended ? 'extended' : undefined}
+      data-chrome=""
       data-open={open}
       // The band under the button decides its surface, as it does the bars'.
       data-theme={overDark ? 'dark' : undefined}
@@ -275,6 +284,13 @@ export function ContentsButton() {
         </>
       )}
     </div>
+  )
+
+  return (
+    <>
+      <span hidden ref={scopeRef} />
+      {host && createPortal(anchor, host)}
+    </>
   )
 }
 

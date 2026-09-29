@@ -21,10 +21,11 @@ const LONG_SECTIONS = Array.from(
  * The button reads the page, so the story is a page: a hero it stays hidden
  * over, an article of `h2` sections (the third on a dark band, to show the
  * surface follow it), and the closing band it leaves for. Scroll to drive it.
- * `--footer-height` stands in for the site chrome the story does not mount.
+ * The chrome's own sizes (`--chrome-top`, `--dock-clearance`) come from
+ * globals.css, so the button stands where it does on the site.
  */
 const Page = ({ sections }: { sections: string[] }) => (
-  <div className="[--footer-height:3.5rem] [--header-height:4rem]">
+  <div>
     <article className="relative z-10 bg-background">
       <Section className="flex min-h-svh items-end" theme="dark">
         <div className="container">

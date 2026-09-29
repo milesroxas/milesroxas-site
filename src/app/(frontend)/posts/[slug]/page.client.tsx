@@ -1,22 +1,22 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import { ChromeTitle } from '@/components/SiteChrome/ChromeTitle'
 import { useLenis } from '@/hooks/useLenis'
 import type { Post } from '@/payload-types'
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+import { restoreChrome } from '@/stores/chromeStore'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { categoryKeys } from '@/utilities/reactKeyDomains'
 
 const PageClient: React.FC<{ post: Post }> = ({ post }) => {
   const { categories, publishedAt, title } = post
 
-  const { restoreFrame } = usePageAnimationStore()
   const lenis = useLenis()
 
   useEffect(() => {
-    restoreFrame()
+    restoreChrome()
     lenis?.scrollTo(0, { immediate: true })
-  }, [restoreFrame, lenis])
+  }, [lenis])
 
   return (
     <div className="mb-8 w-full items-center font-light md:mb-12 md:pt-40">
@@ -63,6 +63,7 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
           </div>
         </div>
       </div>
+      {title && <ChromeTitle title={title} />}
     </div>
   )
 }

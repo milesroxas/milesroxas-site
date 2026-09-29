@@ -1371,27 +1371,630 @@
   isolation: isolate;
 }
 
-/* Fixed chrome heights, ported from sas-site for the blocks and features that
-   offset by them (the full-viewport intro band, the Contents button and its
-   heading scroll margin). Here the chrome is the SiteFrame's bars
-   (src/SiteFrame/SiteFrameClient.tsx): 8px top and 40px bottom on phones,
-   30px from md, 40px from lg. */
+/* ==========================================================================
+   Site chrome (src/components/SiteChrome): the top bar, the dock, the scroll
+   edges and the Ask surface, as approved in Paper ("Chrome — B revised").
+   ========================================================================== */
+
 :root {
-  --header-height: 0.5rem;
-  --footer-height: 2.5rem;
+  /* The top bar's height: the line a page's heading scrolls under. */
+  --chrome-top: 2.75rem;
+  /* The dock: its height and its lift off the viewport's bottom edge.
+     Phone first: a 62px icon tab bar 16px up; a 52px capsule 28px up from md. */
+  --dock-height: 3.875rem;
+  --dock-bottom: 1rem;
+  /* Editors see the admin bar pinned along the bottom; the dock sits on it. */
+  --admin-bar-height: 0px;
+  /* How far the dock reaches up from the bottom edge: what every page keeps
+     clear under its last line (Footer) and what the Contents button stands on. */
+  --dock-clearance: calc(var(--dock-bottom) + var(--dock-height));
+}
+
+:root:has(.admin-bar.block) {
+  --admin-bar-height: 2.5rem;
+  --dock-bottom: calc(1rem + var(--admin-bar-height));
 }
 
 @media (min-width: 48rem) {
   :root {
-    --header-height: 30px;
-    --footer-height: 30px;
+    --chrome-top: 5rem;
+    --dock-height: 3.25rem;
+    --dock-bottom: 1.75rem;
+  }
+
+  :root:has(.admin-bar.block) {
+    --dock-bottom: calc(1.75rem + var(--admin-bar-height));
   }
 }
 
-@media (min-width: 64rem) {
-  :root {
-    --header-height: 40px;
-    --footer-height: 40px;
+/* The chrome's materials, stated once. Every floating control reads these,
+   and a control that floats over a dark band carries `data-theme="dark"`,
+   which swaps the whole set: light glass (white at 72%, a soft two-layer
+   shadow and a half-pixel ink hairline) becomes dark glass (#1C1C1F at 78%). */
+[data-chrome] {
+  --chrome-ink: var(--foreground);
+  --chrome-ink-muted: #52525b;
+  --chrome-ink-quiet: #5f5f66;
+  --chrome-glyph: var(--brand);
+  --chrome-fill: rgb(255 255 255 / 0.72);
+  --chrome-fill-solid: #fff;
+  --chrome-fill-hover: rgb(246 246 247 / 0.82);
+  --chrome-selected: rgb(12 12 14 / 0.07);
+  --chrome-hover: rgb(12 12 14 / 0.035);
+  --chrome-press: rgb(12 12 14 / 0.08);
+  --chrome-hairline: rgb(12 12 14 / 0.1);
+  --chrome-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9), 0 12px 36px rgb(12 12 14 / 0.12),
+    0 2px 6px rgb(12 12 14 / 0.06), 0 0 0 0.5px var(--chrome-hairline);
+}
+
+[data-chrome][data-theme="dark"] {
+  --chrome-ink-muted: #b4b4bb;
+  --chrome-ink-quiet: #a1a1aa;
+  --chrome-glyph: #f47a36;
+  --chrome-fill: rgb(28 28 31 / 0.78);
+  --chrome-fill-solid: #1c1c1f;
+  --chrome-fill-hover: rgb(40 40 44 / 0.84);
+  --chrome-selected: rgb(255 255 255 / 0.12);
+  --chrome-hover: rgb(255 255 255 / 0.06);
+  --chrome-press: rgb(255 255 255 / 0.14);
+  --chrome-hairline: rgb(255 255 255 / 0.12);
+  --chrome-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1), 0 12px 36px rgb(0 0 0 / 0.4), 0 2px 6px rgb(0 0 0 / 0.25),
+    0 0 0 0.5px var(--chrome-hairline);
+}
+
+/* The swap between the two materials is a 240ms cross-fade, never a cut. */
+.chrome-material {
+  background-color: var(--chrome-fill);
+  box-shadow: var(--chrome-shadow);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+}
+
+.chrome-focus {
+  outline: none;
+}
+
+.chrome-focus:focus-visible {
+  outline: 2px solid var(--chrome-ink);
+  outline-offset: 2px;
+}
+
+/* Top bar: words over the page, no bar. The page's own title rises in at the
+   centre once its heading has scrolled under the bar. */
+.chrome-top {
+  transition:
+    color 240ms ease,
+    opacity 240ms ease;
+}
+
+.chrome-title {
+  opacity: 0;
+  translate: 0 4px;
+  transition:
+    opacity 200ms var(--ease-out-quint),
+    translate 200ms var(--ease-out-quint);
+}
+
+.chrome-title[data-shown="true"] {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Scroll edges: a fade of the band's own ground under each end of the
+   chrome, shown once the page has scrolled (`html[data-scrolled]`). */
+.scroll-edge {
+  --edge: var(--background);
+  position: fixed;
+  inset-inline: 0;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.scroll-edge[data-side="top"] {
+  top: 0;
+  height: 7.5rem;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--edge) 95%, transparent),
+    color-mix(in oklab, var(--edge) 60%, transparent) 50%,
+    transparent
+  );
+}
+
+.scroll-edge[data-side="bottom"] {
+  bottom: 0;
+  height: 9.375rem;
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--edge) 95%, transparent),
+    color-mix(in oklab, var(--edge) 60%, transparent) 45%,
+    transparent
+  );
+}
+
+html[data-scrolled] .scroll-edge {
+  opacity: 1;
+}
+
+@media (min-width: 48rem) {
+  .scroll-edge[data-side="bottom"] {
+    height: 8.75rem;
+  }
+}
+
+/* The dock. Phone: the tab bar spans the width with Ask beside it. From md:
+   the tab capsule and the Ask capsule sit together, centred. */
+.dock {
+  position: fixed;
+  inset-inline: 1rem;
+  bottom: var(--dock-bottom);
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.375rem;
+  pointer-events: none;
+  transition:
+    opacity 300ms var(--ease-out-quint),
+    translate 300ms var(--ease-out-quint);
+}
+
+.dock > * {
+  pointer-events: auto;
+}
+
+.dock-tabs-slot {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: var(--dock-height);
+}
+
+.dock-tabs {
+  height: 100%;
+  padding: 0.25rem;
+  transform-origin: left center;
+  transition:
+    background-color 240ms ease,
+    box-shadow 240ms ease,
+    opacity 200ms var(--ease-out-quint),
+    scale 300ms var(--ease-out-quint),
+    filter 200ms var(--ease-out-quint);
+}
+
+/* The current tab's fill: one layer under the labels, clipped to the current
+   tab, so a new page slides it across on the site's spring (damping 1,
+   response 0.35s). It lands without moving the first time it is placed. */
+.dock-indicator {
+  --tab-radius: 1.6875rem;
+  position: absolute;
+  inset: 0.25rem;
+  border-radius: var(--tab-radius);
+  background-color: var(--chrome-selected);
+  clip-path: inset(0 var(--tab-right, 100%) 0 var(--tab-left, 0) round var(--tab-radius));
+  opacity: 0;
+}
+
+.dock-indicator[data-placed] {
+  opacity: 1;
+}
+
+.dock-indicator[data-ready] {
+  transition:
+    clip-path 500ms var(--ease-spring),
+    background-color 240ms ease;
+}
+
+.dock-tab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  border-radius: 1.6875rem;
+  color: var(--chrome-ink-muted);
+}
+
+.dock-tab[aria-current="page"] {
+  color: var(--chrome-ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dock-tab:not([aria-current="page"]):hover {
+    background-color: var(--chrome-hover);
+    color: var(--chrome-ink);
+  }
+}
+
+.dock-tab:not([aria-current="page"]):active {
+  background-color: var(--chrome-press);
+}
+
+/* The label reserves its semibold width, so a tab never changes size as it
+   becomes current and the fill's clip stays true. The reserve is silent. */
+.dock-label {
+  display: inline-grid;
+  font-size: 0.6875rem;
+  line-height: 0.8125rem;
+  font-weight: 500;
+}
+
+.dock-label::after {
+  content: attr(data-label) / "";
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 600;
+}
+
+.dock-tab[aria-current="page"] .dock-label {
+  font-weight: 600;
+}
+
+/* Phone, scrolling down: the bar folds into its current tab. */
+.dock-tabs[data-minimized] {
+  opacity: 0;
+  scale: 0.92;
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.dock-mini {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: var(--dock-height);
+  padding: 0.25rem;
+  border-radius: 9999px;
+  opacity: 0;
+  scale: 0.92;
+  filter: blur(4px);
+  pointer-events: none;
+  transform-origin: left center;
+  transition:
+    background-color 240ms ease,
+    box-shadow 240ms ease,
+    opacity 200ms var(--ease-out-quint),
+    filter 200ms var(--ease-out-quint),
+    scale var(--press-release-duration) var(--press-release-ease);
+}
+
+.dock-mini[data-shown] {
+  opacity: 1;
+  scale: 1;
+  filter: blur(0);
+  pointer-events: auto;
+}
+
+.dock-mini[data-shown]:active {
+  scale: var(--press-scale);
+  transition-duration: var(--press-duration);
+  transition-timing-function: var(--press-ease);
+}
+
+.dock-mini-fill {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 1rem 1.125rem;
+  border-radius: 1.6875rem;
+  background-color: var(--chrome-selected);
+  color: var(--chrome-ink);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+}
+
+/* Ask beside the tabs: its own capsule, never a tab. It hands its place to
+   the Ask field the instant the panel opens, and takes it back the instant
+   the field has closed into its shape, so the two never show at once. */
+.dock-ask {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: var(--dock-height);
+  height: var(--dock-height);
+  border-radius: 9999px;
+  color: var(--chrome-ink);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  transition:
+    background-color 240ms ease,
+    box-shadow 240ms ease,
+    color 240ms ease,
+    scale var(--press-release-duration) var(--press-release-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dock-ask:hover {
+    background-color: var(--chrome-fill-hover);
+  }
+}
+
+.dock-ask:active {
+  scale: var(--press-scale);
+  transition-duration: var(--press-duration);
+  transition-timing-function: var(--press-ease);
+}
+
+.dock-ask[data-present] {
+  opacity: 0;
+}
+
+/* A page transition owns the screen: the chrome steps out and returns. */
+#site-chrome[data-hidden] .dock {
+  opacity: 0;
+  translate: 0 1rem;
+  pointer-events: none;
+  transition-duration: 200ms;
+}
+
+#site-chrome[data-hidden] .chrome-top,
+#site-chrome[data-hidden] .scroll-edge {
+  opacity: 0;
+}
+
+@media (min-width: 48rem) {
+  .dock {
+    inset-inline: 0;
+    justify-content: center;
+    gap: 0.625rem;
+  }
+
+  .dock-tabs-slot {
+    flex: none;
+  }
+
+  .dock-tabs {
+    padding: 0.3125rem;
+    transform-origin: center;
+  }
+
+  .dock-indicator {
+    --tab-radius: 1.3125rem;
+    inset: 0.3125rem;
+  }
+
+  .dock-tab {
+    flex: none;
+    flex-direction: row;
+    padding-inline: 1.25rem;
+    border-radius: 1.3125rem;
+  }
+
+  .dock-label {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .dock-ask {
+    width: auto;
+    padding-inline: 1.125rem 1.375rem;
+  }
+
+  /* Ask open: the tabs step back while the field holds the dock's place. */
+  .dock[data-ask="open"] .dock-tabs {
+    opacity: 0;
+    scale: 0.96;
+    filter: blur(8px);
+    pointer-events: none;
+    transition-duration: 180ms;
+  }
+
+  /* Ask closing: the tabs wait for the field to shrink past them, so the
+     returning field never lies over a label. */
+  .dock[data-ask="closing"] .dock-tabs {
+    transition-delay: 110ms;
+  }
+}
+
+/* The Ask surface (src/features/ask/AskPanel.tsx). Desktop: the panel and
+   the field row, anchored where the dock stands. The morph between the
+   dock's button and this surface runs on the Web Animations API. */
+.ask-surface {
+  position: fixed;
+  inset-inline: 0;
+  bottom: var(--dock-bottom);
+  z-index: 50;
+  display: flex;
+  width: min(42.5rem, calc(100vw - 2rem));
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-inline: auto;
+  outline: none;
+}
+
+.ask-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: clip;
+  border-radius: 1.5rem;
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow:
+    0 24px 64px rgb(12 12 14 / 0.2),
+    0 2px 8px rgb(12 12 14 / 0.08),
+    0 0 0 0.5px rgb(12 12 14 / 0.1);
+  transform-origin: bottom center;
+}
+
+.ask-panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 1.125rem 1.25rem 0.875rem 1.5rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+
+.ask-panel-header:last-child {
+  border-bottom: 0;
+}
+
+.ask-close {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 9999px;
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow:
+    0 12px 36px rgb(12 12 14 / 0.14),
+    0 2px 6px rgb(12 12 14 / 0.06),
+    0 0 0 0.5px rgb(12 12 14 / 0.1);
+}
+
+.ask-transcript {
+  max-height: min(30rem, calc(100svh - var(--chrome-top) - var(--dock-clearance) - 9rem));
+}
+
+.ask-sheet {
+  max-height: calc(100svh - 1rem);
+}
+
+.ask-sheet .ask-transcript {
+  max-height: calc(100svh - 17rem);
+}
+
+.ask-suggestion {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: 0.875rem;
+  background-color: color-mix(in oklab, var(--foreground) 4%, transparent);
+  color: var(--foreground);
+  font-size: 0.9375rem;
+  line-height: 1.25rem;
+  text-align: left;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ask-suggestion:hover {
+    background-color: color-mix(in oklab, var(--foreground) 7%, transparent);
+  }
+}
+
+@media (min-width: 48rem) {
+  .ask-suggestion {
+    border-radius: 0.75rem;
+  }
+}
+
+/* While a reply is on its way: three brand dots breathing in turn. */
+.ask-reading {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.ask-reading > span {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background-color: var(--brand);
+  animation: ask-reading 1.2s ease-in-out infinite;
+}
+
+.ask-reading > span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.ask-reading > span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes ask-reading {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* Reduce transparency: the glass becomes solid, a hairline replaces the
+   soft shadow. */
+@media (prefers-reduced-transparency: reduce) {
+  .chrome-material {
+    background-color: var(--chrome-fill-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: 0 0 0 1px var(--chrome-hairline);
+  }
+}
+
+/* Increase contrast: a firm ink border, full-ink labels, and the current
+   tab inverted. */
+@media (prefers-contrast: more) {
+  [data-chrome] {
+    --chrome-ink-muted: var(--chrome-ink);
+    --chrome-ink-quiet: var(--chrome-ink);
+  }
+
+  .chrome-material {
+    background-color: var(--chrome-fill-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: inset 0 0 0 1.5px var(--chrome-ink);
+  }
+
+  .dock-indicator,
+  .dock-mini-fill {
+    background-color: var(--chrome-ink);
+  }
+
+  .dock-tab[aria-current="page"],
+  .dock-mini-fill {
+    color: var(--chrome-fill-solid);
+  }
+}
+
+/* Reduced motion: the fill and the chrome's own moves become cross-fades;
+   nothing scales, blurs or slides. */
+@media (prefers-reduced-motion: reduce) {
+  .dock-indicator[data-ready] {
+    transition: background-color 240ms ease;
+  }
+
+  .dock-tabs[data-minimized],
+  .dock-mini,
+  .dock[data-ask="open"] .dock-tabs {
+    scale: 1;
+    filter: none;
+  }
+
+  #site-chrome[data-hidden] .dock {
+    translate: 0 0;
+  }
+
+  .chrome-title {
+    translate: 0 0;
+  }
+
+  .ask-reading > span {
+    animation: none;
+  }
+
+  .ask-reading > span:nth-child(2) {
+    opacity: 0.6;
+  }
+
+  .ask-reading > span:nth-child(3) {
+    opacity: 0.3;
   }
 }
 
@@ -1427,7 +2030,7 @@
 .contents-card-layer {
   --contents-seed: inset(calc(100% - 4rem) 0.5rem 0.5rem calc(100% - 4rem) round 1.75rem);
   /* The card stays between the bars; past that the list scrolls inside it. */
-  --contents-list-max: calc(100svh - var(--header-height) - var(--footer-height) - 11rem);
+  --contents-list-max: calc(100svh - var(--chrome-top) - var(--dock-bottom) - 11rem);
 }
 
 .contents-sheet {
@@ -1522,8 +2125,16 @@
 }
 
 /* The anchor rises 12px as it fades in and leaves the same way; visibility
-   flips after the fade out so the hidden button is out of the tab order. */
+   flips after the fade out so the hidden button is out of the tab order.
+   Phone: it stands on the dock, centred over the Ask button. From md: it
+   rides the dock's row at the page gutter. */
 .contents-anchor {
+  position: fixed;
+  right: calc(1rem + (var(--dock-height) - 3.5rem) / 2);
+  bottom: calc(var(--dock-clearance) + 0.75rem);
+  z-index: 40;
+  width: 3.5rem;
+  height: 3.5rem;
   visibility: hidden;
   opacity: 0;
   translate: 0 0.75rem;
@@ -1544,9 +2155,9 @@
 }
 
 @media (min-width: 48rem) {
-  /* The admin bar lifts the footer bar (below); the button sits on it. */
-  html[data-admin-bar] .contents-anchor {
-    bottom: calc(var(--footer-height) + var(--admin-bar-height) + 1rem);
+  .contents-anchor {
+    right: var(--spacing-gutter);
+    bottom: calc(var(--dock-bottom) + (var(--dock-height) - 3.5rem) / 2);
   }
 }
 

@@ -5,15 +5,10 @@ import { Bubble, BubbleContent } from '@/components/ui/bubble'
 import { Message, MessageContent } from '@/components/ui/message'
 import { MessageScrollerItem } from '@/components/ui/message-scroller'
 import { cn } from '@/utilities/ui'
+import { ASK_READING } from './copy'
 import { type AskFeedback, AskFeedbackProvider } from './feedback'
 import { type AskHandoffReceipt, type AskHandoffSent, Handoff } from './HandoffPanel'
-import {
-  ASK_HANDOFFS,
-  type AskHandoff,
-  type AskHandoffTerms,
-  type AskUIMessage,
-  handoffOf,
-} from './handoff'
+import { ASK_HANDOFFS, type AskHandoffTerms, type AskUIMessage, handoffOf } from './handoff'
 import { messageText } from './messageText'
 import { handoffAfterLead, transcriptItemEnter } from './motion'
 import { AskRating } from './Rating'
@@ -21,9 +16,9 @@ import { ASK_NOTICE } from './retention'
 import { AskSources } from './Sources'
 
 /**
- * Shared transcript pieces for every Ask surface (the takeover-menu chat, the
- * footer's closing band, and the /ask page widget) so message rendering and
- * error unwrapping stay identical.
+ * Shared transcript pieces for every Ask surface (the dock's panel and sheet,
+ * and the /ask page widget) so message rendering and error unwrapping stay
+ * identical.
  */
 
 export function errorText(error: Error): string {
@@ -75,9 +70,12 @@ export function TranscriptItems({
   sent,
   onSent,
   feedback,
+  notice = true,
 }: {
   messages: AskUIMessage[]
   status: ChatStatus
+  /** Open with the AI notice. Off where the surface states it under its field (the phone sheet). */
+  notice?: boolean
   /** Site Info's promise, for the quiet offer that carries no resolved handoff of its own. */
   terms: AskHandoffTerms
   /** The handoff the visitor has sent in this conversation, if any. */
@@ -100,13 +98,9 @@ export function TranscriptItems({
 
   return (
     <AskFeedbackProvider value={feedback}>
-      {visible.length > 0 && (
+      {notice && visible.length > 0 && (
         <MessageScrollerItem messageId="ask-notice">
-          <p
-            className={`text-balance text-center text-muted-foreground text-xs/relaxed ${transcriptItemEnter}`}
-          >
-            {ASK_NOTICE}
-          </p>
+          <p className={`text-muted-foreground text-xs/4 ${transcriptItemEnter}`}>{ASK_NOTICE}</p>
         </MessageScrollerItem>
       )}
       {visible.map((message, index) => (
@@ -125,10 +119,15 @@ export function TranscriptItems({
       {pending && (
         <MessageScrollerItem messageId="pending">
           <p
+            className={`flex items-center gap-2.5 text-muted-foreground text-sm/5 ${transcriptItemEnter}`}
             role="status"
-            className={`shimmer text-muted-foreground text-sm/relaxed md:text-xs/relaxed ${transcriptItemEnter}`}
           >
-            Thinking…
+            <span aria-hidden className="ask-reading">
+              <span />
+              <span />
+              <span />
+            </span>
+            {ASK_READING}
           </p>
         </MessageScrollerItem>
       )}
@@ -167,6 +166,8 @@ function TranscriptTurn({
   const turn = reply && previous?.role === 'user' ? previous.id : null
   const { sent } = handoffProps
   const sentHere = sent?.messageId === message.id
+  const offersHandoff = sentHere || (closes && reply)
+  const footId = `${message.id}:foot`
 
   return (
     <>
@@ -180,73 +181,54 @@ function TranscriptTurn({
           <AskReply>{lead}</AskReply>
         </MessageScrollerItem>
       )}
-      {turn && (
-        <MessageScrollerItem messageId={`${message.id}:rating`}>
-          <div className={transcriptItemEnter}>
-            <AskRating turn={turn} />
+      {(turn || offersHandoff) && (
+        <MessageScrollerItem messageId={footId}>
+          {/* The reply's foot: the rating at the start, the way to Miles at the
+              end, on one row. Once the offer opens into its form or its
+              receipt, that takes the row's full width under the rating. */}
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+            {/* A handoff-only reply has no answer to rate: its handoff
+                signal records how the visitor took it. */}
+            {turn && lead === null && (
+              <div className={transcriptItemEnter}>
+                <AskRating turn={turn} />
+              </div>
+            )}
+            {offersHandoff && (
+              <div
+                className={cn(
+                  'ml-auto has-[[data-panel=form],[data-panel=sent]]:ml-0 has-[[data-panel=form],[data-panel=sent]]:basis-full',
+                  transcriptItemEnter,
+                  lead !== null && ['ml-0 basis-full', handoffAfterLead],
+                )}
+              >
+                <Handoff
+                  itemId={footId}
+                  kind={handoff?.reason ?? 'none'}
+                  messages={handoffProps.messages}
+                  onSent={(receipt) => handoffProps.onSent(message.id, receipt)}
+                  prominent={lead !== null}
+                  receipt={sentHere && sent ? sent.receipt : null}
+                  terms={handoff ?? handoffProps.terms}
+                  turn={turn}
+                />
+              </div>
+            )}
           </div>
         </MessageScrollerItem>
-      )}
-      {(sentHere || (closes && reply)) && (
-        <TurnHandoff
-          afterLead={lead !== null}
-          handoff={handoff}
-          messageId={message.id}
-          messages={handoffProps.messages}
-          onSent={handoffProps.onSent}
-          receipt={sentHere && sent ? sent.receipt : null}
-          terms={handoffProps.terms}
-          turn={turn}
-        />
       )}
     </>
   )
 }
 
-/** The way to a person as a transcript item, its entrance a beat after a lead line that mounted with it. */
-function TurnHandoff({
-  messageId,
-  handoff,
-  afterLead,
-  turn,
-  messages,
-  receipt,
-  terms,
-  onSent,
-}: {
-  messageId: string
-  handoff: AskHandoff | null
-  afterLead: boolean
-  turn: string | null
-  messages: AskUIMessage[]
-  /** Set when this is the handoff the visitor already sent from. */
-  receipt: AskHandoffReceipt | null
-  terms: AskHandoffTerms
-  onSent: (messageId: string, receipt: AskHandoffReceipt) => void
-}) {
-  const itemId = `${messageId}:handoff`
-  return (
-    <MessageScrollerItem messageId={itemId}>
-      <div className={cn(transcriptItemEnter, afterLead && handoffAfterLead)}>
-        <Handoff
-          itemId={itemId}
-          kind={handoff?.reason ?? 'none'}
-          messages={messages}
-          onSent={(sent) => onSent(messageId, sent)}
-          receipt={receipt}
-          terms={handoff ?? terms}
-          turn={turn}
-        />
-      </div>
-    </MessageScrollerItem>
-  )
-}
-
 /**
- * Chat body reads at 16px on touch, 14px from md: the primitives' 12px is
- * caption-scale, too small for a conversation surface.
+ * Conversation text at 15px: the primitives' 12px is caption scale, too small
+ * for a conversation. The visitor's question sits in a quiet bubble whose
+ * tail corner points at the field it came from; the answer is plain text on
+ * the panel, so it reads as the page's voice rather than a chat partner's.
  */
-const bubbleBody = 'px-3 py-2 text-base/relaxed md:px-2.5 md:py-1.5 md:text-sm/relaxed'
+const answerBody = 'text-[0.9375rem]/6'
+const questionBody = 'rounded-[1.125rem] rounded-br-md px-4 py-2.5 text-[0.9375rem]/[1.375rem]'
 
 /** The assistant's words with no message of their own: a handoff's lead line. */
 function AskReply({ children }: { children: string }) {
@@ -254,7 +236,7 @@ function AskReply({ children }: { children: string }) {
     <Message align="start" className={transcriptItemEnter}>
       <MessageContent>
         <Bubble align="start" variant="ghost">
-          <BubbleContent className={bubbleBody}>
+          <BubbleContent className={answerBody}>
             <p className="whitespace-pre-wrap">{children}</p>
           </BubbleContent>
         </Bubble>
@@ -290,8 +272,8 @@ export function AskMessage({
   return (
     <Message align={isUser ? 'end' : 'start'} className={transcriptItemEnter}>
       <MessageContent>
-        <Bubble align={isUser ? 'end' : 'start'} variant={isUser ? 'default' : 'ghost'}>
-          <BubbleContent className={bubbleBody}>
+        <Bubble align={isUser ? 'end' : 'start'} variant={isUser ? 'muted' : 'ghost'}>
+          <BubbleContent className={isUser ? questionBody : answerBody}>
             <p className="whitespace-pre-wrap">{messageText(message)}</p>
           </BubbleContent>
         </Bubble>

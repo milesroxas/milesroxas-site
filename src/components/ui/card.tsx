@@ -97,7 +97,7 @@ const cardIconVariants = cva(
   {
     variants: {
       variant: {
-        success: 'bg-active text-background',
+        success: 'bg-primary text-primary-foreground',
       },
     },
     defaultVariants: {

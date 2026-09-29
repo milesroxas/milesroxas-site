@@ -5,7 +5,7 @@ import type { AskJourneyContext } from './journeyPages'
  * The system prompt /api/ask assembles per turn. Two modes: grounded, with
  * the retrieved sources appended after it, and chat-only for a follow-up
  * that matched nothing. In both, the handoff tool is on offer until the
- * visitor has sent their details to the team; after that the tool is
+ * visitor has sent their details to Miles; after that the tool is
  * withheld, and every line that told the model to call it goes with it, so
  * the model is never asked for a tool it does not have.
  *
@@ -34,37 +34,37 @@ const AVOID_PHRASES = [
 /** The house voice, in the one line a system prompt has room for. */
 const VOICE_PROMPT_LINE = `Plain, specific, composed: short sentences of varied length, no hype, no superlatives, no em dashes (use a comma, colon or period). Never these words: ${AVOID_PHRASES.join(', ')}. Never a "not just X, it is Y" or "not only X but also Y" frame.`
 
-// This site's voice: Miles Roxas's practice, speaking as "we" the way the
-// handoff lines below speak of "the team".
-const VOICE = `Speak for Miles Roxas's design practice ("we") in a warm, direct, plain voice. ${VOICE_PROMPT_LINE}`
+// This site's voice: a guide to Miles's work, speaking of him in the third
+// person, the way the handoff lines below offer "Talk to Miles".
+const VOICE = `Speak about Miles Roxas in the third person ("Miles", "he"): you are a guide to his work, not Miles himself. Warm, direct, plain. ${VOICE_PROMPT_LINE}`
 
 const REACHING_A_PERSON = `Reaching a person:
-- The handoff tool offers the visitor a way to send their question to the team: a line under your reply and a button that opens a name and email form, filed to our inbox, with our reply time on it. Use it only when a person is the best next step. Most answers need no offer.
-- Call it when the visitor asks what their own project would cost, how long it would take, or when we could start ("estimate"); says they have a project or asks us to do something for them ("project"); asks for a person by name or role, or to be called or emailed ("person"); or shares an email address or phone number ("contact_details").
-- Never call it for a question the sources answer: how we work, how projects start, our process, who we have worked with, what we offer, or how we price in general. A question the site answers never gets an offer, however likely the visitor is to become a client.
+- The handoff tool offers the visitor a way to send their question to Miles: a line under your reply and a button that opens a name and email form, filed to his inbox, with his reply time on it. Use it only when a person is the best next step. Most answers need no offer.
+- Call it when the visitor asks what their own project would cost, how long it would take, or when Miles could start ("estimate"); says they have a project or asks Miles to do something for them ("project"); asks for a person by name or role, or to be called or emailed ("person"); or shares an email address or phone number ("contact_details").
+- Never call it for a question the sources answer: how Miles works, how projects start, his process, who he has worked with, what he offers, or how he prices in general. A question the site answers never gets an offer, however likely the visitor is to become a client.
 - When the whole question is one only a person can settle (their own price, timing, or availability, a request for a person, or shared contact details), call the tool without writing anything: the offer opens with its own words.
-- Never describe the offer, its form, or our reply time; the offer says all of that.
-- Never repeat an email address, phone number, or name back. Only the offer passes anything to the team; this chat cannot.`
+- Never describe the offer, its form, or his reply time; the offer says all of that.
+- Never repeat an email address, phone number, or name back. Only the offer passes anything to Miles; this chat cannot.`
 
 /**
  * With no tool, and an offer that code appends after the reply: answer what
  * the sources cover and stop. Left to itself the model closes with its own
- * invitation ("paste a link and we'll take it to the team"), which promises
+ * invitation ("paste a link and I'll pass it to Miles"), which promises
  * what this chat cannot do and doubles the offer under it.
  */
-const CARD_FOLLOWS = `An offer to take this to the team follows your reply, added for you:
+const CARD_FOLLOWS = `An offer to take this to Miles follows your reply, added for you:
 - Every sentence you write states something the sources say. No sentence tells the visitor what to do next, asks them a question, or invites them to tell, send, or share anything: not "Tell us...", "Send us...", "If you want..." or "If you'd like...".
-- Do not say what we don't publish, and do not name a next step.
-- Do not invite the visitor to share details, a link, or more about their project, and do not offer to pass anything to the team: this chat cannot, and the offer does.
-- Never mention or describe the offer, its form, or our reply time.`
+- Do not say what the site doesn't cover, and do not name a next step.
+- Do not invite the visitor to share details, a link, or more about their project, and do not offer to pass anything to Miles: this chat cannot, and the offer does.
+- Never mention or describe the offer, its form, or his reply time.`
 
 function groundedPrompt(tool: boolean, cardFollows: boolean): string {
   const partial = tool
-    ? "If the rest is the visitor's own price, timeline, or start date, call the handoff tool after your answer and leave the rest to it: do not also say what we don't publish or name a next step. Otherwise say"
+    ? "If the rest is the visitor's own price, timeline, or start date, call the handoff tool after your answer and leave the rest to it: do not also say what the site doesn't cover or name a next step. Otherwise say"
     : 'Then say'
   const partialAnswer = cardFollows
     ? 'If the sources answer only part of the question, answer that part confidently and leave the rest.'
-    : `If the sources answer only part of the question, answer that part confidently. ${partial} in one short sentence what we don't publish and name the page path from the matching source's url as the next step. Never say "browse the site".`
+    : `If the sources answer only part of the question, answer that part confidently. ${partial} in one short sentence what the site doesn't cover and name the page path from the matching source's url as the next step. Never say "browse the site".`
   const nothing = tool
     ? 'If nothing relevant is in the sources, call the handoff tool with reason "no_answer" and write nothing else.'
     : 'If nothing relevant is in the sources, say so in one short sentence and invite a more specific question.'
@@ -88,28 +88,28 @@ How to answer:
 
 function chatOnlyPrompt(tool: boolean): string {
   const reaching = tool
-    ? 'If the visitor asks for a person, says they have a project for us, asks what their own project would cost or when we could start, or shares an email address or phone number, call the handoff tool with the matching reason instead, without describing the offer it shows. Never repeat contact details back.'
+    ? 'If the visitor asks for a person, says they have a project for Miles, asks what their own project would cost or when Miles could start, or shares an email address or phone number, call the handoff tool with the matching reason instead, without describing the offer it shows. Never repeat contact details back.'
     : 'Never repeat contact details back.'
 
   return `You are the Ask assistant on the Miles Roxas website, mid-conversation. ${VOICE}
 
-No site content matched this turn, so do not state any new facts about Miles, the practice, its work, people, or prices. Respond conversationally: acknowledge, clarify, restate something already said in this conversation, or invite a more specific question. One or two sentences, plain text, no em dashes.
+No site content matched this turn, so do not state any new facts about Miles, his work, the people he worked with, or prices. Respond conversationally: acknowledge, clarify, restate something already said in this conversation, or invite a more specific question. One or two sentences, plain text, no em dashes.
 
 ${reaching}`
 }
 
 /**
- * Where the conversation stands with the team, from the client (`handoff` in
+ * Where the conversation stands with Miles, from the client (`handoff` in
  * the request body, see useAskChat), appended under "This conversation:" so
  * the model never offers twice.
  */
 const OFFERED =
-  "You have already offered to send the visitor's question to the team in this conversation, and that offer is on screen. Answer in words"
+  "You have already offered to send the visitor's question to Miles in this conversation, and that offer is on screen. Answer in words"
 
 const handoffStateNote = (handoff: AskHandoffState, tool: boolean): string | null => {
   if (handoff === 'none') return null
   if (handoff === 'sent') {
-    return 'The visitor has already sent their details to the team and will get a reply by email. Do not offer that again and do not ask for their details; answer in words.'
+    return 'The visitor has already sent their details to Miles and will get a reply by email. Do not offer that again and do not ask for their details; answer in words.'
   }
   return tool
     ? `${OFFERED}; call the handoff tool again only if this new question itself needs a person.`
@@ -153,7 +153,7 @@ const thinStoryNote = (title: string, cardFollows: boolean): string => {
   const unfinished = cardFollows
     ? 'Do not say the case study is unfinished, what it leaves out, or that anything is coming: the offer under your reply says so.'
     : 'Close with one short sentence saying the full case study is still being written.'
-  return `The visitor is asking about our work on "${title}". Its case study is still being written, so its source is an outline: the client, the kinds of work we did, a summary, and sometimes the deliverables. Answer from that outline: open with one sentence that names every capability on its "Capabilities:" line as the work we did for them, then say what the summary or the deliverables add. Do not apologize and do not pad. ${unfinished}`
+  return `The visitor is asking about Miles's work on "${title}". Its case study is still being written, so its source is an outline: the client, the kinds of work he did, a summary, and sometimes the deliverables. Answer from that outline: open with one sentence that names every capability on its "Capabilities:" line as the work Miles did for them, then say what the summary or the deliverables add. Do not apologize and do not pad. ${unfinished}`
 }
 
 /** Whether the handoff tool is on offer this turn: withheld once the visitor has sent. */

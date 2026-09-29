@@ -121,7 +121,7 @@ export function ContentsList({
                   <LeadingLane current={isCurrent}>{position(index)}</LeadingLane>
                   <span className="min-w-0 grow truncate">{entry.label}</span>
                   <span className="flex size-5 shrink-0 items-center justify-center">
-                    {isCurrent && <span className="size-2 rounded-full bg-active" />}
+                    {isCurrent && <span className="size-2 rounded-full bg-foreground" />}
                   </span>
                 </a>
               </li>

@@ -4233,13 +4233,22 @@ export interface SiteInfo {
     scheduleUrl?: string | null;
   };
   /**
-   * The grounded Q&A assistant at /ask.
+   * The grounded Q&A assistant in the dock and at /ask.
    */
   ask?: {
     /**
-     * Turn on to take Ask off the site: /ask returns not found.
+     * Turn on to take Ask off the site: the dock loses its Ask button and /ask returns not found.
      */
     hidden?: boolean | null;
+    /**
+     * Shown when Ask opens with nothing asked yet; a tap sends it. Write questions the case studies and posts answer.
+     */
+    suggestions?:
+      | {
+          question: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   address?: {
     streetAddress?: string | null;
@@ -4327,6 +4336,12 @@ export interface SiteInfoSelect<T extends boolean = true> {
     | T
     | {
         hidden?: T;
+        suggestions?:
+          | T
+          | {
+              question?: T;
+              id?: T;
+            };
       };
   address?:
     | T

@@ -90,7 +90,7 @@ type AskHandoffCopy = {
    * promise. The quiet `none` offer follows an answer that already has words.
    */
   lead: string | null
-  /** The offer's line beside "Talk to the team". */
+  /** The offer's line beside "Talk to Miles". */
   offer: string
 }
 
@@ -104,41 +104,41 @@ type AskHandoffCopy = {
 export const ASK_HANDOFFS: Record<AskHandoffKind, AskHandoffCopy> = {
   estimate: {
     form: 'project',
-    lead: 'Pricing and timing depend on the project, so that one is for a partner.',
-    offer: 'Want a partner to price it?',
+    lead: 'Pricing and timing depend on the project, so that one is for Miles.',
+    offer: 'Want Miles to price it?',
   },
   project: {
     form: 'project',
     lead: 'That sounds like a project worth a real conversation.',
-    offer: 'Want to talk it through with a partner?',
+    offer: 'Want to talk it through with Miles?',
   },
   person: {
     form: 'general',
-    lead: "That's one for a person, not the chat.",
-    offer: 'Want a partner to reply?',
+    lead: "That's one for Miles, not the chat.",
+    offer: 'Want Miles to reply?',
   },
   contact_details: {
     form: 'general',
-    lead: "Thanks. This chat can't pass details on, but the team can take it from here.",
-    offer: 'Send your details to the team?',
+    lead: "Thanks. This chat can't pass details on, but Miles can take it from here.",
+    offer: 'Send your details to Miles?',
   },
   no_answer: {
     form: 'general',
-    lead: "The site doesn't cover that, but the team can.",
-    offer: 'Want a person to answer?',
+    lead: "The site doesn't cover that, but Miles can.",
+    offer: 'Want Miles to answer?',
   },
   case_study: {
     form: 'general',
-    lead: 'We have not published the full story of this project yet.',
+    lead: 'The full story of this project is not published yet.',
     offer:
-      'The full case study is still being written. A partner can walk you through it and similar work.',
+      'The full case study is still being written. Miles can walk you through it and similar work.',
   },
-  none: { form: 'general', lead: null, offer: 'Want a person to reply?' },
+  none: { form: 'general', lead: null, offer: 'Want Miles to reply?' },
 }
 
-/** The form's promise: a person, by email, on Site Info's clock. */
+/** The form's promise: Miles, by email, on Site Info's clock, with the question attached. */
 export const askHandoffPromise = (responseTime: string) =>
-  `A partner will reply by email ${responseTime}.`
+  `Miles will reply by email ${responseTime}. Your question comes with it.`
 
 /**
  * Where a conversation stands with the team, sent with every question so the

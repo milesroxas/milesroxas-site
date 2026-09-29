@@ -56,9 +56,9 @@ describe('askSystemPrompt', () => {
       tool: false,
       cardFollows: true,
     })
-    expect(prompt).toContain('An offer to take this to the team follows your reply')
+    expect(prompt).toContain('An offer to take this to Miles follows your reply')
     expect(prompt).toContain('Do not invite the visitor to share details')
-    expect(prompt).not.toContain("what we don't publish and name the page path")
+    expect(prompt).not.toContain("what the site doesn't cover and name the page path")
     // With the tool on offer the model words the partial answer itself, as before.
     expect(askSystemPrompt({ grounded: true, handoff: 'none', cardFollows: true })).toContain(
       'call the handoff tool after your answer',
@@ -123,7 +123,7 @@ describe('askSystemPrompt', () => {
       cardFollows: true,
       thinStory: 'GentleBeast',
     })
-    expect(withCard).toContain('our work on "GentleBeast"')
+    expect(withCard).toContain('Miles\'s work on "GentleBeast"')
     expect(withCard).toContain('names every capability')
     expect(withCard).toContain('Do not say the case study is unfinished')
 

@@ -25,7 +25,7 @@ const present = (el: HTMLElement) => expect(el).toBeInTheDocument()
  * fields mount on the swap's entrance half and cannot be typed into before.
  */
 export async function openAskHandoff({ canvas, userEvent }: Canvas) {
-  await userEvent.click(canvas.getByRole('button', { name: 'Talk to the team' }))
+  await userEvent.click(canvas.getByRole('button', { name: 'Talk to Miles' }))
   await waitFor(() => present(canvas.getByLabelText('Name')))
   // The entrance half fades the incoming copy up from `autoAlpha: 0`, and a
   // hidden field drops what is typed into it. The panel focuses Name once it
@@ -41,11 +41,11 @@ export async function sendAskHandoff(
 ) {
   await userEvent.type(canvas.getByLabelText('Name'), name)
   await userEvent.type(canvas.getByLabelText('Email'), email)
-  const send = canvas.getByRole('button', { name: 'Send to the team' })
+  const send = canvas.getByRole('button', { name: 'Send to Miles' })
   await waitFor(() => expect(send).toBeEnabled())
   await userEvent.click(send)
   // Two swap halves stand between Send and the receipt: longer than waitFor's default second.
-  await waitFor(() => present(canvas.getByText('Sent to the team')), { timeout: 5000 })
+  await waitFor(() => present(canvas.getByText('Sent to Miles')), { timeout: 5000 })
 }
 
 /**

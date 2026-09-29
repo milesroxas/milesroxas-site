@@ -79,6 +79,12 @@ type HandoffProps = {
   onSent: (receipt: AskHandoffReceipt) => void
   /** The question this handoff closes (its user message id), or null for a reply with none. */
   turn: string | null
+  /**
+   * The handoff is the whole reply (it follows a lead line, not an answer):
+   * the offer is a card with the filled action, since a person is the answer.
+   * After an answer it stays a quiet row beside the rating.
+   */
+  prominent?: boolean
 }
 
 /**
@@ -90,7 +96,7 @@ type HandoffProps = {
  *    before it); a reply with no reason offers quietly.
  * 2. **Form.** The chip opens the same element in place: the surface takes
  *    the transcript's muted ground and grows to a promise, Name and Email in
- *    one inset block that AutoFill fills in a tap, and "Send to the team".
+ *    one inset block that AutoFill fills in a tap, and "Send to Miles".
  *    A visitor who already typed an address lands here directly, with it
  *    filled. What is typed never reaches the model or the Ask log.
  * 3. **Receipt.** Sent, the form becomes its receipt on the same swap: where
@@ -111,6 +117,7 @@ export function Handoff({
   receipt: sentReceipt = null,
   onSent,
   turn,
+  prominent = false,
 }: HandoffProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
@@ -176,11 +183,14 @@ export function Handoff({
         // clipped (the chip's focus ring reaches past the row's box). `!` on
         // the two that the inset variant also sets through a data attribute
         // of its own, which would otherwise win on source order.
-        'data-[panel=offer]:overflow-visible data-[panel=offer]:py-0 data-[panel=offer]:rounded-none! data-[panel=offer]:bg-transparent!',
+        !prominent &&
+          'data-[panel=offer]:overflow-visible data-[panel=offer]:py-0 data-[panel=offer]:rounded-none! data-[panel=offer]:bg-transparent!',
       )}
       style={{ transitionDuration: `${SCROLL_REVEAL_SWAP.textDuration * 1000}ms` }}
     >
-      {panel === OFFER && <HandoffOffer kind={kind} onOpen={() => go(FORM)} />}
+      {panel === OFFER && (
+        <HandoffOffer kind={kind} onOpen={() => go(FORM)} prominent={prominent} />
+      )}
       {panel === FORM && (
         <HandoffForm
           kind={kind}
@@ -201,15 +211,44 @@ export function Handoff({
   )
 }
 
-/** The line and the chip; the chip is the suggestion chips' shape, so it reads as a next question to pick. */
-function HandoffOffer({ kind, onOpen }: { kind: AskHandoffKind; onOpen: () => void }) {
+/**
+ * The line and the chip; the quiet chip is the suggestion chips' shape, so it
+ * reads as a next question to pick. Prominent, the line leads and the filled
+ * action closes the card's row.
+ */
+function HandoffOffer({
+  kind,
+  onOpen,
+  prominent,
+}: {
+  kind: AskHandoffKind
+  onOpen: () => void
+  prominent: boolean
+}) {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2" data-swap="text">
-      <p className="text-muted-foreground text-sm/relaxed md:text-xs/relaxed">
+    <div
+      className={cn(
+        'flex flex-wrap items-center gap-x-3 gap-y-2',
+        prominent && 'justify-between px-(--card-spacing)',
+      )}
+      data-swap="text"
+    >
+      <p
+        className={cn(
+          'text-sm/relaxed',
+          prominent ? 'text-foreground/80' : 'text-muted-foreground md:text-xs/relaxed',
+        )}
+      >
         {ASK_HANDOFFS[kind].offer}
       </p>
-      <Button className="font-normal" onClick={onOpen} size="chat" type="button" variant="outline">
-        Talk to the team
+      <Button
+        className="font-normal"
+        onClick={onOpen}
+        size="chat"
+        type="button"
+        variant={prominent ? 'default' : 'outline'}
+      >
+        Talk to Miles
       </Button>
     </div>
   )
@@ -394,7 +433,7 @@ function SendRow({
     <Field orientation="horizontal">
       <Button disabled={disabled || sending} size="chat" type="submit">
         {sending ? <Spinner /> : null}
-        Send to the team
+        Send to Miles
       </Button>
       {error ? (
         <FieldError id={statusId}>
@@ -404,7 +443,7 @@ function SendRow({
       ) : (
         <FieldDescription id={statusId}>
           <IconLock aria-hidden />
-          Goes to our inbox, never the chat log.
+          Goes to Miles's inbox, never the chat log.
         </FieldDescription>
       )}
     </Field>
@@ -425,10 +464,10 @@ function HandoffReceipt({
         <CardIcon>
           <IconCheck />
         </CardIcon>
-        <CardTitle>Sent to the team</CardTitle>
+        <CardTitle>Sent to Miles</CardTitle>
         <CardDescription>
-          A partner will reply to {receipt.email} {terms.responseTime}. We&apos;ve emailed you a
-          confirmation.
+          He&apos;ll reply to {receipt.email} {terms.responseTime}. A confirmation is on its way to
+          you, and you can keep asking.
           {receipt.reference ? ` Reference ${receipt.reference}.` : null}
         </CardDescription>
       </CardHeader>

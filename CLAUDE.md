@@ -40,7 +40,7 @@ Storybook conventions:
 - Stories are colocated with components as `*.stories.tsx` (CSF3, `satisfies Meta`).
 - Payload-shaped fixtures live in `src/stories/fixtures.ts` and must mirror `src/payload-types.ts`.
 - Config lives in `.storybook/` (`@storybook/nextjs-vite` framework); theme switching drives the site's `data-theme` attribute.
-- Components tied to the live app shell (page-transition GSAP flow, SiteFrame, server-only Payload access, R3F scenes) are intentionally not storied — see the Overview page in Storybook.
+- Components tied to the live app shell (page-transition GSAP flow, SiteChrome, server-only Payload access, R3F scenes) are intentionally not storied — see the Overview page in Storybook.
 
 ### Database Commands
 
@@ -86,7 +86,7 @@ Storybook conventions:
 - Collections are in `src/collections` (`pages`, `posts`, `works`, `media`, `categories`, `users`).
 - Layout blocks are in `src/blocks`.
 - Hero configs/components are in `src/heros`.
-- Frame/transition system is in `src/SiteFrame` and `src/stores/siteframeStore.ts`.
+- Site chrome (top bar, dock, Ask panel) is in `src/components/SiteChrome` and `src/features/ask/AskPanel.tsx`; the dock's tabs come from the Header global, Ask's switch and suggested questions from Site Info. Chrome/transition state is in `src/stores/chromeStore.ts`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

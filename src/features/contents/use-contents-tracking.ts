@@ -11,36 +11,32 @@ import { type ContentsEntry, collectContentsEntries } from './headings'
  */
 const ACTIVATION_LINE = 0.35
 
-/** Bands that flip the button to its dark surface (`themeClasses.dark`, the heroes). */
-const DARK_BAND_SELECTOR = '.band-dark, [data-theme="dark"]'
-
 type Tracking = {
   /** Index of the section being read, `-1` above the first heading. */
   current: number
   /** False over the hero (no heading has passed the fold) and the closing band. */
   visible: boolean
-  /** True while the button floats over a dark band. */
-  overDark: boolean
 }
 
-const AT_REST: Tracking = { current: -1, visible: false, overDark: false }
+const AT_REST: Tracking = { current: -1, visible: false }
 
 /**
- * Everything the Contents button derives from scroll, from cached geometry.
+ * Everything the Contents button derives from scroll, from cached geometry:
+ * the section being read, whether the button shows, and the progress ring.
+ * (Which surface it wears over a dark band is the chrome's shared
+ * `useOverDarkBand`.) `scopeRef` is any element inside the page's
+ * `<article>`, the scope it indexes.
  *
- * Same contract as the chrome's hero pin (`useHeroChromeTheme`): edges are
- * measured once, in document space, and every scroll is arithmetic against
- * them with no layout read (docs/animations.md, "Nothing forces layout in a
- * scroll handler"). Scroll arrives through the chrome's one subscription, so
- * nothing runs while the takeover menu holds the page frame and the thaw
- * re-runs it; a measure that lands during the dock is deferred to that thaw,
- * because every rect inside a docked frame is scaled.
+ * Edges are measured once, in document space, and every scroll is
+ * arithmetic against them with no layout read (docs/animations.md, "Nothing
+ * forces layout in a scroll handler"). Scroll arrives through the chrome's
+ * one subscription (`onChromeScroll`).
  *
  * React state changes only when a value flips. The progress ring moves every
  * frame, so it is written straight to the circle and never renders.
  */
 export function useContentsTracking(
-  anchorRef: RefObject<HTMLElement | null>,
+  scopeRef: RefObject<HTMLElement | null>,
   ringRef: RefObject<SVGCircleElement | null>,
 ) {
   const [entries, setEntries] = useState<ContentsEntry[]>([])
@@ -50,23 +46,20 @@ export function useContentsTracking(
   // Layout effect, so the ids exist before the route's hash scroll
   // (`LenisRouteReset`, an ancestor's layout effect) looks one up.
   useLayoutEffect(() => {
-    const article = anchorRef.current?.closest('article')
+    const article = scopeRef.current?.closest('article')
     if (!article) return
     const collected = collectContentsEntries(article)
     setEntries(collected.entries)
     return collected.restore
-  }, [anchorRef])
+  }, [scopeRef])
 
   useEffect(() => {
-    const anchor = anchorRef.current
-    const article = anchor?.closest('article')
-    if (!anchor || !article || entries.length === 0) return
+    const article = scopeRef.current?.closest('article')
+    if (!article || entries.length === 0) return
 
     let tops: number[] = []
-    let bands: [top: number, bottom: number][] = []
     let articleBottom = 0
     let viewportHeight = 0
-    let anchorCenter = 0
     let scrollY = 0
     let stale = true
     let frame = 0
@@ -77,17 +70,6 @@ export function useContentsTracking(
       viewportHeight = window.innerHeight
       tops = entries.map((entry) => entry.element.getBoundingClientRect().top + scrollY)
       articleBottom = article.getBoundingClientRect().bottom + scrollY
-      bands = Array.from(article.querySelectorAll(DARK_BAND_SELECTOR))
-        // The anchor wears `data-theme="dark"` itself while it floats over a
-        // band, and it is fixed: measured then, it would count as a band of
-        // its own, pinned wherever the button sat at that scroll position.
-        .filter((band) => !anchor.contains(band))
-        .map((band): [top: number, bottom: number] => {
-          const rect = band.getBoundingClientRect()
-          return [rect.top + scrollY, rect.bottom + scrollY]
-        })
-      const anchorRect = anchor.getBoundingClientRect()
-      anchorCenter = anchorRect.top + anchorRect.height / 2
       stale = false
     }
 
@@ -102,19 +84,9 @@ export function useContentsTracking(
       const progress = end > 0 ? Math.min(Math.max(scrollY / end, 0), 1) : 1
       ringRef.current?.style.setProperty('stroke-dashoffset', String(1 - progress))
 
-      const point = scrollY + anchorCenter
-      const next: Tracking = {
-        current,
-        visible: tops[0] < fold && articleBottom > fold,
-        overDark: bands.some(([top, bottom]) => top <= point && bottom >= point),
-      }
+      const next: Tracking = { current, visible: tops[0] < fold && articleBottom > fold }
       const last = trackingRef.current
-      if (
-        next.current === last.current &&
-        next.visible === last.visible &&
-        next.overDark === last.overDark
-      )
-        return
+      if (next.current === last.current && next.visible === last.visible) return
       trackingRef.current = next
       setTracking(next)
     }
@@ -148,7 +120,7 @@ export function useContentsTracking(
       window.removeEventListener('resize', invalidate)
       cancelAnimationFrame(frame)
     }
-  }, [anchorRef, ringRef, entries])
+  }, [scopeRef, ringRef, entries])
 
   return { entries, ...tracking }
 }

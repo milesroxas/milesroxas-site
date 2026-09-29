@@ -13,12 +13,13 @@ const inputGroupVariants = cva(
     variants: {
       variant: {
         default: '',
-        // Floating "ask" pill (takeover menu): capsule on the popover surface
-        // that grows while the field has focus — the width transition is the
-        // affordance, so it lives here rather than at call sites. Mobile is
-        // full-width with no focus-grow (the jump fights the software keyboard
-        // and w-80 overflows narrow phones) and 16px text (iOS focus zoom).
-        pill: 'h-12 w-full rounded-full border-transparent bg-popover px-2 shadow-xl transition-[width,background-color,border-color] duration-200 ease-in-out has-data-[align=inline-end]:rounded-full has-[[data-slot=input-group-control]:focus-visible]:border-transparent has-[[data-slot=input-group-control]:focus-visible]:ring-0 md:w-64 md:focus-within:w-80 dark:bg-popover **:data-[slot=button]:rounded-full [&>[data-slot=input-group-control]]:h-full [&>[data-slot=input-group-control]]:pl-3 [&>[data-slot=input-group-control]]:text-base md:[&>[data-slot=input-group-control]]:text-sm',
+        // The Ask field (the dock's panel and the phone sheet): a one-line
+        // capsule on the popover surface with the send disc inside its end.
+        // At rest a hairline, so it holds its shape on a white sheet; focused,
+        // the hairline turns brand with a soft halo, so the field reads as
+        // the place the conversation continues. 16px text on phones (iOS
+        // focus zoom), 15px from md.
+        pill: 'h-12.5 gap-2.5 rounded-full bg-popover pr-2 pl-4.5 has-data-[align=inline-end]:rounded-full has-[[data-slot=input-group-control]:focus-visible]:border-brand has-[[data-slot=input-group-control]:focus-visible]:ring-3 has-[[data-slot=input-group-control]:focus-visible]:ring-brand/15 **:data-[slot=button]:rounded-full md:h-13 md:pr-1.5 dark:bg-popover [&>[data-slot=input-group-control]]:h-full [&>[data-slot=input-group-control]]:px-0 [&>[data-slot=input-group-control]]:text-base md:[&>[data-slot=input-group-control]]:text-[0.9375rem]',
       },
     },
     defaultVariants: {

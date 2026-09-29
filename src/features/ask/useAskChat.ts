@@ -2,11 +2,12 @@
 
 import { useChat } from '@ai-sdk/react'
 import { type ChatTransport, DefaultChatTransport, generateId } from 'ai'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAskSession } from './AskSession'
 import { type AskFeedback, type AskRated, postAskFeedback } from './feedback'
 import type { AskHandoffReceipt, AskHandoffSent } from './HandoffPanel'
 import { type AskUIMessage, askHandoffState } from './handoff'
+import { messageText } from './messageText'
 import { ASK_QUESTION_LENGTH, type AskHandoffSignal } from './vocabulary'
 
 type UseAskChatOptions = {
@@ -19,14 +20,14 @@ type UseAskChatOptions = {
 }
 
 /**
- * Chat wiring shared by every Ask surface (the takeover-menu composer, the
- * closing band, and the /ask page widget): the /api/ask transport default,
- * busy state, the min-length-guarded submit that clears the composer,
- * `stop` for the composer's in-flight Stop button, the one handoff the
- * conversation can send, and the visitor's feedback on each turn.
+ * Chat wiring shared by every Ask surface (the dock's panel and sheet, the
+ * /ask page widget): the /api/ask transport default, busy state, the
+ * min-length-guarded submit that clears the composer, `stop` for the
+ * composer's in-flight Stop button, the one handoff the conversation can
+ * send, and the visitor's feedback on each turn.
  *
  * On the site every surface reads the one conversation in `AskSession`, so
- * a question asked in the menu is on the closing band's transcript too, in
+ * a question asked in the dock is on the /ask page's transcript too, in
  * the same chat in the log; only the composer's draft and `onSend` are the
  * surface's own. A scripted surface (a `transport` or a seeded transcript:
  * stories and tests) and anything outside the provider keeps a chat to itself.
@@ -63,10 +64,27 @@ export function useAskChat({ transport, initialMessages, onSend }: UseAskChatOpt
       }),
     [transport],
   )
-  const { messages, sendMessage, status, error, stop } = useChat<AskUIMessage>(
+  const { messages, sendMessage, setMessages, status, error, stop } = useChat<AskUIMessage>(
     shared ? { chat: shared.chat } : { id: ownId, transport: chatTransport, messages: seed },
   )
   const id = shared ? shared.chat.id : ownId
+
+  // A question that failed before any reply began (rate limit, network) goes
+  // back into the composer instead of staying in the transcript as a question
+  // nobody answered: the visitor sends it again as it was, and the log never
+  // holds it twice. Read from a ref so only a new error runs it; a surface
+  // that shares the chat and runs it second finds the reply-less question
+  // already gone and leaves the transcript alone.
+  const latest = useRef(messages)
+  latest.current = messages
+  useEffect(() => {
+    if (!error) return
+    const current = latest.current
+    const last = current.at(-1)
+    if (last?.role !== 'user') return
+    setMessages(current.slice(0, -1))
+    setQuestion((draft) => draft || messageText(last))
+  }, [error, setMessages])
 
   const busy = status === 'submitted' || status === 'streaming'
   const canSend = !busy && question.trim().length >= ASK_QUESTION_LENGTH.min

@@ -3,11 +3,11 @@
 import { type RefObject, useEffect, useRef, useState } from 'react'
 import { onChromeScroll } from '@/components/SiteChrome/chrome-scroll'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
+import { usePresence } from '@/hooks/use-presence'
+import { useSheetDrag } from '@/hooks/use-sheet-drag'
 import { cn } from '@/utilities/ui'
 import { CONTENTS_LIST_LABEL, ContentsList } from './ContentsList'
 import type { ContentsEntry } from './headings'
-import { usePresence } from './use-presence'
-import { useSheetDrag } from './use-sheet-drag'
 
 /** Reading on is a dismissal: past this much scroll the open card steps aside. */
 const SCROLL_DISMISS_PX = 64

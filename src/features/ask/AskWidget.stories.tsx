@@ -180,7 +180,7 @@ export const HandoffInvalidEmail: Story = {
     await openAskHandoff(context)
     await context.userEvent.type(context.canvas.getByLabelText('Name'), 'Jordan Lee')
     await context.userEvent.type(context.canvas.getByLabelText('Email'), 'jordan@northwind')
-    await context.userEvent.click(context.canvas.getByRole('button', { name: 'Send to the team' }))
+    await context.userEvent.click(context.canvas.getByRole('button', { name: 'Send to Miles' }))
   },
 }
 
@@ -220,7 +220,7 @@ export const PartialAnswerHandoff: Story = {
 /**
  * A question about a work page whose case study is still being written: the
  * kinds of work from the record's brief, then the offer that says the story
- * is on its way and that a partner can walk through it.
+ * is on its way and that Miles can walk through it.
  */
 const thinCaseStudyChat = createAskChat()
   .user('What did you do for them?')

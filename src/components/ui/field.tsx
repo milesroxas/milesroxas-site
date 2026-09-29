@@ -74,7 +74,9 @@ const insetRow = [
   'group-data-[variant=inset]/field-group:not-first:before:absolute group-data-[variant=inset]/field-group:not-first:before:top-0 group-data-[variant=inset]/field-group:not-first:before:right-0 group-data-[variant=inset]/field-group:not-first:before:left-3 group-data-[variant=inset]/field-group:not-first:before:h-px group-data-[variant=inset]/field-group:not-first:before:bg-border',
   'group-data-[variant=inset]/field-group:has-[:focus-visible]:inset-ring-2 group-data-[variant=inset]/field-group:has-[:focus-visible]:inset-ring-ring/50',
   'group-data-[variant=inset]/field-group:has-[[aria-invalid=true]]:inset-ring-2 group-data-[variant=inset]/field-group:has-[[aria-invalid=true]]:inset-ring-destructive/45',
-  'group-data-[variant=inset]/field-group:has-[:focus-visible,[aria-invalid=true]]:before:opacity-0 group-data-[variant=inset]/field-group:[[data-slot=field]:has(:focus-visible,[aria-invalid=true])+&]:before:opacity-0',
+  // Only rows that draw a hairline touch their ::before: on the first row the
+  // rule would mint a static pseudo-element that takes a flex slot and its gap.
+  'group-data-[variant=inset]/field-group:not-first:has-[:focus-visible,[aria-invalid=true]]:before:opacity-0 group-data-[variant=inset]/field-group:not-first:[[data-slot=field]:has(:focus-visible,[aria-invalid=true])+&]:before:opacity-0',
 ]
 
 const fieldVariants = cva(

@@ -11,4 +11,7 @@ export const ASK_QUESTION_RETENTION_DAYS = 90
  * kept. Not part of cookie consent: it is about what visitors type, which
  * is stored whatever they chose on the banner.
  */
-export const ASK_NOTICE = `Heads up! You're chatting with our AI. We save chats anonymously for ${ASK_QUESTION_RETENTION_DAYS} days to improve this feature.`
+export const ASK_NOTICE = `AI answers from this site. Chats are saved anonymously for ${ASK_QUESTION_RETENTION_DAYS} days.`
+
+/** The same notice where one line is all there is room for: the phone sheet's foot. */
+export const ASK_NOTICE_SHORT = `AI answers from this site. Saved anonymously for ${ASK_QUESTION_RETENTION_DAYS} days.`

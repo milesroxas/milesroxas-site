@@ -19,13 +19,14 @@ type AskSubmitButtonProps = Omit<
 }
 
 /**
- * The button's size in a one-line composer (the menu's pill, the closing
- * band): a 40px touch target on a phone with a little reach around it, a
- * 28px disc from `md`. The glyph scales with it.
+ * The button in the one-line Ask field (`InputGroup variant="pill"`): a 34px
+ * disc on a phone with its reach grown to 46px, 40px from `md`. With nothing
+ * to send it rests as a quiet disc with a faint arrow rather than a dimmed
+ * black one, so the field reads as waiting, not broken.
  */
 export const askComposerButton =
-  'relative size-10 after:absolute after:-inset-1 md:size-7 md:after:hidden'
-export const askComposerIcon = 'size-5 md:size-3.5'
+  'relative size-8.5 after:absolute after:-inset-1.5 disabled:bg-foreground/8 disabled:text-foreground/35 disabled:opacity-100 md:size-10 md:after:hidden'
+export const askComposerIcon = 'size-4'
 
 /**
  * The composer's one button across every Ask surface. Idle it submits the

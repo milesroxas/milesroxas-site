@@ -100,7 +100,7 @@ export const STACK_SPACING = {
  * shell (featured work, industry work), and that shell owns the height.
  */
 export const fullViewportSectionClassName = cn(
-  'flex min-h-[calc(100svh-var(--footer-height))] flex-col justify-center overflow-clip',
+  'flex min-h-svh flex-col justify-center overflow-clip',
   BAND_SPACING.normal,
 )
 

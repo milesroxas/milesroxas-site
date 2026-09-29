@@ -9,7 +9,7 @@ import { Media } from '@/components/Media'
 import { resolveOpening } from '@/features/immersive/visual'
 import { HeroGround } from '@/heros/HeroGround'
 import type { Page } from '@/payload-types'
-import { useSiteFrameStore } from '@/stores/siteframeStore'
+import { useChromeStore } from '@/stores/chromeStore'
 import { cn } from '@/utilities/ui'
 
 export const HighImpactHero: React.FC<Page['hero']> = (hero) => {
@@ -18,7 +18,8 @@ export const HighImpactHero: React.FC<Page['hero']> = (hero) => {
   // With none, the hero renders exactly as it did before the visual slot.
   const { ground, surface } = resolveOpening(hero, { seedKey: 'hero' })
   const heroRef = useRef<HTMLDivElement>(null)
-  const { setIsSiteFrameVisible, setTransitionPhase } = useSiteFrameStore()
+  const setChromeVisible = useChromeStore((s) => s.setVisible)
+  const setTransitionPhase = useChromeStore((s) => s.setTransitionPhase)
   const pathname = usePathname()
 
   // Pick up the page-transition clone only on arrival at this route (mount or
@@ -44,7 +45,7 @@ export const HighImpactHero: React.FC<Page['hero']> = (hero) => {
         onComplete: () => {
           clone.remove()
           window.__PAGE_TRANSITION_CLONE = undefined
-          setIsSiteFrameVisible(true)
+          setChromeVisible(true)
           setTransitionPhase('frame-ready')
         },
       })
@@ -70,12 +71,9 @@ export const HighImpactHero: React.FC<Page['hero']> = (hero) => {
       duration: 1, // Increased from 0.8 to 1.2 for slower animation
       ease: 'power2.inOut', // Changed to power2 for smoother motion
       onUpdate: function () {
-        // Set site frame visible and update transition phase when animation is 70% complete
-        if (
-          this.progress() > 0.7 &&
-          useSiteFrameStore.getState().transitionPhase !== 'frame-ready'
-        ) {
-          setIsSiteFrameVisible(true)
+        // The chrome comes back once the clone is 70% of the way into the hero
+        if (this.progress() > 0.7 && useChromeStore.getState().transitionPhase !== 'frame-ready') {
+          setChromeVisible(true)
           setTransitionPhase('frame-ready')
         }
       },
@@ -90,7 +88,7 @@ export const HighImpactHero: React.FC<Page['hero']> = (hero) => {
         },
         '>-0.1',
       )
-  }, [setIsSiteFrameVisible, setTransitionPhase, pathname])
+  }, [setChromeVisible, setTransitionPhase, pathname])
 
   return (
     <section

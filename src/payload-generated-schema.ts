@@ -500,6 +500,14 @@ export const enum_pages_hero_type = pgEnum("enum_pages_hero_type", [
   "mediumImpact",
   "lowImpact",
 ]);
+export const enum_pages_hero_visual_type = pgEnum(
+  "enum_pages_hero_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum_pages_hero_shader_origin = pgEnum(
+  "enum_pages_hero_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
 export const enum_pages_status = pgEnum("enum_pages_status", [
   "draft",
   "published",
@@ -954,6 +962,14 @@ export const enum__pages_v_version_hero_type = pgEnum(
   "enum__pages_v_version_hero_type",
   ["none", "home", "highImpact", "mediumImpact", "lowImpact"],
 );
+export const enum__pages_v_version_hero_visual_type = pgEnum(
+  "enum__pages_v_version_hero_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum__pages_v_version_hero_shader_origin = pgEnum(
+  "enum__pages_v_version_hero_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
 export const enum__pages_v_version_status = pgEnum(
   "enum__pages_v_version_status",
   ["draft", "published"],
@@ -1317,6 +1333,14 @@ export const enum_posts_hero_type = pgEnum("enum_posts_hero_type", [
   "mediumImpact",
   "lowImpact",
 ]);
+export const enum_posts_hero_visual_type = pgEnum(
+  "enum_posts_hero_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum_posts_hero_shader_origin = pgEnum(
+  "enum_posts_hero_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
 export const enum_posts_status = pgEnum("enum_posts_status", [
   "draft",
   "published",
@@ -1662,6 +1686,14 @@ export const enum___posts_v_section_v_stack = pgEnum(
 export const enum__posts_v_version_hero_type = pgEnum(
   "enum__posts_v_version_hero_type",
   ["none", "home", "highImpact", "mediumImpact", "lowImpact"],
+);
+export const enum__posts_v_version_hero_visual_type = pgEnum(
+  "enum__posts_v_version_hero_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum__posts_v_version_hero_shader_origin = pgEnum(
+  "enum__posts_v_version_hero_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
 export const enum__posts_v_version_status = pgEnum(
   "enum__posts_v_version_status",
@@ -2170,6 +2202,14 @@ export const enum_works_hero_type = pgEnum("enum_works_hero_type", [
   "mediumImpact",
   "lowImpact",
 ]);
+export const enum_works_hero_visual_type = pgEnum(
+  "enum_works_hero_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum_works_hero_shader_origin = pgEnum(
+  "enum_works_hero_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
 export const enum_works_project_status = pgEnum("enum_works_project_status", [
   "coming-soon",
   "live",
@@ -2664,9 +2704,82 @@ export const enum__works_v_version_hero_type = pgEnum(
   "enum__works_v_version_hero_type",
   ["none", "home", "highImpact", "mediumImpact", "lowImpact"],
 );
+export const enum__works_v_version_hero_visual_type = pgEnum(
+  "enum__works_v_version_hero_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum__works_v_version_hero_shader_origin = pgEnum(
+  "enum__works_v_version_hero_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
 export const enum__works_v_version_status = pgEnum(
   "enum__works_v_version_status",
   ["draft", "published"],
+);
+export const enum_inquiries_type = pgEnum("enum_inquiries_type", [
+  "project",
+  "general",
+]);
+export const enum_inquiries_status = pgEnum("enum_inquiries_status", [
+  "new",
+  "in-progress",
+  "replied",
+  "closed",
+  "spam",
+]);
+export const enum_inquiries_budget = pgEnum("enum_inquiries_budget", [
+  "under-25k",
+  "25-50k",
+  "50-100k",
+  "100k-plus",
+  "guidance",
+]);
+export const enum_inquiries_timeline = pgEnum("enum_inquiries_timeline", [
+  "asap",
+  "1-3-months",
+  "3-6-months",
+  "exploring",
+]);
+export const enum_ask_questions_status = pgEnum("enum_ask_questions_status", [
+  "new",
+  "reviewed",
+  "content_planned",
+  "ignored",
+]);
+export const enum_ask_questions_outcome = pgEnum("enum_ask_questions_outcome", [
+  "answered",
+  "partial",
+  "no_sources",
+  "chat_only",
+  "stopped",
+  "error",
+]);
+export const enum_ask_questions_rating = pgEnum("enum_ask_questions_rating", [
+  "up",
+  "down",
+]);
+export const enum_ask_questions_rating_reason = pgEnum(
+  "enum_ask_questions_rating_reason",
+  ["wrong", "incomplete", "off_topic"],
+);
+export const enum_ask_questions_handoff = pgEnum("enum_ask_questions_handoff", [
+  "clicked",
+  "inquiry_sent",
+]);
+export const enum_ask_questions_handoff_reason = pgEnum(
+  "enum_ask_questions_handoff_reason",
+  [
+    "estimate",
+    "project",
+    "person",
+    "contact_details",
+    "no_answer",
+    "case_study",
+  ],
+);
+export const enum_ask_questions_retrieval = pgEnum(
+  "enum_ask_questions_retrieval",
+  ["embedding", "keyword", "none"],
 );
 export const enum_streak_looks_effect = pgEnum("enum_streak_looks_effect", [
   "streakField",
@@ -2694,7 +2807,7 @@ export const enum_forms_confirmation_type = pgEnum(
 );
 export const enum_payload_jobs_log_task_slug = pgEnum(
   "enum_payload_jobs_log_task_slug",
-  ["inline", "schedulePublish"],
+  ["inline", "askQuestionRetention", "schedulePublish"],
 );
 export const enum_payload_jobs_log_state = pgEnum(
   "enum_payload_jobs_log_state",
@@ -2702,7 +2815,7 @@ export const enum_payload_jobs_log_state = pgEnum(
 );
 export const enum_payload_jobs_task_slug = pgEnum(
   "enum_payload_jobs_task_slug",
-  ["inline", "schedulePublish"],
+  ["inline", "askQuestionRetention", "schedulePublish"],
 );
 export const enum_payload_folders_folder_type = pgEnum(
   "enum_payload_folders_folder_type",
@@ -3951,6 +4064,40 @@ export const pages = pgTable(
     hero_media: integer("hero_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    hero_visualType: enum_pages_hero_visual_type("hero_visual_type"),
+    hero_shader_studio: integer("hero_shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    hero_shader_preset: varchar("hero_shader_preset"),
+    hero_shader_seed: numeric("hero_shader_seed", { mode: "number" }),
+    hero_shader_speed: numeric("hero_shader_speed", { mode: "number" }),
+    hero_shader_intensity: numeric("hero_shader_intensity", { mode: "number" }),
+    hero_shader_bleed: boolean("hero_shader_bleed").default(false),
+    hero_shader_origin:
+      enum_pages_hero_shader_origin("hero_shader_origin").default("top-right"),
+    hero_shader_showMedia: boolean("hero_shader_show_media").default(false),
+    hero_shader_surface: enum_visual_surface("hero_shader_surface").default(
+      "auto",
+    ),
+    hero_shader_pointerInteraction: boolean(
+      "hero_shader_pointer_interaction",
+    ).default(false),
+    hero_shader_hoverTargets: enum_leak_hover_targets(
+      "hero_shader_hover_targets",
+    ),
+    hero_shader_sectionHover: numeric("hero_shader_section_hover", {
+      mode: "number",
+    }),
+    hero_shader_posterMedia: integer("hero_shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    showContents: boolean("show_contents").default(false),
     meta_title: varchar("meta_title"),
     meta_image: integer("meta_image_id").references(() => media.id, {
       onDelete: "set null",
@@ -3982,6 +4129,12 @@ export const pages = pgTable(
   },
   (columns) => [
     index("pages_hero_hero_media_idx").on(columns.hero_media),
+    index("pages_hero_shader_hero_shader_studio_idx").on(
+      columns.hero_shader_studio,
+    ),
+    index("pages_hero_shader_hero_shader_poster_media_idx").on(
+      columns.hero_shader_posterMedia,
+    ),
     index("pages_meta_meta_image_idx").on(columns.meta_image),
     index("pages_slug_idx").on(columns.slug),
     index("pages_updated_at_idx").on(columns.updatedAt),
@@ -5359,6 +5512,52 @@ export const _pages_v = pgTable(
         onDelete: "set null",
       },
     ),
+    version_hero_visualType: enum__pages_v_version_hero_visual_type(
+      "version_hero_visual_type",
+    ),
+    version_hero_shader_studio: integer(
+      "version_hero_shader_studio_id",
+    ).references(() => streak_looks.id, {
+      onDelete: "set null",
+    }),
+    version_hero_shader_preset: varchar("version_hero_shader_preset"),
+    version_hero_shader_seed: numeric("version_hero_shader_seed", {
+      mode: "number",
+    }),
+    version_hero_shader_speed: numeric("version_hero_shader_speed", {
+      mode: "number",
+    }),
+    version_hero_shader_intensity: numeric("version_hero_shader_intensity", {
+      mode: "number",
+    }),
+    version_hero_shader_bleed: boolean("version_hero_shader_bleed").default(
+      false,
+    ),
+    version_hero_shader_origin: enum__pages_v_version_hero_shader_origin(
+      "version_hero_shader_origin",
+    ).default("top-right"),
+    version_hero_shader_showMedia: boolean(
+      "version_hero_shader_show_media",
+    ).default(false),
+    version_hero_shader_surface: enum_visual_surface(
+      "version_hero_shader_surface",
+    ).default("auto"),
+    version_hero_shader_pointerInteraction: boolean(
+      "version_hero_shader_pointer_interaction",
+    ).default(false),
+    version_hero_shader_hoverTargets: enum_leak_hover_targets(
+      "version_hero_shader_hover_targets",
+    ),
+    version_hero_shader_sectionHover: numeric(
+      "version_hero_shader_section_hover",
+      { mode: "number" },
+    ),
+    version_hero_shader_posterMedia: integer(
+      "version_hero_shader_poster_media_id",
+    ).references(() => media.id, {
+      onDelete: "set null",
+    }),
+    version_showContents: boolean("version_show_contents").default(false),
     version_meta_title: varchar("version_meta_title"),
     version_meta_image: integer("version_meta_image_id").references(
       () => media.id,
@@ -5408,6 +5607,12 @@ export const _pages_v = pgTable(
     index("_pages_v_parent_idx").on(columns.parent),
     index("_pages_v_version_hero_version_hero_media_idx").on(
       columns.version_hero_media,
+    ),
+    index("_pages_v_version_hero_shader_version_hero_shader_studio_idx").on(
+      columns.version_hero_shader_studio,
+    ),
+    index("_pages_v_version_hero_shader_version_hero_shader_poster__idx").on(
+      columns.version_hero_shader_posterMedia,
     ),
     index("_pages_v_version_meta_version_meta_image_idx").on(
       columns.version_meta_image,
@@ -6488,7 +6693,45 @@ export const posts = pgTable(
     hero_media: integer("hero_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    hero_visualType: enum_posts_hero_visual_type("hero_visual_type"),
+    hero_shader_studio: integer("hero_shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    hero_shader_preset: varchar("hero_shader_preset"),
+    hero_shader_seed: numeric("hero_shader_seed", { mode: "number" }),
+    hero_shader_speed: numeric("hero_shader_speed", { mode: "number" }),
+    hero_shader_intensity: numeric("hero_shader_intensity", { mode: "number" }),
+    hero_shader_bleed: boolean("hero_shader_bleed").default(false),
+    hero_shader_origin:
+      enum_posts_hero_shader_origin("hero_shader_origin").default("top-right"),
+    hero_shader_showMedia: boolean("hero_shader_show_media").default(false),
+    hero_shader_surface: enum_visual_surface("hero_shader_surface").default(
+      "auto",
+    ),
+    hero_shader_pointerInteraction: boolean(
+      "hero_shader_pointer_interaction",
+    ).default(false),
+    hero_shader_hoverTargets: enum_leak_hover_targets(
+      "hero_shader_hover_targets",
+    ),
+    hero_shader_sectionHover: numeric("hero_shader_section_hover", {
+      mode: "number",
+    }),
+    hero_shader_posterMedia: integer("hero_shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    intro_eyebrow: varchar("intro_eyebrow"),
+    intro_title: varchar("intro_title"),
+    intro_body: jsonb("intro_body"),
+    showContents: boolean("show_contents").default(false),
     content: jsonb("content"),
+    hideRelatedPosts: boolean("hide_related_posts").default(false),
     meta_title: varchar("meta_title"),
     meta_image: integer("meta_image_id").references(() => media.id, {
       onDelete: "set null",
@@ -6520,6 +6763,12 @@ export const posts = pgTable(
   },
   (columns) => [
     index("posts_hero_hero_media_idx").on(columns.hero_media),
+    index("posts_hero_shader_hero_shader_studio_idx").on(
+      columns.hero_shader_studio,
+    ),
+    index("posts_hero_shader_hero_shader_poster_media_idx").on(
+      columns.hero_shader_posterMedia,
+    ),
     index("posts_meta_meta_image_idx").on(columns.meta_image),
     index("posts_slug_idx").on(columns.slug),
     index("posts_updated_at_idx").on(columns.updatedAt),
@@ -7664,7 +7913,59 @@ export const _posts_v = pgTable(
         onDelete: "set null",
       },
     ),
+    version_hero_visualType: enum__posts_v_version_hero_visual_type(
+      "version_hero_visual_type",
+    ),
+    version_hero_shader_studio: integer(
+      "version_hero_shader_studio_id",
+    ).references(() => streak_looks.id, {
+      onDelete: "set null",
+    }),
+    version_hero_shader_preset: varchar("version_hero_shader_preset"),
+    version_hero_shader_seed: numeric("version_hero_shader_seed", {
+      mode: "number",
+    }),
+    version_hero_shader_speed: numeric("version_hero_shader_speed", {
+      mode: "number",
+    }),
+    version_hero_shader_intensity: numeric("version_hero_shader_intensity", {
+      mode: "number",
+    }),
+    version_hero_shader_bleed: boolean("version_hero_shader_bleed").default(
+      false,
+    ),
+    version_hero_shader_origin: enum__posts_v_version_hero_shader_origin(
+      "version_hero_shader_origin",
+    ).default("top-right"),
+    version_hero_shader_showMedia: boolean(
+      "version_hero_shader_show_media",
+    ).default(false),
+    version_hero_shader_surface: enum_visual_surface(
+      "version_hero_shader_surface",
+    ).default("auto"),
+    version_hero_shader_pointerInteraction: boolean(
+      "version_hero_shader_pointer_interaction",
+    ).default(false),
+    version_hero_shader_hoverTargets: enum_leak_hover_targets(
+      "version_hero_shader_hover_targets",
+    ),
+    version_hero_shader_sectionHover: numeric(
+      "version_hero_shader_section_hover",
+      { mode: "number" },
+    ),
+    version_hero_shader_posterMedia: integer(
+      "version_hero_shader_poster_media_id",
+    ).references(() => media.id, {
+      onDelete: "set null",
+    }),
+    version_intro_eyebrow: varchar("version_intro_eyebrow"),
+    version_intro_title: varchar("version_intro_title"),
+    version_intro_body: jsonb("version_intro_body"),
+    version_showContents: boolean("version_show_contents").default(false),
     version_content: jsonb("version_content"),
+    version_hideRelatedPosts: boolean("version_hide_related_posts").default(
+      false,
+    ),
     version_meta_title: varchar("version_meta_title"),
     version_meta_image: integer("version_meta_image_id").references(
       () => media.id,
@@ -7714,6 +8015,12 @@ export const _posts_v = pgTable(
     index("_posts_v_parent_idx").on(columns.parent),
     index("_posts_v_version_hero_version_hero_media_idx").on(
       columns.version_hero_media,
+    ),
+    index("_posts_v_version_hero_shader_version_hero_shader_studio_idx").on(
+      columns.version_hero_shader_studio,
+    ),
+    index("_posts_v_version_hero_shader_version_hero_shader_poster__idx").on(
+      columns.version_hero_shader_posterMedia,
     ),
     index("_posts_v_version_meta_version_meta_image_idx").on(
       columns.version_meta_image,
@@ -9095,6 +9402,43 @@ export const works = pgTable(
     hero_media: integer("hero_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    hero_visualType: enum_works_hero_visual_type("hero_visual_type"),
+    hero_shader_studio: integer("hero_shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    hero_shader_preset: varchar("hero_shader_preset"),
+    hero_shader_seed: numeric("hero_shader_seed", { mode: "number" }),
+    hero_shader_speed: numeric("hero_shader_speed", { mode: "number" }),
+    hero_shader_intensity: numeric("hero_shader_intensity", { mode: "number" }),
+    hero_shader_bleed: boolean("hero_shader_bleed").default(false),
+    hero_shader_origin:
+      enum_works_hero_shader_origin("hero_shader_origin").default("top-right"),
+    hero_shader_showMedia: boolean("hero_shader_show_media").default(false),
+    hero_shader_surface: enum_visual_surface("hero_shader_surface").default(
+      "auto",
+    ),
+    hero_shader_pointerInteraction: boolean(
+      "hero_shader_pointer_interaction",
+    ).default(false),
+    hero_shader_hoverTargets: enum_leak_hover_targets(
+      "hero_shader_hover_targets",
+    ),
+    hero_shader_sectionHover: numeric("hero_shader_section_hover", {
+      mode: "number",
+    }),
+    hero_shader_posterMedia: integer("hero_shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    intro_eyebrow: varchar("intro_eyebrow"),
+    intro_title: varchar("intro_title"),
+    intro_body: jsonb("intro_body"),
+    showContents: boolean("show_contents").default(false),
     industry: varchar("industry"),
     role: varchar("role"),
     deliverables: varchar("deliverables"),
@@ -9138,6 +9482,12 @@ export const works = pgTable(
   (columns) => [
     index("works__order_idx").on(columns._order),
     index("works_hero_hero_media_idx").on(columns.hero_media),
+    index("works_hero_shader_hero_shader_studio_idx").on(
+      columns.hero_shader_studio,
+    ),
+    index("works_hero_shader_hero_shader_poster_media_idx").on(
+      columns.hero_shader_posterMedia,
+    ),
     index("works_fallback_work_idx").on(columns.fallbackWork),
     index("works_meta_meta_image_idx").on(columns.meta_image),
     index("works_slug_idx").on(columns.slug),
@@ -10591,6 +10941,55 @@ export const _works_v = pgTable(
         onDelete: "set null",
       },
     ),
+    version_hero_visualType: enum__works_v_version_hero_visual_type(
+      "version_hero_visual_type",
+    ),
+    version_hero_shader_studio: integer(
+      "version_hero_shader_studio_id",
+    ).references(() => streak_looks.id, {
+      onDelete: "set null",
+    }),
+    version_hero_shader_preset: varchar("version_hero_shader_preset"),
+    version_hero_shader_seed: numeric("version_hero_shader_seed", {
+      mode: "number",
+    }),
+    version_hero_shader_speed: numeric("version_hero_shader_speed", {
+      mode: "number",
+    }),
+    version_hero_shader_intensity: numeric("version_hero_shader_intensity", {
+      mode: "number",
+    }),
+    version_hero_shader_bleed: boolean("version_hero_shader_bleed").default(
+      false,
+    ),
+    version_hero_shader_origin: enum__works_v_version_hero_shader_origin(
+      "version_hero_shader_origin",
+    ).default("top-right"),
+    version_hero_shader_showMedia: boolean(
+      "version_hero_shader_show_media",
+    ).default(false),
+    version_hero_shader_surface: enum_visual_surface(
+      "version_hero_shader_surface",
+    ).default("auto"),
+    version_hero_shader_pointerInteraction: boolean(
+      "version_hero_shader_pointer_interaction",
+    ).default(false),
+    version_hero_shader_hoverTargets: enum_leak_hover_targets(
+      "version_hero_shader_hover_targets",
+    ),
+    version_hero_shader_sectionHover: numeric(
+      "version_hero_shader_section_hover",
+      { mode: "number" },
+    ),
+    version_hero_shader_posterMedia: integer(
+      "version_hero_shader_poster_media_id",
+    ).references(() => media.id, {
+      onDelete: "set null",
+    }),
+    version_intro_eyebrow: varchar("version_intro_eyebrow"),
+    version_intro_title: varchar("version_intro_title"),
+    version_intro_body: jsonb("version_intro_body"),
+    version_showContents: boolean("version_show_contents").default(false),
     version_industry: varchar("version_industry"),
     version_role: varchar("version_role"),
     version_deliverables: varchar("version_deliverables"),
@@ -10652,6 +11051,12 @@ export const _works_v = pgTable(
     index("_works_v_version_version__order_idx").on(columns.version__order),
     index("_works_v_version_hero_version_hero_media_idx").on(
       columns.version_hero_media,
+    ),
+    index("_works_v_version_hero_shader_version_hero_shader_studio_idx").on(
+      columns.version_hero_shader_studio,
+    ),
+    index("_works_v_version_hero_shader_version_hero_shader_poster__idx").on(
+      columns.version_hero_shader_posterMedia,
     ),
     index("_works_v_version_version_fallback_work_idx").on(
       columns.version_fallbackWork,
@@ -10888,6 +11293,199 @@ export const categories = pgTable(
     index("categories_parent_idx").on(columns.parent),
     index("categories_updated_at_idx").on(columns.updatedAt),
     index("categories_created_at_idx").on(columns.createdAt),
+  ],
+);
+
+export const inquiries_notes = pgTable(
+  "inquiries_notes",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    note: varchar("note").notNull(),
+    author: integer("author_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+  },
+  (columns) => [
+    index("inquiries_notes_order_idx").on(columns._order),
+    index("inquiries_notes_parent_id_idx").on(columns._parentID),
+    index("inquiries_notes_author_idx").on(columns.author),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [inquiries.id],
+      name: "inquiries_notes_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const inquiries = pgTable(
+  "inquiries",
+  {
+    id: serial("id").primaryKey(),
+    reference: varchar("reference"),
+    type: enum_inquiries_type("type").notNull().default("general"),
+    status: enum_inquiries_status("status").notNull().default("new"),
+    assignedTo: integer("assigned_to_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    askConversation: varchar("ask_conversation"),
+    submittedAt: timestamp("submitted_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    repliedAt: timestamp("replied_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    name: varchar("name").notNull(),
+    email: varchar("email").notNull(),
+    company: varchar("company"),
+    website: varchar("website"),
+    budget: enum_inquiries_budget("budget"),
+    timeline: enum_inquiries_timeline("timeline"),
+    message: varchar("message").notNull(),
+    sourceUrl: varchar("source_url"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => [
+    uniqueIndex("inquiries_reference_idx").on(columns.reference),
+    index("inquiries_type_idx").on(columns.type),
+    index("inquiries_status_idx").on(columns.status),
+    index("inquiries_assigned_to_idx").on(columns.assignedTo),
+    index("inquiries_ask_conversation_idx").on(columns.askConversation),
+    index("inquiries_submitted_at_idx").on(columns.submittedAt),
+    index("inquiries_email_idx").on(columns.email),
+    index("inquiries_updated_at_idx").on(columns.updatedAt),
+    index("inquiries_created_at_idx").on(columns.createdAt),
+  ],
+);
+
+export const ask_questions_sources = pgTable(
+  "ask_questions_sources",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title").notNull(),
+    url: varchar("url").notNull(),
+    similarity: numeric("similarity", { mode: "number" }),
+  },
+  (columns) => [
+    index("ask_questions_sources_order_idx").on(columns._order),
+    index("ask_questions_sources_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [ask_questions.id],
+      name: "ask_questions_sources_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const ask_questions = pgTable(
+  "ask_questions",
+  {
+    id: serial("id").primaryKey(),
+    question: varchar("question").notNull(),
+    answer: varchar("answer"),
+    note: varchar("note"),
+    status: enum_ask_questions_status("status").notNull().default("new"),
+    topic: integer("topic_id").references(() => categories.id, {
+      onDelete: "set null",
+    }),
+    outcome: enum_ask_questions_outcome("outcome"),
+    rating: enum_ask_questions_rating("rating"),
+    ratingReason: enum_ask_questions_rating_reason("rating_reason"),
+    handoff: enum_ask_questions_handoff("handoff"),
+    handoffReason: enum_ask_questions_handoff_reason("handoff_reason"),
+    pagePath: varchar("page_path"),
+    followUp: boolean("follow_up").default(false),
+    retrieval: enum_ask_questions_retrieval("retrieval"),
+    latencyMs: numeric("latency_ms", { mode: "number" }),
+    inputTokens: numeric("input_tokens", { mode: "number" }),
+    outputTokens: numeric("output_tokens", { mode: "number" }),
+    conversation: varchar("conversation"),
+    turn: varchar("turn"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => [
+    index("ask_questions_status_idx").on(columns.status),
+    index("ask_questions_topic_idx").on(columns.topic),
+    index("ask_questions_outcome_idx").on(columns.outcome),
+    index("ask_questions_rating_idx").on(columns.rating),
+    index("ask_questions_handoff_idx").on(columns.handoff),
+    index("ask_questions_page_path_idx").on(columns.pagePath),
+    index("ask_questions_conversation_idx").on(columns.conversation),
+    index("ask_questions_turn_idx").on(columns.turn),
+    index("ask_questions_updated_at_idx").on(columns.updatedAt),
+    index("ask_questions_created_at_idx").on(columns.createdAt),
+  ],
+);
+
+export const ask_questions_rels = pgTable(
+  "ask_questions_rels",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order"),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    postsID: integer("posts_id"),
+    pagesID: integer("pages_id"),
+  },
+  (columns) => [
+    index("ask_questions_rels_order_idx").on(columns.order),
+    index("ask_questions_rels_parent_idx").on(columns.parent),
+    index("ask_questions_rels_path_idx").on(columns.path),
+    index("ask_questions_rels_posts_id_idx").on(columns.postsID),
+    index("ask_questions_rels_pages_id_idx").on(columns.pagesID),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [ask_questions.id],
+      name: "ask_questions_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["postsID"]],
+      foreignColumns: [posts.id],
+      name: "ask_questions_rels_posts_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["pagesID"]],
+      foreignColumns: [pages.id],
+      name: "ask_questions_rels_pages_fk",
+    }).onDelete("cascade"),
   ],
 );
 
@@ -11673,17 +12271,31 @@ export const search_rels = pgTable(
     order: integer("order"),
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
+    pagesID: integer("pages_id"),
+    worksID: integer("works_id"),
     postsID: integer("posts_id"),
   },
   (columns) => [
     index("search_rels_order_idx").on(columns.order),
     index("search_rels_parent_idx").on(columns.parent),
     index("search_rels_path_idx").on(columns.path),
+    index("search_rels_pages_id_idx").on(columns.pagesID),
+    index("search_rels_works_id_idx").on(columns.worksID),
     index("search_rels_posts_id_idx").on(columns.postsID),
     foreignKey({
       columns: [columns["parent"]],
       foreignColumns: [search.id],
       name: "search_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["pagesID"]],
+      foreignColumns: [pages.id],
+      name: "search_rels_pages_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["worksID"]],
+      foreignColumns: [works.id],
+      name: "search_rels_works_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["postsID"]],
@@ -11758,6 +12370,7 @@ export const payload_jobs = pgTable(
       precision: 3,
     }),
     processing: boolean("processing").default(false),
+    meta: jsonb("meta"),
     updatedAt: timestamp("updated_at", {
       mode: "string",
       withTimezone: true,
@@ -11878,6 +12491,8 @@ export const payload_locked_documents_rels = pgTable(
     worksID: integer("works_id"),
     mediaID: integer("media_id"),
     categoriesID: integer("categories_id"),
+    inquiriesID: integer("inquiries_id"),
+    "ask-questionsID": integer("ask_questions_id"),
     usersID: integer("users_id"),
     "streak-looksID": integer("streak_looks_id"),
     redirectsID: integer("redirects_id"),
@@ -11896,6 +12511,12 @@ export const payload_locked_documents_rels = pgTable(
     index("payload_locked_documents_rels_media_id_idx").on(columns.mediaID),
     index("payload_locked_documents_rels_categories_id_idx").on(
       columns.categoriesID,
+    ),
+    index("payload_locked_documents_rels_inquiries_id_idx").on(
+      columns.inquiriesID,
+    ),
+    index("payload_locked_documents_rels_ask_questions_id_idx").on(
+      columns["ask-questionsID"],
     ),
     index("payload_locked_documents_rels_users_id_idx").on(columns.usersID),
     index("payload_locked_documents_rels_streak_looks_id_idx").on(
@@ -11941,6 +12562,16 @@ export const payload_locked_documents_rels = pgTable(
       columns: [columns["categoriesID"]],
       foreignColumns: [categories.id],
       name: "payload_locked_documents_rels_categories_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["inquiriesID"]],
+      foreignColumns: [inquiries.id],
+      name: "payload_locked_documents_rels_inquiries_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["ask-questionsID"]],
+      foreignColumns: [ask_questions.id],
+      name: "payload_locked_documents_rels_ask_questions_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["usersID"]],
@@ -12132,6 +12763,91 @@ export const header_rels = pgTable(
     }).onDelete("cascade"),
   ],
 );
+
+export const site_info_ask_suggestions = pgTable(
+  "site_info_ask_suggestions",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    question: varchar("question").notNull(),
+  },
+  (columns) => [
+    index("site_info_ask_suggestions_order_idx").on(columns._order),
+    index("site_info_ask_suggestions_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [site_info.id],
+      name: "site_info_ask_suggestions_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const site_info_social_profiles = pgTable(
+  "site_info_social_profiles",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    label: varchar("label").notNull(),
+    url: varchar("url").notNull(),
+  },
+  (columns) => [
+    index("site_info_social_profiles_order_idx").on(columns._order),
+    index("site_info_social_profiles_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [site_info.id],
+      name: "site_info_social_profiles_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const site_info = pgTable("site_info", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull().default("Miles Roxas"),
+  legalName: varchar("legal_name"),
+  tagline: varchar("tagline"),
+  description: varchar("description"),
+  foundingYear: numeric("founding_year", { mode: "number" }),
+  contactEmail: varchar("contact_email").default("miles@milesroxas.com"),
+  inquiries_responseTime: varchar("inquiries_response_time").default(
+    "within 2 business days",
+  ),
+  inquiries_scheduleUrl: varchar("inquiries_schedule_url"),
+  ask_hidden: boolean("ask_hidden").default(false),
+  address_streetAddress: varchar("address_street_address"),
+  address_city: varchar("address_city"),
+  address_state: varchar("address_state"),
+  address_postalCode: varchar("address_postal_code"),
+  address_country: varchar("address_country"),
+  llmsNotes: varchar("llms_notes"),
+  updatedAt: timestamp("updated_at", {
+    mode: "string",
+    withTimezone: true,
+    precision: 3,
+  }),
+  createdAt: timestamp("created_at", {
+    mode: "string",
+    withTimezone: true,
+    precision: 3,
+  }),
+});
+
+export const payload_jobs_stats = pgTable("payload_jobs_stats", {
+  id: serial("id").primaryKey(),
+  stats: jsonb("stats"),
+  updatedAt: timestamp("updated_at", {
+    mode: "string",
+    withTimezone: true,
+    precision: 3,
+  }),
+  createdAt: timestamp("created_at", {
+    mode: "string",
+    withTimezone: true,
+    precision: 3,
+  }),
+});
 
 export const relations_pages_hero_links = relations(
   pages_hero_links,
@@ -12655,6 +13371,16 @@ export const relations_pages = relations(pages, ({ one, many }) => ({
     fields: [pages.hero_media],
     references: [media.id],
     relationName: "hero_media",
+  }),
+  hero_shader_studio: one(streak_looks, {
+    fields: [pages.hero_shader_studio],
+    references: [streak_looks.id],
+    relationName: "hero_shader_studio",
+  }),
+  hero_shader_posterMedia: one(media, {
+    fields: [pages.hero_shader_posterMedia],
+    references: [media.id],
+    relationName: "hero_shader_posterMedia",
   }),
   _blocks_richTransition: many(pages_transition, {
     relationName: "_blocks_richTransition",
@@ -13278,6 +14004,16 @@ export const relations__pages_v = relations(_pages_v, ({ one, many }) => ({
     references: [media.id],
     relationName: "version_hero_media",
   }),
+  version_hero_shader_studio: one(streak_looks, {
+    fields: [_pages_v.version_hero_shader_studio],
+    references: [streak_looks.id],
+    relationName: "version_hero_shader_studio",
+  }),
+  version_hero_shader_posterMedia: one(media, {
+    fields: [_pages_v.version_hero_shader_posterMedia],
+    references: [media.id],
+    relationName: "version_hero_shader_posterMedia",
+  }),
   _blocks_richTransition: many(__pages_v_transition_v, {
     relationName: "_blocks_richTransition",
   }),
@@ -13795,6 +14531,16 @@ export const relations_posts = relations(posts, ({ one, many }) => ({
     fields: [posts.hero_media],
     references: [media.id],
     relationName: "hero_media",
+  }),
+  hero_shader_studio: one(streak_looks, {
+    fields: [posts.hero_shader_studio],
+    references: [streak_looks.id],
+    relationName: "hero_shader_studio",
+  }),
+  hero_shader_posterMedia: one(media, {
+    fields: [posts.hero_shader_posterMedia],
+    references: [media.id],
+    relationName: "hero_shader_posterMedia",
   }),
   _blocks_richTransition: many(posts_transition, {
     relationName: "_blocks_richTransition",
@@ -14316,6 +15062,16 @@ export const relations__posts_v = relations(_posts_v, ({ one, many }) => ({
     fields: [_posts_v.version_hero_media],
     references: [media.id],
     relationName: "version_hero_media",
+  }),
+  version_hero_shader_studio: one(streak_looks, {
+    fields: [_posts_v.version_hero_shader_studio],
+    references: [streak_looks.id],
+    relationName: "version_hero_shader_studio",
+  }),
+  version_hero_shader_posterMedia: one(media, {
+    fields: [_posts_v.version_hero_shader_posterMedia],
+    references: [media.id],
+    relationName: "version_hero_shader_posterMedia",
   }),
   _blocks_richTransition: many(__posts_v_transition_v, {
     relationName: "_blocks_richTransition",
@@ -14936,6 +15692,16 @@ export const relations_works = relations(works, ({ one, many }) => ({
     fields: [works.hero_media],
     references: [media.id],
     relationName: "hero_media",
+  }),
+  hero_shader_studio: one(streak_looks, {
+    fields: [works.hero_shader_studio],
+    references: [streak_looks.id],
+    relationName: "hero_shader_studio",
+  }),
+  hero_shader_posterMedia: one(media, {
+    fields: [works.hero_shader_posterMedia],
+    references: [media.id],
+    relationName: "hero_shader_posterMedia",
   }),
   _blocks_richTransition: many(works_transition, {
     relationName: "_blocks_richTransition",
@@ -15595,6 +16361,16 @@ export const relations__works_v = relations(_works_v, ({ one, many }) => ({
     references: [media.id],
     relationName: "version_hero_media",
   }),
+  version_hero_shader_studio: one(streak_looks, {
+    fields: [_works_v.version_hero_shader_studio],
+    references: [streak_looks.id],
+    relationName: "version_hero_shader_studio",
+  }),
+  version_hero_shader_posterMedia: one(media, {
+    fields: [_works_v.version_hero_shader_posterMedia],
+    references: [media.id],
+    relationName: "version_hero_shader_posterMedia",
+  }),
   _blocks_richTransition: many(__works_v_transition_v, {
     relationName: "_blocks_richTransition",
   }),
@@ -15713,6 +16489,77 @@ export const relations_categories = relations(categories, ({ one, many }) => ({
     relationName: "breadcrumbs",
   }),
 }));
+export const relations_inquiries_notes = relations(
+  inquiries_notes,
+  ({ one }) => ({
+    _parentID: one(inquiries, {
+      fields: [inquiries_notes._parentID],
+      references: [inquiries.id],
+      relationName: "notes",
+    }),
+    author: one(users, {
+      fields: [inquiries_notes.author],
+      references: [users.id],
+      relationName: "author",
+    }),
+  }),
+);
+export const relations_inquiries = relations(inquiries, ({ one, many }) => ({
+  assignedTo: one(users, {
+    fields: [inquiries.assignedTo],
+    references: [users.id],
+    relationName: "assignedTo",
+  }),
+  notes: many(inquiries_notes, {
+    relationName: "notes",
+  }),
+}));
+export const relations_ask_questions_sources = relations(
+  ask_questions_sources,
+  ({ one }) => ({
+    _parentID: one(ask_questions, {
+      fields: [ask_questions_sources._parentID],
+      references: [ask_questions.id],
+      relationName: "sources",
+    }),
+  }),
+);
+export const relations_ask_questions_rels = relations(
+  ask_questions_rels,
+  ({ one }) => ({
+    parent: one(ask_questions, {
+      fields: [ask_questions_rels.parent],
+      references: [ask_questions.id],
+      relationName: "_rels",
+    }),
+    postsID: one(posts, {
+      fields: [ask_questions_rels.postsID],
+      references: [posts.id],
+      relationName: "posts",
+    }),
+    pagesID: one(pages, {
+      fields: [ask_questions_rels.pagesID],
+      references: [pages.id],
+      relationName: "pages",
+    }),
+  }),
+);
+export const relations_ask_questions = relations(
+  ask_questions,
+  ({ one, many }) => ({
+    sources: many(ask_questions_sources, {
+      relationName: "sources",
+    }),
+    topic: one(categories, {
+      fields: [ask_questions.topic],
+      references: [categories.id],
+      relationName: "topic",
+    }),
+    _rels: many(ask_questions_rels, {
+      relationName: "_rels",
+    }),
+  }),
+);
 export const relations_users_sessions = relations(
   users_sessions,
   ({ one }) => ({
@@ -16025,6 +16872,16 @@ export const relations_search_rels = relations(search_rels, ({ one }) => ({
     references: [search.id],
     relationName: "_rels",
   }),
+  pagesID: one(pages, {
+    fields: [search_rels.pagesID],
+    references: [pages.id],
+    relationName: "pages",
+  }),
+  worksID: one(works, {
+    fields: [search_rels.worksID],
+    references: [works.id],
+    relationName: "works",
+  }),
   postsID: one(posts, {
     fields: [search_rels.postsID],
     references: [posts.id],
@@ -16115,6 +16972,16 @@ export const relations_payload_locked_documents_rels = relations(
       fields: [payload_locked_documents_rels.categoriesID],
       references: [categories.id],
       relationName: "categories",
+    }),
+    inquiriesID: one(inquiries, {
+      fields: [payload_locked_documents_rels.inquiriesID],
+      references: [inquiries.id],
+      relationName: "inquiries",
+    }),
+    "ask-questionsID": one(ask_questions, {
+      fields: [payload_locked_documents_rels["ask-questionsID"]],
+      references: [ask_questions.id],
+      relationName: "ask-questions",
     }),
     usersID: one(users, {
       fields: [payload_locked_documents_rels.usersID],
@@ -16223,6 +17090,38 @@ export const relations_header = relations(header, ({ many }) => ({
     relationName: "_rels",
   }),
 }));
+export const relations_site_info_ask_suggestions = relations(
+  site_info_ask_suggestions,
+  ({ one }) => ({
+    _parentID: one(site_info, {
+      fields: [site_info_ask_suggestions._parentID],
+      references: [site_info.id],
+      relationName: "ask_suggestions",
+    }),
+  }),
+);
+export const relations_site_info_social_profiles = relations(
+  site_info_social_profiles,
+  ({ one }) => ({
+    _parentID: one(site_info, {
+      fields: [site_info_social_profiles._parentID],
+      references: [site_info.id],
+      relationName: "socialProfiles",
+    }),
+  }),
+);
+export const relations_site_info = relations(site_info, ({ many }) => ({
+  ask_suggestions: many(site_info_ask_suggestions, {
+    relationName: "ask_suggestions",
+  }),
+  socialProfiles: many(site_info_social_profiles, {
+    relationName: "socialProfiles",
+  }),
+}));
+export const relations_payload_jobs_stats = relations(
+  payload_jobs_stats,
+  () => ({}),
+);
 
 type DatabaseSchema = {
   enum_pages_hero_links_link_type: typeof enum_pages_hero_links_link_type;
@@ -16337,6 +17236,8 @@ type DatabaseSchema = {
   enum_pages_blocks_media_block_space_mt: typeof enum_pages_blocks_media_block_space_mt;
   enum_pages_blocks_media_block_space_mb: typeof enum_pages_blocks_media_block_space_mb;
   enum_pages_hero_type: typeof enum_pages_hero_type;
+  enum_pages_hero_visual_type: typeof enum_pages_hero_visual_type;
+  enum_pages_hero_shader_origin: typeof enum_pages_hero_shader_origin;
   enum_pages_status: typeof enum_pages_status;
   enum__pages_v_version_hero_links_link_type: typeof enum__pages_v_version_hero_links_link_type;
   enum__pages_v_version_hero_links_link_appearance: typeof enum__pages_v_version_hero_links_link_appearance;
@@ -16448,6 +17349,8 @@ type DatabaseSchema = {
   enum__pages_v_blocks_media_block_space_mt: typeof enum__pages_v_blocks_media_block_space_mt;
   enum__pages_v_blocks_media_block_space_mb: typeof enum__pages_v_blocks_media_block_space_mb;
   enum__pages_v_version_hero_type: typeof enum__pages_v_version_hero_type;
+  enum__pages_v_version_hero_visual_type: typeof enum__pages_v_version_hero_visual_type;
+  enum__pages_v_version_hero_shader_origin: typeof enum__pages_v_version_hero_shader_origin;
   enum__pages_v_version_status: typeof enum__pages_v_version_status;
   enum_posts_hero_links_link_type: typeof enum_posts_hero_links_link_type;
   enum_posts_hero_links_link_appearance: typeof enum_posts_hero_links_link_appearance;
@@ -16532,6 +17435,8 @@ type DatabaseSchema = {
   enum_posts_section_spacing: typeof enum_posts_section_spacing;
   enum_posts_section_stack: typeof enum_posts_section_stack;
   enum_posts_hero_type: typeof enum_posts_hero_type;
+  enum_posts_hero_visual_type: typeof enum_posts_hero_visual_type;
+  enum_posts_hero_shader_origin: typeof enum_posts_hero_shader_origin;
   enum_posts_status: typeof enum_posts_status;
   enum__posts_v_version_hero_links_link_type: typeof enum__posts_v_version_hero_links_link_type;
   enum__posts_v_version_hero_links_link_appearance: typeof enum__posts_v_version_hero_links_link_appearance;
@@ -16616,6 +17521,8 @@ type DatabaseSchema = {
   enum___posts_v_section_v_spacing: typeof enum___posts_v_section_v_spacing;
   enum___posts_v_section_v_stack: typeof enum___posts_v_section_v_stack;
   enum__posts_v_version_hero_type: typeof enum__posts_v_version_hero_type;
+  enum__posts_v_version_hero_visual_type: typeof enum__posts_v_version_hero_visual_type;
+  enum__posts_v_version_hero_shader_origin: typeof enum__posts_v_version_hero_shader_origin;
   enum__posts_v_version_status: typeof enum__posts_v_version_status;
   enum_works_hero_links_link_type: typeof enum_works_hero_links_link_type;
   enum_works_hero_links_link_appearance: typeof enum_works_hero_links_link_appearance;
@@ -16736,6 +17643,8 @@ type DatabaseSchema = {
   enum_works_blocks_media_block_space_mt: typeof enum_works_blocks_media_block_space_mt;
   enum_works_blocks_media_block_space_mb: typeof enum_works_blocks_media_block_space_mb;
   enum_works_hero_type: typeof enum_works_hero_type;
+  enum_works_hero_visual_type: typeof enum_works_hero_visual_type;
+  enum_works_hero_shader_origin: typeof enum_works_hero_shader_origin;
   enum_works_project_status: typeof enum_works_project_status;
   enum_works_status: typeof enum_works_status;
   enum__works_v_version_hero_links_link_type: typeof enum__works_v_version_hero_links_link_type;
@@ -16857,7 +17766,20 @@ type DatabaseSchema = {
   enum__works_v_blocks_media_block_space_mt: typeof enum__works_v_blocks_media_block_space_mt;
   enum__works_v_blocks_media_block_space_mb: typeof enum__works_v_blocks_media_block_space_mb;
   enum__works_v_version_hero_type: typeof enum__works_v_version_hero_type;
+  enum__works_v_version_hero_visual_type: typeof enum__works_v_version_hero_visual_type;
+  enum__works_v_version_hero_shader_origin: typeof enum__works_v_version_hero_shader_origin;
   enum__works_v_version_status: typeof enum__works_v_version_status;
+  enum_inquiries_type: typeof enum_inquiries_type;
+  enum_inquiries_status: typeof enum_inquiries_status;
+  enum_inquiries_budget: typeof enum_inquiries_budget;
+  enum_inquiries_timeline: typeof enum_inquiries_timeline;
+  enum_ask_questions_status: typeof enum_ask_questions_status;
+  enum_ask_questions_outcome: typeof enum_ask_questions_outcome;
+  enum_ask_questions_rating: typeof enum_ask_questions_rating;
+  enum_ask_questions_rating_reason: typeof enum_ask_questions_rating_reason;
+  enum_ask_questions_handoff: typeof enum_ask_questions_handoff;
+  enum_ask_questions_handoff_reason: typeof enum_ask_questions_handoff_reason;
+  enum_ask_questions_retrieval: typeof enum_ask_questions_retrieval;
   enum_streak_looks_effect: typeof enum_streak_looks_effect;
   enum_streak_looks_status: typeof enum_streak_looks_status;
   enum__streak_looks_v_version_effect: typeof enum__streak_looks_v_version_effect;
@@ -17078,6 +18000,11 @@ type DatabaseSchema = {
   media: typeof media;
   categories_breadcrumbs: typeof categories_breadcrumbs;
   categories: typeof categories;
+  inquiries_notes: typeof inquiries_notes;
+  inquiries: typeof inquiries;
+  ask_questions_sources: typeof ask_questions_sources;
+  ask_questions: typeof ask_questions;
+  ask_questions_rels: typeof ask_questions_rels;
   users_sessions: typeof users_sessions;
   users: typeof users;
   streak_looks: typeof streak_looks;
@@ -17116,6 +18043,10 @@ type DatabaseSchema = {
   header_nav_items: typeof header_nav_items;
   header: typeof header;
   header_rels: typeof header_rels;
+  site_info_ask_suggestions: typeof site_info_ask_suggestions;
+  site_info_social_profiles: typeof site_info_social_profiles;
+  site_info: typeof site_info;
+  payload_jobs_stats: typeof payload_jobs_stats;
   relations_pages_hero_links: typeof relations_pages_hero_links;
   relations_pages_transition: typeof relations_pages_transition;
   relations_pages_blocks_feature_heading_offset: typeof relations_pages_blocks_feature_heading_offset;
@@ -17325,6 +18256,11 @@ type DatabaseSchema = {
   relations_media: typeof relations_media;
   relations_categories_breadcrumbs: typeof relations_categories_breadcrumbs;
   relations_categories: typeof relations_categories;
+  relations_inquiries_notes: typeof relations_inquiries_notes;
+  relations_inquiries: typeof relations_inquiries;
+  relations_ask_questions_sources: typeof relations_ask_questions_sources;
+  relations_ask_questions_rels: typeof relations_ask_questions_rels;
+  relations_ask_questions: typeof relations_ask_questions;
   relations_users_sessions: typeof relations_users_sessions;
   relations_users: typeof relations_users;
   relations_streak_looks_texts: typeof relations_streak_looks_texts;
@@ -17363,6 +18299,10 @@ type DatabaseSchema = {
   relations_header_nav_items: typeof relations_header_nav_items;
   relations_header_rels: typeof relations_header_rels;
   relations_header: typeof relations_header;
+  relations_site_info_ask_suggestions: typeof relations_site_info_ask_suggestions;
+  relations_site_info_social_profiles: typeof relations_site_info_social_profiles;
+  relations_site_info: typeof relations_site_info;
+  relations_payload_jobs_stats: typeof relations_payload_jobs_stats;
 };
 
 declare module "@payloadcms/db-vercel-postgres" {

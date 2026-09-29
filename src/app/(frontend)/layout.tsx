@@ -8,20 +8,18 @@ import type React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
 import { Clarity } from '@/components/Clarity'
+import { SiteChrome } from '@/components/SiteChrome/SiteChrome'
 import { Footer } from '@/Footer/Component'
-import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
 import { PostHogProvider } from '@/providers/PostHog'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { cn } from '@/utilities/ui'
 import './globals.css'
 
-import { SiteFrame } from '@/SiteFrame/Component'
-import FrameRestorer from '@/SiteFrame/FrameRestorer'
 import { getServerSideURL } from '@/utilities/getURL'
 
 const ibmPlexSans = IBM_Plex_Sans({
-  weight: ['300', '400', '600', '700'],
+  weight: ['300', '400', '500', '600', '700'],
   subsets: ['latin'],
   variable: '--font-ibm-plex-sans',
 })
@@ -41,15 +39,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="min-h-screen bg-background text-foreground">
         <Providers>
-          <Header />
-          <SiteFrame>{children}</SiteFrame>
+          <SiteChrome />
+          {children}
           <AdminBar
             adminBarProps={{
               preview: isEnabled,
             }}
           />
           <Footer />
-          <FrameRestorer />
         </Providers>
         <Analytics />
         <Clarity />

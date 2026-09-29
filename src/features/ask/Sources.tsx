@@ -1,29 +1,12 @@
 'use client'
 
-import {
-  type Icon,
-  IconArrowRight,
-  IconArticle,
-  IconBriefcase,
-  IconChevronRight,
-  IconFileText,
-} from '@tabler/icons-react'
+import { IconArrowRight, IconChevronRight } from '@tabler/icons-react'
 import type { SourceUrlUIPart } from 'ai'
 import Link from 'next/link'
-import type { CollectionSlug } from 'payload'
 import { useId, useState } from 'react'
+import { glyphForPath } from '@/components/SiteChrome/glyphs'
 import { surfaceForPath } from '@/shared/content/surfaces'
 import { cn } from '@/utilities/ui'
-
-/**
- * A glyph per content surface, so a row says what kind of page it opens
- * before its title is read. Root pages and anything outside a surface take
- * the plain page glyph.
- */
-const SURFACE_GLYPHS: Partial<Record<CollectionSlug, Icon>> = {
-  posts: IconArticle,
-  works: IconBriefcase,
-}
 
 /** Row and header tint: the group's own muted ground, a step toward the ink. */
 const ROW_HOVER = 'hover:bg-foreground/3'
@@ -34,7 +17,8 @@ const ROW_FOCUS = 'outline-none focus-visible:inset-ring-2 focus-visible:inset-r
 /**
  * The pages an answer drew on, as a disclosure group (Apple's inset grouped
  * list): collapsed to one "Sources" row with the count trailing as a value,
- * so the answer stays the thing read first.
+ * so the answer stays the thing read first. A single source starts open: one
+ * row costs less to show than a disclosure costs to open.
  *
  * The chevron sits in the leading lane like a disclosure triangle, pointing
  * right when closed and turning down when open; a trailing chevron would read
@@ -49,7 +33,7 @@ const ROW_FOCUS = 'outline-none focus-visible:inset-ring-2 focus-visible:inset-r
  * line up down the list whatever the titles say.
  */
 export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(sources.length === 1)
   const listId = useId()
 
   return (
@@ -89,7 +73,9 @@ export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
 
 function SourceRow({ source }: { source: SourceUrlUIPart }) {
   const surface = surfaceForPath(source.url)
-  const Glyph = (surface && SURFACE_GLYPHS[surface.collection]) || IconFileText
+  // The dock's mark for the same destination, so a row says what kind of
+  // page it opens before its title is read.
+  const Glyph = glyphForPath(source.url)
 
   return (
     <li className="group/row">

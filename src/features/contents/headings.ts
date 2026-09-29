@@ -25,7 +25,7 @@ export const CONTENTS_MIN_ENTRIES = 3
 const SKIPPED_HEADING = 'form h2, [data-contents-skip] h2, [aria-hidden="true"] h2, h2.sr-only'
 
 /** Clears the fixed header, with air, wherever a jump or a `#hash` load lands. */
-const HEADING_SCROLL_MARGIN = 'calc(var(--header-height) + 1.5rem)'
+const HEADING_SCROLL_MARGIN = 'calc(var(--chrome-top) + 1.5rem)'
 
 const slugify = (text: string) =>
   text

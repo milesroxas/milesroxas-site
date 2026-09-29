@@ -15,6 +15,7 @@ import {
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import { cn } from '@/utilities/ui'
 import { AskTextarea } from './Composer'
+import { ASK_PLACEHOLDER } from './copy'
 import { ASK_HANDOFF_TERMS_FALLBACK, type AskHandoffTerms, type AskUIMessage } from './handoff'
 import { errorText, TranscriptItems } from './messages'
 import { transcriptItemEnter } from './motion'
@@ -32,7 +33,7 @@ type AskWidgetProps = {
   transport?: ChatTransport<AskUIMessage>
   /** Seed the transcript, e.g. for stories or resuming a conversation. */
   initialMessages?: AskUIMessage[]
-  /** Composer placeholder override, e.g. the footer closing band's shorter prompt. */
+  /** Composer placeholder override. */
   placeholder?: string
   /** Site Info's reply promise, for the handoff under a finished answer. */
   terms?: AskHandoffTerms
@@ -41,7 +42,7 @@ type AskWidgetProps = {
 export function AskWidget({
   transport,
   initialMessages,
-  placeholder = 'Ask something about our work, services, or insights…',
+  placeholder = ASK_PLACEHOLDER,
   terms = ASK_HANDOFF_TERMS_FALLBACK,
 }: AskWidgetProps) {
   const {
