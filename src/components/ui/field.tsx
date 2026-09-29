@@ -67,10 +67,12 @@ function FieldGroup({
  * A row of an `inset` group: 44px for touch, 36px from md; a hairline on its
  * top edge from the label lane on (none on the first row); focus and an
  * invalid control draw an inset ring, since the group clips anything outside,
- * and the hairlines on both edges of that row step aside for it.
+ * and the hairlines on both edges of that row step aside for it. The end rows
+ * take the group's corners, so the ring follows its shape.
  */
 const insetRow = [
   'group-data-[variant=inset]/field-group:relative group-data-[variant=inset]/field-group:min-h-11 group-data-[variant=inset]/field-group:gap-3 group-data-[variant=inset]/field-group:px-3 md:group-data-[variant=inset]/field-group:min-h-9',
+  'group-data-[variant=inset]/field-group:first:rounded-t-lg group-data-[variant=inset]/field-group:last:rounded-b-lg',
   'group-data-[variant=inset]/field-group:not-first:before:absolute group-data-[variant=inset]/field-group:not-first:before:top-0 group-data-[variant=inset]/field-group:not-first:before:right-0 group-data-[variant=inset]/field-group:not-first:before:left-3 group-data-[variant=inset]/field-group:not-first:before:h-px group-data-[variant=inset]/field-group:not-first:before:bg-border',
   'group-data-[variant=inset]/field-group:has-[:focus-visible]:inset-ring-2 group-data-[variant=inset]/field-group:has-[:focus-visible]:inset-ring-ring/50',
   'group-data-[variant=inset]/field-group:has-[[aria-invalid=true]]:inset-ring-2 group-data-[variant=inset]/field-group:has-[[aria-invalid=true]]:inset-ring-destructive/45',

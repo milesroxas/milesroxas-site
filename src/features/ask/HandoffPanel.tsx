@@ -1,12 +1,6 @@
 'use client'
 
-import {
-  IconAlertCircle,
-  IconArrowRight,
-  IconArrowUpRight,
-  IconCheck,
-  IconLock,
-} from '@tabler/icons-react'
+import { IconAlertCircle, IconArrowRight, IconArrowUpRight, IconCheck } from '@tabler/icons-react'
 import Link from 'next/link'
 import type React from 'react'
 import { type Ref, useEffect, useId, useRef, useState } from 'react'
@@ -63,6 +57,15 @@ type Panel = typeof OFFER | typeof FORM | typeof SENT
 
 const PANEL_NAME: Record<Panel, string> = { [OFFER]: 'offer', [FORM]: 'form', [SENT]: 'sent' }
 
+/** The element sits wholly inside the transcript's visible area. */
+function inView(element: HTMLElement | null) {
+  const viewport = element?.closest('[data-slot=message-scroller-viewport]')
+  if (!element || !viewport) return false
+  const box = element.getBoundingClientRect()
+  const view = viewport.getBoundingClientRect()
+  return box.top >= view.top && box.bottom <= view.bottom
+}
+
 /** A pointer that can aim: a mouse or trackpad, never a finger. */
 const finePointer = () =>
   typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches
@@ -93,12 +96,14 @@ type HandoffProps = {
  * 1. **Offer.** A line and a chip, at the weight of the quiet row every
  *    finished answer already closed with. The model's reason picks the line
  *    (and, when the reply was only the handoff, the lead the transcript shows
- *    before it); a reply with no reason offers quietly.
+ *    before it, and the offer becomes a card with the filled action); a
+ *    reply with no reason offers quietly.
  * 2. **Form.** The chip opens the same element in place: the surface takes
  *    the transcript's muted ground and grows to a promise, Name and Email in
- *    one inset block that AutoFill fills in a tap, and "Send to Miles".
- *    A visitor who already typed an address lands here directly, with it
- *    filled. What is typed never reaches the model or the Ask log.
+ *    one inset block that AutoFill fills in a tap, then Cancel (back to the
+ *    offer) and "Send to Miles". A visitor who already typed an address lands
+ *    here directly, with it filled. What is typed never reaches the model or
+ *    the Ask log.
  * 3. **Receipt.** Sent, the form becomes its receipt on the same swap: where
  *    the reply goes, the reference, and "Book a call" after the commitment.
  *
@@ -143,13 +148,19 @@ export function Handoff({
       if (headingTo.current === FORM) {
         const name = nameRef.current
         if (name && (lastInputWasKeyboard() || finePointer())) name.focus({ preventScroll: true })
-        // Aligned to its top, not brought "nearest": on a short panel the form
+        // Already in full view (a tall panel), nothing moves: the lead line and
+        // the question stay above the form they travel with. Otherwise it is
+        // aligned to its top, not brought "nearest": on a short panel the form
         // is taller than the transcript, and the scroller's own pin to the end
         // would leave the promise line above the fold, which is the whole
         // reason the visitor is being asked for an address.
-        scrollToMessage(itemId, { align: 'start', behavior: reducedMotion ? 'auto' : 'smooth' })
+        if (!inView(rootRef.current))
+          scrollToMessage(itemId, { align: 'start', behavior: reducedMotion ? 'auto' : 'smooth' })
       }
       if (headingTo.current === SENT) focusForKeyboard(rootRef.current, { preventScroll: true })
+      // Cancelled: keyboard focus goes back to the chip that opened the form.
+      if (headingTo.current === OFFER)
+        focusForKeyboard(rootRef.current?.querySelector('button'), { preventScroll: true })
     })
   }
 
@@ -196,6 +207,7 @@ export function Handoff({
           kind={kind}
           messages={messages}
           nameRef={nameRef}
+          onCancel={() => go(OFFER)}
           onSent={(sent) => {
             setReceipt(sent)
             onSent(sent)
@@ -264,6 +276,7 @@ function HandoffForm({
   kind,
   messages,
   nameRef,
+  onCancel,
   onSent,
   suggestedEmail,
   terms,
@@ -272,6 +285,7 @@ function HandoffForm({
   kind: AskHandoffKind
   messages: AskUIMessage[]
   nameRef: Ref<HTMLInputElement>
+  onCancel: () => void
   onSent: (receipt: AskHandoffReceipt) => void
   suggestedEmail: string | null
   terms: AskHandoffTerms
@@ -331,13 +345,14 @@ function HandoffForm({
             setError(null)
           }}
           onName={setName}
-          statusId={statusId}
+          statusId={error ? statusId : undefined}
         />
       </CardContent>
       <CardContent data-swap="text">
         <SendRow
           disabled={!name.trim() || !email.trim()}
           error={error}
+          onCancel={onCancel}
           sending={sending}
           statusId={statusId}
         />
@@ -373,8 +388,8 @@ function ContactFields({
   nameRef: Ref<HTMLInputElement>
   onEmail: (value: string) => void
   onName: (value: string) => void
-  /** The status line under the block, which describes the address. */
-  statusId: string
+  /** The error under the block, when there is one: it describes the address. */
+  statusId: string | undefined
 }) {
   const nameId = useId()
   const emailId = useId()
@@ -417,35 +432,38 @@ function ContactFields({
   )
 }
 
-/** The one action, and beside it either where the note goes or what stopped it. */
+/**
+ * Cancel and the one action, set to the trailing edge like a sheet's
+ * buttons; what stopped a send leads the row.
+ */
 function SendRow({
   disabled,
   error,
+  onCancel,
   sending,
   statusId,
 }: {
   disabled: boolean
   error: string | null
+  onCancel: () => void
   sending: boolean
   statusId: string
 }) {
   return (
-    <Field orientation="horizontal">
+    <Field className="justify-end" orientation="horizontal">
+      {error ? (
+        <FieldError className="mr-auto" id={statusId}>
+          <IconAlertCircle aria-hidden />
+          {error}
+        </FieldError>
+      ) : null}
+      <Button className="font-normal" onClick={onCancel} size="chat" type="button" variant="ghost">
+        Cancel
+      </Button>
       <Button disabled={disabled || sending} size="chat" type="submit">
         {sending ? <Spinner /> : null}
         Send to Miles
       </Button>
-      {error ? (
-        <FieldError id={statusId}>
-          <IconAlertCircle aria-hidden />
-          {error}
-        </FieldError>
-      ) : (
-        <FieldDescription id={statusId}>
-          <IconLock aria-hidden />
-          Goes to Miles's inbox, never the chat log.
-        </FieldDescription>
-      )}
     </Field>
   )
 }

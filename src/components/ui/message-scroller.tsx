@@ -43,8 +43,10 @@ function MessageScrollerViewport({
       className={cn(
         // Native thin scrollbar (the primitive owns the scrolling element, so
         // ScrollArea cannot wrap it) painted with the same `border` token the
-        // ScrollArea thumb uses, so both scrollers read as one system.
-        'size-full min-h-0 min-w-0 scroll-fade-b scrollbar-thin scrollbar-gutter-stable scrollbar-thumb-border scrollbar-track-transparent overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-thumb-transparent data-autoscrolling:scrollbar-track-transparent data-pending-scroll:invisible',
+        // ScrollArea thumb uses, so both scrollers read as one system. Both
+        // edges fade once there is more to scroll that way, so earlier turns
+        // pass under a header instead of being cut by it.
+        'size-full min-h-0 min-w-0 scroll-fade-y scrollbar-thin scrollbar-gutter-stable scrollbar-thumb-border scrollbar-track-transparent overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-thumb-transparent data-autoscrolling:scrollbar-track-transparent data-pending-scroll:invisible',
         className,
       )}
       {...props}

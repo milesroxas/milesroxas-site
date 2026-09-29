@@ -27,10 +27,12 @@ const ROW_FOCUS = 'outline-none focus-visible:inset-ring-2 focus-visible:inset-r
  * as the FAQ and the stepped form, and goes `inert` while closed so its links
  * leave the tab order (and are never prefetched unseen).
  *
- * Rows sit on inset hairlines that start at the title lane; a hovered or
- * focused row hides the hairlines on both of its edges so the tint reads as
- * one shape. Every lane is a fixed-width slot, so glyphs, titles and arrows
- * line up down the list whatever the titles say.
+ * The rows are one raised white group inside the muted well, split by
+ * inset hairlines that start at the title lane; a hovered or focused row
+ * hides the hairlines on both of its edges so the tint reads as one shape.
+ * Every lane is a fixed-width slot, so glyphs, titles and arrows line up
+ * down the list whatever the titles say. A title wraps to a second line
+ * before it truncates.
  */
 export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
   const [open, setOpen] = useState(sources.length === 1)
@@ -60,7 +62,7 @@ export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
 
       <div className="disclosure-body" data-open={open || undefined} id={listId} inert={!open}>
         <div>
-          <ul>
+          <ul className="mx-1 mb-1 overflow-hidden rounded-lg bg-popover shadow-xs ring-1 ring-foreground/6">
             {sources.map((source) => (
               <SourceRow key={source.sourceId} source={source} />
             ))}
@@ -81,27 +83,28 @@ function SourceRow({ source }: { source: SourceUrlUIPart }) {
     <li className="group/row">
       <Link
         className={cn(
-          'group/source pressable pressable-subtle relative flex min-h-12 items-center gap-2.5 px-3 group-last/row:rounded-b-xl',
+          'group/source pressable pressable-subtle relative flex min-h-12 items-center gap-2.5 px-2.5 py-1.5',
           ROW_HOVER,
           ROW_FOCUS,
-          // The inset hairline on this row's top edge, and the rules that
-          // hide it beside a tinted neighbor: this row, the row above it, or
-          // the disclosure header above the first row.
-          'before:absolute before:top-0 before:right-0 before:left-12.5 before:h-px before:bg-border',
+          // The inset hairline between rows (none above the first, which the
+          // group's own edge closes), hidden beside a tinted neighbor: this
+          // row or the row above it.
+          'before:absolute before:top-0 before:right-0 before:left-12 before:h-px before:bg-border group-first/row:before:hidden',
           'hover:before:opacity-0 focus-visible:before:opacity-0',
           '[li:hover+li>&]:before:opacity-0 [li:has(:focus-visible)+li>&]:before:opacity-0',
-          '[button:hover+div_li:first-child>&]:before:opacity-0',
         )}
         href={source.url}
       >
         <span
           aria-hidden
-          className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-background shadow-xs ring-1 ring-foreground/6"
+          className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted ring-1 ring-foreground/6"
         >
           <Glyph className="size-3.5 text-primary" />
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-base/6 md:text-sm/5">{source.title ?? source.url}</span>
+          <span className="line-clamp-2 text-base/6 md:text-sm/5">
+            {source.title ?? source.url}
+          </span>
           {surface ? (
             <span className="truncate text-xs/4 text-muted-foreground">{surface.title}</span>
           ) : null}

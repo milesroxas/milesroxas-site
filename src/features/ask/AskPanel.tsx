@@ -576,6 +576,10 @@ function AskBody({
           <MessageScrollerViewport className="ask-transcript" data-lenis-prevent>
             <MessageScrollerContent className="gap-4.5 px-5.5 pt-4.5 pb-5 md:px-6">
               <TranscriptItems
+                // The panel and the sheet grow up out of the field, so the
+                // transcript follows the bottom there and a short reply never
+                // holds a gap under it.
+                anchorQuestions={false}
                 feedback={feedback}
                 messages={messages}
                 notice={!sheet}

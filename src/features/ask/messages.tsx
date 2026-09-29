@@ -71,11 +71,19 @@ export function TranscriptItems({
   onSent,
   feedback,
   notice = true,
+  anchorQuestions = true,
 }: {
   messages: AskUIMessage[]
   status: ChatStatus
   /** Open with the AI notice. Off where the surface states it under its field (the phone sheet). */
   notice?: boolean
+  /**
+   * Pin each new question to the top of the scroller, as a page-length
+   * transcript reads. Off where the transcript grows up out of its field
+   * (the dock's panel and sheet): it follows the bottom, as Messages does,
+   * so a short reply never leaves a reserved gap under it.
+   */
+  anchorQuestions?: boolean
   /** Site Info's promise, for the quiet offer that carries no resolved handoff of its own. */
   terms: AskHandoffTerms
   /** The handoff the visitor has sent in this conversation, if any. */
@@ -106,6 +114,7 @@ export function TranscriptItems({
       {visible.map((message, index) => (
         <TranscriptTurn
           closes={settled && !sent && index === visible.length - 1}
+          anchor={anchorQuestions}
           key={message.id}
           live={status === 'streaming' && index === visible.length - 1}
           message={message}
@@ -144,12 +153,15 @@ export function TranscriptItems({
 function TranscriptTurn({
   message,
   previous,
+  anchor,
   live,
   closes,
   ...handoffProps
 }: {
   message: AskUIMessage
   previous: AskUIMessage | undefined
+  /** A question pins itself to the scroller's top as it lands. */
+  anchor: boolean
   /** Still receiving deltas. */
   live: boolean
   /** The settled reply that ends the transcript, with nothing sent yet. */
@@ -172,7 +184,10 @@ function TranscriptTurn({
   return (
     <>
       {text !== '' && (
-        <MessageScrollerItem messageId={message.id} scrollAnchor={message.role === 'user'}>
+        <MessageScrollerItem
+          messageId={message.id}
+          scrollAnchor={anchor && message.role === 'user'}
+        >
           <AskMessage message={message} streaming={live} />
         </MessageScrollerItem>
       )}
