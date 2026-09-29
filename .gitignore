@@ -52,6 +52,7 @@ scripts/snapshots/
 # Impeccable — review screenshots, live-mode session state, per-developer config.
 # Keep surfaces/, mocks/, build/ and config.json tracked: they carry approvals.
 .impeccable/review/
+.impeccable/questions/
 .impeccable/live/sessions/
 .impeccable/live/inject-journal.json
 .impeccable/config.local.json

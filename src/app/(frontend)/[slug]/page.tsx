@@ -29,8 +29,9 @@ export async function generateStaticParams() {
   })
 
   const params = pages.docs
+    // Home renders at `/`, and Contact has its own route (contact/page.tsx).
     ?.filter((doc) => {
-      return doc.slug !== 'home'
+      return doc.slug !== 'home' && doc.slug !== 'contact'
     })
     .map(({ slug }) => {
       return { slug }

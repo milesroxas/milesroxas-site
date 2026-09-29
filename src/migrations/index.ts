@@ -14,6 +14,7 @@ import * as migration_20260927_173548_sections_and_run from './20260927_173548_s
 import * as migration_20260927_175225_opening_intro_contents from './20260927_175225_opening_intro_contents';
 import * as migration_20260927_180824_ask from './20260927_180824_ask';
 import * as migration_20260929_013625_ask_suggestions from './20260929_013625_ask_suggestions';
+import * as migration_20260929_162031_contact_page from './20260929_162031_contact_page';
 
 export const migrations = [
   {
@@ -94,6 +95,11 @@ export const migrations = [
   {
     up: migration_20260929_013625_ask_suggestions.up,
     down: migration_20260929_013625_ask_suggestions.down,
-    name: '20260929_013625_ask_suggestions'
+    name: '20260929_013625_ask_suggestions',
+  },
+  {
+    up: migration_20260929_162031_contact_page.up,
+    down: migration_20260929_162031_contact_page.down,
+    name: '20260929_162031_contact_page'
   },
 ];

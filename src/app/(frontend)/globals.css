@@ -2273,3 +2273,33 @@
     translate: 0 0;
   }
 }
+
+/* Contact: the sent mark draws itself once as the receipt lands, ring first
+   (from twelve o'clock), then the check. Rare, so it earns the beat; reduced
+   motion shows it drawn. */
+.contact-sent-mark circle {
+  transform: rotate(-90deg);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.contact-sent-mark :is(circle, path) {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .contact-sent-mark circle {
+    animation: contact-sent-draw 420ms var(--ease-out-quint) 120ms both;
+  }
+
+  .contact-sent-mark path {
+    animation: contact-sent-draw 260ms var(--ease-out-quint) 440ms both;
+  }
+}
+
+@keyframes contact-sent-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}

@@ -87,7 +87,7 @@ export async function sendInquiryReceivedEmail({
 }) {
   const lines = [
     `Hi ${senderName},`,
-    `Thanks for getting in touch. We have your note and you will hear back ${responseTime}.`,
+    `Thanks for getting in touch. Miles has your message and will reply ${responseTime}.`,
     ...(scheduleUrl ? [`If you would rather talk sooner, schedule a call: ${scheduleUrl}`] : []),
     `Your reference is ${reference}.`,
   ]
@@ -102,7 +102,7 @@ export async function sendInquiryReceivedEmail({
   )
   return payload.sendEmail({
     to,
-    subject: `We have your note (${reference})`,
+    subject: `Miles has your message (${reference})`,
     html,
     text: lines.join('\n\n'),
   })

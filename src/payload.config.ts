@@ -18,6 +18,7 @@ import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { Works } from './collections/Works'
 import { askEndpoints } from './endpoints/ask'
+import { ContactPage } from './globals/ContactPage'
 import { SiteInfo } from './globals/SiteInfo'
 import { Header } from './Header/config'
 import { askQuestionRetentionTask } from './jobs/askQuestionRetention'
@@ -110,7 +111,7 @@ export default buildConfig({
   collections: [Pages, Posts, Works, Media, Categories, Inquiries, AskQuestions, Users],
   cors: [getServerSideURL()].filter(Boolean),
   endpoints: askEndpoints,
-  globals: [Header, SiteInfo],
+  globals: [Header, SiteInfo, ContactPage],
   plugins: [
     ...plugins,
     vercelBlobStorage({

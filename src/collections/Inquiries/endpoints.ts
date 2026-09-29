@@ -83,12 +83,12 @@ const submit: Endpoint = {
 
       const name = trimmed(body?.name, MAX_NAME_LENGTH)
       if (!name) {
-        return json({ error: 'Tell us who you are.' }, 400)
+        return json({ error: 'Enter your name.' }, 400)
       }
 
       const message = trimmed(body?.message, INQUIRY_MESSAGE_MAX_LENGTH)
       if (!message) {
-        return json({ error: 'Add a line or two about what you need.' }, 400)
+        return json({ error: 'Add a message for Miles.' }, 400)
       }
 
       const type: InquiryType = oneOf(INQUIRY_TYPES, body?.type) ?? 'general'
@@ -161,7 +161,7 @@ const submit: Endpoint = {
       return json({ reference: created.reference, submittedAt: created.submittedAt })
     } catch (err) {
       req.payload.logger.error({ msg: 'Inquiry submission failed', err })
-      return json({ error: 'Something went wrong on our end. Try again in a moment.' }, 500)
+      return json({ error: 'Something went wrong sending that. Try again in a moment.' }, 500)
     }
   },
 }

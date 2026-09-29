@@ -120,11 +120,13 @@ export interface Config {
   globals: {
     header: Header;
     'site-info': SiteInfo;
+    'contact-page': ContactPage;
     'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     'site-info': SiteInfoSelect<false> | SiteInfoSelect<true>;
+    'contact-page': ContactPageSelect<false> | ContactPageSelect<true>;
     'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
@@ -4275,6 +4277,49 @@ export interface SiteInfo {
   createdAt?: string | null;
 }
 /**
+ * The copy on /contact. Reply time and email address live in Site Info.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-page".
+ */
+export interface ContactPage {
+  id: number;
+  heading: string;
+  /**
+   * One or two sentences under the heading: what to write about.
+   */
+  lead?: string | null;
+  /**
+   * The prompt inside the empty message field.
+   */
+  messagePlaceholder?: string | null;
+  submitLabel?: string | null;
+  /**
+   * Beside the send button. {responseTime} fills in.
+   */
+  submitNote?: string | null;
+  /**
+   * Use {name}, {email} and {responseTime} to fill in the sender and Site Info’s reply time.
+   */
+  sentHeading?: string | null;
+  /**
+   * Use {name}, {email} and {responseTime} to fill in the sender and Site Info’s reply time.
+   */
+  sentBody?: string | null;
+  meta?: {
+    /**
+     * Browser tab and search title. Defaults to "Contact".
+     */
+    title?: string | null;
+    /**
+     * Search and share description. Defaults to the lead.
+     */
+    description?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs-stats".
  */
@@ -4360,6 +4405,28 @@ export interface SiteInfoSelect<T extends boolean = true> {
         id?: T;
       };
   llmsNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-page_select".
+ */
+export interface ContactPageSelect<T extends boolean = true> {
+  heading?: T;
+  lead?: T;
+  messagePlaceholder?: T;
+  submitLabel?: T;
+  submitNote?: T;
+  sentHeading?: T;
+  sentBody?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
