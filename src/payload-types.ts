@@ -64,6 +64,7 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    'payload-mcp-api-keys': PayloadMcpApiKeyAuthOperations;
   };
   blocks: {};
   collections: {
@@ -80,6 +81,7 @@ export interface Config {
     forms: Form;
     'form-submissions': FormSubmission;
     search: Search;
+    'payload-mcp-api-keys': PayloadMcpApiKey;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-folders': FolderInterface;
@@ -106,6 +108,7 @@ export interface Config {
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
+    'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
@@ -133,7 +136,7 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: User | PayloadMcpApiKey;
   jobs: {
     tasks: {
       askQuestionRetention: TaskAskQuestionRetention;
@@ -147,6 +150,24 @@ export interface Config {
   };
 }
 export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface PayloadMcpApiKeyAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -2504,6 +2525,126 @@ export interface Search {
   createdAt: string;
 }
 /**
+ * API keys control which collections, resources, tools, and prompts MCP clients can access
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-mcp-api-keys".
+ */
+export interface PayloadMcpApiKey {
+  id: number;
+  /**
+   * The user that the API key is associated with.
+   */
+  user: number | User;
+  /**
+   * A useful label for the API key.
+   */
+  label?: string | null;
+  /**
+   * The purpose of the API key.
+   */
+  description?: string | null;
+  pages?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  works?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  posts?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  categories?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  forms?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  redirects?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  askQuestions?: {
+    find?: boolean | null;
+  };
+  formSubmissions?: {
+    find?: boolean | null;
+  };
+  inquiries?: {
+    find?: boolean | null;
+  };
+  streakLooks?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  media?: {
+    find?: boolean | null;
+  };
+  contactPage?: {
+    find?: boolean | null;
+    update?: boolean | null;
+  };
+  header?: {
+    find?: boolean | null;
+    update?: boolean | null;
+  };
+  siteInfo?: {
+    find?: boolean | null;
+    update?: boolean | null;
+  };
+  'payload-mcp-tool'?: {
+    /**
+     * Where the published site talks about a topic, across Pages, Works, Posts and Site Info, judged on the server (a vector search over the site, then one Jev check per passage), so no page reaches you. Answers with passages best first: collection, document id, title, url, section heading, a snippet, and `focus`: how much of the passage is about the topic (`subject`, `part` or `passing`). Published copy only, protected works never included: before editing, locateBlock the document by id with the user's words. Send the topic as the user put it.
+     */
+    findContent?: boolean | null;
+    /**
+     * One row per block of a document, nested blocks included: path, id, blockType, blockName, a child count, and the first 200 characters of its copy. Read this instead of the whole document to find the block an edit concerns, then getBlock or patchBlock it by id. Returns the latest draft.
+     */
+    outlineDocument?: boolean | null;
+    /**
+     * Which block of a document an editing instruction is about, judged on the server from the outline (one Jev request, no client tokens for the page). Answers with a verdict (`found`, `unsure`, `none`), the most likely blocks best first with a probability each (path, id, blockType, blockName, the start of the copy), and what the judgment cost. On `found`, getBlock or patchBlock the first candidate by id; on `unsure`, pick from the candidates or read outlineDocument; on `none`, the document has no such block. Protected works are never sent to the judge: use outlineDocument for those. Send the instruction in the user's words.
+     */
+    locateBlock?: boolean | null;
+    /**
+     * One block of a document by its id (from outlineDocument or locateBlock), with its path. The block comes back exactly as stored, nested blocks included, so it can be edited and sent to patchBlock. Returns the latest draft.
+     */
+    getBlock?: boolean | null;
+    /**
+     * Change one block of a document by its id and save. `patch` holds only the fields to change; each replaces the stored field whole, so send a complete array (rows with their ids) when changing one row of it. `id` and `blockType` cannot change. Saves a draft unless `draft` is false, which publishes. Returns the saved block. A refused save names each problem by path: fix those and resend the same patch.
+     */
+    patchBlock?: boolean | null;
+  };
+  /**
+   * Allow `pnpm cms:upload` with this key.
+   */
+  uploadMedia?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
+  hasAPIKey?: boolean | null;
+  collection: 'payload-mcp-api-keys';
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -2681,14 +2822,23 @@ export interface PayloadLockedDocument {
         value: number | Search;
       } | null)
     | ({
+        relationTo: 'payload-mcp-api-keys';
+        value: number | PayloadMcpApiKey;
+      } | null)
+    | ({
         relationTo: 'payload-folders';
         value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'payload-mcp-api-keys';
+        value: number | PayloadMcpApiKey;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -2698,10 +2848,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'payload-mcp-api-keys';
+        value: number | PayloadMcpApiKey;
+      };
   key?: string | null;
   value?:
     | {
@@ -4084,6 +4239,125 @@ export interface SearchSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-mcp-api-keys_select".
+ */
+export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
+  user?: T;
+  label?: T;
+  description?: T;
+  pages?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  works?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  posts?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  categories?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  forms?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  redirects?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  askQuestions?:
+    | T
+    | {
+        find?: T;
+      };
+  formSubmissions?:
+    | T
+    | {
+        find?: T;
+      };
+  inquiries?:
+    | T
+    | {
+        find?: T;
+      };
+  streakLooks?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  media?:
+    | T
+    | {
+        find?: T;
+      };
+  contactPage?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  header?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  siteInfo?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  'payload-mcp-tool'?:
+    | T
+    | {
+        findContent?: T;
+        outlineDocument?: T;
+        locateBlock?: T;
+        getBlock?: T;
+        patchBlock?: T;
+      };
+  uploadMedia?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
+  hasAPIKey?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -4483,10 +4757,15 @@ export interface TaskSchedulePublish {
           value: number | Work;
         } | null);
     global?: string | null;
-    user?: {
-      relationTo: 'users';
-      value: number | User;
-    } | null;
+    user?:
+      | ({
+          relationTo: 'users';
+          value: number | User;
+        } | null)
+      | ({
+          relationTo: 'payload-mcp-api-keys';
+          value: number | PayloadMcpApiKey;
+        } | null);
   };
   output?: unknown;
 }

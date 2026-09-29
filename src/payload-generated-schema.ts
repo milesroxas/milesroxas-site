@@ -12305,6 +12305,96 @@ export const search_rels = pgTable(
   ],
 );
 
+export const payload_mcp_api_keys = pgTable(
+  "payload_mcp_api_keys",
+  {
+    id: serial("id").primaryKey(),
+    user: integer("user_id")
+      .notNull()
+      .references(() => users.id, {
+        onDelete: "set null",
+      }),
+    label: varchar("label"),
+    description: varchar("description"),
+    pages_find: boolean("pages_find").default(false),
+    pages_create: boolean("pages_create").default(false),
+    pages_update: boolean("pages_update").default(false),
+    pages_delete: boolean("pages_delete").default(false),
+    works_find: boolean("works_find").default(false),
+    works_create: boolean("works_create").default(false),
+    works_update: boolean("works_update").default(false),
+    works_delete: boolean("works_delete").default(false),
+    posts_find: boolean("posts_find").default(false),
+    posts_create: boolean("posts_create").default(false),
+    posts_update: boolean("posts_update").default(false),
+    posts_delete: boolean("posts_delete").default(false),
+    categories_find: boolean("categories_find").default(false),
+    categories_create: boolean("categories_create").default(false),
+    categories_update: boolean("categories_update").default(false),
+    categories_delete: boolean("categories_delete").default(false),
+    forms_find: boolean("forms_find").default(false),
+    forms_create: boolean("forms_create").default(false),
+    forms_update: boolean("forms_update").default(false),
+    forms_delete: boolean("forms_delete").default(false),
+    redirects_find: boolean("redirects_find").default(false),
+    redirects_create: boolean("redirects_create").default(false),
+    redirects_update: boolean("redirects_update").default(false),
+    redirects_delete: boolean("redirects_delete").default(false),
+    askQuestions_find: boolean("ask_questions_find").default(false),
+    formSubmissions_find: boolean("form_submissions_find").default(false),
+    inquiries_find: boolean("inquiries_find").default(false),
+    streakLooks_find: boolean("streak_looks_find").default(false),
+    streakLooks_create: boolean("streak_looks_create").default(false),
+    streakLooks_update: boolean("streak_looks_update").default(false),
+    streakLooks_delete: boolean("streak_looks_delete").default(false),
+    media_find: boolean("media_find").default(false),
+    contactPage_find: boolean("contact_page_find").default(false),
+    contactPage_update: boolean("contact_page_update").default(false),
+    header_find: boolean("header_find").default(false),
+    header_update: boolean("header_update").default(false),
+    siteInfo_find: boolean("site_info_find").default(false),
+    siteInfo_update: boolean("site_info_update").default(false),
+    "payload-mcp-tool_findContent": boolean(
+      "payload_mcp_tool_find_content",
+    ).default(false),
+    "payload-mcp-tool_outlineDocument": boolean(
+      "payload_mcp_tool_outline_document",
+    ).default(false),
+    "payload-mcp-tool_locateBlock": boolean(
+      "payload_mcp_tool_locate_block",
+    ).default(false),
+    "payload-mcp-tool_getBlock": boolean("payload_mcp_tool_get_block").default(
+      false,
+    ),
+    "payload-mcp-tool_patchBlock": boolean(
+      "payload_mcp_tool_patch_block",
+    ).default(false),
+    uploadMedia: boolean("upload_media").default(false),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    enableAPIKey: boolean("enable_a_p_i_key"),
+    apiKey: varchar("api_key"),
+    apiKeyIndex: varchar("api_key_index"),
+  },
+  (columns) => [
+    index("payload_mcp_api_keys_user_idx").on(columns.user),
+    index("payload_mcp_api_keys_updated_at_idx").on(columns.updatedAt),
+    index("payload_mcp_api_keys_created_at_idx").on(columns.createdAt),
+  ],
+);
+
 export const payload_kv = pgTable(
   "payload_kv",
   {
@@ -12499,6 +12589,7 @@ export const payload_locked_documents_rels = pgTable(
     formsID: integer("forms_id"),
     "form-submissionsID": integer("form_submissions_id"),
     searchID: integer("search_id"),
+    "payload-mcp-api-keysID": integer("payload_mcp_api_keys_id"),
     "payload-foldersID": integer("payload_folders_id"),
   },
   (columns) => [
@@ -12530,6 +12621,9 @@ export const payload_locked_documents_rels = pgTable(
       columns["form-submissionsID"],
     ),
     index("payload_locked_documents_rels_search_id_idx").on(columns.searchID),
+    index("payload_locked_documents_rels_payload_mcp_api_keys_id_idx").on(
+      columns["payload-mcp-api-keysID"],
+    ),
     index("payload_locked_documents_rels_payload_folders_id_idx").on(
       columns["payload-foldersID"],
     ),
@@ -12604,6 +12698,11 @@ export const payload_locked_documents_rels = pgTable(
       name: "payload_locked_documents_rels_search_fk",
     }).onDelete("cascade"),
     foreignKey({
+      columns: [columns["payload-mcp-api-keysID"]],
+      foreignColumns: [payload_mcp_api_keys.id],
+      name: "payload_locked_documents_rels_payload_mcp_api_keys_fk",
+    }).onDelete("cascade"),
+    foreignKey({
       columns: [columns["payload-foldersID"]],
       foreignColumns: [payload_folders.id],
       name: "payload_locked_documents_rels_payload_folders_fk",
@@ -12647,12 +12746,16 @@ export const payload_preferences_rels = pgTable(
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
     usersID: integer("users_id"),
+    "payload-mcp-api-keysID": integer("payload_mcp_api_keys_id"),
   },
   (columns) => [
     index("payload_preferences_rels_order_idx").on(columns.order),
     index("payload_preferences_rels_parent_idx").on(columns.parent),
     index("payload_preferences_rels_path_idx").on(columns.path),
     index("payload_preferences_rels_users_id_idx").on(columns.usersID),
+    index("payload_preferences_rels_payload_mcp_api_keys_id_idx").on(
+      columns["payload-mcp-api-keysID"],
+    ),
     foreignKey({
       columns: [columns["parent"]],
       foreignColumns: [payload_preferences.id],
@@ -12662,6 +12765,11 @@ export const payload_preferences_rels = pgTable(
       columns: [columns["usersID"]],
       foreignColumns: [users.id],
       name: "payload_preferences_rels_users_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["payload-mcp-api-keysID"]],
+      foreignColumns: [payload_mcp_api_keys.id],
+      name: "payload_preferences_rels_payload_mcp_api_keys_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -12822,6 +12930,39 @@ export const site_info = pgTable("site_info", {
   address_postalCode: varchar("address_postal_code"),
   address_country: varchar("address_country"),
   llmsNotes: varchar("llms_notes"),
+  updatedAt: timestamp("updated_at", {
+    mode: "string",
+    withTimezone: true,
+    precision: 3,
+  }),
+  createdAt: timestamp("created_at", {
+    mode: "string",
+    withTimezone: true,
+    precision: 3,
+  }),
+});
+
+export const contact_page = pgTable("contact_page", {
+  id: serial("id").primaryKey(),
+  heading: varchar("heading")
+    .notNull()
+    .default("Tell Miles what you’re working on."),
+  lead: varchar("lead").default(
+    "A role, a project, or a question about the work. A few lines is plenty.",
+  ),
+  messagePlaceholder: varchar("message_placeholder").default(
+    "What you’re hiring for or building, and where Miles fits in.",
+  ),
+  submitLabel: varchar("submit_label").default("Send to Miles"),
+  submitNote: varchar("submit_note").default("Miles replies {responseTime}."),
+  sentHeading: varchar("sent_heading").default(
+    "Thanks, {name}. Your message is with Miles.",
+  ),
+  sentBody: varchar("sent_body").default(
+    "He’ll reply to {email} {responseTime}. A confirmation is on its way to your inbox.",
+  ),
+  meta_title: varchar("meta_title"),
+  meta_description: varchar("meta_description"),
   updatedAt: timestamp("updated_at", {
     mode: "string",
     withTimezone: true,
@@ -16901,6 +17042,16 @@ export const relations_search = relations(search, ({ one, many }) => ({
     relationName: "_rels",
   }),
 }));
+export const relations_payload_mcp_api_keys = relations(
+  payload_mcp_api_keys,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [payload_mcp_api_keys.user],
+      references: [users.id],
+      relationName: "user",
+    }),
+  }),
+);
 export const relations_payload_kv = relations(payload_kv, () => ({}));
 export const relations_payload_jobs_log = relations(
   payload_jobs_log,
@@ -17013,6 +17164,11 @@ export const relations_payload_locked_documents_rels = relations(
       references: [search.id],
       relationName: "search",
     }),
+    "payload-mcp-api-keysID": one(payload_mcp_api_keys, {
+      fields: [payload_locked_documents_rels["payload-mcp-api-keysID"]],
+      references: [payload_mcp_api_keys.id],
+      relationName: "payload-mcp-api-keys",
+    }),
     "payload-foldersID": one(payload_folders, {
       fields: [payload_locked_documents_rels["payload-foldersID"]],
       references: [payload_folders.id],
@@ -17040,6 +17196,11 @@ export const relations_payload_preferences_rels = relations(
       fields: [payload_preferences_rels.usersID],
       references: [users.id],
       relationName: "users",
+    }),
+    "payload-mcp-api-keysID": one(payload_mcp_api_keys, {
+      fields: [payload_preferences_rels["payload-mcp-api-keysID"]],
+      references: [payload_mcp_api_keys.id],
+      relationName: "payload-mcp-api-keys",
     }),
   }),
 );
@@ -17118,6 +17279,7 @@ export const relations_site_info = relations(site_info, ({ many }) => ({
     relationName: "socialProfiles",
   }),
 }));
+export const relations_contact_page = relations(contact_page, () => ({}));
 export const relations_payload_jobs_stats = relations(
   payload_jobs_stats,
   () => ({}),
@@ -18030,6 +18192,7 @@ type DatabaseSchema = {
   search_categories: typeof search_categories;
   search: typeof search;
   search_rels: typeof search_rels;
+  payload_mcp_api_keys: typeof payload_mcp_api_keys;
   payload_kv: typeof payload_kv;
   payload_jobs_log: typeof payload_jobs_log;
   payload_jobs: typeof payload_jobs;
@@ -18046,6 +18209,7 @@ type DatabaseSchema = {
   site_info_ask_suggestions: typeof site_info_ask_suggestions;
   site_info_social_profiles: typeof site_info_social_profiles;
   site_info: typeof site_info;
+  contact_page: typeof contact_page;
   payload_jobs_stats: typeof payload_jobs_stats;
   relations_pages_hero_links: typeof relations_pages_hero_links;
   relations_pages_transition: typeof relations_pages_transition;
@@ -18286,6 +18450,7 @@ type DatabaseSchema = {
   relations_search_categories: typeof relations_search_categories;
   relations_search_rels: typeof relations_search_rels;
   relations_search: typeof relations_search;
+  relations_payload_mcp_api_keys: typeof relations_payload_mcp_api_keys;
   relations_payload_kv: typeof relations_payload_kv;
   relations_payload_jobs_log: typeof relations_payload_jobs_log;
   relations_payload_jobs: typeof relations_payload_jobs;
@@ -18302,6 +18467,7 @@ type DatabaseSchema = {
   relations_site_info_ask_suggestions: typeof relations_site_info_ask_suggestions;
   relations_site_info_social_profiles: typeof relations_site_info_social_profiles;
   relations_site_info: typeof relations_site_info;
+  relations_contact_page: typeof relations_contact_page;
   relations_payload_jobs_stats: typeof relations_payload_jobs_stats;
 };
 

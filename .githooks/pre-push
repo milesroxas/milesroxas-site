@@ -53,6 +53,10 @@ SCHEMA_RES=(
   '^src/globals/.*\.ts$'
   '^src/plugins/streak-studio/collections\.ts$'
   '^src/features/ask/schema\.ts$'
+  # MCP API-keys collection: one capability column per collection, global
+  # and site tool offered in mcp.ts (docs/mcp.md).
+  '^src/plugins/mcp\.ts$'
+  '^src/plugins/mcp-tools/index\.ts$'
 )
 # A migration was added if a numbered migration file (not index.ts) is added.
 MIGRATION_RE='^src/migrations/[0-9].*\.(ts|json)$'

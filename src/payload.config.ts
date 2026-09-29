@@ -17,6 +17,7 @@ import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { Works } from './collections/Works'
+import { agentMediaEndpoint } from './endpoints/agentMedia'
 import { askEndpoints } from './endpoints/ask'
 import { ContactPage } from './globals/ContactPage'
 import { SiteInfo } from './globals/SiteInfo'
@@ -110,7 +111,8 @@ export default buildConfig({
   }),
   collections: [Pages, Posts, Works, Media, Categories, Inquiries, AskQuestions, Users],
   cors: [getServerSideURL()].filter(Boolean),
-  endpoints: askEndpoints,
+  // `agent/media`: an MCP key's image upload (docs/mcp.md).
+  endpoints: [...askEndpoints, agentMediaEndpoint],
   globals: [Header, SiteInfo, ContactPage],
   plugins: [
     ...plugins,
@@ -133,7 +135,8 @@ export default buildConfig({
   jobs: {
     access: {
       run: ({ req }: { req: PayloadRequest }): boolean => {
-        if (req.user) return true
+        // Team members only: an MCP API key authenticates as `req.user` too.
+        if (req.user?.collection === 'users') return true
 
         // Vercel Cron (vercel.json) sends the secret; without one set, nothing
         // anonymous may run jobs.

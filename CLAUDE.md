@@ -87,6 +87,8 @@ Storybook conventions:
 - Layout blocks are in `src/blocks`.
 - Hero configs/components are in `src/heros`.
 - Site chrome (top bar, dock, Ask panel) is in `src/components/SiteChrome` and `src/features/ask/AskPanel.tsx`; the dock's tabs come from the Header global, Ask's switch and suggested questions from Site Info. Chrome/transition state is in `src/stores/chromeStore.ts`.
+- The agent authoring MCP server (`milesroxas-cms`, `/api/mcp`) is configured in `src/plugins/mcp.ts`, its site tools in `src/plugins/mcp-tools/`. Human docs: `docs/mcp.md`. A new collection or global is not exposed until it is listed there.
+- Access rule: MCP API keys authenticate as `req.user` over REST too. Team-only access uses the `authenticated` helper (`user.collection === 'users'`) or `authenticatedOr(where)`, never `Boolean(req.user)`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

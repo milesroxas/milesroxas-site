@@ -45,6 +45,10 @@ import { InquiriesDashboard as InquiriesDashboard_ef92ef0a0367c0619848229c330ca2
 import { InquiryActions as InquiryActions_b2c2cebae1858c3ee8d4e6a6dd6abc0c } from '@/collections/Inquiries/components/InquiryActions'
 import { BlocksDrawerTabs as BlocksDrawerTabs_382fdb41e52232ddd723ecac128689ab } from '@/components/admin/BlocksDrawerTabs'
 import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
+import {
+  CapabilitiesToolbar as CapabilitiesToolbar_1ba37f1a47d78984fe73dea23b65dbc9,
+  SectionToggleAll as SectionToggleAll_1ba37f1a47d78984fe73dea23b65dbc9,
+} from '@/components/McpCapabilityControls'
 import { RebuildIndexPanel as RebuildIndexPanel_2fbb0093563e2d7bb244051223c34ed2 } from '@/features/ask/admin/RebuildIndexPanel'
 import { UsagePanel as UsagePanel_8416b95f0a2679127501c530bbbd092d } from '@/features/ask/admin/UsagePanel'
 import { TextStyleFeatureClient as TextStyleFeatureClient_e7b913e416ceba4e2967f6c2d57f66da } from '@/fields/lexical/textStyle/feature.client'
@@ -128,6 +132,10 @@ export const importMap = {
     PublishButton_5a35448d00732a2cb070b7da7922d784,
   '@payloadcms/plugin-search/client#LinkToDoc': LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   '@payloadcms/plugin-search/client#ReindexButton': ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
+  '@/components/McpCapabilityControls#CapabilitiesToolbar':
+    CapabilitiesToolbar_1ba37f1a47d78984fe73dea23b65dbc9,
+  '@/components/McpCapabilityControls#SectionToggleAll':
+    SectionToggleAll_1ba37f1a47d78984fe73dea23b65dbc9,
   '@payloadcms/next/client#FolderTypeField': FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   '@/Header/RowLabel#RowLabel': RowLabel_ec255a65fa6fa8d1faeb09cf35284224,
   '@/features/ask/admin/RebuildIndexPanel#RebuildIndexPanel':

@@ -1,0 +1,107 @@
+diff --git a/dist/mcp/createRequest.js b/dist/mcp/createRequest.js
+index cfbf3f0ddcfb6d310f70fd4d70553bc174d63488..345d55bb0438f0cd4cc923d89eeb5d0838af2bbd 100644
+--- a/dist/mcp/createRequest.js
++++ b/dist/mcp/createRequest.js
+@@ -3,9 +3,10 @@ export const createRequestFromPayloadRequest = (req)=>{
+     if (!req.url) {
+         throw new AuthenticationError();
+     }
++    const noBody = req.method === 'GET' || req.method === 'HEAD';
+     return new Request(req.url, {
+-        body: req.body,
+-        duplex: 'half',
++        body: noBody ? undefined : req.body,
++        duplex: noBody ? undefined : 'half',
+         headers: req.headers,
+         method: req.method
+     });
+diff --git a/dist/mcp/tools/resource/delete.js b/dist/mcp/tools/resource/delete.js
+index 9a134688f4964b51a65f07260f0e559baff58bfe..09f4f4ab8385128a7a0630f632148311c11538cb 100644
+--- a/dist/mcp/tools/resource/delete.js
++++ b/dist/mcp/tools/resource/delete.js
+@@ -1,8 +1,13 @@
+ import { toCamelCase } from '../../../utils/camelCase.js';
+ import { toolSchemas } from '../schemas.js';
+ export const deleteResourceTool = (server, req, user, verboseLogs, collectionSlug, collections)=>{
+-    const tool = async (id, where, depth = 0, locale, fallbackLocale)=>{
++    const tool = async (id, where, depth = 0, locale, fallbackLocale, confirm)=>{
+         const payload = req.payload;
++        // Read by the host app's beforeDelete hook, which owns the confirmation rule.
++        req.context = {
++            ...req.context,
++            mcpDeleteConfirm: confirm
++        };
+         if (verboseLogs) {
+             payload.logger.info(`[payload-mcp] Deleting resource from collection: ${collectionSlug}${id ? ` with ID: ${id}` : ' with where clause'}${locale ? `, locale: ${locale}` : ''}`);
+         }
+@@ -140,10 +145,15 @@ ${JSON.stringify(errors)}
+     };
+     if (collections?.[collectionSlug]?.enabled) {
+         server.registerTool(`delete${collectionSlug.charAt(0).toUpperCase() + toCamelCase(collectionSlug).slice(1)}`, {
+-            description: `${collections?.[collectionSlug]?.description || toolSchemas.deleteResource.description.trim()}`,
+-            inputSchema: toolSchemas.deleteResource.parameters.shape
+-        }, async ({ id, depth, fallbackLocale, locale, where })=>{
+-            return await tool(id, where, depth, locale, fallbackLocale);
++            description: `${toolSchemas.deleteResource.description.trim()}${collections?.[collectionSlug]?.description ? ` Collection: ${collections[collectionSlug].description}` : ''}`,
++            inputSchema: toolSchemas.deleteResource.parameters.shape,
++            annotations: {
++                destructiveHint: true,
++                idempotentHint: false,
++                readOnlyHint: false
++            }
++        }, async ({ id, confirm, depth, fallbackLocale, locale, where })=>{
++            return await tool(id, where, depth, locale, fallbackLocale, confirm);
+         });
+     }
+ };
+diff --git a/dist/mcp/tools/schemas.js b/dist/mcp/tools/schemas.js
+index 505b5a8d55f9eb214c6a4800cceedb53ab92c209..2e07a8b6fbbb424307b976d8606ef2417fd1d9ce 100644
+--- a/dist/mcp/tools/schemas.js
++++ b/dist/mcp/tools/schemas.js
+@@ -56,8 +56,9 @@ export const toolSchemas = {
+         })
+     },
+     deleteResource: {
+-        description: 'Delete documents in a collection by ID or where clause.',
++        description: 'Permanently delete one document by ID. The first call deletes nothing: it answers with what would be deleted and a confirmation token. Show that to the user, and only after their explicit yes call again with the same id and the token in `confirm`.',
+         parameters: z.object({
++            confirm: z.string().optional().describe('The confirmation token the first call answered with. Send it only after the user has explicitly approved deleting this exact document'),
+             id: z.union([
+                 z.string(),
+                 z.number()
+@@ -65,7 +66,7 @@ export const toolSchemas = {
+             depth: z.number().int().min(0).max(10).optional().default(0).describe('Depth of population for relationships in response'),
+             fallbackLocale: z.string().optional().describe('Optional: fallback locale code to use when requested locale is not available'),
+             locale: z.string().optional().describe('Optional: locale code for the operation (e.g., "en", "es"). Defaults to the default locale'),
+-            where: z.string().optional().describe('Optional: JSON string for where clause to delete multiple documents')
++            where: z.string().optional().describe('Not usable on this server: every delete is confirmed one document at a time, so send id')
+         })
+     },
+     updateGlobal: {
+diff --git a/dist/utils/schemaConversion/convertCollectionSchemaToZod.js b/dist/utils/schemaConversion/convertCollectionSchemaToZod.js
+index 504c0a041cacdefe438ceae9e2c59c6d3da5300f..35b3cf7aa40a3f89cca37b07960d3decd5063a95 100644
+--- a/dist/utils/schemaConversion/convertCollectionSchemaToZod.js
++++ b/dist/utils/schemaConversion/convertCollectionSchemaToZod.js
+@@ -1,4 +1,5 @@
+ import { jsonSchemaToZod } from 'json-schema-to-zod';
++import * as nodeModule from 'node:module';
+ import * as ts from 'typescript';
+ import { z } from 'zod';
+ import { sanitizeJsonSchema } from './sanitizeJsonSchema.js';
+@@ -11,8 +12,14 @@ export const convertCollectionSchemaToZod = (schema)=>{
+         const sanitized = sanitizeJsonSchema(schemaClone);
+         const pointTransformed = transformPointFieldsForMCP(sanitized);
+         const zodSchemaAsString = jsonSchemaToZod(simplifyRelationshipFields(pointTransformed));
+-        // Transpile TypeScript to JavaScript
+-        const transpileResult = ts.transpileModule(zodSchemaAsString, {
++        // Transpile TypeScript to JavaScript. The generated code's only
++        // TypeScript is erasable (a generic on `reduce`), so Node's built-in
++        // type stripping does it; TypeScript 7 (native) has no JS compiler API,
++        // and `ts.ModuleKind` is undefined there. The compiler stays the
++        // fallback for a Node without `stripTypeScriptTypes` (before 22.13).
++        const transpileResult = typeof nodeModule.stripTypeScriptTypes === 'function' ? {
++            outputText: nodeModule.stripTypeScriptTypes(zodSchemaAsString)
++        } : ts.transpileModule(zodSchemaAsString, {
+             compilerOptions: {
+                 module: ts.ModuleKind.CommonJS,
+                 removeComments: true,
