@@ -3,6 +3,16 @@
 import { type RefObject, useEffect, useState } from 'react'
 
 /**
+ * An animation that ends on its own clock. A scroll-driven one (a scroll
+ * fade on a list inside the element) follows its scroller and an endless
+ * loop never stops: neither ever finishes, so waiting on them would keep the
+ * element mounted for good.
+ */
+const endsOnItsOwn = (animation: Animation) =>
+  animation.timeline === document.timeline &&
+  animation.effect?.getTiming().iterations !== Number.POSITIVE_INFINITY
+
+/**
  * Keeps an element mounted until its CSS exit has finished.
  *
  * The enter is `@starting-style`, the exit is an ordinary transition off
@@ -26,7 +36,9 @@ export function usePresence(ref: RefObject<HTMLElement | null>, open: boolean) {
     if (!mounted || !element) return
     // No Web Animations (jsdom, very old engines): nothing to wait for.
     const running =
-      typeof element.getAnimations === 'function' ? element.getAnimations({ subtree: true }) : []
+      typeof element.getAnimations === 'function'
+        ? element.getAnimations({ subtree: true }).filter(endsOnItsOwn)
+        : []
     let cancelled = false
     const settle = () => {
       if (cancelled) return

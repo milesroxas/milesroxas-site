@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { type MouseEvent, useLayoutEffect, useRef } from 'react'
 import { cn } from '@/utilities/ui'
 import { glyphForPath } from './glyphs'
+import { GLASS_CONTROL, useLiquidGlass } from './liquid-glass'
 import type { ChromeTab } from './tabs'
 
 /** A click the browser handles itself (new tab, new window, download): the page does not change here. */
@@ -28,7 +29,7 @@ type PageTabsProps = {
 
 /**
  * The site's pages as a tab group, always visible, the current one filled.
- * Text tabs in a capsule from `md`; icon-over-label tabs across a bar on a
+ * Text tabs in a glass bar from `md`; icon-over-label tabs across a bar on a
  * phone. They are links in a labelled nav, not ARIA tabs: each one opens a
  * page, and the current one says so with `aria-current`.
  *
@@ -42,6 +43,7 @@ type PageTabsProps = {
 export function PageTabs({ tabs, active, onSelect, minimized, className }: PageTabsProps) {
   const indicatorRef = useRef<HTMLSpanElement>(null)
   const tabRefs = useRef<Array<HTMLAnchorElement | null>>([])
+  const glass = useLiquidGlass<HTMLElement>(GLASS_CONTROL)
 
   useLayoutEffect(() => {
     const indicator = indicatorRef.current
@@ -71,9 +73,10 @@ export function PageTabs({ tabs, active, onSelect, minimized, className }: PageT
   return (
     <nav
       aria-label="Site"
-      className={cn('dock-tabs chrome-material relative rounded-full', className)}
+      className={cn('dock-tabs chrome-material relative', className)}
       data-minimized={minimized || undefined}
       inert={minimized || undefined}
+      ref={glass}
     >
       <span aria-hidden className="dock-indicator" ref={indicatorRef} />
       <ul className="flex h-full md:gap-0.5">
@@ -93,7 +96,7 @@ export function PageTabs({ tabs, active, onSelect, minimized, className }: PageT
                 }}
                 {...(tab.newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
               >
-                <Glyph className="size-5.5 md:hidden" />
+                <Glyph className="size-5 md:hidden" />
                 <span className="dock-label" data-label={tab.label}>
                   {tab.label}
                 </span>

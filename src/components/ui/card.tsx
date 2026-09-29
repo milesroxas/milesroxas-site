@@ -23,7 +23,7 @@ function Card({
       data-variant={variant}
       className={cn(
         'group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-lg bg-card py-(--card-spacing) text-xs/relaxed text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] *:[img:first-child]:rounded-t-lg *:[img:last-child]:rounded-b-lg',
-        'data-[variant=inset]:gap-3 data-[variant=inset]:rounded-xl data-[variant=inset]:bg-muted data-[variant=inset]:text-foreground data-[variant=inset]:ring-0 data-[variant=inset]:outline-none',
+        'data-[variant=inset]:gap-3 data-[variant=inset]:rounded-[0.625rem] data-[variant=inset]:bg-foreground/5 data-[variant=inset]:text-foreground data-[variant=inset]:ring-0 data-[variant=inset]:outline-none',
         // A card that takes focus by script (a receipt that replaced the form
         // under the pointer) rings inside: the transcript clips what is outside.
         'data-[variant=inset]:focus-visible:inset-ring-2 data-[variant=inset]:focus-visible:inset-ring-ring/50',

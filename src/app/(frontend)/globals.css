@@ -1379,77 +1379,117 @@
 :root {
   /* The top bar's height: the line a page's heading scrolls under. */
   --chrome-top: 2.75rem;
-  /* The dock: its height and its lift off the viewport's bottom edge.
-     Phone first: a 62px icon tab bar 16px up; a 52px capsule 28px up from md. */
-  --dock-height: 3.875rem;
-  --dock-bottom: 1rem;
+  /* The dock: its height, its lift off the viewport's bottom edge, the inset
+     between its edge and the tabs inside it, and its corner. Phone first: a
+     52px icon tab bar 12px up; a 40px bar 24px up from md. */
+  --dock-height: 3.25rem;
+  --dock-bottom: 0.75rem;
+  --dock-inset: 0.25rem;
+  --dock-radius: 1rem;
+  /* Corners inside the dock are concentric with it: its radius less the inset. */
+  --dock-item-radius: calc(var(--dock-radius) - var(--dock-inset));
   /* Editors see the admin bar pinned along the bottom; the dock sits on it. */
   --admin-bar-height: 0px;
   /* How far the dock reaches up from the bottom edge: what every page keeps
      clear under its last line (Footer) and what the Contents button stands on. */
   --dock-clearance: calc(var(--dock-bottom) + var(--dock-height));
+  /* The Ask field: on a phone a 44px touch row on the sheet; from md the
+     dock's own height and corner, since the field takes the Ask button's
+     place. The send button sits inside its end, concentric with it. */
+  --ask-field-height: 2.75rem;
+  --ask-field-radius: 0.875rem;
+  --ask-send-size: 2rem;
+  --ask-field-inset: calc((var(--ask-field-height) - var(--ask-send-size)) / 2);
+  --ask-send-radius: calc(var(--ask-field-radius) - var(--ask-field-inset));
 }
 
 :root:has(.admin-bar.block) {
   --admin-bar-height: 2.5rem;
-  --dock-bottom: calc(1rem + var(--admin-bar-height));
+  --dock-bottom: calc(0.75rem + var(--admin-bar-height));
 }
 
 @media (min-width: 48rem) {
   :root {
     --chrome-top: 5rem;
-    --dock-height: 3.25rem;
-    --dock-bottom: 1.75rem;
+    --dock-height: 2.5rem;
+    --dock-bottom: 1.5rem;
+    --dock-radius: 0.75rem;
+    --ask-field-height: var(--dock-height);
+    --ask-field-radius: var(--dock-radius);
   }
 
   :root:has(.admin-bar.block) {
-    --dock-bottom: calc(1.75rem + var(--admin-bar-height));
+    --dock-bottom: calc(1.5rem + var(--admin-bar-height));
   }
 }
 
-/* The chrome's materials, stated once. Every floating control reads these,
-   and a control that floats over a dark band carries `data-theme="dark"`,
-   which swaps the whole set: light glass (white at 72%, a soft two-layer
-   shadow and a half-pixel ink hairline) becomes dark glass (#1C1C1F at 78%). */
+/* The chrome's glass, stated once: the liquid glass of Codrops' "Infinite
+   Liquid Glass Grid", ported to the page (src/components/SiteChrome/
+   liquid-glass). Every floating surface reads these, and one that floats
+   over a dark band carries `data-theme="dark"`, which swaps the set.
+
+   From the page up: the backdrop, refracted through the glass's bevel
+   (`--glass-filter`, Chromium) and softly frosted and saturated; the tint;
+   the light on the glass (`--glass-highlight`: the fresnel environment and
+   the rim, drawn for the surface's own size and corner); a half-pixel
+   hairline and a lift. Before the glass is drawn, and wherever SVG
+   backdrop filters are not applied, the surface is the frost and the tint
+   alone. Controls are thin glass; surfaces that hold reading (the Ask panel
+   and sheet, `.chrome-panel`) are thicker: more tint, more frost, a deeper
+   lift. */
 [data-chrome] {
   --chrome-ink: var(--foreground);
   --chrome-ink-muted: #52525b;
   --chrome-ink-quiet: #5f5f66;
   --chrome-glyph: var(--brand);
-  --chrome-fill: rgb(255 255 255 / 0.72);
+  --chrome-fill: rgb(255 255 255 / 0.6);
+  --chrome-fill-thick: rgb(255 255 255 / 0.82);
   --chrome-fill-solid: #fff;
-  --chrome-fill-hover: rgb(246 246 247 / 0.82);
-  --chrome-selected: rgb(12 12 14 / 0.07);
-  --chrome-hover: rgb(12 12 14 / 0.035);
-  --chrome-press: rgb(12 12 14 / 0.08);
+  --chrome-fill-hover: rgb(255 255 255 / 0.76);
+  --chrome-blur: 3px;
+  --chrome-selected: rgb(12 12 14 / 0.08);
+  --chrome-hover: rgb(12 12 14 / 0.04);
+  --chrome-press: rgb(12 12 14 / 0.09);
   --chrome-hairline: rgb(12 12 14 / 0.1);
-  --chrome-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.9), 0 12px 36px rgb(12 12 14 / 0.12),
-    0 2px 6px rgb(12 12 14 / 0.06), 0 0 0 0.5px var(--chrome-hairline);
+  --chrome-lift: 0 1px 2px rgb(12 12 14 / 0.06), 0 8px 24px -6px rgb(12 12 14 / 0.16);
+  --chrome-lift-thick: 0 2px 6px rgb(12 12 14 / 0.06), 0 24px 56px -12px rgb(12 12 14 / 0.3);
 }
 
 [data-chrome][data-theme="dark"] {
-  --chrome-ink-muted: #b4b4bb;
+  --chrome-ink-muted: #c4c4ca;
   --chrome-ink-quiet: #a1a1aa;
   --chrome-glyph: #f47a36;
-  --chrome-fill: rgb(28 28 31 / 0.78);
+  --chrome-fill: rgb(30 30 33 / 0.62);
+  --chrome-fill-thick: rgb(30 30 33 / 0.84);
   --chrome-fill-solid: #1c1c1f;
-  --chrome-fill-hover: rgb(40 40 44 / 0.84);
-  --chrome-selected: rgb(255 255 255 / 0.12);
+  --chrome-fill-hover: rgb(46 46 50 / 0.74);
+  --chrome-selected: rgb(255 255 255 / 0.13);
   --chrome-hover: rgb(255 255 255 / 0.06);
-  --chrome-press: rgb(255 255 255 / 0.14);
-  --chrome-hairline: rgb(255 255 255 / 0.12);
-  --chrome-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.1), 0 12px 36px rgb(0 0 0 / 0.4), 0 2px 6px rgb(0 0 0 / 0.25),
-    0 0 0 0.5px var(--chrome-hairline);
+  --chrome-press: rgb(255 255 255 / 0.16);
+  --chrome-hairline: rgb(255 255 255 / 0.1);
+  --chrome-lift: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -6px rgb(0 0 0 / 0.5);
+  --chrome-lift-thick: 0 2px 6px rgb(0 0 0 / 0.3), 0 24px 56px -12px rgb(0 0 0 / 0.6);
 }
 
 /* The swap between the two materials is a 240ms cross-fade, never a cut. */
-.chrome-material {
+.chrome-material,
+.chrome-panel {
   background-color: var(--chrome-fill);
-  box-shadow: var(--chrome-shadow);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
+  background-image: var(--glass-highlight, none);
+  background-origin: border-box;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-shadow:
+    0 0 0 0.5px var(--chrome-hairline),
+    var(--chrome-lift);
+  -webkit-backdrop-filter: blur(var(--chrome-blur)) saturate(180%);
+  backdrop-filter: var(--glass-filter,) blur(var(--chrome-blur)) saturate(180%);
+}
+
+.chrome-panel {
+  --chrome-fill: var(--chrome-fill-thick);
+  --chrome-lift: var(--chrome-lift-thick);
+  --chrome-blur: 16px;
 }
 
 .chrome-focus {
@@ -1482,50 +1522,6 @@
   translate: 0 0;
 }
 
-/* Scroll edges: a fade of the band's own ground under each end of the
-   chrome, shown once the page has scrolled (`html[data-scrolled]`). */
-.scroll-edge {
-  --edge: var(--background);
-  position: fixed;
-  inset-inline: 0;
-  z-index: 30;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 200ms ease;
-}
-
-.scroll-edge[data-side="top"] {
-  top: 0;
-  height: 7.5rem;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in oklab, var(--edge) 95%, transparent),
-    color-mix(in oklab, var(--edge) 60%, transparent) 50%,
-    transparent
-  );
-}
-
-.scroll-edge[data-side="bottom"] {
-  bottom: 0;
-  height: 9.375rem;
-  background: linear-gradient(
-    to top,
-    color-mix(in oklab, var(--edge) 95%, transparent),
-    color-mix(in oklab, var(--edge) 60%, transparent) 45%,
-    transparent
-  );
-}
-
-html[data-scrolled] .scroll-edge {
-  opacity: 1;
-}
-
-@media (min-width: 48rem) {
-  .scroll-edge[data-side="bottom"] {
-    height: 8.75rem;
-  }
-}
-
 /* The dock. Phone: the tab bar spans the width with Ask beside it. From md:
    the tab capsule and the Ask capsule sit together, centred. */
 .dock {
@@ -1535,7 +1531,7 @@ html[data-scrolled] .scroll-edge {
   z-index: 40;
   display: flex;
   align-items: flex-end;
-  gap: 0.375rem;
+  gap: 0.5rem;
   pointer-events: none;
   transition:
     opacity 300ms var(--ease-out-quint),
@@ -1555,7 +1551,8 @@ html[data-scrolled] .scroll-edge {
 
 .dock-tabs {
   height: 100%;
-  padding: 0.25rem;
+  padding: var(--dock-inset);
+  border-radius: var(--dock-radius);
   transform-origin: left center;
   transition:
     background-color 240ms ease,
@@ -1569,12 +1566,11 @@ html[data-scrolled] .scroll-edge {
    tab, so a new page slides it across on the site's spring (damping 1,
    response 0.35s). It lands without moving the first time it is placed. */
 .dock-indicator {
-  --tab-radius: 1.6875rem;
   position: absolute;
-  inset: 0.25rem;
-  border-radius: var(--tab-radius);
+  inset: var(--dock-inset);
+  border-radius: var(--dock-item-radius);
   background-color: var(--chrome-selected);
-  clip-path: inset(0 var(--tab-right, 100%) 0 var(--tab-left, 0) round var(--tab-radius));
+  clip-path: inset(0 var(--tab-right, 100%) 0 var(--tab-left, 0) round var(--dock-item-radius));
   opacity: 0;
 }
 
@@ -1597,18 +1593,15 @@ html[data-scrolled] .scroll-edge {
   align-items: center;
   justify-content: center;
   gap: 0.125rem;
-  border-radius: 1.6875rem;
-  color: var(--chrome-ink-muted);
-}
-
-.dock-tab[aria-current="page"] {
+  border-radius: var(--dock-item-radius);
+  /* Every label is full ink: on glass a muted grey drops below legible over
+     a dark image. The current tab says so with its fill and weight. */
   color: var(--chrome-ink);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .dock-tab:not([aria-current="page"]):hover {
     background-color: var(--chrome-hover);
-    color: var(--chrome-ink);
   }
 }
 
@@ -1620,8 +1613,8 @@ html[data-scrolled] .scroll-edge {
    becomes current and the fill's clip stays true. The reserve is silent. */
 .dock-label {
   display: inline-grid;
-  font-size: 0.6875rem;
-  line-height: 0.8125rem;
+  font-size: 0.625rem;
+  line-height: 0.75rem;
   font-weight: 500;
 }
 
@@ -1650,8 +1643,8 @@ html[data-scrolled] .scroll-edge {
   bottom: 0;
   left: 0;
   height: var(--dock-height);
-  padding: 0.25rem;
-  border-radius: 9999px;
+  padding: var(--dock-inset);
+  border-radius: var(--dock-radius);
   opacity: 0;
   scale: 0.92;
   filter: blur(4px);
@@ -1682,13 +1675,13 @@ html[data-scrolled] .scroll-edge {
   display: flex;
   height: 100%;
   align-items: center;
-  gap: 0.5rem;
-  padding-inline: 1rem 1.125rem;
-  border-radius: 1.6875rem;
+  gap: 0.375rem;
+  padding-inline: 0.875rem 1rem;
+  border-radius: var(--dock-item-radius);
   background-color: var(--chrome-selected);
   color: var(--chrome-ink);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1rem;
   font-weight: 600;
 }
 
@@ -1700,13 +1693,13 @@ html[data-scrolled] .scroll-edge {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   width: var(--dock-height);
   height: var(--dock-height);
-  border-radius: 9999px;
+  border-radius: var(--dock-radius);
   color: var(--chrome-ink);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1rem;
   font-weight: 500;
   transition:
     background-color 240ms ease,
@@ -1731,6 +1724,15 @@ html[data-scrolled] .scroll-edge {
   opacity: 0;
 }
 
+/* Phone: the Ask sheet covers the dock, as a sheet covers a tab bar. The
+   dock steps out under it rather than showing through the sheet's glass. */
+@media (width < 48rem) {
+  .dock[data-ask="open"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
 /* A page transition owns the screen: the chrome steps out and returns. */
 #site-chrome[data-hidden] .dock {
   opacity: 0;
@@ -1739,8 +1741,7 @@ html[data-scrolled] .scroll-edge {
   transition-duration: 200ms;
 }
 
-#site-chrome[data-hidden] .chrome-top,
-#site-chrome[data-hidden] .scroll-edge {
+#site-chrome[data-hidden] .chrome-top {
   opacity: 0;
 }
 
@@ -1748,7 +1749,6 @@ html[data-scrolled] .scroll-edge {
   .dock {
     inset-inline: 0;
     justify-content: center;
-    gap: 0.625rem;
   }
 
   .dock-tabs-slot {
@@ -1756,30 +1756,23 @@ html[data-scrolled] .scroll-edge {
   }
 
   .dock-tabs {
-    padding: 0.3125rem;
     transform-origin: center;
-  }
-
-  .dock-indicator {
-    --tab-radius: 1.3125rem;
-    inset: 0.3125rem;
   }
 
   .dock-tab {
     flex: none;
     flex-direction: row;
-    padding-inline: 1.25rem;
-    border-radius: 1.3125rem;
+    padding-inline: 0.75rem;
   }
 
   .dock-label {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: 0.8125rem;
+    line-height: 1rem;
   }
 
   .dock-ask {
     width: auto;
-    padding-inline: 1.125rem 1.375rem;
+    padding-inline: 0.75rem 0.875rem;
   }
 
   /* Ask open: the tabs step back while the field holds the dock's place. */
@@ -1799,17 +1792,20 @@ html[data-scrolled] .scroll-edge {
 }
 
 /* The Ask surface (src/features/ask/AskPanel.tsx). Desktop: the panel and
-   the field row, anchored where the dock stands. The morph between the
-   dock's button and this surface runs on the Web Animations API. */
+   the field row, anchored where the dock stands. The panel is the chrome's
+   thick glass (`.chrome-panel`); the field and the close button are the
+   dock's thin glass at the dock's height, so the row reads as the dock
+   itself, opened. The morph between the dock's button and this surface
+   runs on the Web Animations API. */
 .ask-surface {
   position: fixed;
   inset-inline: 0;
   bottom: var(--dock-bottom);
   z-index: 50;
   display: flex;
-  width: min(42.5rem, calc(100vw - 2rem));
+  width: min(35rem, calc(100vw - 2rem));
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 0.5rem;
   margin-inline: auto;
   outline: none;
 }
@@ -1818,13 +1814,8 @@ html[data-scrolled] .scroll-edge {
   display: flex;
   flex-direction: column;
   overflow: clip;
-  border-radius: 1.5rem;
-  background-color: var(--popover);
-  color: var(--popover-foreground);
-  box-shadow:
-    0 24px 64px rgb(12 12 14 / 0.2),
-    0 2px 8px rgb(12 12 14 / 0.08),
-    0 0 0 0.5px rgb(12 12 14 / 0.1);
+  border-radius: 1rem;
+  color: var(--foreground);
   transform-origin: bottom center;
 }
 
@@ -1832,8 +1823,8 @@ html[data-scrolled] .scroll-edge {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-  padding: 1.125rem 1.25rem 0.875rem 1.5rem;
-  border-bottom: 1px solid color-mix(in oklab, var(--foreground) 6%, transparent);
+  padding: 0.875rem 1.125rem 0.75rem;
+  border-bottom: 0.5px solid var(--chrome-hairline);
 }
 
 .ask-panel-header:last-child {
@@ -1845,15 +1836,16 @@ html[data-scrolled] .scroll-edge {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 3.25rem;
-  height: 3.25rem;
-  border-radius: 9999px;
-  background-color: var(--popover);
-  color: var(--popover-foreground);
-  box-shadow:
-    0 12px 36px rgb(12 12 14 / 0.14),
-    0 2px 6px rgb(12 12 14 / 0.06),
-    0 0 0 0.5px rgb(12 12 14 / 0.1);
+  width: var(--dock-height);
+  height: var(--dock-height);
+  border-radius: var(--dock-radius);
+  color: var(--chrome-ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ask-close:hover {
+    background-color: var(--chrome-fill-hover);
+  }
 }
 
 .ask-transcript {
@@ -1872,10 +1864,10 @@ html[data-scrolled] .scroll-edge {
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 0.625rem;
-  padding: 0.75rem 0.875rem;
-  border-radius: 0.875rem;
-  background-color: color-mix(in oklab, var(--foreground) 4%, transparent);
+  gap: 0.5rem;
+  padding: 0.6875rem 0.75rem;
+  border-radius: 0.625rem;
+  background-color: color-mix(in oklab, var(--foreground) 5%, transparent);
   color: var(--foreground);
   font-size: 0.9375rem;
   line-height: 1.25rem;
@@ -1884,13 +1876,15 @@ html[data-scrolled] .scroll-edge {
 
 @media (hover: hover) and (pointer: fine) {
   .ask-suggestion:hover {
-    background-color: color-mix(in oklab, var(--foreground) 7%, transparent);
+    background-color: color-mix(in oklab, var(--foreground) 8%, transparent);
   }
 }
 
 @media (min-width: 48rem) {
   .ask-suggestion {
-    border-radius: 0.75rem;
+    padding: 0.5rem 0.625rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
   }
 }
 
@@ -1929,11 +1923,15 @@ html[data-scrolled] .scroll-edge {
 /* Reduce transparency: the glass becomes solid, a hairline replaces the
    soft shadow. */
 @media (prefers-reduced-transparency: reduce) {
-  .chrome-material {
+  .chrome-material,
+  .chrome-panel {
     background-color: var(--chrome-fill-solid);
+    background-image: none;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    box-shadow: 0 0 0 1px var(--chrome-hairline);
+    box-shadow:
+      0 0 0 1px var(--chrome-hairline),
+      var(--chrome-lift);
   }
 }
 
@@ -1945,8 +1943,10 @@ html[data-scrolled] .scroll-edge {
     --chrome-ink-quiet: var(--chrome-ink);
   }
 
-  .chrome-material {
+  .chrome-material,
+  .chrome-panel {
     background-color: var(--chrome-fill-solid);
+    background-image: none;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: inset 0 0 0 1.5px var(--chrome-ink);

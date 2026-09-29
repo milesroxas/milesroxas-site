@@ -13,13 +13,16 @@ const inputGroupVariants = cva(
     variants: {
       variant: {
         default: '',
-        // The Ask field (the dock's panel and the phone sheet): a one-line
-        // capsule on the popover surface with the send disc inside its end.
-        // At rest a hairline, so it holds its shape on a white sheet; focused,
-        // the hairline turns brand with a soft halo, so the field reads as
-        // the place the conversation continues. 16px text on phones (iOS
-        // focus zoom), 15px from md.
-        pill: 'h-12.5 gap-2.5 rounded-full bg-popover pr-2 pl-4.5 has-data-[align=inline-end]:rounded-full has-[[data-slot=input-group-control]:focus-visible]:border-brand has-[[data-slot=input-group-control]:focus-visible]:ring-3 has-[[data-slot=input-group-control]:focus-visible]:ring-brand/15 **:data-[slot=button]:rounded-full md:h-13 md:pr-1.5 dark:bg-popover [&>[data-slot=input-group-control]]:h-full [&>[data-slot=input-group-control]]:px-0 [&>[data-slot=input-group-control]]:text-base md:[&>[data-slot=input-group-control]]:text-[0.9375rem]',
+        // The Ask field (the dock's panel and the phone sheet): one line with
+        // the send button inside its end. Its size and corners are the
+        // chrome's tokens (globals.css, `--ask-field-*`), so the button's
+        // corner stays concentric with the field's. The caller gives it its
+        // ground: glass where it floats, a tinted well on the sheet. Focused,
+        // the edge turns brand with a soft halo drawn as an outline, so a
+        // glass ground's own shadow never covers it. 16px text on phones
+        // (iOS focus zoom), 14px from md.
+        field:
+          'h-(--ask-field-height) gap-2 rounded-(--ask-field-radius) pr-(--ask-field-inset) pl-3 has-data-[align=inline-end]:rounded-(--ask-field-radius) has-[[data-slot=input-group-control]:focus-visible]:border-brand has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:outline-3 has-[[data-slot=input-group-control]:focus-visible]:outline-brand/15 **:data-[slot=button]:rounded-(--ask-send-radius) [&>[data-slot=input-group-control]]:h-full [&>[data-slot=input-group-control]]:px-0 [&>[data-slot=input-group-control]]:text-base md:[&>[data-slot=input-group-control]]:text-sm',
       },
     },
     defaultVariants: {

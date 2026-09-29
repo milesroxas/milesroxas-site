@@ -14,18 +14,18 @@ type AskSubmitButtonProps = Omit<
   canSend: boolean
   /** Aborts the in-flight reply. */
   onStop: () => void
-  /** Glyph sizing override, e.g. the menu pill's touch scale. */
+  /** Glyph sizing override. */
   iconClassName?: string
 }
 
 /**
- * The button in the one-line Ask field (`InputGroup variant="pill"`): a 34px
- * disc on a phone with its reach grown to 46px, 40px from `md`. With nothing
- * to send it rests as a quiet disc with a faint arrow rather than a dimmed
- * black one, so the field reads as waiting, not broken.
+ * The button in the one-line Ask field (`InputGroup variant="field"`): 32px
+ * (`--ask-send-size`), its reach grown to 44px on a phone. With nothing to
+ * send it rests as a quiet tile with a faint arrow rather than a dimmed black
+ * one, so the field reads as waiting, not broken.
  */
 export const askComposerButton =
-  'relative size-8.5 after:absolute after:-inset-1.5 disabled:bg-foreground/8 disabled:text-foreground/35 disabled:opacity-100 md:size-10 md:after:hidden'
+  'relative size-(--ask-send-size) after:absolute after:-inset-1.5 disabled:bg-foreground/8 disabled:text-foreground/35 disabled:opacity-100 md:after:hidden'
 export const askComposerIcon = 'size-4'
 
 /**
@@ -33,7 +33,7 @@ export const askComposerIcon = 'size-4'
  * form; while a reply is in flight it is an enabled Stop, never a dimmed
  * disabled arrow (a half-opacity button reads as broken, not busy). The two
  * glyphs stack in one cell and crossfade with a light scale, so the state
- * change is a morph rather than a swap. Same-size glyphs keep the disc still.
+ * change is a morph rather than a swap. Same-size glyphs keep the button still.
  */
 export function AskSubmitButton({
   busy,

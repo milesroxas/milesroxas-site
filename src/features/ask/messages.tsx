@@ -237,13 +237,14 @@ function TranscriptTurn({
 }
 
 /**
- * Conversation text at 15px: the primitives' 12px is caption scale, too small
- * for a conversation. The visitor's question sits in a quiet bubble whose
- * tail corner points at the field it came from; the answer is plain text on
- * the panel, so it reads as the page's voice rather than a chat partner's.
+ * Conversation text at 15px on a phone and 14px from md: the primitives' 12px
+ * is caption scale, too small for a conversation. The visitor's question sits
+ * in a quiet bubble whose tail corner points at the field it came from; the
+ * answer is plain text on the panel, so it reads as the page's voice rather
+ * than a chat partner's.
  */
-const answerBody = 'text-[0.9375rem]/6'
-const questionBody = 'rounded-[1.125rem] rounded-br-md px-4 py-2.5 text-[0.9375rem]/[1.375rem]'
+const answerBody = 'text-[0.9375rem]/6 md:text-sm/[1.375rem]'
+const questionBody = 'rounded-xl rounded-br-sm px-3.5 py-2 text-[0.9375rem]/[1.375rem] md:text-sm/5'
 
 /** The assistant's words with no message of their own: a handoff's lead line. */
 function AskReply({ children }: { children: string }) {

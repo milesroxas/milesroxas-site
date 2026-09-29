@@ -4,8 +4,17 @@ import { IconAlertCircle, IconArrowUpLeft, IconX } from '@tabler/icons-react'
 import { useLenis } from 'lenis/react'
 import { usePathname } from 'next/navigation'
 import { Dialog as DialogPrimitive } from 'radix-ui'
-import { createRef, type RefObject, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import {
+  createRef,
+  type Ref,
+  type RefObject,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { AskGlyph } from '@/components/SiteChrome/glyphs'
+import { GLASS_CONTROL, GLASS_PANEL, useLiquidGlass } from '@/components/SiteChrome/liquid-glass'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import {
   MessageScroller,
@@ -104,18 +113,27 @@ type SurfaceProps = Pick<
 const EASE_DRAWER = 'cubic-bezier(0.32, 0.72, 0, 1)'
 /** The site's settle curve (`--ease-out-quint`); WAAPI cannot read the token. */
 const EASE_OUT = 'cubic-bezier(0.22, 1, 0.36, 1)'
+/** How far the field's open clip reaches past its box. */
+const FIELD_REACH = 48
+
+/** An element's corner radius in px, as its stylesheet draws it. */
+const cornerOf = (element: Element) =>
+  Number.parseFloat(getComputedStyle(element).borderTopLeftRadius)
+
 /**
- * The field's open clip reaches past its box, so its shadow and focus halo
- * are never cut while it grows; at rest the clip is dropped altogether.
+ * The field's open clip: past its box, so its shadow and focus halo are never
+ * cut while it grows, with a corner concentric with the field's own. At rest
+ * the clip is dropped altogether.
  */
-const FIELD_OPEN = 'inset(-48px -48px -48px -48px round 74px)'
+const openClip = (field: HTMLElement) =>
+  `inset(-${FIELD_REACH}px round ${cornerOf(field) + FIELD_REACH}px)`
 
 /** The dock's button as a clip on the field: the shape the field grows out of and returns into. */
 function seedClip(field: HTMLElement, trigger: HTMLElement | null) {
-  if (!trigger) return FIELD_OPEN
+  if (!trigger) return openClip(field)
   const f = field.getBoundingClientRect()
   const t = trigger.getBoundingClientRect()
-  return `inset(${t.top - f.top}px ${f.right - t.right}px ${f.bottom - t.bottom}px ${t.left - f.left}px round ${t.height / 2}px)`
+  return `inset(${t.top - f.top}px ${f.right - t.right}px ${f.bottom - t.bottom}px ${t.left - f.left}px round ${cornerOf(trigger)}px)`
 }
 
 type MorphRefs = {
@@ -203,7 +221,10 @@ function useAskMorph({
       play(scrim, [{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease' })
       play(
         field,
-        [{ clipPath: from.clip ?? seedClip(field, triggerRef.current) }, { clipPath: FIELD_OPEN }],
+        [
+          { clipPath: from.clip ?? seedClip(field, triggerRef.current) },
+          { clipPath: openClip(field) },
+        ],
         {
           duration: 380,
           easing: EASE_DRAWER,
@@ -248,7 +269,10 @@ function useAskMorph({
         play(element, [{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: EASE_OUT })
       play(
         field,
-        [{ clipPath: from.clip ?? FIELD_OPEN }, { clipPath: seedClip(field, triggerRef.current) }],
+        [
+          { clipPath: from.clip ?? openClip(field) },
+          { clipPath: seedClip(field, triggerRef.current) },
+        ],
         {
           duration: 240,
           delay: 40,
@@ -291,6 +315,9 @@ function AskDialog({
   const surfaceRef = useRef<HTMLDivElement>(null)
   const { mounted } = usePresence(surfaceRef, open)
   const refs = useAskMorph({ open, mounted, instant, escaped, reducedMotion, triggerRef })
+  const panelGlass = useLiquidGlass(GLASS_PANEL, refs.panel)
+  const fieldGlass = useLiquidGlass(GLASS_CONTROL, refs.field)
+  const closeGlass = useLiquidGlass(GLASS_CONTROL, refs.close)
 
   useEffect(() => onPresenceChange(mounted), [mounted, onPresenceChange])
 
@@ -330,27 +357,30 @@ function AskDialog({
               refs.surface.current = element
             }}
           >
-            <section className="ask-panel" ref={refs.panel}>
+            <section className="ask-panel chrome-panel" ref={panelGlass}>
               <header className="ask-panel-header">
-                <DialogPrimitive.Title className="font-semibold text-base/5.5">
+                <DialogPrimitive.Title className="font-semibold text-[0.9375rem]/5">
                   Ask
                 </DialogPrimitive.Title>
-                <DialogPrimitive.Description className="text-[0.8125rem]/[1.125rem] text-muted-foreground">
+                <DialogPrimitive.Description className="text-muted-foreground text-xs/4">
                   {ASK_SCOPE}
                 </DialogPrimitive.Description>
               </header>
               {children}
             </section>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <AskField
                 chat={chat}
                 className="flex-1"
-                fieldClassName="ask-field-shadow"
-                fieldRef={refs.field}
+                fieldClassName="chrome-material border-transparent"
+                fieldRef={fieldGlass}
                 inputRef={inputRef}
               />
-              <DialogPrimitive.Close className="ask-close chrome-focus pressable" ref={refs.close}>
-                <IconX aria-hidden className="size-4" stroke={1.75} />
+              <DialogPrimitive.Close
+                className="ask-close chrome-material chrome-focus pressable"
+                ref={closeGlass}
+              >
+                <IconX aria-hidden className="size-3.5" stroke={2} />
                 <span className="sr-only">Close Ask</span>
               </DialogPrimitive.Close>
             </div>
@@ -374,6 +404,7 @@ function AskSheet({
   children,
 }: SurfaceProps) {
   const sheetRef = useRef<HTMLDivElement>(null)
+  const sheetGlass = useLiquidGlass(GLASS_PANEL, sheetRef)
   const inputRef = useRef<HTMLInputElement>(null)
   // A drag has already played the exit; the sheet must not play it again.
   const [dragged, setDragged] = useState(false)
@@ -389,7 +420,7 @@ function AskSheet({
     <Sheet onOpenChange={onOpenChange} open={open}>
       <SheetContent
         className={cn(
-          'ask-sheet gap-0 rounded-[2.375rem] border-t-0 bg-popover p-0 text-foreground shadow-[0_0_0_0.5px_rgb(0_0_0/0.06),0_-8px_40px_rgb(12_12_14/0.16)]',
+          'ask-sheet chrome-panel gap-0 rounded-[1.25rem] border-t-0 p-0 text-foreground',
           'data-[side=bottom]:inset-x-2 data-[side=bottom]:bottom-[max(0.5rem,env(safe-area-inset-bottom))]',
           'duration-300 ease-(--ease-out-quint) data-closed:duration-200',
           'data-[side=bottom]:data-open:slide-in-from-bottom-full data-[side=bottom]:data-closed:slide-out-to-bottom-full',
@@ -409,7 +440,7 @@ function AskSheet({
         }}
         overlayClassName="bg-foreground/22 supports-backdrop-filter:backdrop-blur-none"
         data-chrome=""
-        ref={sheetRef}
+        ref={sheetGlass}
         showCloseButton={false}
         side="bottom"
       >
@@ -421,14 +452,14 @@ function AskSheet({
         >
           <span className="h-1.25 w-9 rounded-full bg-foreground/25" />
         </div>
-        <div className="flex h-11 shrink-0 items-center justify-between pr-3.5 pl-5.5">
-          <SheetTitle className="flex items-center gap-2 font-semibold text-[1.0625rem]/5.5">
-            <AskGlyph className="size-4.5 text-brand" />
+        <div className="flex h-11 shrink-0 items-center justify-between pr-3 pl-5">
+          <SheetTitle className="flex items-center gap-1.5 font-semibold text-base/5">
+            <AskGlyph className="size-4 text-brand" />
             Ask
           </SheetTitle>
           <SheetDescription className="sr-only">{ASK_SCOPE}</SheetDescription>
           <button
-            className="pressable relative flex size-7.5 items-center justify-center rounded-full bg-foreground/8 text-foreground/75 after:absolute after:size-11"
+            className="pressable relative flex size-7 items-center justify-center rounded-lg bg-foreground/8 text-foreground/75 after:absolute after:size-11"
             onClick={() => onOpenChange(false)}
             type="button"
           >
@@ -437,8 +468,13 @@ function AskSheet({
           </button>
         </div>
         {children}
-        <div className="flex shrink-0 flex-col gap-2 px-3 pt-2.5 pb-6.5">
-          <AskField chat={chat} inputRef={inputRef} />
+        <div className="flex shrink-0 flex-col gap-2 px-3 pt-2 pb-5">
+          <AskField
+            chat={chat}
+            // Glass on glass loses its edge: on the sheet the field is a tinted well.
+            fieldClassName="border-transparent bg-foreground/6 dark:bg-foreground/6"
+            inputRef={inputRef}
+          />
           <p className="text-center text-muted-foreground text-xs/4">{ASK_NOTICE_SHORT}</p>
         </div>
       </SheetContent>
@@ -447,7 +483,7 @@ function AskSheet({
 }
 
 /**
- * The one-line field: Enter sends, the disc sends or stops. The desktop
+ * The one-line field: Enter sends, the button sends or stops. The desktop
  * field leads with Ask's mark; on a phone the sheet's title already carries
  * it. The placeholder follows the conversation: an invitation before the
  * first question, a follow-up after.
@@ -462,15 +498,15 @@ function AskField({
   chat: AskChat
   className?: string
   fieldClassName?: string
-  fieldRef?: RefObject<HTMLDivElement | null>
+  fieldRef?: Ref<HTMLDivElement>
   inputRef: RefObject<HTMLInputElement | null>
 }) {
   const { question, setQuestion, submit, busy, canSend, stop, messages } = chat
   return (
     <form className={cn('min-w-0', className)} onSubmit={submit}>
-      <InputGroup className={fieldClassName} ref={fieldRef} variant="pill">
+      <InputGroup className={fieldClassName} ref={fieldRef} variant="field">
         <InputGroupAddon className="p-0 max-md:hidden">
-          <AskGlyph className="size-4.5 text-brand" />
+          <AskGlyph className="size-4 text-brand" />
         </InputGroupAddon>
         <InputGroupInput
           aria-label="Your question"
@@ -515,7 +551,7 @@ function AskBody({
   const failure = error ? (
     <div
       className={cn(
-        'mx-5.5 mb-5 flex items-start gap-2.5 rounded-[0.875rem] bg-destructive/6 px-3.5 py-3 md:mx-6',
+        'mx-5 mb-4 flex items-start gap-2 rounded-[0.625rem] bg-destructive/6 px-3 py-2.5 md:mx-4.5 md:rounded-lg',
         transcriptItemEnter,
       )}
       role="alert"
@@ -532,12 +568,12 @@ function AskBody({
 
   if (messages.length === 0) {
     const intro = sheet ? (
-      <p className="font-light text-[1.375rem]/7.5 tracking-[-0.01em]">{ASK_INTRO}</p>
+      <p className="font-light text-xl/7 tracking-[-0.01em]">{ASK_INTRO}</p>
     ) : null
     // A failed first question stands alone: the error, and the question back in the field.
     const list =
       !failure && suggestions.length > 0 ? (
-        <ul aria-label="Suggested questions" className="flex flex-col gap-2 max-md:pt-1.5">
+        <ul aria-label="Suggested questions" className="flex flex-col gap-1.5 max-md:pt-1 md:gap-1">
           {suggestions.map((suggestion) => (
             <li key={suggestion}>
               <button
@@ -559,12 +595,14 @@ function AskBody({
     return (
       <>
         {(intro || list) && (
-          <div className="flex flex-col gap-3.5 px-5.5 pt-1.5 pb-2 md:px-5 md:pt-4.5 md:pb-5">
+          // From md the rows sit 8px in from the panel's edge, so their 8px
+          // corners run concentric with its 16px one.
+          <div className="flex flex-col gap-3 px-5 pt-1 pb-2 md:p-2">
             {intro}
             {list}
           </div>
         )}
-        {failure && <div className={cn(!list && 'md:pt-4.5')}>{failure}</div>}
+        {failure && <div className={cn(!list && 'md:pt-4')}>{failure}</div>}
       </>
     )
   }
@@ -574,7 +612,7 @@ function AskBody({
       <MessageScrollerProvider autoScroll>
         <MessageScroller>
           <MessageScrollerViewport className="ask-transcript" data-lenis-prevent>
-            <MessageScrollerContent className="gap-4.5 px-5.5 pt-4.5 pb-5 md:px-6">
+            <MessageScrollerContent className="gap-4 px-5 pt-4 pb-4 md:px-4.5">
               <TranscriptItems
                 // The panel and the sheet grow up out of the field, so the
                 // transcript follows the bottom there and a short reply never

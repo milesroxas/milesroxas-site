@@ -1,12 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
-
 /**
  * One scroll subscription for the fixed site chrome (header + footer bars).
  *
- * Everything that keys chrome state off the scroll position (the bars'
- * scrolled shrink, the hero band's palette pin) reads from here rather than
+ * Everything that keys chrome state off the scroll position (the phone tab
+ * bar's minimize, the Contents button) reads from here rather than
  * owning a `scroll` listener: one `scrollY` read per event, fanned out, and
  * one place that knows when the page frame cannot be trusted.
  *
@@ -21,9 +19,6 @@ import { useEffect } from 'react'
  */
 
 const PAGE_FRAME_SELECTOR = '[data-page-frame]'
-
-/** Past this the bars shrink (`html[data-scrolled]`, globals.css). */
-const SCROLLED_THRESHOLD_PX = 8
 
 type ChromeScrollListener = (scrollY: number) => void
 
@@ -86,34 +81,4 @@ export function onChromeScroll(listener: ChromeScrollListener): () => void {
     listeners.delete(listener)
     if (listeners.size === 0) stop()
   }
-}
-
-/**
- * Keeps `html[data-scrolled]` in step with the scroll position: past a small
- * threshold both fixed bars shrink so more of the page shows (globals.css
- * keys `--header-bar-height` / `--footer-bar-height` off the attribute).
- * Written only when the state actually flips, so a scrolling frame never
- * touches the root element.
- *
- * Owned by the site header, the one persistent chrome element: on unmount
- * (demo routes bring their own shell) the attribute is cleared so the
- * demo's site-menu band does not inherit the shrunk height.
- */
-export function useScrolledChrome() {
-  useEffect(() => {
-    const root = document.documentElement
-    let scrolled = root.hasAttribute('data-scrolled')
-    const sync = (scrollY: number) => {
-      const next = scrollY > SCROLLED_THRESHOLD_PX
-      if (next === scrolled) return
-      scrolled = next
-      root.toggleAttribute('data-scrolled', next)
-    }
-    if (!pageFrameFrozen()) sync(window.scrollY)
-    const unsubscribe = onChromeScroll(sync)
-    return () => {
-      unsubscribe()
-      root.removeAttribute('data-scrolled')
-    }
-  }, [])
 }

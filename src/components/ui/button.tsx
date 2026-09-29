@@ -79,10 +79,10 @@ const buttonVariants = cva(
         // Takeover-menu pill: letterspaced all-caps capsule (CLOSE / GET IN
         // TOUCH). Trailing letter-space is offset so the label reads centered.
         pill: "h-8 gap-1 rounded-full px-6 text-sm/none font-semibold tracking-widest uppercase [&>span]:mr-[-0.1em] [&_svg:not([class*='size-'])]:size-4",
-        // Action inside a conversation (Ask suggestions, the handoff card): a
-        // sentence-case capsule at the chat's reading size, 36px from `md`
-        // and the 44px touch target below it.
-        chat: "min-h-11 gap-1.5 rounded-full px-3.5 text-sm has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3 md:min-h-9 [&_svg:not([class*='size-'])]:size-3.5",
+        // Action inside a conversation (Ask's rating and handoff): a
+        // sentence-case button with the chrome's inner 8px corner, 32px from
+        // `md` and 40px below it.
+        chat: "min-h-10 gap-1.5 rounded-lg px-3 text-sm has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 md:min-h-8 md:text-[0.8125rem] [&_svg:not([class*='size-'])]:size-3.5",
       },
     },
     defaultVariants: {

@@ -6,7 +6,6 @@ import { AskPanel } from '@/features/ask/AskPanel'
 import type { AskHandoffTerms } from '@/features/ask/handoff'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useChromeStore } from '@/stores/chromeStore'
-import { useScrolledChrome } from './chrome-scroll'
 import { Dock } from './Dock'
 import { TopBar } from './TopBar'
 import { activeTabIndex, type ChromeTab } from './tabs'
@@ -34,15 +33,13 @@ const isAskShortcut = (event: KeyboardEvent) =>
 
 /**
  * The site's chrome, on every public page: the top bar (wordmark, the
- * page's place, the clock) and the dock (the pages and Ask), each with the
- * scroll edge that keeps it legible over whatever passes beneath.
+ * page's place, the clock) and the dock (the pages and Ask).
  *
  * The current tab follows the route, and follows a press at once: the fill
  * moves on the tap, not once the next page has loaded. During the card →
  * case study transition the chrome steps out of the way (`useChromeStore`).
  */
 export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
-  useScrolledChrome()
   const pathname = usePathname()
   const phone = useIsMobile()
   const visible = useChromeStore((state) => state.visible)

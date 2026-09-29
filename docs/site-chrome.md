@@ -1,7 +1,6 @@
 # Site chrome
 
-The chrome on every public route: the top bar, the dock, the scroll edges and
-the Ask panel. The approved design is the Paper file "Scratchpad", page
+The chrome on every public route: the top bar, the dock and the Ask panel. The approved design is the Paper file "Scratchpad", page
 "Chrome — B revised" (frames R1–R4, M1–M4, and the state boards S1–S3).
 
 ## Structure
@@ -13,10 +12,8 @@ the Ask panel. The approved design is the Paper file "Scratchpad", page
 - **Dock** (`Dock.tsx`, `PageTabs.tsx`): the pages as tabs, always visible,
   with the current one filled, and Ask beside them as its own button. The
   tabs are links in a nav labelled "Site", with `aria-current="page"` on the
-  current one. Text tabs in a capsule from `md`; an icon tab bar on a phone,
+  current one. Text tabs in a glass bar from `md`; an icon tab bar on a phone,
   which folds into its current tab while scrolling down.
-- **Scroll edges** (`ScrollEdge.tsx`): a fade of the band's own ground under
-  each end of the chrome, shown once the page has scrolled.
 - **Ask** (`src/features/ask/AskPanel.tsx`): a modal dialog anchored to the
   dock on desktop, a bottom sheet on a phone. ⌘K / Ctrl+K toggles it.
 
@@ -28,10 +25,36 @@ the Ask panel. The approved design is the Paper file "Scratchpad", page
   rows use the same map.
 - **Ask**: Site Info › Ask › Hide Ask removes the button, the shortcut and
   `/ask`. Site Info › Ask › Suggested questions fills the empty panel.
-- **Sizes and materials**: the `--chrome-top`, `--dock-height`,
-  `--dock-bottom` and `--dock-clearance` tokens and the `[data-chrome]`
-  material tokens in `globals.css`. The footer (`src/Footer/Component.tsx`)
+- **Sizes and materials**: the `--chrome-top`, `--dock-*` and `--ask-*`
+  tokens and the `[data-chrome]` glass tokens in `globals.css`. Corners are
+  concentric: an inner corner is the outer one less the inset
+  (`--dock-item-radius`, `--ask-send-radius`). Controls are thin glass
+  (`.chrome-material`); the Ask panel and sheet are thick glass
+  (`.chrome-panel`). The footer (`src/Footer/Component.tsx`)
   keeps `--dock-clearance` clear under every page's last line.
+
+## Liquid glass
+
+Every glass surface takes `useLiquidGlass` (`SiteChrome/liquid-glass`), a
+port of the material in Codrops' "Building an Infinite Liquid Glass Grid with
+Three.js, WebGPU and TSL" (2026-09-08). The article shades a WebGPU plane
+over its own video; the chrome floats over DOM, which no canvas can sample,
+so the same functions (`optics.ts`: rounded-box SDF, superellipse bevel,
+normals from its slope, `refract` with a per-channel IOR, fresnel and rim)
+are evaluated per surface size into two images:
+
+- a displacement map, applied as an SVG `backdrop-filter`
+  (`--glass-filter`): three `feDisplacementMap` passes, one per colour
+  channel at its own scale for the dispersion, screened back together.
+  Chromium only; Safari and Firefox keep the frost and tint.
+- a highlight (`--glass-highlight`): the fresnel environment and the rim,
+  painted over the tint in every browser.
+
+The images redraw when a surface's layout size or corner changes (a
+`ResizeObserver`, once a frame at most), never for transforms. Tune the look
+in `GLASS_CONTROL` and `GLASS_PANEL`; the frost and tint are the
+`[data-chrome]` tokens. Reduce transparency and increase contrast drop the
+glass for a solid fill.
 
 ## Dark bands
 

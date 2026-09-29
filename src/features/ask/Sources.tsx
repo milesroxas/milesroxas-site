@@ -8,7 +8,7 @@ import { glyphForPath } from '@/components/SiteChrome/glyphs'
 import { surfaceForPath } from '@/shared/content/surfaces'
 import { cn } from '@/utilities/ui'
 
-/** Row and header tint: the group's own muted ground, a step toward the ink. */
+/** Row and header tint: the group's own tinted ground, a step toward the ink. */
 const ROW_HOVER = 'hover:bg-foreground/3'
 
 /** Inset so the ring survives the transcript item's paint containment and the body's clip. */
@@ -39,12 +39,12 @@ export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
   const listId = useId()
 
   return (
-    <div className="rounded-xl bg-muted">
+    <div className="rounded-[0.625rem] bg-foreground/5">
       <button
         aria-controls={listId}
         aria-expanded={open}
         className={cn(
-          'group/disclosure pressable pressable-subtle flex min-h-11 w-full items-center gap-2.5 rounded-xl px-3 text-left aria-expanded:rounded-b-none md:min-h-9',
+          'group/disclosure pressable pressable-subtle flex min-h-10 w-full items-center gap-2 rounded-[0.625rem] px-2.5 text-left aria-expanded:rounded-b-none md:min-h-8',
           ROW_HOVER,
           ROW_FOCUS,
         )}
@@ -62,7 +62,7 @@ export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
 
       <div className="disclosure-body" data-open={open || undefined} id={listId} inert={!open}>
         <div>
-          <ul className="mx-1 mb-1 overflow-hidden rounded-lg bg-popover shadow-xs ring-1 ring-foreground/6">
+          <ul className="mx-1 mb-1 overflow-hidden rounded-md bg-popover shadow-xs ring-1 ring-foreground/6">
             {sources.map((source) => (
               <SourceRow key={source.sourceId} source={source} />
             ))}
@@ -83,7 +83,7 @@ function SourceRow({ source }: { source: SourceUrlUIPart }) {
     <li className="group/row">
       <Link
         className={cn(
-          'group/source pressable pressable-subtle relative flex min-h-12 items-center gap-2.5 px-2.5 py-1.5',
+          'group/source pressable pressable-subtle relative flex min-h-11 items-center gap-2.5 px-2.5 py-1.5 md:min-h-10',
           ROW_HOVER,
           ROW_FOCUS,
           // The inset hairline between rows (none above the first, which the
@@ -97,12 +97,12 @@ function SourceRow({ source }: { source: SourceUrlUIPart }) {
       >
         <span
           aria-hidden
-          className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted ring-1 ring-foreground/6"
+          className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted ring-1 ring-foreground/6"
         >
           <Glyph className="size-3.5 text-primary" />
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="line-clamp-2 text-base/6 md:text-sm/5">
+          <span className="line-clamp-2 text-[0.9375rem]/5 md:text-[0.8125rem]/4.5">
             {source.title ?? source.url}
           </span>
           {surface ? (

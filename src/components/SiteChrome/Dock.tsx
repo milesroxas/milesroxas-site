@@ -7,8 +7,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useIsMobile } from '@/hooks/use-mobile'
 import { onChromeScroll } from './chrome-scroll'
 import { AskGlyph, glyphForPath } from './glyphs'
+import { GLASS_CONTROL, useLiquidGlass } from './liquid-glass'
 import { PageTabs } from './PageTabs'
-import { ScrollEdge } from './ScrollEdge'
 import type { ChromeTab } from './tabs'
 import { useOverDarkBand } from './use-over-dark-band'
 
@@ -84,68 +84,68 @@ export function Dock({ tabs, active, onSelect, ask }: DockProps) {
   const [minimized, restore] = useMinimizedTabs(phone && active >= 0)
   const current = tabs[active]
   const CurrentGlyph = current ? glyphForPath(current.href) : null
+  const miniGlass = useLiquidGlass<HTMLButtonElement>(GLASS_CONTROL)
+  const askGlass = useLiquidGlass(GLASS_CONTROL, ask?.triggerRef)
 
   return (
-    <>
-      <ScrollEdge dark={overDark} side="bottom" />
-      <div
-        className="dock"
-        data-chrome=""
-        data-ask={ask?.open ? 'open' : ask?.present ? 'closing' : undefined}
-        data-theme={overDark ? 'dark' : undefined}
-        ref={ref}
-      >
-        <div className="dock-tabs-slot">
-          <PageTabs active={active} minimized={minimized} onSelect={onSelect} tabs={tabs} />
-          {current && CurrentGlyph && (
-            <button
-              aria-hidden={!minimized}
-              aria-label={`${current.label}. Show all pages`}
-              className="dock-mini chrome-material chrome-focus"
-              data-shown={minimized || undefined}
-              onClick={restore}
-              tabIndex={minimized ? 0 : -1}
-              type="button"
-            >
-              <span className="dock-mini-fill">
-                <CurrentGlyph className="size-5.5" />
-                {current.label}
-              </span>
-            </button>
-          )}
-        </div>
-
-        {ask && (
-          <TooltipProvider delayDuration={TOOLTIP_DELAY_MS}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  aria-expanded={ask.open}
-                  aria-haspopup="dialog"
-                  aria-keyshortcuts="Meta+K Control+K"
-                  className="dock-ask chrome-material chrome-focus"
-                  data-present={ask.present || undefined}
-                  onClick={ask.onOpen}
-                  // Focus handed back after a pointer close is not a request
-                  // for the tooltip; keyboard focus still shows the shortcut.
-                  onFocus={(event) => {
-                    if (!event.currentTarget.matches(':focus-visible')) event.preventDefault()
-                  }}
-                  ref={ask.triggerRef}
-                  type="button"
-                >
-                  <AskGlyph className="size-6.5 text-(--chrome-glyph) md:size-4.5" />
-                  <span className="max-md:sr-only">Ask</span>
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className="max-md:hidden" side="top" sideOffset={10}>
-                Ask
-                <Kbd>{shortcutKeys()}</Kbd>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+    <div
+      className="dock"
+      data-chrome=""
+      data-ask={ask?.open ? 'open' : ask?.present ? 'closing' : undefined}
+      data-theme={overDark ? 'dark' : undefined}
+      ref={ref}
+    >
+      <div className="dock-tabs-slot">
+        <PageTabs active={active} minimized={minimized} onSelect={onSelect} tabs={tabs} />
+        {current && CurrentGlyph && (
+          <button
+            aria-hidden={!minimized}
+            aria-label={`${current.label}. Show all pages`}
+            className="dock-mini chrome-material chrome-focus"
+            data-shown={minimized || undefined}
+            onClick={restore}
+            ref={miniGlass}
+            tabIndex={minimized ? 0 : -1}
+            type="button"
+          >
+            <span className="dock-mini-fill">
+              <CurrentGlyph className="size-5" />
+              {current.label}
+            </span>
+          </button>
         )}
       </div>
-    </>
+
+      {ask && (
+        <TooltipProvider delayDuration={TOOLTIP_DELAY_MS}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                aria-expanded={ask.open}
+                aria-haspopup="dialog"
+                aria-keyshortcuts="Meta+K Control+K"
+                className="dock-ask chrome-material chrome-focus"
+                data-present={ask.present || undefined}
+                onClick={ask.onOpen}
+                // Focus handed back after a pointer close is not a request
+                // for the tooltip; keyboard focus still shows the shortcut.
+                onFocus={(event) => {
+                  if (!event.currentTarget.matches(':focus-visible')) event.preventDefault()
+                }}
+                ref={askGlass}
+                type="button"
+              >
+                <AskGlyph className="size-6 text-(--chrome-glyph) md:size-4" />
+                <span className="max-md:sr-only">Ask</span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent className="max-md:hidden" side="top" sideOffset={8}>
+              Ask
+              <Kbd>{shortcutKeys()}</Kbd>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+    </div>
   )
 }
