@@ -244,7 +244,7 @@ function TranscriptTurn({
  * than a chat partner's.
  */
 const answerBody = 'text-[0.9375rem]/6 md:text-sm/[1.375rem]'
-const questionBody = 'rounded-xl rounded-br-sm px-3.5 py-2 text-[0.9375rem]/[1.375rem] md:text-sm/5'
+const questionBody = 'rounded-md rounded-br-xs px-3.5 py-2 text-[0.9375rem]/[1.375rem] md:text-sm/5'
 
 /** The assistant's words with no message of their own: a handoff's lead line. */
 function AskReply({ children }: { children: string }) {

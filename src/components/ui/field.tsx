@@ -55,7 +55,7 @@ function FieldGroup({
       data-variant={variant}
       className={cn(
         'group/field-group @container/field-group flex w-full flex-col gap-4 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4',
-        'data-[variant=inset]:gap-0 data-[variant=inset]:overflow-hidden data-[variant=inset]:rounded-lg data-[variant=inset]:bg-background data-[variant=inset]:shadow-xs data-[variant=inset]:ring-1 data-[variant=inset]:ring-foreground/10 dark:data-[variant=inset]:bg-input/30',
+        'data-[variant=inset]:gap-0 data-[variant=inset]:overflow-hidden data-[variant=inset]:rounded-md data-[variant=inset]:bg-background data-[variant=inset]:shadow-xs data-[variant=inset]:ring-1 data-[variant=inset]:ring-foreground/10 dark:data-[variant=inset]:bg-input/30',
         className,
       )}
       {...props}

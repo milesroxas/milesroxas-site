@@ -4,17 +4,8 @@ import { IconAlertCircle, IconArrowUpLeft, IconX } from '@tabler/icons-react'
 import { useLenis } from 'lenis/react'
 import { usePathname } from 'next/navigation'
 import { Dialog as DialogPrimitive } from 'radix-ui'
-import {
-  createRef,
-  type Ref,
-  type RefObject,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import { createRef, type RefObject, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AskGlyph } from '@/components/SiteChrome/glyphs'
-import { GLASS_CONTROL, GLASS_PANEL, useLiquidGlass } from '@/components/SiteChrome/liquid-glass'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import {
   MessageScroller,
@@ -315,9 +306,6 @@ function AskDialog({
   const surfaceRef = useRef<HTMLDivElement>(null)
   const { mounted } = usePresence(surfaceRef, open)
   const refs = useAskMorph({ open, mounted, instant, escaped, reducedMotion, triggerRef })
-  const panelGlass = useLiquidGlass(GLASS_PANEL, refs.panel)
-  const fieldGlass = useLiquidGlass(GLASS_CONTROL, refs.field)
-  const closeGlass = useLiquidGlass(GLASS_CONTROL, refs.close)
 
   useEffect(() => onPresenceChange(mounted), [mounted, onPresenceChange])
 
@@ -357,7 +345,7 @@ function AskDialog({
               refs.surface.current = element
             }}
           >
-            <section className="ask-panel chrome-panel" ref={panelGlass}>
+            <section className="ask-panel chrome-panel" ref={refs.panel}>
               <header className="ask-panel-header">
                 <DialogPrimitive.Title className="font-semibold text-[0.9375rem]/5">
                   Ask
@@ -373,12 +361,12 @@ function AskDialog({
                 chat={chat}
                 className="flex-1"
                 fieldClassName="chrome-material border-transparent"
-                fieldRef={fieldGlass}
+                fieldRef={refs.field}
                 inputRef={inputRef}
               />
               <DialogPrimitive.Close
                 className="ask-close chrome-material chrome-focus pressable"
-                ref={closeGlass}
+                ref={refs.close}
               >
                 <IconX aria-hidden className="size-3.5" stroke={2} />
                 <span className="sr-only">Close Ask</span>
@@ -404,7 +392,6 @@ function AskSheet({
   children,
 }: SurfaceProps) {
   const sheetRef = useRef<HTMLDivElement>(null)
-  const sheetGlass = useLiquidGlass(GLASS_PANEL, sheetRef)
   const inputRef = useRef<HTMLInputElement>(null)
   // A drag has already played the exit; the sheet must not play it again.
   const [dragged, setDragged] = useState(false)
@@ -420,7 +407,7 @@ function AskSheet({
     <Sheet onOpenChange={onOpenChange} open={open}>
       <SheetContent
         className={cn(
-          'ask-sheet chrome-panel gap-0 rounded-[1.25rem] border-t-0 p-0 text-foreground',
+          'ask-sheet chrome-panel gap-0 rounded-lg border-t-0 p-0 text-foreground',
           'data-[side=bottom]:inset-x-2 data-[side=bottom]:bottom-[max(0.5rem,env(safe-area-inset-bottom))]',
           'duration-300 ease-(--ease-out-quint) data-closed:duration-200',
           'data-[side=bottom]:data-open:slide-in-from-bottom-full data-[side=bottom]:data-closed:slide-out-to-bottom-full',
@@ -440,7 +427,7 @@ function AskSheet({
         }}
         overlayClassName="bg-foreground/22 supports-backdrop-filter:backdrop-blur-none"
         data-chrome=""
-        ref={sheetGlass}
+        ref={sheetRef}
         showCloseButton={false}
         side="bottom"
       >
@@ -459,7 +446,7 @@ function AskSheet({
           </SheetTitle>
           <SheetDescription className="sr-only">{ASK_SCOPE}</SheetDescription>
           <button
-            className="pressable relative flex size-7 items-center justify-center rounded-lg bg-foreground/8 text-foreground/75 after:absolute after:size-11"
+            className="pressable relative flex size-7 items-center justify-center rounded-md bg-foreground/8 text-foreground/75 after:absolute after:size-11"
             onClick={() => onOpenChange(false)}
             type="button"
           >
@@ -498,7 +485,7 @@ function AskField({
   chat: AskChat
   className?: string
   fieldClassName?: string
-  fieldRef?: Ref<HTMLDivElement>
+  fieldRef?: RefObject<HTMLDivElement | null>
   inputRef: RefObject<HTMLInputElement | null>
 }) {
   const { question, setQuestion, submit, busy, canSend, stop, messages } = chat
@@ -551,7 +538,7 @@ function AskBody({
   const failure = error ? (
     <div
       className={cn(
-        'mx-5 mb-4 flex items-start gap-2 rounded-[0.625rem] bg-destructive/6 px-3 py-2.5 md:mx-4.5 md:rounded-lg',
+        'mx-5 mb-4 flex items-start gap-2 rounded-md bg-destructive/6 px-3 py-2.5 md:mx-4.5',
         transcriptItemEnter,
       )}
       role="alert"

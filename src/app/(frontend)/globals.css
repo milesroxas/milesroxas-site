@@ -1372,8 +1372,8 @@
 }
 
 /* ==========================================================================
-   Site chrome (src/components/SiteChrome): the top bar, the dock, the scroll
-   edges and the Ask surface, as approved in Paper ("Chrome — B revised").
+   Site chrome (src/components/SiteChrome): the top bar, the dock and the Ask
+   surface, as approved in Paper ("Chrome — B revised").
    ========================================================================== */
 
 :root {
@@ -1381,11 +1381,12 @@
   --chrome-top: 2.75rem;
   /* The dock: its height, its lift off the viewport's bottom edge, the inset
      between its edge and the tabs inside it, and its corner. Phone first: a
-     52px icon tab bar 12px up; a 40px bar 24px up from md. */
+     52px icon tab bar 12px up; a 40px bar 24px up from md. The corner is the
+     site's own (`--radius`, the cards' and media's 8px) at every size. */
   --dock-height: 3.25rem;
   --dock-bottom: 0.75rem;
   --dock-inset: 0.25rem;
-  --dock-radius: 1rem;
+  --dock-radius: var(--radius);
   /* Corners inside the dock are concentric with it: its radius less the inset. */
   --dock-item-radius: calc(var(--dock-radius) - var(--dock-inset));
   /* Editors see the admin bar pinned along the bottom; the dock sits on it. */
@@ -1394,13 +1395,14 @@
      clear under its last line (Footer) and what the Contents button stands on. */
   --dock-clearance: calc(var(--dock-bottom) + var(--dock-height));
   /* The Ask field: on a phone a 44px touch row on the sheet; from md the
-     dock's own height and corner, since the field takes the Ask button's
-     place. The send button sits inside its end, concentric with it. */
+     dock's own height, since the field takes the Ask button's place. Its
+     corner is the dock's. The send button sits inside its end, concentric
+     with it, and never squarer than the site's small corner. */
   --ask-field-height: 2.75rem;
-  --ask-field-radius: 0.875rem;
+  --ask-field-radius: var(--dock-radius);
   --ask-send-size: 2rem;
   --ask-field-inset: calc((var(--ask-field-height) - var(--ask-send-size)) / 2);
-  --ask-send-radius: calc(var(--ask-field-radius) - var(--ask-field-inset));
+  --ask-send-radius: max(var(--radius-sm), calc(var(--ask-field-radius) - var(--ask-field-inset)));
 }
 
 :root:has(.admin-bar.block) {
@@ -1413,9 +1415,7 @@
     --chrome-top: 5rem;
     --dock-height: 2.5rem;
     --dock-bottom: 1.5rem;
-    --dock-radius: 0.75rem;
     --ask-field-height: var(--dock-height);
-    --ask-field-radius: var(--dock-radius);
   }
 
   :root:has(.admin-bar.block) {
@@ -1423,46 +1423,86 @@
   }
 }
 
-/* The chrome's glass, stated once: the liquid glass of Codrops' "Infinite
-   Liquid Glass Grid", ported to the page (src/components/SiteChrome/
-   liquid-glass). Every floating surface reads these, and one that floats
-   over a dark band carries `data-theme="dark"`, which swaps the set.
+/* The chrome's glass, stated once. Every floating surface reads these, and
+   one that floats over a dark band carries `data-theme="dark"`, which swaps
+   the set. A glass surface is one layer, lit from above:
 
-   From the page up: the backdrop, refracted through the glass's bevel
-   (`--glass-filter`, Chromium) and softly frosted and saturated; the tint;
-   the light on the glass (`--glass-highlight`: the fresnel environment and
-   the rim, drawn for the surface's own size and corner); a half-pixel
-   hairline and a lift. Before the glass is drawn, and wherever SVG
-   backdrop filters are not applied, the surface is the frost and the tint
-   alone. Controls are thin glass; surfaces that hold reading (the Ask panel
-   and sheet, `.chrome-panel`) are thicker: more tint, more frost, a deeper
-   lift. */
+   - the body: one linear gradient, a touch denser at the top where the light
+     falls, over a frost (backdrop blur, with a saturation lift so colour
+     under the glass stays alive rather than turning grey);
+   - the rim: a 1px stroke drawn in the surface's `::before`, a linear
+     gradient masked to the edge. Bright where the top edge catches the
+     light, near clear down the sides, and a softer glow along the bottom,
+     where light that entered through the top leaves the slab;
+   - a half-pixel hairline and a lift, so it floats.
+
+   Legibility first: the tint is dense enough that full-ink labels hold on
+   any backdrop, and the dock turns dark over dark bands rather than thinning
+   its tint. Controls are regular glass; surfaces that hold reading (the Ask
+   panel and sheet, `.chrome-panel`) are thick glass: denser, more frost, a
+   deeper lift. */
+@property --glass-top {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --glass-bottom {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --glass-rim-top {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --glass-rim-bottom {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
 [data-chrome] {
   --chrome-ink: var(--foreground);
   --chrome-ink-muted: #52525b;
   --chrome-ink-quiet: #5f5f66;
   --chrome-glyph: var(--brand);
-  --chrome-fill: rgb(255 255 255 / 0.6);
-  --chrome-fill-thick: rgb(255 255 255 / 0.82);
+  --chrome-glass-top: rgb(255 255 255 / 0.84);
+  --chrome-glass-bottom: rgb(255 255 255 / 0.7);
+  --chrome-glass-thick-top: rgb(255 255 255 / 0.93);
+  --chrome-glass-thick-bottom: rgb(255 255 255 / 0.86);
+  --chrome-rim-top: rgb(255 255 255 / 0.95);
+  --chrome-rim-bottom: rgb(255 255 255 / 0.5);
+  --chrome-frost: 24px;
+  --chrome-frost-thick: 40px;
   --chrome-fill-solid: #fff;
-  --chrome-fill-hover: rgb(255 255 255 / 0.76);
-  --chrome-blur: 3px;
   --chrome-selected: rgb(12 12 14 / 0.08);
   --chrome-hover: rgb(12 12 14 / 0.04);
   --chrome-press: rgb(12 12 14 / 0.09);
   --chrome-hairline: rgb(12 12 14 / 0.1);
   --chrome-lift: 0 1px 2px rgb(12 12 14 / 0.06), 0 8px 24px -6px rgb(12 12 14 / 0.16);
   --chrome-lift-thick: 0 2px 6px rgb(12 12 14 / 0.06), 0 24px 56px -12px rgb(12 12 14 / 0.3);
+  /* What a glass surface transitions when its theme swaps: a 240ms
+     cross-fade, never a cut. The registered stops are named bare, as a
+     transition names a property. */
+  /* biome-ignore lint/correctness/noMissingVarFunction: transition property names, not values */
+  --chrome-glass-swap: --glass-top 240ms ease, --glass-bottom 240ms ease, box-shadow 240ms ease;
 }
 
 [data-chrome][data-theme="dark"] {
   --chrome-ink-muted: #c4c4ca;
   --chrome-ink-quiet: #a1a1aa;
   --chrome-glyph: #f47a36;
-  --chrome-fill: rgb(30 30 33 / 0.62);
-  --chrome-fill-thick: rgb(30 30 33 / 0.84);
+  --chrome-glass-top: rgb(58 58 62 / 0.74);
+  --chrome-glass-bottom: rgb(30 30 33 / 0.8);
+  --chrome-glass-thick-top: rgb(46 46 50 / 0.9);
+  --chrome-glass-thick-bottom: rgb(28 28 31 / 0.92);
+  --chrome-rim-top: rgb(255 255 255 / 0.3);
+  --chrome-rim-bottom: rgb(255 255 255 / 0.1);
   --chrome-fill-solid: #1c1c1f;
-  --chrome-fill-hover: rgb(46 46 50 / 0.74);
   --chrome-selected: rgb(255 255 255 / 0.13);
   --chrome-hover: rgb(255 255 255 / 0.06);
   --chrome-press: rgb(255 255 255 / 0.16);
@@ -1471,25 +1511,73 @@
   --chrome-lift-thick: 0 2px 6px rgb(0 0 0 / 0.3), 0 24px 56px -12px rgb(0 0 0 / 0.6);
 }
 
-/* The swap between the two materials is a 240ms cross-fade, never a cut. */
-.chrome-material,
-.chrome-panel {
-  background-color: var(--chrome-fill);
-  background-image: var(--glass-highlight, none);
-  background-origin: border-box;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  box-shadow:
-    0 0 0 0.5px var(--chrome-hairline),
-    var(--chrome-lift);
-  -webkit-backdrop-filter: blur(var(--chrome-blur)) saturate(180%);
-  backdrop-filter: var(--glass-filter,) blur(var(--chrome-blur)) saturate(180%);
+/* A glass surface must be a positioned box: its rim is drawn in `::before`.
+   The shorthand `background` also clears any fill a component brings, so
+   the gradient is the only layer. */
+.chrome-material {
+  --glass-top: var(--chrome-glass-top);
+  --glass-bottom: var(--chrome-glass-bottom);
+  --glass-frost: var(--chrome-frost);
 }
 
 .chrome-panel {
-  --chrome-fill: var(--chrome-fill-thick);
+  --glass-top: var(--chrome-glass-thick-top);
+  --glass-bottom: var(--chrome-glass-thick-bottom);
+  --glass-frost: var(--chrome-frost-thick);
   --chrome-lift: var(--chrome-lift-thick);
-  --chrome-blur: 16px;
+}
+
+.chrome-material,
+.chrome-panel {
+  background: linear-gradient(to bottom, var(--glass-top), var(--glass-bottom));
+  box-shadow:
+    0 0 0 0.5px var(--chrome-hairline),
+    var(--chrome-lift);
+  -webkit-backdrop-filter: blur(var(--glass-frost)) saturate(180%);
+  backdrop-filter: blur(var(--glass-frost)) saturate(180%);
+}
+
+.chrome-material::before,
+.chrome-panel::before {
+  --glass-rim-top: var(--chrome-rim-top);
+  --glass-rim-bottom: var(--chrome-rim-bottom);
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    to bottom,
+    var(--glass-rim-top),
+    color-mix(in srgb, var(--glass-rim-top) 20%, transparent) 35%,
+    color-mix(in srgb, var(--glass-rim-bottom) 30%, transparent) 70%,
+    var(--glass-rim-bottom)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  mask-clip: content-box, border-box;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition:
+    --glass-rim-top 240ms ease,
+    --glass-rim-bottom 240ms ease;
+}
+
+/* The Ask field's 1px border (its focus edge) sits outside its padding box;
+   the rim covers the border box. */
+.chrome-material[data-slot="input-group"]::before {
+  inset: -1px;
+}
+
+/* Hover thickens the glass toward solid; it never stacks a fill on it. */
+@media (hover: hover) and (pointer: fine) {
+  .chrome-material:is(.dock-ask, .ask-close):hover {
+    --glass-top: color-mix(in oklab, var(--chrome-glass-top), var(--chrome-fill-solid) 50%);
+    --glass-bottom: color-mix(in oklab, var(--chrome-glass-bottom), var(--chrome-fill-solid) 50%);
+  }
 }
 
 .chrome-focus {
@@ -1555,8 +1643,7 @@
   border-radius: var(--dock-radius);
   transform-origin: left center;
   transition:
-    background-color 240ms ease,
-    box-shadow 240ms ease,
+    var(--chrome-glass-swap),
     opacity 200ms var(--ease-out-quint),
     scale 300ms var(--ease-out-quint),
     filter 200ms var(--ease-out-quint);
@@ -1651,8 +1738,7 @@
   pointer-events: none;
   transform-origin: left center;
   transition:
-    background-color 240ms ease,
-    box-shadow 240ms ease,
+    var(--chrome-glass-swap),
     opacity 200ms var(--ease-out-quint),
     filter 200ms var(--ease-out-quint),
     scale var(--press-release-duration) var(--press-release-ease);
@@ -1677,8 +1763,6 @@
   align-items: center;
   gap: 0.375rem;
   padding-inline: 0.875rem 1rem;
-  border-radius: var(--dock-item-radius);
-  background-color: var(--chrome-selected);
   color: var(--chrome-ink);
   font-size: 0.8125rem;
   line-height: 1rem;
@@ -1689,6 +1773,7 @@
    the Ask field the instant the panel opens, and takes it back the instant
    the field has closed into its shape, so the two never show at once. */
 .dock-ask {
+  position: relative;
   display: flex;
   flex-shrink: 0;
   align-items: center;
@@ -1702,16 +1787,9 @@
   line-height: 1rem;
   font-weight: 500;
   transition:
-    background-color 240ms ease,
-    box-shadow 240ms ease,
+    var(--chrome-glass-swap),
     color 240ms ease,
     scale var(--press-release-duration) var(--press-release-ease);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .dock-ask:hover {
-    background-color: var(--chrome-fill-hover);
-  }
 }
 
 .dock-ask:active {
@@ -1811,10 +1889,11 @@
 }
 
 .ask-panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow: clip;
-  border-radius: 1rem;
+  border-radius: var(--radius);
   color: var(--foreground);
   transform-origin: bottom center;
 }
@@ -1832,6 +1911,7 @@
 }
 
 .ask-close {
+  position: relative;
   display: flex;
   flex-shrink: 0;
   align-items: center;
@@ -1840,12 +1920,6 @@
   height: var(--dock-height);
   border-radius: var(--dock-radius);
   color: var(--chrome-ink);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .ask-close:hover {
-    background-color: var(--chrome-fill-hover);
-  }
 }
 
 .ask-transcript {
@@ -1866,7 +1940,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6875rem 0.75rem;
-  border-radius: 0.625rem;
+  border-radius: var(--radius-md);
   background-color: color-mix(in oklab, var(--foreground) 5%, transparent);
   color: var(--foreground);
   font-size: 0.9375rem;
@@ -1883,7 +1957,6 @@
 @media (min-width: 48rem) {
   .ask-suggestion {
     padding: 0.5rem 0.625rem;
-    border-radius: 0.5rem;
     font-size: 0.875rem;
   }
 }
@@ -1920,8 +1993,8 @@
   }
 }
 
-/* Reduce transparency: the glass becomes solid, a hairline replaces the
-   soft shadow. */
+/* Reduce transparency: the glass becomes solid and unfrosted, with a firmer
+   hairline. */
 @media (prefers-reduced-transparency: reduce) {
   .chrome-material,
   .chrome-panel {
@@ -1952,13 +2025,16 @@
     box-shadow: inset 0 0 0 1.5px var(--chrome-ink);
   }
 
-  .dock-indicator,
-  .dock-mini-fill {
+  .chrome-material::before,
+  .chrome-panel::before {
+    display: none;
+  }
+
+  .dock-indicator {
     background-color: var(--chrome-ink);
   }
 
-  .dock-tab[aria-current="page"],
-  .dock-mini-fill {
+  .dock-tab[aria-current="page"] {
     color: var(--chrome-fill-solid);
   }
 }

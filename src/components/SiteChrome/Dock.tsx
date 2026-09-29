@@ -7,7 +7,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useIsMobile } from '@/hooks/use-mobile'
 import { onChromeScroll } from './chrome-scroll'
 import { AskGlyph, glyphForPath } from './glyphs'
-import { GLASS_CONTROL, useLiquidGlass } from './liquid-glass'
 import { PageTabs } from './PageTabs'
 import type { ChromeTab } from './tabs'
 import { useOverDarkBand } from './use-over-dark-band'
@@ -84,8 +83,6 @@ export function Dock({ tabs, active, onSelect, ask }: DockProps) {
   const [minimized, restore] = useMinimizedTabs(phone && active >= 0)
   const current = tabs[active]
   const CurrentGlyph = current ? glyphForPath(current.href) : null
-  const miniGlass = useLiquidGlass<HTMLButtonElement>(GLASS_CONTROL)
-  const askGlass = useLiquidGlass(GLASS_CONTROL, ask?.triggerRef)
 
   return (
     <div
@@ -104,7 +101,6 @@ export function Dock({ tabs, active, onSelect, ask }: DockProps) {
             className="dock-mini chrome-material chrome-focus"
             data-shown={minimized || undefined}
             onClick={restore}
-            ref={miniGlass}
             tabIndex={minimized ? 0 : -1}
             type="button"
           >
@@ -132,7 +128,7 @@ export function Dock({ tabs, active, onSelect, ask }: DockProps) {
                 onFocus={(event) => {
                   if (!event.currentTarget.matches(':focus-visible')) event.preventDefault()
                 }}
-                ref={askGlass}
+                ref={ask.triggerRef}
                 type="button"
               >
                 <AskGlyph className="size-6 text-(--chrome-glyph) md:size-4" />

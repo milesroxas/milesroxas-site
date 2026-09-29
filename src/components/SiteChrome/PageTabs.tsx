@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { type MouseEvent, useLayoutEffect, useRef } from 'react'
 import { cn } from '@/utilities/ui'
 import { glyphForPath } from './glyphs'
-import { GLASS_CONTROL, useLiquidGlass } from './liquid-glass'
 import type { ChromeTab } from './tabs'
 
 /** A click the browser handles itself (new tab, new window, download): the page does not change here. */
@@ -43,7 +42,6 @@ type PageTabsProps = {
 export function PageTabs({ tabs, active, onSelect, minimized, className }: PageTabsProps) {
   const indicatorRef = useRef<HTMLSpanElement>(null)
   const tabRefs = useRef<Array<HTMLAnchorElement | null>>([])
-  const glass = useLiquidGlass<HTMLElement>(GLASS_CONTROL)
 
   useLayoutEffect(() => {
     const indicator = indicatorRef.current
@@ -76,7 +74,6 @@ export function PageTabs({ tabs, active, onSelect, minimized, className }: PageT
       className={cn('dock-tabs chrome-material relative', className)}
       data-minimized={minimized || undefined}
       inert={minimized || undefined}
-      ref={glass}
     >
       <span aria-hidden className="dock-indicator" ref={indicatorRef} />
       <ul className="flex h-full md:gap-0.5">

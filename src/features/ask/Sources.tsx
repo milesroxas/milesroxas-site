@@ -39,12 +39,12 @@ export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
   const listId = useId()
 
   return (
-    <div className="rounded-[0.625rem] bg-foreground/5">
+    <div className="rounded-md bg-foreground/5">
       <button
         aria-controls={listId}
         aria-expanded={open}
         className={cn(
-          'group/disclosure pressable pressable-subtle flex min-h-10 w-full items-center gap-2 rounded-[0.625rem] px-2.5 text-left aria-expanded:rounded-b-none md:min-h-8',
+          'group/disclosure pressable pressable-subtle flex min-h-10 w-full items-center gap-2 rounded-md px-2.5 text-left aria-expanded:rounded-b-none md:min-h-8',
           ROW_HOVER,
           ROW_FOCUS,
         )}
@@ -62,7 +62,7 @@ export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
 
       <div className="disclosure-body" data-open={open || undefined} id={listId} inert={!open}>
         <div>
-          <ul className="mx-1 mb-1 overflow-hidden rounded-md bg-popover shadow-xs ring-1 ring-foreground/6">
+          <ul className="mx-1 mb-1 overflow-hidden rounded-sm bg-popover shadow-xs ring-1 ring-foreground/6">
             {sources.map((source) => (
               <SourceRow key={source.sourceId} source={source} />
             ))}

@@ -26,35 +26,37 @@ The chrome on every public route: the top bar, the dock and the Ask panel. The a
 - **Ask**: Site Info › Ask › Hide Ask removes the button, the shortcut and
   `/ask`. Site Info › Ask › Suggested questions fills the empty panel.
 - **Sizes and materials**: the `--chrome-top`, `--dock-*` and `--ask-*`
-  tokens and the `[data-chrome]` glass tokens in `globals.css`. Corners are
+  tokens and the `[data-chrome]` glass tokens in `globals.css`. Corners use
+  the site's radius scale (`--radius` 8px outside, `--radius-md` 6px for rows
+  and cards in the Ask panel, `--radius-sm` 4px at the least) and are
   concentric: an inner corner is the outer one less the inset
-  (`--dock-item-radius`, `--ask-send-radius`). Controls are thin glass
+  (`--dock-item-radius`, `--ask-send-radius`). Controls are regular glass
   (`.chrome-material`); the Ask panel and sheet are thick glass
   (`.chrome-panel`). The footer (`src/Footer/Component.tsx`)
   keeps `--dock-clearance` clear under every page's last line.
 
-## Liquid glass
+## Glass
 
-Every glass surface takes `useLiquidGlass` (`SiteChrome/liquid-glass`), a
-port of the material in Codrops' "Building an Infinite Liquid Glass Grid with
-Three.js, WebGPU and TSL" (2026-09-08). The article shades a WebGPU plane
-over its own video; the chrome floats over DOM, which no canvas can sample,
-so the same functions (`optics.ts`: rounded-box SDF, superellipse bevel,
-normals from its slope, `refract` with a per-channel IOR, fresnel and rim)
-are evaluated per surface size into two images:
+One material for every floating surface, stated once in `globals.css`
+(`.chrome-material` for controls, `.chrome-panel` for the Ask panel and
+sheet). It is one layer, lit from above:
 
-- a displacement map, applied as an SVG `backdrop-filter`
-  (`--glass-filter`): three `feDisplacementMap` passes, one per colour
-  channel at its own scale for the dispersion, screened back together.
-  Chromium only; Safari and Firefox keep the frost and tint.
-- a highlight (`--glass-highlight`): the fresnel environment and the rim,
-  painted over the tint in every browser.
+- **Body**: one linear gradient, a touch denser at the top, over a backdrop
+  blur with a 180% saturation lift. The `background` shorthand clears any
+  fill a component brings, so nothing stacks on the glass.
+- **Rim**: a 1px stroke in the surface's `::before`, a linear gradient masked
+  to the edge (`mask-composite: exclude`). Bright along the top edge, near
+  clear down the sides, a softer glow along the bottom. A glass surface must
+  be a positioned box for its rim.
+- **Hairline and lift**: a half-pixel ink ring and a drop shadow.
 
-The images redraw when a surface's layout size or corner changes (a
-`ResizeObserver`, once a frame at most), never for transforms. Tune the look
-in `GLASS_CONTROL` and `GLASS_PANEL`; the frost and tint are the
-`[data-chrome]` tokens. Reduce transparency and increase contrast drop the
-glass for a solid fill.
+The values are the `[data-chrome]` tokens (`--chrome-glass-*`,
+`--chrome-rim-*`, `--chrome-frost*`). Legibility comes first: the tint is
+dense enough for full-ink labels over photos and text, and the dock turns
+dark over dark bands instead of thinning. The gradient stops are registered
+`@property` colours, so the light/dark swap and hover cross-fade in 240ms.
+Hover moves the glass halfway to solid. Reduce transparency makes it solid
+and unfrosted; increase contrast adds an ink border and drops the rim.
 
 ## Dark bands
 
