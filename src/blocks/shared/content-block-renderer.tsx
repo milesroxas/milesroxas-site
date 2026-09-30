@@ -6,6 +6,8 @@ import { FaqBlock } from '@/blocks/faq/Component'
 import { FeatureHeadingOffsetBlock } from '@/blocks/feature/HeadingOffset/Component'
 import { FeatureImageStatementBlock } from '@/blocks/feature/ImageStatement/Component'
 import { FeatureTabsBlock } from '@/blocks/feature/Tabs/Component'
+import { ChartBlock } from '@/blocks/figures/chart/Component'
+import { DiagramBlock } from '@/blocks/figures/diagram/Component'
 import { FullMediaBlock } from '@/blocks/full-media/Component'
 import { ImagePairBlock } from '@/blocks/image-pair/Component'
 import { InsightListBlock } from '@/blocks/insight-list/Component'
@@ -37,7 +39,9 @@ export type ContentBlockComponents = Record<string, React.ComponentType<never>>
 export const sectionChildComponents = {
   caption: CaptionBlock,
   carousel: CarouselBlock,
+  chart: ChartBlock,
   code: CodeSectionBlock,
+  diagram: DiagramBlock,
   faq: FaqBlock,
   featureHeadingOffset: FeatureHeadingOffsetBlock,
   featureImageStatement: FeatureImageStatementBlock,

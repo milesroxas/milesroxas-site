@@ -10,6 +10,7 @@ import { authenticated } from '@/access/authenticated'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import type { Page, Post } from '@/payload-types'
 import { askIndexPlugin } from '@/plugins/ask-index'
+import { figuresPlugin } from '@/plugins/figures'
 import { mcp } from '@/plugins/mcp'
 import { streakStudioPlugin } from '@/plugins/streak-studio'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
@@ -118,6 +119,9 @@ export const plugins: Plugin[] = [
       },
     },
   }),
+  // Validates every figure spec and computes diagram geometry on save
+  // (docs/figures.md). Hooks only the collections that offer a figure block.
+  figuresPlugin(),
   // Agent authoring server at /api/mcp (docs/mcp.md). Full config
   // (collections, globals, capability policy, block tools) lives in ./mcp.
   mcp,

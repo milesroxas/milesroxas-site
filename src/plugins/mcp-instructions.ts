@@ -19,6 +19,7 @@ export const MCP_INSTRUCTIONS = [
   'Relationship fields take document ids: look them up with a find tool.',
   'Omit `slug` and `generateSlug`; if a create tool requires one, send a short URL-safe value.',
   "Rich text takes Lexical JSON, except a field with a write-only `markdown` sibling (a Rich text block's `body`): send Markdown there. It refuses syntax the field cannot hold and replaces existing content only with `replace: true`.",
+  'Charts and diagrams are `chart` and `diagram` blocks with a JSON `spec` (see the tool schema); every figure needs a `textAlternative`. Never send `geometry`: it is computed on save.',
   'A refused save names each problem by path: fix those and resend.',
   "A visual slot's `studio` field takes a Studio look id: the streak-looks tools explain looks.",
   'A work with `isProtected` is client work behind an access link: never quote it in public copy.',

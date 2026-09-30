@@ -7,6 +7,8 @@ import { Faq } from '@/blocks/faq/config'
 import { FeatureHeadingOffset } from '@/blocks/feature/HeadingOffset/config'
 import { FeatureImageStatement } from '@/blocks/feature/ImageStatement/config'
 import { FeatureTabs } from '@/blocks/feature/Tabs/config'
+import { Chart } from '@/blocks/figures/chart/config'
+import { Diagram } from '@/blocks/figures/diagram/config'
 import { FullMedia } from '@/blocks/full-media/config'
 import { ImagePair } from '@/blocks/image-pair/config'
 import { InsightList } from '@/blocks/insight-list/config'
@@ -18,8 +20,15 @@ import { SplitImageOffset } from '@/blocks/split-image-offset/config'
 import { YouTube } from '@/blocks/youtube/config'
 
 /**
+ * The figure blocks (docs/figures.md), named so a surface that builds its run
+ * by hand takes the same pair. `plugins/figures` finds the collections that
+ * offer them by slug, so a new surface needs no registration.
+ */
+export const figureBlocks: Block[] = [Chart, Diagram]
+
+/**
  * The Section-nestable run, ported from sas-site (docs/composer-roadmap.md,
- * Phase 3) without its figures and story blocks. Stated once so every
+ * Phase 3) without its story blocks. Stated once so every
  * composition surface offers the same blocks under the same group labels.
  * Each collection nests this run inside its own Section instance and spreads
  * it into its top-level drawer list.
@@ -44,6 +53,8 @@ export const sectionNestableBlocks: Block[] = [
   // Text
   RichTextBlock,
   Code,
+  // Figures
+  ...figureBlocks,
   // Interactive
   Faq,
   Carousel,

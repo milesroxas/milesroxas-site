@@ -1,10 +1,10 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
-Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6 is built and proven on the local copy of production; its production run waits for `main` (runbook under Phase 6). Phase 7: the code-only bullets are done, the content ones wait for Phase 6 to soak. Phase 8 not started. Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
+Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6's script is built and proven on the local Docker copy of production and on the Neon `preview/dev` branch; its production run is a cutover step (Phase 9). Phase 7: the code-only bullets are done, the three content ones wait for the cutover to soak. Phase 8: figures built 2026-09-30, the rest not started. Three workstreams landed on `dev` after the phases and are documented where they live, not here: the top bar, dock and Ask panel (`docs/site-chrome.md`, supersedes D10 and O3), the `/contact` inquiry form, and the `milesroxas-cms` MCP server (`docs/mcp.md`). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
-Not in scope, on purpose: the Content Hub (case studies, lab projects, story beats, asset libraries, organizations, taxonomy collections), newsletters, the MCP server, the takeover menu, route transitions and hero landing, the AEO plugin (`llms.txt`), Sentry. Figures (chart, diagram, bespoke) are optional (Phase 8).
+Not in scope, on purpose: the Content Hub (case studies, lab projects, story beats, asset libraries, organizations, taxonomy collections), newsletters, the takeover menu, route transitions and hero landing, the AEO plugin (`llms.txt`), Sentry. Figures (chart, diagram, bespoke) are Phase 8. The `milesroxas-cms` MCP server was out of scope for this plan and shipped on its own (`docs/mcp.md`).
 
 Agents: read this before touching blocks, themes, heroes, or migrations in this repo. It plays the role `sas:docs/blocks-reorg-roadmap.md` plays there. Read that file too before porting: it records why the block system is shaped the way it is.
 
@@ -13,7 +13,8 @@ Agents: read this before touching blocks, themes, heroes, or migrations in this 
 ## 0. Rules that hold for every phase
 
 - **Expand, migrate, contract.** Every phase up to 5 is additive: new tables, new columns, new blocks. No slug, `dbName`, enum value or column is renamed or dropped before Phase 7, and Phase 7 runs only after content has moved and soaked.
-- **Every deploy renders production identically** until the explicit content step (Phase 6). New blocks exist in the drawer; nothing is re-authored by a deploy.
+- **`main` is the cutover branch.** Every phase lands on `dev`. `dev` merges to `main` once, in Phase 9, so production takes one CI migration pass and one content run instead of a deploy per phase. No production deploy carries a half-finished composer.
+- **Every deploy renders production identically** until the explicit content step (Phase 9). New blocks exist in the drawer; nothing is re-authored by a deploy.
 - **Push in dev, migrations in CI** (`MIGRATIONS.md`). `pnpm migrate:create` only after asking, one migration per phase PR, `pnpm check:migrations` and `pnpm check:migrations:drift` before every push. Expected prompts per phase are in Appendix A; if a **rename** prompt appears where the sheet says none, stop and re-check `check:migrations:drift`.
 - **Copy sas-site verbatim where the code is site-neutral; adapt at the seams only.** The seams are listed per phase. A block's fields, layout classes, reveal markers and tuning constants are never "improved" during the port. Parity first, taste later.
 - **Legacy blocks keep rendering forever.** `content`, `mediaBlock`, `slider`, `tabs`, `archive`, `cta`, `formBlock`, `callout` keep their slugs, tables, components and `data-theme` wrapper until Phase 7 replaces the wrapper. Editors can keep using them.
@@ -85,9 +86,9 @@ Consequence: the real migration surface is about 140 block rows on 10 works and 
 | Site Info global (AEO plugin) | new minimal `site-info` global | Only what Ask reads: `ask.hidden`, `inquiries.responseTime`, `inquiries.scheduleUrl` (Phase 5) |
 | Inquiries collection + `/api/inquiries/submit` | new (Phase 5) | Ask's team-form handoff posts here. Team-only PII, Resend notify |
 | Closing band (Footer global + per-page Closing tab) | optional (Phase 8, D4) | The Footer global was removed on purpose; re-adding it is a product call |
-| Takeover menu, `MenuAsk`, `ClosingAsk` | not ported | Ask mounts at `/ask` plus a Header nav entry (D10) |
+| Takeover menu, `MenuAsk`, `ClosingAsk` | not ported | The dock owns Ask: a panel in the bottom dock plus `/ask` (`docs/site-chrome.md`; supersedes D10) |
 | Visitor light/dark toggle, `InitTheme`, `ChromeTheme` | not ported | The site stays light; bands give per-section contrast (Section 5) |
-| Route transitions (View Transition API), hero landing, page intro | not ported | `SiteFrame` and the card FLIP transition stay as they are |
+| Route transitions (View Transition API), hero landing, page intro | not ported | The site chrome and the card FLIP transition stay as they are |
 | `BlocksDrawerTabs` admin provider, `BLOCK_GROUPS`, Section factory, `sectionNestableBlocks`, `content-block-renderer`, `reveal-variants` | ported verbatim | Phase 1 and 3 |
 | Streak Studio plugin, `fields/visual.ts`, `features/immersive` (studio, visual, streak field, light leak) | ported | Phase 2. Media-field seams in the publish endpoint |
 | Ask (`features/ask`, `endpoints/ask.ts`, `ask-index` plugin, `AskQuestions`, retention job) | ported | Phase 5. Jev/TypeSafe optional |
@@ -107,7 +108,7 @@ Consequence: the real migration surface is about 140 block rows on 10 works and 
 | D7 | The Studio plugin (Phase 2) lands **before** the block run (Phase 3). | The run's block configs spread `blockVisualSlotFields`, whose `studio` relationship needs the `streak-looks` collection. Porting the configs twice (plain upload, then slot) would generate two migrations on the same tables. Phases 1 and 2 can run in parallel Conductor workspaces |
 | D8 | The `link()` field stays milesroxas's (`reference | custom`, appearance `default | outline`). Ported blocks that ask for the `text` appearance (Rich text Actions) are configured with `['default', 'outline']`. | Adding `text` is an `ADD VALUE` on every `*_link_appearance` enum (14 of them plus `_v` twins) for one toolbar block |
 | D9 | Figures (chart, diagram, bespoke) and the figures plugin are optional, Phase 8. | They pull `elkjs`, `recharts`, `zod` spec schemas and a `beforeChange` validator; not asked for |
-| D10 | Ask mounts at `/ask` (AskWidget) and as a Header nav item. A drawer in the SiteFrame bottom bar is a Phase 8 nicety. | No takeover menu and no footer closing band here |
+| D10 | ~~Ask mounts at `/ask` (AskWidget) and as a Header nav item.~~ **Superseded 2026-09-29**: Ask is a dock panel plus `/ask`; the dock replaced the Header nav and the SiteFrame (`docs/site-chrome.md`). | No takeover menu and no footer closing band here |
 | D11 | Docker image becomes `pgvector/pgvector:pg17` (not pg18). | Neon production is Postgres 17 (`MIGRATIONS.md`); `docker-compose.yml` records a drizzle-kit issue with PG 18 named constraints. Ask needs `CREATE EXTENSION vector` |
 | D12 | The existing hero group stays; `hero.media` becomes a visual slot (`heroVisualSlotFields`) so an effect can ground the opening band. `HighImpact` keeps the FLIP clone pickup and already fades the clone out when there is no `img`/`video`. | Keeps the SiteFrame transition; adds the shader where sas-site has it |
 | D13 | Remove the dormant shader dependencies and Turbopack loader rules in Phase 7. | Nothing imports them; the ported effects are inline GLSL |
@@ -170,7 +171,7 @@ Hardcoded `data-theme` on `HighImpact`, `HomeHero`, `CallOut` and the work title
 
 ### Phase 0: preflight
 
-- [ ] Land or shelve `chore/update-deps`; start every phase branch from a clean `main`.
+- [ ] Land or shelve `chore/update-deps`; start every phase branch from a clean `dev`.
 - [ ] Dev TUI → Pull production content → local Docker DB, then Database → Back up local Docker DB. Keep the dump path in the PR description of every phase.
 - [ ] Re-run the Section 1 inventory against the fresh pull (queries are plain `count(*)` per block table plus `select theme, count(*) ... group by 1`). Also confirm the Posts inline-block count:
   ```sql
@@ -401,7 +402,7 @@ Schema added: `ask_embeddings` (drizzle, HNSW index), `ask_questions` + `_source
 - **Storybook**: the handoff plays wait for the form's settle focus and give the receipt five seconds (sas-site never ran them as browser tests). New primitives: `bubble`, `field`, `input-group`, `message`, `message-scroller`, sas-site's `card` and `textarea` (this site's textarea moved to `legacy-textarea.tsx`).
 - **Not done here**: `OPENAI_API_KEY` (and optionally `OPENAI_ADMIN_API_KEY`, `TYPESAFE_API_KEY`) must be added in Vercel before `/api/ask` answers; then run the backfill (`pnpm exec tsx --env-file=.env scripts/backfill-ask-index.ts`, or Site Info › Ask › Rebuild index). The int specs (`tests/int/ask*.int.spec.ts`) were not ported: they boot Payload against a database.
 
-### Phase 6: content migration (scripted, no admin re-authoring)
+### Phase 6: content migration (scripted, no admin re-authoring; the production run is Phase 9)
 
 Nothing before this phase changes what production renders. This phase moves every legacy block onto the sas-site run with one script, `scripts/compose-layouts.ts` (D15). Nobody rebuilds a block in admin. The script writes drafts, so production changes only when `--publish` runs.
 
@@ -490,14 +491,9 @@ Checklist:
   - The preservation check follows only the column group a Columns column renders (`content` / `contentType`): the others are leftovers from an earlier choice ("hello" in a hidden text group) that no visitor sees.
   - Legacy `blockName` ("Intro", "My Role") carries onto the first block each legacy block produces.
 
-**Production runbook for Phase 6** (after `dev` is merged to `main` and the Phase 2 to 5 migrations have run there):
-1. Decide the pending draft on `works/design-systems-for-organizational-scale` (June edits over the published version): publish or discard it in admin. Otherwise `--publish` ships it.
-2. Back up Neon (a `pg_dump` or a branch), and pull `.env.production.pulled`.
-3. `PAYLOAD_DB_PUSH=false pnpm exec tsx --env-file=.env.production.pulled scripts/compose-layouts.ts --production --dry-run`, read the report. Without `--production` the script refuses any database but the local Docker one (`--preview` targets the Neon preview branch and refuses production).
-4. Same command without `--dry-run`: drafts only, the site keeps rendering the legacy layouts. Check each work in live preview.
-5. `... --publish`, then redeploy (revalidation is skipped). To undo: `... --restore scripts/snapshots/<file>.json`.
+The production run is Phase 9, step 4.
 
-### Phase 7: contract and normalize (one PR per bullet, each with its own migration, after Phase 6 has soaked)
+### Phase 7: contract and normalize (one PR per bullet, each with its own migration, after the Phase 9 content run has soaked)
 
 - [ ] Theme enums on the five legacy blocks: `UPDATE ... WHERE theme = 'system'` → `light`, then recreate as `light | dark | neutral | brand`; components read `sectionThemeClass`; `useBlockTheme.ts` and `ClientBlockWrapper.tsx` deleted; hardcoded `data-theme` on heroes, CallOut and the work title strip become band classes. Prompt: none (enum recreate); hand-check normalize-before-cast; `pnpm check:migrations`.
 - [ ] Retire legacy blocks from the drawer once no document uses them (config only, no schema). Tables stay until a later drop.
@@ -505,16 +501,42 @@ Checklist:
 - [x] Remove dormant dependencies and config (D13), done 2026-09-27 (no consumers, no schema): `glslify`, `glslify-import`, `glslify-loader`, `glsl-canvas-js`, `glsl-noise`, `glsl-easings`, `glsl-fast-gaussian-blur`, `raw-loader`, `shader.d.ts`, the Turbopack `.glsl/.vert/.frag` rules, `src/hooks/useHoverShader.ts`, `useImageCropMaterial.ts`, `src/utilities/texturePreloader.ts`, `calculateMeshScale.ts`, `src/animations/*` (unused), `swiper`, `next-view-transitions`, `payloadcms-lexical-ext`, `hamo`, `split-type`, `leva` (no demo playgrounds here).
 - [x] Delete `src/blocks/YouTube` (Phase 3: its config and story; the component lives on as `blocks/Content/YouTubeColumn.tsx`, which the Columns block renders) and the orphan `src/global.d.ts` import of `./r3f/components/CardPlane/PlaneWithImage`, done 2026-09-27.
 
-The first three bullets stay open on purpose: each changes or retires production content, and waits for Phase 6 to have run on production and soaked.
+The first three bullets stay open on purpose: each changes or retires production content, and waits for the Phase 9 content run to have soaked. They are the only phase that ships to `main` on its own, after the cutover.
 
-### Phase 8: optional, in any order
+### Phase 8: optional, in any order (the last code phase before the cutover)
 
-- Figures (`chart`, `diagram`, `bespokeFigure`) with `sas:src/plugins/figures` and `sas:src/features/figures` (adds `elkjs`, `recharts`, `zod`). Joins the run under Figures.
+- [x] **Figures** (`chart`, `diagram`) with `sas:src/plugins/figures` and `sas:src/features/figures`, done 2026-09-30. Joins the run under Figures. Notes below; the system is documented in [figures.md](figures.md).
 - `scrollGallery` (WebGL, pinned, `self` reveal), `featureStatementLinks` (`self`, own `ScrollReveal`), a plain `mediaShowcase` (sas Lab Media showcase minus the record).
 - Closing band: re-add a Footer global with `sas:src/fields/closing.ts` and the per-page Closing tab; `ClosingAsk` then has a home.
-- Ask in the SiteFrame bottom bar as a drawer (`vaul` is installed).
 - `/demo/transitions` reveal tuner (`sas:src/widgets/transition-demo`) for retuning the two reveals on this site's type scale.
 - A visitor light/dark theme (`sas:src/providers/Theme/*`, `InitTheme`); the bands are already built for it.
+
+**Figures as built (2026-09-30).** Migration `20260930_140439_figures` (no prompts): 12 `CREATE TABLE` (`{pages,works,posts}_{chart,diagram}` and their `_v` twins), 24 `CREATE TYPE` (each table's `width` and `theme` enums), their indexes and FKs. Zero `DROP`, `RENAME`, `ADD VALUE`. `tsc`, `pnpm lint:ci`, `pnpm test:unit` (45 files, 427 tests), `pnpm test:storybook` (65 files, 365 tests), `pnpm check:migrations` and `check:migrations:drift` green; a throwaway local page rendered a chart at the top level and a diagram plus a chart inside a Section, the diagram's geometry was computed on save (6 nodes, version 1), and a bad spec was refused by path. Where the build departs from the plan above:
+
+- **Bespoke figures are not ported** (`bespokeFigure`, `features/figures/registry/`): its registry holds sas-site's own drawings, so the block would have arrived empty. The plugin, the barrel and the block list carry two kinds instead of three. Adding it later is additive.
+- **`figureBlocks`** is exported from `blocks/shared/section-blocks.ts` as sas-site does, so a surface that builds its run by hand takes the same pair. `plugins/figures` finds the collections that offer them by slug.
+- **The content walk needed nothing**: `shared/content/extract.ts` already carried `textalternative` as a text key and `spec` / `geometry` as skip keys (they came with Phase 5), so a figure reaches Ask and search through its words.
+- **Series colors** are sas-site's, re-checked against this site's grounds rather than assumed: 3.36 to 4.06 on the page ground, 5.12 to 6.47 on the dark band, all over the 3:1 non-text floor. The figures CSS (colors, diagram entrance, chart canvas fade, data disclosure) is verbatim otherwise.
+- **`recharts` is 3.10**, not sas-site's 3.8; `elkjs` matches at 0.12. No source change was needed.
+- The `@payloadcms/drizzle` patch that Phase 3 already carries covers the figure blocks too (both are offered at the top level and inside a Section).
+
+---
+
+### Phase 9: cutover (merge `dev` to `main`, once, last)
+
+Everything above lands on `dev`. This phase is the only production event: one merge, one CI migration pass, one content run.
+
+1. **Gate.** Phases 1 to 5 deployed nowhere yet, Phase 6's script proven locally and on preview, Phase 8 decided (shipped or dropped, not half-built). `tsc`, `pnpm lint:ci`, `pnpm test:unit`, `pnpm test:storybook`, `pnpm build`, `pnpm check:migrations`, `pnpm check:migrations:drift` green on `dev`. `pnpm migrate:status` clean on production.
+2. **Merge.** `dev` to `main` (one PR, the whole composer). Vercel's `pnpm ci` runs `payload migrate`: every migration from `20260927_171656_streak_studio` forward applies in order, all additive. Back up Neon first.
+3. **Env.** Add `OPENAI_API_KEY` in Vercel (Phase 5, "Not done here"), then backfill the Ask index (Site Info › Ask › Rebuild index).
+4. **Content run.** The Phase 6 script against production:
+   1. Decide the pending draft on `works/design-systems-for-organizational-scale` (June edits over the published version): publish or discard it in admin. Otherwise `--publish` ships it.
+   2. Back up Neon (a `pg_dump` or a branch), and pull `.env.production.pulled`.
+   3. `PAYLOAD_DB_PUSH=false pnpm exec tsx --env-file=.env.production.pulled scripts/compose-layouts.ts --production --dry-run`, read the report. Without `--production` the script refuses any database but the local Docker one (`--preview` targets the Neon preview branch and refuses production).
+   4. Same command without `--dry-run`: drafts only, the site keeps rendering the legacy layouts. Check each work in live preview.
+   5. `... --publish`, then redeploy (revalidation is skipped). To undo: `... --restore scripts/snapshots/<file>.json`.
+5. **MCP.** Re-point `milesroxas-cms` from the dev alias to production and drop the bypass header (`docs/mcp.md`).
+6. **Soak**, then Phase 7's three open bullets.
 
 ---
 
@@ -582,10 +604,10 @@ Integration rules here:
 |---|---|---|
 | O1 | Keep Posts `content` as the article body long term (sas-site Posts do), or move every post fully into Sections (the Lab Page shape)? | Fully into Sections, since the ask is "posts like Lab pages". Keep the field optional until every post has moved |
 | O2 | Re-add the Footer global for the Closing band? | Later (Phase 8). It was removed on purpose |
-| O3 | Ask entry points beyond `/ask` and the nav | A SiteFrame bottom-bar drawer once the widget is in |
+| O3 | Ask entry points beyond `/ask` and the nav | **Settled 2026-09-29**: the dock Ask panel (`docs/site-chrome.md`) |
 | O4 | Jev (TypeSafe) on for Ask? | Off at first (`ASK_JEV` unset); turn on shadow after a week of questions |
 | O5 | Add the `text` link appearance (D8)? | Not now; revisit when the Actions block is wanted with text links |
-| O6 | Figures in the run? | Phase 8, if long-form technical posts need charts |
+| O6 | Figures in the run? | **Settled 2026-09-30**: chart and diagram are in the run ([figures.md](figures.md)); bespoke figures are not |
 | O7 | Band token values | Start from sas-site's oklch values; retune against IBM Plex and the orange accent on `/demo`-style stories before Phase 3 ships |
 | O8 | Work Details tab (industry, role, deliverables) as a hero facts row like `CaseStudyHero`? | Yes, in Phase 4, read from the existing text fields; no schema |
 | O9 | Tab slider in Phase 6: every tab holds a slider (3 to 12 slides). sas-site's Tabs (`featureTabs`) holds one media per tab, so it would keep 13 of 73 images | TB1: each tab becomes a Standard plus a Carousel, which keeps every image but stacks them instead of tabbing. The alternative is `keep` in `overrides.ts`, which leaves the legacy Tab slider in place and blocks its Phase 7 retirement |
@@ -601,6 +623,7 @@ Never run without asking. Every phase below is additive, so **no create/rename p
 - **Phase 3** `pnpm migrate:create sections-and-run`: `{pages,works,posts}_section` and every per-parent run table listed in Phase 3 with `_v` twins, their enums, FKs and indexes; `posts` gains no column (`layout` is rows in `posts_section` and the run tables). Expect several hundred `CREATE TYPE` / `CREATE TABLE` statements and zero `DROP`, zero `ALTER ... RENAME`, zero `ADD VALUE`.
 - **Phase 4** `pnpm migrate:create opening-intro-contents`: `hero_visual_type` enums and `hero_shader_*` columns on `pages`, `posts`, `works` and `_v`; `intro_eyebrow`, `intro_title`, `intro_body` on `posts`, `works`; `show_contents` on `pages`, `posts`, `works`; `hide_related_posts` on `posts`. All create; no prompt.
 - **Phase 5** `pnpm migrate:create ask`: hand-add `CREATE EXTENSION IF NOT EXISTS vector;` as the first statement of `up()`; `ask_embeddings` with its unique, btree and HNSW indexes; `ask_questions`, `ask_questions_sources`, `ask_questions_rels`; `inquiries` and `inquiries_rels`; `site_info`; locked-documents rels columns; the `payload_jobs` task-slug enum gains `askQuestionRetention` (an `ADD VALUE`: keep it in this migration only if nothing in the same `up()` uses the label, otherwise split it into its own migration; `pnpm check:migrations` decides).
+- **Phase 8 figures** `pnpm migrate:create figures`: `{pages,works,posts}_chart`, `{pages,works,posts}_diagram` and their `__{...}_v_{chart,diagram}_v` twins, each table's `enum_..._width` and `enum_..._theme`, indexes and FKs. All create; no prompt.
 - **Phase 7** (per PR): theme enum recreate on `enum_{pages,works}_blocks_{content,media_block,archive,slider}_theme`, `enum_works_blocks_tabs_theme`, the nested slider theme enums, and their `_v` twins: no prompt; hand-check that every `UPDATE ... 'system' -> 'light'` precedes its cast. Column drops (posts `content`, if taken): no prompt, plain `DROP COLUMN` in the diff.
 
 `scripts/migrate-create.exp` takes the same answers if a prompt does appear.
@@ -633,7 +656,7 @@ Everything under "Files to copy for a port" in the Ask agent map, minus `storyBr
 
 ## Appendix C: dependency changes
 
-Add: `radix-ui`, `tw-animate-css`, `lite-youtube-embed`, `ai`, `@ai-sdk/openai`, `@ai-sdk/react`, `@shadcn/react`, `@tabler/icons-react`, `zod`. Optional: `@typesafe-ai/sdk`, `botid`, `elkjs`, `recharts` (figures), `@playwright/test` (poster script).
+Add: `radix-ui`, `tw-animate-css`, `lite-youtube-embed`, `ai`, `@ai-sdk/openai`, `@ai-sdk/react`, `@shadcn/react`, `@tabler/icons-react`, `zod`; `elkjs` and `recharts` with the figures (Phase 8, added 2026-09-30). Optional: `@typesafe-ai/sdk`, `botid`, `@playwright/test` (poster script).
 
 Already here and reused: `gsap`, `@gsap/react`, `lenis`, `three`, `@react-three/fiber`, `embla-carousel-react`, `geist`, `prism-react-renderer`, `sharp`, `posthog-js`, `posthog-node`, `vaul`, `zustand`, `tailwind-merge`, `clsx`, `class-variance-authority`.
 

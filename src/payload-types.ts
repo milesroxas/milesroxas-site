@@ -255,6 +255,8 @@ export interface Page {
     | YouTubeBlock
     | RichTextBlock
     | CodeBlock
+    | ChartBlock
+    | DiagramBlock
     | FaqBlock
     | CarouselBlock
     | FeatureTabsBlock
@@ -384,6 +386,8 @@ export interface Post {
         | YouTubeBlock
         | RichTextBlock
         | CodeBlock
+        | ChartBlock
+        | DiagramBlock
         | FaqBlock
         | CarouselBlock
         | FeatureTabsBlock
@@ -773,6 +777,8 @@ export interface PostSectionBlock {
         | YouTubeBlock
         | RichTextBlock
         | CodeBlock
+        | ChartBlock
+        | DiagramBlock
         | FaqBlock
         | CarouselBlock
         | FeatureTabsBlock
@@ -1269,6 +1275,2745 @@ export interface CodeBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ChartBlock".
+ */
+export interface ChartBlock {
+  /**
+   * Says what the figure shows. Shown above it and used as its heading.
+   */
+  title?: string | null;
+  /**
+   * What the figure shows and the takeaway, in plain sentences. Read aloud by screen readers and indexed for search and Ask, so write it for someone who cannot see the figure.
+   */
+  textAlternative: string;
+  /**
+   * Optional line under the figure: context, method, a caveat.
+   */
+  caption?: string | null;
+  /**
+   * Optional attribution under the caption.
+   */
+  dataSource?: {
+    label?: string | null;
+    href?: string | null;
+  };
+  /**
+   * How wide the drawing runs: the reading column, that column plus one each side, or all eight. Wide keeps the title, caption and description on the reading column.
+   */
+  width?: ('text' | 'wide' | 'full') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  spec: {
+    specVersion: 1;
+    kind: 'bar' | 'line' | 'area' | 'scatter' | 'diverging-bar';
+    /**
+     * Bar kinds only. Default vertical. Use horizontal for long category labels or more than about six categories: vertical bands get too thin to label on a phone.
+     */
+    orientation?: 'horizontal' | 'vertical';
+    x: {
+      /**
+       * The row column plotted on x.
+       */
+      key: string;
+      label?: string;
+      /**
+       * category: strings. number: numbers. time: calendar dates, YYYY-MM-DD.
+       */
+      type: 'category' | 'number' | 'time';
+    };
+    y: {
+      label?: string;
+      /**
+       * percent reads values as fractions of 1 (0.42 is 42%). compact prints 12.9K.
+       */
+      format?: 'number' | 'percent' | 'compact';
+      /**
+       * Fixed [min, max]. Omit to fit the data; bar kinds always include zero.
+       *
+       * @minItems 2
+       * @maxItems 2
+       */
+      domain?: [number, number];
+    };
+    /**
+     * Order is identity: color follows position, so never reorder to restyle.
+     *
+     * @minItems 1
+     * @maxItems 4
+     */
+    series:
+      | [
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          }
+        ]
+      | [
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          }
+        ]
+      | [
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          }
+        ]
+      | [
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          }
+        ];
+    /**
+     * One object per x position: the x key plus a number or null per series key.
+     *
+     * @minItems 1
+     * @maxItems 500
+     */
+    rows: [
+      {
+        [k: string]: number | string | null;
+      },
+      ...{
+        [k: string]: number | string | null;
+      }[]
+    ];
+    /**
+     * A labelled reference line at an x position, a y value, or a point at both. The label sits inside the plot: two or three words.
+     *
+     * @maxItems 6
+     */
+    annotations?:
+      | []
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ];
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'chart';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DiagramBlock".
+ */
+export interface DiagramBlock {
+  /**
+   * Says what the figure shows. Shown above it and used as its heading.
+   */
+  title?: string | null;
+  /**
+   * What the figure shows and the takeaway, in plain sentences. Read aloud by screen readers and indexed for search and Ask, so write it for someone who cannot see the figure.
+   */
+  textAlternative: string;
+  /**
+   * Optional line under the figure: context, method, a caveat.
+   */
+  caption?: string | null;
+  /**
+   * Optional attribution under the caption.
+   */
+  dataSource?: {
+    label?: string | null;
+    href?: string | null;
+  };
+  /**
+   * How wide the drawing runs: the reading column, that column plus one each side, or all eight. Wide keeps the title, caption and description on the reading column.
+   */
+  width?: ('text' | 'wide' | 'full') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  spec:
+    | {
+        specVersion: 1;
+        kind: 'flow' | 'state';
+        /**
+         * LR reads left to right and re-lays out top down on narrow screens, so it always fits a phone. TD has no second layout: three or more nodes side by side, or wide groups, scroll sideways on a phone. Use LR for a chain; split a TD figure that fans out.
+         */
+        direction: 'LR' | 'TD';
+        /**
+         * @minItems 2
+         * @maxItems 40
+         */
+        nodes: [
+          {
+            id: string;
+            /**
+             * A caption, not a sentence: it wraps at about four words a line and is cut after three lines.
+             */
+            label: string;
+            /**
+             * Default step. Shape is a second channel beside color, so use it.
+             */
+            shape?: 'step' | 'decision' | 'terminal';
+            /**
+             * The id of an entry in groups.
+             */
+            group?: string;
+            /**
+             * The one or two nodes the figure is about.
+             */
+            emphasis?: boolean;
+          },
+          {
+            id: string;
+            /**
+             * A caption, not a sentence: it wraps at about four words a line and is cut after three lines.
+             */
+            label: string;
+            /**
+             * Default step. Shape is a second channel beside color, so use it.
+             */
+            shape?: 'step' | 'decision' | 'terminal';
+            /**
+             * The id of an entry in groups.
+             */
+            group?: string;
+            /**
+             * The one or two nodes the figure is about.
+             */
+            emphasis?: boolean;
+          },
+          ...{
+            id: string;
+            /**
+             * A caption, not a sentence: it wraps at about four words a line and is cut after three lines.
+             */
+            label: string;
+            /**
+             * Default step. Shape is a second channel beside color, so use it.
+             */
+            shape?: 'step' | 'decision' | 'terminal';
+            /**
+             * The id of an entry in groups.
+             */
+            group?: string;
+            /**
+             * The one or two nodes the figure is about.
+             */
+            emphasis?: boolean;
+          }[]
+        ];
+        /**
+         * @minItems 1
+         * @maxItems 80
+         */
+        edges: [
+          {
+            from: string;
+            to: string;
+            /**
+             * One line, never wrapped: a word or two ("yes", "on error").
+             */
+            label?: string;
+            /**
+             * dashed: optional or async.
+             */
+            style?: 'solid' | 'dashed';
+            /**
+             * Marching dashes along a live data path.
+             */
+            animated?: boolean;
+          },
+          ...{
+            from: string;
+            to: string;
+            /**
+             * One line, never wrapped: a word or two ("yes", "on error").
+             */
+            label?: string;
+            /**
+             * dashed: optional or async.
+             */
+            style?: 'solid' | 'dashed';
+            /**
+             * Marching dashes along a live data path.
+             */
+            animated?: boolean;
+          }[]
+        ];
+        /**
+         * @maxItems 8
+         */
+        groups?:
+          | []
+          | [
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ];
+      }
+    | {
+        specVersion: 1;
+        kind: 'sequence';
+        /**
+         * Up to four actors fit a phone with their lifelines intact; five or more scroll sideways there, so split the figure instead. Name each in one to three short words: a phone header holds two short lines and cuts the rest. role person draws the header as a pill.
+         *
+         * @minItems 2
+         * @maxItems 8
+         */
+        actors:
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ];
+        /**
+         * @minItems 1
+         * @maxItems 30
+         */
+        messages: [
+          {
+            from: string;
+            to: string;
+            /**
+             * A short phrase. It wraps to two lines, and a self message gets one line on a phone; the rest is cut.
+             */
+            label: string;
+            /**
+             * Default call. reply draws dashed. self needs from and to to match.
+             */
+            style?: 'call' | 'reply' | 'self';
+          },
+          ...{
+            from: string;
+            to: string;
+            /**
+             * A short phrase. It wraps to two lines, and a self message gets one line on a phone; the rest is cut.
+             */
+            label: string;
+            /**
+             * Default call. reply draws dashed. self needs from and to to match.
+             */
+            style?: 'call' | 'reply' | 'self';
+          }[]
+        ];
+      }
+    | {
+        specVersion: 1;
+        kind: 'timeline';
+        range: {
+          start: string;
+          end: string;
+        };
+        /**
+         * @maxItems 6
+         */
+        eras?:
+          | []
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ];
+        /**
+         * An event label is a short phrase: it wraps to two lines and the rest is cut.
+         *
+         * @minItems 1
+         * @maxItems 20
+         */
+        events:
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ];
+      };
+  geometry?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'diagram';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FaqBlock".
  */
 export interface FaqBlock {
@@ -1676,6 +4421,8 @@ export interface Work {
     | YouTubeBlock
     | RichTextBlock
     | CodeBlock
+    | ChartBlock
+    | DiagramBlock
     | FaqBlock
     | CarouselBlock
     | FeatureTabsBlock
@@ -1760,6 +4507,8 @@ export interface WorkSectionBlock {
         | YouTubeBlock
         | RichTextBlock
         | CodeBlock
+        | ChartBlock
+        | DiagramBlock
         | FaqBlock
         | CarouselBlock
         | FeatureTabsBlock
@@ -2270,6 +5019,8 @@ export interface PageSectionBlock {
         | YouTubeBlock
         | RichTextBlock
         | CodeBlock
+        | ChartBlock
+        | DiagramBlock
         | FaqBlock
         | CarouselBlock
         | FeatureTabsBlock
@@ -2928,6 +5679,8 @@ export interface PagesSelect<T extends boolean = true> {
         youtube?: T | YouTubeBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
@@ -2999,6 +5752,8 @@ export interface PageSectionBlockSelect<T extends boolean = true> {
         youtube?: T | YouTubeBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
@@ -3174,6 +5929,47 @@ export interface RichTextBlockSelect<T extends boolean = true> {
 export interface CodeBlockSelect<T extends boolean = true> {
   language?: T;
   code?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ChartBlock_select".
+ */
+export interface ChartBlockSelect<T extends boolean = true> {
+  title?: T;
+  textAlternative?: T;
+  caption?: T;
+  dataSource?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  width?: T;
+  theme?: T;
+  spec?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DiagramBlock_select".
+ */
+export interface DiagramBlockSelect<T extends boolean = true> {
+  title?: T;
+  textAlternative?: T;
+  caption?: T;
+  dataSource?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  width?: T;
+  theme?: T;
+  spec?: T;
+  geometry?: T;
   id?: T;
   blockName?: T;
 }
@@ -3571,6 +6367,8 @@ export interface PostsSelect<T extends boolean = true> {
         youtube?: T | YouTubeBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
@@ -3634,6 +6432,8 @@ export interface PostSectionBlockSelect<T extends boolean = true> {
         youtube?: T | YouTubeBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
@@ -3692,6 +6492,8 @@ export interface WorksSelect<T extends boolean = true> {
         youtube?: T | YouTubeBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
@@ -3752,6 +6554,8 @@ export interface WorkSectionBlockSelect<T extends boolean = true> {
         youtube?: T | YouTubeBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;

@@ -198,6 +198,28 @@ export const enum_pages_code_language = pgEnum("enum_pages_code_language", [
   "glsl",
   "bash",
 ]);
+export const enum_pages_chart_width = pgEnum("enum_pages_chart_width", [
+  "text",
+  "wide",
+  "full",
+]);
+export const enum_pages_chart_theme = pgEnum("enum_pages_chart_theme", [
+  "light",
+  "dark",
+  "neutral",
+  "brand",
+]);
+export const enum_pages_diagram_width = pgEnum("enum_pages_diagram_width", [
+  "text",
+  "wide",
+  "full",
+]);
+export const enum_pages_diagram_theme = pgEnum("enum_pages_diagram_theme", [
+  "light",
+  "dark",
+  "neutral",
+  "brand",
+]);
 export const enum_pages_faq_link_type = pgEnum("enum_pages_faq_link_type", [
   "reference",
   "custom",
@@ -663,6 +685,22 @@ export const enum___pages_v_rich_text_v_theme = pgEnum(
 export const enum___pages_v_code_v_language = pgEnum(
   "enum___pages_v_code_v_language",
   ["typescript", "tsx", "javascript", "css", "json", "glsl", "bash"],
+);
+export const enum___pages_v_chart_v_width = pgEnum(
+  "enum___pages_v_chart_v_width",
+  ["text", "wide", "full"],
+);
+export const enum___pages_v_chart_v_theme = pgEnum(
+  "enum___pages_v_chart_v_theme",
+  ["light", "dark", "neutral", "brand"],
+);
+export const enum___pages_v_diagram_v_width = pgEnum(
+  "enum___pages_v_diagram_v_width",
+  ["text", "wide", "full"],
+);
+export const enum___pages_v_diagram_v_theme = pgEnum(
+  "enum___pages_v_diagram_v_theme",
+  ["light", "dark", "neutral", "brand"],
 );
 export const enum___pages_v_faq_v_link_type = pgEnum(
   "enum___pages_v_faq_v_link_type",
@@ -1139,6 +1177,28 @@ export const enum_posts_code_language = pgEnum("enum_posts_code_language", [
   "glsl",
   "bash",
 ]);
+export const enum_posts_chart_width = pgEnum("enum_posts_chart_width", [
+  "text",
+  "wide",
+  "full",
+]);
+export const enum_posts_chart_theme = pgEnum("enum_posts_chart_theme", [
+  "light",
+  "dark",
+  "neutral",
+  "brand",
+]);
+export const enum_posts_diagram_width = pgEnum("enum_posts_diagram_width", [
+  "text",
+  "wide",
+  "full",
+]);
+export const enum_posts_diagram_theme = pgEnum("enum_posts_diagram_theme", [
+  "light",
+  "dark",
+  "neutral",
+  "brand",
+]);
 export const enum_posts_faq_link_type = pgEnum("enum_posts_faq_link_type", [
   "reference",
   "custom",
@@ -1496,6 +1556,22 @@ export const enum___posts_v_rich_text_v_theme = pgEnum(
 export const enum___posts_v_code_v_language = pgEnum(
   "enum___posts_v_code_v_language",
   ["typescript", "tsx", "javascript", "css", "json", "glsl", "bash"],
+);
+export const enum___posts_v_chart_v_width = pgEnum(
+  "enum___posts_v_chart_v_width",
+  ["text", "wide", "full"],
+);
+export const enum___posts_v_chart_v_theme = pgEnum(
+  "enum___posts_v_chart_v_theme",
+  ["light", "dark", "neutral", "brand"],
+);
+export const enum___posts_v_diagram_v_width = pgEnum(
+  "enum___posts_v_diagram_v_width",
+  ["text", "wide", "full"],
+);
+export const enum___posts_v_diagram_v_theme = pgEnum(
+  "enum___posts_v_diagram_v_theme",
+  ["light", "dark", "neutral", "brand"],
 );
 export const enum___posts_v_faq_v_link_type = pgEnum(
   "enum___posts_v_faq_v_link_type",
@@ -1863,6 +1939,28 @@ export const enum_works_code_language = pgEnum("enum_works_code_language", [
   "json",
   "glsl",
   "bash",
+]);
+export const enum_works_chart_width = pgEnum("enum_works_chart_width", [
+  "text",
+  "wide",
+  "full",
+]);
+export const enum_works_chart_theme = pgEnum("enum_works_chart_theme", [
+  "light",
+  "dark",
+  "neutral",
+  "brand",
+]);
+export const enum_works_diagram_width = pgEnum("enum_works_diagram_width", [
+  "text",
+  "wide",
+  "full",
+]);
+export const enum_works_diagram_theme = pgEnum("enum_works_diagram_theme", [
+  "light",
+  "dark",
+  "neutral",
+  "brand",
 ]);
 export const enum_works_faq_link_type = pgEnum("enum_works_faq_link_type", [
   "reference",
@@ -2369,6 +2467,22 @@ export const enum___works_v_rich_text_v_theme = pgEnum(
 export const enum___works_v_code_v_language = pgEnum(
   "enum___works_v_code_v_language",
   ["typescript", "tsx", "javascript", "css", "json", "glsl", "bash"],
+);
+export const enum___works_v_chart_v_width = pgEnum(
+  "enum___works_v_chart_v_width",
+  ["text", "wide", "full"],
+);
+export const enum___works_v_chart_v_theme = pgEnum(
+  "enum___works_v_chart_v_theme",
+  ["light", "dark", "neutral", "brand"],
+);
+export const enum___works_v_diagram_v_width = pgEnum(
+  "enum___works_v_diagram_v_width",
+  ["text", "wide", "full"],
+);
+export const enum___works_v_diagram_v_theme = pgEnum(
+  "enum___works_v_diagram_v_theme",
+  ["light", "dark", "neutral", "brand"],
 );
 export const enum___works_v_faq_v_link_type = pgEnum(
   "enum___works_v_faq_v_link_type",
@@ -3326,6 +3440,69 @@ export const pages_code = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [pages.id],
       name: "pages_code_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const pages_chart = pgTable(
+  "pages_chart",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum_pages_chart_width("width").default("wide"),
+    theme: enum_pages_chart_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
+    ),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("pages_chart_order_idx").on(columns._order),
+    index("pages_chart_parent_id_idx").on(columns._parentID),
+    index("pages_chart_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [pages.id],
+      name: "pages_chart_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const pages_diagram = pgTable(
+  "pages_diagram",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum_pages_diagram_width("width").default("wide"),
+    theme: enum_pages_diagram_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
+    ),
+    geometry: jsonb("geometry"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("pages_diagram_order_idx").on(columns._order),
+    index("pages_diagram_parent_id_idx").on(columns._parentID),
+    index("pages_diagram_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [pages.id],
+      name: "pages_diagram_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -4722,6 +4899,71 @@ export const __pages_v_code_v = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [_pages_v.id],
       name: "__pages_v_code_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __pages_v_chart_v = pgTable(
+  "__pages_v_chart_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum___pages_v_chart_v_width("width").default("wide"),
+    theme: enum___pages_v_chart_v_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
+    ),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__pages_v_chart_v_order_idx").on(columns._order),
+    index("__pages_v_chart_v_parent_id_idx").on(columns._parentID),
+    index("__pages_v_chart_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_pages_v.id],
+      name: "__pages_v_chart_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __pages_v_diagram_v = pgTable(
+  "__pages_v_diagram_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum___pages_v_diagram_v_width("width").default("wide"),
+    theme: enum___pages_v_diagram_v_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
+    ),
+    geometry: jsonb("geometry"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__pages_v_diagram_v_order_idx").on(columns._order),
+    index("__pages_v_diagram_v_parent_id_idx").on(columns._parentID),
+    index("__pages_v_diagram_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_pages_v.id],
+      name: "__pages_v_diagram_v_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -6184,6 +6426,69 @@ export const posts_code = pgTable(
   ],
 );
 
+export const posts_chart = pgTable(
+  "posts_chart",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum_posts_chart_width("width").default("wide"),
+    theme: enum_posts_chart_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
+    ),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("posts_chart_order_idx").on(columns._order),
+    index("posts_chart_parent_id_idx").on(columns._parentID),
+    index("posts_chart_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [posts.id],
+      name: "posts_chart_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const posts_diagram = pgTable(
+  "posts_diagram",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum_posts_diagram_width("width").default("wide"),
+    theme: enum_posts_diagram_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
+    ),
+    geometry: jsonb("geometry"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("posts_diagram_order_idx").on(columns._order),
+    index("posts_diagram_parent_id_idx").on(columns._parentID),
+    index("posts_diagram_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [posts.id],
+      name: "posts_diagram_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
 export const posts_faq_items = pgTable(
   "posts_faq_items",
   {
@@ -7363,6 +7668,71 @@ export const __posts_v_code_v = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [_posts_v.id],
       name: "__posts_v_code_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __posts_v_chart_v = pgTable(
+  "__posts_v_chart_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum___posts_v_chart_v_width("width").default("wide"),
+    theme: enum___posts_v_chart_v_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
+    ),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__posts_v_chart_v_order_idx").on(columns._order),
+    index("__posts_v_chart_v_parent_id_idx").on(columns._parentID),
+    index("__posts_v_chart_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_posts_v.id],
+      name: "__posts_v_chart_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __posts_v_diagram_v = pgTable(
+  "__posts_v_diagram_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum___posts_v_diagram_v_width("width").default("wide"),
+    theme: enum___posts_v_diagram_v_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
+    ),
+    geometry: jsonb("geometry"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__posts_v_diagram_v_order_idx").on(columns._order),
+    index("__posts_v_diagram_v_parent_id_idx").on(columns._parentID),
+    index("__posts_v_diagram_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_posts_v.id],
+      name: "__posts_v_diagram_v_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -8595,6 +8965,69 @@ export const works_code = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [works.id],
       name: "works_code_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const works_chart = pgTable(
+  "works_chart",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum_works_chart_width("width").default("wide"),
+    theme: enum_works_chart_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
+    ),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("works_chart_order_idx").on(columns._order),
+    index("works_chart_parent_id_idx").on(columns._parentID),
+    index("works_chart_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [works.id],
+      name: "works_chart_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const works_diagram = pgTable(
+  "works_diagram",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum_works_diagram_width("width").default("wide"),
+    theme: enum_works_diagram_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
+    ),
+    geometry: jsonb("geometry"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("works_diagram_order_idx").on(columns._order),
+    index("works_diagram_parent_id_idx").on(columns._parentID),
+    index("works_diagram_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [works.id],
+      name: "works_diagram_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -10076,6 +10509,71 @@ export const __works_v_code_v = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [_works_v.id],
       name: "__works_v_code_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __works_v_chart_v = pgTable(
+  "__works_v_chart_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum___works_v_chart_v_width("width").default("wide"),
+    theme: enum___works_v_chart_v_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
+    ),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__works_v_chart_v_order_idx").on(columns._order),
+    index("__works_v_chart_v_parent_id_idx").on(columns._parentID),
+    index("__works_v_chart_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_works_v.id],
+      name: "__works_v_chart_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __works_v_diagram_v = pgTable(
+  "__works_v_diagram_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum___works_v_diagram_v_width("width").default("wide"),
+    theme: enum___works_v_diagram_v_theme("theme").default("light"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
+    ),
+    geometry: jsonb("geometry"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__works_v_diagram_v_order_idx").on(columns._order),
+    index("__works_v_diagram_v_parent_id_idx").on(columns._parentID),
+    index("__works_v_diagram_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_works_v.id],
+      name: "__works_v_diagram_v_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -13186,6 +13684,20 @@ export const relations_pages_code = relations(pages_code, ({ one }) => ({
     relationName: "_blocks_code",
   }),
 }));
+export const relations_pages_chart = relations(pages_chart, ({ one }) => ({
+  _parentID: one(pages, {
+    fields: [pages_chart._parentID],
+    references: [pages.id],
+    relationName: "_blocks_chart",
+  }),
+}));
+export const relations_pages_diagram = relations(pages_diagram, ({ one }) => ({
+  _parentID: one(pages, {
+    fields: [pages_diagram._parentID],
+    references: [pages.id],
+    relationName: "_blocks_diagram",
+  }),
+}));
 export const relations_pages_faq_items = relations(
   pages_faq_items,
   ({ one }) => ({
@@ -13559,6 +14071,12 @@ export const relations_pages = relations(pages, ({ one, many }) => ({
   _blocks_code: many(pages_code, {
     relationName: "_blocks_code",
   }),
+  _blocks_chart: many(pages_chart, {
+    relationName: "_blocks_chart",
+  }),
+  _blocks_diagram: many(pages_diagram, {
+    relationName: "_blocks_diagram",
+  }),
   _blocks_faq: many(pages_faq, {
     relationName: "_blocks_faq",
   }),
@@ -13806,6 +14324,26 @@ export const relations___pages_v_code_v = relations(
       fields: [__pages_v_code_v._parentID],
       references: [_pages_v.id],
       relationName: "_blocks_code",
+    }),
+  }),
+);
+export const relations___pages_v_chart_v = relations(
+  __pages_v_chart_v,
+  ({ one }) => ({
+    _parentID: one(_pages_v, {
+      fields: [__pages_v_chart_v._parentID],
+      references: [_pages_v.id],
+      relationName: "_blocks_chart",
+    }),
+  }),
+);
+export const relations___pages_v_diagram_v = relations(
+  __pages_v_diagram_v,
+  ({ one }) => ({
+    _parentID: one(_pages_v, {
+      fields: [__pages_v_diagram_v._parentID],
+      references: [_pages_v.id],
+      relationName: "_blocks_diagram",
     }),
   }),
 );
@@ -14191,6 +14729,12 @@ export const relations__pages_v = relations(_pages_v, ({ one, many }) => ({
   _blocks_code: many(__pages_v_code_v, {
     relationName: "_blocks_code",
   }),
+  _blocks_chart: many(__pages_v_chart_v, {
+    relationName: "_blocks_chart",
+  }),
+  _blocks_diagram: many(__pages_v_diagram_v, {
+    relationName: "_blocks_diagram",
+  }),
   _blocks_faq: many(__pages_v_faq_v, {
     relationName: "_blocks_faq",
   }),
@@ -14430,6 +14974,20 @@ export const relations_posts_code = relations(posts_code, ({ one }) => ({
     fields: [posts_code._parentID],
     references: [posts.id],
     relationName: "_blocks_code",
+  }),
+}));
+export const relations_posts_chart = relations(posts_chart, ({ one }) => ({
+  _parentID: one(posts, {
+    fields: [posts_chart._parentID],
+    references: [posts.id],
+    relationName: "_blocks_chart",
+  }),
+}));
+export const relations_posts_diagram = relations(posts_diagram, ({ one }) => ({
+  _parentID: one(posts, {
+    fields: [posts_diagram._parentID],
+    references: [posts.id],
+    relationName: "_blocks_diagram",
   }),
 }));
 export const relations_posts_faq_items = relations(
@@ -14719,6 +15277,12 @@ export const relations_posts = relations(posts, ({ one, many }) => ({
   _blocks_code: many(posts_code, {
     relationName: "_blocks_code",
   }),
+  _blocks_chart: many(posts_chart, {
+    relationName: "_blocks_chart",
+  }),
+  _blocks_diagram: many(posts_diagram, {
+    relationName: "_blocks_diagram",
+  }),
   _blocks_faq: many(posts_faq, {
     relationName: "_blocks_faq",
   }),
@@ -14951,6 +15515,26 @@ export const relations___posts_v_code_v = relations(
       fields: [__posts_v_code_v._parentID],
       references: [_posts_v.id],
       relationName: "_blocks_code",
+    }),
+  }),
+);
+export const relations___posts_v_chart_v = relations(
+  __posts_v_chart_v,
+  ({ one }) => ({
+    _parentID: one(_posts_v, {
+      fields: [__posts_v_chart_v._parentID],
+      references: [_posts_v.id],
+      relationName: "_blocks_chart",
+    }),
+  }),
+);
+export const relations___posts_v_diagram_v = relations(
+  __posts_v_diagram_v,
+  ({ one }) => ({
+    _parentID: one(_posts_v, {
+      fields: [__posts_v_diagram_v._parentID],
+      references: [_posts_v.id],
+      relationName: "_blocks_diagram",
     }),
   }),
 );
@@ -15250,6 +15834,12 @@ export const relations__posts_v = relations(_posts_v, ({ one, many }) => ({
   _blocks_code: many(__posts_v_code_v, {
     relationName: "_blocks_code",
   }),
+  _blocks_chart: many(__posts_v_chart_v, {
+    relationName: "_blocks_chart",
+  }),
+  _blocks_diagram: many(__posts_v_diagram_v, {
+    relationName: "_blocks_diagram",
+  }),
   _blocks_faq: many(__posts_v_faq_v, {
     relationName: "_blocks_faq",
   }),
@@ -15474,6 +16064,20 @@ export const relations_works_code = relations(works_code, ({ one }) => ({
     fields: [works_code._parentID],
     references: [works.id],
     relationName: "_blocks_code",
+  }),
+}));
+export const relations_works_chart = relations(works_chart, ({ one }) => ({
+  _parentID: one(works, {
+    fields: [works_chart._parentID],
+    references: [works.id],
+    relationName: "_blocks_chart",
+  }),
+}));
+export const relations_works_diagram = relations(works_diagram, ({ one }) => ({
+  _parentID: one(works, {
+    fields: [works_diagram._parentID],
+    references: [works.id],
+    relationName: "_blocks_diagram",
   }),
 }));
 export const relations_works_faq_items = relations(
@@ -15880,6 +16484,12 @@ export const relations_works = relations(works, ({ one, many }) => ({
   _blocks_code: many(works_code, {
     relationName: "_blocks_code",
   }),
+  _blocks_chart: many(works_chart, {
+    relationName: "_blocks_chart",
+  }),
+  _blocks_diagram: many(works_diagram, {
+    relationName: "_blocks_diagram",
+  }),
   _blocks_faq: many(works_faq, {
     relationName: "_blocks_faq",
   }),
@@ -16132,6 +16742,26 @@ export const relations___works_v_code_v = relations(
       fields: [__works_v_code_v._parentID],
       references: [_works_v.id],
       relationName: "_blocks_code",
+    }),
+  }),
+);
+export const relations___works_v_chart_v = relations(
+  __works_v_chart_v,
+  ({ one }) => ({
+    _parentID: one(_works_v, {
+      fields: [__works_v_chart_v._parentID],
+      references: [_works_v.id],
+      relationName: "_blocks_chart",
+    }),
+  }),
+);
+export const relations___works_v_diagram_v = relations(
+  __works_v_diagram_v,
+  ({ one }) => ({
+    _parentID: one(_works_v, {
+      fields: [__works_v_diagram_v._parentID],
+      references: [_works_v.id],
+      relationName: "_blocks_diagram",
     }),
   }),
 );
@@ -16547,6 +17177,12 @@ export const relations__works_v = relations(_works_v, ({ one, many }) => ({
   }),
   _blocks_code: many(__works_v_code_v, {
     relationName: "_blocks_code",
+  }),
+  _blocks_chart: many(__works_v_chart_v, {
+    relationName: "_blocks_chart",
+  }),
+  _blocks_diagram: many(__works_v_diagram_v, {
+    relationName: "_blocks_diagram",
   }),
   _blocks_faq: many(__works_v_faq_v, {
     relationName: "_blocks_faq",
@@ -17326,6 +17962,10 @@ type DatabaseSchema = {
   enum_pages_youtube_theme: typeof enum_pages_youtube_theme;
   enum_pages_rich_text_theme: typeof enum_pages_rich_text_theme;
   enum_pages_code_language: typeof enum_pages_code_language;
+  enum_pages_chart_width: typeof enum_pages_chart_width;
+  enum_pages_chart_theme: typeof enum_pages_chart_theme;
+  enum_pages_diagram_width: typeof enum_pages_diagram_width;
+  enum_pages_diagram_theme: typeof enum_pages_diagram_theme;
   enum_pages_faq_link_type: typeof enum_pages_faq_link_type;
   enum_pages_faq_theme: typeof enum_pages_faq_theme;
   enum_pages_blocks_carousel_width: typeof enum_pages_blocks_carousel_width;
@@ -17439,6 +18079,10 @@ type DatabaseSchema = {
   enum___pages_v_youtube_v_theme: typeof enum___pages_v_youtube_v_theme;
   enum___pages_v_rich_text_v_theme: typeof enum___pages_v_rich_text_v_theme;
   enum___pages_v_code_v_language: typeof enum___pages_v_code_v_language;
+  enum___pages_v_chart_v_width: typeof enum___pages_v_chart_v_width;
+  enum___pages_v_chart_v_theme: typeof enum___pages_v_chart_v_theme;
+  enum___pages_v_diagram_v_width: typeof enum___pages_v_diagram_v_width;
+  enum___pages_v_diagram_v_theme: typeof enum___pages_v_diagram_v_theme;
   enum___pages_v_faq_v_link_type: typeof enum___pages_v_faq_v_link_type;
   enum___pages_v_faq_v_theme: typeof enum___pages_v_faq_v_theme;
   enum__pages_v_blocks_carousel_width: typeof enum__pages_v_blocks_carousel_width;
@@ -17552,6 +18196,10 @@ type DatabaseSchema = {
   enum_posts_youtube_theme: typeof enum_posts_youtube_theme;
   enum_posts_rich_text_theme: typeof enum_posts_rich_text_theme;
   enum_posts_code_language: typeof enum_posts_code_language;
+  enum_posts_chart_width: typeof enum_posts_chart_width;
+  enum_posts_chart_theme: typeof enum_posts_chart_theme;
+  enum_posts_diagram_width: typeof enum_posts_diagram_width;
+  enum_posts_diagram_theme: typeof enum_posts_diagram_theme;
   enum_posts_faq_link_type: typeof enum_posts_faq_link_type;
   enum_posts_faq_theme: typeof enum_posts_faq_theme;
   enum_posts_blocks_carousel_width: typeof enum_posts_blocks_carousel_width;
@@ -17638,6 +18286,10 @@ type DatabaseSchema = {
   enum___posts_v_youtube_v_theme: typeof enum___posts_v_youtube_v_theme;
   enum___posts_v_rich_text_v_theme: typeof enum___posts_v_rich_text_v_theme;
   enum___posts_v_code_v_language: typeof enum___posts_v_code_v_language;
+  enum___posts_v_chart_v_width: typeof enum___posts_v_chart_v_width;
+  enum___posts_v_chart_v_theme: typeof enum___posts_v_chart_v_theme;
+  enum___posts_v_diagram_v_width: typeof enum___posts_v_diagram_v_width;
+  enum___posts_v_diagram_v_theme: typeof enum___posts_v_diagram_v_theme;
   enum___posts_v_faq_v_link_type: typeof enum___posts_v_faq_v_link_type;
   enum___posts_v_faq_v_theme: typeof enum___posts_v_faq_v_theme;
   enum__posts_v_blocks_carousel_width: typeof enum__posts_v_blocks_carousel_width;
@@ -17724,6 +18376,10 @@ type DatabaseSchema = {
   enum_works_youtube_theme: typeof enum_works_youtube_theme;
   enum_works_rich_text_theme: typeof enum_works_rich_text_theme;
   enum_works_code_language: typeof enum_works_code_language;
+  enum_works_chart_width: typeof enum_works_chart_width;
+  enum_works_chart_theme: typeof enum_works_chart_theme;
+  enum_works_diagram_width: typeof enum_works_diagram_width;
+  enum_works_diagram_theme: typeof enum_works_diagram_theme;
   enum_works_faq_link_type: typeof enum_works_faq_link_type;
   enum_works_faq_theme: typeof enum_works_faq_theme;
   enum_works_blocks_carousel_width: typeof enum_works_blocks_carousel_width;
@@ -17847,6 +18503,10 @@ type DatabaseSchema = {
   enum___works_v_youtube_v_theme: typeof enum___works_v_youtube_v_theme;
   enum___works_v_rich_text_v_theme: typeof enum___works_v_rich_text_v_theme;
   enum___works_v_code_v_language: typeof enum___works_v_code_v_language;
+  enum___works_v_chart_v_width: typeof enum___works_v_chart_v_width;
+  enum___works_v_chart_v_theme: typeof enum___works_v_chart_v_theme;
+  enum___works_v_diagram_v_width: typeof enum___works_v_diagram_v_width;
+  enum___works_v_diagram_v_theme: typeof enum___works_v_diagram_v_theme;
   enum___works_v_faq_v_link_type: typeof enum___works_v_faq_v_link_type;
   enum___works_v_faq_v_theme: typeof enum___works_v_faq_v_theme;
   enum__works_v_blocks_carousel_width: typeof enum__works_v_blocks_carousel_width;
@@ -17966,6 +18626,8 @@ type DatabaseSchema = {
   pages_youtube: typeof pages_youtube;
   pages_rich_text: typeof pages_rich_text;
   pages_code: typeof pages_code;
+  pages_chart: typeof pages_chart;
+  pages_diagram: typeof pages_diagram;
   pages_faq_items: typeof pages_faq_items;
   pages_faq: typeof pages_faq;
   pages_blocks_carousel_slides: typeof pages_blocks_carousel_slides;
@@ -18002,6 +18664,8 @@ type DatabaseSchema = {
   __pages_v_youtube_v: typeof __pages_v_youtube_v;
   __pages_v_rich_text_v: typeof __pages_v_rich_text_v;
   __pages_v_code_v: typeof __pages_v_code_v;
+  __pages_v_chart_v: typeof __pages_v_chart_v;
+  __pages_v_diagram_v: typeof __pages_v_diagram_v;
   __pages_v_faq_v_items: typeof __pages_v_faq_v_items;
   __pages_v_faq_v: typeof __pages_v_faq_v;
   _pages_v_blocks_carousel_slides: typeof _pages_v_blocks_carousel_slides;
@@ -18038,6 +18702,8 @@ type DatabaseSchema = {
   posts_youtube: typeof posts_youtube;
   posts_rich_text: typeof posts_rich_text;
   posts_code: typeof posts_code;
+  posts_chart: typeof posts_chart;
+  posts_diagram: typeof posts_diagram;
   posts_faq_items: typeof posts_faq_items;
   posts_faq: typeof posts_faq;
   posts_blocks_carousel_slides: typeof posts_blocks_carousel_slides;
@@ -18067,6 +18733,8 @@ type DatabaseSchema = {
   __posts_v_youtube_v: typeof __posts_v_youtube_v;
   __posts_v_rich_text_v: typeof __posts_v_rich_text_v;
   __posts_v_code_v: typeof __posts_v_code_v;
+  __posts_v_chart_v: typeof __posts_v_chart_v;
+  __posts_v_diagram_v: typeof __posts_v_diagram_v;
   __posts_v_faq_v_items: typeof __posts_v_faq_v_items;
   __posts_v_faq_v: typeof __posts_v_faq_v;
   _posts_v_blocks_carousel_slides: typeof _posts_v_blocks_carousel_slides;
@@ -18096,6 +18764,8 @@ type DatabaseSchema = {
   works_youtube: typeof works_youtube;
   works_rich_text: typeof works_rich_text;
   works_code: typeof works_code;
+  works_chart: typeof works_chart;
+  works_diagram: typeof works_diagram;
   works_faq_items: typeof works_faq_items;
   works_faq: typeof works_faq;
   works_blocks_carousel_slides: typeof works_blocks_carousel_slides;
@@ -18134,6 +18804,8 @@ type DatabaseSchema = {
   __works_v_youtube_v: typeof __works_v_youtube_v;
   __works_v_rich_text_v: typeof __works_v_rich_text_v;
   __works_v_code_v: typeof __works_v_code_v;
+  __works_v_chart_v: typeof __works_v_chart_v;
+  __works_v_diagram_v: typeof __works_v_diagram_v;
   __works_v_faq_v_items: typeof __works_v_faq_v_items;
   __works_v_faq_v: typeof __works_v_faq_v;
   _works_v_blocks_carousel_slides: typeof _works_v_blocks_carousel_slides;
@@ -18224,6 +18896,8 @@ type DatabaseSchema = {
   relations_pages_youtube: typeof relations_pages_youtube;
   relations_pages_rich_text: typeof relations_pages_rich_text;
   relations_pages_code: typeof relations_pages_code;
+  relations_pages_chart: typeof relations_pages_chart;
+  relations_pages_diagram: typeof relations_pages_diagram;
   relations_pages_faq_items: typeof relations_pages_faq_items;
   relations_pages_faq: typeof relations_pages_faq;
   relations_pages_blocks_carousel_slides: typeof relations_pages_blocks_carousel_slides;
@@ -18260,6 +18934,8 @@ type DatabaseSchema = {
   relations___pages_v_youtube_v: typeof relations___pages_v_youtube_v;
   relations___pages_v_rich_text_v: typeof relations___pages_v_rich_text_v;
   relations___pages_v_code_v: typeof relations___pages_v_code_v;
+  relations___pages_v_chart_v: typeof relations___pages_v_chart_v;
+  relations___pages_v_diagram_v: typeof relations___pages_v_diagram_v;
   relations___pages_v_faq_v_items: typeof relations___pages_v_faq_v_items;
   relations___pages_v_faq_v: typeof relations___pages_v_faq_v;
   relations__pages_v_blocks_carousel_slides: typeof relations__pages_v_blocks_carousel_slides;
@@ -18296,6 +18972,8 @@ type DatabaseSchema = {
   relations_posts_youtube: typeof relations_posts_youtube;
   relations_posts_rich_text: typeof relations_posts_rich_text;
   relations_posts_code: typeof relations_posts_code;
+  relations_posts_chart: typeof relations_posts_chart;
+  relations_posts_diagram: typeof relations_posts_diagram;
   relations_posts_faq_items: typeof relations_posts_faq_items;
   relations_posts_faq: typeof relations_posts_faq;
   relations_posts_blocks_carousel_slides: typeof relations_posts_blocks_carousel_slides;
@@ -18325,6 +19003,8 @@ type DatabaseSchema = {
   relations___posts_v_youtube_v: typeof relations___posts_v_youtube_v;
   relations___posts_v_rich_text_v: typeof relations___posts_v_rich_text_v;
   relations___posts_v_code_v: typeof relations___posts_v_code_v;
+  relations___posts_v_chart_v: typeof relations___posts_v_chart_v;
+  relations___posts_v_diagram_v: typeof relations___posts_v_diagram_v;
   relations___posts_v_faq_v_items: typeof relations___posts_v_faq_v_items;
   relations___posts_v_faq_v: typeof relations___posts_v_faq_v;
   relations__posts_v_blocks_carousel_slides: typeof relations__posts_v_blocks_carousel_slides;
@@ -18354,6 +19034,8 @@ type DatabaseSchema = {
   relations_works_youtube: typeof relations_works_youtube;
   relations_works_rich_text: typeof relations_works_rich_text;
   relations_works_code: typeof relations_works_code;
+  relations_works_chart: typeof relations_works_chart;
+  relations_works_diagram: typeof relations_works_diagram;
   relations_works_faq_items: typeof relations_works_faq_items;
   relations_works_faq: typeof relations_works_faq;
   relations_works_blocks_carousel_slides: typeof relations_works_blocks_carousel_slides;
@@ -18392,6 +19074,8 @@ type DatabaseSchema = {
   relations___works_v_youtube_v: typeof relations___works_v_youtube_v;
   relations___works_v_rich_text_v: typeof relations___works_v_rich_text_v;
   relations___works_v_code_v: typeof relations___works_v_code_v;
+  relations___works_v_chart_v: typeof relations___works_v_chart_v;
+  relations___works_v_diagram_v: typeof relations___works_v_diagram_v;
   relations___works_v_faq_v_items: typeof relations___works_v_faq_v_items;
   relations___works_v_faq_v: typeof relations___works_v_faq_v;
   relations__works_v_blocks_carousel_slides: typeof relations__works_v_blocks_carousel_slides;
