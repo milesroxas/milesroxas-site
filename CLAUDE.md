@@ -54,7 +54,9 @@ Storybook conventions:
 
 ## Codebase Conventions
 
-- Use `pnpm` for all package and script operations.
+- Use `pnpm` for all package and script operations. The repo pins pnpm 10.28.0 in
+  `package.json#packageManager`; pnpm self-switches here, so plain `pnpm install` is
+  correct and only pnpm 10 may write `pnpm-lock.yaml` (see the note in `pnpm-workspace.yaml`).
 - Prefer project aliases (`@/*` and `@payload-config`) over deep relative imports.
 - Follow Biome formatting rules (single quotes, trailing commas, 2-space indentation, 100 columns).
 - Use `node:` protocol for Node.js built-in imports.

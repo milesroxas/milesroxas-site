@@ -27,10 +27,13 @@ allowBuilds:
 #   match the value found in the lockfile
 #
 # That failed every Vercel preview twice. `package.json#packageManager` now
-# pins pnpm 10.28.0, so Vercel and a corepack shell agree. Install with
-# `corepack pnpm install`, not a global pnpm 12: only pnpm 10 may write this
-# lockfile. If the entries come back as bare hashes anyway, put the
-# `{ hash, path }` form back before pushing.
+# pins pnpm 10.28.0, which Vercel installs with and which pnpm self-switches
+# to in this directory (`managePackageManagerVersions`, on by default), so
+# plain `pnpm install` here runs 10 whatever the global version is and only
+# pnpm 10 writes this lockfile. Check with `pnpm --version` in the repo root:
+# 10.28.0. If the entries ever come back as bare hashes, something wrote the
+# lockfile with another pnpm; put the `{ hash, path }` form back before
+# pushing.
 patchedDependencies:
   '@payloadcms/drizzle': patches/@payloadcms__drizzle.patch
   '@payloadcms/plugin-mcp': patches/@payloadcms__plugin-mcp.patch
