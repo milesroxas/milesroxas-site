@@ -301,6 +301,87 @@ describe('sliders (S and C5/C6 rules)', () => {
   })
 })
 
+describe('tab sliders (TB rules)', () => {
+  const tabSlider = (
+    id: string,
+    tabs: unknown[],
+    heading: Record<string, unknown> = { heading: 'Visual Directions', eyebrow: 'Round 1' },
+  ): Block => ({ blockType: 'tabs', id, theme: 'dark', heading, tabs })
+
+  const deckTab = (title: string, count = 3, style = 'single') => ({
+    tabTitle: title,
+    contentType: 'slider',
+    slider: { style, slides: slides(...Array.from({ length: count }, (_, i) => i + 1)) },
+  })
+
+  it('TB1: every tab a deck becomes one Carousel tabs block', () => {
+    const { layout, report } = transformLayout(
+      [tabSlider('t1', [deckTab('Spark'), deckTab('Rounded'), deckTab('Velocity')])],
+      media,
+    )
+    expect(report.map((line) => line.rule)).toEqual(['TB1'])
+    const [standard, tabs] = children(layout)
+    expect(standard).toMatchObject({
+      blockType: 'richTransition',
+      eyebrow: 'Round 1',
+      heading: 'Visual Directions',
+    })
+    expect(tabs).toMatchObject({
+      blockType: 'carouselTabs',
+      slideSize: 'full',
+      tabSize: 'default',
+    })
+    expect((tabs.tabs as { title: string; slides: unknown[] }[]).map((tab) => tab.title)).toEqual([
+      'Spark',
+      'Rounded',
+      'Velocity',
+    ])
+  })
+
+  it('TB1: five tabs take the small strip, and a non-single slider a half deck', () => {
+    const { layout } = transformLayout(
+      [
+        tabSlider(
+          't1',
+          Array.from({ length: 5 }, (_, i) => deckTab(`Tab ${i + 1}`, 3, 'default')),
+        ),
+      ],
+      media,
+    )
+    expect(children(layout)[1]).toMatchObject({
+      blockType: 'carouselTabs',
+      slideSize: 'half',
+      tabSize: 'small',
+    })
+  })
+
+  it('TB2: a tab of copy falls back to the flattened Section', () => {
+    const { layout, report } = transformLayout(
+      [
+        tabSlider('t1', [
+          deckTab('Spark'),
+          { tabTitle: 'Notes', contentType: 'richText', richText: stateOf([p('Some copy')]) },
+        ]),
+      ],
+      media,
+    )
+    expect(report.map((line) => line.rule)).toEqual(['TB2'])
+    expect(children(layout).map((block) => block.blockType)).toEqual([
+      'richTransition',
+      'richTransition',
+      'carousel',
+      'richTransition',
+      'richText',
+    ])
+  })
+
+  it('TB1 keeps every tab title, slide and word', () => {
+    const legacy = [tabSlider('t1', [deckTab('Spark'), deckTab('Rounded')])]
+    const { layout } = transformLayout(legacy, media)
+    expect(checkPreservation(legacy, layout).ok).toBe(true)
+  })
+})
+
 describe('grouping', () => {
   it('opens a Section per opener and per band, and passes listings through', () => {
     const { layout } = transformLayout(
@@ -397,6 +478,7 @@ describe.runIf(Boolean(latest))('production snapshot', () => {
     'faq',
     'carousel',
     'carouselSplit',
+    'carouselTabs',
     'featureTabs',
     'insightList',
     'slider',

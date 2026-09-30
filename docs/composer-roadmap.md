@@ -1,6 +1,6 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
-Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6's script is built and proven on the local Docker copy of production and on the Neon `preview/dev` branch; its production run is a cutover step (Phase 9). Phase 7: the code-only bullets are done, the three content ones wait for the cutover to soak. Phase 8: figures and the Carousel split built 2026-09-30, the rest not started. Three workstreams landed on `dev` after the phases and are documented where they live, not here: the top bar, dock and Ask panel (`docs/site-chrome.md`, supersedes D10 and O3), the `/contact` inquiry form, and the `milesroxas-cms` MCP server (`docs/mcp.md`). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
+Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6's script is built and proven on the local Docker copy of production and on the Neon `preview/dev` branch; its production run is a cutover step (Phase 9). Phase 7: the code-only bullets are done, the three content ones wait for the cutover to soak. Phase 8: figures, the Carousel split and Carousel tabs built 2026-09-30, the rest not started. Three workstreams landed on `dev` after the phases and are documented where they live, not here: the top bar, dock and Ask panel (`docs/site-chrome.md`, supersedes D10 and O3), the `/contact` inquiry form, and the `milesroxas-cms` MCP server (`docs/mcp.md`). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
@@ -137,6 +137,7 @@ Every sas-site block in the run, checked against `src/blocks/*/config.ts` here.
 | `tabs` (ours) vs `featureTabs` (sas) | different slugs | 4 | both. Ours relabelled "Tab slider", Interactive, top-level only |
 | `slider` (ours) vs `carousel` (sas) | different slugs | 8 | both. Ours stays "Slider", Interactive, top-level only |
 | `carouselSplit` | ours only, Phase 8 | 0 | **create.** Not in sas-site: a deck beside its copy, the shape a Columns block reached for with a Slider column next to a Section heading column. Media and content group |
+| `carouselTabs` | ours only, Phase 8 | 0 | **create.** Not in sas-site: a deck per tab, the shape every Tab slider holds. Interactive group. Shares its trigger strip with `featureTabs` and its deck with `carousel` |
 | `callout` | ours only | 1 | keep, group Statements |
 | `storyBeats`, `labStorySection`, `labFacts`, `labRelatedProjects`, `labMediaShowcase`, `caseStudy*`, `featuredWork`, `industryWork`, `audienceTabs`, `dynamicAudience`, `testimonialsMarquee`, `newsletterSignup`, `featureStatementGrid` (carries `source`), `scrollGallery` | | | **not ported** (hub, taxonomy or newsletter dependencies). `scrollGallery`, `featureStatementLinks`, a plain `mediaShowcase` are Phase 8 candidates |
 
@@ -285,6 +286,7 @@ Definition of done: a look can be drafted in Admin → Assets → Studio Looks, 
 | FAQ `faq` | `faq/` | Interactive | `intro` | Radix accordion on `.disclosure-body`, plus-to-minus glyph on `--ease-out-quint` | `link()` is ours (D8) |
 | Carousel `carousel` | `Carousel/` | Interactive | CSS reveal | `use-carousel-effects.ts` (embla velocity → `quickTo` RGB split), `playback.ts` (poster dissolve), `geometry.ts`, `visual-state.ts`, tests | embla already installed |
 | Carousel split `carouselSplit` | `carousel-split/` | Media and content | CSS reveal | renders the Carousel component `bare` in a grid cell | ours, added in Phase 8 |
+| Carousel tabs `carouselTabs` | `carousel-tabs/` | Interactive | CSS reveal | `shared/tabs.tsx` trigger strip, the Carousel component `bare` per panel | ours, added in Phase 8 |
 | Tabs `featureTabs` | `feature/Tabs/` | Interactive | `intro` | | per-tab visual slot; drop `source` on tab rows |
 | Insight list `insightList` | `insight-list/` | Lists | `intro` | | SVG marks via CSS mask; picker filter `mimeType` svg only |
 | Columns `content` (ours) | | Custom | none (own wrapper) | | closes every list; nested in Sections too |
@@ -298,7 +300,7 @@ export const sectionNestableBlocks: Block[] = [
   FullMedia, MediaContentSplit, SplitContentNarrow, CarouselSplit, ImagePair, SplitImageOffset, // Media and content
   FeatureImageStatement, Caption, YouTube,                                // Media
   RichTextBlock, Code,                                                    // Text
-  Faq, Carousel, FeatureTabs,                                             // Interactive
+  Faq, Carousel, CarouselTabs, FeatureTabs,                               // Interactive
   InsightList,                                                            // Lists
 ]
 export const sectionChildBlocks = [...sectionNestableBlocks, Content]      // Custom closes the nested list
@@ -453,7 +455,8 @@ Slider and Tab slider:
 |---|---|---|
 | S1 | Any slider | Carousel (`carousel`): each slide `media` = `slide.image`, `caption` = `slide.caption`; `slideSize` is `full` for `single` and `half` for `default` and `cropped`; `width: 'contained'` |
 | S2 | Slider with `introContent.heading` | A Standard before the Carousel, opening a Section: `heading` = intro heading, `body` = subheading; `layout` is `centered` when `align` is `center`, else `left` |
-| TB1 | Tab slider (see O9) | A new Section: a Standard (`eyebrow`, `heading` and `body` from the block's heading group), then, per tab, a Standard (`layout: 'left'`, `heading` = tab title) and a Carousel of that tab's slides (`slideSize: 'full'`) |
+| TB1 | Tab slider whose every tab is a slider of two or more slides (all four in production) | A new Section: a Standard (`eyebrow`, `heading` and `body` from the block's heading group), then one Carousel tabs block (`carouselTabs`) with a tab per legacy tab, `title` = tab title and `slides` = that tab's slides. `slideSize` is `full` when every tab slider is `single`, else `half`; `tabSize` is `small` from five tabs, else `default` |
+| TB2 | Any other Tab slider (one that mixes copy into its tabs; none in production) | The flattened Section TB1 used to write: the heading Standard, then per tab a Standard (`layout: 'left'`, `heading` = tab title), its Rich text, and a Carousel of its slides. The tabbing is lost, nothing else is |
 
 **Overrides.** `scripts/composer/overrides.ts` maps a legacy block id to another rule id, or to `keep` (leave the legacy block in place). To change a mapping, edit this file and run the script again. Nothing is done in admin.
 
@@ -509,11 +512,20 @@ The first three bullets stay open on purpose: each changes or retires production
 ### Phase 8: optional, in any order (the last code phase before the cutover)
 
 - [x] **Figures** (`chart`, `diagram`) with `sas:src/plugins/figures` and `sas:src/features/figures`, done 2026-09-30. Joins the run under Figures. Notes below; the system is documented in [figures.md](figures.md).
+- [x] **Carousel tabs** (`carouselTabs`), done 2026-09-30. A deck per tab, so a Tab slider keeps its tabs through Phase 6 (O9). Joins the run under Interactive. Notes below.
 - [x] **Carousel split** (`carouselSplit`), done 2026-09-30. A deck beside its copy, so a carousel can sit next to words as the legacy Columns grid allowed. Joins the run under Media and content, and Phase 6's C6 maps the legacy shape onto it. Notes below.
 - `scrollGallery` (WebGL, pinned, `self` reveal), `featureStatementLinks` (`self`, own `ScrollReveal`), a plain `mediaShowcase` (sas Lab Media showcase minus the record).
 - Closing band: re-add a Footer global with `sas:src/fields/closing.ts` and the per-page Closing tab; `ClosingAsk` then has a home.
 - `/demo/transitions` reveal tuner (`sas:src/widgets/transition-demo`) for retuning the two reveals on this site's type scale.
 - [x] **A visitor light/dark theme** (`sas:src/providers/Theme/*`, `InitTheme`), done 2026-09-30. Notes below; the toggle is documented in [site-chrome.md](site-chrome.md).
+
+**Carousel tabs as built (2026-09-30).** `src/blocks/carousel-tabs/{config.ts, CarouselTabs.tsx, Component.tsx, Component.stories.tsx}`, registered in `sectionNestableBlocks` (Interactive, before Tabs) and in `sectionChildComponents`. Fields: `tabs` (two to eight rows of a `title` and that tab's slides), `slideSize`, `showArrows`, `tabSize`, `theme`. Tables `{pages,works,posts}_blocks_carousel_tabs(_tabs)(_slides)` plus `_v` twins.
+
+- **Two extractions, so nothing is stated twice.** `blocks/shared/carousel-fields.ts` holds the slide array, `slideSize` and `showArrows`, and the Carousel block, Carousel split and Carousel tabs all take them (each passes only its own admin description). `blocks/shared/tabs.tsx` holds the trigger strip and the Radix root that Tabs already had, and both tabbed blocks render through it; `tabSizeField()` joined `shared/fields.ts` beside `themeField()`. Both extractions are schema-neutral: the generated schema is identical outside the new tables.
+- **A deck per panel, not a copy of one.** Each panel renders `CarouselBlock` `bare` with its gutter off, as Carousel split does. Radix mounts only the active panel, so exactly one embla instance and one per-frame writer is ever live, however many tabs a block has.
+- **A client component.** `renderPanel` is a function, and a function cannot cross the server/client boundary into `TabbedPanels`, so this file carries `'use client'` as `FeatureTabs.tsx` does. A server component here renders as a 500, not a warning.
+- **Out of `blockRevealVariants`**, for the reason Carousel split is: the deck writes its own per-frame transforms, so the block takes the CSS block reveal instead.
+- **Settings are per block, not per tab.** The tabs are alternatives to each other, so a deck that changed size when the reader switched would read as a different component.
 
 **Carousel split as built (2026-09-30).** `src/blocks/carousel-split/{config.ts, CarouselSplit.tsx, Component.tsx, Component.stories.tsx}`, registered in `sectionNestableBlocks` after Split narrow and in `sectionChildComponents`, so every surface that offers the run offers it. Fields: `eyebrow`, `heading`, `body` (`contentLexical`), `slides` (media plus caption, the Carousel's slide fields), `carouselPosition` (`left` / `right`, default right), `slideSize`, `showArrows`, `theme`. No `dbName` function: the slug is short enough that the default per-parent names fit (`{pages,works,posts}_blocks_carousel_split` and `_slides`, plus `_v` twins).
 
@@ -630,7 +642,7 @@ Integration rules here:
 | O6 | Figures in the run? | **Settled 2026-09-30**: chart and diagram are in the run ([figures.md](figures.md)); bespoke figures are not |
 | O7 | Band token values | Start from sas-site's oklch values; retune against IBM Plex and the orange accent on `/demo`-style stories before Phase 3 ships |
 | O8 | Work Details tab (industry, role, deliverables) as a hero facts row like `CaseStudyHero`? | Yes, in Phase 4, read from the existing text fields; no schema |
-| O9 | Tab slider in Phase 6: every tab holds a slider (3 to 12 slides). sas-site's Tabs (`featureTabs`) holds one media per tab, so it would keep 13 of 73 images | TB1: each tab becomes a Standard plus a Carousel, which keeps every image but stacks them instead of tabbing. The alternative is `keep` in `overrides.ts`, which leaves the legacy Tab slider in place and blocks its Phase 7 retirement |
+| O9 | Tab slider in Phase 6: every tab holds a slider (3 to 12 slides). sas-site's Tabs (`featureTabs`) holds one media per tab, so it would keep 13 of 73 images | **Settled 2026-09-30**: a `carouselTabs` block of our own, a deck per tab. TB1 maps every production Tab slider onto it, so all 13 tabs and 73 slides survive as tabs. The first answer here (flatten each tab into a Standard plus a Carousel) is now the TB2 fallback for a Tab slider that mixes copy into its tabs |
 | O10 | Move each work's opening statement (7 of 9 works open with one, 103 to 377 characters) into the Phase 4 intro band? | Not by default. sas-site's intro needs a short statement title, which the legacy data does not have. The statements go through H2 or H3 instead |
 | O11 | Visitor theme | **Settled 2026-09-30**: shipped, OS preference honoured, toggle in the top bar |
 | O12 | A carousel beside copy: refine the ported `carousel` block, or add one of our own? | **Settled 2026-09-30**: a new `carouselSplit` block. Adding copy fields to `carousel` would drift the ported config from sas-site; the split reuses the same deck component, so nothing is duplicated but the shell |
@@ -645,6 +657,7 @@ Never run without asking. Every phase below is additive, so **no create/rename p
 - **Phase 3** `pnpm migrate:create sections-and-run`: `{pages,works,posts}_section` and every per-parent run table listed in Phase 3 with `_v` twins, their enums, FKs and indexes; `posts` gains no column (`layout` is rows in `posts_section` and the run tables). Expect several hundred `CREATE TYPE` / `CREATE TABLE` statements and zero `DROP`, zero `ALTER ... RENAME`, zero `ADD VALUE`.
 - **Phase 4** `pnpm migrate:create opening-intro-contents`: `hero_visual_type` enums and `hero_shader_*` columns on `pages`, `posts`, `works` and `_v`; `intro_eyebrow`, `intro_title`, `intro_body` on `posts`, `works`; `show_contents` on `pages`, `posts`, `works`; `hide_related_posts` on `posts`. All create; no prompt.
 - **Phase 5** `pnpm migrate:create ask`: hand-add `CREATE EXTENSION IF NOT EXISTS vector;` as the first statement of `up()`; `ask_embeddings` with its unique, btree and HNSW indexes; `ask_questions`, `ask_questions_sources`, `ask_questions_rels`; `inquiries` and `inquiries_rels`; `site_info`; locked-documents rels columns; the `payload_jobs` task-slug enum gains `askQuestionRetention` (an `ADD VALUE`: keep it in this migration only if nothing in the same `up()` uses the label, otherwise split it into its own migration; `pnpm check:migrations` decides).
+- **Phase 8 carousel tabs** `pnpm migrate:create carousel-tabs`: `{pages,works,posts}_blocks_carousel_tabs`, `_blocks_carousel_tabs_tabs` and `_blocks_carousel_tabs_tabs_slides`, their `_v` twins, each parent table's `enum_..._slide_size`, `enum_..._tab_size` and `enum_..._theme`, indexes and FKs. All create; no prompt; zero `DROP`, `RENAME` or `ADD VALUE`. The shared-field extraction changes no existing table, so nothing else appears in the diff.
 - **Phase 8 carousel split** `pnpm migrate:create carousel-split`: `{pages,works,posts}_blocks_carousel_split` and `_blocks_carousel_split_slides`, their `_v` twins, each split table's `enum_..._carousel_position`, `enum_..._slide_size` and `enum_..._theme`, indexes and FKs. All create; no prompt; zero `DROP`, `RENAME` or `ADD VALUE`.
 - **Phase 8 figures** `pnpm migrate:create figures`: `{pages,works,posts}_chart`, `{pages,works,posts}_diagram` and their `__{...}_v_{chart,diagram}_v` twins, each table's `enum_..._width` and `enum_..._theme`, indexes and FKs. All create; no prompt.
 - **Phase 7** (per PR): theme enum recreate on `enum_{pages,works}_blocks_{content,media_block,archive,slider}_theme`, `enum_works_blocks_tabs_theme`, the nested slider theme enums, and their `_v` twins: no prompt; hand-check that every `UPDATE ... 'system' -> 'light'` precedes its cast. Column drops (posts `content`, if taken): no prompt, plain `DROP COLUMN` in the diff.

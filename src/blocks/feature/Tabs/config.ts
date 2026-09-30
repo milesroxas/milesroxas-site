@@ -1,5 +1,5 @@
 import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import { tabSizeField, themeField } from '@/blocks/shared/fields'
 
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { blockVisualSlotFields } from '@/fields/visual'
@@ -58,17 +58,7 @@ export const FeatureTabs: Block = {
         },
       ],
     },
-    {
-      name: 'tabSize',
-      type: 'select',
-      label: 'Tab size',
-      defaultValue: 'default',
-      options: ['default', 'small'],
-      admin: {
-        description:
-          'Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.',
-      },
-    },
+    tabSizeField(),
     themeField(),
   ],
 }

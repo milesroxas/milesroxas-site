@@ -17,6 +17,22 @@ export const themeField = (name = 'theme'): SelectField => ({
 })
 
 /**
+ * How big a tabbed block's trigger strip runs, shared by every tabbed block
+ * so a reader meets one tab strip on this site, not two.
+ */
+export const tabSizeField = (): SelectField => ({
+  name: 'tabSize',
+  type: 'select',
+  label: 'Tab size',
+  defaultValue: 'default',
+  options: ['default', 'small'],
+  admin: {
+    description:
+      'Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.',
+  },
+})
+
+/**
  * The outline level of a heading on the reading column (a Prose Standard
  * heading, a Story beats heading). The level also sets the type size, from
  * the one prose scale in `proseHeadingClassNames` (`./typography.ts`), so the

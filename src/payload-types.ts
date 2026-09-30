@@ -260,6 +260,7 @@ export interface Page {
     | DiagramBlock
     | FaqBlock
     | CarouselBlock
+    | CarouselTabsBlock
     | FeatureTabsBlock
     | InsightListBlock
     | SliderBlock
@@ -392,6 +393,7 @@ export interface Post {
         | DiagramBlock
         | FaqBlock
         | CarouselBlock
+        | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
       )[]
@@ -784,6 +786,7 @@ export interface PostSectionBlock {
         | DiagramBlock
         | FaqBlock
         | CarouselBlock
+        | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
         | ContentBlock
@@ -4166,6 +4169,43 @@ export interface CarouselBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselTabsBlock".
+ */
+export interface CarouselTabsBlock {
+  tabs: {
+    title: string;
+    slides: {
+      media: number | Media;
+      /**
+       * Optional. Renders below the slide.
+       */
+      caption?: string | null;
+      id?: string | null;
+    }[];
+    id?: string | null;
+  }[];
+  /**
+   * Slides visible at once inside a tab panel, from tablet up. Phones always show one slide plus a sliver of its neighbours.
+   */
+  slideSize?: ('full' | 'half' | 'third') | null;
+  /**
+   * Previous/next buttons beside the slides, in every tab. The panel is the page column, so they sit in its outer gutter.
+   */
+  showArrows?: boolean | null;
+  /**
+   * Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.
+   */
+  tabSize?: ('default' | 'small') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'carouselTabs';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FeatureTabsBlock".
  */
 export interface FeatureTabsBlock {
@@ -4485,6 +4525,7 @@ export interface Work {
     | DiagramBlock
     | FaqBlock
     | CarouselBlock
+    | CarouselTabsBlock
     | FeatureTabsBlock
     | InsightListBlock
     | SliderBlock
@@ -4572,6 +4613,7 @@ export interface WorkSectionBlock {
         | DiagramBlock
         | FaqBlock
         | CarouselBlock
+        | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
         | ContentBlock
@@ -5085,6 +5127,7 @@ export interface PageSectionBlock {
         | DiagramBlock
         | FaqBlock
         | CarouselBlock
+        | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
         | ContentBlock
@@ -5746,6 +5789,7 @@ export interface PagesSelect<T extends boolean = true> {
         diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
@@ -5820,6 +5864,7 @@ export interface PageSectionBlockSelect<T extends boolean = true> {
         diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
@@ -6103,6 +6148,31 @@ export interface CarouselBlockSelect<T extends boolean = true> {
   width?: T;
   showArrows?: T;
   slideSize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselTabsBlock_select".
+ */
+export interface CarouselTabsBlockSelect<T extends boolean = true> {
+  tabs?:
+    | T
+    | {
+        title?: T;
+        slides?:
+          | T
+          | {
+              media?: T;
+              caption?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  slideSize?: T;
+  showArrows?: T;
+  tabSize?: T;
   theme?: T;
   id?: T;
   blockName?: T;
@@ -6458,6 +6528,7 @@ export interface PostsSelect<T extends boolean = true> {
         diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
       };
@@ -6524,6 +6595,7 @@ export interface PostSectionBlockSelect<T extends boolean = true> {
         diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
@@ -6585,6 +6657,7 @@ export interface WorksSelect<T extends boolean = true> {
         diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
@@ -6648,6 +6721,7 @@ export interface WorkSectionBlockSelect<T extends boolean = true> {
         diagram?: T | DiagramBlockSelect<T>;
         faq?: T | FaqBlockSelect<T>;
         carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;

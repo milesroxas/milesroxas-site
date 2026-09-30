@@ -3,6 +3,7 @@ import { CarouselBlock } from '@/blocks/Carousel/Component'
 import { CodeSectionBlock } from '@/blocks/Code/Section'
 import { CaptionBlock } from '@/blocks/caption/Component'
 import { CarouselSplitBlock } from '@/blocks/carousel-split/Component'
+import { CarouselTabsBlock } from '@/blocks/carousel-tabs/Component'
 import { FaqBlock } from '@/blocks/faq/Component'
 import { FeatureHeadingOffsetBlock } from '@/blocks/feature/HeadingOffset/Component'
 import { FeatureImageStatementBlock } from '@/blocks/feature/ImageStatement/Component'
@@ -41,6 +42,7 @@ export const sectionChildComponents = {
   caption: CaptionBlock,
   carousel: CarouselBlock,
   carouselSplit: CarouselSplitBlock,
+  carouselTabs: CarouselTabsBlock,
   chart: ChartBlock,
   code: CodeSectionBlock,
   diagram: DiagramBlock,

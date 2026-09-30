@@ -50,6 +50,7 @@ export type RuleId =
   | 'S1'
   | 'S2'
   | 'TB1'
+  | 'TB2'
 
 /** What one rule produced for one legacy block. */
 export type Unit = {
@@ -617,7 +618,7 @@ export const mediaBlockUnits = (block: Block): Unit[] => {
 }
 
 // ---------------------------------------------------------------------------
-// Tab slider (TB1)
+// Tab slider (TB1, TB2)
 // ---------------------------------------------------------------------------
 
 type Tab = {
@@ -627,27 +628,73 @@ type Tab = {
   slider?: Block | null
 }
 
-export const tabsUnits = (block: Block): Unit[] => {
-  const source = String(block.id ?? 'tabs')
-  const band = bandOf(block.theme)
+/** The Standard a Tab slider's own heading group opens with, or nothing. */
+const tabsHeadingBlocks = (block: Block): Block[] => {
   const heading = (block.heading ?? {}) as {
     eyebrow?: string | null
     heading?: string | null
     subheading?: string | null
   }
-  const blocks: Block[] = []
   const title = str(heading.heading)
-  if (title) {
-    const eyebrow = str(heading.eyebrow)
-    const subheading = str(heading.subheading)
-    blocks.push({
+  if (!title) return []
+  const eyebrow = str(heading.eyebrow)
+  const subheading = str(heading.subheading)
+  return [
+    {
       blockType: 'richTransition',
       ...(eyebrow ? { eyebrow } : {}),
       heading: title,
       layout: 'left',
       ...(subheading ? { body: paragraphsState([subheading]) } : {}),
-    })
+    },
+  ]
+}
+
+/** Five tabs no longer fit the heading-sized strip; they pan on the small one. */
+const SMALL_STRIP_TABS = 5
+
+/**
+ * A Tab slider whose every tab is a deck becomes one Carousel tabs block
+ * (`carouselTabs`), so the reader still picks a direction instead of
+ * scrolling through all of them. Every production Tab slider is this shape.
+ * Null when any tab is not a usable deck, so the caller falls back to TB2.
+ */
+const carouselTabsUnit = (block: Block, source: string, band: Band): Unit | null => {
+  const tabs = Array.isArray(block.tabs) ? (block.tabs as Tab[]) : []
+  const decks = tabs.flatMap((tab) => {
+    if (tab.contentType !== 'slider' || !tab.slider) return []
+    const title = str(tab.tabTitle)
+    const slides = slidesOf(tab.slider)
+    // The block holds two tabs minimum and each deck two slides, as the
+    // Carousel does: one of either is not a carousel, nor a set of choices.
+    return title && slides.length >= 2 ? [{ slider: tab.slider, slides, title }] : []
+  })
+  if (decks.length < 2 || decks.length !== tabs.length) return null
+
+  return {
+    rule: 'TB1',
+    source,
+    band,
+    opens: true,
+    blocks: [
+      ...tabsHeadingBlocks(block),
+      {
+        blockType: 'carouselTabs',
+        tabs: decks.map(({ slides, title }) => ({ title, slides })),
+        slideSize: decks.every(({ slider }) => slider.style === 'single') ? 'full' : 'half',
+        tabSize: decks.length >= SMALL_STRIP_TABS ? 'small' : 'default',
+      },
+    ],
   }
+}
+
+/**
+ * The fallback for a Tab slider that mixes copy into its tabs (none in
+ * production): the tabs are flattened into a Section, a Standard per tab
+ * title, so nothing is lost even though the tabbing is.
+ */
+const flattenedTabsUnit = (block: Block, source: string, band: Band): Unit | null => {
+  const blocks: Block[] = tabsHeadingBlocks(block)
   for (const tab of Array.isArray(block.tabs) ? (block.tabs as Tab[]) : []) {
     const tabTitle = str(tab.tabTitle)
     if (tabTitle) blocks.push({ blockType: 'richTransition', heading: tabTitle, layout: 'left' })
@@ -663,7 +710,14 @@ export const tabsUnits = (block: Block): Unit[] => {
         blocks.push({ blockType: 'carousel', slides, slideSize: 'full', width: 'contained' })
     }
   }
-  return blocks.length ? [{ rule: 'TB1', source, band, opens: true, blocks }] : []
+  return blocks.length ? { rule: 'TB2', source, band, opens: true, blocks } : null
+}
+
+export const tabsUnits = (block: Block): Unit[] => {
+  const source = String(block.id ?? 'tabs')
+  const band = bandOf(block.theme)
+  const unit = carouselTabsUnit(block, source, band) ?? flattenedTabsUnit(block, source, band)
+  return unit ? [unit] : []
 }
 
 /** Blocks the transform converts. Everything else passes through at the top level. */

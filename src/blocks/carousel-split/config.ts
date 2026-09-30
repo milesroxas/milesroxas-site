@@ -1,4 +1,9 @@
 import type { Block } from 'payload'
+import {
+  carouselSlidesField,
+  showArrowsField,
+  slideSizeField,
+} from '@/blocks/shared/carousel-fields'
 import { themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { contentLexical } from '@/fields/contentLexical'
@@ -32,28 +37,7 @@ export const CarouselSplit: Block = {
       editor: contentLexical,
       admin: { description: 'The copy column beside the deck.' },
     },
-    {
-      name: 'slides',
-      type: 'array',
-      required: true,
-      minRows: 2,
-      labels: { singular: 'Slide', plural: 'Slides' },
-      fields: [
-        {
-          name: 'media',
-          type: 'upload',
-          relationTo: 'media',
-          required: true,
-        },
-        {
-          name: 'caption',
-          type: 'text',
-          admin: {
-            description: 'Optional. Renders below the slide.',
-          },
-        },
-      ],
-    },
+    carouselSlidesField(),
     {
       name: 'carouselPosition',
       type: 'select',
@@ -62,30 +46,12 @@ export const CarouselSplit: Block = {
       options: ['left', 'right'],
       admin: { description: 'Arrange the deck on the left or the right of the copy.' },
     },
-    {
-      name: 'slideSize',
-      type: 'select',
-      defaultValue: 'full',
-      options: [
-        { label: 'Full width', value: 'full' },
-        { label: 'Half', value: 'half' },
-        { label: 'One third', value: 'third' },
-      ],
-      admin: {
-        description:
-          'Slides visible at once within the deck column, from tablet up. Phones always show one slide plus a sliver of its neighbours.',
-      },
-    },
-    {
-      name: 'showArrows',
-      type: 'checkbox',
-      defaultValue: false,
-      label: 'Show arrows',
-      admin: {
-        description:
-          'Previous/next buttons beside the slides. They take an outer gutter from the deck column, which is already the narrower half of a split.',
-      },
-    },
+    slideSizeField(
+      'Slides visible at once within the deck column, from tablet up. Phones always show one slide plus a sliver of its neighbours.',
+    ),
+    showArrowsField(
+      'Previous/next buttons beside the slides. They take an outer gutter from the deck column, which is already the narrower half of a split.',
+    ),
     themeField(),
   ],
 }

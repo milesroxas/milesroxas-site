@@ -18,6 +18,7 @@ import * as migration_20260929_162031_contact_page from './20260929_162031_conta
 import * as migration_20260929_172901_mcp_api_keys from './20260929_172901_mcp_api_keys';
 import * as migration_20260930_140439_figures from './20260930_140439_figures';
 import * as migration_20260930_154412_carousel_split from './20260930_154412_carousel_split';
+import * as migration_20260930_170149_carousel_tabs from './20260930_170149_carousel_tabs';
 
 export const migrations = [
   {
@@ -118,6 +119,11 @@ export const migrations = [
   {
     up: migration_20260930_154412_carousel_split.up,
     down: migration_20260930_154412_carousel_split.down,
-    name: '20260930_154412_carousel_split'
+    name: '20260930_154412_carousel_split',
+  },
+  {
+    up: migration_20260930_170149_carousel_tabs.up,
+    down: migration_20260930_170149_carousel_tabs.down,
+    name: '20260930_170149_carousel_tabs'
   },
 ];
