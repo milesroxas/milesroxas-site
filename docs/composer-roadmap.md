@@ -59,7 +59,7 @@ Consequence: the real migration surface is about 140 block rows on 10 works and 
 
 ### Code facts that shape the plan
 
-- **No visitor theme toggle.** `<html>` carries no `data-theme`. The light palette is `:root`; `[data-theme="dark"]` is stamped per block (`ClientBlockWrapper`, block components, `HighImpact` hero, the work title strip) and swaps the whole palette inside that subtree. So today `dark` means "forced dark palette here", and `light`/`system` mean "page palette". That maps cleanly onto sas-site bands (Section 5).
+- **No visitor theme toggle** (true on 2026-09-27; Phase 8 added one on 2026-09-30, and `<html>` now carries `data-theme`). `<html>` carried no `data-theme`. The light palette is `:root`; `[data-theme="dark"]` is stamped per block (`ClientBlockWrapper`, block components, `HighImpact` hero, the work title strip) and swaps the whole palette inside that subtree. So today `dark` means "forced dark palette here", and `light`/`system` mean "page palette". That maps cleanly onto sas-site bands (Section 5).
 - **Five legacy blocks carry `theme` with enum values `system | light | dark`** (content, mediaBlock, archive, slider, tabs, plus nested slider groups). sas-site's `themeField()` is `light | dark | neutral | brand`. Same field name, different enum: a ported block cannot share a slug with one of these (Section 4).
 - **`RenderBlocks` is an async server component** (`src/blocks/RenderBlocks.tsx`): it resolves protected works inside Content columns (`processLayoutBlocks`) and wraps every block in `div.block-wrapper` inside `AnimatedBlocksContainer`, which animates only on `/`.
 - **The hero group is shared** by Pages, Posts and Works (`src/heros/config.ts`): `type`, `showContent`, `richText`, `links`, `media` (required for highImpact / mediumImpact / home). `HighImpact` receives the card-to-page FLIP clone (`docs/site-chrome.md`) and needs an `img` or `video` inside it.
@@ -147,7 +147,7 @@ Every ported block that lives in more than one collection uses the function `dbN
 
 sas-site's rule (`sas:src/blocks/shared/section.tsx`): a block's `theme` picks a **surface within the visitor's theme**. `light` is the page surface, `dark` a low-luminance band (`--tertiary`), `neutral` a quiet stripe (`--neutral`), `brand` the accent surface (`--brand`). Sections expose the same idea as `inherit | secondary | accent | inverted`, mapped in `sas:src/blocks/section/shared.ts`.
 
-Here the site has no visitor theme, so "within the visitor's theme" collapses to "within the light page". The translation is exact:
+The site was light only when this was written, so "within the visitor's theme" collapsed to "within the light page". Phase 8 added the visitor theme (2026-09-30) and the bands were already built for it: a band is a surface inside whichever palette `<html data-theme>` selects. The translation is exact either way:
 
 | Legacy value (five blocks) | Renders today | Band after Phase 7 |
 |---|---|---|
@@ -509,7 +509,16 @@ The first three bullets stay open on purpose: each changes or retires production
 - `scrollGallery` (WebGL, pinned, `self` reveal), `featureStatementLinks` (`self`, own `ScrollReveal`), a plain `mediaShowcase` (sas Lab Media showcase minus the record).
 - Closing band: re-add a Footer global with `sas:src/fields/closing.ts` and the per-page Closing tab; `ClosingAsk` then has a home.
 - `/demo/transitions` reveal tuner (`sas:src/widgets/transition-demo`) for retuning the two reveals on this site's type scale.
-- A visitor light/dark theme (`sas:src/providers/Theme/*`, `InitTheme`); the bands are already built for it.
+- [x] **A visitor light/dark theme** (`sas:src/providers/Theme/*`, `InitTheme`), done 2026-09-30. Notes below; the toggle is documented in [site-chrome.md](site-chrome.md).
+
+**Visitor theme as built (2026-09-30).** No schema. `providers/Theme/{index.tsx,shared.ts,InitTheme}` ported from sas-site (`types.ts` was already here for `useSiteTheme`), `ThemeProvider` outermost in `providers/index.tsx`, `InitTheme` in the root `<head>`. Stored choice wins, then `prefers-color-scheme`, then light. `tsc`, `pnpm lint:ci`, `pnpm test:unit`, `pnpm test:storybook`, `pnpm build` green; both themes walked in Chrome over `/`, `/works`, a work, a post, `/contact` and the Ask panel. Where it departs from sas-site:
+
+- **No `html { opacity: 0 }` guard.** sas-site hides the document until the bootstrap stamps a theme. The script already runs before the body is parsed, and the guard's failure mode is a permanently invisible site, so it was left out.
+- **The toggle is in the top bar**, beside the clock, not in a menu or the footer (neither exists here). It reads `useSiteTheme()` (the attribute) rather than the provider's context, so its mark is right on the first client render with no mount flag, and it still reads correctly in Storybook, which drives the same attribute.
+- **Chrome materials follow a dark document too**, not only a dark band: `[data-theme="dark"] [data-chrome]` joins the existing `[data-chrome][data-theme="dark"]`. `--chrome-ink` needed nothing, it reads `--foreground`.
+- **Four surfaces used inverted tokens** and so flipped with the theme instead of staying dark: the post article and its "More posts" section (`bg-primary`), the post title (`text-primary-foreground`) and the Related posts rail. They now take `bg-tertiary` / `text-tertiary-foreground`, the dark band ground of whichever palette is on. In the light theme this is a 4% lift off pure black and nothing else. `bg-card` surfaces (CTA, Banner info, Tabs card) state `text-card-foreground` rather than inheriting the page's ink, which they never should have.
+- **A subtree pinned `data-theme="dark"` renders identically in both themes** (the stamp restates the whole palette), so the heroes, the work title strip, CallOut and every legacy forced-dark block were unaffected. Phase 7 still converts them to band classes.
+- **Known, unchanged**: the top bar and dock read *bands*, not media, so chrome ink over a photo is whatever the band under it says. That was true before the theme and is true in both.
 
 **Figures as built (2026-09-30).** Migration `20260930_140439_figures` (no prompts): 12 `CREATE TABLE` (`{pages,works,posts}_{chart,diagram}` and their `_v` twins), 24 `CREATE TYPE` (each table's `width` and `theme` enums), their indexes and FKs. Zero `DROP`, `RENAME`, `ADD VALUE`. `tsc`, `pnpm lint:ci`, `pnpm test:unit` (45 files, 427 tests), `pnpm test:storybook` (65 files, 365 tests), `pnpm check:migrations` and `check:migrations:drift` green; a throwaway local page rendered a chart at the top level and a diagram plus a chart inside a Section, the diagram's geometry was computed on save (6 nodes, version 1), and a bad spec was refused by path. Where the build departs from the plan above:
 
@@ -612,6 +621,7 @@ Integration rules here:
 | O8 | Work Details tab (industry, role, deliverables) as a hero facts row like `CaseStudyHero`? | Yes, in Phase 4, read from the existing text fields; no schema |
 | O9 | Tab slider in Phase 6: every tab holds a slider (3 to 12 slides). sas-site's Tabs (`featureTabs`) holds one media per tab, so it would keep 13 of 73 images | TB1: each tab becomes a Standard plus a Carousel, which keeps every image but stacks them instead of tabbing. The alternative is `keep` in `overrides.ts`, which leaves the legacy Tab slider in place and blocks its Phase 7 retirement |
 | O10 | Move each work's opening statement (7 of 9 works open with one, 103 to 377 characters) into the Phase 4 intro band? | Not by default. sas-site's intro needs a short statement title, which the legacy data does not have. The statements go through H2 or H3 instead |
+| O11 | Visitor theme | **Settled 2026-09-30**: shipped, OS preference honoured, toggle in the top bar |
 
 ---
 

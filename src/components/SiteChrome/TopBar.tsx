@@ -6,6 +6,7 @@ import { useRef } from 'react'
 import { Logo } from '@/components/Logo/Logo'
 import { useChromeStore } from '@/stores/chromeStore'
 import { Clock } from './Clock'
+import { ThemeToggle } from './ThemeToggle'
 import { useOverDarkBand } from './use-over-dark-band'
 
 /**
@@ -15,6 +16,9 @@ import { useOverDarkBand } from './use-over-dark-band'
  * On a page that names itself (`ChromeTitle`), the centre shows where the
  * reader is once the page's heading has scrolled away: the tab, then the
  * title. Wide screens only; a phone has no room between the two ends.
+ *
+ * The theme toggle sits with the clock rather than in the dock: both are the
+ * bar's quiet register, and the dock stays navigation only.
  */
 export function TopBar({ section }: { section: string | null }) {
   const ref = useRef<HTMLElement>(null)
@@ -49,7 +53,10 @@ export function TopBar({ section }: { section: string | null }) {
         </p>
       )}
 
-      <Clock />
+      <div className="flex items-center gap-2 md:gap-3">
+        <ThemeToggle />
+        <Clock />
+      </div>
     </header>
   )
 }

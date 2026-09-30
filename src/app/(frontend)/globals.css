@@ -1492,7 +1492,11 @@
   --chrome-glass-swap: --glass-top 240ms ease, --glass-bottom 240ms ease, box-shadow 240ms ease;
 }
 
-[data-chrome][data-theme="dark"] {
+/* The dark material: while the chrome floats over a dark band (it stamps
+   itself), and everywhere in the dark theme, where the page itself is the
+   dark ground. `--chrome-ink` needs neither: it reads `--foreground`. */
+[data-chrome][data-theme="dark"],
+[data-theme="dark"] [data-chrome] {
   --chrome-ink-muted: #c4c4ca;
   --chrome-ink-quiet: #a1a1aa;
   --chrome-glyph: #f47a36;
@@ -1587,6 +1591,36 @@
 .chrome-focus:focus-visible {
   outline: 2px solid var(--chrome-ink);
   outline-offset: 2px;
+}
+
+/* Theme toggle: ink, no surface. The press is felt, not seen (3%), and the
+   glyph crossfades on its own key change while the palette behind it swaps,
+   so the two read as one event rather than two. */
+.theme-toggle {
+  transition:
+    opacity 150ms ease,
+    scale 150ms var(--ease-out-quint);
+}
+.theme-toggle:hover {
+  opacity: 0.7;
+}
+.theme-toggle:active {
+  scale: 0.97;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .theme-toggle > svg {
+    animation: theme-toggle-glyph 150ms ease-out both;
+  }
+}
+@keyframes theme-toggle-glyph {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle {
+    transition: none;
+  }
 }
 
 /* Top bar: words over the page, no bar. The page's own title rises in at the

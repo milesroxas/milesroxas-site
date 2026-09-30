@@ -16,6 +16,9 @@ The chrome on every public route: the top bar, the dock and the Ask panel. The a
   which folds into its current tab while scrolling down.
 - **Ask** (`src/features/ask/AskPanel.tsx`): a modal dialog anchored to the
   dock on desktop, a bottom sheet on a phone. ⌘K / Ctrl+K toggles it.
+- **Theme toggle** (`ThemeToggle.tsx`): light or dark, in the top bar beside
+  the clock. Ink only, no glass: it belongs to the bar's quiet register, and
+  the dock stays navigation.
 
 ## Sources of truth
 
@@ -25,6 +28,13 @@ The chrome on every public route: the top bar, the dock and the Ask panel. The a
   rows use the same map.
 - **Ask**: Site Info › Ask › Hide Ask removes the button, the shortcut and
   `/ask`. Site Info › Ask › Suggested questions fills the empty panel.
+- **Theme**: `<html data-theme>`, stamped by `InitTheme` during head parsing
+  (stored choice, else `prefers-color-scheme`, else light) and written by
+  `ThemeProvider` on every toggle. Read it with `useSiteTheme()`; change it
+  with `useTheme()`. The chrome's dark material follows either the band it
+  floats over or a dark document (`[data-chrome][data-theme="dark"],
+  [data-theme="dark"] [data-chrome]` in `globals.css`), and `--chrome-ink`
+  needs neither: it reads `--foreground`.
 - **Sizes and materials**: the `--chrome-top`, `--dock-*` and `--ask-*`
   tokens and the `[data-chrome]` glass tokens in `globals.css`. Corners use
   the site's radius scale (`--radius` 8px outside, `--radius-md` 6px for rows

@@ -112,7 +112,7 @@ const TabPanel: React.FC<{ tab: FeatureTab; surface: StreakVisualSurface }> = ({
         />
       ) : null}
       {tab.caption ? (
-        <div className="absolute right-4 bottom-4 max-w-72 rounded-md bg-card p-4 md:right-8 md:bottom-9">
+        <div className="absolute right-4 bottom-4 max-w-72 rounded-md bg-card p-4 text-card-foreground md:right-8 md:bottom-9">
           <p className="text-sm text-muted-foreground">{tab.caption}</p>
         </div>
       ) : null}

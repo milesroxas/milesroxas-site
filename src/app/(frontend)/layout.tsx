@@ -12,6 +12,7 @@ import { SiteChrome } from '@/components/SiteChrome/SiteChrome'
 import { Footer } from '@/Footer/Component'
 import { Providers } from '@/providers'
 import { PostHogProvider } from '@/providers/PostHog'
+import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { cn } from '@/utilities/ui'
 import './globals.css'
@@ -34,6 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
     >
       <head>
+        <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>

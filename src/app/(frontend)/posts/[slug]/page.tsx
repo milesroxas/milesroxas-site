@@ -49,7 +49,7 @@ export default async function Post({ params: paramsPromise }: Args) {
   if (!post) return <PayloadRedirects url={url} />
 
   return (
-    <article className="bg-primary pt-24 pb-12 md:pt-0 md:pb-32">
+    <article className="bg-tertiary pt-24 pb-12 text-tertiary-foreground md:pt-0 md:pb-32">
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
@@ -70,7 +70,7 @@ export default async function Post({ params: paramsPromise }: Args) {
               <RichText
                 data={post.content}
                 enableGutter={false}
-                className="text-primary-foreground"
+                className="text-tertiary-foreground"
               />
             </div>
           </div>
@@ -80,8 +80,10 @@ export default async function Post({ params: paramsPromise }: Args) {
           article body. Each band paints its own surface. */}
       <RenderBlocks blocks={post.layout} />
       {!post.hideRelatedPosts && post.relatedPosts && post.relatedPosts.length > 0 && (
-        <section className="bg-primary py-12">
-          <h2 className="container pb-4 font-light text-5xl text-primary-foreground">More posts</h2>
+        <section className="bg-tertiary py-12">
+          <h2 className="container pb-4 font-light text-5xl text-tertiary-foreground">
+            More posts
+          </h2>
           <RelatedPosts docs={post.relatedPosts.filter((post) => typeof post === 'object')} />
         </section>
       )}

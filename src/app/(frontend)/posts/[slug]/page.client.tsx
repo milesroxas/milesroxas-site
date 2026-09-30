@@ -24,7 +24,7 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
         <div className="flex max-w-2xl flex-col gap-4">
           {title && (
             <div className="">
-              <h1 className="mb-2 text-2xl text-primary-foreground leading-tight md:text-3xl lg:text-4xl">
+              <h1 className="mb-2 text-2xl text-tertiary-foreground leading-tight md:text-3xl lg:text-4xl">
                 {title}
               </h1>
             </div>
