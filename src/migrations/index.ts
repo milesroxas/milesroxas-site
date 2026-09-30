@@ -19,6 +19,7 @@ import * as migration_20260929_172901_mcp_api_keys from './20260929_172901_mcp_a
 import * as migration_20260930_140439_figures from './20260930_140439_figures';
 import * as migration_20260930_154412_carousel_split from './20260930_154412_carousel_split';
 import * as migration_20260930_170149_carousel_tabs from './20260930_170149_carousel_tabs';
+import * as migration_20260930_181644_carousel_tabs_header from './20260930_181644_carousel_tabs_header';
 
 export const migrations = [
   {
@@ -124,6 +125,11 @@ export const migrations = [
   {
     up: migration_20260930_170149_carousel_tabs.up,
     down: migration_20260930_170149_carousel_tabs.down,
-    name: '20260930_170149_carousel_tabs'
+    name: '20260930_170149_carousel_tabs',
+  },
+  {
+    up: migration_20260930_181644_carousel_tabs_header.up,
+    down: migration_20260930_181644_carousel_tabs_header.down,
+    name: '20260930_181644_carousel_tabs_header'
   },
 ];

@@ -3862,6 +3862,9 @@ export const pages_blocks_carousel_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
     slideSize:
       enum_pages_blocks_carousel_tabs_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
@@ -5469,6 +5472,9 @@ export const _pages_v_blocks_carousel_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
     slideSize:
       enum__pages_v_blocks_carousel_tabs_slide_size("slide_size").default(
         "full",
@@ -7121,6 +7127,9 @@ export const posts_blocks_carousel_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
     slideSize:
       enum_posts_blocks_carousel_tabs_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
@@ -8515,6 +8524,9 @@ export const _posts_v_blocks_carousel_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
     slideSize:
       enum__posts_v_blocks_carousel_tabs_slide_size("slide_size").default(
         "full",
@@ -9941,6 +9953,9 @@ export const works_blocks_carousel_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
     slideSize:
       enum_works_blocks_carousel_tabs_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
@@ -11633,6 +11648,9 @@ export const _works_v_blocks_carousel_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
     slideSize:
       enum__works_v_blocks_carousel_tabs_slide_size("slide_size").default(
         "full",

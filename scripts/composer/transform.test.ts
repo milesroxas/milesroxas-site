@@ -183,6 +183,16 @@ describe('media and content (C and M rules)', () => {
     })
   })
 
+  it('M2: a full-width media authored as `original` is not cropped', () => {
+    const blocks: Block[] = [
+      { blockType: 'mediaBlock', id: 'm1', media: 1, fullWidth: true, aspectRatio: 'landscape' },
+      { blockType: 'mediaBlock', id: 'm2', media: 1, fullWidth: true, aspectRatio: 'original' },
+    ]
+    const { layout, report } = transformLayout(blocks, media)
+    expect(report.map((line) => line.rule)).toEqual(['M2', 'M1'])
+    expect(children(layout)[1]).toMatchObject({ blockType: 'caption', size: 'full' })
+  })
+
   it('M rules follow the caption layout', () => {
     const caption = stateOf([p('A caption')])
     const blocks: Block[] = [
@@ -225,7 +235,7 @@ describe('sliders (S and C5/C6 rules)', () => {
     expect(children(layout)[0]).toMatchObject({
       blockType: 'carousel',
       slideSize: 'half',
-      width: 'contained',
+      width: 'full-width',
       slides: [{ media: 1 }, { media: 2 }],
     })
   })
@@ -320,14 +330,15 @@ describe('tab sliders (TB rules)', () => {
       media,
     )
     expect(report.map((line) => line.rule)).toEqual(['TB1'])
-    const [standard, tabs] = children(layout)
-    expect(standard).toMatchObject({
-      blockType: 'richTransition',
-      eyebrow: 'Round 1',
-      heading: 'Visual Directions',
-    })
+    // One legacy block, one new block: the heading group travels into the
+    // split's copy column rather than becoming a Standard above it.
+    const blocks = children(layout)
+    expect(blocks).toHaveLength(1)
+    const [tabs] = blocks
     expect(tabs).toMatchObject({
       blockType: 'carouselTabs',
+      eyebrow: 'Round 1',
+      heading: 'Visual Directions',
       slideSize: 'full',
       tabSize: 'default',
     })
@@ -348,7 +359,7 @@ describe('tab sliders (TB rules)', () => {
       ],
       media,
     )
-    expect(children(layout)[1]).toMatchObject({
+    expect(children(layout)[0]).toMatchObject({
       blockType: 'carouselTabs',
       slideSize: 'half',
       tabSize: 'small',

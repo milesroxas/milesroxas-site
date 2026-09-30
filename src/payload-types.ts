@@ -4172,6 +4172,29 @@ export interface CarouselBlock {
  * via the `definition` "CarouselTabsBlock".
  */
 export interface CarouselTabsBlock {
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * The copy column beside the tabs.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   tabs: {
     title: string;
     slides: {
@@ -6157,6 +6180,9 @@ export interface CarouselBlockSelect<T extends boolean = true> {
  * via the `definition` "CarouselTabsBlock_select".
  */
 export interface CarouselTabsBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
   tabs?:
     | T
     | {

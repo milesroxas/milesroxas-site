@@ -348,7 +348,9 @@ export const sliderUnits = (slider: Block, source: string, band: Band): Unit[] =
           blockType: 'carousel',
           slides,
           slideSize: slideSizeOf(slider),
-          width: 'contained',
+          // A deck of its own is a full-bleed band: the legacy Slider ran the
+          // window too, and a contained deck reads as a shrunken one.
+          width: 'full-width',
         },
       ],
     })
@@ -580,7 +582,12 @@ export const mediaBlockUnits = (block: Block): Unit[] => {
   })
 
   if (!caption) {
-    return fullWidth
+    // Stacked's full-bleed width crops to 16:9, then 21:9 from `md`. The
+    // legacy block only ever cropped when its `aspectRatio` was set, so a
+    // media authored as `original` keeps its own shape and takes Caption
+    // even when it ran the window: a cropped 3D render is a worse loss than
+    // a contained one.
+    return fullWidth && block.aspectRatio !== 'original'
       ? [unit('M2', { blockType: 'fullMedia', media, showContent: false, width: 'full-width' })]
       : [unit('M1', { blockType: 'caption', media, size: 'full' })]
   }
@@ -628,24 +635,34 @@ type Tab = {
   slider?: Block | null
 }
 
-/** The Standard a Tab slider's own heading group opens with, or nothing. */
-const tabsHeadingBlocks = (block: Block): Block[] => {
+/** A Tab slider's own heading group: an eyebrow, a heading and a body. */
+const tabsHeading = (block: Block) => {
   const heading = (block.heading ?? {}) as {
     eyebrow?: string | null
     heading?: string | null
     subheading?: string | null
   }
-  const title = str(heading.heading)
-  if (!title) return []
   const eyebrow = str(heading.eyebrow)
+  const title = str(heading.heading)
   const subheading = str(heading.subheading)
+  return {
+    ...(eyebrow ? { eyebrow } : {}),
+    ...(title ? { heading: title } : {}),
+    ...(subheading ? { body: paragraphsState([subheading]) } : {}),
+  }
+}
+
+/** The Standard the flattened fallback opens with, or nothing. */
+const tabsHeadingBlocks = (block: Block): Block[] => {
+  const { body, eyebrow, heading } = tabsHeading(block)
+  if (!heading) return []
   return [
     {
       blockType: 'richTransition',
       ...(eyebrow ? { eyebrow } : {}),
-      heading: title,
+      heading,
       layout: 'left',
-      ...(subheading ? { body: paragraphsState([subheading]) } : {}),
+      ...(body ? { body } : {}),
     },
   ]
 }
@@ -657,7 +674,10 @@ const SMALL_STRIP_TABS = 5
  * A Tab slider whose every tab is a deck becomes one Carousel tabs block
  * (`carouselTabs`), so the reader still picks a direction instead of
  * scrolling through all of them. Every production Tab slider is this shape.
- * Null when any tab is not a usable deck, so the caller falls back to TB2.
+ * The block is a split that owns its copy column, so the legacy heading
+ * group travels into it and nothing else is emitted: one legacy block, one
+ * new block. Null when any tab is not a usable deck, so the caller falls
+ * back to TB2.
  */
 const carouselTabsUnit = (block: Block, source: string, band: Band): Unit | null => {
   const tabs = Array.isArray(block.tabs) ? (block.tabs as Tab[]) : []
@@ -677,9 +697,12 @@ const carouselTabsUnit = (block: Block, source: string, band: Band): Unit | null
     band,
     opens: true,
     blocks: [
-      ...tabsHeadingBlocks(block),
       {
         blockType: 'carouselTabs',
+        // The block is a split and carries its own copy column, so the
+        // heading group stays with its tabs instead of becoming a Standard a
+        // whole band above them.
+        ...tabsHeading(block),
         tabs: decks.map(({ slides, title }) => ({ title, slides })),
         slideSize: decks.every(({ slider }) => slider.style === 'single') ? 'full' : 'half',
         tabSize: decks.length >= SMALL_STRIP_TABS ? 'small' : 'default',
@@ -707,7 +730,7 @@ const flattenedTabsUnit = (block: Block, source: string, band: Band): Unit | nul
     if (tab.slider) {
       const slides = slidesOf(tab.slider)
       if (slides.length)
-        blocks.push({ blockType: 'carousel', slides, slideSize: 'full', width: 'contained' })
+        blocks.push({ blockType: 'carousel', slides, slideSize: 'full', width: 'full-width' })
     }
   }
   return blocks.length ? { rule: 'TB2', source, band, opens: true, blocks } : null

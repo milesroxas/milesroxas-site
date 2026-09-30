@@ -26,9 +26,26 @@ export type TabbedRow = { id?: string | null; title?: string | null }
  * would be cropped.
  */
 const TAB_STRIP = {
-  default: 'flex flex-wrap items-center justify-center gap-8 md:gap-24',
+  default: 'flex flex-wrap items-center gap-8 md:gap-24',
   small:
-    'no-scrollbar scroll-fade-x scroll-fade-8 -mx-gutter -my-1 flex items-center justify-center-safe gap-6 overflow-x-auto overscroll-x-contain py-1 pe-gutter ps-gutter md:gap-12',
+    'no-scrollbar scroll-fade-x scroll-fade-8 -my-1 flex items-center gap-6 overflow-x-auto overscroll-x-contain py-1 md:gap-12',
+} as const
+
+/**
+ * Where the strip sits in its column. `center` is the full-width shell's
+ * (Tabs); `start` is a strip that shares a grid row with a copy column
+ * (Carousel tabs), where a centred strip would not line up with anything.
+ *
+ * The centred small rail bleeds to the page gutter so a half-cut tab is the
+ * pan affordance; a strip inside a grid cell is already inset, so it pans
+ * within its cell instead.
+ */
+const TAB_ALIGN = {
+  center: {
+    default: 'justify-center',
+    small: 'justify-center-safe -mx-gutter pe-gutter ps-gutter',
+  },
+  start: { default: 'justify-start', small: 'justify-start' },
 } as const
 
 const TAB_TRIGGER = {
@@ -52,11 +69,13 @@ const TAB_TRIGGER = {
  * whose panels swap on click cannot stagger its contents.
  */
 export const TabbedPanels = <Row extends TabbedRow>({
+  align = 'center',
   ariaLabel,
   renderPanel,
   rows,
   tabSize,
 }: {
+  align?: keyof typeof TAB_ALIGN
   ariaLabel: string
   renderPanel: (row: Row) => React.ReactNode
   rows: Row[]
@@ -72,7 +91,10 @@ export const TabbedPanels = <Row extends TabbedRow>({
       data-reveal
       defaultValue={valueFor(0)}
     >
-      <TabsPrimitive.List aria-label={ariaLabel} className={TAB_STRIP[size]}>
+      <TabsPrimitive.List
+        aria-label={ariaLabel}
+        className={cn(TAB_STRIP[size], TAB_ALIGN[align][size])}
+      >
         {rows.map((row, index) => (
           <TabsPrimitive.Trigger
             key={row.id ?? index}

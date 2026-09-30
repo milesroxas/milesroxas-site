@@ -444,7 +444,7 @@ Legacy Media block (`mediaBlock`). A caption counts only when `showCaption` is o
 | Id | When | Becomes |
 |---|---|---|
 | M1 | No caption, not full width | Caption (`caption`), `size: 'full'` (the page container, as today) |
-| M2 | No caption, full width | Stacked (`fullMedia`): `showContent: false`, `width: 'full-width'` (sas-site's only edge-to-edge media; it crops to 16:9, then 21:9 from `md`) |
+| M2 | No caption, full width, `aspectRatio` **not** `original` | Stacked (`fullMedia`): `showContent: false`, `width: 'full-width'` (sas-site's only edge-to-edge media; it crops to 16:9, then 21:9 from `md`). A media authored `original` never cropped legacy-side, so it takes M1 instead: a cropped 3D render loses more than a contained one |
 | M3 | Caption, `captionLayout` `left` or `right` | Stacked: `showContent: true`, `body` = caption, `contentPosition` = `left` or `right`, `width` from `fullWidth`, `aspectRatio: '16-9'` when contained |
 | M4 | Caption, `split-left` or `split-right` | Split narrow: `body` = caption, `imagePosition` `left` for `split-left` (the media came first) and `right` for `split-right` |
 | M5 | Caption, `center` | Caption with `captionOverride` = caption (no rows today) |
@@ -453,9 +453,9 @@ Slider and Tab slider:
 
 | Id | When | Becomes |
 |---|---|---|
-| S1 | Any slider | Carousel (`carousel`): each slide `media` = `slide.image`, `caption` = `slide.caption`; `slideSize` is `full` for `single` and `half` for `default` and `cropped`; `width: 'contained'` |
+| S1 | Any slider | Carousel (`carousel`): each slide `media` = `slide.image`, `caption` = `slide.caption`; `slideSize` is `full` for `single` and `half` for `default` and `cropped`; `width: 'full-width'` (the legacy Slider ran the window; a contained deck reads as a shrunken one) |
 | S2 | Slider with `introContent.heading` | A Standard before the Carousel, opening a Section: `heading` = intro heading, `body` = subheading; `layout` is `centered` when `align` is `center`, else `left` |
-| TB1 | Tab slider whose every tab is a slider of two or more slides (all four in production) | A new Section: a Standard (`eyebrow`, `heading` and `body` from the block's heading group), then one Carousel tabs block (`carouselTabs`) with a tab per legacy tab, `title` = tab title and `slides` = that tab's slides. `slideSize` is `full` when every tab slider is `single`, else `half`; `tabSize` is `small` from five tabs, else `default` |
+| TB1 | Tab slider whose every tab is a slider of two or more slides (all four in production) | One Carousel tabs block (`carouselTabs`), which is a split and owns its copy column, so the heading group travels into it as `eyebrow`, `heading` and `body` rather than becoming a Standard a whole band above the strip. A tab per legacy tab, `title` = tab title and `slides` = that tab's slides. `slideSize` is `full` when every tab slider is `single`, else `half`; `tabSize` is `small` from five tabs, else `default` |
 | TB2 | Any other Tab slider (one that mixes copy into its tabs; none in production) | The flattened Section TB1 used to write: the heading Standard, then per tab a Standard (`layout: 'left'`, `heading` = tab title), its Rich text, and a Carousel of its slides. The tabbing is lost, nothing else is |
 
 **Overrides.** `scripts/composer/overrides.ts` maps a legacy block id to another rule id, or to `keep` (leave the legacy block in place). To change a mapping, edit this file and run the script again. Nothing is done in admin.
@@ -525,6 +525,7 @@ The first three bullets stay open on purpose: each changes or retires production
 - **A deck per panel, not a copy of one.** Each panel renders `CarouselBlock` `bare` with its gutter off, as Carousel split does. Radix mounts only the active panel, so exactly one embla instance and one per-frame writer is ever live, however many tabs a block has.
 - **A client component.** `renderPanel` is a function, and a function cannot cross the server/client boundary into `TabbedPanels`, so this file carries `'use client'` as `FeatureTabs.tsx` does. A server component here renders as a 500, not a warning.
 - **Out of `blockRevealVariants`**, for the reason Carousel split is: the deck writes its own per-frame transforms, so the block takes the CSS block reveal instead.
+- **Laid out as a split**, copy in columns 1-3 from `lg` and the strip plus the deck in 4-8, stacked below that. It carries its own `eyebrow`, `heading` and `body` (`contentLexical`), which is the one place this block departs from the convention that section headings live in a Standard: a Standard is a band with the run's rhythm around it, and it left the strip 225px below the words introducing it. The strip aligns to the start here rather than centring (`align` on `TabbedPanels`), because it shares a grid row with the copy.
 - **Settings are per block, not per tab.** The tabs are alternatives to each other, so a deck that changed size when the reader switched would read as a different component.
 
 **Carousel split as built (2026-09-30).** `src/blocks/carousel-split/{config.ts, CarouselSplit.tsx, Component.tsx, Component.stories.tsx}`, registered in `sectionNestableBlocks` after Split narrow and in `sectionChildComponents`, so every surface that offers the run offers it. Fields: `eyebrow`, `heading`, `body` (`contentLexical`), `slides` (media plus caption, the Carousel's slide fields), `carouselPosition` (`left` / `right`, default right), `slideSize`, `showArrows`, `theme`. No `dbName` function: the slug is short enough that the default per-parent names fit (`{pages,works,posts}_blocks_carousel_split` and `_slides`, plus `_v` twins).
