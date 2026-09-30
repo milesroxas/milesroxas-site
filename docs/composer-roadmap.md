@@ -433,7 +433,7 @@ A Standard's `body` runs on the **root editor**, which enables no heading featur
 | H2 | Section heading, longer, with an eyebrow | Standard on the section-opener layout: `heading` = the eyebrow, `body` = the statement paragraphs |
 | H3 | Section heading, longer, no eyebrow | Rich text: `body` = the statement paragraphs |
 | T1 | One text column | Rich text, body as is (`h4` → `h3`, where the Rich text editor stops) |
-| T2 | Two or more text columns, each made only of heading-then-paragraphs runs, no links | Rich text whose body is one Insights block (`insights`): one item per run, `title` = the heading, `description` = the paragraphs as plain text |
+| T2 | Two or more text columns, each made only of heading-then-paragraphs runs, no links | Rich text, the columns concatenated in order with every heading at `h3`. `runsOf` reads the columns only to recognise the shape; the nodes go through as authored, so inline marks survive. h3 is the level the Insight block rendered a title at, and it nests the runs under the section's h2 opener. The Insights block (`insights`) is no longer a conversion target; it stays available to authors |
 | T3 | Two or more text columns, the first a lone heading (one heading node, or one paragraph of 80 characters or fewer) | Standard on the section-opener layout: `heading` = that text, `body` = the other columns in order |
 | T4 | Any other set of two or more text columns | Rich text, the columns concatenated in order |
 | C1 | One media column plus one text column | Split narrow (`splitContentNarrow`): `imagePosition` from the column order; a leading heading in the text becomes `heading`, and the rest becomes `body` (other headings → `h4`, the only level in the content-column editor) |

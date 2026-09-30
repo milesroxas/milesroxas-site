@@ -122,23 +122,28 @@ describe('section headings (H rules)', () => {
 })
 
 describe('text columns (T rules)', () => {
-  it('T2: heading-and-paragraph runs become one Insights block', () => {
+  it('T2: heading-and-paragraph runs become prose at h3', () => {
     const { layout, report } = transformLayout(
       [
         content('a', [
           text(heading('h3', '')),
-          text(heading('h3', 'My Role'), p('I lead.')),
+          text(heading('h2', 'My Role'), p('I lead.')),
           text(heading('h3', 'Team'), p('We build.')),
         ]),
       ],
       media,
     )
     expect(report[0].rule).toBe('T2')
+    expect(children(layout)[0].blockType).toBe('richText')
     const body = children(layout)[0].body as ReturnType<typeof stateOf>
-    const block = body.root.children[0] as unknown as {
-      fields: { items: { title: string; description: string }[] }
-    }
-    expect(block.fields.items.map((item) => item.title)).toEqual(['My Role', 'Team'])
+    // Every run heading nests under the section's h2 opener, whatever it was
+    // authored as, and no Insights block is produced.
+    expect(body.root.children.map((node) => [node.type, node.tag])).toEqual([
+      ['heading', 'h3'],
+      ['paragraph', undefined],
+      ['heading', 'h3'],
+      ['paragraph', undefined],
+    ])
   })
 
   it('T3: a lone heading column opens a Standard on the Prose layout', () => {

@@ -10,7 +10,6 @@
  * media's `fullWidth`. Copy and media are never dropped; `preserve.ts`
  * enforces that.
  */
-import { randomBytes } from 'node:crypto'
 import {
   clampHeadings,
   hasLink,
@@ -85,9 +84,6 @@ const mediaId = (value: unknown): number | null => {
 }
 
 const str = (value: unknown): string => (typeof value === 'string' ? value.trim() : '')
-
-/** A Payload-shaped id for a Lexical block node and its array rows (24 hex chars). */
-const objectId = () => randomBytes(12).toString('hex')
 
 type Column = {
   id?: string | null
@@ -241,6 +237,10 @@ const textUnits = (columns: Column[], source: string, band: Band): Unit[] => {
     ]
   }
 
+  // Runs of heading-then-paragraphs read as prose, at the level the Insight
+  // block used to render a title (h3), so they nest under the section's h2
+  // opener. The nodes go through as authored: `runsOf` reads them only to
+  // recognise the shape, and its plain-text titles would drop inline marks.
   const runs = bodies.map(runsOf)
   if (runs.every((run): run is Run[] => run !== null)) {
     return [
@@ -250,22 +250,7 @@ const textUnits = (columns: Column[], source: string, band: Band): Unit[] => {
         band,
         opens: false,
         blocks: [
-          {
-            blockType: 'richText',
-            body: stateOf([
-              {
-                type: 'block',
-                version: 2,
-                format: '',
-                fields: {
-                  id: objectId(),
-                  blockType: 'insights',
-                  blockName: '',
-                  items: runs.flat().map((run) => ({ id: objectId(), ...run })),
-                },
-              },
-            ]),
-          },
+          { blockType: 'richText', body: stateOf(clampHeadings(bodies.flat(), ['h3']), like) },
         ],
       },
     ]
