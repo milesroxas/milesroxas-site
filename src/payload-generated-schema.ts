@@ -121,6 +121,18 @@ export const enum_pages_split_narrow_theme = pgEnum(
   "enum_pages_split_narrow_theme",
   ["light", "dark", "neutral", "brand"],
 );
+export const enum_pages_blocks_carousel_split_carousel_position = pgEnum(
+  "enum_pages_blocks_carousel_split_carousel_position",
+  ["left", "right"],
+);
+export const enum_pages_blocks_carousel_split_slide_size = pgEnum(
+  "enum_pages_blocks_carousel_split_slide_size",
+  ["full", "half", "third"],
+);
+export const enum_pages_blocks_carousel_split_theme = pgEnum(
+  "enum_pages_blocks_carousel_split_theme",
+  ["light", "dark", "neutral", "brand"],
+);
 export const enum_pages_image_pair_portrait_position = pgEnum(
   "enum_pages_image_pair_portrait_position",
   ["left", "right"],
@@ -622,6 +634,18 @@ export const enum___pages_v_split_narrow_v_theme = pgEnum(
   "enum___pages_v_split_narrow_v_theme",
   ["light", "dark", "neutral", "brand"],
 );
+export const enum__pages_v_blocks_carousel_split_carousel_position = pgEnum(
+  "enum__pages_v_blocks_carousel_split_carousel_position",
+  ["left", "right"],
+);
+export const enum__pages_v_blocks_carousel_split_slide_size = pgEnum(
+  "enum__pages_v_blocks_carousel_split_slide_size",
+  ["full", "half", "third"],
+);
+export const enum__pages_v_blocks_carousel_split_theme = pgEnum(
+  "enum__pages_v_blocks_carousel_split_theme",
+  ["light", "dark", "neutral", "brand"],
+);
 export const enum___pages_v_image_pair_v_portrait_position = pgEnum(
   "enum___pages_v_image_pair_v_portrait_position",
   ["left", "right"],
@@ -1100,6 +1124,18 @@ export const enum_posts_split_narrow_theme = pgEnum(
   "enum_posts_split_narrow_theme",
   ["light", "dark", "neutral", "brand"],
 );
+export const enum_posts_blocks_carousel_split_carousel_position = pgEnum(
+  "enum_posts_blocks_carousel_split_carousel_position",
+  ["left", "right"],
+);
+export const enum_posts_blocks_carousel_split_slide_size = pgEnum(
+  "enum_posts_blocks_carousel_split_slide_size",
+  ["full", "half", "third"],
+);
+export const enum_posts_blocks_carousel_split_theme = pgEnum(
+  "enum_posts_blocks_carousel_split_theme",
+  ["light", "dark", "neutral", "brand"],
+);
 export const enum_posts_image_pair_portrait_position = pgEnum(
   "enum_posts_image_pair_portrait_position",
   ["left", "right"],
@@ -1493,6 +1529,18 @@ export const enum___posts_v_split_narrow_v_theme = pgEnum(
   "enum___posts_v_split_narrow_v_theme",
   ["light", "dark", "neutral", "brand"],
 );
+export const enum__posts_v_blocks_carousel_split_carousel_position = pgEnum(
+  "enum__posts_v_blocks_carousel_split_carousel_position",
+  ["left", "right"],
+);
+export const enum__posts_v_blocks_carousel_split_slide_size = pgEnum(
+  "enum__posts_v_blocks_carousel_split_slide_size",
+  ["full", "half", "third"],
+);
+export const enum__posts_v_blocks_carousel_split_theme = pgEnum(
+  "enum__posts_v_blocks_carousel_split_theme",
+  ["light", "dark", "neutral", "brand"],
+);
 export const enum___posts_v_image_pair_v_portrait_position = pgEnum(
   "enum___posts_v_image_pair_v_portrait_position",
   ["left", "right"],
@@ -1861,6 +1909,18 @@ export const enum_works_split_narrow_image_position = pgEnum(
 );
 export const enum_works_split_narrow_theme = pgEnum(
   "enum_works_split_narrow_theme",
+  ["light", "dark", "neutral", "brand"],
+);
+export const enum_works_blocks_carousel_split_carousel_position = pgEnum(
+  "enum_works_blocks_carousel_split_carousel_position",
+  ["left", "right"],
+);
+export const enum_works_blocks_carousel_split_slide_size = pgEnum(
+  "enum_works_blocks_carousel_split_slide_size",
+  ["full", "half", "third"],
+);
+export const enum_works_blocks_carousel_split_theme = pgEnum(
+  "enum_works_blocks_carousel_split_theme",
   ["light", "dark", "neutral", "brand"],
 );
 export const enum_works_image_pair_portrait_position = pgEnum(
@@ -2402,6 +2462,18 @@ export const enum___works_v_split_narrow_v_image_position = pgEnum(
 );
 export const enum___works_v_split_narrow_v_theme = pgEnum(
   "enum___works_v_split_narrow_v_theme",
+  ["light", "dark", "neutral", "brand"],
+);
+export const enum__works_v_blocks_carousel_split_carousel_position = pgEnum(
+  "enum__works_v_blocks_carousel_split_carousel_position",
+  ["left", "right"],
+);
+export const enum__works_v_blocks_carousel_split_slide_size = pgEnum(
+  "enum__works_v_blocks_carousel_split_slide_size",
+  ["full", "half", "third"],
+);
+export const enum__works_v_blocks_carousel_split_theme = pgEnum(
+  "enum__works_v_blocks_carousel_split_theme",
   ["light", "dark", "neutral", "brand"],
 );
 export const enum___works_v_image_pair_v_portrait_position = pgEnum(
@@ -3226,6 +3298,63 @@ export const pages_split_narrow = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [pages.id],
       name: "pages_split_narrow_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const pages_blocks_carousel_split_slides = pgTable(
+  "pages_blocks_carousel_split_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+  },
+  (columns) => [
+    index("pages_blocks_carousel_split_slides_order_idx").on(columns._order),
+    index("pages_blocks_carousel_split_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("pages_blocks_carousel_split_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [pages_blocks_carousel_split.id],
+      name: "pages_blocks_carousel_split_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const pages_blocks_carousel_split = pgTable(
+  "pages_blocks_carousel_split",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    carouselPosition:
+      enum_pages_blocks_carousel_split_carousel_position(
+        "carousel_position",
+      ).default("right"),
+    slideSize:
+      enum_pages_blocks_carousel_split_slide_size("slide_size").default("full"),
+    showArrows: boolean("show_arrows").default(false),
+    theme: enum_pages_blocks_carousel_split_theme("theme").default("light"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("pages_blocks_carousel_split_order_idx").on(columns._order),
+    index("pages_blocks_carousel_split_parent_id_idx").on(columns._parentID),
+    index("pages_blocks_carousel_split_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [pages.id],
+      name: "pages_blocks_carousel_split_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -4670,6 +4799,67 @@ export const __pages_v_split_narrow_v = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [_pages_v.id],
       name: "__pages_v_split_narrow_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _pages_v_blocks_carousel_split_slides = pgTable(
+  "_pages_v_blocks_carousel_split_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_pages_v_blocks_carousel_split_slides_order_idx").on(columns._order),
+    index("_pages_v_blocks_carousel_split_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("_pages_v_blocks_carousel_split_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_pages_v_blocks_carousel_split.id],
+      name: "_pages_v_blocks_carousel_split_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _pages_v_blocks_carousel_split = pgTable(
+  "_pages_v_blocks_carousel_split",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    carouselPosition:
+      enum__pages_v_blocks_carousel_split_carousel_position(
+        "carousel_position",
+      ).default("right"),
+    slideSize:
+      enum__pages_v_blocks_carousel_split_slide_size("slide_size").default(
+        "full",
+      ),
+    showArrows: boolean("show_arrows").default(false),
+    theme: enum__pages_v_blocks_carousel_split_theme("theme").default("light"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_pages_v_blocks_carousel_split_order_idx").on(columns._order),
+    index("_pages_v_blocks_carousel_split_parent_id_idx").on(columns._parentID),
+    index("_pages_v_blocks_carousel_split_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_pages_v.id],
+      name: "_pages_v_blocks_carousel_split_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -6212,6 +6402,63 @@ export const posts_split_narrow = pgTable(
   ],
 );
 
+export const posts_blocks_carousel_split_slides = pgTable(
+  "posts_blocks_carousel_split_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+  },
+  (columns) => [
+    index("posts_blocks_carousel_split_slides_order_idx").on(columns._order),
+    index("posts_blocks_carousel_split_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("posts_blocks_carousel_split_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [posts_blocks_carousel_split.id],
+      name: "posts_blocks_carousel_split_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const posts_blocks_carousel_split = pgTable(
+  "posts_blocks_carousel_split",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    carouselPosition:
+      enum_posts_blocks_carousel_split_carousel_position(
+        "carousel_position",
+      ).default("right"),
+    slideSize:
+      enum_posts_blocks_carousel_split_slide_size("slide_size").default("full"),
+    showArrows: boolean("show_arrows").default(false),
+    theme: enum_posts_blocks_carousel_split_theme("theme").default("light"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("posts_blocks_carousel_split_order_idx").on(columns._order),
+    index("posts_blocks_carousel_split_parent_id_idx").on(columns._parentID),
+    index("posts_blocks_carousel_split_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [posts.id],
+      name: "posts_blocks_carousel_split_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
 export const posts_image_pair = pgTable(
   "posts_image_pair",
   {
@@ -7439,6 +7686,67 @@ export const __posts_v_split_narrow_v = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [_posts_v.id],
       name: "__posts_v_split_narrow_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _posts_v_blocks_carousel_split_slides = pgTable(
+  "_posts_v_blocks_carousel_split_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_posts_v_blocks_carousel_split_slides_order_idx").on(columns._order),
+    index("_posts_v_blocks_carousel_split_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("_posts_v_blocks_carousel_split_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_posts_v_blocks_carousel_split.id],
+      name: "_posts_v_blocks_carousel_split_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _posts_v_blocks_carousel_split = pgTable(
+  "_posts_v_blocks_carousel_split",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    carouselPosition:
+      enum__posts_v_blocks_carousel_split_carousel_position(
+        "carousel_position",
+      ).default("right"),
+    slideSize:
+      enum__posts_v_blocks_carousel_split_slide_size("slide_size").default(
+        "full",
+      ),
+    showArrows: boolean("show_arrows").default(false),
+    theme: enum__posts_v_blocks_carousel_split_theme("theme").default("light"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_posts_v_blocks_carousel_split_order_idx").on(columns._order),
+    index("_posts_v_blocks_carousel_split_parent_id_idx").on(columns._parentID),
+    index("_posts_v_blocks_carousel_split_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_posts_v.id],
+      name: "_posts_v_blocks_carousel_split_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -8751,6 +9059,63 @@ export const works_split_narrow = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [works.id],
       name: "works_split_narrow_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const works_blocks_carousel_split_slides = pgTable(
+  "works_blocks_carousel_split_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+  },
+  (columns) => [
+    index("works_blocks_carousel_split_slides_order_idx").on(columns._order),
+    index("works_blocks_carousel_split_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("works_blocks_carousel_split_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [works_blocks_carousel_split.id],
+      name: "works_blocks_carousel_split_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const works_blocks_carousel_split = pgTable(
+  "works_blocks_carousel_split",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    carouselPosition:
+      enum_works_blocks_carousel_split_carousel_position(
+        "carousel_position",
+      ).default("right"),
+    slideSize:
+      enum_works_blocks_carousel_split_slide_size("slide_size").default("full"),
+    showArrows: boolean("show_arrows").default(false),
+    theme: enum_works_blocks_carousel_split_theme("theme").default("light"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("works_blocks_carousel_split_order_idx").on(columns._order),
+    index("works_blocks_carousel_split_parent_id_idx").on(columns._parentID),
+    index("works_blocks_carousel_split_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [works.id],
+      name: "works_blocks_carousel_split_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -10280,6 +10645,67 @@ export const __works_v_split_narrow_v = pgTable(
       columns: [columns["_parentID"]],
       foreignColumns: [_works_v.id],
       name: "__works_v_split_narrow_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _works_v_blocks_carousel_split_slides = pgTable(
+  "_works_v_blocks_carousel_split_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_works_v_blocks_carousel_split_slides_order_idx").on(columns._order),
+    index("_works_v_blocks_carousel_split_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("_works_v_blocks_carousel_split_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_works_v_blocks_carousel_split.id],
+      name: "_works_v_blocks_carousel_split_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _works_v_blocks_carousel_split = pgTable(
+  "_works_v_blocks_carousel_split",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    carouselPosition:
+      enum__works_v_blocks_carousel_split_carousel_position(
+        "carousel_position",
+      ).default("right"),
+    slideSize:
+      enum__works_v_blocks_carousel_split_slide_size("slide_size").default(
+        "full",
+      ),
+    showArrows: boolean("show_arrows").default(false),
+    theme: enum__works_v_blocks_carousel_split_theme("theme").default("light"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_works_v_blocks_carousel_split_order_idx").on(columns._order),
+    index("_works_v_blocks_carousel_split_parent_id_idx").on(columns._parentID),
+    index("_works_v_blocks_carousel_split_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_works_v.id],
+      name: "_works_v_blocks_carousel_split_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -13593,6 +14019,34 @@ export const relations_pages_split_narrow = relations(
     }),
   }),
 );
+export const relations_pages_blocks_carousel_split_slides = relations(
+  pages_blocks_carousel_split_slides,
+  ({ one }) => ({
+    _parentID: one(pages_blocks_carousel_split, {
+      fields: [pages_blocks_carousel_split_slides._parentID],
+      references: [pages_blocks_carousel_split.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [pages_blocks_carousel_split_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_pages_blocks_carousel_split = relations(
+  pages_blocks_carousel_split,
+  ({ one, many }) => ({
+    _parentID: one(pages, {
+      fields: [pages_blocks_carousel_split._parentID],
+      references: [pages.id],
+      relationName: "_blocks_carouselSplit",
+    }),
+    slides: many(pages_blocks_carousel_split_slides, {
+      relationName: "slides",
+    }),
+  }),
+);
 export const relations_pages_image_pair = relations(
   pages_image_pair,
   ({ one }) => ({
@@ -14050,6 +14504,9 @@ export const relations_pages = relations(pages, ({ one, many }) => ({
   _blocks_splitContentNarrow: many(pages_split_narrow, {
     relationName: "_blocks_splitContentNarrow",
   }),
+  _blocks_carouselSplit: many(pages_blocks_carousel_split, {
+    relationName: "_blocks_carouselSplit",
+  }),
   _blocks_imagePair: many(pages_image_pair, {
     relationName: "_blocks_imagePair",
   }),
@@ -14224,6 +14681,34 @@ export const relations___pages_v_split_narrow_v = relations(
       fields: [__pages_v_split_narrow_v.shader_posterMedia],
       references: [media.id],
       relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations__pages_v_blocks_carousel_split_slides = relations(
+  _pages_v_blocks_carousel_split_slides,
+  ({ one }) => ({
+    _parentID: one(_pages_v_blocks_carousel_split, {
+      fields: [_pages_v_blocks_carousel_split_slides._parentID],
+      references: [_pages_v_blocks_carousel_split.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [_pages_v_blocks_carousel_split_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations__pages_v_blocks_carousel_split = relations(
+  _pages_v_blocks_carousel_split,
+  ({ one, many }) => ({
+    _parentID: one(_pages_v, {
+      fields: [_pages_v_blocks_carousel_split._parentID],
+      references: [_pages_v.id],
+      relationName: "_blocks_carouselSplit",
+    }),
+    slides: many(_pages_v_blocks_carousel_split_slides, {
+      relationName: "slides",
     }),
   }),
 );
@@ -14708,6 +15193,9 @@ export const relations__pages_v = relations(_pages_v, ({ one, many }) => ({
   _blocks_splitContentNarrow: many(__pages_v_split_narrow_v, {
     relationName: "_blocks_splitContentNarrow",
   }),
+  _blocks_carouselSplit: many(_pages_v_blocks_carousel_split, {
+    relationName: "_blocks_carouselSplit",
+  }),
   _blocks_imagePair: many(__pages_v_image_pair_v, {
     relationName: "_blocks_imagePair",
   }),
@@ -14882,6 +15370,34 @@ export const relations_posts_split_narrow = relations(
       fields: [posts_split_narrow.shader_posterMedia],
       references: [media.id],
       relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations_posts_blocks_carousel_split_slides = relations(
+  posts_blocks_carousel_split_slides,
+  ({ one }) => ({
+    _parentID: one(posts_blocks_carousel_split, {
+      fields: [posts_blocks_carousel_split_slides._parentID],
+      references: [posts_blocks_carousel_split.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [posts_blocks_carousel_split_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_posts_blocks_carousel_split = relations(
+  posts_blocks_carousel_split,
+  ({ one, many }) => ({
+    _parentID: one(posts, {
+      fields: [posts_blocks_carousel_split._parentID],
+      references: [posts.id],
+      relationName: "_blocks_carouselSplit",
+    }),
+    slides: many(posts_blocks_carousel_split_slides, {
+      relationName: "slides",
     }),
   }),
 );
@@ -15256,6 +15772,9 @@ export const relations_posts = relations(posts, ({ one, many }) => ({
   _blocks_splitContentNarrow: many(posts_split_narrow, {
     relationName: "_blocks_splitContentNarrow",
   }),
+  _blocks_carouselSplit: many(posts_blocks_carousel_split, {
+    relationName: "_blocks_carouselSplit",
+  }),
   _blocks_imagePair: many(posts_image_pair, {
     relationName: "_blocks_imagePair",
   }),
@@ -15415,6 +15934,34 @@ export const relations___posts_v_split_narrow_v = relations(
       fields: [__posts_v_split_narrow_v.shader_posterMedia],
       references: [media.id],
       relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations__posts_v_blocks_carousel_split_slides = relations(
+  _posts_v_blocks_carousel_split_slides,
+  ({ one }) => ({
+    _parentID: one(_posts_v_blocks_carousel_split, {
+      fields: [_posts_v_blocks_carousel_split_slides._parentID],
+      references: [_posts_v_blocks_carousel_split.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [_posts_v_blocks_carousel_split_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations__posts_v_blocks_carousel_split = relations(
+  _posts_v_blocks_carousel_split,
+  ({ one, many }) => ({
+    _parentID: one(_posts_v, {
+      fields: [_posts_v_blocks_carousel_split._parentID],
+      references: [_posts_v.id],
+      relationName: "_blocks_carouselSplit",
+    }),
+    slides: many(_posts_v_blocks_carousel_split_slides, {
+      relationName: "slides",
     }),
   }),
 );
@@ -15813,6 +16360,9 @@ export const relations__posts_v = relations(_posts_v, ({ one, many }) => ({
   _blocks_splitContentNarrow: many(__posts_v_split_narrow_v, {
     relationName: "_blocks_splitContentNarrow",
   }),
+  _blocks_carouselSplit: many(_posts_v_blocks_carousel_split, {
+    relationName: "_blocks_carouselSplit",
+  }),
   _blocks_imagePair: many(__posts_v_image_pair_v, {
     relationName: "_blocks_imagePair",
   }),
@@ -15972,6 +16522,34 @@ export const relations_works_split_narrow = relations(
       fields: [works_split_narrow.shader_posterMedia],
       references: [media.id],
       relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations_works_blocks_carousel_split_slides = relations(
+  works_blocks_carousel_split_slides,
+  ({ one }) => ({
+    _parentID: one(works_blocks_carousel_split, {
+      fields: [works_blocks_carousel_split_slides._parentID],
+      references: [works_blocks_carousel_split.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [works_blocks_carousel_split_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_works_blocks_carousel_split = relations(
+  works_blocks_carousel_split,
+  ({ one, many }) => ({
+    _parentID: one(works, {
+      fields: [works_blocks_carousel_split._parentID],
+      references: [works.id],
+      relationName: "_blocks_carouselSplit",
+    }),
+    slides: many(works_blocks_carousel_split_slides, {
+      relationName: "slides",
     }),
   }),
 );
@@ -16463,6 +17041,9 @@ export const relations_works = relations(works, ({ one, many }) => ({
   _blocks_splitContentNarrow: many(works_split_narrow, {
     relationName: "_blocks_splitContentNarrow",
   }),
+  _blocks_carouselSplit: many(works_blocks_carousel_split, {
+    relationName: "_blocks_carouselSplit",
+  }),
   _blocks_imagePair: many(works_image_pair, {
     relationName: "_blocks_imagePair",
   }),
@@ -16642,6 +17223,34 @@ export const relations___works_v_split_narrow_v = relations(
       fields: [__works_v_split_narrow_v.shader_posterMedia],
       references: [media.id],
       relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations__works_v_blocks_carousel_split_slides = relations(
+  _works_v_blocks_carousel_split_slides,
+  ({ one }) => ({
+    _parentID: one(_works_v_blocks_carousel_split, {
+      fields: [_works_v_blocks_carousel_split_slides._parentID],
+      references: [_works_v_blocks_carousel_split.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [_works_v_blocks_carousel_split_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations__works_v_blocks_carousel_split = relations(
+  _works_v_blocks_carousel_split,
+  ({ one, many }) => ({
+    _parentID: one(_works_v, {
+      fields: [_works_v_blocks_carousel_split._parentID],
+      references: [_works_v.id],
+      relationName: "_blocks_carouselSplit",
+    }),
+    slides: many(_works_v_blocks_carousel_split_slides, {
+      relationName: "slides",
     }),
   }),
 );
@@ -17156,6 +17765,9 @@ export const relations__works_v = relations(_works_v, ({ one, many }) => ({
   }),
   _blocks_splitContentNarrow: many(__works_v_split_narrow_v, {
     relationName: "_blocks_splitContentNarrow",
+  }),
+  _blocks_carouselSplit: many(_works_v_blocks_carousel_split, {
+    relationName: "_blocks_carouselSplit",
   }),
   _blocks_imagePair: many(__works_v_image_pair_v, {
     relationName: "_blocks_imagePair",
@@ -17946,6 +18558,9 @@ type DatabaseSchema = {
   enum_pages_split_narrow_shader_origin: typeof enum_pages_split_narrow_shader_origin;
   enum_pages_split_narrow_image_position: typeof enum_pages_split_narrow_image_position;
   enum_pages_split_narrow_theme: typeof enum_pages_split_narrow_theme;
+  enum_pages_blocks_carousel_split_carousel_position: typeof enum_pages_blocks_carousel_split_carousel_position;
+  enum_pages_blocks_carousel_split_slide_size: typeof enum_pages_blocks_carousel_split_slide_size;
+  enum_pages_blocks_carousel_split_theme: typeof enum_pages_blocks_carousel_split_theme;
   enum_pages_image_pair_portrait_position: typeof enum_pages_image_pair_portrait_position;
   enum_pages_image_pair_text_position: typeof enum_pages_image_pair_text_position;
   enum_pages_image_pair_theme: typeof enum_pages_image_pair_theme;
@@ -18063,6 +18678,9 @@ type DatabaseSchema = {
   enum___pages_v_split_narrow_v_shader_origin: typeof enum___pages_v_split_narrow_v_shader_origin;
   enum___pages_v_split_narrow_v_image_position: typeof enum___pages_v_split_narrow_v_image_position;
   enum___pages_v_split_narrow_v_theme: typeof enum___pages_v_split_narrow_v_theme;
+  enum__pages_v_blocks_carousel_split_carousel_position: typeof enum__pages_v_blocks_carousel_split_carousel_position;
+  enum__pages_v_blocks_carousel_split_slide_size: typeof enum__pages_v_blocks_carousel_split_slide_size;
+  enum__pages_v_blocks_carousel_split_theme: typeof enum__pages_v_blocks_carousel_split_theme;
   enum___pages_v_image_pair_v_portrait_position: typeof enum___pages_v_image_pair_v_portrait_position;
   enum___pages_v_image_pair_v_text_position: typeof enum___pages_v_image_pair_v_text_position;
   enum___pages_v_image_pair_v_theme: typeof enum___pages_v_image_pair_v_theme;
@@ -18180,6 +18798,9 @@ type DatabaseSchema = {
   enum_posts_split_narrow_shader_origin: typeof enum_posts_split_narrow_shader_origin;
   enum_posts_split_narrow_image_position: typeof enum_posts_split_narrow_image_position;
   enum_posts_split_narrow_theme: typeof enum_posts_split_narrow_theme;
+  enum_posts_blocks_carousel_split_carousel_position: typeof enum_posts_blocks_carousel_split_carousel_position;
+  enum_posts_blocks_carousel_split_slide_size: typeof enum_posts_blocks_carousel_split_slide_size;
+  enum_posts_blocks_carousel_split_theme: typeof enum_posts_blocks_carousel_split_theme;
   enum_posts_image_pair_portrait_position: typeof enum_posts_image_pair_portrait_position;
   enum_posts_image_pair_text_position: typeof enum_posts_image_pair_text_position;
   enum_posts_image_pair_theme: typeof enum_posts_image_pair_theme;
@@ -18270,6 +18891,9 @@ type DatabaseSchema = {
   enum___posts_v_split_narrow_v_shader_origin: typeof enum___posts_v_split_narrow_v_shader_origin;
   enum___posts_v_split_narrow_v_image_position: typeof enum___posts_v_split_narrow_v_image_position;
   enum___posts_v_split_narrow_v_theme: typeof enum___posts_v_split_narrow_v_theme;
+  enum__posts_v_blocks_carousel_split_carousel_position: typeof enum__posts_v_blocks_carousel_split_carousel_position;
+  enum__posts_v_blocks_carousel_split_slide_size: typeof enum__posts_v_blocks_carousel_split_slide_size;
+  enum__posts_v_blocks_carousel_split_theme: typeof enum__posts_v_blocks_carousel_split_theme;
   enum___posts_v_image_pair_v_portrait_position: typeof enum___posts_v_image_pair_v_portrait_position;
   enum___posts_v_image_pair_v_text_position: typeof enum___posts_v_image_pair_v_text_position;
   enum___posts_v_image_pair_v_theme: typeof enum___posts_v_image_pair_v_theme;
@@ -18360,6 +18984,9 @@ type DatabaseSchema = {
   enum_works_split_narrow_shader_origin: typeof enum_works_split_narrow_shader_origin;
   enum_works_split_narrow_image_position: typeof enum_works_split_narrow_image_position;
   enum_works_split_narrow_theme: typeof enum_works_split_narrow_theme;
+  enum_works_blocks_carousel_split_carousel_position: typeof enum_works_blocks_carousel_split_carousel_position;
+  enum_works_blocks_carousel_split_slide_size: typeof enum_works_blocks_carousel_split_slide_size;
+  enum_works_blocks_carousel_split_theme: typeof enum_works_blocks_carousel_split_theme;
   enum_works_image_pair_portrait_position: typeof enum_works_image_pair_portrait_position;
   enum_works_image_pair_text_position: typeof enum_works_image_pair_text_position;
   enum_works_image_pair_theme: typeof enum_works_image_pair_theme;
@@ -18487,6 +19114,9 @@ type DatabaseSchema = {
   enum___works_v_split_narrow_v_shader_origin: typeof enum___works_v_split_narrow_v_shader_origin;
   enum___works_v_split_narrow_v_image_position: typeof enum___works_v_split_narrow_v_image_position;
   enum___works_v_split_narrow_v_theme: typeof enum___works_v_split_narrow_v_theme;
+  enum__works_v_blocks_carousel_split_carousel_position: typeof enum__works_v_blocks_carousel_split_carousel_position;
+  enum__works_v_blocks_carousel_split_slide_size: typeof enum__works_v_blocks_carousel_split_slide_size;
+  enum__works_v_blocks_carousel_split_theme: typeof enum__works_v_blocks_carousel_split_theme;
   enum___works_v_image_pair_v_portrait_position: typeof enum___works_v_image_pair_v_portrait_position;
   enum___works_v_image_pair_v_text_position: typeof enum___works_v_image_pair_v_text_position;
   enum___works_v_image_pair_v_theme: typeof enum___works_v_image_pair_v_theme;
@@ -18619,6 +19249,8 @@ type DatabaseSchema = {
   pages_full_media: typeof pages_full_media;
   pages_media_split: typeof pages_media_split;
   pages_split_narrow: typeof pages_split_narrow;
+  pages_blocks_carousel_split_slides: typeof pages_blocks_carousel_split_slides;
+  pages_blocks_carousel_split: typeof pages_blocks_carousel_split;
   pages_image_pair: typeof pages_image_pair;
   pages_split_offset: typeof pages_split_offset;
   pages_image_statement: typeof pages_image_statement;
@@ -18657,6 +19289,8 @@ type DatabaseSchema = {
   __pages_v_full_media_v: typeof __pages_v_full_media_v;
   __pages_v_media_split_v: typeof __pages_v_media_split_v;
   __pages_v_split_narrow_v: typeof __pages_v_split_narrow_v;
+  _pages_v_blocks_carousel_split_slides: typeof _pages_v_blocks_carousel_split_slides;
+  _pages_v_blocks_carousel_split: typeof _pages_v_blocks_carousel_split;
   __pages_v_image_pair_v: typeof __pages_v_image_pair_v;
   __pages_v_split_offset_v: typeof __pages_v_split_offset_v;
   __pages_v_image_statement_v: typeof __pages_v_image_statement_v;
@@ -18695,6 +19329,8 @@ type DatabaseSchema = {
   posts_full_media: typeof posts_full_media;
   posts_media_split: typeof posts_media_split;
   posts_split_narrow: typeof posts_split_narrow;
+  posts_blocks_carousel_split_slides: typeof posts_blocks_carousel_split_slides;
+  posts_blocks_carousel_split: typeof posts_blocks_carousel_split;
   posts_image_pair: typeof posts_image_pair;
   posts_split_offset: typeof posts_split_offset;
   posts_image_statement: typeof posts_image_statement;
@@ -18726,6 +19362,8 @@ type DatabaseSchema = {
   __posts_v_full_media_v: typeof __posts_v_full_media_v;
   __posts_v_media_split_v: typeof __posts_v_media_split_v;
   __posts_v_split_narrow_v: typeof __posts_v_split_narrow_v;
+  _posts_v_blocks_carousel_split_slides: typeof _posts_v_blocks_carousel_split_slides;
+  _posts_v_blocks_carousel_split: typeof _posts_v_blocks_carousel_split;
   __posts_v_image_pair_v: typeof __posts_v_image_pair_v;
   __posts_v_split_offset_v: typeof __posts_v_split_offset_v;
   __posts_v_image_statement_v: typeof __posts_v_image_statement_v;
@@ -18757,6 +19395,8 @@ type DatabaseSchema = {
   works_full_media: typeof works_full_media;
   works_media_split: typeof works_media_split;
   works_split_narrow: typeof works_split_narrow;
+  works_blocks_carousel_split_slides: typeof works_blocks_carousel_split_slides;
+  works_blocks_carousel_split: typeof works_blocks_carousel_split;
   works_image_pair: typeof works_image_pair;
   works_split_offset: typeof works_split_offset;
   works_image_statement: typeof works_image_statement;
@@ -18797,6 +19437,8 @@ type DatabaseSchema = {
   __works_v_full_media_v: typeof __works_v_full_media_v;
   __works_v_media_split_v: typeof __works_v_media_split_v;
   __works_v_split_narrow_v: typeof __works_v_split_narrow_v;
+  _works_v_blocks_carousel_split_slides: typeof _works_v_blocks_carousel_split_slides;
+  _works_v_blocks_carousel_split: typeof _works_v_blocks_carousel_split;
   __works_v_image_pair_v: typeof __works_v_image_pair_v;
   __works_v_split_offset_v: typeof __works_v_split_offset_v;
   __works_v_image_statement_v: typeof __works_v_image_statement_v;
@@ -18889,6 +19531,8 @@ type DatabaseSchema = {
   relations_pages_full_media: typeof relations_pages_full_media;
   relations_pages_media_split: typeof relations_pages_media_split;
   relations_pages_split_narrow: typeof relations_pages_split_narrow;
+  relations_pages_blocks_carousel_split_slides: typeof relations_pages_blocks_carousel_split_slides;
+  relations_pages_blocks_carousel_split: typeof relations_pages_blocks_carousel_split;
   relations_pages_image_pair: typeof relations_pages_image_pair;
   relations_pages_split_offset: typeof relations_pages_split_offset;
   relations_pages_image_statement: typeof relations_pages_image_statement;
@@ -18927,6 +19571,8 @@ type DatabaseSchema = {
   relations___pages_v_full_media_v: typeof relations___pages_v_full_media_v;
   relations___pages_v_media_split_v: typeof relations___pages_v_media_split_v;
   relations___pages_v_split_narrow_v: typeof relations___pages_v_split_narrow_v;
+  relations__pages_v_blocks_carousel_split_slides: typeof relations__pages_v_blocks_carousel_split_slides;
+  relations__pages_v_blocks_carousel_split: typeof relations__pages_v_blocks_carousel_split;
   relations___pages_v_image_pair_v: typeof relations___pages_v_image_pair_v;
   relations___pages_v_split_offset_v: typeof relations___pages_v_split_offset_v;
   relations___pages_v_image_statement_v: typeof relations___pages_v_image_statement_v;
@@ -18965,6 +19611,8 @@ type DatabaseSchema = {
   relations_posts_full_media: typeof relations_posts_full_media;
   relations_posts_media_split: typeof relations_posts_media_split;
   relations_posts_split_narrow: typeof relations_posts_split_narrow;
+  relations_posts_blocks_carousel_split_slides: typeof relations_posts_blocks_carousel_split_slides;
+  relations_posts_blocks_carousel_split: typeof relations_posts_blocks_carousel_split;
   relations_posts_image_pair: typeof relations_posts_image_pair;
   relations_posts_split_offset: typeof relations_posts_split_offset;
   relations_posts_image_statement: typeof relations_posts_image_statement;
@@ -18996,6 +19644,8 @@ type DatabaseSchema = {
   relations___posts_v_full_media_v: typeof relations___posts_v_full_media_v;
   relations___posts_v_media_split_v: typeof relations___posts_v_media_split_v;
   relations___posts_v_split_narrow_v: typeof relations___posts_v_split_narrow_v;
+  relations__posts_v_blocks_carousel_split_slides: typeof relations__posts_v_blocks_carousel_split_slides;
+  relations__posts_v_blocks_carousel_split: typeof relations__posts_v_blocks_carousel_split;
   relations___posts_v_image_pair_v: typeof relations___posts_v_image_pair_v;
   relations___posts_v_split_offset_v: typeof relations___posts_v_split_offset_v;
   relations___posts_v_image_statement_v: typeof relations___posts_v_image_statement_v;
@@ -19027,6 +19677,8 @@ type DatabaseSchema = {
   relations_works_full_media: typeof relations_works_full_media;
   relations_works_media_split: typeof relations_works_media_split;
   relations_works_split_narrow: typeof relations_works_split_narrow;
+  relations_works_blocks_carousel_split_slides: typeof relations_works_blocks_carousel_split_slides;
+  relations_works_blocks_carousel_split: typeof relations_works_blocks_carousel_split;
   relations_works_image_pair: typeof relations_works_image_pair;
   relations_works_split_offset: typeof relations_works_split_offset;
   relations_works_image_statement: typeof relations_works_image_statement;
@@ -19067,6 +19719,8 @@ type DatabaseSchema = {
   relations___works_v_full_media_v: typeof relations___works_v_full_media_v;
   relations___works_v_media_split_v: typeof relations___works_v_media_split_v;
   relations___works_v_split_narrow_v: typeof relations___works_v_split_narrow_v;
+  relations__works_v_blocks_carousel_split_slides: typeof relations__works_v_blocks_carousel_split_slides;
+  relations__works_v_blocks_carousel_split: typeof relations__works_v_blocks_carousel_split;
   relations___works_v_image_pair_v: typeof relations___works_v_image_pair_v;
   relations___works_v_split_offset_v: typeof relations___works_v_split_offset_v;
   relations___works_v_image_statement_v: typeof relations___works_v_image_statement_v;

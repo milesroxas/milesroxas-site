@@ -248,6 +248,7 @@ export interface Page {
     | FullMediaBlock
     | MediaContentSplitBlock
     | SplitContentNarrowBlock
+    | CarouselSplitBlock
     | ImagePairBlock
     | SplitImageOffsetBlock
     | FeatureImageStatementBlock
@@ -379,6 +380,7 @@ export interface Post {
         | FullMediaBlock
         | MediaContentSplitBlock
         | SplitContentNarrowBlock
+        | CarouselSplitBlock
         | ImagePairBlock
         | SplitImageOffsetBlock
         | FeatureImageStatementBlock
@@ -770,6 +772,7 @@ export interface PostSectionBlock {
         | FullMediaBlock
         | MediaContentSplitBlock
         | SplitContentNarrowBlock
+        | CarouselSplitBlock
         | ImagePairBlock
         | SplitImageOffsetBlock
         | FeatureImageStatementBlock
@@ -1024,6 +1027,62 @@ export interface SplitContentNarrowBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'splitContentNarrow';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselSplitBlock".
+ */
+export interface CarouselSplitBlock {
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * The copy column beside the deck.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  slides: {
+    media: number | Media;
+    /**
+     * Optional. Renders below the slide.
+     */
+    caption?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Arrange the deck on the left or the right of the copy.
+   */
+  carouselPosition?: ('left' | 'right') | null;
+  /**
+   * Slides visible at once within the deck column, from tablet up. Phones always show one slide plus a sliver of its neighbours.
+   */
+  slideSize?: ('full' | 'half' | 'third') | null;
+  /**
+   * Previous/next buttons beside the slides. They take an outer gutter from the deck column, which is already the narrower half of a split.
+   */
+  showArrows?: boolean | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'carouselSplit';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4414,6 +4473,7 @@ export interface Work {
     | FullMediaBlock
     | MediaContentSplitBlock
     | SplitContentNarrowBlock
+    | CarouselSplitBlock
     | ImagePairBlock
     | SplitImageOffsetBlock
     | FeatureImageStatementBlock
@@ -4500,6 +4560,7 @@ export interface WorkSectionBlock {
         | FullMediaBlock
         | MediaContentSplitBlock
         | SplitContentNarrowBlock
+        | CarouselSplitBlock
         | ImagePairBlock
         | SplitImageOffsetBlock
         | FeatureImageStatementBlock
@@ -5012,6 +5073,7 @@ export interface PageSectionBlock {
         | FullMediaBlock
         | MediaContentSplitBlock
         | SplitContentNarrowBlock
+        | CarouselSplitBlock
         | ImagePairBlock
         | SplitImageOffsetBlock
         | FeatureImageStatementBlock
@@ -5672,6 +5734,7 @@ export interface PagesSelect<T extends boolean = true> {
         fullMedia?: T | FullMediaBlockSelect<T>;
         mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
         splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
         imagePair?: T | ImagePairBlockSelect<T>;
         splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
         featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
@@ -5745,6 +5808,7 @@ export interface PageSectionBlockSelect<T extends boolean = true> {
         fullMedia?: T | FullMediaBlockSelect<T>;
         mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
         splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
         imagePair?: T | ImagePairBlockSelect<T>;
         splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
         featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
@@ -5838,6 +5902,28 @@ export interface SplitContentNarrowBlockSelect<T extends boolean = true> {
   visualType?: T;
   shader?: T | PlacedVisualConfigSelect<T>;
   imagePosition?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselSplitBlock_select".
+ */
+export interface CarouselSplitBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  slides?:
+    | T
+    | {
+        media?: T;
+        caption?: T;
+        id?: T;
+      };
+  carouselPosition?: T;
+  slideSize?: T;
+  showArrows?: T;
   theme?: T;
   id?: T;
   blockName?: T;
@@ -6360,6 +6446,7 @@ export interface PostsSelect<T extends boolean = true> {
         fullMedia?: T | FullMediaBlockSelect<T>;
         mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
         splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
         imagePair?: T | ImagePairBlockSelect<T>;
         splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
         featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
@@ -6425,6 +6512,7 @@ export interface PostSectionBlockSelect<T extends boolean = true> {
         fullMedia?: T | FullMediaBlockSelect<T>;
         mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
         splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
         imagePair?: T | ImagePairBlockSelect<T>;
         splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
         featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
@@ -6485,6 +6573,7 @@ export interface WorksSelect<T extends boolean = true> {
         fullMedia?: T | FullMediaBlockSelect<T>;
         mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
         splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
         imagePair?: T | ImagePairBlockSelect<T>;
         splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
         featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
@@ -6547,6 +6636,7 @@ export interface WorkSectionBlockSelect<T extends boolean = true> {
         fullMedia?: T | FullMediaBlockSelect<T>;
         mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
         splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
         imagePair?: T | ImagePairBlockSelect<T>;
         splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
         featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;

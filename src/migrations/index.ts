@@ -17,6 +17,7 @@ import * as migration_20260929_013625_ask_suggestions from './20260929_013625_as
 import * as migration_20260929_162031_contact_page from './20260929_162031_contact_page';
 import * as migration_20260929_172901_mcp_api_keys from './20260929_172901_mcp_api_keys';
 import * as migration_20260930_140439_figures from './20260930_140439_figures';
+import * as migration_20260930_154412_carousel_split from './20260930_154412_carousel_split';
 
 export const migrations = [
   {
@@ -112,6 +113,11 @@ export const migrations = [
   {
     up: migration_20260930_140439_figures.up,
     down: migration_20260930_140439_figures.down,
-    name: '20260930_140439_figures'
+    name: '20260930_140439_figures',
+  },
+  {
+    up: migration_20260930_154412_carousel_split.up,
+    down: migration_20260930_154412_carousel_split.down,
+    name: '20260930_154412_carousel_split'
   },
 ];

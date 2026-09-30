@@ -2,6 +2,7 @@ import type React from 'react'
 import { CarouselBlock } from '@/blocks/Carousel/Component'
 import { CodeSectionBlock } from '@/blocks/Code/Section'
 import { CaptionBlock } from '@/blocks/caption/Component'
+import { CarouselSplitBlock } from '@/blocks/carousel-split/Component'
 import { FaqBlock } from '@/blocks/faq/Component'
 import { FeatureHeadingOffsetBlock } from '@/blocks/feature/HeadingOffset/Component'
 import { FeatureImageStatementBlock } from '@/blocks/feature/ImageStatement/Component'
@@ -39,6 +40,7 @@ export type ContentBlockComponents = Record<string, React.ComponentType<never>>
 export const sectionChildComponents = {
   caption: CaptionBlock,
   carousel: CarouselBlock,
+  carouselSplit: CarouselSplitBlock,
   chart: ChartBlock,
   code: CodeSectionBlock,
   diagram: DiagramBlock,

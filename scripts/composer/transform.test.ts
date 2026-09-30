@@ -31,6 +31,27 @@ const sectionHeading = (words: string, eyebrow = '', align = 'left') => ({
   sectionHeading: { eyebrow, align, content: stateOf([p(words)]) },
 })
 const mediaColumn = (id: number) => ({ content: 'media', media: { media: id } })
+const slides = (...ids: number[]) => ids.map((id) => ({ slide: { image: id, caption: null } }))
+const sliderColumn = (
+  style = 'single',
+  rows = slides(1, 2),
+  introContent: Record<string, unknown> = {},
+) => ({
+  content: 'slider',
+  slider: { theme: 'system', style, introContent, slides: rows },
+})
+const slider = (
+  id: string,
+  style = 'default',
+  introContent: Record<string, unknown> = {},
+): Block => ({
+  blockType: 'slider',
+  id,
+  theme: 'light',
+  style,
+  introContent,
+  slides: slides(1, 2),
+})
 const content = (id: string, columns: unknown[], theme = 'light'): Block => ({
   blockType: 'content',
   id,
@@ -197,6 +218,89 @@ describe('media and content (C and M rules)', () => {
   })
 })
 
+describe('sliders (S and C5/C6 rules)', () => {
+  it('S1: a top-level slider becomes a Carousel', () => {
+    const { layout, report } = transformLayout([slider('s1')], media)
+    expect(report.map((line) => line.rule)).toEqual(['S1'])
+    expect(children(layout)[0]).toMatchObject({
+      blockType: 'carousel',
+      slideSize: 'half',
+      width: 'contained',
+      slides: [{ media: 1 }, { media: 2 }],
+    })
+  })
+
+  it('S2: an intro heading opens a Standard before the Carousel', () => {
+    const { report } = transformLayout(
+      [slider('s1', 'single', { heading: 'Selected work', subheading: 'A subheading' })],
+      media,
+    )
+    expect(report.map((line) => line.rule)).toEqual(['S2', 'S1'])
+  })
+
+  it('C5: a slider column on its own becomes a Carousel', () => {
+    const { layout, report } = transformLayout([content('a', [sliderColumn()])], media)
+    expect(report.map((line) => line.rule)).toEqual(['C5'])
+    expect(children(layout)[0]).toMatchObject({ blockType: 'carousel', slideSize: 'full' })
+  })
+
+  it('C6: a slider column beside a section heading becomes a Carousel split', () => {
+    const { layout, report } = transformLayout(
+      [content('a', [sectionHeading(LONG, 'Differentiator'), sliderColumn()], 'dark')],
+      media,
+    )
+    expect(report.map((line) => line.rule)).toEqual(['C6'])
+    expect(sections(layout)[0]).toMatchObject({ customize: true, theme: 'inverted' })
+    expect(children(layout)[0]).toMatchObject({
+      blockType: 'carouselSplit',
+      eyebrow: 'Differentiator',
+      carouselPosition: 'right',
+      slideSize: 'full',
+      slides: [{ media: 1 }, { media: 2 }],
+    })
+    expect(children(layout)[0].heading).toBeUndefined()
+  })
+
+  it('C6: a leading short paragraph becomes the heading, the deck keeps its side', () => {
+    const { layout } = transformLayout(
+      [content('a', [sliderColumn(), text(p('Short title'), p(LONG))])],
+      media,
+    )
+    const block = children(layout)[0]
+    expect(block).toMatchObject({
+      blockType: 'carouselSplit',
+      heading: 'Short title',
+      carouselPosition: 'left',
+    })
+    const body = block.body as ReturnType<typeof stateOf>
+    expect(body.root.children).toHaveLength(1)
+  })
+
+  it('C6: the slider keeps its own intro heading as a Standard before the split', () => {
+    const { report } = transformLayout(
+      [
+        content('a', [
+          sectionHeading(LONG),
+          sliderColumn('default', slides(1, 2), { heading: 'Selected work' }),
+        ]),
+      ],
+      media,
+    )
+    expect(report.map((line) => line.rule)).toEqual(['S2', 'C6'])
+  })
+
+  it('a slider column beside a media column falls through to the C rules', () => {
+    const { report } = transformLayout([content('a', [sliderColumn(), mediaColumn(1)])], media)
+    expect(report.map((line) => line.rule)).toEqual(['C5', 'C3'])
+  })
+
+  it('C6 keeps every slide and every word', () => {
+    const legacy = [content('a', [sectionHeading(LONG, 'Differentiator'), sliderColumn()])]
+    const { layout } = transformLayout(legacy, media)
+    expect(checkPreservation(legacy, layout).ok).toBe(true)
+  })
+})
+
 describe('grouping', () => {
   it('opens a Section per opener and per band, and passes listings through', () => {
     const { layout } = transformLayout(
@@ -292,6 +396,7 @@ describe.runIf(Boolean(latest))('production snapshot', () => {
     'code',
     'faq',
     'carousel',
+    'carouselSplit',
     'featureTabs',
     'insightList',
     'slider',

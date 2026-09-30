@@ -41,6 +41,7 @@ export type RuleId =
   | 'C3'
   | 'C4'
   | 'C5'
+  | 'C6'
   | 'M1'
   | 'M2'
   | 'M3'
@@ -301,32 +302,40 @@ const slidesOf = (slider: Block): { media: number; caption?: string }[] =>
     return [{ media, ...(caption ? { caption } : {}) }]
   })
 
-export const sliderUnits = (slider: Block, source: string, band: Band): Unit[] => {
+/** Slides in view at once: the legacy `single` slider showed one, the others two. */
+const slideSizeOf = (slider: Block): string => (slider.style === 'single' ? 'full' : 'half')
+
+/** The Standard a slider's own intro heading opens with (S2), or null. */
+const sliderIntroUnit = (slider: Block, source: string, band: Band): Unit | null => {
   const intro = (slider.introContent ?? {}) as {
     heading?: string | null
     subheading?: string | null
     align?: string | null
   }
+  const heading = str(intro.heading)
+  if (!heading) return null
+  const subheading = str(intro.subheading)
+  return {
+    rule: 'S2',
+    source,
+    band,
+    opens: true,
+    blocks: [
+      {
+        blockType: 'richTransition',
+        heading,
+        layout: intro.align === 'center' ? 'centered' : 'left',
+        ...(subheading ? { body: paragraphsState([subheading]) } : {}),
+      },
+    ],
+  }
+}
+
+export const sliderUnits = (slider: Block, source: string, band: Band): Unit[] => {
   const slides = slidesOf(slider)
   const units: Unit[] = []
-  const heading = str(intro.heading)
-  if (heading) {
-    const subheading = str(intro.subheading)
-    units.push({
-      rule: 'S2',
-      source,
-      band,
-      opens: true,
-      blocks: [
-        {
-          blockType: 'richTransition',
-          heading,
-          layout: intro.align === 'center' ? 'centered' : 'left',
-          ...(subheading ? { body: paragraphsState([subheading]) } : {}),
-        },
-      ],
-    })
-  }
+  const intro = sliderIntroUnit(slider, source, band)
+  if (intro) units.push(intro)
   if (slides.length) {
     units.push({
       rule: 'S1',
@@ -337,12 +346,99 @@ export const sliderUnits = (slider: Block, source: string, band: Band): Unit[] =
         {
           blockType: 'carousel',
           slides,
-          slideSize: slider.style === 'single' ? 'full' : 'half',
+          slideSize: slideSizeOf(slider),
           width: 'contained',
         },
       ],
     })
   }
+  return units
+}
+
+// ---------------------------------------------------------------------------
+// A slider column beside its copy (C6)
+// ---------------------------------------------------------------------------
+
+/** The columns a Carousel split builds its copy stack from. */
+const isCopyColumn = (column: Column) =>
+  column.content === 'sectionHeading' || column.content === 'text'
+
+/**
+ * The copy stack beside the deck, from the heading and text columns in order:
+ * the eyebrow of the first section heading that carries one, a leading heading
+ * node or short paragraph as the block heading, and the rest as the body
+ * (headings clamped to `h4`, the only level the content-column editor holds).
+ */
+const splitCopy = (copy: Column[]) => {
+  const nodes: LexicalNode[] = []
+  let eyebrow = ''
+  let like: unknown
+  for (const column of copy) {
+    const state =
+      column.content === 'sectionHeading' ? column.sectionHeading?.content : column.text?.richText
+    if (column.content === 'sectionHeading' && !eyebrow)
+      eyebrow = str(column.sectionHeading?.eyebrow)
+    if (like === undefined && state) like = state
+    nodes.push(...withoutBlankNodes(topNodes(state)))
+  }
+  const [first, ...rest] = nodes
+  const firstText = plainText(first).trim()
+  const leads =
+    Boolean(first) &&
+    !hasLink(first) &&
+    (isHeading(first) || (first.type === 'paragraph' && firstText.length <= SHORT_HEADING_CHARS))
+  const heading = leads ? firstText : ''
+  const body = leads ? rest : nodes
+  return {
+    eyebrow,
+    heading,
+    body: body.length ? stateOf(clampHeadings(body, ['h4']), like) : null,
+  }
+}
+
+/**
+ * A Columns block that is one slider beside copy and nothing else becomes one
+ * Carousel split (`carouselSplit`), the block that keeps a deck and its words
+ * side by side as the legacy grid did. Null when the block is any other shape,
+ * so the caller falls through to the C, H and T rules.
+ *
+ * The slider's own intro heading, when it has one, still opens a Standard
+ * before the split (S2), exactly as it does for a top-level slider.
+ */
+const carouselSplitUnits = (columns: Column[], source: string, band: Band): Unit[] | null => {
+  const sliders = columns.filter((column) => column.content === 'slider' && column.slider)
+  const copy = columns.filter(isCopyColumn)
+  if (sliders.length !== 1 || !copy.length || copy.length !== columns.length - 1) return null
+
+  const slider = sliders[0].slider as Block
+  const slides = slidesOf(slider)
+  if (!slides.length) return null
+
+  const { body, eyebrow, heading } = splitCopy(copy)
+  if (!body && !heading && !eyebrow) return null
+
+  const units: Unit[] = []
+  const intro = sliderIntroUnit(slider, source, band)
+  if (intro) units.push(intro)
+  units.push({
+    rule: 'C6',
+    source,
+    band,
+    opens: false,
+    blocks: [
+      {
+        blockType: 'carouselSplit',
+        ...(eyebrow ? { eyebrow } : {}),
+        ...(heading ? { heading } : {}),
+        ...(body ? { body } : {}),
+        slides,
+        slideSize: slideSizeOf(slider),
+        // The deck keeps the side the editor gave it: a slider column after
+        // its copy column stays on the right.
+        carouselPosition: columns.indexOf(sliders[0]) > columns.indexOf(copy[0]) ? 'right' : 'left',
+      },
+    ],
+  })
   return units
 }
 
@@ -359,6 +455,10 @@ export const contentUnits = (block: Block, media: MediaInfo): Unit[] => {
   const source = String(block.id ?? 'content')
   const band = bandOf(block.theme)
   const columns = columnsOf(block).filter((column) => !isSpacer(column))
+
+  const split = carouselSplitUnits(columns, source, band)
+  if (split) return split
+
   const units: Unit[] = []
 
   for (const column of columns.filter((c) => c.content === 'sectionHeading')) {
