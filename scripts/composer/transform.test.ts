@@ -26,9 +26,14 @@ const text = (...nodes: unknown[]) => ({
   content: 'text',
   text: { richText: stateOf(nodes as never) },
 })
-const sectionHeading = (words: string, eyebrow = '', align = 'left') => ({
+const sectionHeading = (
+  words: string,
+  eyebrow = '',
+  align = 'left',
+  rest: ReturnType<typeof p>[] = [],
+) => ({
   content: 'sectionHeading',
-  sectionHeading: { eyebrow, align, content: stateOf([p(words)]) },
+  sectionHeading: { eyebrow, align, content: stateOf([p(words), ...rest]) },
 })
 const mediaColumn = (id: number) => ({ content: 'media', media: { media: id } })
 const slides = (...ids: number[]) => ids.map((id) => ({ slide: { image: id, caption: null } }))
@@ -71,7 +76,7 @@ const sections = (layout: Block[]) => layout.filter((block) => block.blockType =
 const children = (layout: Block[]) => sections(layout).flatMap((s) => (s.blocks as Block[]) ?? [])
 
 describe('section headings (H rules)', () => {
-  it('H1: a short heading opens a Standard', () => {
+  it('H1: a short heading opens a Standard on the Prose layout at h2', () => {
     const { layout, report } = transformLayout(
       [content('a', [sectionHeading('Short title', 'Kicker', 'center')])],
       media,
@@ -81,17 +86,33 @@ describe('section headings (H rules)', () => {
       blockType: 'richTransition',
       eyebrow: 'Kicker',
       heading: 'Short title',
-      layout: 'centered',
+      layout: 'prose',
+      headingLevel: 'h2',
     })
   })
 
-  it('H2: a long statement with an eyebrow becomes an Offset', () => {
+  it('H2: a long statement with an eyebrow opens on its eyebrow', () => {
     const { layout } = transformLayout([content('a', [sectionHeading(LONG, 'The Vision')])], media)
     expect(children(layout)[0]).toMatchObject({
-      blockType: 'featureHeadingOffset',
+      blockType: 'richTransition',
       heading: 'The Vision',
-      bodySize: 'large',
+      layout: 'prose',
+      headingLevel: 'h2',
     })
+  })
+
+  it('a section opener carries no heading node: its body field has no heading feature', () => {
+    const { layout } = transformLayout(
+      [
+        content('a', [
+          sectionHeading('Short title', undefined, undefined, [heading('h2', 'Inner')]),
+        ]),
+      ],
+      media,
+    )
+    const body = children(layout)[0].body as ReturnType<typeof stateOf>
+    expect(body.root.children.map((node) => node.type)).toEqual(['paragraph'])
+    expect(body.root.children[0]).not.toHaveProperty('tag')
   })
 
   it('H3: a long statement without one becomes Rich text', () => {
@@ -120,7 +141,7 @@ describe('text columns (T rules)', () => {
     expect(block.fields.items.map((item) => item.title)).toEqual(['My Role', 'Team'])
   })
 
-  it('T3: a lone heading column opens a split Standard', () => {
+  it('T3: a lone heading column opens a Standard on the Prose layout', () => {
     const { layout, report } = transformLayout(
       [content('a', [text(p('Insights')), text(p('Body one.'), link('A link'))])],
       media,
@@ -128,7 +149,8 @@ describe('text columns (T rules)', () => {
     expect(report[0].rule).toBe('T3')
     expect(children(layout)[0]).toMatchObject({
       blockType: 'richTransition',
-      layout: 'split',
+      layout: 'prose',
+      headingLevel: 'h2',
       heading: 'Insights',
     })
   })
@@ -468,7 +490,12 @@ const latest = fs.existsSync(snapshotDir)
       .readdirSync(snapshotDir)
       .filter((file) => file.startsWith('compose-layouts-') && file.endsWith('.json'))
       .sort()
-      .pop()
+      .reverse()
+      // A snapshot of a run that converted nothing proves nothing: keep looking.
+      .find((file) => {
+        const entries = JSON.parse(fs.readFileSync(path.join(snapshotDir, file), 'utf8'))
+        return Array.isArray(entries) && entries.length > 0
+      })
   : undefined
 
 describe.runIf(Boolean(latest))('production snapshot', () => {

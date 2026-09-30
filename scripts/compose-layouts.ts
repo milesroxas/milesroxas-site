@@ -351,6 +351,13 @@ async function run() {
     return
   }
 
+  // A run that converts nothing has nothing to undo, and an empty snapshot
+  // would sort newest and shadow the real restore point.
+  if (snapshot.length === 0) {
+    payload.logger.info('Nothing to convert: no snapshot written.')
+    return
+  }
+
   // Every input goes to disk before the first write, so --restore can undo all of it.
   const dir = path.resolve('scripts/snapshots')
   fs.mkdirSync(dir, { recursive: true })

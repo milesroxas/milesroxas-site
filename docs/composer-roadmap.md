@@ -415,7 +415,11 @@ Mapping principle (D16): each legacy block becomes the sas-site block and varian
 **Audited usage (local pull 2026-09-27, works).** 61 `content` blocks with 89 columns: 38 section headings (all paragraphs, never heading nodes; 26 are over 80 characters, so they are statements, not headings; 17 carry an eyebrow), 44 text columns (paragraphs, h2 and h3 only; 3 contain links; several are empty spacer columns), 5 media, 1 YouTube, 1 slider (the one slider column sits beside a section heading column, so it is the only C6 in production). 53 `mediaBlock`: 24 are videos; 12 show a caption (6 `split-*`, 6 `left`/`right`, 0 `center`); 3 hide caption text behind `showCaption: false`; 7 are full width. 8 `slider` (4 with an intro heading; 6 `default`, 2 `cropped`; no slide links). 4 `tabs` with 13 tabs, every tab a `single` slider (73 slides, no captions). The `archive`, `cta` and `formBlock` rows pass through.
 
 **Grouping into Sections.** Walk each `layout` in order and keep one Section open:
-- A new Section opens when a block produces an opener (a Standard or an Offset, from any rule below), or when the band changes (legacy `dark` against `light`/`system`).
+- A new Section opens when a block produces an opener (a Standard, from any rule below), or when the band changes (legacy `dark` against `light`/`system`).
+
+**The section-opener layout.** Every converted section heading is a Standard with `layout: 'prose'` and `headingLevel: 'h2'` (`SECTION_OPENER_LAYOUT` in `rules.ts`), whatever the legacy `align` said. Prose is the only layout that binds an opener to the run it introduces: it sits on the reading column and `SectionBand` closes the gap beneath it, so the heading reads as the title of the blocks under it. The other layouts are page furniture, which left a converted heading floating above its own content. h2 is the level a section opener holds in the page outline; nothing below it emits an h1. Two consequences: legacy `align: 'center'` is not carried over, and Offset (`featureHeadingOffset`) is no longer a conversion target, though it stays available to authors.
+
+A Standard's `body` runs on the **root editor**, which enables no heading feature at all, so every rule that fills one passes its nodes through `headingsAsParagraphs`. Clamping to `h2`/`h3` there, as the Rich text block's body does, would store nodes the field cannot produce or render.
 - Band: `dark` → `customize: true`, `theme: 'inverted'`; `light` and `system` → Section defaults (`inherit`). Children keep their default `theme`, because the Section owns the band. Section `spacing` and `stack` stay `default`.
 - `archive`, `cta`, `formBlock`, `callout`, and any `content` block that holds a `work` or `post` column pass through untouched at top level and close the open Section. That covers all three `content` blocks on `pages/home`, so Pages need no conversion.
 
@@ -425,12 +429,12 @@ Mapping principle (D16): each legacy block becomes the sas-site block and varian
 
 | Id | When | Becomes |
 |---|---|---|
-| H1 | Section heading, first paragraph 80 characters or fewer | Standard (`richTransition`): `eyebrow`, `heading` = first paragraph, `body` = any further paragraphs; `layout` is `centered` when `align` is `center`, else `left` |
-| H2 | Section heading, longer, with an eyebrow | Offset (`featureHeadingOffset`): `heading` = the eyebrow, `body` = the statement paragraphs, `bodySize: 'large'` |
+| H1 | Section heading, first paragraph 80 characters or fewer | Standard (`richTransition`) on the section-opener layout: `eyebrow`, `heading` = first paragraph, `body` = any further paragraphs |
+| H2 | Section heading, longer, with an eyebrow | Standard on the section-opener layout: `heading` = the eyebrow, `body` = the statement paragraphs |
 | H3 | Section heading, longer, no eyebrow | Rich text: `body` = the statement paragraphs |
 | T1 | One text column | Rich text, body as is (`h4` → `h3`, where the Rich text editor stops) |
 | T2 | Two or more text columns, each made only of heading-then-paragraphs runs, no links | Rich text whose body is one Insights block (`insights`): one item per run, `title` = the heading, `description` = the paragraphs as plain text |
-| T3 | Two or more text columns, the first a lone heading (one heading node, or one paragraph of 80 characters or fewer) | Standard, `layout: 'split'`: `heading` = that text, `body` = the other columns in order |
+| T3 | Two or more text columns, the first a lone heading (one heading node, or one paragraph of 80 characters or fewer) | Standard on the section-opener layout: `heading` = that text, `body` = the other columns in order |
 | T4 | Any other set of two or more text columns | Rich text, the columns concatenated in order |
 | C1 | One media column plus one text column | Split narrow (`splitContentNarrow`): `imagePosition` from the column order; a leading heading in the text becomes `heading`, and the rest becomes `body` (other headings → `h4`, the only level in the content-column editor) |
 | C2 | Two media columns | Pair (`imagePair`): the square or portrait image → `portraitMedia`, the other → `landscapeMedia`, `portraitPosition` from the column order |
@@ -454,7 +458,7 @@ Slider and Tab slider:
 | Id | When | Becomes |
 |---|---|---|
 | S1 | Any slider | Carousel (`carousel`): each slide `media` = `slide.image`, `caption` = `slide.caption`; `slideSize` is `full` for `single` and `half` for `default` and `cropped`; `width: 'full-width'` (the legacy Slider ran the window; a contained deck reads as a shrunken one) |
-| S2 | Slider with `introContent.heading` | A Standard before the Carousel, opening a Section: `heading` = intro heading, `body` = subheading; `layout` is `centered` when `align` is `center`, else `left` |
+| S2 | Slider with `introContent.heading` | A Standard before the Carousel, opening a Section on the section-opener layout: `heading` = intro heading, `body` = subheading |
 | TB1 | Tab slider whose every tab is a slider of two or more slides (all four in production) | One Carousel tabs block (`carouselTabs`), which is a split and owns its copy column, so the heading group travels into it as `eyebrow`, `heading` and `body` rather than becoming a Standard a whole band above the strip. A tab per legacy tab, `title` = tab title and `slides` = that tab's slides. `slideSize` is `full` when every tab slider is `single`, else `half`; `tabSize` is `small` from five tabs, else `default` |
 | TB2 | Any other Tab slider (one that mixes copy into its tabs; none in production) | The flattened Section TB1 used to write: the heading Standard, then per tab a Standard (`layout: 'left'`, `heading` = tab title), its Rich text, and a Carousel of its slides. The tabbing is lost, nothing else is |
 

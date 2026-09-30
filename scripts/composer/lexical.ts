@@ -139,6 +139,21 @@ export const clampHeadings = (nodes: LexicalNode[], allowed: string[]): LexicalN
   })
 }
 
+/**
+ * Heading nodes as paragraphs, their content untouched.
+ *
+ * A Standard's body field runs on the root editor, which enables no heading
+ * feature at all: a heading node stored there has no toolbar that could
+ * produce it and no treatment that renders it. Copy that opened with a
+ * heading keeps its words, as the paragraph it now is.
+ */
+export const headingsAsParagraphs = (nodes: LexicalNode[]): LexicalNode[] =>
+  nodes.map((node) => {
+    if (!isHeading(node)) return node
+    const { tag: _tag, ...rest } = node
+    return { ...rest, type: 'paragraph' }
+  })
+
 /** Drops blank top-level blocks (the spacer paragraphs legacy bodies used for rhythm). */
 export const withoutBlankNodes = (nodes: LexicalNode[]): LexicalNode[] =>
   nodes.filter((node) => !isBlankNode(node))

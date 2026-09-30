@@ -14,6 +14,7 @@ import { randomBytes } from 'node:crypto'
 import {
   clampHeadings,
   hasLink,
+  headingsAsParagraphs,
   isBlankState,
   isHeading,
   type LexicalNode,
@@ -116,6 +117,18 @@ const isSpacer = (column: Column) =>
 // Section heading columns (H rules)
 // ---------------------------------------------------------------------------
 
+/**
+ * Every converted section heading is a Standard on the Prose layout at h2.
+ *
+ * Prose is the only layout that binds an opener to the run it introduces: it
+ * sits on the reading column and `SectionBand` closes the gap beneath it, so
+ * the heading reads as the title of the blocks under it rather than as a band
+ * of its own. The other layouts are page furniture, which is what made a
+ * converted heading float above its own content. h2 is the level a section
+ * opener holds in the page outline; the blocks below it never emit an h1.
+ */
+const SECTION_OPENER_LAYOUT = { layout: 'prose', headingLevel: 'h2' } as const
+
 const sectionHeadingUnit = (column: Column, source: string, band: Band): Unit => {
   const heading = column.sectionHeading ?? {}
   const content = heading.content
@@ -135,8 +148,8 @@ const sectionHeadingUnit = (column: Column, source: string, band: Band): Unit =>
           blockType: 'richTransition',
           ...(eyebrow ? { eyebrow } : {}),
           heading: firstText,
-          layout: heading.align === 'center' ? 'centered' : 'left',
-          ...(rest.length ? { body: stateOf(clampHeadings(rest, ['h2', 'h3']), content) } : {}),
+          ...SECTION_OPENER_LAYOUT,
+          ...(rest.length ? { body: stateOf(headingsAsParagraphs(rest), content) } : {}),
         },
       ],
     }
@@ -150,10 +163,10 @@ const sectionHeadingUnit = (column: Column, source: string, band: Band): Unit =>
       opens: true,
       blocks: [
         {
-          blockType: 'featureHeadingOffset',
+          blockType: 'richTransition',
           heading: eyebrow,
-          body: stateOf(nodes, content),
-          bodySize: 'large',
+          ...SECTION_OPENER_LAYOUT,
+          body: stateOf(headingsAsParagraphs(nodes), content),
         },
       ],
     }
@@ -270,8 +283,8 @@ const textUnits = (columns: Column[], source: string, band: Band): Unit[] => {
           {
             blockType: 'richTransition',
             heading: lone,
-            layout: 'split',
-            body: stateOf(richTextNodes(bodies.slice(1).flat()), like),
+            ...SECTION_OPENER_LAYOUT,
+            body: stateOf(headingsAsParagraphs(bodies.slice(1).flat()), like),
           },
         ],
       },
@@ -325,7 +338,7 @@ const sliderIntroUnit = (slider: Block, source: string, band: Band): Unit | null
       {
         blockType: 'richTransition',
         heading,
-        layout: intro.align === 'center' ? 'centered' : 'left',
+        ...SECTION_OPENER_LAYOUT,
         ...(subheading ? { body: paragraphsState([subheading]) } : {}),
       },
     ],
