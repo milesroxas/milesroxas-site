@@ -5,8 +5,12 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  '@payloadcms/drizzle': 719f96ffe7312c1f56d9939d653968955ffec771611932314e96339e23ffa7d2
-  '@payloadcms/plugin-mcp': df11b3717d6f2230c8888e88652be21ba9f4a7f1926407ed68caf5fde4759821
+  '@payloadcms/drizzle':
+    hash: 719f96ffe7312c1f56d9939d653968955ffec771611932314e96339e23ffa7d2
+    path: patches/@payloadcms__drizzle.patch
+  '@payloadcms/plugin-mcp':
+    hash: df11b3717d6f2230c8888e88652be21ba9f4a7f1926407ed68caf5fde4759821
+    path: patches/@payloadcms__plugin-mcp.patch
 
 importers:
 
