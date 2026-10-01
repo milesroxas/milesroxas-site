@@ -1,6 +1,6 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
-Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6's script is built and proven on the local Docker copy of production and on the Neon `preview/dev` branch; its production run is a cutover step (Phase 9). Phase 7: the code-only bullets are done, the three content ones wait for the cutover to soak. Phase 8: figures, the Carousel split and Carousel tabs built 2026-09-30, the rest not started. Three workstreams landed on `dev` after the phases and are documented where they live, not here: the top bar, dock and Ask panel (`docs/site-chrome.md`, supersedes D10 and O3), the `/contact` inquiry form, and the `milesroxas-cms` MCP server (`docs/mcp.md`). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
+Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6's script is built and proven on the local Docker copy of production and on the Neon `preview/dev` branch; its production run is a cutover step (Phase 9). Phase 7: the code-only bullets are done, the three content ones wait for the cutover to soak. Phase 8 closed 2026-10-01: figures, the Carousel split, Carousel tabs and the visitor theme built 2026-09-30; nothing else is planned. Three workstreams landed on `dev` after the phases and are documented where they live, not here: the top bar, dock and Ask panel (`docs/site-chrome.md`, supersedes D10 and O3), the `/contact` inquiry form, and the `milesroxas-cms` MCP server (`docs/mcp.md`). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
@@ -85,7 +85,7 @@ Consequence: the real migration surface is about 140 block rows on 10 works and 
 | Home global, index globals (`works-index`, `insights-index`) | existing `home`, `works`, `posts` Pages documents | Unchanged. `home` gets the run through the Pages list |
 | Site Info global (AEO plugin) | new minimal `site-info` global | Only what Ask reads: `ask.hidden`, `inquiries.responseTime`, `inquiries.scheduleUrl` (Phase 5) |
 | Inquiries collection + `/api/inquiries/submit` | new (Phase 5) | Ask's team-form handoff posts here. Team-only PII, Resend notify |
-| Closing band (Footer global + per-page Closing tab) | optional (Phase 8, D4) | The Footer global was removed on purpose; re-adding it is a product call |
+| Closing band (Footer global + per-page Closing tab) | not ported (D4) | The Footer global was removed on purpose; re-adding it is a product call |
 | Takeover menu, `MenuAsk`, `ClosingAsk` | not ported | The dock owns Ask: a panel in the bottom dock plus `/ask` (`docs/site-chrome.md`; supersedes D10) |
 | Visitor light/dark toggle, `InitTheme`, `ChromeTheme` | not ported | The site stays light; bands give per-section contrast (Section 5) |
 | Route transitions (View Transition API), hero landing, page intro | not ported | The site chrome and the card FLIP transition stay as they are |
@@ -102,7 +102,7 @@ Consequence: the real migration surface is about 140 block rows on 10 works and 
 | D1 | **Strip the story fields** (`storySourceField`, `featureSourceField`, `storyScope`, `storyBeatKey`, `showOverrides`) from every ported block config. | No record to resolve against. A dead `source` enum column on every block table would still have to be migrated later. Adding it back is additive if a hub ever arrives |
 | D2 | Replace `filterOptions: publicApprovedMediaWhere` with no filter on every ported upload field. | Media here has no `usageStatus` |
 | D3 | Colliding slugs keep the milesroxas block (Section 4). sas-site's Caption ships as slug **`caption`**; sas-site's Content, Archive, CTA, Form and Banner are not imported. | 61 + 53 + 8 + 4 + 6 rows would otherwise sit under a block whose fields changed underneath them |
-| D4 | The Closing tab and Footer global are **not** part of the core port. | Removed here in July on purpose. Listed under Phase 8 for when it is wanted |
+| D4 | The Closing tab and Footer global are **not** part of the core port. | Removed here in July on purpose |
 | D5 | Posts keep `content` (made optional) and gain `layout`. The route renders hero → intro → content → composition → related. Moving existing bodies into Sections is the Phase 6 posts transform (D15), with dry-run and snapshot. | No content is touched by schema work |
 | D6 | Works keep `layout` required and keep every legacy block in the drawer under its group, relabelled where a ported block takes the same name (`tabs` becomes "Tab slider", `mediaBlock` stays "Media"). | Zero re-authoring pressure; Phase 7 retires legacy blocks from the drawer only after Phase 6 |
 | D7 | The Studio plugin (Phase 2) lands **before** the block run (Phase 3). | The run's block configs spread `blockVisualSlotFields`, whose `studio` relationship needs the `streak-looks` collection. Porting the configs twice (plain upload, then slot) would generate two migrations on the same tables. Phases 1 and 2 can run in parallel Conductor workspaces |
@@ -139,7 +139,7 @@ Every sas-site block in the run, checked against `src/blocks/*/config.ts` here.
 | `carouselSplit` | ours only, Phase 8 | 0 | **create.** Not in sas-site: a deck beside its copy, the shape a Columns block reached for with a Slider column next to a Section heading column. Media and content group |
 | `carouselTabs` | ours only, Phase 8 | 0 | **create.** Not in sas-site: a deck per tab, the shape every Tab slider holds. Interactive group. Shares its trigger strip with `featureTabs` and its deck with `carousel` |
 | `callout` | ours only | 1 | keep, group Statements |
-| `storyBeats`, `labStorySection`, `labFacts`, `labRelatedProjects`, `labMediaShowcase`, `caseStudy*`, `featuredWork`, `industryWork`, `audienceTabs`, `dynamicAudience`, `testimonialsMarquee`, `newsletterSignup`, `featureStatementGrid` (carries `source`), `scrollGallery` | | | **not ported** (hub, taxonomy or newsletter dependencies). `scrollGallery`, `featureStatementLinks`, a plain `mediaShowcase` are Phase 8 candidates |
+| `storyBeats`, `labStorySection`, `labFacts`, `labRelatedProjects`, `labMediaShowcase`, `caseStudy*`, `featuredWork`, `industryWork`, `audienceTabs`, `dynamicAudience`, `testimonialsMarquee`, `newsletterSignup`, `featureStatementGrid` (carries `source`), `scrollGallery` | | | **not ported** (hub, taxonomy or newsletter dependencies) |
 
 Every ported block that lives in more than one collection uses the function `dbName` exactly as sas-site does. Tables land per parent: `pages_section`, `works_section`, `posts_section`, `works_full_media`, `posts_rich_text`, and so on, plus `_v` twins. No existing table is renamed.
 
@@ -475,13 +475,13 @@ Slider and Tab slider:
 
 Files: `scripts/composer/{transform.ts, rules.ts, lexical.ts, preserve.ts, overrides.ts}` and `transform.test.ts`. The test runs under `pnpm test:unit` against fixtures from the Phase 0 snapshot. It asserts that every work converts, that preservation passes, that no Section nests a Section, and that every output block slug is in its collection's block list.
 
-**Pending draft.** `design-systems-for-organizational-scale` has an unpublished draft from 2026-06-12 that is newer than its published version. The script converts the latest draft and flags the document, so `--publish` would also ship those June edits. Publish or discard that draft before Phase 6.
+**Pending draft.** `design-systems-for-organizational-scale` has an unpublished draft from 2026-06-12 that is newer than its published version. The script converts the latest draft and flags the document, so `--publish` would also ship those June edits. Publish or discard that draft before Phase 6. **Resolved 2026-10-01**: published in admin.
 
 **Posts (6 documents).** The same CLI runs a posts transform with the same flags: split `content` at every `h2` node. Each split becomes a Section holding a Standard (`layout: 'prose'`, `headingLevel: 'h2'`, heading = the h2 text) followed by a Rich text block with the nodes up to the next h2. Inline `code` nodes become Code blocks, inline `mediaBlock` nodes become Caption blocks, and `banner` stays inside the body (Phase 3 added it to the Rich text editor). It writes `layout` as a draft and leaves `content` untouched; the route prefers `layout` when it is not empty.
 
 Checklist:
 - [ ] Phases 3 and 4 are deployed, so every target block exists in production.
-- [ ] Resolve the pending draft on `design-systems-for-organizational-scale`.
+- [x] Resolve the pending draft on `design-systems-for-organizational-scale` (published 2026-10-01).
 - [ ] Re-pull production, back up, re-run the inventory, then `--dry-run` locally and read the report. Adjust `overrides.ts` and repeat until the report reads right.
 - [ ] Run locally, check every work in live preview, `--publish` locally, and take screenshots.
 - [ ] Take a Neon backup. Run against production with `.env.production.pulled` and `PAYLOAD_DB_PUSH=false`, check live preview, then `--publish` and redeploy.
@@ -518,9 +518,6 @@ The first three bullets stay open on purpose: each changes or retires production
 - [x] **Figures** (`chart`, `diagram`) with `sas:src/plugins/figures` and `sas:src/features/figures`, done 2026-09-30. Joins the run under Figures. Notes below; the system is documented in [figures.md](figures.md).
 - [x] **Carousel tabs** (`carouselTabs`), done 2026-09-30. A deck per tab, so a Tab slider keeps its tabs through Phase 6 (O9). Joins the run under Interactive. Notes below.
 - [x] **Carousel split** (`carouselSplit`), done 2026-09-30. A deck beside its copy, so a carousel can sit next to words as the legacy Columns grid allowed. Joins the run under Media and content, and Phase 6's C6 maps the legacy shape onto it. Notes below.
-- `scrollGallery` (WebGL, pinned, `self` reveal), `featureStatementLinks` (`self`, own `ScrollReveal`), a plain `mediaShowcase` (sas Lab Media showcase minus the record).
-- Closing band: re-add a Footer global with `sas:src/fields/closing.ts` and the per-page Closing tab; `ClosingAsk` then has a home.
-- `/demo/transitions` reveal tuner (`sas:src/widgets/transition-demo`) for retuning the two reveals on this site's type scale.
 - [x] **A visitor light/dark theme** (`sas:src/providers/Theme/*`, `InitTheme`), done 2026-09-30. Notes below; the toggle is documented in [site-chrome.md](site-chrome.md).
 
 **Carousel tabs as built (2026-09-30).** `src/blocks/carousel-tabs/{config.ts, CarouselTabs.tsx, Component.tsx, Component.stories.tsx}`, registered in `sectionNestableBlocks` (Interactive, before Tabs) and in `sectionChildComponents`. Fields: `tabs` (two to eight rows of a `title` and that tab's slides), `slideSize`, `showArrows`, `tabSize`, `theme`. Tables `{pages,works,posts}_blocks_carousel_tabs(_tabs)(_slides)` plus `_v` twins.
@@ -567,7 +564,7 @@ Everything above lands on `dev`. This phase is the only production event: one me
 2. **Merge.** `dev` to `main` (one PR, the whole composer). Vercel's `pnpm ci` runs `payload migrate`: every migration from `20260927_171656_streak_studio` forward applies in order, all additive. Back up Neon first.
 3. **Env.** Add `OPENAI_API_KEY` in Vercel (Phase 5, "Not done here"), then backfill the Ask index (Site Info › Ask › Rebuild index).
 4. **Content run.** The Phase 6 script against production:
-   1. Decide the pending draft on `works/design-systems-for-organizational-scale` (June edits over the published version): publish or discard it in admin. Otherwise `--publish` ships it.
+   1. Decide the pending draft on `works/design-systems-for-organizational-scale` (June edits over the published version): publish or discard it in admin. Otherwise `--publish` ships it. Done 2026-10-01: published.
    2. Back up Neon (a `pg_dump` or a branch), and pull `.env.production.pulled`.
    3. `PAYLOAD_DB_PUSH=false pnpm exec tsx --env-file=.env.production.pulled scripts/compose-layouts.ts --production --dry-run`, read the report. Without `--production` the script refuses any database but the local Docker one (`--preview` targets the Neon preview branch and refuses production).
    4. Same command without `--dry-run`: drafts only, the site keeps rendering the legacy layouts. Check each work in live preview.
@@ -640,7 +637,7 @@ Integration rules here:
 | # | Decision | Recommendation |
 |---|---|---|
 | O1 | Keep Posts `content` as the article body long term (sas-site Posts do), or move every post fully into Sections (the Lab Page shape)? | Fully into Sections, since the ask is "posts like Lab pages". Keep the field optional until every post has moved |
-| O2 | Re-add the Footer global for the Closing band? | Later (Phase 8). It was removed on purpose |
+| O2 | Re-add the Footer global for the Closing band? | **Settled 2026-10-01**: no. It was removed on purpose |
 | O3 | Ask entry points beyond `/ask` and the nav | **Settled 2026-09-29**: the dock Ask panel (`docs/site-chrome.md`) |
 | O4 | Jev (TypeSafe) on for Ask? | Off at first (`ASK_JEV` unset); turn on shadow after a week of questions |
 | O5 | Add the `text` link appearance (D8)? | Not now; revisit when the Actions block is wanted with text links |
