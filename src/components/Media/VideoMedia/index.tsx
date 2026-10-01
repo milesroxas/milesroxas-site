@@ -16,7 +16,7 @@ function supportsNativeHls(): boolean {
 }
 
 export const VideoMedia: React.FC<MediaProps> = (props) => {
-  const { onClick, onLoad, resource, videoClassName, priority = false } = props
+  const { autoPlay = true, onClick, onLoad, resource, videoClassName, priority = false } = props
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const hlsRef = useRef<{ destroy: () => void } | null>(null)
@@ -82,7 +82,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
   // For non-priority videos, start playback when the element becomes visible
   useEffect(() => {
     const video = videoRef.current
-    if (!video || priority || strategy.shouldAutoplay) return
+    if (!video || !autoPlay || priority || strategy.shouldAutoplay) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -96,7 +96,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
 
     observer.observe(video)
     return () => observer.disconnect()
-  }, [priority, strategy.shouldAutoplay])
+  }, [autoPlay, priority, strategy.shouldAutoplay])
 
   if (resource && typeof resource === 'object') {
     const { filename, url } = resource
@@ -115,7 +115,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
     return (
       <video
         poster={posterUrl}
-        autoPlay={strategy.shouldAutoplay}
+        autoPlay={autoPlay && strategy.shouldAutoplay}
         className={cn(videoClassName)}
         controls={false}
         loop
@@ -127,7 +127,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
         onCanPlay={async () => {
           const video = videoRef.current
           if (!video?.paused) return
-          if (!strategy.shouldAutoplay) return
+          if (!autoPlay || !strategy.shouldAutoplay) return
           try {
             await video.play()
           } catch {

@@ -21,8 +21,11 @@ import { Banner } from '@/blocks/Banner/config'
 
 import { Code } from '@/blocks/Code/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
+import { contentsButtonField } from '@/fields/pageFields'
+import { pageIntroField } from '@/fields/pageHero'
+import { postLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
-import { hero } from '@/heros/config'
+import { heroField } from '@/heros/config'
 import { generatePreviewPath } from '@/utilities/generatePreviewPath'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
@@ -76,11 +79,12 @@ export const Posts: CollectionConfig<'posts'> = {
       type: 'tabs',
       tabs: [
         {
-          fields: [hero],
-          label: 'Hero',
+          fields: [heroField(), pageIntroField()],
+          label: 'Opening',
         },
         {
           fields: [
+            contentsButtonField(),
             {
               name: 'content',
               type: 'richText',
@@ -88,7 +92,9 @@ export const Posts: CollectionConfig<'posts'> = {
                 features: ({ rootFeatures }) => {
                   return [
                     ...rootFeatures,
-                    HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+                    // h5 stays enabled for the bodies that already use it: publishing
+                    // revalidates the body, and a level the editor dropped fails it.
+                    HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4', 'h5'] }),
                     BlocksFeature({ blocks: [Banner, Code, MediaBlock] }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
@@ -97,10 +103,28 @@ export const Posts: CollectionConfig<'posts'> = {
                 },
               }),
               label: false,
-              required: true,
+              // Optional since the composer port (docs/composer-roadmap.md,
+              // D5): a post can be composed from Sections alone.
             },
           ],
           label: 'Content',
+        },
+        {
+          fields: [
+            {
+              name: 'layout',
+              type: 'blocks',
+              label: 'Composition',
+              labels: { singular: 'Section', plural: 'Sections' },
+              blocks: postLayoutBlocks,
+              admin: {
+                initCollapsed: true,
+                description:
+                  'Sections after the article body. The route renders the body, then these.',
+              },
+            },
+          ],
+          label: 'Composition',
         },
         {
           fields: [
@@ -121,6 +145,16 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'posts',
             },
             {
+              name: 'hideRelatedPosts',
+              type: 'checkbox',
+              label: 'Hide related posts',
+              defaultValue: false,
+              admin: {
+                position: 'sidebar',
+                description: 'Leaves the "More posts" rail off the end of this post.',
+              },
+            },
+            {
               name: 'categories',
               type: 'relationship',
               admin: {
@@ -130,7 +164,7 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'categories',
             },
           ],
-          label: 'Meta',
+          label: 'Related & Categories',
         },
         {
           name: 'meta',

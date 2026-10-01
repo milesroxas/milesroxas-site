@@ -1,0 +1,147 @@
+'use client'
+
+import * as SelectPrimitive from '@radix-ui/react-select'
+import { Check, ChevronDown, ChevronUp } from 'lucide-react'
+import type * as React from 'react'
+import { cn } from '@/utilities/ui'
+
+const Select = SelectPrimitive.Root
+
+const SelectGroup = SelectPrimitive.Group
+
+const SelectValue = SelectPrimitive.Value
+
+const SelectTrigger: React.FC<
+  { ref?: React.Ref<HTMLButtonElement> } & React.ComponentProps<typeof SelectPrimitive.Trigger>
+> = ({ children, className, ref, ...props }) => (
+  <SelectPrimitive.Trigger
+    className={cn(
+      'flex h-10 w-full items-center justify-between rounded border border-input bg-background px-3 py-2 text-foreground ring-offset-background focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&_[data-placeholder]]:text-muted-foreground',
+      className,
+    )}
+    ref={ref}
+    {...props}
+  >
+    {children}
+    <SelectPrimitive.Icon asChild>
+      <ChevronDown className="h-4 w-4 opacity-50" />
+    </SelectPrimitive.Icon>
+  </SelectPrimitive.Trigger>
+)
+
+const SelectScrollUpButton: React.FC<
+  { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>
+> = ({ className, ref, ...props }) => (
+  <SelectPrimitive.ScrollUpButton
+    className={cn('flex cursor-default items-center justify-center py-1', className)}
+    ref={ref}
+    {...props}
+  >
+    <ChevronUp className="h-4 w-4" />
+  </SelectPrimitive.ScrollUpButton>
+)
+
+const SelectScrollDownButton: React.FC<
+  { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<
+    typeof SelectPrimitive.ScrollDownButton
+  >
+> = ({ className, ref, ...props }) => (
+  <SelectPrimitive.ScrollDownButton
+    className={cn('flex cursor-default items-center justify-center py-1', className)}
+    ref={ref}
+    {...props}
+  >
+    <ChevronDown className="h-4 w-4" />
+  </SelectPrimitive.ScrollDownButton>
+)
+
+const SelectContent: React.FC<
+  {
+    ref?: React.Ref<HTMLDivElement>
+  } & React.ComponentProps<typeof SelectPrimitive.Content>
+> = ({ children, className, position = 'popper', ref, ...props }) => (
+  <SelectPrimitive.Portal>
+    <SelectPrimitive.Content
+      className={cn(
+        // The shadcn enter/exit classes this list shipped with were inert until the
+        // site loaded `tw-animate-css` (composer Phase 4, for the Contents sheet);
+        // they came off so the legacy form select opens exactly as it always has.
+        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-md',
+        position === 'popper' &&
+          'data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
+        className,
+      )}
+      position={position}
+      ref={ref}
+      {...props}
+    >
+      <SelectScrollUpButton />
+      <SelectPrimitive.Viewport
+        className={cn(
+          'p-1',
+          position === 'popper' &&
+            'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]',
+        )}
+      >
+        {children}
+      </SelectPrimitive.Viewport>
+      <SelectScrollDownButton />
+    </SelectPrimitive.Content>
+  </SelectPrimitive.Portal>
+)
+
+const SelectLabel: React.FC<
+  { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<typeof SelectPrimitive.Label>
+> = ({ className, ref, ...props }) => (
+  <SelectPrimitive.Label
+    className={cn('py-1.5 pr-2 pl-8 font-semibold text-sm', className)}
+    ref={ref}
+    {...props}
+  />
+)
+
+const SelectItem: React.FC<
+  { ref?: React.Ref<HTMLDivElement>; value: string } & React.ComponentProps<
+    typeof SelectPrimitive.Item
+  >
+> = ({ children, className, ref, ...props }) => (
+  <SelectPrimitive.Item
+    className={cn(
+      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pr-2 pl-8 text-popover-foreground text-sm outline-hidden data-disabled:pointer-events-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-disabled:opacity-50',
+      className,
+    )}
+    ref={ref}
+    {...props}
+  >
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <SelectPrimitive.ItemIndicator>
+        <Check className="h-4 w-4" />
+      </SelectPrimitive.ItemIndicator>
+    </span>
+
+    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+  </SelectPrimitive.Item>
+)
+
+const SelectSeparator: React.FC<
+  { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<typeof SelectPrimitive.Separator>
+> = ({ className, ref, ...props }) => (
+  <SelectPrimitive.Separator
+    className={cn('-mx-1 my-1 h-px bg-muted', className)}
+    ref={ref}
+    {...props}
+  />
+)
+
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+}

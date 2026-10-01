@@ -20,7 +20,7 @@ MAIN_DB="payload"
 DB_HOST="127.0.0.1:54330"
 # Same image as docker-compose.yml / scripts/dev-tui/constants.ts — dumping
 # production with the container's own pg_dump avoids client/server mismatch.
-POSTGRES_IMAGE="postgres:17"
+POSTGRES_IMAGE="pgvector/pgvector:pg17-trixie"
 # Vercel-pulled production env in the Conductor root (same file/convention as
 # the dev TUI). Optional: only needed for `setup.sh --from production`.
 PROD_ENV_FILE="$ROOT/.env.production.pulled"

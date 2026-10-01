@@ -40,7 +40,7 @@ Storybook conventions:
 - Stories are colocated with components as `*.stories.tsx` (CSF3, `satisfies Meta`).
 - Payload-shaped fixtures live in `src/stories/fixtures.ts` and must mirror `src/payload-types.ts`.
 - Config lives in `.storybook/` (`@storybook/nextjs-vite` framework); theme switching drives the site's `data-theme` attribute.
-- Components tied to the live app shell (page-transition GSAP flow, SiteFrame, server-only Payload access, R3F scenes) are intentionally not storied — see the Overview page in Storybook.
+- Components tied to the live app shell (page-transition GSAP flow, SiteChrome, server-only Payload access, R3F scenes) are intentionally not storied — see the Overview page in Storybook.
 
 ### Database Commands
 
@@ -54,7 +54,9 @@ Storybook conventions:
 
 ## Codebase Conventions
 
-- Use `pnpm` for all package and script operations.
+- Use `pnpm` for all package and script operations. The repo pins pnpm 10.28.0 in
+  `package.json#packageManager`; pnpm self-switches here, so plain `pnpm install` is
+  correct and only pnpm 10 may write `pnpm-lock.yaml` (see the note in `pnpm-workspace.yaml`).
 - Prefer project aliases (`@/*` and `@payload-config`) over deep relative imports.
 - Follow Biome formatting rules (single quotes, trailing commas, 2-space indentation, 100 columns).
 - Use `node:` protocol for Node.js built-in imports.
@@ -86,7 +88,10 @@ Storybook conventions:
 - Collections are in `src/collections` (`pages`, `posts`, `works`, `media`, `categories`, `users`).
 - Layout blocks are in `src/blocks`.
 - Hero configs/components are in `src/heros`.
-- Frame/transition system is in `src/SiteFrame` and `src/stores/siteframeStore.ts`.
+- Figures (Chart, Diagram) are spec-driven: schemas and renderers in `src/features/figures`, blocks in `src/blocks/figures`, save-time validation and diagram geometry in `src/plugins/figures`. Human docs: `docs/figures.md`. Never hand-write `geometry`; the spec is the only authored value.
+- Site chrome (top bar, dock, Ask panel) is in `src/components/SiteChrome` and `src/features/ask/AskPanel.tsx`; the dock's tabs come from the Header global, Ask's switch and suggested questions from Site Info. Chrome/transition state is in `src/stores/chromeStore.ts`.
+- The agent authoring MCP server (`milesroxas-cms`, `/api/mcp`) is configured in `src/plugins/mcp.ts`, its site tools in `src/plugins/mcp-tools/`. Human docs: `docs/mcp.md`. A new collection or global is not exposed until it is listed there.
+- Access rule: MCP API keys authenticate as `req.user` over REST too. Team-only access uses the `authenticated` helper (`user.collection === 'users'`) or `authenticatedOr(where)`, never `Boolean(req.user)`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

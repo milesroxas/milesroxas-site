@@ -3,7 +3,7 @@
 import type { CardPostData } from '@/components/Card/Posts/Component'
 import type { CardWorkData } from '@/components/Card/Works/Component'
 import { CollectionArchive } from '@/components/CollectionArchive'
-import RichText from '@/components/RichText'
+import RichText from '@/components/RichText/Legacy'
 import { useBlockTheme } from '@/hooks/useBlockTheme'
 import type { ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 import { cn } from '@/utilities/ui'

@@ -1,48 +1,66 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { ArrowRight, Plus } from 'lucide-react'
-import { expect, fn, userEvent, within } from 'storybook/test'
-
+import { IconArrowRight, IconMail } from '@tabler/icons-react'
 import { Button } from './button'
+import { Spinner } from './spinner'
 
 const meta = {
   title: 'UI/Button',
   component: Button,
-  tags: ['autodocs'],
+  parameters: {
+    layout: 'centered',
+  },
   args: {
     children: 'Button',
-    onClick: fn(),
   },
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'secondary', 'destructive', 'outline', 'ghost', 'link'],
+      options: [
+        'default',
+        'outline',
+        'secondary',
+        'ghost',
+        'destructive',
+        'link',
+        'ruled',
+        'mono',
+        'glass',
+        'underline',
+        'text',
+        'fineprint',
+      ],
     },
     size: {
       control: 'select',
-      options: ['default', 'sm', 'lg', 'icon', 'clear'],
+      options: [
+        'default',
+        'xs',
+        'sm',
+        'lg',
+        'icon',
+        'icon-xs',
+        'icon-sm',
+        'icon-lg',
+        'clear',
+        'action',
+        'pill',
+        'chat',
+      ],
     },
-    asChild: { table: { disable: true } },
-    ref: { table: { disable: true } },
+    asChild: {
+      table: { disable: true },
+    },
   },
 } satisfies Meta<typeof Button>
 
 export default meta
+
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Button' }))
-    await expect(args.onClick).toHaveBeenCalled()
-  },
-}
+export const Default: Story = {}
 
 export const Secondary: Story = {
   args: { variant: 'secondary' },
-}
-
-export const Destructive: Story = {
-  args: { variant: 'destructive' },
 }
 
 export const Outline: Story = {
@@ -53,8 +71,16 @@ export const Ghost: Story = {
   args: { variant: 'ghost' },
 }
 
+export const Destructive: Story = {
+  args: { variant: 'destructive' },
+}
+
 export const Link: Story = {
   args: { variant: 'link' },
+}
+
+export const ExtraSmall: Story = {
+  args: { size: 'xs' },
 }
 
 export const Small: Story = {
@@ -65,28 +91,114 @@ export const Large: Story = {
   args: { size: 'lg' },
 }
 
-export const Icon: Story = {
-  args: {
-    'aria-label': 'Add item',
-    children: <Plus />,
-    size: 'icon',
-  },
+/** Takeover-menu capsule: letterspaced all-caps label (CLOSE / GET IN TOUCH). */
+export const Pill: Story = {
+  args: { size: 'pill', children: <span>Get in touch</span> },
 }
 
-export const WithTrailingIcon: Story = {
+export const PillSecondary: Story = {
+  args: { size: 'pill', variant: 'secondary', children: <span>Close</span> },
+}
+
+/** Conversation action: Ask's suggestion chips and handoff card buttons. */
+export const Chat: Story = {
   args: {
+    size: 'chat',
     children: (
       <>
-        Continue <ArrowRight className="ml-2 h-4 w-4" />
+        Request an estimate
+        <IconArrowRight data-icon="inline-end" />
       </>
     ),
   },
 }
 
+export const ChatOutline: Story = {
+  args: { size: 'chat', variant: 'outline', children: 'What does it cost?' },
+}
+
+export const Icon: Story = {
+  args: {
+    'aria-label': 'Send email',
+    children: <IconMail />,
+    size: 'icon',
+  },
+}
+
+export const WithIcon: Story = {
+  args: {
+    children: (
+      <>
+        <IconMail data-icon="inline-start" />
+        Send email
+      </>
+    ),
+  },
+}
+
+export const Loading: Story = {
+  args: {
+    disabled: true,
+    children: (
+      <>
+        <Spinner data-icon="inline-start" />
+        Sending…
+      </>
+    ),
+  },
+}
+
+export const Clear: Story = {
+  args: { size: 'clear', variant: 'link' },
+}
+
+/** Editorial text action in the field-label voice (Edit, Edit and resend). */
+export const Mono: Story = {
+  args: { size: 'clear', variant: 'mono', children: 'Edit' },
+}
+
 export const Disabled: Story = {
   args: { disabled: true },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByRole('button')).toBeDisabled()
+}
+
+/**
+ * Content-column actions (rich text Actions block): the primary chip beside
+ * the text action, which owns its height and no side padding so the row's
+ * gap is the whole distance between them.
+ */
+export const ContentActions: Story = {
+  render: () => (
+    <div className="flex flex-wrap items-center gap-6">
+      <Button size="action">Primary Action</Button>
+      <Button size="clear" variant="text">
+        Secondary Action
+      </Button>
+    </div>
+  ),
+}
+
+/**
+ * Small print (the closing band's legal row): quiet ink at rest, full ink and
+ * a rule on hover. The row it sits in (separators, stacking) belongs to
+ * ClosingLegal; see Features/FooterClosing for it assembled.
+ */
+export const Fineprint: Story = {
+  args: { size: 'clear', variant: 'fineprint', children: 'Privacy Policy' },
+}
+
+/** Hero actions over media: frosted primary chip beside an underlined text action. */
+export const HeroActions: Story = {
+  parameters: {
+    backgrounds: { default: 'dark' },
   },
+  render: () => (
+    <div className="flex items-start gap-3 bg-tertiary p-12" data-theme="dark">
+      <Button size="action" variant="glass">
+        Primary Action
+      </Button>
+      <Button size="action" variant="underline">
+        Secondary Action
+      </Button>
+    </div>
+  ),
 }

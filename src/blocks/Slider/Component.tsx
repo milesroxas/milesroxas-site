@@ -4,7 +4,12 @@ import Link from 'next/link'
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import { Media } from '@/components/Media'
-import { Carousel, type CarouselApi, CarouselContent, CarouselItem } from '@/components/ui/carousel'
+import {
+  Carousel,
+  type CarouselApi,
+  CarouselContent,
+  CarouselItem,
+} from '@/components/ui/legacy-carousel'
 import { useBlockTheme } from '@/hooks/useBlockTheme'
 import { useSpacing } from '@/hooks/useSpacing'
 import type { SliderBlock as SliderBlockType } from '@/payload-types'

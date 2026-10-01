@@ -4,10 +4,13 @@ import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
+import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
-import RichText from '@/components/RichText'
+import RichText from '@/components/RichText/Legacy'
+import { ContentsButton } from '@/features/contents'
 import { RenderHero } from '@/heros/RenderHero'
+import { WorkIntro } from '@/sections/WorkIntro'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
@@ -46,31 +49,45 @@ export default async function Post({ params: paramsPromise }: Args) {
   if (!post) return <PayloadRedirects url={url} />
 
   return (
-    <article className="bg-primary pt-24 pb-12 md:pt-0 md:pb-32">
+    <article className="bg-tertiary pt-24 pb-12 text-tertiary-foreground md:pt-0 md:pb-32">
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
       {draft && <LivePreviewListener />}
       <PageClient post={post} />
       {post.hero && <RenderHero {...post.hero} />}
+      {post.intro?.title && (
+        <WorkIntro body={post.intro.body} eyebrow={post.intro.eyebrow} title={post.intro.title} />
+      )}
 
-      <div className="flex flex-col items-start gap-4 pt-8 pb-32 md:pt-12 lg:pt-32">
-        <div className="container">
-          <div className="max-w-3xl md:pl-32">
-            <RichText
-              data={post.content}
-              enableGutter={false}
-              className="text-primary-foreground"
-            />
+      {/* The body renders until the post is composed: the composer's posts
+          transform (scripts/compose-layouts.ts) splits it into `layout`, and
+          both at once would print the article twice. */}
+      {post.content && !post.layout?.length && (
+        <div className="flex flex-col items-start gap-4 pt-8 pb-32 md:pt-12 lg:pt-32">
+          <div className="container">
+            <div className="max-w-3xl md:pl-32">
+              <RichText
+                data={post.content}
+                enableGutter={false}
+                className="text-tertiary-foreground"
+              />
+            </div>
           </div>
         </div>
-      </div>
-      {post.relatedPosts && post.relatedPosts.length > 0 && (
-        <section className="bg-primary py-12">
-          <h2 className="container pb-4 font-light text-5xl text-primary-foreground">More posts</h2>
+      )}
+      {/* Composition (docs/composer-roadmap.md, Phase 3): Sections after the
+          article body. Each band paints its own surface. */}
+      <RenderBlocks blocks={post.layout} />
+      {!post.hideRelatedPosts && post.relatedPosts && post.relatedPosts.length > 0 && (
+        <section className="bg-tertiary py-12">
+          <h2 className="container pb-4 font-light text-5xl text-tertiary-foreground">
+            More posts
+          </h2>
           <RelatedPosts docs={post.relatedPosts.filter((post) => typeof post === 'object')} />
         </section>
       )}
+      {post.showContents && <ContentsButton />}
     </article>
   )
 }

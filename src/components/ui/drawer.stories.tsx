@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, screen, userEvent, within } from 'storybook/test'
-
-import { Button } from './button'
 import {
   Drawer,
   DrawerClose,
@@ -12,6 +10,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from './drawer'
+import { Button } from './legacy-button'
 
 const meta = {
   title: 'UI/Drawer',

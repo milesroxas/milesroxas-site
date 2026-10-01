@@ -4,17 +4,17 @@ import type React from 'react'
 import { PostCard } from '@/components/Card/Posts/Component'
 import { WorkCard } from '@/components/Card/Works/Component'
 import { CMSLink } from '@/components/Link'
-import RichText from '@/components/RichText'
+import RichText from '@/components/RichText/Legacy'
 import type { ContentBlock, Post, SliderBlock as SliderBlockType, Work } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 import { MediaBlock } from '../MediaBlock/Component'
 import { SliderBlock } from '../Slider/Component'
-import { YouTubeBlock } from '../YouTube/Component'
 import {
   getSectionHeadingAlignClasses,
   getSectionHeadingSizeClasses,
   getTextSizeClasses,
 } from './utils'
+import { YouTubeColumn } from './YouTubeColumn'
 
 type Column = NonNullable<ContentBlock['columns']>[number]
 
@@ -122,7 +122,7 @@ const renderYouTube = (
   if (!youTube?.url) return null
 
   return (
-    <YouTubeBlock
+    <YouTubeColumn
       blockType="youTube"
       url={youTube.url}
       aspectRatio={youTube.aspectRatio}

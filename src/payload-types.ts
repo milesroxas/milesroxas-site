@@ -64,6 +64,7 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    'payload-mcp-api-keys': PayloadMcpApiKeyAuthOperations;
   };
   blocks: {};
   collections: {
@@ -72,11 +73,15 @@ export interface Config {
     works: Work;
     media: Media;
     categories: Category;
+    inquiries: Inquiry;
+    'ask-questions': AskQuestion;
     users: User;
+    'streak-looks': StreakLook;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
     search: Search;
+    'payload-mcp-api-keys': PayloadMcpApiKey;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-folders': FolderInterface;
@@ -86,7 +91,7 @@ export interface Config {
   };
   collectionsJoins: {
     'payload-folders': {
-      documentsAndFolders: 'payload-folders' | 'media';
+      documentsAndFolders: 'payload-folders' | 'media' | 'streak-looks';
     };
   };
   collectionsSelect: {
@@ -95,11 +100,15 @@ export interface Config {
     works: WorksSelect<false> | WorksSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
+    'ask-questions': AskQuestionsSelect<false> | AskQuestionsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'streak-looks': StreakLooksSelect<false> | StreakLooksSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
+    'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
@@ -113,17 +122,24 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     header: Header;
+    'site-info': SiteInfo;
+    'contact-page': ContactPage;
+    'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
+    'site-info': SiteInfoSelect<false> | SiteInfoSelect<true>;
+    'contact-page': ContactPageSelect<false> | ContactPageSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: User | PayloadMcpApiKey;
   jobs: {
     tasks: {
+      askQuestionRetention: TaskAskQuestionRetention;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -134,6 +150,24 @@ export interface Config {
   };
 }
 export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface PayloadMcpApiKeyAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -201,8 +235,46 @@ export interface Page {
         }[]
       | null;
     media?: (number | null) | Media;
+    /**
+     * Leave empty for the media alone. An effect grounds the whole opening band behind the copy; the media upload, when one is set, still shows in its own frame.
+     */
+    visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+    shader?: PlacedVisualConfig;
   };
-  layout: (CallToActionBlock | CallOutBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | SliderBlock)[];
+  layout: (
+    | PageSectionBlock
+    | RichTransitionBlock
+    | FeatureHeadingOffsetBlock
+    | FullMediaBlock
+    | MediaContentSplitBlock
+    | SplitContentNarrowBlock
+    | CarouselSplitBlock
+    | ImagePairBlock
+    | SplitImageOffsetBlock
+    | FeatureImageStatementBlock
+    | CaptionBlock
+    | YouTubeBlock
+    | RichTextBlock
+    | CodeBlock
+    | ChartBlock
+    | DiagramBlock
+    | FaqBlock
+    | CarouselBlock
+    | CarouselTabsBlock
+    | FeatureTabsBlock
+    | InsightListBlock
+    | SliderBlock
+    | CallOutBlock
+    | ArchiveBlock
+    | CallToActionBlock
+    | FormBlock
+    | MediaBlock
+    | ContentBlock
+  )[];
+  /**
+   * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
+   */
+  showContents?: boolean | null;
   meta?: {
     title?: string | null;
     /**
@@ -272,8 +344,18 @@ export interface Post {
         }[]
       | null;
     media?: (number | null) | Media;
+    /**
+     * Leave empty for the media alone. An effect grounds the whole opening band behind the copy; the media upload, when one is set, still shows in its own frame.
+     */
+    visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+    shader?: PlacedVisualConfig;
   };
-  content: {
+  intro?: WorkIntro;
+  /**
+   * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
+   */
+  showContents?: boolean | null;
+  content?: {
     root: {
       type: string;
       children: {
@@ -287,8 +369,40 @@ export interface Post {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
+  /**
+   * Sections after the article body. The route renders the body, then these.
+   */
+  layout?:
+    | (
+        | PostSectionBlock
+        | RichTransitionBlock
+        | FeatureHeadingOffsetBlock
+        | FullMediaBlock
+        | MediaContentSplitBlock
+        | SplitContentNarrowBlock
+        | CarouselSplitBlock
+        | ImagePairBlock
+        | SplitImageOffsetBlock
+        | FeatureImageStatementBlock
+        | CaptionBlock
+        | YouTubeBlock
+        | RichTextBlock
+        | CodeBlock
+        | ChartBlock
+        | DiagramBlock
+        | FaqBlock
+        | CarouselBlock
+        | CarouselTabsBlock
+        | FeatureTabsBlock
+        | InsightListBlock
+      )[]
+    | null;
   relatedPosts?: (number | Post)[] | null;
+  /**
+   * Leaves the "More posts" rail off the end of this post.
+   */
+  hideRelatedPosts?: boolean | null;
   categories?: (number | Category)[] | null;
   meta?: {
     title?: string | null;
@@ -434,34 +548,90 @@ export interface FolderInterface {
           relationTo?: 'media';
           value: number | Media;
         }
+      | {
+          relationTo?: 'streak-looks';
+          value: number | StreakLook;
+        }
     )[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  folderType?: 'media'[] | null;
+  folderType?: ('media' | 'streak-looks')[] | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Tune the recipe in the Inspector, watch it on the stage, then publish. Every place that uses the look shows what is published.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
+ * via the `definition` "streak-looks".
  */
-export interface Category {
+export interface StreakLook {
   id: number;
   title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  parent?: (number | null) | Category;
-  breadcrumbs?:
+  /**
+   * What this look draws. Chosen in Studio before the first publish.
+   */
+  effect: 'streakField' | 'lightLeak';
+  description?: string | null;
+  tags?: string[] | null;
+  /**
+   * Rendered on Publish. Also the library thumbnail.
+   */
+  thumbnail?: (number | null) | Media;
+  /**
+   * Rendered on Publish.
+   */
+  lightPoster?: (number | null) | Media;
+  /**
+   * Hides the look from the picker. Places that use it keep working.
+   */
+  archived?: boolean | null;
+  createdBy?: (number | null) | User;
+  updatedBy?: (number | null) | User;
+  /**
+   * What a Studio look draws. A draft can be written over the API; publishing happens in the admin Studio, where the posters are rendered.
+   */
+  recipe: {
+    version: 1;
+    /**
+     * Lays out a seeded effect: a different seed is a different arrangement of the same look. Send 0 for an effect no seed changes (Light leak).
+     */
+    seed: number;
+    /**
+     * The animation frame the posters are captured at.
+     */
+    frame: number;
+    /**
+     * Only the parameters that leave their default, by name. `{}` is the effect as it ships, and the `snapshot.dark` of any published look of the same effect shows every resolved value to start from. An unknown name or a value out of range is refused on save with the reason. When `effect` is "streakField" (Streak Field): Composition: layout: "rows" | "grid"; shape: "dash" | "dot"; count: 100 to 8000; columnPitch: 4 to 100; rowPitch: 4 to 100; rowJitter: 0 to 1; thickness: 0.2 to 4; minLength: 1 to 80; maxLength: 1 to 80; lengthBias: 1 to 10. Motion: motion: "drift" | "flow"; flowSpeed: 0 to 100; drift: -50 to 50; driftSpread: 0 to 1; timeScale: 0 to 1.5. Flow: noise: "none" | "value" | "simplex" | "fbm" | "ridged" | "curl" | "gradient"; noiseScale: 100 to 2000; noiseStrength: 0 to 200; noiseSpeed: 0 to 0.5; noiseGain: 0 to 0.6; noiseAxis: 0 to 1; orient: 0 to 1. Relief: relief: 0 to 1; reliefFloor: 0 to 1; reliefContrast: 0.5 to 5; reliefLength: 0 to 1. Color: ink: [r, g, b], each 0 to 1; paperInk: [r, g, b], each 0 to 1; brightness: 0 to 1.5; brightnessSpread: 0 to 1; flicker: 0 to 1; flickerRate: 0 to 2; tail: 0 to 1; cap: 0 to 8. Life: lifetime: 2 to 30; lifeSpread: 0 to 0.9; fadeIn: 0 to 0.4; fadeOut: 0 to 0.4. Interaction: pointerRadius: 0 to 500; pointerPush: -100 to 100; pointerSwirl: -100 to 100; pointerWake: 0 to 0.2; pointerAgitate: 0 to 4.2; pointerGlow: 0 to 3; pointerLift: -1 to 1; pointerEase: 1 to 20. When `effect` is "lightLeak" (Light leak): Light: blendMode: "plus-lighter" | "screen" | "lighten"; gain: 0 to 3; gainEnergy: 0 to 2; saturation: 0 to 3; vignette: 0 to 2; grain: 0 to 0.2; grainLuminance: 0 to 0.3. Field: blobWarm: 0 to 3; blobCool: 0 to 3; streak: 0 to 3; streakAngle: -3.14 to 3.14; streakSpread: 0.005 to 0.5; slats: 0 to 3; slatAngle: -3.14 to 3.14; slatTopSpread: 0.01 to 1.2; slatBottomSpread: 0.01 to 1.2; slatFrequency: 1 to 60; slatSharpness: 0.5 to 8. Color: coolTint: 3 numbers, each 0 to 2; warmTint: 3 numbers, each 0 to 2; amber: 3 numbers, each 0 to 1. Dispersion: dispersion: 0 to 0.08; dispersionEnergy: 0 to 0.2; dispersionDirection: 2 numbers, each -3 to 3. Motion: timeScale: 0 to 2; warpAmount: 0 to 1.5; warpScale: 0.1 to 8. Scroll: scrollSpeed: 100 to 3000; scrollCurve: 0.3 to 3; scrollDecay: 0.1 to 12; scrollIntensity: 0 to 1; scrollSmooth: 0.1 to 12; scrollDrift: 0 to 2; morph: 0 to 2; morphScale: 0.1 to 12. Paper: inkChroma: 0 to 3; inkDensity: 0 to 1.5. Interaction: excite: true | false; exciteTargets: "marked" | "interactive"; sectionExcite: 0 to 1; hoverBloom: 0 to 4; exciteEase: 0.5 to 12; pointerEase: 0.5 to 12; gainExcite: 0 to 2; saturationExcite: 0 to 2; dispersionExcite: 0 to 0.2; slatFrequencyExcite: 0 to 20.
+     */
+    deltas: {
+      [k: string]: unknown;
+    };
+  };
+  snapshot?:
     | {
-        doc?: (number | null) | Category;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
     | null;
+  posters?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sourceHash?: string | null;
+  folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -492,10 +662,75 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CallToActionBlock".
+ * via the `definition` "PlacedVisualConfig".
  */
-export interface CallToActionBlock {
-  richText?: {
+export interface PlacedVisualConfig {
+  studio?: (number | null) | StreakLook;
+  preset?: string | null;
+  /**
+   * Lays out the field. The same seed always draws the same composition; leave empty to have one assigned when saved.
+   */
+  seed?: number | null;
+  /**
+   * Playback rate as a fraction of the look, 0 to 1. Empty is the look as shipped.
+   */
+  speed?: number | null;
+  /**
+   * Brightness multiplier, 0.5 to 1.25. Empty is the look as shipped.
+   */
+  intensity?: number | null;
+  /**
+   * Off, the effect is clipped to the media frame. On, it leaves the frame and washes across the whole block, edge to edge of the browser.
+   */
+  bleed?: boolean | null;
+  /**
+   * The corner the light is pinned to, of the frame or, bleeding, of the block.
+   */
+  origin?: ('top-right' | 'top-left' | 'bottom-right' | 'bottom-left') | null;
+  /**
+   * Off, the effect fills the frame on its own. On, the media upload shows under it.
+   */
+  showMedia?: boolean | null;
+  /**
+   * Which face of the effect shows. Following, it is light for a visitor in the light theme and dark for one in the dark theme, or the palette of the band it sits in. Always light or always dark holds that face for every visitor, on its own ground: a hero takes the same palette so its copy stays legible.
+   */
+  surface?: ('auto' | 'dark' | 'light') | null;
+  /**
+   * Let the pointer move and light the effect on devices that run it live. Off, nothing below runs and the effect never listens.
+   */
+  pointerInteraction?: boolean | null;
+  /**
+   * What lights the effect on hover, within the section it sits in. Links and buttons need no marking; marked elements are the ones the design calls out in code. Empty is the look as shipped.
+   */
+  hoverTargets?: ('interactive' | 'marked') | null;
+  /**
+   * How far the effect answers the pointer merely crossing the section, as a fraction of a full flare. 0 waits for a link or a marked element. Empty is the look as shipped.
+   */
+  sectionHover?: number | null;
+  /**
+   * Optional still shown before the effect runs, and wherever it cannot (reduced motion, no WebGL, menus, social). Images only. Empty uses the look’s built-in poster.
+   */
+  posterMedia?: (number | null) | Media;
+}
+/**
+ * Full-screen introduction band rendered right after the hero. Shown when it has a title.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkIntro".
+ */
+export interface WorkIntro {
+  /**
+   * Short label above the introduction copy, e.g. "Introduction".
+   */
+  eyebrow?: string | null;
+  /**
+   * Statement headline for the section.
+   */
+  title?: string | null;
+  /**
+   * The introduction copy, offset beside the title.
+   */
+  body?: {
     root: {
       type: string;
       children: {
@@ -510,40 +745,77 @@ export interface CallToActionBlock {
     };
     [k: string]: unknown;
   } | null;
-  links?:
-    | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-          /**
-           * Choose how the link should be rendered.
-           */
-          appearance?: ('default' | 'outline') | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'cta';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CallOutBlock".
+ * via the `definition` "PostSectionBlock".
  */
-export interface CallOutBlock {
-  richText?: {
+export interface PostSectionBlock {
+  /**
+   * Override the surface, band padding, and space between blocks. Off uses the page surface and default rhythm.
+   */
+  customize?: boolean | null;
+  /**
+   * Surface within the visitor's site theme. "Inherit" is the page surface; "Inverted" is a contrasted band, not a forced dark mode.
+   */
+  theme?: ('inherit' | 'secondary' | 'accent' | 'inverted') | null;
+  /**
+   * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
+   */
+  spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
+  /**
+   * Space between nested blocks. Independent of Band. "None" sits them flush.
+   */
+  stack?: ('default' | 'tight' | 'loose' | 'none') | null;
+  blocks?:
+    | (
+        | RichTransitionBlock
+        | FeatureHeadingOffsetBlock
+        | FullMediaBlock
+        | MediaContentSplitBlock
+        | SplitContentNarrowBlock
+        | CarouselSplitBlock
+        | ImagePairBlock
+        | SplitImageOffsetBlock
+        | FeatureImageStatementBlock
+        | CaptionBlock
+        | YouTubeBlock
+        | RichTextBlock
+        | CodeBlock
+        | ChartBlock
+        | DiagramBlock
+        | FaqBlock
+        | CarouselBlock
+        | CarouselTabsBlock
+        | FeatureTabsBlock
+        | InsightListBlock
+        | ContentBlock
+      )[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'section';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTransitionBlock".
+ */
+export interface RichTransitionBlock {
+  eyebrow?: string | null;
+  heading: string;
+  /**
+   * How the copy sits on the band.
+   */
+  layout?: ('offset' | 'left' | 'centered' | 'split' | 'statement' | 'prose') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  /**
+   * Outline level and type size for the Prose layout, set against the article body rather than the page headings.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h4') | null;
+  body?: {
     root: {
       type: string;
       children: {
@@ -560,7 +832,3499 @@ export interface CallOutBlock {
   } | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'callout';
+  blockType: 'richTransition';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureHeadingOffsetBlock".
+ */
+export interface FeatureHeadingOffsetBlock {
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading: string;
+  /**
+   * Supporting copy in the offset right column. Leave empty to pull the source.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Type size of the supporting copy.
+   */
+  bodySize?: ('small' | 'medium' | 'large') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureHeadingOffset';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FullMediaBlock".
+ */
+export interface FullMediaBlock {
+  /**
+   * Off renders the media on its own, with no copy beneath it.
+   */
+  showContent?: boolean | null;
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Contained uses the aspect ratio below. Full width crops to 16:9 on small screens and 21:9 from md up.
+   */
+  media?: (number | null) | Media;
+  /**
+   * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
+   */
+  visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+  shader?: PlacedVisualConfig;
+  /**
+   * Contained keeps the media in the page column. Full width bleeds edge to edge.
+   */
+  width?: ('contained' | 'full-width') | null;
+  /**
+   * Crop for contained media.
+   */
+  aspectRatio?: ('16-9' | '3-2' | '21-9') | null;
+  /**
+   * Arrange the content row on the left or the right below the media (desktop only; smaller screens always sit left).
+   */
+  contentPosition?: ('left' | 'right') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'fullMedia';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaContentSplitBlock".
+ */
+export interface MediaContentSplitBlock {
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  media?: (number | null) | Media;
+  /**
+   * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
+   */
+  visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+  shader?: PlacedVisualConfig;
+  /**
+   * Arrange the media on the left or the right of the content.
+   */
+  layout?: ('left' | 'right') | null;
+  /**
+   * Crop for the media column.
+   */
+  aspectRatio?: ('16-9' | '3-2' | '21-9') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaContentSplit';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitContentNarrowBlock".
+ */
+export interface SplitContentNarrowBlock {
+  /**
+   * Short kicker above the text.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  media?: (number | null) | Media;
+  /**
+   * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
+   */
+  visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+  shader?: PlacedVisualConfig;
+  /**
+   * Arrange the image on the left or the right of the text.
+   */
+  imagePosition?: ('left' | 'right') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'splitContentNarrow';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselSplitBlock".
+ */
+export interface CarouselSplitBlock {
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * The copy column beside the deck.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  slides: {
+    media: number | Media;
+    /**
+     * Optional. Renders below the slide.
+     */
+    caption?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Arrange the deck on the left or the right of the copy.
+   */
+  carouselPosition?: ('left' | 'right') | null;
+  /**
+   * Slides visible at once within the deck column, from tablet up. Phones always show one slide plus a sliver of its neighbours.
+   */
+  slideSize?: ('full' | 'half' | 'third') | null;
+  /**
+   * Previous/next buttons beside the slides. They take an outer gutter from the deck column, which is already the narrower half of a split.
+   */
+  showArrows?: boolean | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'carouselSplit';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImagePairBlock".
+ */
+export interface ImagePairBlock {
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Cropped to 4:5.
+   */
+  portraitMedia: number | Media;
+  /**
+   * Cropped to 16:10.
+   */
+  landscapeMedia: number | Media;
+  /**
+   * Arrange the portrait on the left or the right; the landscape fills the other column. On small screens the left image stacks first.
+   */
+  portraitPosition?: ('left' | 'right') | null;
+  /**
+   * Which image the text sits under. Under the portrait it stays compact; under the landscape it runs larger and wider.
+   */
+  textPosition?: ('under-portrait' | 'under-landscape') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imagePair';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitImageOffsetBlock".
+ */
+export interface SplitImageOffsetBlock {
+  heading?: string | null;
+  /**
+   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Cropped to 5:4.
+   */
+  largeMedia: number | Media;
+  /**
+   * Cropped to 3:2. Shown above the caption.
+   */
+  smallMedia: number | Media;
+  /**
+   * Place the small image and caption on the left or the right of the large image.
+   */
+  captionPosition?: ('left' | 'right') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'splitImageOffset';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureImageStatementBlock".
+ */
+export interface FeatureImageStatementBlock {
+  media: number | Media;
+  /**
+   * Large statement set beneath the image. Leave empty to pull the source.
+   */
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Which edge the statement aligns to beneath the image.
+   */
+  textPosition?: ('left' | 'right') | null;
+  /**
+   * Small steps the statement down one type size.
+   */
+  textSize?: ('default' | 'small') | null;
+  /**
+   * Contained keeps the image in the site container; full bleeds edge to edge.
+   */
+  imageWidth?: ('contained' | 'full') | null;
+  /**
+   * Crop for the image, at both widths. Responsive keeps the taller small-screen crop that widens to 21:9 from md up.
+   */
+  aspectRatio?: ('responsive' | '16-9' | '3-2' | '21-9') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureImageStatement';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CaptionBlock".
+ */
+export interface CaptionBlock {
+  media: number | Media;
+  /**
+   * Presentation for this placement only; the media document itself stays layout-neutral.
+   */
+  size?: ('full' | 'inset' | 'small') | null;
+  /**
+   * Optional. Replaces the media document's canonical caption for this placement only.
+   */
+  captionOverride?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'caption';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "YouTubeBlock".
+ */
+export interface YouTubeBlock {
+  /**
+   * Paste any YouTube link. A start time in the link (the "Start at" box on YouTube's share panel) is kept.
+   */
+  url: string;
+  /**
+   * Optional. Shown over the poster the way YouTube shows it, and read out as the play button's label.
+   */
+  title?: string | null;
+  /**
+   * Presentation for this placement, matching the Caption block.
+   */
+  size?: ('full' | 'inset' | 'small') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'youtube';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock".
+ */
+export interface RichTextBlock {
+  /**
+   * Write-only. Markdown for `body`: converted to rich text on save and never stored. Syntax the field cannot hold is refused with what to use instead.
+   */
+  markdown?: string | null;
+  /**
+   * Write-only. Send true beside `markdown` to overwrite `body` when it already has content.
+   */
+  replace?: boolean | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'richText';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock".
+ */
+export interface CodeBlock {
+  language?: ('typescript' | 'tsx' | 'javascript' | 'css' | 'json' | 'glsl' | 'bash') | null;
+  code: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'code';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ChartBlock".
+ */
+export interface ChartBlock {
+  /**
+   * Says what the figure shows. Shown above it and used as its heading.
+   */
+  title?: string | null;
+  /**
+   * What the figure shows and the takeaway, in plain sentences. Read aloud by screen readers and indexed for search and Ask, so write it for someone who cannot see the figure.
+   */
+  textAlternative: string;
+  /**
+   * Optional line under the figure: context, method, a caveat.
+   */
+  caption?: string | null;
+  /**
+   * Optional attribution under the caption.
+   */
+  dataSource?: {
+    label?: string | null;
+    href?: string | null;
+  };
+  /**
+   * How wide the drawing runs: the reading column, that column plus one each side, or all eight. Wide keeps the title, caption and description on the reading column.
+   */
+  width?: ('text' | 'wide' | 'full') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  spec: {
+    specVersion: 1;
+    kind: 'bar' | 'line' | 'area' | 'scatter' | 'diverging-bar';
+    /**
+     * Bar kinds only. Default vertical. Use horizontal for long category labels or more than about six categories: vertical bands get too thin to label on a phone.
+     */
+    orientation?: 'horizontal' | 'vertical';
+    x: {
+      /**
+       * The row column plotted on x.
+       */
+      key: string;
+      label?: string;
+      /**
+       * category: strings. number: numbers. time: calendar dates, YYYY-MM-DD.
+       */
+      type: 'category' | 'number' | 'time';
+    };
+    y: {
+      label?: string;
+      /**
+       * percent reads values as fractions of 1 (0.42 is 42%). compact prints 12.9K.
+       */
+      format?: 'number' | 'percent' | 'compact';
+      /**
+       * Fixed [min, max]. Omit to fit the data; bar kinds always include zero.
+       *
+       * @minItems 2
+       * @maxItems 2
+       */
+      domain?: [number, number];
+    };
+    /**
+     * Order is identity: color follows position, so never reorder to restyle.
+     *
+     * @minItems 1
+     * @maxItems 4
+     */
+    series:
+      | [
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          }
+        ]
+      | [
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          }
+        ]
+      | [
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          }
+        ]
+      | [
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          },
+          {
+            /**
+             * The row column this series reads.
+             */
+            key: string;
+            label: string;
+            /**
+             * reference draws neutral: a baseline, target or prior period.
+             */
+            role?: 'primary' | 'reference';
+          }
+        ];
+    /**
+     * One object per x position: the x key plus a number or null per series key.
+     *
+     * @minItems 1
+     * @maxItems 500
+     */
+    rows: [
+      {
+        [k: string]: number | string | null;
+      },
+      ...{
+        [k: string]: number | string | null;
+      }[]
+    ];
+    /**
+     * A labelled reference line at an x position, a y value, or a point at both. The label sits inside the plot: two or three words.
+     *
+     * @maxItems 6
+     */
+    annotations?:
+      | []
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ]
+      | [
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          },
+          {
+            x?: number | string;
+            y?: number;
+            label: string;
+          }
+        ];
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'chart';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DiagramBlock".
+ */
+export interface DiagramBlock {
+  /**
+   * Says what the figure shows. Shown above it and used as its heading.
+   */
+  title?: string | null;
+  /**
+   * What the figure shows and the takeaway, in plain sentences. Read aloud by screen readers and indexed for search and Ask, so write it for someone who cannot see the figure.
+   */
+  textAlternative: string;
+  /**
+   * Optional line under the figure: context, method, a caveat.
+   */
+  caption?: string | null;
+  /**
+   * Optional attribution under the caption.
+   */
+  dataSource?: {
+    label?: string | null;
+    href?: string | null;
+  };
+  /**
+   * How wide the drawing runs: the reading column, that column plus one each side, or all eight. Wide keeps the title, caption and description on the reading column.
+   */
+  width?: ('text' | 'wide' | 'full') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  spec:
+    | {
+        specVersion: 1;
+        kind: 'flow' | 'state';
+        /**
+         * LR reads left to right and re-lays out top down on narrow screens, so it always fits a phone. TD has no second layout: three or more nodes side by side, or wide groups, scroll sideways on a phone. Use LR for a chain; split a TD figure that fans out.
+         */
+        direction: 'LR' | 'TD';
+        /**
+         * @minItems 2
+         * @maxItems 40
+         */
+        nodes: [
+          {
+            id: string;
+            /**
+             * A caption, not a sentence: it wraps at about four words a line and is cut after three lines.
+             */
+            label: string;
+            /**
+             * Default step. Shape is a second channel beside color, so use it.
+             */
+            shape?: 'step' | 'decision' | 'terminal';
+            /**
+             * The id of an entry in groups.
+             */
+            group?: string;
+            /**
+             * The one or two nodes the figure is about.
+             */
+            emphasis?: boolean;
+          },
+          {
+            id: string;
+            /**
+             * A caption, not a sentence: it wraps at about four words a line and is cut after three lines.
+             */
+            label: string;
+            /**
+             * Default step. Shape is a second channel beside color, so use it.
+             */
+            shape?: 'step' | 'decision' | 'terminal';
+            /**
+             * The id of an entry in groups.
+             */
+            group?: string;
+            /**
+             * The one or two nodes the figure is about.
+             */
+            emphasis?: boolean;
+          },
+          ...{
+            id: string;
+            /**
+             * A caption, not a sentence: it wraps at about four words a line and is cut after three lines.
+             */
+            label: string;
+            /**
+             * Default step. Shape is a second channel beside color, so use it.
+             */
+            shape?: 'step' | 'decision' | 'terminal';
+            /**
+             * The id of an entry in groups.
+             */
+            group?: string;
+            /**
+             * The one or two nodes the figure is about.
+             */
+            emphasis?: boolean;
+          }[]
+        ];
+        /**
+         * @minItems 1
+         * @maxItems 80
+         */
+        edges: [
+          {
+            from: string;
+            to: string;
+            /**
+             * One line, never wrapped: a word or two ("yes", "on error").
+             */
+            label?: string;
+            /**
+             * dashed: optional or async.
+             */
+            style?: 'solid' | 'dashed';
+            /**
+             * Marching dashes along a live data path.
+             */
+            animated?: boolean;
+          },
+          ...{
+            from: string;
+            to: string;
+            /**
+             * One line, never wrapped: a word or two ("yes", "on error").
+             */
+            label?: string;
+            /**
+             * dashed: optional or async.
+             */
+            style?: 'solid' | 'dashed';
+            /**
+             * Marching dashes along a live data path.
+             */
+            animated?: boolean;
+          }[]
+        ];
+        /**
+         * @maxItems 8
+         */
+        groups?:
+          | []
+          | [
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              },
+              {
+                id: string;
+                label: string;
+              }
+            ];
+      }
+    | {
+        specVersion: 1;
+        kind: 'sequence';
+        /**
+         * Up to four actors fit a phone with their lifelines intact; five or more scroll sideways there, so split the figure instead. Name each in one to three short words: a phone header holds two short lines and cuts the rest. role person draws the header as a pill.
+         *
+         * @minItems 2
+         * @maxItems 8
+         */
+        actors:
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ]
+          | [
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              },
+              {
+                id: string;
+                label: string;
+                role?: 'person' | 'system';
+              }
+            ];
+        /**
+         * @minItems 1
+         * @maxItems 30
+         */
+        messages: [
+          {
+            from: string;
+            to: string;
+            /**
+             * A short phrase. It wraps to two lines, and a self message gets one line on a phone; the rest is cut.
+             */
+            label: string;
+            /**
+             * Default call. reply draws dashed. self needs from and to to match.
+             */
+            style?: 'call' | 'reply' | 'self';
+          },
+          ...{
+            from: string;
+            to: string;
+            /**
+             * A short phrase. It wraps to two lines, and a self message gets one line on a phone; the rest is cut.
+             */
+            label: string;
+            /**
+             * Default call. reply draws dashed. self needs from and to to match.
+             */
+            style?: 'call' | 'reply' | 'self';
+          }[]
+        ];
+      }
+    | {
+        specVersion: 1;
+        kind: 'timeline';
+        range: {
+          start: string;
+          end: string;
+        };
+        /**
+         * @maxItems 6
+         */
+        eras?:
+          | []
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ]
+          | [
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              },
+              {
+                start: string;
+                end: string;
+                label: string;
+              }
+            ];
+        /**
+         * An event label is a short phrase: it wraps to two lines and the rest is cut.
+         *
+         * @minItems 1
+         * @maxItems 20
+         */
+        events:
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ]
+          | [
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              },
+              {
+                at: string;
+                label: string;
+                /**
+                 * A short tag under the label: a version, a commit, a PR.
+                 */
+                ref?: string;
+              }
+            ];
+      };
+  geometry?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'diagram';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqBlock".
+ */
+export interface FaqBlock {
+  /**
+   * Short kicker above the heading, e.g. "Questions".
+   */
+  eyebrow?: string | null;
+  heading: string;
+  items: {
+    question: string;
+    /**
+     * Shown when the question is opened.
+     */
+    answer: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    id?: string | null;
+  }[];
+  enableLink?: boolean | null;
+  /**
+   * Sits beside the link, e.g. "Did not find your answer?"
+   */
+  prompt?: string | null;
+  link?: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    url?: string | null;
+    label: string;
+  };
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselBlock".
+ */
+export interface CarouselBlock {
+  slides: {
+    media: number | Media;
+    /**
+     * Optional. Renders below the slide.
+     */
+    caption?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Full width runs edge to edge of the browser window.
+   */
+  width?: ('contained' | 'full-width') | null;
+  /**
+   * Previous/next buttons. Contained places them beside the slides; full width overlays them on the slides.
+   */
+  showArrows?: boolean | null;
+  /**
+   * Slides visible at once from tablet up. Phones always show one slide plus a sliver of its neighbours, whichever size is picked.
+   */
+  slideSize?: ('full' | 'half' | 'third') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'carousel';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselTabsBlock".
+ */
+export interface CarouselTabsBlock {
+  /**
+   * Short kicker above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  /**
+   * The copy column beside the tabs.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  tabs: {
+    title: string;
+    slides: {
+      media: number | Media;
+      /**
+       * Optional. Renders below the slide.
+       */
+      caption?: string | null;
+      id?: string | null;
+    }[];
+    id?: string | null;
+  }[];
+  /**
+   * Slides visible at once inside a tab panel, from tablet up. Phones always show one slide plus a sliver of its neighbours.
+   */
+  slideSize?: ('full' | 'half' | 'third') | null;
+  /**
+   * Previous/next buttons beside the slides, in every tab. The panel is the page column, so they sit in its outer gutter.
+   */
+  showArrows?: boolean | null;
+  /**
+   * Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.
+   */
+  tabSize?: ('default' | 'small') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'carouselTabs';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureTabsBlock".
+ */
+export interface FeatureTabsBlock {
+  tabs: {
+    title: string;
+    /**
+     * Lead statement for this tab.
+     */
+    heading: string;
+    /**
+     * Tab body copy. Leave empty to pull the source.
+     */
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    subheading?: string | null;
+    items?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    media?: (number | null) | Media;
+    /**
+     * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
+     */
+    visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+    shader?: PlacedVisualConfig;
+    /**
+     * Short note shown as a card over the media.
+     */
+    caption?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.
+   */
+  tabSize?: ('default' | 'small') | null;
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureTabs';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InsightListBlock".
+ */
+export interface InsightListBlock {
+  /**
+   * Short kicker above the heading, e.g. "Where clarity breaks down".
+   */
+  eyebrow?: string | null;
+  heading: string;
+  /**
+   * Short supporting line under the heading.
+   */
+  summary?: string | null;
+  /**
+   * Side by side keeps the heading beside two insights per row. Stacked sets it above three per row. Ledger keeps the heading beside one ruled row per insight, title and description side by side.
+   */
+  layout?: ('side' | 'stacked' | 'ledger') | null;
+  /**
+   * Size of the SVG mark on every insight.
+   */
+  markSize?: ('small' | 'medium' | 'large') | null;
+  items: {
+    /**
+     * An SVG mark. It renders in the text color of the band, so use a single-color line or fill mark.
+     */
+    media?: (number | null) | Media;
+    title: string;
+    description: string;
+    id?: string | null;
+  }[];
+  /**
+   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   */
+  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'insightList';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -758,8 +4522,47 @@ export interface Work {
         }[]
       | null;
     media?: (number | null) | Media;
+    /**
+     * Leave empty for the media alone. An effect grounds the whole opening band behind the copy; the media upload, when one is set, still shows in its own frame.
+     */
+    visualType?: ('media' | 'streakField' | 'lightLeak') | null;
+    shader?: PlacedVisualConfig;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | SliderBlock | TabsBlock)[];
+  intro?: WorkIntro;
+  layout: (
+    | WorkSectionBlock
+    | RichTransitionBlock
+    | FeatureHeadingOffsetBlock
+    | FullMediaBlock
+    | MediaContentSplitBlock
+    | SplitContentNarrowBlock
+    | CarouselSplitBlock
+    | ImagePairBlock
+    | SplitImageOffsetBlock
+    | FeatureImageStatementBlock
+    | CaptionBlock
+    | YouTubeBlock
+    | RichTextBlock
+    | CodeBlock
+    | ChartBlock
+    | DiagramBlock
+    | FaqBlock
+    | CarouselBlock
+    | CarouselTabsBlock
+    | FeatureTabsBlock
+    | InsightListBlock
+    | SliderBlock
+    | TabsBlock
+    | ArchiveBlock
+    | CallToActionBlock
+    | FormBlock
+    | MediaBlock
+    | ContentBlock
+  )[];
+  /**
+   * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
+   */
+  showContents?: boolean | null;
   industry?: string | null;
   role?: string | null;
   deliverables?: string | null;
@@ -795,46 +4598,159 @@ export interface Work {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MediaBlock".
+ * via the `definition` "WorkSectionBlock".
  */
-export interface MediaBlock {
-  media: number | Media;
-  aspectRatio?: ('landscape' | 'square' | 'portrait' | 'original') | null;
+export interface WorkSectionBlock {
   /**
-   * Makes the media span the full width of its container. Note: For true edge-to-edge display, set both this option AND use "Full Width" in the parent Content Block settings.
+   * Override the surface, band padding, and space between blocks. Off uses the page surface and default rhythm.
    */
-  fullWidth?: boolean | null;
+  customize?: boolean | null;
   /**
-   * Override the site theme for this content block.
+   * Surface within the visitor's site theme. "Inherit" is the page surface; "Inverted" is a contrasted band, not a forced dark mode.
    */
+  theme?: ('inherit' | 'secondary' | 'accent' | 'inverted') | null;
+  /**
+   * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
+   */
+  spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
+  /**
+   * Space between nested blocks. Independent of Band. "None" sits them flush.
+   */
+  stack?: ('default' | 'tight' | 'loose' | 'none') | null;
+  blocks?:
+    | (
+        | RichTransitionBlock
+        | FeatureHeadingOffsetBlock
+        | FullMediaBlock
+        | MediaContentSplitBlock
+        | SplitContentNarrowBlock
+        | CarouselSplitBlock
+        | ImagePairBlock
+        | SplitImageOffsetBlock
+        | FeatureImageStatementBlock
+        | CaptionBlock
+        | YouTubeBlock
+        | RichTextBlock
+        | CodeBlock
+        | ChartBlock
+        | DiagramBlock
+        | FaqBlock
+        | CarouselBlock
+        | CarouselTabsBlock
+        | FeatureTabsBlock
+        | InsightListBlock
+        | ContentBlock
+      )[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'section';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SliderBlock".
+ */
+export interface SliderBlock {
   theme?: ('system' | 'light' | 'dark') | null;
-  showCaption?: boolean | null;
-  captionLayout?: ('center' | 'left' | 'right' | 'split-left' | 'split-right') | null;
-  richText?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  textSize?: ('sm' | 'base' | 'lg' | 'xl' | '2xl') | null;
+  introContent?: {
+    heading?: string | null;
+    subheading?: string | null;
+    size?: ('base' | 'lg' | 'xl') | null;
+    align?: ('left' | 'center') | null;
+  };
+  style?: ('default' | 'cropped' | 'single') | null;
   space?: {
     pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
   };
+  slides: {
+    slide: {
+      image: number | Media;
+      caption?: string | null;
+      link?:
+        | ({
+            relationTo: 'works';
+            value: number | Work;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+    };
+    id?: string | null;
+  }[];
   id?: string | null;
   blockName?: string | null;
-  blockType: 'mediaBlock';
+  blockType: 'slider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TabsBlock".
+ */
+export interface TabsBlock {
+  theme?: ('system' | 'light' | 'dark') | null;
+  heading?: {
+    style?: ('default' | 'center') | null;
+    eyebrow?: string | null;
+    heading?: string | null;
+    subheading?: string | null;
+  };
+  space?: {
+    pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+    mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  };
+  tabs?:
+    | {
+        tabTitle: string;
+        /**
+         * Choose the type of content for this tab.
+         */
+        contentType: 'richText' | 'slider';
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        slider?: {
+          theme?: ('system' | 'light' | 'dark') | null;
+          style?: ('default' | 'cropped' | 'single') | null;
+          slides: {
+            slide: {
+              image: number | Media;
+              caption?: string | null;
+              link?:
+                | ({
+                    relationTo: 'works';
+                    value: number | Work;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: number | Post;
+                  } | null);
+            };
+            id?: string | null;
+          }[];
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'tabs';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -883,6 +4799,75 @@ export interface ArchiveBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'archive';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  parent?: (number | null) | Category;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Category;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock".
+ */
+export interface CallToActionBlock {
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1084,109 +5069,257 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "SliderBlock".
+ * via the `definition` "MediaBlock".
  */
-export interface SliderBlock {
+export interface MediaBlock {
+  media: number | Media;
+  aspectRatio?: ('landscape' | 'square' | 'portrait' | 'original') | null;
+  /**
+   * Makes the media span the full width of its container. Note: For true edge-to-edge display, set both this option AND use "Full Width" in the parent Content Block settings.
+   */
+  fullWidth?: boolean | null;
+  /**
+   * Override the site theme for this content block.
+   */
   theme?: ('system' | 'light' | 'dark') | null;
-  introContent?: {
-    heading?: string | null;
-    subheading?: string | null;
-    size?: ('base' | 'lg' | 'xl') | null;
-    align?: ('left' | 'center') | null;
-  };
-  style?: ('default' | 'cropped' | 'single') | null;
+  showCaption?: boolean | null;
+  captionLayout?: ('center' | 'left' | 'right' | 'split-left' | 'split-right') | null;
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  textSize?: ('sm' | 'base' | 'lg' | 'xl' | '2xl') | null;
   space?: {
     pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
     mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
   };
-  slides: {
-    slide: {
-      image: number | Media;
-      caption?: string | null;
-      link?:
-        | ({
-            relationTo: 'works';
-            value: number | Work;
-          } | null)
-        | ({
-            relationTo: 'posts';
-            value: number | Post;
-          } | null);
-    };
-    id?: string | null;
-  }[];
   id?: string | null;
   blockName?: string | null;
-  blockType: 'slider';
+  blockType: 'mediaBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TabsBlock".
+ * via the `definition` "PageSectionBlock".
  */
-export interface TabsBlock {
-  theme?: ('system' | 'light' | 'dark') | null;
-  heading?: {
-    style?: ('default' | 'center') | null;
-    eyebrow?: string | null;
-    heading?: string | null;
-    subheading?: string | null;
-  };
-  space?: {
-    pt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-    pb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-    mt?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-    mb?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-  };
-  tabs?:
-    | {
-        tabTitle: string;
-        /**
-         * Choose the type of content for this tab.
-         */
-        contentType: 'richText' | 'slider';
-        richText?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        slider?: {
-          theme?: ('system' | 'light' | 'dark') | null;
-          style?: ('default' | 'cropped' | 'single') | null;
-          slides: {
-            slide: {
-              image: number | Media;
-              caption?: string | null;
-              link?:
-                | ({
-                    relationTo: 'works';
-                    value: number | Work;
-                  } | null)
-                | ({
-                    relationTo: 'posts';
-                    value: number | Post;
-                  } | null);
-            };
-            id?: string | null;
-          }[];
-        };
-        id?: string | null;
-      }[]
+export interface PageSectionBlock {
+  /**
+   * Override the surface, band padding, and space between blocks. Off uses the page surface and default rhythm.
+   */
+  customize?: boolean | null;
+  /**
+   * Surface within the visitor's site theme. "Inherit" is the page surface; "Inverted" is a contrasted band, not a forced dark mode.
+   */
+  theme?: ('inherit' | 'secondary' | 'accent' | 'inverted') | null;
+  /**
+   * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
+   */
+  spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
+  /**
+   * Space between nested blocks. Independent of Band. "None" sits them flush.
+   */
+  stack?: ('default' | 'tight' | 'loose' | 'none') | null;
+  blocks?:
+    | (
+        | RichTransitionBlock
+        | FeatureHeadingOffsetBlock
+        | FullMediaBlock
+        | MediaContentSplitBlock
+        | SplitContentNarrowBlock
+        | CarouselSplitBlock
+        | ImagePairBlock
+        | SplitImageOffsetBlock
+        | FeatureImageStatementBlock
+        | CaptionBlock
+        | YouTubeBlock
+        | RichTextBlock
+        | CodeBlock
+        | ChartBlock
+        | DiagramBlock
+        | FaqBlock
+        | CarouselBlock
+        | CarouselTabsBlock
+        | FeatureTabsBlock
+        | InsightListBlock
+        | ContentBlock
+      )[]
     | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'tabs';
+  blockType: 'section';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallOutBlock".
+ */
+export interface CallOutBlock {
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'callout';
+}
+/**
+ * Requests from the site. New ones are unread until someone opens them — assign an owner so nothing sits.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inquiries".
+ */
+export interface Inquiry {
+  id: number;
+  /**
+   * Quoted in the confirmation email — the visitor knows this code.
+   */
+  reference?: string | null;
+  type: 'project' | 'general';
+  /**
+   * Where this request has got to. "New" means nobody has picked it up yet.
+   */
+  status: 'new' | 'in-progress' | 'replied' | 'closed' | 'spam';
+  /**
+   * Who owns the reply. Assigning emails them.
+   */
+  assignedTo?: (number | null) | User;
+  /**
+   * The Ask chat this came from. What they asked is below the request.
+   */
+  askConversation?: string | null;
+  submittedAt?: string | null;
+  repliedAt?: string | null;
+  name: string;
+  email: string;
+  company?: string | null;
+  website?: string | null;
+  budget?: ('under-25k' | '25-50k' | '50-100k' | '100k-plus' | 'guidance') | null;
+  timeline?: ('asap' | '1-3-months' | '3-6-months' | 'exploring') | null;
+  message: string;
+  /**
+   * Page the form was on — useful when a campaign is running.
+   */
+  sourceUrl?: string | null;
+  /**
+   * What was said, decided, or is still outstanding.
+   */
+  notes?:
+    | {
+        note: string;
+        author?: (number | null) | User;
+        createdAt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Every question asked in Ask, with emails, phone numbers and keys removed, and the answer the visitor got. "No sources" is the content-gap list. Rows delete themselves after 90 days.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ask-questions".
+ */
+export interface AskQuestion {
+  id: number;
+  question: string;
+  /**
+   * What the model said, redacted. Empty when the reply was only a handoff.
+   */
+  answer?: string | null;
+  /**
+   * The pages the answer drew on, best match first, with the cosine similarity of their best chunk.
+   */
+  sources?:
+    | {
+        title: string;
+        url: string;
+        similarity?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Why it was triaged the way it was.
+   */
+  note?: string | null;
+  /**
+   * The draft that closes the gap.
+   */
+  plannedContent?:
+    | (
+        | {
+            relationTo: 'posts';
+            value: number | Post;
+          }
+        | {
+            relationTo: 'pages';
+            value: number | Page;
+          }
+      )[]
+    | null;
+  status: 'new' | 'reviewed' | 'content_planned' | 'ignored';
+  /**
+   * The site taxonomy, so gaps group by subject.
+   */
+  topic?: (number | null) | Category;
+  /**
+   * What the visitor got. Partial: an answer that ended in a handoff. No sources: nothing relevant was published. Chat only: a follow-up with no new facts.
+   */
+  outcome?: ('answered' | 'partial' | 'no_sources' | 'chat_only' | 'stopped' | 'error') | null;
+  rating?: ('up' | 'down') | null;
+  ratingReason?: ('wrong' | 'incomplete' | 'off_topic') | null;
+  /**
+   * How far the visitor went toward a person.
+   */
+  handoff?: ('clicked' | 'inquiry_sent') | null;
+  /**
+   * Why the reply offered a person, if it did.
+   */
+  handoffReason?: ('estimate' | 'project' | 'person' | 'contact_details' | 'no_answer' | 'case_study') | null;
+  /**
+   * The page the visitor was on.
+   */
+  pagePath?: string | null;
+  /**
+   * Asked after an earlier question in the same chat.
+   */
+  followUp?: boolean | null;
+  /**
+   * Which search found the sources.
+   */
+  retrieval?: ('embedding' | 'keyword' | 'none') | null;
+  latencyMs?: number | null;
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  /**
+   * Shared by every question from one open Ask box.
+   */
+  conversation?: string | null;
+  turn?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1241,10 +5374,19 @@ export interface Search {
   id: number;
   title?: string | null;
   priority?: number | null;
-  doc: {
-    relationTo: 'posts';
-    value: number | Post;
-  };
+  doc:
+    | {
+        relationTo: 'pages';
+        value: number | Page;
+      }
+    | {
+        relationTo: 'works';
+        value: number | Work;
+      }
+    | {
+        relationTo: 'posts';
+        value: number | Post;
+      };
   slug?: string | null;
   meta?: {
     title?: string | null;
@@ -1260,6 +5402,126 @@ export interface Search {
     | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * API keys control which collections, resources, tools, and prompts MCP clients can access
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-mcp-api-keys".
+ */
+export interface PayloadMcpApiKey {
+  id: number;
+  /**
+   * The user that the API key is associated with.
+   */
+  user: number | User;
+  /**
+   * A useful label for the API key.
+   */
+  label?: string | null;
+  /**
+   * The purpose of the API key.
+   */
+  description?: string | null;
+  pages?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  works?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  posts?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  categories?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  forms?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  redirects?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  askQuestions?: {
+    find?: boolean | null;
+  };
+  formSubmissions?: {
+    find?: boolean | null;
+  };
+  inquiries?: {
+    find?: boolean | null;
+  };
+  streakLooks?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
+  media?: {
+    find?: boolean | null;
+  };
+  contactPage?: {
+    find?: boolean | null;
+    update?: boolean | null;
+  };
+  header?: {
+    find?: boolean | null;
+    update?: boolean | null;
+  };
+  siteInfo?: {
+    find?: boolean | null;
+    update?: boolean | null;
+  };
+  'payload-mcp-tool'?: {
+    /**
+     * Where the published site talks about a topic, across Pages, Works, Posts and Site Info, judged on the server (a vector search over the site, then one Jev check per passage), so no page reaches you. Answers with passages best first: collection, document id, title, url, section heading, a snippet, and `focus`: how much of the passage is about the topic (`subject`, `part` or `passing`). Published copy only, protected works never included: before editing, locateBlock the document by id with the user's words. Send the topic as the user put it.
+     */
+    findContent?: boolean | null;
+    /**
+     * One row per block of a document, nested blocks included: path, id, blockType, blockName, a child count, and the first 200 characters of its copy. Read this instead of the whole document to find the block an edit concerns, then getBlock or patchBlock it by id. Returns the latest draft.
+     */
+    outlineDocument?: boolean | null;
+    /**
+     * Which block of a document an editing instruction is about, judged on the server from the outline (one Jev request, no client tokens for the page). Answers with a verdict (`found`, `unsure`, `none`), the most likely blocks best first with a probability each (path, id, blockType, blockName, the start of the copy), and what the judgment cost. On `found`, getBlock or patchBlock the first candidate by id; on `unsure`, pick from the candidates or read outlineDocument; on `none`, the document has no such block. Protected works are never sent to the judge: use outlineDocument for those. Send the instruction in the user's words.
+     */
+    locateBlock?: boolean | null;
+    /**
+     * One block of a document by its id (from outlineDocument or locateBlock), with its path. The block comes back exactly as stored, nested blocks included, so it can be edited and sent to patchBlock. Returns the latest draft.
+     */
+    getBlock?: boolean | null;
+    /**
+     * Change one block of a document by its id and save. `patch` holds only the fields to change; each replaces the stored field whole, so send a complete array (rows with their ids) when changing one row of it. `id` and `blockType` cannot change. Saves a draft unless `draft` is false, which publishes. Returns the saved block. A refused save names each problem by path: fix those and resend the same patch.
+     */
+    patchBlock?: boolean | null;
+  };
+  /**
+   * Allow `pnpm cms:upload` with this key.
+   */
+  uploadMedia?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
+  hasAPIKey?: boolean | null;
+  collection: 'payload-mcp-api-keys';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1330,7 +5592,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'schedulePublish';
+        taskSlug: 'inline' | 'askQuestionRetention' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -1363,10 +5625,19 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'askQuestionRetention' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1398,8 +5669,20 @@ export interface PayloadLockedDocument {
         value: number | Category;
       } | null)
     | ({
+        relationTo: 'inquiries';
+        value: number | Inquiry;
+      } | null)
+    | ({
+        relationTo: 'ask-questions';
+        value: number | AskQuestion;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'streak-looks';
+        value: number | StreakLook;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1418,14 +5701,23 @@ export interface PayloadLockedDocument {
         value: number | Search;
       } | null)
     | ({
+        relationTo: 'payload-mcp-api-keys';
+        value: number | PayloadMcpApiKey;
+      } | null)
+    | ({
         relationTo: 'payload-folders';
         value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'payload-mcp-api-keys';
+        value: number | PayloadMcpApiKey;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -1435,10 +5727,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'payload-mcp-api-keys';
+        value: number | PayloadMcpApiKey;
+      };
   key?: string | null;
   value?:
     | {
@@ -1491,18 +5788,42 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        visualType?: T;
+        shader?: T | PlacedVisualConfigSelect<T>;
       };
   layout?:
     | T
     | {
-        cta?: T | CallToActionBlockSelect<T>;
-        callout?: T | CallOutBlockSelect<T>;
-        content?: T | ContentBlockSelect<T>;
-        mediaBlock?: T | MediaBlockSelect<T>;
-        archive?: T | ArchiveBlockSelect<T>;
-        formBlock?: T | FormBlockSelect<T>;
+        section?: T | PageSectionBlockSelect<T>;
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
+        callout?: T | CallOutBlockSelect<T>;
+        archive?: T | ArchiveBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
       };
+  showContents?: T;
   meta?:
     | T
     | {
@@ -1520,34 +5841,416 @@ export interface PagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CallToActionBlock_select".
+ * via the `definition` "PlacedVisualConfig_select".
  */
-export interface CallToActionBlockSelect<T extends boolean = true> {
-  richText?: T;
-  links?:
+export interface PlacedVisualConfigSelect<T extends boolean = true> {
+  studio?: T;
+  preset?: T;
+  seed?: T;
+  speed?: T;
+  intensity?: T;
+  bleed?: T;
+  origin?: T;
+  showMedia?: T;
+  surface?: T;
+  pointerInteraction?: T;
+  hoverTargets?: T;
+  sectionHover?: T;
+  posterMedia?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PageSectionBlock_select".
+ */
+export interface PageSectionBlockSelect<T extends boolean = true> {
+  customize?: T;
+  theme?: T;
+  spacing?: T;
+  stack?: T;
+  blocks?:
     | T
     | {
-        link?:
-          | T
-          | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-              label?: T;
-              appearance?: T;
-            };
-        id?: T;
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
       };
   id?: T;
   blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CallOutBlock_select".
+ * via the `definition` "RichTransitionBlock_select".
  */
-export interface CallOutBlockSelect<T extends boolean = true> {
-  richText?: T;
+export interface RichTransitionBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  layout?: T;
+  theme?: T;
+  headingLevel?: T;
+  body?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureHeadingOffsetBlock_select".
+ */
+export interface FeatureHeadingOffsetBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  bodySize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FullMediaBlock_select".
+ */
+export interface FullMediaBlockSelect<T extends boolean = true> {
+  showContent?: T;
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  media?: T;
+  visualType?: T;
+  shader?: T | PlacedVisualConfigSelect<T>;
+  width?: T;
+  aspectRatio?: T;
+  contentPosition?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaContentSplitBlock_select".
+ */
+export interface MediaContentSplitBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  media?: T;
+  visualType?: T;
+  shader?: T | PlacedVisualConfigSelect<T>;
+  layout?: T;
+  aspectRatio?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitContentNarrowBlock_select".
+ */
+export interface SplitContentNarrowBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  media?: T;
+  visualType?: T;
+  shader?: T | PlacedVisualConfigSelect<T>;
+  imagePosition?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselSplitBlock_select".
+ */
+export interface CarouselSplitBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  slides?:
+    | T
+    | {
+        media?: T;
+        caption?: T;
+        id?: T;
+      };
+  carouselPosition?: T;
+  slideSize?: T;
+  showArrows?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImagePairBlock_select".
+ */
+export interface ImagePairBlockSelect<T extends boolean = true> {
+  heading?: T;
+  body?: T;
+  portraitMedia?: T;
+  landscapeMedia?: T;
+  portraitPosition?: T;
+  textPosition?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitImageOffsetBlock_select".
+ */
+export interface SplitImageOffsetBlockSelect<T extends boolean = true> {
+  heading?: T;
+  body?: T;
+  largeMedia?: T;
+  smallMedia?: T;
+  captionPosition?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureImageStatementBlock_select".
+ */
+export interface FeatureImageStatementBlockSelect<T extends boolean = true> {
+  media?: T;
+  caption?: T;
+  textPosition?: T;
+  textSize?: T;
+  imageWidth?: T;
+  aspectRatio?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CaptionBlock_select".
+ */
+export interface CaptionBlockSelect<T extends boolean = true> {
+  media?: T;
+  size?: T;
+  captionOverride?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "YouTubeBlock_select".
+ */
+export interface YouTubeBlockSelect<T extends boolean = true> {
+  url?: T;
+  title?: T;
+  size?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock_select".
+ */
+export interface RichTextBlockSelect<T extends boolean = true> {
+  markdown?: T;
+  replace?: T;
+  body?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock_select".
+ */
+export interface CodeBlockSelect<T extends boolean = true> {
+  language?: T;
+  code?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ChartBlock_select".
+ */
+export interface ChartBlockSelect<T extends boolean = true> {
+  title?: T;
+  textAlternative?: T;
+  caption?: T;
+  dataSource?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  width?: T;
+  theme?: T;
+  spec?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DiagramBlock_select".
+ */
+export interface DiagramBlockSelect<T extends boolean = true> {
+  title?: T;
+  textAlternative?: T;
+  caption?: T;
+  dataSource?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  width?: T;
+  theme?: T;
+  spec?: T;
+  geometry?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqBlock_select".
+ */
+export interface FaqBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  items?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  enableLink?: T;
+  prompt?: T;
+  link?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+      };
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselBlock_select".
+ */
+export interface CarouselBlockSelect<T extends boolean = true> {
+  slides?:
+    | T
+    | {
+        media?: T;
+        caption?: T;
+        id?: T;
+      };
+  width?: T;
+  showArrows?: T;
+  slideSize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselTabsBlock_select".
+ */
+export interface CarouselTabsBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  tabs?:
+    | T
+    | {
+        title?: T;
+        slides?:
+          | T
+          | {
+              media?: T;
+              caption?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  slideSize?: T;
+  showArrows?: T;
+  tabSize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureTabsBlock_select".
+ */
+export interface FeatureTabsBlockSelect<T extends boolean = true> {
+  tabs?:
+    | T
+    | {
+        title?: T;
+        heading?: T;
+        description?: T;
+        subheading?: T;
+        items?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        media?: T;
+        visualType?: T;
+        shader?: T | PlacedVisualConfigSelect<T>;
+        caption?: T;
+        id?: T;
+      };
+  tabSize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InsightListBlock_select".
+ */
+export interface InsightListBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  summary?: T;
+  layout?: T;
+  markSize?: T;
+  items?:
+    | T
+    | {
+        media?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  theme?: T;
   id?: T;
   blockName?: T;
 }
@@ -1667,66 +6370,6 @@ export interface ContentBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MediaBlock_select".
- */
-export interface MediaBlockSelect<T extends boolean = true> {
-  media?: T;
-  aspectRatio?: T;
-  fullWidth?: T;
-  theme?: T;
-  showCaption?: T;
-  captionLayout?: T;
-  richText?: T;
-  textSize?: T;
-  space?:
-    | T
-    | {
-        pt?: T;
-        pb?: T;
-        mt?: T;
-        mb?: T;
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ArchiveBlock_select".
- */
-export interface ArchiveBlockSelect<T extends boolean = true> {
-  theme?: T;
-  cardStyle?: T;
-  introContent?: T;
-  populateBy?: T;
-  relationTo?: T;
-  categories?: T;
-  limit?: T;
-  selectedDocs?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FormBlock_select".
- */
-export interface FormBlockSelect<T extends boolean = true> {
-  form?: T;
-  space?:
-    | T
-    | {
-        pt?: T;
-        pb?: T;
-        mt?: T;
-        mb?: T;
-      };
-  enableIntro?: T;
-  introAlign?: T;
-  introContent?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "SliderBlock_select".
  */
 export interface SliderBlockSelect<T extends boolean = true> {
@@ -1765,6 +6408,99 @@ export interface SliderBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallOutBlock_select".
+ */
+export interface CallOutBlockSelect<T extends boolean = true> {
+  richText?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ArchiveBlock_select".
+ */
+export interface ArchiveBlockSelect<T extends boolean = true> {
+  theme?: T;
+  cardStyle?: T;
+  introContent?: T;
+  populateBy?: T;
+  relationTo?: T;
+  categories?: T;
+  limit?: T;
+  selectedDocs?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock_select".
+ */
+export interface CallToActionBlockSelect<T extends boolean = true> {
+  richText?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlock_select".
+ */
+export interface FormBlockSelect<T extends boolean = true> {
+  form?: T;
+  space?:
+    | T
+    | {
+        pt?: T;
+        pb?: T;
+        mt?: T;
+        mb?: T;
+      };
+  enableIntro?: T;
+  introAlign?: T;
+  introContent?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaBlock_select".
+ */
+export interface MediaBlockSelect<T extends boolean = true> {
+  media?: T;
+  aspectRatio?: T;
+  fullWidth?: T;
+  theme?: T;
+  showCaption?: T;
+  captionLayout?: T;
+  richText?: T;
+  textSize?: T;
+  space?:
+    | T
+    | {
+        pt?: T;
+        pb?: T;
+        mt?: T;
+        mb?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -1791,9 +6527,39 @@ export interface PostsSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        visualType?: T;
+        shader?: T | PlacedVisualConfigSelect<T>;
       };
+  intro?: T | WorkIntroSelect<T>;
+  showContents?: T;
   content?: T;
+  layout?:
+    | T
+    | {
+        section?: T | PostSectionBlockSelect<T>;
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
+      };
   relatedPosts?: T;
+  hideRelatedPosts?: T;
   categories?: T;
   meta?:
     | T
@@ -1816,6 +6582,52 @@ export interface PostsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkIntro_select".
+ */
+export interface WorkIntroSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  body?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostSectionBlock_select".
+ */
+export interface PostSectionBlockSelect<T extends boolean = true> {
+  customize?: T;
+  theme?: T;
+  spacing?: T;
+  stack?: T;
+  blocks?:
+    | T
+    | {
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+      };
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1846,18 +6658,43 @@ export interface WorksSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        visualType?: T;
+        shader?: T | PlacedVisualConfigSelect<T>;
       };
+  intro?: T | WorkIntroSelect<T>;
   layout?:
     | T
     | {
-        cta?: T | CallToActionBlockSelect<T>;
-        content?: T | ContentBlockSelect<T>;
-        mediaBlock?: T | MediaBlockSelect<T>;
-        archive?: T | ArchiveBlockSelect<T>;
-        formBlock?: T | FormBlockSelect<T>;
+        section?: T | WorkSectionBlockSelect<T>;
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         tabs?: T | TabsBlockSelect<T>;
+        archive?: T | ArchiveBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
       };
+  showContents?: T;
   industry?: T;
   role?: T;
   deliverables?: T;
@@ -1880,6 +6717,43 @@ export interface WorksSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkSectionBlock_select".
+ */
+export interface WorkSectionBlockSelect<T extends boolean = true> {
+  customize?: T;
+  theme?: T;
+  spacing?: T;
+  stack?: T;
+  blocks?:
+    | T
+    | {
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+      };
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2055,6 +6929,72 @@ export interface CategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inquiries_select".
+ */
+export interface InquiriesSelect<T extends boolean = true> {
+  reference?: T;
+  type?: T;
+  status?: T;
+  assignedTo?: T;
+  askConversation?: T;
+  submittedAt?: T;
+  repliedAt?: T;
+  name?: T;
+  email?: T;
+  company?: T;
+  website?: T;
+  budget?: T;
+  timeline?: T;
+  message?: T;
+  sourceUrl?: T;
+  notes?:
+    | T
+    | {
+        note?: T;
+        author?: T;
+        createdAt?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ask-questions_select".
+ */
+export interface AskQuestionsSelect<T extends boolean = true> {
+  question?: T;
+  answer?: T;
+  sources?:
+    | T
+    | {
+        title?: T;
+        url?: T;
+        similarity?: T;
+        id?: T;
+      };
+  note?: T;
+  plannedContent?: T;
+  status?: T;
+  topic?: T;
+  outcome?: T;
+  rating?: T;
+  ratingReason?: T;
+  handoff?: T;
+  handoffReason?: T;
+  pagePath?: T;
+  followUp?: T;
+  retrieval?: T;
+  latencyMs?: T;
+  inputTokens?: T;
+  outputTokens?: T;
+  conversation?: T;
+  turn?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -2076,6 +7016,29 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "streak-looks_select".
+ */
+export interface StreakLooksSelect<T extends boolean = true> {
+  title?: T;
+  effect?: T;
+  description?: T;
+  tags?: T;
+  thumbnail?: T;
+  lightPoster?: T;
+  archived?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  recipe?: T;
+  snapshot?: T;
+  posters?: T;
+  sourceHash?: T;
+  folder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2270,6 +7233,125 @@ export interface SearchSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-mcp-api-keys_select".
+ */
+export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
+  user?: T;
+  label?: T;
+  description?: T;
+  pages?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  works?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  posts?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  categories?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  forms?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  redirects?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  askQuestions?:
+    | T
+    | {
+        find?: T;
+      };
+  formSubmissions?:
+    | T
+    | {
+        find?: T;
+      };
+  inquiries?:
+    | T
+    | {
+        find?: T;
+      };
+  streakLooks?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  media?:
+    | T
+    | {
+        find?: T;
+      };
+  contactPage?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  header?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  siteInfo?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
+  'payload-mcp-tool'?:
+    | T
+    | {
+        findContent?: T;
+        outlineDocument?: T;
+        locateBlock?: T;
+        getBlock?: T;
+        patchBlock?: T;
+      };
+  uploadMedia?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
+  hasAPIKey?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -2304,6 +7386,7 @@ export interface PayloadJobsSelect<T extends boolean = true> {
   queue?: T;
   waitUntil?: T;
   processing?: T;
+  meta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2381,6 +7464,148 @@ export interface Header {
   createdAt?: string | null;
 }
 /**
+ * Site-wide facts the Ask assistant answers from, and the Ask switch.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-info".
+ */
+export interface SiteInfo {
+  id: number;
+  name: string;
+  /**
+   * Registered legal name, if different from the name above.
+   */
+  legalName?: string | null;
+  /**
+   * One-sentence positioning.
+   */
+  tagline?: string | null;
+  /**
+   * A longer summary Ask can quote. Two to four sentences.
+   */
+  description?: string | null;
+  foundingYear?: number | null;
+  /**
+   * Where Ask handoffs are sent, and the address Ask gives when asked.
+   */
+  contactEmail?: string | null;
+  /**
+   * What the Ask handoff and its receipt email promise.
+   */
+  inquiries?: {
+    /**
+     * Completes the sentence "you will hear back ___".
+     */
+    responseTime?: string | null;
+    /**
+     * Booking link behind "Book a call". Leave empty to hide that action.
+     */
+    scheduleUrl?: string | null;
+  };
+  /**
+   * The grounded Q&A assistant in the dock and at /ask.
+   */
+  ask?: {
+    /**
+     * Turn on to take Ask off the site: the dock loses its Ask button and /ask returns not found.
+     */
+    hidden?: boolean | null;
+    /**
+     * Shown when Ask opens with nothing asked yet; a tap sends it. Write questions the case studies and posts answer.
+     */
+    suggestions?:
+      | {
+          question: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  address?: {
+    streetAddress?: string | null;
+    city?: string | null;
+    state?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+  };
+  /**
+   * Profile URLs Ask can point to (LinkedIn, GitHub, Dribbble).
+   */
+  socialProfiles?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional extra paragraph Ask can answer from (what you are known for).
+   */
+  llmsNotes?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * The copy on /contact. Reply time and email address live in Site Info.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-page".
+ */
+export interface ContactPage {
+  id: number;
+  heading: string;
+  /**
+   * One or two sentences under the heading: what to write about.
+   */
+  lead?: string | null;
+  /**
+   * The prompt inside the empty message field.
+   */
+  messagePlaceholder?: string | null;
+  submitLabel?: string | null;
+  /**
+   * Beside the send button. {responseTime} fills in.
+   */
+  submitNote?: string | null;
+  /**
+   * Use {name}, {email} and {responseTime} to fill in the sender and Site Info’s reply time.
+   */
+  sentHeading?: string | null;
+  /**
+   * Use {name}, {email} and {responseTime} to fill in the sender and Site Info’s reply time.
+   */
+  sentBody?: string | null;
+  meta?: {
+    /**
+     * Browser tab and search title. Defaults to "Contact".
+     */
+    title?: string | null;
+    /**
+     * Search and share description. Defaults to the lead.
+     */
+    description?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: number;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -2405,6 +7630,87 @@ export interface HeaderSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-info_select".
+ */
+export interface SiteInfoSelect<T extends boolean = true> {
+  name?: T;
+  legalName?: T;
+  tagline?: T;
+  description?: T;
+  foundingYear?: T;
+  contactEmail?: T;
+  inquiries?:
+    | T
+    | {
+        responseTime?: T;
+        scheduleUrl?: T;
+      };
+  ask?:
+    | T
+    | {
+        hidden?: T;
+        suggestions?:
+          | T
+          | {
+              question?: T;
+              id?: T;
+            };
+      };
+  address?:
+    | T
+    | {
+        streetAddress?: T;
+        city?: T;
+        state?: T;
+        postalCode?: T;
+        country?: T;
+      };
+  socialProfiles?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  llmsNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-page_select".
+ */
+export interface ContactPageSelect<T extends boolean = true> {
+  heading?: T;
+  lead?: T;
+  messagePlaceholder?: T;
+  submitLabel?: T;
+  submitNote?: T;
+  sentHeading?: T;
+  sentBody?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -2412,6 +7718,16 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAskQuestionRetention".
+ */
+export interface TaskAskQuestionRetention {
+  input?: unknown;
+  output: {
+    deleted?: number | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2435,12 +7751,86 @@ export interface TaskSchedulePublish {
           value: number | Work;
         } | null);
     global?: string | null;
-    user?: {
-      relationTo: 'users';
-      value: number | User;
-    } | null;
+    user?:
+      | ({
+          relationTo: 'users';
+          value: number | User;
+        } | null)
+      | ({
+          relationTo: 'payload-mcp-api-keys';
+          value: number | PayloadMcpApiKey;
+        } | null);
   };
   output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextActionsBlock".
+ */
+export interface RichTextActionsBlock {
+  /**
+   * One or two links, set in a row. Default is the primary chip; Outline is the secondary action beside it.
+   */
+  links: {
+    link: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null);
+      url?: string | null;
+      label: string;
+      /**
+       * Choose how the link should be rendered.
+       */
+      appearance?: ('default' | 'outline') | null;
+    };
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'actions';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextInsightsBlock".
+ */
+export interface RichTextInsightsBlock {
+  items: {
+    /**
+     * An SVG mark. It renders in the text color of the band, so use a single-color line or fill mark.
+     */
+    media?: (number | null) | Media;
+    title: string;
+    description: string;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'insights';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextPillListBlock".
+ */
+export interface RichTextPillListBlock {
+  /**
+   * Optional kicker above the pills.
+   */
+  eyebrow?: string | null;
+  items: {
+    label: string;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pillList';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2466,17 +7856,6 @@ export interface BannerBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CodeBlock".
- */
-export interface CodeBlock {
-  language?: ('typescript' | 'javascript' | 'css') | null;
-  code: string;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'code';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

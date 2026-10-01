@@ -1,6 +1,24 @@
 import type { BeforeSync, DocToSync } from '@payloadcms/plugin-search/types'
 
-export const beforeSyncWithSearch: BeforeSync = async ({ originalDoc, payload, searchDoc }) => {
+type CategoryRef = number | string | { id?: number | string; title?: string | null }
+
+/**
+ * Keeps a flattened copy of a document's categories on its search entry.
+ *
+ * The array's `id` field is the row id (search_categories' primary key), so
+ * it has to be unique across every search entry. It used to be the category's
+ * own id, which a Local API save at depth 0 does not have (the category is a
+ * bare number, so the row id went in null) and which two posts in one
+ * category share (a duplicate key). Either failure aborted the save's
+ * transaction and rolled the whole save back, silently. The row id is now the
+ * document and the category together.
+ */
+export const beforeSyncWithSearch: BeforeSync = async ({
+  originalDoc,
+  payload,
+  req,
+  searchDoc,
+}) => {
   const {
     doc: { relationTo: collection },
   } = searchDoc
@@ -19,20 +37,27 @@ export const beforeSyncWithSearch: BeforeSync = async ({ originalDoc, payload, s
     categories: [],
   }
 
-  if (categories && Array.isArray(categories) && categories.length > 0) {
-    // get full categories and keep a flattened copy of their most important properties
+  if (Array.isArray(categories) && categories.length > 0) {
     try {
-      const mappedCategories = categories.map((category) => {
-        const { id, title } = category
-
-        return {
-          relationTo: 'categories',
-          id,
-          title,
-        }
+      const refs = categories as CategoryRef[]
+      const ids = refs
+        .map((category) => (typeof category === 'object' ? category.id : category))
+        .filter((value): value is number | string => value !== undefined && value !== null)
+      const { docs } = await payload.find({
+        collection: 'categories',
+        where: { id: { in: ids } },
+        depth: 0,
+        limit: ids.length,
+        pagination: false,
+        select: { title: true },
+        req,
       })
-
-      modifiedDoc.categories = mappedCategories
+      const titles = new Map(docs.map((doc) => [String(doc.id), doc.title]))
+      modifiedDoc.categories = ids.map((categoryId) => ({
+        id: `${collection}-${id}-${categoryId}`,
+        relationTo: 'categories',
+        title: titles.get(String(categoryId)) ?? null,
+      }))
     } catch (_err) {
       payload.logger.error(
         `Failed. Category not found when syncing collection '${collection}' with id: '${id}' to search.`,

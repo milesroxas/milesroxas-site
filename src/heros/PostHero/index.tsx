@@ -4,8 +4,7 @@ import { usePathname } from 'next/navigation'
 import React, { useEffect, useRef } from 'react'
 import { Media } from '@/components/Media'
 import type { Post } from '@/payload-types'
-import { useSiteFrameStore } from '@/stores/siteframeStore'
-import { usePageAnimationStore } from '@/templates/shared/usePageAnimationStore'
+import { restoreChrome, useChromeStore } from '@/stores/chromeStore'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { categoryKeys } from '@/utilities/reactKeyDomains'
 
@@ -14,8 +13,7 @@ export const PostHero: React.FC<{
 }> = ({ post }) => {
   const { categories, hero, publishedAt, title } = post
   const heroRef = useRef<HTMLDivElement>(null)
-  const restoreFrame = usePageAnimationStore((s) => s.restoreFrame)
-  const { setTransitionPhase } = useSiteFrameStore()
+  const setTransitionPhase = useChromeStore((s) => s.setTransitionPhase)
   const pathname = usePathname()
 
   // Pick up the page-transition clone only on arrival at this route (mount or
@@ -36,8 +34,8 @@ export const PostHero: React.FC<{
 
       const heroEl = heroRef.current
       if (!heroEl) {
-        // No hero element, just fade out the clone after restoring frame
-        restoreFrame(() => {
+        // No hero element: bring the chrome back and fade the clone out
+        restoreChrome(() => {
           gsap.to(clone, {
             opacity: 0,
             duration: 0.5,
@@ -55,8 +53,8 @@ export const PostHero: React.FC<{
       // Find the media element in the hero
       const mediaEl = heroEl.querySelector('img, video') as HTMLElement | null
       if (!mediaEl) {
-        // No media element, just fade out the clone after restoring frame
-        restoreFrame(() => {
+        // No media element: bring the chrome back and fade the clone out
+        restoreChrome(() => {
           gsap.to(clone, {
             opacity: 0,
             duration: 0.5,
@@ -83,8 +81,8 @@ export const PostHero: React.FC<{
           opacity: 1,
         })
 
-        // First restore the site frame
-        restoreFrame(() => {
+        // Bring the chrome back as the clone settles into the hero
+        restoreChrome(() => {
           setTransitionPhase('frame-ready')
           // Then animate the image to its final position
           gsap
@@ -119,7 +117,7 @@ export const PostHero: React.FC<{
         })
       }, 100) // Small delay to ensure all elements are properly rendered
     }, 100) // Initial delay to ensure component is mounted
-  }, [restoreFrame, setTransitionPhase, pathname])
+  }, [setTransitionPhase, pathname])
 
   return (
     <div className="relative -mt-[10.4rem] flex items-end" ref={heroRef}>

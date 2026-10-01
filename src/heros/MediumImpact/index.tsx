@@ -1,13 +1,24 @@
 import type React from 'react'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
-import RichText from '@/components/RichText'
+import RichText from '@/components/RichText/Legacy'
+import { resolveOpening } from '@/features/immersive/visual'
+import { HeroGround, pinnedOpening } from '@/heros/HeroGround'
 import type { Page } from '@/payload-types'
 import { linkKeys } from '@/utilities/reactKeyDomains'
 
-export const MediumImpactHero: React.FC<Page['hero']> = ({ links, media, richText }) => {
+export const MediumImpactHero: React.FC<Page['hero']> = (hero) => {
+  const { links, media, richText } = hero
+  // The effect the editor chose to ground the band (composer roadmap, D12).
+  // With none, the hero renders exactly as it did before the visual slot.
+  const { ground, surface } = resolveOpening(hero, { seedKey: 'hero' })
   return (
-    <div className="">
+    <div
+      {...(ground
+        ? pinnedOpening(surface, 'relative isolate overflow-clip py-12')
+        : { className: '' })}
+    >
+      <HeroGround ground={ground} />
       <div className="container mb-8">
         {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
 

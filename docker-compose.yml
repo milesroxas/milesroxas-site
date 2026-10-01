@@ -11,11 +11,25 @@
 # name, and `docker compose exec` in a workspace can't see the running container.
 name: milesroxas
 
+configs:
+  # Runs only on fresh-volume init: CREATE EXTENSION vector, so a clean reset
+  # (db:reset) leaves the DB ready for push without a manual step. Inline
+  # content rather than a bind-mounted directory: a bind mount's absolute host
+  # path is part of the service config hash, so `docker compose up` from a
+  # different checkout (Conductor workspace vs main repo) would see a
+  # "changed" config and re-create the running container.
+  initdb-extensions:
+    content: |
+      CREATE EXTENSION IF NOT EXISTS vector;
+
 services:
   postgres:
     # Same major as Neon production (17). Payload 3.58's drizzle-kit misreads
     # PG 18's named NOT NULL constraints, so on 18 every push would drop them.
-    image: postgres:17
+    # The pgvector build of 17: Ask's embeddings need CREATE EXTENSION vector.
+    # Same data directory layout and Debian (glibc) as postgres:17, so the
+    # volume carries over with no collation version change.
+    image: pgvector/pgvector:pg17-trixie
     restart: unless-stopped
     ports:
       - '54330:5432'
@@ -23,6 +37,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: payload
       POSTGRES_HOST_AUTH_METHOD: trust
+    configs:
+      - source: initdb-extensions
+        target: /docker-entrypoint-initdb.d/01-extensions.sql
     volumes:
       # PG 17 keeps PGDATA here; PG 18+ images moved it under
       # /var/lib/postgresql/<major>/, so a major bump changes this mount too.

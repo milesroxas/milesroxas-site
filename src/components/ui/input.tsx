@@ -1,22 +1,61 @@
+import { cva, type VariantProps } from 'class-variance-authority'
 import type * as React from 'react'
+
 import { cn } from '@/utilities/ui'
 
-const Input: React.FC<
+/**
+ * Three input treatments, stated once.
+ *
+ * - `default`: the boxed admin/utility control (filters, inline forms).
+ * - `line`: the site's editorial form control — no box, a single hairline
+ *   under a mono label. Its three states are pure CSS so no call site has to
+ *   track them: empty rests on `--input`, a filled value darkens the rule to
+ *   `--foreground`, and focus takes it to `--primary` (the label follows via
+ *   `FieldLabel variant="mono"`, which reads the field's focus with `has`).
+ * - `bare`: no chrome of its own, for an input whose container draws the
+ *   field, its focus and its invalid state (a row of an `inset` FieldGroup),
+ *   like Textarea's `bare`.
+ * - `value`: the boxed control at inspector density, for the number beside a
+ *   slider: mono, right-set, tabular so a changing figure never shifts its
+ *   neighbours, and no spinner (the slider is the coarse control).
+ *
+ * `text-base` below md in both: iOS Safari zooms the page when a focused
+ * control is under 16px, and the zoom outlives the form.
+ */
+const inputVariants = cva(
+  'w-full min-w-0 transition-colors outline-none placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
   {
-    ref?: React.Ref<HTMLInputElement>
-  } & React.InputHTMLAttributes<HTMLInputElement>
-> = ({ type, className, ref, ...props }) => {
+    variants: {
+      variant: {
+        default:
+          'h-7 rounded-md border border-input bg-input/20 px-2 py-0.5 text-base file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-xs/relaxed file:font-medium file:text-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 md:text-xs/relaxed dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+        line: 'h-auto rounded-none border-0 border-b border-input bg-transparent px-0 pb-3 text-base not-placeholder-shown:border-b-foreground focus-visible:border-b-primary aria-invalid:border-b-destructive md:text-lg/relaxed',
+        bare: 'h-auto rounded-none border-0 bg-transparent p-0 text-base/5 md:text-sm/5',
+        value:
+          'h-6.5 rounded-md border border-input bg-input/20 px-2 text-right font-mono text-xs/4 tabular-nums disabled:border-transparent disabled:bg-transparent disabled:text-muted-foreground/60 disabled:opacity-100 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+    },
+  },
+)
+
+function Input({
+  className,
+  type,
+  variant,
+  ...props
+}: React.ComponentProps<'input'> & VariantProps<typeof inputVariants>) {
   return (
     <input
-      className={cn(
-        'flex h-10 w-full rounded border border-border bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-sm placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-        className,
-      )}
-      ref={ref}
       type={type}
+      data-slot="input"
+      data-variant={variant ?? 'default'}
+      className={cn(inputVariants({ variant }), className)}
       {...props}
     />
   )
 }
 
-export { Input }
+export { Input, inputVariants }

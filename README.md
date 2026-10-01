@@ -131,8 +131,8 @@ Main directories inside `src/`:
 - `collections` - Payload collections
 - `blocks` - Layout block configs/components
 - `heros` - Hero configs/components
-- `SiteFrame` - Frame and transition UI
-- `templates` - Page templates and shared animation stores
+- `components/SiteChrome` - Top bar, dock and Ask entry (docs/site-chrome.md)
+- `templates` - Page templates
 - `stores` - Zustand stores
 - `plugins` - Payload plugin setup
 - `migrations` - Database migrations

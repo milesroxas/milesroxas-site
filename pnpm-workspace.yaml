@@ -12,3 +12,28 @@ allowBuilds:
   core-js: false
   # Postinstall only checks versions.
   protobufjs: false
+
+# Ported from sas-site. `@payloadcms/drizzle`: a virtual field (the Rich text
+# block's write-only `markdown` sibling) must not fail the "identical block"
+# check, or a block used both at the top level and inside a Section gets a
+# second, suffixed table (`<table>_2`).
+#
+# pnpm 10 reads `pnpm.patchedDependencies` in package.json and writes each
+# lockfile entry as `{ hash, path }`; pnpm 12 reads this file and rewrites
+# those entries to a bare hash, which pnpm 10 then refuses:
+#
+#   ERR_PNPM_LOCKFILE_CONFIG_MISMATCH  Cannot proceed with the frozen
+#   installation. The current "patchedDependencies" configuration doesn't
+#   match the value found in the lockfile
+#
+# That failed every Vercel preview twice. `package.json#packageManager` now
+# pins pnpm 10.28.0, which Vercel installs with and which pnpm self-switches
+# to in this directory (`managePackageManagerVersions`, on by default), so
+# plain `pnpm install` here runs 10 whatever the global version is and only
+# pnpm 10 writes this lockfile. Check with `pnpm --version` in the repo root:
+# 10.28.0. If the entries ever come back as bare hashes, something wrote the
+# lockfile with another pnpm; put the `{ hash, path }` form back before
+# pushing.
+patchedDependencies:
+  '@payloadcms/drizzle': patches/@payloadcms__drizzle.patch
+  '@payloadcms/plugin-mcp': patches/@payloadcms__plugin-mcp.patch

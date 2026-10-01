@@ -5,8 +5,6 @@ import type { NextRequest } from 'next/server'
 import type { CollectionSlug, PayloadRequest } from 'payload'
 import { getPayload } from 'payload'
 
-import type { User } from '@/payload-types'
-
 export async function GET(req: NextRequest): Promise<Response> {
   const payload = await getPayload({ config: configPromise })
 
@@ -29,7 +27,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     return new Response('This endpoint can only be used for relative previews', { status: 500 })
   }
 
-  let user: (User & { collection: 'users' }) | null = null
+  let user: Awaited<ReturnType<typeof payload.auth>>['user'] = null
 
   try {
     const authResult = await payload.auth({
@@ -44,7 +42,8 @@ export async function GET(req: NextRequest): Promise<Response> {
 
   const draft = await draftMode()
 
-  if (!user) {
+  // Team members only: an MCP API key authenticates as a user too.
+  if (user?.collection !== 'users') {
     draft.disable()
     return new Response('You are not allowed to preview this page', { status: 403 })
   }

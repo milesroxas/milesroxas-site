@@ -1,0 +1,285 @@
+import type { LightLeakProps } from './ui/light-leak'
+import type { StreakFieldProps } from './ui/streak-field'
+
+/**
+ * Named, shipped looks for the immersive effects — the single source of truth
+ * for tuning that appears anywhere on the site. Each preset holds only the
+ * props that differ from the component's exported `*_DEFAULTS`; everything
+ * else falls through to those defaults, so a preset never restates them.
+ *
+ * Promote a tuning here once it ships (or is used in more than one place);
+ * keep one-off experiments inline at their call site.
+ */
+
+/**
+ * The light leak's amber cut, dialed in on /demo/immersive — the look the
+ * effect shipped with before the cooler default replaced it.
+ *
+ * Where the default reads as blue shadow and cream highlight through a wide,
+ * splayed slat fan, this one is hot gold over lilac with the fan pulled to a
+ * razor at its top end, a denser cool bloom and a stronger hover flare. The
+ * bars barely tighten on hover (`slatFrequencyExcite` 2 against the default's
+ * 6.5), so the flare reads as light gathering rather than the blinds closing.
+ *
+ * Everything not listed falls through to `LIGHT_LEAK_DEFAULTS`.
+ */
+export const LIGHT_LEAK_AMBER = {
+  hoverBloom: 0.36,
+  coolTint: [0.79, 0.49, 1.1],
+  warmTint: [2, 0.95, 0.1],
+  blobCool: 0.69,
+  slatAngle: -0.5,
+  slatTopSpread: 0.01,
+  slatBottomSpread: 0.84,
+  slatFrequency: 24,
+  slatFrequencyExcite: 2,
+} as const satisfies Partial<LightLeakProps>
+
+/**
+ * The light leak over a pale ground — the shipped look for the site's light
+ * theme, against `LIGHT_LEAK_DEFAULTS`' dark-ground look. Re-tune it on
+ * /demo/immersive with the window's own light/dark button set to light.
+ *
+ * `blendMode: 'multiply'` is the load-bearing delta: the default screen-like
+ * blend adds light, and light added to white is still white, so the effect is
+ * simply absent on a light page. Multiplying flips the shader's composite to
+ * its absorptive tail, where the frame reads as shade on paper rather than
+ * light on film — everything below is the art direction that follows.
+ *
+ * The brief for that art direction is a **warm shadow, not coloured beams**.
+ * Two things make an absorptive frame read as colour rather than shade, and
+ * both come down here. Dispersion is the first: it fringes every edge into six
+ * wavelengths, which over a dark ground is spectral bloom and over paper is a
+ * rainbow smear, so it drops to a quarter of the default. The cool/warm tint
+ * pair is the second: the shader keeps the field's own hue through the stain,
+ * so the default's blue lows printed as a violet cast across the sheet. Both
+ * tints are pulled to the warm side of neutral — the "cool" end is now only
+ * *less* warm — which leaves the whole sheet in one warm grey and the hot core
+ * in tan. Saturation and `LIGHT_LEAK_DEFAULTS`' `inkChroma` carry what warmth
+ * is left; the shadow's weight is `inkDensity` and gain.
+ *
+ * The blobs come up and the slat fan stays soft (its sharpness is the default)
+ * so the composition is a broad cast with rays in it, rather than a row of
+ * bars. Gain still runs above the default to compensate the field being read
+ * through `exp()` instead of added straight, but only part way: on paper gain
+ * is the stain's weight, so the same value that reads as a lit frame on film
+ * reads as a heavy smudge here. The excite response is damped too —
+ * `gainEnergy`, `saturationExcite` and `hoverBloom` all below their defaults —
+ * because a hard scroll or a hover *darkens* the page, and an undamped one
+ * turned the shadow into a blot.
+ *
+ * Grain runs at roughly three times its default amplitude, for a structural
+ * reason rather than a stylistic one. The stain's chroma term reads only the
+ * *differences* between channels, and film grain is added to all three
+ * equally, so that term is blind to it — only `inkDensity` carries grain into
+ * an absorptive frame, and it is 0.32. Scaled back up, the speckle measures
+ * the same on paper as it does on film.
+ *
+ * Copy sits under this overlay and multiply can only darken, so legibility is
+ * the constraint the tuning is bounded by: the lowered gain leaves more
+ * headroom than the ~12.6:1 near-black contrast the heavier cut measured at
+ * rest, and the damping is what keeps a scroll flick and a hover stacked on
+ * top of it close to that.
+ */
+export const LIGHT_LEAK_PAPER = {
+  blendMode: 'multiply',
+  dispersion: 0.01,
+  dispersionEnergy: 0.018,
+  gain: 0.4,
+  gainEnergy: 0.7,
+  saturation: 0.5,
+  saturationExcite: 0.1,
+  hoverBloom: 0.1,
+  grain: 0.1,
+  grainLuminance: 0.13,
+  coolTint: [1.08, 0.82, 0.58],
+  warmTint: [1.45, 0.98, 0.6],
+  amber: [0.26, 0.09, 0],
+  blobWarm: 0.6,
+  streak: 0.25,
+  blobCool: 0.4,
+  slats: 0.34,
+} as const satisfies Partial<LightLeakProps>
+
+/**
+ * The streak field over a light ground: the same field printed as ink. Only
+ * the polarity and what paper changes about the read: a slightly denser
+ * stroke, because thin ink on white needs more coverage than thin light on
+ * black needs brightness, and less shimmer, which reads as print flicker
+ * rather than signal once the streaks are dark. Pair with the site theme:
+ * `<StreakField {...(theme === 'light' ? STREAK_FIELD_PAPER : {})} />`, or
+ * pass `surface={theme}` alone to keep the dark tuning and only flip polarity.
+ */
+export const STREAK_FIELD_PAPER = {
+  surface: 'light',
+  brightness: 1.3,
+  flicker: 0.15,
+} as const satisfies Partial<StreakFieldProps>
+
+/**
+ * The streak field as a quiet backdrop: sparse rows, a slow leftward creep
+ * and little shimmer, so copy can sit on it. Promoted from the "as a
+ * backdrop" story once the `backdrop-v1` visual look began shipping it.
+ */
+export const STREAK_FIELD_BACKDROP = {
+  count: 900,
+  rowPitch: 18,
+  drift: -6,
+  flicker: 0.15,
+} as const satisfies Partial<StreakFieldProps>
+
+/**
+ * The streak field as a topography: a tick grid where every dash streams
+ * along the contours of an fbm height map (curl of the potential runs along
+ * its level lines) and brightens with altitude, so ridges read as lit relief
+ * and valleys fall below the floor into black. The particles are simulated:
+ * each leaves its cell along the flow, fades, and is reborn in its cell, so
+ * the grid reads as the source the flow pours out of. The terrain itself
+ * morphs slowly, and the pointer lifts the ground it crosses. Uniform short
+ * ticks so the orientation, not the length, carries the shape. `count` is
+ * set high enough to fill the grid on a large display.
+ */
+export const STREAK_FIELD_TOPOGRAPHY = {
+  count: 12000,
+  layout: 'grid',
+  columnPitch: 18,
+  rowPitch: 14,
+  thickness: 1.5,
+  minLength: 9,
+  maxLength: 9,
+  motion: 'flow',
+  flowSpeed: 20,
+  drift: 0,
+  driftSpread: 0.3,
+  lifetime: 3.5,
+  lifeSpread: 0.5,
+  fadeIn: 0.15,
+  fadeOut: 0.3,
+  noise: 'curl',
+  noiseScale: 640,
+  noiseSpeed: 0.03,
+  orient: 1,
+  relief: 1,
+  reliefFloor: 0.25,
+  reliefContrast: 1.4,
+  reliefLength: 0.3,
+  pointerPush: 0,
+  pointerSwirl: 0,
+  pointerWake: 0,
+  pointerAgitate: 0,
+  pointerGlow: 0.4,
+  pointerLift: 0.35,
+  pointerRadius: 240,
+  brightness: 1.4,
+  brightnessSpread: 0.25,
+  flicker: 0.12,
+  tail: 0,
+} as const satisfies Partial<StreakFieldProps>
+
+/**
+ * The topography read as a depth map: the same grid, but the dashes lean up
+ * the slope (`gradient`) rather than along the contours, the height map is
+ * broader and the floor sits high, so only the crests surface out of black
+ * as one soft lit form and the rest of the frame is empty. The lean is
+ * partial, a tilt rather than a full turn, so the grid still reads as rows.
+ */
+export const STREAK_FIELD_DEPTH_MAP = {
+  ...STREAK_FIELD_TOPOGRAPHY,
+  noise: 'gradient',
+  noiseScale: 900,
+  noiseOctaves: 2,
+  orient: 0.6,
+  reliefFloor: 0.45,
+  reliefContrast: 2,
+  reliefLength: 0.4,
+  minLength: 11,
+  maxLength: 11,
+  brightnessSpread: 0.15,
+} as const satisfies Partial<StreakFieldProps>
+
+/**
+ * Technical Lines: dialed in on /demo/immersive. A schematic overlay, not a
+ * tick grid. The default field is a dense sheet of short dashes; this one
+ * thins the population, lengthens the stroke, and lets each dash bend
+ * (`segments` 6) so the rows read as ruled lines rather than ticks.
+ *
+ * Relief is quieter overall but punchier at the peaks, with the floor dropped
+ * so valleys stay on the sheet instead of falling to black. Ink shifts cooler
+ * and more saturated, brightness comes up, and shimmer and tail fade drop, so
+ * the strokes hold as even technical marks rather than a breathing signal.
+ */
+export const STREAK_FIELD_TECHNICAL_LINES = {
+  count: 4200,
+  segments: 6,
+  columnPitch: 1,
+  rowPitch: 5.5,
+  thickness: 1.05,
+  maxLength: 22.5,
+  lengthBias: 5,
+  relief: 0.46,
+  reliefFloor: 0.13,
+  reliefContrast: 4.04,
+  reliefLength: 0.6,
+  lifetime: 8.7,
+  lifeSpread: 0.69,
+  ink: [0.373, 0.549, 1],
+  paperInk: [0.149, 0.275, 0.62],
+  brightness: 2.47,
+  brightnessSpread: 0.27,
+  flicker: 0.09,
+  tail: 0.21,
+  cap: 1.2,
+} as const satisfies Partial<StreakFieldProps>
+
+/**
+ * Technical B2B: dialed in on /demo/immersive. A sparse schematic grid, not a
+ * tick sheet and not terrain. Wide pitch and a low count leave air between
+ * dashes; each stroke is long enough to read as a ruled mark, bent along
+ * the field (`segments` 8) and fully oriented to it.
+ *
+ * Motion is `flow` through a single-octave simplex: particles stream out of
+ * their cells, displacement bunches along the rows only (`noiseAxis` 1), and
+ * the field itself evolves slowly. Relief is quieter with the floor dropped,
+ * so valleys stay on the sheet instead of falling to black. Shimmer is off.
+ *
+ * Ink is a cooler cyan over dark, near-navy on paper. The pointer lifts and
+ * brightens rather than shoving: no wake, a tighter radius, a snappier ease.
+ */
+export const STREAK_FIELD_TECHNICAL_B2B = {
+  count: 1500,
+  segments: 8,
+  layout: 'grid',
+  columnPitch: 10.5,
+  rowPitch: 11,
+  thickness: 2.25,
+  minLength: 6.5,
+  maxLength: 15.5,
+  lengthBias: 2.3,
+  motion: 'flow',
+  drift: 5,
+  driftSpread: 0.46,
+  timeScale: 0.45,
+  noise: 'simplex',
+  noiseScale: 980,
+  noiseStrength: 17.75,
+  noiseSpeed: 0.246,
+  noiseOctaves: 1,
+  noiseGain: 1,
+  noiseAxis: 1,
+  orient: 1,
+  relief: 0.63,
+  reliefFloor: 0.08,
+  reliefContrast: 1.33,
+  reliefLength: 0.63,
+  pointerRadius: 310,
+  pointerWake: 0,
+  pointerAgitate: 3.4,
+  pointerGlow: 3,
+  pointerLift: 0.91,
+  pointerEase: 8.6,
+  ink: [0.4, 0.702, 0.914],
+  paperInk: [0.063, 0.118, 0.278],
+  brightnessSpread: 0.37,
+  flickerRate: 0,
+  tail: 0.27,
+} as const satisfies Partial<StreakFieldProps>

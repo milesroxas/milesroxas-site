@@ -22,6 +22,18 @@ const animateBlock = (block: Element) => {
   })
 }
 
+/**
+ * A block that owns its entrance (a ported run block under `ScrollReveal` or
+ * `RevealSection`, or a Section band holding them) marks its root with
+ * `data-scroll-reveal`. Fading it here as well would play a second entrance
+ * on top of that one, so only the legacy blocks animate from this container.
+ */
+const ownsReveal = (block: Element) =>
+  block.matches('[data-scroll-reveal]') || block.querySelector('[data-scroll-reveal]') !== null
+
+const animatableBlocks = (container: HTMLElement) =>
+  Array.from(container.children).filter((block) => !ownsReveal(block))
+
 const isBlockInViewport = (block: Element) => {
   const rect = block.getBoundingClientRect()
   return rect.top < window.innerHeight * 0.85
@@ -43,7 +55,7 @@ export const AnimatedBlocksContainer: React.FC<AnimatedBlocksContainerProps> = (
 
     gsap.registerPlugin(ScrollTrigger)
 
-    const blockElements = Array.from(blocksContainerRef.current.children)
+    const blockElements = animatableBlocks(blocksContainerRef.current)
 
     // Set initial state - hide all blocks that haven't been animated
     gsap.set(blockElements, {
@@ -64,7 +76,7 @@ export const AnimatedBlocksContainer: React.FC<AnimatedBlocksContainerProps> = (
     const initializeAnimations = () => {
       if (!blocksContainerRef.current) return
 
-      const elements = Array.from(blocksContainerRef.current.children)
+      const elements = animatableBlocks(blocksContainerRef.current)
 
       // Animate visible blocks and create ScrollTriggers for others
       for (const block of elements) {
@@ -92,7 +104,7 @@ export const AnimatedBlocksContainer: React.FC<AnimatedBlocksContainerProps> = (
     // Safety timeout - ensure blocks are visible after delay
     const safetyTimeout = setTimeout(() => {
       if (blocksContainerRef.current) {
-        const allBlocks = Array.from(blocksContainerRef.current.children)
+        const allBlocks = animatableBlocks(blocksContainerRef.current)
         gsap.to(allBlocks, {
           y: 0,
           opacity: 1,

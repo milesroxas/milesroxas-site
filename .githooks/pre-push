@@ -48,6 +48,15 @@ SCHEMA_RES=(
   '^src/Header/config\.ts$'
   # Plugin field overrides (form builder, SEO, search, redirects) that reshape tables.
   '^src/plugins/index\.ts$'
+  # Composer port (docs/composer-roadmap.md): globals, the Studio looks
+  # collection, and Ask's drizzle table injected through beforeSchemaInit.
+  '^src/globals/.*\.ts$'
+  '^src/plugins/streak-studio/collections\.ts$'
+  '^src/features/ask/schema\.ts$'
+  # MCP API-keys collection: one capability column per collection, global
+  # and site tool offered in mcp.ts (docs/mcp.md).
+  '^src/plugins/mcp\.ts$'
+  '^src/plugins/mcp-tools/index\.ts$'
 )
 # A migration was added if a numbered migration file (not index.ts) is added.
 MIGRATION_RE='^src/migrations/[0-9].*\.(ts|json)$'

@@ -1,0 +1,200 @@
+/* Ported from sas-site (src/styles/shadcn-theme.css): the shadcn token map,
+   the data-state variants, the `dark` variant on the data-theme mechanism,
+   the press recipe and the settle curve. Read by the ported primitives in
+   src/components/ui (button, sheet, dropdown-menu, separator, carousel).
+
+   Seams against sas-site:
+   - The token map leaves out the sidebar, success, warning, error and active
+     colours: this site does not define those tokens, and mapping them would
+     turn today's inert `border-error` / `bg-error/30` safelist into
+     declarations that resolve to nothing. `--color-destructive` stays mapped
+     by globals.css with its `-foreground` twin.
+   - `dark` keys on `[data-theme="dark"]`, which is what the site already
+     stamps on a forced-dark block, so a ported primitive inside a legacy dark
+     block reads dark. Without it, Tailwind's default `dark` variant follows
+     the visitor's OS setting, which this light-only site never paints. */
+
+/* Matches the themed root element itself as well as descendants
+   (Tailwind v4 data-attribute dark-mode form). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Custom variants */
+@custom-variant data-open {
+  &:where([data-state="open"]),
+  &:where([data-open]:not([data-open="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-closed {
+  &:where([data-state="closed"]),
+  &:where([data-closed]:not([data-closed="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-checked {
+  &:where([data-state="checked"]),
+  &:where([data-checked]:not([data-checked="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-unchecked {
+  &:where([data-state="unchecked"]),
+  &:where([data-unchecked]:not([data-unchecked="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-selected {
+  &:where([data-selected="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant data-disabled {
+  &:where([data-disabled="true"]),
+  &:where([data-disabled]:not([data-disabled="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-active {
+  &:where([data-state="active"]),
+  &:where([data-active]:not([data-active="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-horizontal {
+  &:where([data-orientation="horizontal"]) {
+    @slot;
+  }
+}
+
+@custom-variant data-vertical {
+  &:where([data-orientation="vertical"]) {
+    @slot;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-foreground: var(--tertiary-foreground);
+  --color-neutral: var(--neutral);
+  --color-neutral-foreground: var(--neutral-foreground);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@theme {
+  /* Strong ease-out (quint): the site's settle curve for entrances and swaps,
+     as `ease-out-quint`. The reveal and filter-swap rules below spell out the
+     same curve. */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Critically damped spring (damping 1.0, response 0.35s, so ω = 2π / 0.35),
+     sampled as x(t) = 1 - (1 + ωt)e^(-ωt) across 500ms: no overshoot, 87% of
+     the way by 200ms, a long soft settle. For a surface that grows out of its
+     trigger. The samples assume a 500ms duration; change the two together. */
+  --ease-spring: linear(
+    0,
+    0.0755 5%,
+    0.2275 10%,
+    0.3908 15%,
+    0.5372 20%,
+    0.6575 25%,
+    0.7513 30%,
+    0.8222 35%,
+    0.8743 40%,
+    0.9389 50%,
+    0.9711 60%,
+    0.9866 70%,
+    0.9939 80%,
+    0.9972 90%,
+    1
+  );
+}
+
+/* Press micro-interaction — single source of truth for the tuning (Apple-style:
+   quick ease-out press-down, slower spring-back release with slight overshoot).
+   Consumed by the `pressable` utility below and by bespoke wirings that must
+   merge these timings into their own transition lists (see Home FeaturedCard). */
+:root {
+  --press-scale: 0.97;
+  /* Gentler compress for large surfaces (full-width rows, media tiles, heading
+     chips) where 0.97 would translate edges by tens of pixels. Applied via
+     `pressable-subtle`. */
+  --press-scale-subtle: 0.985;
+  --press-duration: 150ms;
+  --press-ease: cubic-bezier(0, 0, 0.2, 1);
+  --press-release-duration: 350ms;
+  --press-release-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Press/release interaction for interactive surfaces (buttons, card links).
+   Owns the element's `transition` — don't stack `transition-*` utilities on a
+   pressable element; colors/opacity ride the same list. The aria-haspopup
+   guard keeps open dropdown/select triggers from sitting compressed. */
+@utility pressable {
+  transition:
+    color var(--press-duration) var(--press-ease),
+    background-color var(--press-duration) var(--press-ease),
+    border-color var(--press-duration) var(--press-ease),
+    opacity var(--press-duration) var(--press-ease),
+    scale var(--press-release-duration) var(--press-release-ease);
+
+  &:active:not([aria-haspopup="true"]) {
+    scale: var(--press-scale);
+    transition-duration: var(--press-duration);
+    transition-timing-function: var(--press-ease);
+  }
+
+  /* A press that became a drag was never a click. Cards on a rail are dragged
+     about as often as they are opened, and one that stays compressed for the
+     length of a drag reads as an accepted click. `useClickableCard` sets the
+     attribute the moment travel passes its slop. It goes quiet on the press
+     curve rather than the springy release curve — a cancelled press should not
+     bounce back as if something completed. */
+  &[data-dragging]:active:not([aria-haspopup="true"]) {
+    scale: 1;
+    transition-duration: var(--press-duration);
+    transition-timing-function: var(--press-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition-duration: 0s;
+  }
+}
+
+/* Modifier for `pressable` on large surfaces — swaps in the subtle scale
+   token; timing and behavior stay owned by `pressable`. */
+@utility pressable-subtle {
+  --press-scale: var(--press-scale-subtle);
+}

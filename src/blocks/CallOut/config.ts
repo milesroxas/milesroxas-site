@@ -5,9 +5,11 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
+import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 
 export const CallOut: Block = {
   slug: 'callout',
+  admin: { group: BLOCK_GROUPS.statements },
   interfaceName: 'CallOutBlock',
   fields: [
     {

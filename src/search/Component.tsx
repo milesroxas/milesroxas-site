@@ -2,8 +2,8 @@
 import { useRouter } from 'next/navigation'
 import type React from 'react'
 import { useEffect, useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/legacy-input'
+import { Label } from '@/components/ui/legacy-label'
 import { useDebounce } from '@/utilities/useDebounce'
 
 export const Search: React.FC = () => {

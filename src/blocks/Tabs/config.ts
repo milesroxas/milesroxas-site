@@ -6,6 +6,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 import type { Block, Field } from 'payload'
 import { SliderBlock } from '@/blocks/Slider/config'
+import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { sectionHeading } from '@/fields/sectionHeading'
 import { sectionSpacing } from '@/fields/sectionSpacing'
 
@@ -68,6 +69,8 @@ const tabFields: Field[] = [
 
 export const TabsBlock: Block = {
   slug: 'tabs',
+  admin: { group: BLOCK_GROUPS.interactive },
+  labels: { singular: 'Tab slider', plural: 'Tab sliders' },
   interfaceName: 'TabsBlock',
   fields: [
     {

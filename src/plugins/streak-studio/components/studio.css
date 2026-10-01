@@ -1,0 +1,252 @@
+/* Tailwind for the Streak Field Studio admin surface.
+
+   The Payload admin ships its own CSS (`@payloadcms/next/css`, cascade layers
+   `payload-default` and `payload`), so this entry brings utilities only: no
+   preflight, no base styles. The utilities stay unlayered on purpose: an
+   unlayered declaration beats every layered one, so a class on a Studio
+   element wins over Payload's element resets whichever stylesheet the
+   bundler happens to emit first. The
+   shadcn primitives in src/components/ui read the same token map the site
+   uses (src/styles/shadcn-theme.css); here those tokens are painted from
+   Payload's own `--theme-*` scale, so the Studio follows the admin's light
+   and dark toggle and any palette change Payload makes on upgrade, with no
+   colors of its own. Sources are the primitives and this plugin's
+   components, nothing else in the app. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" source(none);
+@import "tw-animate-css";
+@import "../../../styles/shadcn-theme.css";
+@source "../../../components/ui";
+@source "./";
+
+/* This site's shared token map (shadcn-theme.css) leaves out the status
+   colours, which the site does not paint. The Studio reads them, and paints
+   them below from Payload's scale, so this entry maps them for itself. */
+@theme inline {
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-active: var(--active);
+}
+
+/* Tailwind's preflight is left out (Payload's guide: it would reset the
+   admin's own chrome), so the browser's default button, input and list
+   styling still reaches the Studio. This is the slice of preflight the
+   primitives assume, scoped to the Studio's roots and its portaled
+   surfaces, and wrapped in `:where()` so it has no specificity: every
+   utility class outranks it, exactly as it outranks preflight on the site. */
+:where([data-streak-studio], [data-slot="tooltip-content"], [data-slot="select-content"]) {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+  /* The border reset is unlayered, so it beats Payload's own layered
+     `.btn--style-*` rules and would leave a secondary button as bare text.
+     `.btn` and everything inside it keep their chrome; `:where()` keeps this
+     at zero specificity, so every utility still outranks it. */
+  :where(*:not(.btn, .btn *)),
+  ::before,
+  ::after {
+    border: 0 solid;
+  }
+  :where(h2, h3, p, ul, ol, figure) {
+    margin: 0;
+  }
+  :where(ul, ol) {
+    padding: 0;
+    list-style: none;
+  }
+  /* Payload's own Button (`.btn`) keeps its chrome: it is the one control
+     the Studio borrows from the admin as is. */
+  :where(button:not(.btn), input, select, textarea) {
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    letter-spacing: inherit;
+  }
+  :where(button:not(.btn), [role="button"]) {
+    cursor: default;
+    appearance: button;
+  }
+  :where(input, textarea) {
+    appearance: none;
+  }
+  :where(img, svg, canvas) {
+    display: block;
+    vertical-align: middle;
+    max-width: 100%;
+  }
+  :where(kbd, code) {
+    font-size: 1em;
+  }
+  :where(a) {
+    color: inherit;
+    text-decoration: inherit;
+  }
+}
+
+@theme {
+  /* Tailwind's font namespace would repaint Payload's `--font-mono` and
+     `--font-serif` on `:root`. Drop it; the one utility the Studio needs
+     reads Payload's variable below. */
+  --font-*: initial;
+}
+
+@utility font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Payload's admin sets the root font size to 13px, so a `rem` in here is
+   0.8125 of what Tailwind's scale means by it: `text-xs` lands at 9.75px, a
+   26px control at 21px, a 12px gap at 9.75px. Left alone the Studio reads as
+   a shrunken copy of itself next to every px-sized thing beside it. The
+   scale is restated in px on the Studio's roots and its portaled surfaces —
+   spacing, size and text utilities all read these variables at the use site,
+   so the utilities resolve at the size they were authored at and nothing
+   outside these roots is touched.
+
+   Container and media queries are the exception: Tailwind emits
+   `@container (width >= 48rem)` as a literal, and a query condition cannot
+   read a variable, so the Stage states its own breakpoint in px. */
+[data-streak-studio],
+[data-slot="tooltip-content"],
+[data-slot="select-content"] {
+  --spacing: 4px;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --container-xs: 320px;
+
+  /* Inspector row geometry, stated once and read by every row: the label
+     column is the longest parameter name, the control column is fluid, and
+     the value column is fixed so that one number, a range pair and a
+     select's readout all end on the same rule and every slider track stops
+     at the same place. The label column is measured to the longest name that
+     sets on one line, not to the longest name there is: `Brightness spread`
+     takes two, at the row's own height, and holding a column wide enough for
+     it would spend thirteen pixels of every slider's travel on one label. */
+  --row-label: 112px;
+  --row-value: 72px;
+  /* The gutter the change dots sit in, outside the label column. */
+  --row-gutter: 16px;
+  /* The Inspector's tab strip is Payload's document tab row, stated in
+     Payload's own unit: same height, same top offset, so the hairline under
+     `Look · Pointer · Export` runs on with the one under `Studio · Details ·
+     Releases · Renders` and the two columns start on one line. Section
+     headers park directly beneath it. */
+  --inspector-tabs: calc(var(--base) * 2 + 1px);
+}
+
+/* Payload's elevation scale runs from the ground (0) to the ink (1000) in
+   both polarities, so one map serves light and dark. The only literal is
+   the primary: Payload has no accent, and the Studio needs one for a value
+   that departs from its default. It is the site's primary in light, and a
+   lighter tint of it in dark so 12px changed-value text clears 4.5:1 on
+   the admin's ground. */
+:root {
+  --background: var(--theme-bg);
+  --foreground: var(--theme-text);
+  --card: var(--theme-elevation-50);
+  --card-foreground: var(--theme-text);
+  --popover: var(--theme-elevation-50);
+  --popover-foreground: var(--theme-text);
+  --primary: oklch(42% 0.149 264.4);
+  --primary-foreground: oklch(97% 0.014 254.6);
+  --secondary: var(--theme-elevation-100);
+  --secondary-foreground: var(--theme-text);
+  --muted: var(--theme-elevation-100);
+  --muted-foreground: var(--theme-elevation-650);
+  --accent: var(--theme-elevation-100);
+  --accent-foreground: var(--theme-text);
+  --destructive: var(--theme-error-500);
+  --border: var(--theme-elevation-150);
+  --input: var(--theme-elevation-250);
+  --ring: var(--theme-elevation-500);
+  --success: var(--theme-success-500);
+  --warning: var(--theme-warning-500);
+  --error: var(--theme-error-500);
+  --active: var(--theme-success-500);
+  /* Payload's medium radius is 4px; the map derives `rounded-md` as
+     `--radius` minus 2px. */
+  --radius: 6px;
+}
+
+[data-theme="dark"] {
+  --primary: oklch(78% 0.11 265);
+  --primary-foreground: oklch(20% 0.04 265);
+}
+
+/* Payload paints the admin dark without declaring the polarity to the
+   browser, so the document keeps `color-scheme: normal` and the scroll
+   thumbs render in the light palette: a bright bar down the edge of a dark
+   panel, over the values it is scrolling past. Declared here for the pages
+   that carry the Studio, so the sidebar's thumb, the Inspector's own
+   scrollers and the portaled menus all come back in the admin's polarity. */
+:root:has([data-streak-studio]) {
+  color-scheme: light;
+}
+
+[data-theme="dark"]:has([data-streak-studio]) {
+  color-scheme: dark;
+}
+
+/* The Studio's own scrollers get a hairline thumb. Payload's sidebar, which
+   is the Inspector's scroll container, is deliberately left alone: forcing a
+   classic scrollbar there takes its width out of a panel whose control column
+   is already the narrowest thing on the page, and the polarity above is what
+   made that scrollbar wrong in the first place. */
+[data-slot="select-content"] {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--muted-foreground) 45%, transparent) transparent;
+}
+
+/* Payload's document frame, asked for an inspector instead of a document.
+   The sidebar is a third of the page by default, which on a wide screen is a
+   600px column of 26px controls: sliders long enough to be imprecise, a value
+   column a hand's travel from its label. Payload states that width and those
+   gutters as custom properties, so this is a request in its own terms rather
+   than a rule fighting its layout. The width is the Inspector's own geometry
+   (label + control + value + the gutters below) and does not grow with the
+   viewport; the main column keeps `flex-grow`, so every pixel taken off the
+   sidebar goes to the stage. */
+.document-fields:has([data-streak-studio="inspector"]) {
+  --doc-sidebar-width: 376px;
+  --sidebar-wrap-width: var(--doc-sidebar-width);
+  --sidebar-gutter-h-left: 0px;
+  --sidebar-gutter-h-right: 0px;
+  /* Payload sizes the sticky column at `100vh - --doc-controls-height`, the
+     height it would need if the controls bar were the only thing above it.
+     At rest the app header is above it too, so the column runs one header
+     past the fold: the page grows by that much even when the stage is short,
+     and the Inspector's last rows sit below the window with its own scroll
+     region ending out of reach. The column is chrome, not a field stack, so
+     it states every band above it and ends on the fold. Once the page does
+     scroll (a stage taller than the window) the header leaves and the column
+     sticks under the controls bar with that band to spare at the bottom,
+     which is the trade for never lengthening the page ourselves. */
+  --sidebar-wrap-height: calc(100svh - var(--app-header-height) - var(--doc-controls-height));
+}
+
+/* Payload's sidebar gutter is 40px in and 60px out, sized for a stack of
+   document fields. The Inspector states its own, once, in `--row-gutter`, so
+   the change dots sit in a margin of the panel's own making. */
+.document-fields__sidebar-fields:has([data-streak-studio="inspector"]) {
+  gap: 0;
+  /* The top matches the main column's, so both columns' first rule lands on
+     the same line; the bottom is the panel's own, sized to clear the end of
+     the scroll region. */
+  padding-block: calc(var(--base) * 1.5) 0;
+}
+
+/* The sidebar is the Inspector's scroll region and stops at its own ends: a
+   flick that reaches the last row must not carry on into the document and
+   take the stage off screen with it. */
+.document-fields__sidebar:has([data-streak-studio="inspector"]) {
+  overscroll-behavior: contain;
+}
