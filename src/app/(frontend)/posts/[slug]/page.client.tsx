@@ -30,7 +30,7 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
             </div>
           )}
 
-          <div className="flex flex-col gap-2 align-middle text-white/60 md:flex-row md:gap-4">
+          <div className="flex flex-col gap-2 align-middle text-tertiary-foreground/60 md:flex-row md:gap-4">
             {categories && categories.length > 0 && (
               <div className="text-sm uppercase tracking-widest">
                 {categories?.map((category, index) => {
@@ -53,7 +53,7 @@ const PageClient: React.FC<{ post: Post }> = ({ post }) => {
               </div>
             )}
 
-            <span className="text-sm text-white/40 uppercase tracking-widest">–</span>
+            <span className="text-sm text-tertiary-foreground/40 uppercase tracking-widest">–</span>
 
             {publishedAt && (
               <time dateTime={publishedAt} className="text-light text-sm">

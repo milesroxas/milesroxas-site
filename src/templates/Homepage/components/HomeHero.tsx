@@ -52,8 +52,8 @@ export default function HomeHero() {
       <div className="relative z-10 flex justify-center py-24">
         <div className="relative h-[30vh] w-[30vh]">
           {!isVideoLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center rounded-sm bg-gray-100">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-gray-800"></div>
+            <div className="absolute inset-0 flex items-center justify-center rounded-sm bg-muted">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-foreground"></div>
             </div>
           )}
           <video
