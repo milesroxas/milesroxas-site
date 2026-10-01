@@ -7,7 +7,7 @@ import { Logo } from '@/components/Logo/Logo'
 import { useChromeStore } from '@/stores/chromeStore'
 import { Clock } from './Clock'
 import { ThemeToggle } from './ThemeToggle'
-import { useOverDarkBand } from './use-over-dark-band'
+import { useBandGround } from './use-band-ground'
 
 /**
  * The top of the chrome: the wordmark home, and Miles's local time. No bar
@@ -22,7 +22,7 @@ import { useOverDarkBand } from './use-over-dark-band'
  */
 export function TopBar({ section }: { section: string | null }) {
   const ref = useRef<HTMLElement>(null)
-  const overDark = useOverDarkBand(ref)
+  const ground = useBandGround(ref)
   const title = useChromeStore((state) => state.title)
 
   return (
@@ -30,7 +30,7 @@ export function TopBar({ section }: { section: string | null }) {
       className="chrome-top pointer-events-none fixed inset-x-0 top-0 z-40 flex h-(--chrome-top) items-center justify-between px-5 text-(--chrome-ink) md:px-8"
       data-chrome=""
       data-chrome-top=""
-      data-theme={overDark ? 'dark' : undefined}
+      data-theme={ground}
       ref={ref}
     >
       <Link

@@ -9,7 +9,7 @@ import { onChromeScroll } from './chrome-scroll'
 import { AskGlyph, glyphForPath } from './glyphs'
 import { PageTabs } from './PageTabs'
 import type { ChromeTab } from './tabs'
-import { useOverDarkBand } from './use-over-dark-band'
+import { useBandGround } from './use-band-ground'
 
 /** Phone tab bar: collapse after this much downward travel, restore after this much upward. */
 const MINIMIZE_AFTER_PX = 48
@@ -72,13 +72,13 @@ type DockProps = {
  * action. The two never share a control, so a visitor always knows which one
  * navigates and which one starts a conversation.
  *
- * The dock samples the band under it and swaps to its dark material over a
- * dark one. While Ask is open the tabs step back (fade, 0.96, blur) and the
+ * The dock samples the band under it and wears that band's ground: its dark
+ * material over a dark one, its light glass over a light one. While Ask is open the tabs step back (fade, 0.96, blur) and the
  * Ask field takes the button's place.
  */
 export function Dock({ tabs, active, onSelect, ask }: DockProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const overDark = useOverDarkBand(ref)
+  const ground = useBandGround(ref)
   const phone = useIsMobile()
   const [minimized, restore] = useMinimizedTabs(phone && active >= 0)
   const current = tabs[active]
@@ -89,7 +89,7 @@ export function Dock({ tabs, active, onSelect, ask }: DockProps) {
       className="dock"
       data-chrome=""
       data-ask={ask?.open ? 'open' : ask?.present ? 'closing' : undefined}
-      data-theme={overDark ? 'dark' : undefined}
+      data-theme={ground}
       ref={ref}
     >
       <div className="dock-tabs-slot">

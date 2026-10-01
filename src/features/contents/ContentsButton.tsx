@@ -13,7 +13,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { onChromeScroll } from '@/components/SiteChrome/chrome-scroll'
-import { useOverDarkBand } from '@/components/SiteChrome/use-over-dark-band'
+import { useBandGround } from '@/components/SiteChrome/use-band-ground'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { usePresence } from '@/hooks/use-presence'
 import { focusForKeyboard, trackInputModality } from '@/utilities/input-modality'
@@ -122,7 +122,7 @@ export function ContentsButton() {
   const { entries, current, visible } = useContentsTracking(scopeRef, ringRef)
   const [host, setHost] = useState<HTMLElement | null>(null)
   useEffect(() => setHost(document.body), [])
-  const overDark = useOverDarkBand(anchorRef, host !== null)
+  const ground = useBandGround(anchorRef, host !== null)
   const [open, setOpen] = useState(false)
   const [Panel, warmPanel] = useContentsPanel()
   const [arrival, setArrival] = useState<'pending' | 'extended' | 'done'>('pending')
@@ -195,7 +195,7 @@ export function ContentsButton() {
       data-chrome=""
       data-open={open}
       // The band under the button decides its surface, as it does the bars'.
-      data-theme={overDark ? 'dark' : undefined}
+      data-theme={ground}
       data-visible={shown}
       ref={anchorRef}
     >

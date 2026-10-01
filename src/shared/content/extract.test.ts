@@ -45,7 +45,7 @@ describe('extractDocMarkdown', () => {
       layout: [
         {
           blockType: 'content',
-          theme: 'dark',
+          theme: 'inverted',
           richText: paragraph('Body copy.'),
           link: { url: 'https://example.com', label: 'Nope' },
           internalNotes: 'never',

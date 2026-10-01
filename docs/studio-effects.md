@@ -42,7 +42,7 @@ A Studio look's `effect` is chosen on the stage and is open until the look is fi
 
 ## Light and dark faces
 
-Every effect has two faces (`face(tuning, surface)`), and a slot draws the one for the ground it lands on. `surface="auto"` reads the nearest `[data-theme]` or `.band-dark` ancestor, else the visitor's site theme (`useGroundSurface`), and re-reads when the theme flips; the poster pair is gated the same way in CSS (globals.css, "Visual posters"), so the server HTML is already right. A hero band that pins a palette is a ground like any other: the effect follows the band, not the visitor.
+Every effect has two faces (`face(tuning, surface)`), and a slot draws the one for the ground it lands on. `surface="auto"` reads the ground's polarity as the stylesheet resolved it (`readGround`, the computed `color-scheme`: a `[data-theme]` pin, an inverted band, else the visitor's site theme) through `useGroundSurface`, and re-reads when the theme flips; the poster pair is gated the same way in CSS (globals.css, "Visual posters"), so the server HTML is already right. A hero band that pins a palette is a ground like any other: the effect follows the band, not the visitor.
 
 `shader.surface` ("Appearance") pins one use instead: Follow the visitor's theme (`auto`, the default), Always light, Always dark. The resolver carries it as `descriptor.surface` (`Surface | null`), and it outranks the `surface` a call site passes. Who honors it:
 

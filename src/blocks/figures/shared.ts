@@ -29,7 +29,6 @@ const httpsOnly = (value: null | string | undefined): string | true => {
  * cannot.
  */
 export const figureFrameFields = (): Field[] => {
-  const theme = themeField()
   return [
     {
       name: 'title',
@@ -89,7 +88,7 @@ export const figureFrameFields = (): Field[] => {
               'How wide the drawing runs: the reading column, that column plus one each side, or all eight. Wide keeps the title, caption and description on the reading column.',
           },
         },
-        { ...theme, admin: { ...theme.admin, width: '50%' } },
+        themeField({ admin: { width: '50%' } }),
       ],
     },
   ]

@@ -69,8 +69,14 @@ export type MediaInfo = Map<number, { width?: number | null; height?: number | n
 /** Heading at or under this many characters; longer section headings are statements. */
 export const SHORT_HEADING_CHARS = 80
 
-/** Legacy `theme`: `dark` is a forced-dark band, `light` and `system` are the page. */
-export const bandOf = (theme: unknown): Band => (theme === 'dark' ? 'dark' : 'light')
+/**
+ * Legacy `theme`: `dark` is a forced-dark band, `light` and `system` are the
+ * page. Migration `band_theme_roles` renamed them in place (`dark` to
+ * `inverted`, `light` and `system` to `default`), so both spellings read the
+ * same and a pre-migration snapshot restores as it did.
+ */
+export const bandOf = (theme: unknown): Band =>
+  theme === 'dark' || theme === 'inverted' ? 'dark' : 'light'
 
 const mediaId = (value: unknown): number | null => {
   if (typeof value === 'number') return value

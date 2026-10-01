@@ -232,7 +232,7 @@ STREAK_FIELD_DEFAULTS
 
 That is `composeStreakTuning`. Nothing along the chain restates a default, and ceilings only ever lower a look, never raise it.
 
-The ground polarity is read from the DOM: the nearest `[data-theme]` or `.band-dark` ancestor, falling back to the site theme (`useGroundSurface`). A Section band can therefore pin a dark field on a light page. An editor can pin one use to a face instead (`shader.surface`, "Appearance"): see [studio-effects.md](studio-effects.md#light-and-dark-faces).
+The ground polarity is read from the stylesheet (`readGround`, the computed `color-scheme`) through `useGroundSurface`: a `[data-theme]` pin, an inverted band, else the site theme. An inverted Section band can therefore ground a dark field on a light page. An editor can pin one use to a face instead (`shader.surface`, "Appearance"): see [studio-effects.md](studio-effects.md#light-and-dark-faces).
 
 Precedence per consumer is deliberately not flattened: the menu uses `menuPreview` then hero then cover, work entries use cover then hero, Industry Work overrides with `menuPreview`.
 
@@ -289,7 +289,7 @@ A live field is admitted only when **all** of these hold: hydrated, placement al
 
 - Files: `public/images/streak-field/<look>-<surface>.webp` at 1600x900, one per look and ground polarity.
 - **They carry alpha.** The CSS ground beneath (a Section band, the hero's `bg-background`) supplies the colour, so the still composites exactly as the live field does. A menu preview paints `MENU_MEDIA_GROUND` under it for the same reason.
-- Both twins ship. `globals.css` ("Visual posters") shows one based on the nearest `[data-theme]` or `.band-dark`, so the server HTML already carries the right still and the menu finds one visible image.
+- Both twins ship. `globals.css` ("Visual posters") shows one based on the `dark` variant (the ground's polarity), so the server HTML already carries the right still and the menu finds one visible image.
 - Regenerate after changing a look, a shared default, or the poster size, then bump `STREAK_LOOK_REVISION` (the `?v=` query keys the optimizer cache):
 
 ```bash
@@ -367,7 +367,7 @@ Removing a look is a **content** change: keep its id, entry and posters until ev
 | `data-visual-status="failed"` | Read `data-visual-failure`: `context` (no WebGL2 or a performance caveat), `shader`, `context-lost`, `flow-unsupported` (no renderable float target for a `flow` look), `performance` (watchdog gave up), `chunk` (runtime failed to load). |
 | Field runs, then drops back to a still | The frame watchdog stepped down and then failed. Lower the look's `count`, `dpr` or octaves rather than raising the ceiling. |
 | Grid truncates at the bottom | Something bypassed `coveragePitch`. Grid density must widen pitch when `count` is capped, not drop rows. |
-| Wrong ground, poster looks washed out or doubled | The ground is read from the nearest `[data-theme]` / `.band-dark`. Posters carry alpha, so a missing CSS ground shows as a pale or doubled image. |
+| Wrong ground, poster looks washed out or doubled | The ground is the `dark` variant's call (a `[data-theme]` pin, an inverted band, the site theme). Posters carry alpha, so a missing CSS ground shows as a pale or doubled image. |
 | Menu preview shows a page crop instead of the still | The poster is not inside `[data-hero-media]`, or the cloned element was theme gated away. See the menu ground notes in the [plan](streak-field-media-plan.md#implementation-record-2026-09-13). |
 | Menu window rests on the still, never runs the field | Check the slot inside `[data-menu-live-visual]`: no slot means the hero's `data-visual-descriptor` was missing or unparsable; status `poster` means a gate (reduced motion, coarse pointer, software renderer) or the menu holding `active` (still docking, a hover preview, the Ask transcript). Faint, sub-pixel streaks mean the host lost its counter-scale (`fitToWindow`, `trackWindowScale` in Menu/index.tsx). |
 | Look changed but the site still shows the old still | Posters not regenerated, or `STREAK_LOOK_REVISION` not bumped. |

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type React from 'react'
 import { useEffect, useState } from 'react'
+import { sectionThemeClass } from '@/blocks/shared/band-theme'
 import { Media } from '@/components/Media'
 import {
   Carousel,
@@ -10,7 +11,6 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/legacy-carousel'
-import { useBlockTheme } from '@/hooks/useBlockTheme'
 import { useSpacing } from '@/hooks/useSpacing'
 import type { SliderBlock as SliderBlockType } from '@/payload-types'
 import { CursorSlider } from '@/providers/Cursor/components/CursorInteractions'
@@ -192,7 +192,6 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const spacingStyles = useSpacing(space)
-  const appliedTheme = useBlockTheme(theme)
 
   useEffect(() => {
     if (!api) {
@@ -212,8 +211,8 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
   }, [api])
 
   return (
-    <div data-theme={appliedTheme} className={cn('w-full', className)} id={`block-${id}`}>
-      <div style={spacingStyles} className="bg-background text-foreground">
+    <div className={cn(sectionThemeClass(theme), 'w-full', className)} id={`block-${id}`}>
+      <div style={spacingStyles}>
         {introContent && (
           <div className={cn({ container: !fullWidth, 'px-8 md:px-14': fullWidth }, 'mb-12')}>
             {introContent.heading && (

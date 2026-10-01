@@ -5,8 +5,9 @@ import RichText from '@/components/RichText'
 import { RevealSection } from '@/shared/ui/reveal-section'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { imageMedia, paragraph, richText, text } from '@/stories/fixtures'
+import { BAND_THEME_OPTIONS, type BandTheme } from './band-theme'
 import { BlockGrid } from './grid'
-import { Section, type SectionTheme, SPACING_SCALE, STACK_SPACING } from './section'
+import { Section, SPACING_SCALE, STACK_SPACING } from './section'
 import { eyebrowClassName } from './typography'
 
 /*
@@ -85,7 +86,7 @@ const CssRevealBlock = () => (
 
 type BandArgs = {
   spacing: keyof typeof SPACING_SCALE
-  theme: SectionTheme
+  theme: BandTheme
 }
 
 const Band = ({ spacing, theme }: BandArgs) => (
@@ -102,19 +103,19 @@ const meta = {
   title: 'Foundation/Section band',
   component: Band,
   parameters: { layout: 'fullscreen' },
-  args: { spacing: 'normal', theme: 'light' },
+  args: { spacing: 'normal', theme: 'default' },
   argTypes: {
     spacing: { control: 'inline-radio', options: Object.keys(SPACING_SCALE) },
-    theme: { control: 'inline-radio', options: ['light', 'dark', 'neutral', 'brand'] },
+    theme: { control: 'inline-radio', options: BAND_THEME_OPTIONS.map(({ value }) => value) },
   },
 } satisfies Meta<typeof Band>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Light: Story = {}
+export const Default: Story = {}
 
-export const Dark: Story = { args: { theme: 'dark' } }
+export const Inverted: Story = { args: { theme: 'inverted' } }
 
 export const Neutral: Story = { args: { theme: 'neutral' } }
 
@@ -122,13 +123,13 @@ export const Brand: Story = { args: { theme: 'brand' } }
 
 export const Tight: Story = { args: { spacing: 'tight' } }
 
-export const Loose: Story = { args: { spacing: 'loose', theme: 'dark' } }
+export const Loose: Story = { args: { spacing: 'loose', theme: 'inverted' } }
 
 /** All four surfaces stacked, the way adjacent bands meet on a page. */
 export const AllBands: Story = {
   render: (args) => (
     <>
-      {(['light', 'dark', 'neutral', 'brand'] as const).map((theme) => (
+      {BAND_THEME_OPTIONS.map(({ value: theme }) => (
         <Band key={theme} spacing={args.spacing} theme={theme} />
       ))}
     </>

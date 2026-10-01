@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { useBlockTheme } from '@/hooks/useBlockTheme'
+import { sectionThemeClass } from '@/blocks/shared/band-theme'
 import { useSpacing } from '@/hooks/useSpacing'
 import type { ContentBlock as ContentBlockProps } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -14,13 +14,12 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
   space,
   containerWidth,
 }) => {
-  const appliedTheme = useBlockTheme(themeOption)
   const isFullWidth = containerWidth === 'fullWidth'
   const spacingStyles = useSpacing(space)
 
   return (
-    <div data-theme={appliedTheme} className="font-light">
-      <div style={spacingStyles} className="bg-background font-light text-foreground">
+    <div className={cn(sectionThemeClass(themeOption), 'font-light')}>
+      <div style={spacingStyles} className="font-light">
         <div
           className={cn(
             'grid grid-cols-4 gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-12',
@@ -36,7 +35,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
               <div className={colClass} key={id || `col-${idx}`}>
                 <ColumnRenderer
                   column={col}
-                  appliedTheme={appliedTheme}
+                  theme={themeOption}
                   isFullWidth={isFullWidth}
                   sizes={sizes}
                 />

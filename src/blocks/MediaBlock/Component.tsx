@@ -2,6 +2,7 @@
 
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type React from 'react'
+import { sectionThemeClass } from '@/blocks/shared/band-theme'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText/Legacy'
 import { type SpaceProps, useSpacing } from '@/hooks/useSpacing'
@@ -13,7 +14,7 @@ export const MediaBlock: React.FC<MediaBlockProps> = (props) => {
     aspectRatio = 'landscape',
     fullWidth = false,
     space,
-    theme = 'dark',
+    theme,
     showCaption,
     captionLayout = 'center',
     id,
@@ -27,14 +28,9 @@ export const MediaBlock: React.FC<MediaBlockProps> = (props) => {
   const spacingStyles = useSpacing(space as SpaceProps)
 
   return (
-    <div data-theme={theme} className={cn('w-full font-light', {})} id={`block-${id}`}>
-      <div style={spacingStyles} className="bg-background text-foreground">
-        <div
-          className={cn('bg-background text-foreground', {
-            'w-full': true,
-            'mx-0': true,
-          })}
-        >
+    <div className={cn(sectionThemeClass(theme), 'w-full font-light')} id={`block-${id}`}>
+      <div style={spacingStyles}>
+        <div className="mx-0 w-full">
           <div
             className={cn({
               container: !fullWidth,

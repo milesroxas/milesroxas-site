@@ -46,19 +46,19 @@ export const AdminBar: React.FC<{
 
   return (
     <div
-      className={cn(baseClass, 'fixed bottom-0 w-full bg-black py-2 text-white', {
+      className={cn(baseClass, 'fixed bottom-0 w-full bg-background py-2 text-foreground', {
         block: show,
         hidden: !show,
       })}
+      // Pinned to the dark palette: the bar stays a dark strip in either site theme.
+      data-theme="dark"
     >
       <div className="container">
         <PayloadAdminBar
           {...adminBarProps}
-          className="fixed bottom-0 py-2 text-white"
+          className="fixed bottom-0 py-2"
           classNames={{
-            controls: 'font-medium text-white',
-            logo: 'text-white',
-            user: 'text-white',
+            controls: 'font-medium',
           }}
           cmsURL={getClientSideURL()}
           collectionSlug={collection}
@@ -74,8 +74,11 @@ export const AdminBar: React.FC<{
               router.refresh()
             })
           }}
+          // The package inlines `color: #fff` on its root (its links inherit
+          // it), which a class cannot beat, so hand the ink back to the strip.
           style={{
             backgroundColor: 'transparent',
+            color: 'inherit',
             padding: 0,
             position: 'relative',
             zIndex: 'unset',

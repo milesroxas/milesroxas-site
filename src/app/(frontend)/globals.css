@@ -15,7 +15,48 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* Color variables converted to HSL */
+  /* Syntax ink for the code surface (components/ui/code-block.tsx), stated
+     once: the panel is always dark (`data-band="dark"`), so the palette
+     never flips.
+     Values are sas-site's; comments, punctuation and the gutter read the
+     band's --muted-foreground. */
+  --syntax-operator: oklch(0.8 0 0);
+  --syntax-keyword: oklch(0.72 0.14 260);
+  --syntax-entity: oklch(0.82 0.1 200);
+  --syntax-property: oklch(0.809 0.105 251.813);
+  --syntax-string: oklch(0.75 0.16 150);
+  --syntax-number: oklch(0.87 0.14 85);
+
+  /* Non-color variables remain unchanged */
+  --radius: 0.5rem;
+  --space-none: 0;
+  --space-sm: 2rem;
+  --space-md: 4rem;
+  --space-lg: 6rem;
+  --space-xl: 8rem;
+}
+
+/* Palettes. Each is stated once, as a utility of custom properties, and
+   painted onto every polarity scope by the rule after the dark palette:
+   `<html>` (the visitor's preference), any `[data-theme]` pin, and the
+   inverted band. Which of the two a scope takes is decided by the `dark`
+   variant (src/styles/shadcn-theme.css), the one statement of the polarity
+   model, so the palette, the `dark:` utilities and every rule that flips with
+   the ground can never disagree.
+
+   `color-scheme` travels with each palette: native controls and scrollbars
+   follow the ground, and script reads a ground's polarity from the computed
+   `color-scheme` (`readGround`, src/utilities/ground.ts) rather than
+   restating selectors. A polarity-dependent token goes in both palettes, not
+   `light-dark()`: the build polyfills that function with variables resolved
+   where the token is declared, so on `:root` it would never flip.
+
+   A token that points at another (`--figure-reference: var(--muted-foreground)`)
+   belongs in a palette, never on bare `:root`: a custom property resolves its
+   `var()` where it is declared, so a `:root` alias would freeze the
+   document's value and never follow an inverted band. */
+@utility palette-light {
+  color-scheme: light;
   --background: hsl(60 5% 96%);
   --foreground: hsl(240 6% 5%);
   --card: hsl(0 0% 0%);
@@ -51,12 +92,12 @@
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(240 5% 65%);
 
-  /* Section surfaces (the composition band select; blocks/shared/section.tsx).
-     `dark` is a low-luminance band: its ground is the legacy forced-dark
-     palette's background, so a legacy `dark` block and a `dark` band read
-     the same once Phase 7 converts one to the other. `neutral` is a quiet
-     stripe off the page, `brand` the orange accent with dark ink (white on
-     this orange is under 4.5:1). */
+  /* Surfaces that stay inside the active palette. --tertiary is the ground
+     of the always-dark panel (`data-band="dark"`, the code block); --neutral
+     is the quiet stripe (band theme "neutral"); --brand is the brand band,
+     the orange accent with dark ink (white on this orange is under 4.5:1).
+     The "inverted" band needs no token of its own: it paints the other
+     palette. */
   --tertiary: hsl(240 10% 4%);
   --tertiary-foreground: hsl(0 0% 98%);
   --neutral: hsl(60 5% 92%);
@@ -64,27 +105,26 @@
   --brand: hsl(21 90% 48%);
   --brand-foreground: hsl(240 6% 5%);
 
-  /* Syntax ink for the code surface (components/ui/code-block.tsx), stated
-     once: the panel is always a dark band, so the palette never flips.
-     Values are sas-site's; comments, punctuation and the gutter read the
-     band's --muted-foreground. */
-  --syntax-operator: oklch(0.8 0 0);
-  --syntax-keyword: oklch(0.72 0.14 260);
-  --syntax-entity: oklch(0.82 0.1 200);
-  --syntax-property: oklch(0.809 0.105 251.813);
-  --syntax-string: oklch(0.75 0.16 150);
-  --syntax-number: oklch(0.87 0.14 85);
-
-  /* Non-color variables remain unchanged */
-  --radius: 0.5rem;
-  --space-none: 0;
-  --space-sm: 2rem;
-  --space-md: 4rem;
-  --space-lg: 6rem;
-  --space-xl: 8rem;
+  /* Figure series (src/features/figures/ui, docs/figures.md): four
+     categorical slots, assigned by series order and never cycled, plus a
+     neutral for `reference` series. Light and dark are selected separately,
+     not flipped. sas-site's values, re-checked against this site's own
+     grounds: every step clears 3:1 for non-text contrast on the page ground
+     in both palettes (numbers in docs/figures.md). They live in the palettes
+     so a figure follows its ground, not the site theme: a chart in an
+     inverted band on a light visit takes the dark steps. Re-check before
+     changing a value. */
+  --figure-1: #2a78d6;
+  --figure-2: #d95926;
+  --figure-3: #15936a;
+  --figure-4: #b57a00;
+  --figure-reference: var(--muted-foreground);
 }
 
-[data-theme="dark"] {
+/* Dark palette: the visitor's dark theme, and the ground of an inverted band
+   on a light visit. */
+@utility palette-dark {
+  color-scheme: dark;
   --background: hsl(240 10% 4%);
   --foreground: hsl(0 0% 98%);
   --card: hsl(0 0% 98%);
@@ -117,14 +157,30 @@
   --sidebar-accent-foreground: hsl(240 5% 96%);
   --sidebar-border: hsl(240 4% 16%);
   --sidebar-ring: hsl(240 5% 84%);
-  /* Band surfaces inside a legacy forced-dark block: a band nested there
-     still contrasts its neighbours. */
+  /* The always-dark panel sits a step below the dark page ground. */
   --tertiary: hsl(240 12% 2%);
   --tertiary-foreground: hsl(0 0% 98%);
   --neutral: hsl(240 6% 10%);
   --neutral-foreground: hsl(0 0% 98%);
   --brand: hsl(21 90% 48%);
   --brand-foreground: hsl(240 6% 5%);
+  --figure-1: #3987e5;
+  --figure-3: #199e70;
+  --figure-4: #c98500;
+}
+
+/* Every polarity scope repaints, so a nested pin never inherits the other
+   palette: a hero or the floating chrome stamping `data-theme="light"` inside
+   a dark document takes the light values. Light is the site default, so an
+   unstamped document paints light. */
+:root,
+[data-theme],
+.band-inverted {
+  @apply palette-light;
+
+  @variant dark {
+    @apply palette-dark;
+  }
 }
 
 @theme inline {
@@ -784,22 +840,25 @@
   }
 }
 
-/* Surface set for the `dark` composition band (blocks/shared/section.tsx
-   `themeClasses.dark`). The band restates every surface token, not just
-   background/foreground: anything left behind keeps the page value and
-   paints a light chip inside a dark band (a `bg-muted` media plate as a
-   near-white sheet, `--border` as a visible white line).
+/* Surface set for the always-dark panel (`data-band="dark"`: the code
+   surface in components/ui/code-block.tsx). It is a low-luminance panel on
+   whatever ground it lands on, deeper than the dark page itself, so it
+   restates every surface token rather than taking the dark palette whole.
+   Anything left behind keeps the ground's value and paints a light chip
+   inside the panel (a `bg-muted` plate as a near-white sheet, `--border` as
+   a visible white line).
 
    Derived from --tertiary: both are achromatic, so an oklab mix moves
-   lightness only. --popover and --ring stay on the page palette on purpose:
-   Radix portals popovers to <body>, and a light focus ring is right on a
-   dark surface.
+   lightness only. --popover and --ring stay on the ground's palette on
+   purpose: Radix portals popovers to <body>, and a light focus ring is right
+   on a dark surface. `color-scheme` declares the polarity to native
+   scrollbars and to `readGround`.
 
    Seam: sas-site also remaps `--accent` here, because its accent is a
    selected-surface tint. This site's `--accent` is the orange ink
    (`.prose-blocks a`, the legacy forced-dark green), so it is left alone. */
-[data-band="dark"],
-.band-dark {
+[data-band="dark"] {
+  color-scheme: dark;
   --background: var(--tertiary);
   --foreground: var(--tertiary-foreground);
   --muted: color-mix(in oklab, var(--tertiary) 88%, var(--tertiary-foreground));
@@ -815,8 +874,8 @@
   --input: oklch(1 0 0 / 15%);
 }
 
-/* Neutral composition band (`themeClasses.neutral`). Only remaps the canvas
-   pair; nested chrome stays on the page palette. */
+/* Neutral composition band (`themeClasses.neutral`, blocks/shared/band-theme.ts).
+   Only remaps the canvas pair; nested chrome stays on the page palette. */
 [data-band="neutral"],
 .band-neutral {
   --background: var(--neutral);
@@ -1347,17 +1406,19 @@
 
 /* Visual posters (src/features/immersive/visual/streak-visual.tsx), ported
    from sas-site: an effect slot ships one still per ground polarity and the
-   ground decides which paints. Light is the page; a legacy forced-dark block
-   or a dark band flips the pair. Keyed here rather than on a hook so the
-   server HTML already shows the right still. */
+   ground decides which paints. Light is the site default; a dark ground (the
+   visitor's dark theme, a dark pin, an inverted band on a light visit) flips
+   the pair. Keyed on the `dark` variant rather than on a hook so the server
+   HTML already shows the right still. */
 [data-visual-poster="dark"] {
-  display: none;
+  @variant not-dark {
+    display: none;
+  }
 }
-:is([data-theme="dark"], .band-dark) [data-visual-poster="light"] {
-  display: none;
-}
-:is([data-theme="dark"], .band-dark) [data-visual-poster="dark"] {
-  display: block;
+[data-visual-poster="light"] {
+  @variant dark {
+    display: none;
+  }
 }
 
 /* Visual bleed (src/features/immersive/visual/leak-visual.tsx): a visual that
@@ -1424,8 +1485,8 @@
 }
 
 /* The chrome's glass, stated once. Every floating surface reads these, and
-   one that floats over a dark band carries `data-theme="dark"`, which swaps
-   the set. A glass surface is one layer, lit from above:
+   one that floats over a band carries that band's polarity as `data-theme`,
+   which swaps the set on a dark ground. A glass surface is one layer, lit from above:
 
    - the body: one linear gradient, a touch denser at the top where the light
      falls, over a frost (backdrop blur, with a saturation lift so colour
@@ -1492,27 +1553,29 @@
   --chrome-glass-swap: --glass-top 240ms ease, --glass-bottom 240ms ease, box-shadow 240ms ease;
 }
 
-/* The dark material: while the chrome floats over a dark band (it stamps
-   itself), and everywhere in the dark theme, where the page itself is the
-   dark ground. `--chrome-ink` needs neither: it reads `--foreground`. */
-[data-chrome][data-theme="dark"],
-[data-theme="dark"] [data-chrome] {
-  --chrome-ink-muted: #c4c4ca;
-  --chrome-ink-quiet: #a1a1aa;
-  --chrome-glyph: #f47a36;
-  --chrome-glass-top: rgb(58 58 62 / 0.74);
-  --chrome-glass-bottom: rgb(30 30 33 / 0.8);
-  --chrome-glass-thick-top: rgb(46 46 50 / 0.9);
-  --chrome-glass-thick-bottom: rgb(28 28 31 / 0.92);
-  --chrome-rim-top: rgb(255 255 255 / 0.3);
-  --chrome-rim-bottom: rgb(255 255 255 / 0.1);
-  --chrome-fill-solid: #1c1c1f;
-  --chrome-selected: rgb(255 255 255 / 0.13);
-  --chrome-hover: rgb(255 255 255 / 0.06);
-  --chrome-press: rgb(255 255 255 / 0.16);
-  --chrome-hairline: rgb(255 255 255 / 0.1);
-  --chrome-lift: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -6px rgb(0 0 0 / 0.5);
-  --chrome-lift-thick: 0 2px 6px rgb(0 0 0 / 0.3), 0 24px 56px -12px rgb(0 0 0 / 0.6);
+/* The dark material: on any dark ground, the `dark` variant's call. That is
+   the dark theme, where the page itself is the dark ground, and a band the
+   chrome floats over, whose polarity it stamps on itself (an inverted band
+   on a light visit). `--chrome-ink` needs neither: it reads `--foreground`. */
+[data-chrome] {
+  @variant dark {
+    --chrome-ink-muted: #c4c4ca;
+    --chrome-ink-quiet: #a1a1aa;
+    --chrome-glyph: #f47a36;
+    --chrome-glass-top: rgb(58 58 62 / 0.74);
+    --chrome-glass-bottom: rgb(30 30 33 / 0.8);
+    --chrome-glass-thick-top: rgb(46 46 50 / 0.9);
+    --chrome-glass-thick-bottom: rgb(28 28 31 / 0.92);
+    --chrome-rim-top: rgb(255 255 255 / 0.3);
+    --chrome-rim-bottom: rgb(255 255 255 / 0.1);
+    --chrome-fill-solid: #1c1c1f;
+    --chrome-selected: rgb(255 255 255 / 0.13);
+    --chrome-hover: rgb(255 255 255 / 0.06);
+    --chrome-press: rgb(255 255 255 / 0.16);
+    --chrome-hairline: rgb(255 255 255 / 0.1);
+    --chrome-lift: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -6px rgb(0 0 0 / 0.5);
+    --chrome-lift-thick: 0 2px 6px rgb(0 0 0 / 0.3), 0 24px 56px -12px rgb(0 0 0 / 0.6);
+  }
 }
 
 /* A glass surface must be a positioned box: its rim is drawn in `::before`.
@@ -2336,29 +2399,6 @@
   from {
     stroke-dashoffset: 1;
   }
-}
-
-/* Figures (src/features/figures/ui, docs/figures.md).
-
-   Series colors: four categorical slots, assigned by series order and never
-   cycled, plus a neutral for `reference` series. Light and dark are selected
-   separately, not flipped. sas-site's values, re-checked against this site's
-   own grounds: every step clears 3:1 for non-text contrast on the page ground
-   and on the dark band (numbers in docs/figures.md). Dark follows the ground,
-   not the site theme, so a chart on a dark band takes the dark steps.
-   Re-check before changing a value. */
-:root {
-  --figure-1: #2a78d6;
-  --figure-2: #d95926;
-  --figure-3: #15936a;
-  --figure-4: #b57a00;
-  --figure-reference: var(--muted-foreground);
-}
-:is([data-theme="dark"], .band-dark) {
-  --figure-1: #3987e5;
-  --figure-2: #d95926;
-  --figure-3: #199e70;
-  --figure-4: #c98500;
 }
 
 /* Diagram entrance: explanatory, not decorative. Nodes surface in reading

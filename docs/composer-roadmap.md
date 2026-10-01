@@ -167,6 +167,23 @@ Work to do, all in Phase 1 unless noted:
 
 Hardcoded `data-theme` on `HighImpact`, `HomeHero`, `CallOut` and the work title strip stay until Phase 7, then become band classes.
 
+**Band themes became roles (2026-10-01).** Ported from sas-site's `band_theme_roles`. Everything above this note describes the model before it. One vocabulary for every block, the Section, the hero select and the five legacy blocks, stated once in `src/blocks/shared/band-theme.ts` and offered by one `themeField()`: `default | inverted | neutral | brand`.
+
+- `default` is the page surface in the visitor's palette. `inverted` paints the other palette: dark on a light visit, light on a dark one. `inverted` is a polarity scope, not a token set, so tokens, `dark:` utilities, prose, posters and figure series all flip with it.
+- The polarity model lives in one place, the `dark` custom variant in `src/styles/shadcn-theme.css`. The palettes are the `palette-light` / `palette-dark` utilities in `globals.css`, painted onto `:root`, every `[data-theme]` pin and `.band-inverted`. Script reads a ground from the computed `color-scheme` (`readGround`, `src/utilities/ground.ts`). That replaced `blockSurface`, `.band-dark` and the chrome's `useOverDarkBand` (now `useBandGround`, which stamps the band's polarity, light or dark).
+- `[data-band="dark"]` stays the always-dark panel (the code block). It is not a band theme.
+- A block nested in a Section hides its own theme select. The Section's theme applies there.
+
+Migration `20261001_232240_band_theme_roles` renames stored values in place across all 148 theme enums, versions included, among them the 8 nested `slider_theme` groups:
+
+| Family | Up | Down |
+|---|---|---|
+| Blocks (`light, dark, neutral, brand`) | `light` → `default`, `dark` → `inverted` | exact inverse |
+| Section (`inherit, secondary, accent, inverted`) | `inherit` → `default`, `secondary` → `neutral`, `accent` → `brand` | exact inverse |
+| Legacy (`system, light, dark`) | `system`, `light` → `default`; `dark` → `inverted` | `default` → `system`, `inverted` → `dark`; exact in rendering (`system` drew `light`), not in storage |
+
+A light visit renders as before: legacy `system` and `light` both drew the light palette, and `dark` the dark one. On a dark visit `default` follows the visitor and `inverted` paints the light palette.
+
 ---
 
 ## 6. Phases
@@ -505,7 +522,7 @@ The production run is Phase 9, step 4.
 
 ### Phase 7: contract and normalize (one PR per bullet, each with its own migration, after the Phase 9 content run has soaked)
 
-- [ ] Theme enums on the five legacy blocks: `UPDATE ... WHERE theme = 'system'` → `light`, then recreate as `light | dark | neutral | brand`; components read `sectionThemeClass`; `useBlockTheme.ts` and `ClientBlockWrapper.tsx` deleted; hardcoded `data-theme` on heroes, CallOut and the work title strip become band classes. Prompt: none (enum recreate); hand-check normalize-before-cast; `pnpm check:migrations`.
+- [ ] Theme enums on the five legacy blocks. **Enums done 2026-10-01** as band roles (Section 5, "Band themes became roles"): migration `20261001_232240_band_theme_roles`; the components read `sectionThemeClass`; `useBlockTheme.ts` and `ClientBlockWrapper.tsx` are deleted. **Open:** the hardcoded `data-theme` on the heroes, CallOut and the work title strip. These are absolute pins, a scope the polarity model keeps on purpose (a hero over media stays dark in both themes), so convert one only where it should flip with the visitor.
 - [ ] Retire legacy blocks from the drawer once no document uses them (config only, no schema). Tables stay until a later drop.
 - [ ] Posts `content`: drop the field only if every post has moved; otherwise leave it optional forever.
 - [x] Remove dormant dependencies and config (D13), done 2026-09-27 (no consumers, no schema): `glslify`, `glslify-import`, `glslify-loader`, `glsl-canvas-js`, `glsl-noise`, `glsl-easings`, `glsl-fast-gaussian-blur`, `raw-loader`, `shader.d.ts`, the Turbopack `.glsl/.vert/.frag` rules, `src/hooks/useHoverShader.ts`, `useImageCropMaterial.ts`, `src/utilities/texturePreloader.ts`, `calculateMeshScale.ts`, `src/animations/*` (unused), `swiper`, `next-view-transitions`, `payloadcms-lexical-ext`, `hamo`, `split-type`, `leva` (no demo playgrounds here).

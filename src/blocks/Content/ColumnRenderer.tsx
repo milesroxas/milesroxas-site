@@ -20,7 +20,7 @@ type Column = NonNullable<ContentBlock['columns']>[number]
 
 interface ColumnRendererProps {
   column: Column
-  appliedTheme: string
+  theme: ContentBlock['theme']
   isFullWidth: boolean
   sizes: Column['sizes']
 }
@@ -29,7 +29,7 @@ const renderWorkCard = (works: Work) => <WorkCard doc={works} />
 
 const renderPostCard = (posts: Post) => <PostCard doc={posts} />
 
-const renderRichText = (text: Column['text'], appliedTheme: string) => {
+const renderRichText = (text: Column['text']) => {
   if (!text?.richText) return null
 
   return (
@@ -42,9 +42,7 @@ const renderRichText = (text: Column['text'], appliedTheme: string) => {
       {text.enableLink && text.link && (
         <CMSLink
           {...text.link}
-          className={cn({
-            'text-primary-foreground hover:text-primary-foreground/80': appliedTheme === 'dark',
-          })}
+          className="dark:text-primary-foreground dark:hover:text-primary-foreground/80"
         />
       )}
     </>
@@ -74,7 +72,7 @@ const renderSectionHeading = (sectionHeading: Column['sectionHeading']) => {
 
 const renderMedia = (
   media: Column['media'],
-  appliedTheme: string,
+  theme: ContentBlock['theme'],
   isFullWidth: boolean,
   sizes: Column['sizes'],
 ) => {
@@ -86,7 +84,7 @@ const renderMedia = (
       media={media.media}
       aspectRatio={media.aspectRatio}
       fullWidth={media.fullWidth || (isFullWidth && sizes === 'full')}
-      theme={appliedTheme as 'system' | 'light' | 'dark' | null | undefined}
+      theme={theme}
       space={{ pt: null, pb: null, mt: null, mb: null }}
     />
   )
@@ -94,7 +92,7 @@ const renderMedia = (
 
 const renderSlider = (
   slider: Column['slider'],
-  appliedTheme: string,
+  theme: ContentBlock['theme'],
   isFullWidth: boolean,
   sizes: Column['sizes'],
 ) => {
@@ -107,7 +105,7 @@ const renderSlider = (
         slides={slider.slides as SliderBlockType['slides']}
         style={slider.style}
         className="py-0"
-        theme={appliedTheme as 'system' | 'light' | 'dark' | null | undefined}
+        theme={theme}
         fullWidth={isFullWidth && sizes === 'full'}
       />
     </div>
@@ -133,7 +131,7 @@ const renderYouTube = (
 
 export const ColumnRenderer: React.FC<ColumnRendererProps> = ({
   column,
-  appliedTheme,
+  theme,
   isFullWidth,
   sizes,
 }) => {
@@ -148,7 +146,7 @@ export const ColumnRenderer: React.FC<ColumnRendererProps> = ({
   }
 
   if (content === 'text') {
-    return renderRichText(column.text, appliedTheme)
+    return renderRichText(column.text)
   }
 
   if (content === 'sectionHeading') {
@@ -156,11 +154,11 @@ export const ColumnRenderer: React.FC<ColumnRendererProps> = ({
   }
 
   if (content === 'media') {
-    return renderMedia(column.media, appliedTheme, isFullWidth, sizes)
+    return renderMedia(column.media, theme, isFullWidth, sizes)
   }
 
   if (content === 'slider') {
-    return renderSlider(column.slider, appliedTheme, isFullWidth, sizes)
+    return renderSlider(column.slider, theme, isFullWidth, sizes)
   }
 
   if (content === 'youTube') {

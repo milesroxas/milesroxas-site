@@ -23,8 +23,8 @@ const AT_REST: Tracking = { current: -1, visible: false }
 /**
  * Everything the Contents button derives from scroll, from cached geometry:
  * the section being read, whether the button shows, and the progress ring.
- * (Which surface it wears over a dark band is the chrome's shared
- * `useOverDarkBand`.) `scopeRef` is any element inside the page's
+ * (Which surface it wears over a band is the chrome's shared
+ * `useBandGround`.) `scopeRef` is any element inside the page's
  * `<article>`, the scope it indexes.
  *
  * Edges are measured once, in document space, and every scroll is

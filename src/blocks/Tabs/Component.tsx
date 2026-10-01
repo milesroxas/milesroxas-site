@@ -1,9 +1,9 @@
 'use client'
 
 import { SliderBlock } from '@/blocks/Slider/Component'
+import { sectionThemeClass } from '@/blocks/shared/band-theme'
 import RichText from '@/components/RichText/Legacy'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/legacy-tabs'
-import { useBlockTheme } from '@/hooks/useBlockTheme'
 import { type SpaceProps, useSpacing } from '@/hooks/useSpacing'
 import type { TabsBlock as TabsBlockProps } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -16,15 +16,13 @@ type TabsBlockLocalProps = TabsBlockProps & {
 }
 
 export const TabsBlock: React.FC<TabsBlockLocalProps> = (props) => {
-  const { tabs, space, heading, theme = 'system' } = props
-
-  const appliedTheme = useBlockTheme(theme)
+  const { tabs, space, heading, theme } = props
 
   const spacingStyles = useSpacing(space as SpaceProps)
 
   return (
-    <div data-theme={appliedTheme} className={cn('w-full', {})}>
-      <div style={spacingStyles} className="bg-background text-foreground">
+    <div className={cn(sectionThemeClass(theme), 'w-full')}>
+      <div style={spacingStyles}>
         <div className="container px-8 md:px-14 lg:px-16">
           <Tabs
             defaultValue={tabs?.[0]?.id != null ? String(tabs[0].id) : undefined}
@@ -77,7 +75,7 @@ export const TabsBlock: React.FC<TabsBlockLocalProps> = (props) => {
                         <SliderBlock
                           {...tab.slider}
                           blockType="slider"
-                          theme="dark"
+                          theme={theme}
                           slides={tab.slider.slides}
                           id={tab.id}
                         />

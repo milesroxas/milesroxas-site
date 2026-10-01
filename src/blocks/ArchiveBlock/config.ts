@@ -5,6 +5,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
+import { themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 
 export const Archive: Block = {
@@ -12,19 +13,7 @@ export const Archive: Block = {
   admin: { group: BLOCK_GROUPS.lists },
   interfaceName: 'ArchiveBlock',
   fields: [
-    {
-      name: 'theme',
-      type: 'select',
-      defaultValue: 'system',
-      admin: {
-        description: 'Override the site theme for this content block.',
-      },
-      options: [
-        { label: 'System (Follow site theme)', value: 'system' },
-        { label: 'Light', value: 'light' },
-        { label: 'Dark', value: 'dark' },
-      ],
-    },
+    themeField(),
     {
       name: 'cardStyle',
       type: 'select',

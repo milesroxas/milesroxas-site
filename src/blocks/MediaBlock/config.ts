@@ -5,6 +5,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
+import { themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { sectionSpacing } from '@/fields/sectionSpacing'
 
@@ -52,19 +53,7 @@ export const MediaBlock: Block = {
           'Makes the media span the full width of its container. Note: For true edge-to-edge display, set both this option AND use "Full Width" in the parent Content Block settings.',
       },
     },
-    {
-      name: 'theme',
-      type: 'select',
-      defaultValue: 'system',
-      admin: {
-        description: 'Override the site theme for this content block.',
-      },
-      options: [
-        { label: 'System (Follow site theme)', value: 'system' },
-        { label: 'Light', value: 'light' },
-        { label: 'Dark', value: 'dark' },
-      ],
-    },
+    themeField(),
     {
       name: 'showCaption',
       type: 'checkbox',

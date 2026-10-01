@@ -1,6 +1,6 @@
 import type { Block, Field } from 'payload'
+import { themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
-
 import { sectionSpacing } from '@/fields/sectionSpacing'
 
 const slideFields: Field[] = [
@@ -50,16 +50,7 @@ export const SliderBlock: Block = {
   admin: { group: BLOCK_GROUPS.interactive },
   interfaceName: 'SliderBlock',
   fields: [
-    {
-      name: 'theme',
-      type: 'select',
-      defaultValue: 'system',
-      options: [
-        { label: 'System Default', value: 'system' },
-        { label: 'Light', value: 'light' },
-        { label: 'Dark', value: 'dark' },
-      ],
-    },
+    themeField(),
     {
       name: 'introContent',
       type: 'group',

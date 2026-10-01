@@ -6,6 +6,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 import type { Block, Field } from 'payload'
 import { SliderBlock } from '@/blocks/Slider/config'
+import { themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { sectionHeading } from '@/fields/sectionHeading'
 import { sectionSpacing } from '@/fields/sectionSpacing'
@@ -73,16 +74,7 @@ export const TabsBlock: Block = {
   labels: { singular: 'Tab slider', plural: 'Tab sliders' },
   interfaceName: 'TabsBlock',
   fields: [
-    {
-      name: 'theme',
-      type: 'select',
-      defaultValue: 'system',
-      options: [
-        { label: 'System Default', value: 'system' },
-        { label: 'Light', value: 'light' },
-        { label: 'Dark', value: 'dark' },
-      ],
-    },
+    themeField(),
     sectionHeading(),
     sectionSpacing(),
     {

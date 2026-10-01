@@ -9,6 +9,7 @@ import type { Block, Field } from 'payload'
 import { FormBlock } from '@/blocks/Form/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { SliderBlock } from '@/blocks/Slider/config'
+import { themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { link } from '@/fields/link'
 import { sectionSpacing } from '@/fields/sectionSpacing'
@@ -375,19 +376,7 @@ export const Content: Block = {
   labels: { singular: 'Columns', plural: 'Columns' },
   interfaceName: 'ContentBlock',
   fields: [
-    {
-      name: 'theme',
-      type: 'select',
-      defaultValue: 'system',
-      admin: {
-        description: 'Override the site theme for this content block.',
-      },
-      options: [
-        { label: 'System (Follow site theme)', value: 'system' },
-        { label: 'Light', value: 'light' },
-        { label: 'Dark', value: 'dark' },
-      ],
-    },
+    themeField(),
     {
       name: 'containerWidth',
       type: 'select',

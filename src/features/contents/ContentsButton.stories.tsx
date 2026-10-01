@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { INITIAL_VIEWPORTS } from 'storybook/viewport'
-import { Section, type SectionTheme } from '@/blocks/shared/section'
+import type { BandTheme } from '@/blocks/shared/band-theme'
+import { Section } from '@/blocks/shared/section'
 import { ContentsButton } from './ContentsButton'
 
 const LAB_SECTIONS = [
@@ -19,7 +20,7 @@ const LONG_SECTIONS = Array.from(
 
 /**
  * The button reads the page, so the story is a page: a hero it stays hidden
- * over, an article of `h2` sections (the third on a dark band, to show the
+ * over, an article of `h2` sections (the third on an inverted band, to show the
  * surface follow it), and the closing band it leaves for. Scroll to drive it.
  * The chrome's own sizes (`--chrome-top`, `--dock-clearance`) come from
  * globals.css, so the button stands where it does on the site.
@@ -27,13 +28,13 @@ const LONG_SECTIONS = Array.from(
 const Page = ({ sections }: { sections: string[] }) => (
   <div>
     <article className="relative z-10 bg-background">
-      <Section className="flex min-h-svh items-end" theme="dark">
+      <Section className="flex min-h-svh items-end" theme="inverted">
         <div className="container">
           <h1 className="text-display">Payload CMS Shader Plugin</h1>
         </div>
       </Section>
       {sections.map((title, index) => {
-        const theme: SectionTheme = index === 2 ? 'dark' : 'light'
+        const theme: BandTheme = index === 2 ? 'inverted' : 'default'
         return (
           <Section key={title} theme={theme}>
             <div className="container flex min-h-[70svh] flex-col gap-6">

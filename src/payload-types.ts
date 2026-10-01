@@ -756,9 +756,9 @@ export interface PostSectionBlock {
    */
   customize?: boolean | null;
   /**
-   * Surface within the visitor's site theme. "Inherit" is the page surface; "Inverted" is a contrasted band, not a forced dark mode.
+   * The band this section paints. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it, to flip this section against its neighbours.
    */
-  theme?: ('inherit' | 'secondary' | 'accent' | 'inverted') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   /**
    * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
    */
@@ -808,9 +808,9 @@ export interface RichTransitionBlock {
    */
   layout?: ('offset' | 'left' | 'centered' | 'split' | 'statement' | 'prose') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   /**
    * Outline level and type size for the Prose layout, set against the article body rather than the page headings.
    */
@@ -867,9 +867,9 @@ export interface FeatureHeadingOffsetBlock {
    */
   bodySize?: ('small' | 'medium' | 'large') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'featureHeadingOffset';
@@ -928,9 +928,9 @@ export interface FullMediaBlock {
    */
   contentPosition?: ('left' | 'right') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'fullMedia';
@@ -978,9 +978,9 @@ export interface MediaContentSplitBlock {
    */
   aspectRatio?: ('16-9' | '3-2' | '21-9') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaContentSplit';
@@ -1024,9 +1024,9 @@ export interface SplitContentNarrowBlock {
    */
   imagePosition?: ('left' | 'right') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'splitContentNarrow';
@@ -1080,9 +1080,9 @@ export interface CarouselSplitBlock {
    */
   showArrows?: boolean | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'carouselSplit';
@@ -1128,9 +1128,9 @@ export interface ImagePairBlock {
    */
   textPosition?: ('under-portrait' | 'under-landscape') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'imagePair';
@@ -1172,9 +1172,9 @@ export interface SplitImageOffsetBlock {
    */
   captionPosition?: ('left' | 'right') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'splitImageOffset';
@@ -1220,9 +1220,9 @@ export interface FeatureImageStatementBlock {
    */
   aspectRatio?: ('responsive' | '16-9' | '3-2' | '21-9') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'featureImageStatement';
@@ -1256,9 +1256,9 @@ export interface CaptionBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'caption';
@@ -1281,9 +1281,9 @@ export interface YouTubeBlock {
    */
   size?: ('full' | 'inset' | 'small') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'youtube';
@@ -1317,9 +1317,9 @@ export interface RichTextBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'richText';
@@ -1364,9 +1364,9 @@ export interface ChartBlock {
    */
   width?: ('text' | 'wide' | 'full') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   spec: {
     specVersion: 1;
     kind: 'bar' | 'line' | 'area' | 'scatter' | 'diverging-bar';
@@ -1696,9 +1696,9 @@ export interface DiagramBlock {
    */
   width?: ('text' | 'wide' | 'full') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   spec:
     | {
         specVersion: 1;
@@ -4127,9 +4127,9 @@ export interface FaqBlock {
     label: string;
   };
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'faq';
@@ -4160,9 +4160,9 @@ export interface CarouselBlock {
    */
   slideSize?: ('full' | 'half' | 'third') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'carousel';
@@ -4220,9 +4220,9 @@ export interface CarouselTabsBlock {
    */
   tabSize?: ('default' | 'small') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'carouselTabs';
@@ -4280,9 +4280,9 @@ export interface FeatureTabsBlock {
    */
   tabSize?: ('default' | 'small') | null;
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'featureTabs';
@@ -4319,9 +4319,9 @@ export interface InsightListBlock {
     id?: string | null;
   }[];
   /**
-   * Section surface within the visitor's site theme. Does not force light/dark mode — "dark" is a contrasted band in whichever theme the visitor chose.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('light' | 'dark' | 'neutral' | 'brand') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'insightList';
@@ -4332,9 +4332,9 @@ export interface InsightListBlock {
  */
 export interface ContentBlock {
   /**
-   * Override the site theme for this content block.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('system' | 'light' | 'dark') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   /**
    * Control the width of the content container
    */
@@ -4419,7 +4419,10 @@ export interface ContentBlock {
           variant?: ('featured' | 'card') | null;
         };
         slider?: {
-          theme?: ('system' | 'light' | 'dark') | null;
+          /**
+           * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
+           */
+          theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
           introContent?: {
             heading?: string | null;
             subheading?: string | null;
@@ -4606,9 +4609,9 @@ export interface WorkSectionBlock {
    */
   customize?: boolean | null;
   /**
-   * Surface within the visitor's site theme. "Inherit" is the page surface; "Inverted" is a contrasted band, not a forced dark mode.
+   * The band this section paints. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it, to flip this section against its neighbours.
    */
-  theme?: ('inherit' | 'secondary' | 'accent' | 'inverted') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   /**
    * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
    */
@@ -4651,7 +4654,10 @@ export interface WorkSectionBlock {
  * via the `definition` "SliderBlock".
  */
 export interface SliderBlock {
-  theme?: ('system' | 'light' | 'dark') | null;
+  /**
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
+   */
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   introContent?: {
     heading?: string | null;
     subheading?: string | null;
@@ -4690,7 +4696,10 @@ export interface SliderBlock {
  * via the `definition` "TabsBlock".
  */
 export interface TabsBlock {
-  theme?: ('system' | 'light' | 'dark') | null;
+  /**
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
+   */
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   heading?: {
     style?: ('default' | 'center') | null;
     eyebrow?: string | null;
@@ -4726,7 +4735,10 @@ export interface TabsBlock {
           [k: string]: unknown;
         } | null;
         slider?: {
-          theme?: ('system' | 'light' | 'dark') | null;
+          /**
+           * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
+           */
+          theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
           style?: ('default' | 'cropped' | 'single') | null;
           slides: {
             slide: {
@@ -4758,9 +4770,9 @@ export interface TabsBlock {
  */
 export interface ArchiveBlock {
   /**
-   * Override the site theme for this content block.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('system' | 'light' | 'dark') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   cardStyle?: ('card' | 'featured') | null;
   introContent?: {
     root: {
@@ -5079,9 +5091,9 @@ export interface MediaBlock {
    */
   fullWidth?: boolean | null;
   /**
-   * Override the site theme for this content block.
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
-  theme?: ('system' | 'light' | 'dark') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   showCaption?: boolean | null;
   captionLayout?: ('center' | 'left' | 'right' | 'split-left' | 'split-right') | null;
   richText?: {
@@ -5120,9 +5132,9 @@ export interface PageSectionBlock {
    */
   customize?: boolean | null;
   /**
-   * Surface within the visitor's site theme. "Inherit" is the page surface; "Inverted" is a contrasted band, not a forced dark mode.
+   * The band this section paints. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it, to flip this section against its neighbours.
    */
-  theme?: ('inherit' | 'secondary' | 'accent' | 'inverted') | null;
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   /**
    * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
    */

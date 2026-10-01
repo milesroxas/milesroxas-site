@@ -34,7 +34,7 @@ const meta = {
     heading: 'The gap in brand storytelling',
     slideSize: 'full',
     slides,
-    theme: 'light',
+    theme: 'default',
   },
 } satisfies Meta<typeof CarouselSplitBlock>
 
@@ -70,6 +70,6 @@ export const Video: Story = {
   },
 }
 
-export const Dark: Story = {
-  args: { theme: 'dark' },
+export const Inverted: Story = {
+  args: { theme: 'inverted' },
 }

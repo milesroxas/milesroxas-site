@@ -1,10 +1,10 @@
 'use client'
 
+import { sectionThemeClass } from '@/blocks/shared/band-theme'
 import type { CardPostData } from '@/components/Card/Posts/Component'
 import type { CardWorkData } from '@/components/Card/Works/Component'
 import { CollectionArchive } from '@/components/CollectionArchive'
 import RichText from '@/components/RichText/Legacy'
-import { useBlockTheme } from '@/hooks/useBlockTheme'
 import type { ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 export default function ArchiveBlockClient({
@@ -14,18 +14,17 @@ export default function ArchiveBlockClient({
   works,
   cardStyle,
 }: {
-  theme: 'light' | 'dark' | 'system' | undefined | null
+  theme: ArchiveBlockProps['theme']
   introContent?: ArchiveBlockProps['introContent']
   posts?: CardPostData[]
   works?: CardWorkData[]
   cardStyle?: 'card' | 'featured'
 }) {
-  const appliedTheme = useBlockTheme(theme)
   return (
     <div
-      data-theme={appliedTheme}
       className={cn(
-        'bg-background pt-32 pb-36 text-foreground',
+        sectionThemeClass(theme),
+        'pt-32 pb-36',
         cardStyle === 'featured' && 'bg-red-500',
       )}
     >

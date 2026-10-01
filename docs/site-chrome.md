@@ -68,10 +68,15 @@ dark over dark bands instead of thinning. The gradient stops are registered
 Hover moves the glass halfway to solid. Reduce transparency makes it solid
 and unfrosted; increase contrast adds an ink border and drops the rim.
 
-## Dark bands
+## Bands under the chrome
 
-Every floating piece samples the band under it with `useOverDarkBand`
-(`.band-dark` or anything `data-theme="dark"`) and swaps to its dark material.
+Every floating piece samples the band under it with `useBandGround`
+(`src/components/SiteChrome/use-band-ground.ts`): any ground scope (a hero, an
+inverted Section, the always-dark panel, a pinned visual), its polarity read
+from the stylesheet (`readGround`, `src/utilities/ground.ts`). The piece wears
+that polarity as `data-theme`, so it takes its dark material over a dark band
+and its light glass over a light one, including an inverted band on a dark
+visit. Over the page itself it stamps nothing and follows the visitor's theme.
 Chrome marks itself `data-chrome` so it never counts as a band. The Contents
 button uses the same hook.
 

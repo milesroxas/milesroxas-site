@@ -11,7 +11,7 @@ const meta = {
     blockType: 'mediaBlock',
     media: imageMedia,
     aspectRatio: 'landscape',
-    theme: 'light',
+    theme: 'default',
   },
   argTypes: {
     aspectRatio: {
@@ -20,7 +20,7 @@ const meta = {
     },
     theme: {
       control: 'select',
-      options: ['system', 'light', 'dark'],
+      options: ['default', 'inverted', 'neutral', 'brand'],
     },
     captionLayout: {
       control: 'select',

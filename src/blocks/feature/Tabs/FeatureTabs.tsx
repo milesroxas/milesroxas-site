@@ -5,11 +5,9 @@ import { BlockGrid } from '@/blocks/shared/grid'
 import type { RowWithVisual } from '@/blocks/shared/row-visuals'
 import { Section } from '@/blocks/shared/section'
 import { TabbedPanels } from '@/blocks/shared/tabs'
-import { blockSurface } from '@/blocks/shared/visual-surface'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import { Visual } from '@/components/Visual'
-import type { StreakVisualSurface } from '@/features/immersive/visual'
 import type { FeatureTabsBlock as FeatureTabsBlockData } from '@/payload-types'
 
 /** A tab after the adapter resolved its visual slot; the story `source` never reaches the client. */
@@ -37,10 +35,7 @@ const MEDIA_SIZES = '(max-width: 1024px) 100vw, 62vw'
  * the grid's gap, the plate at 3:2: three columns of a 768px page cannot hold
  * a heading, and a 16:9 plate there is shallower than its caption card.
  */
-const TabPanel: React.FC<{ tab: FeatureTab; surface: StreakVisualSurface }> = ({
-  tab,
-  surface,
-}) => (
+const TabPanel: React.FC<{ tab: FeatureTab }> = ({ tab }) => (
   <BlockGrid>
     <div className="flex flex-col justify-between gap-12 md:col-span-8 lg:col-span-3">
       <div className="text-stack">
@@ -79,7 +74,6 @@ const TabPanel: React.FC<{ tab: FeatureTab; surface: StreakVisualSurface }> = ({
           imgClassName="object-cover"
           placement="block"
           size={MEDIA_SIZES}
-          surface={surface}
           visual={tab.visual}
         />
       ) : null}
@@ -101,15 +95,12 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({ bare, tabs, tabSize, t
   const panels = tabs ?? []
   if (panels.length === 0) return null
 
-  // Radix mounts only the active panel, so at most one tab's field is live.
-  const surface = blockSurface(theme, Boolean(bare))
-
   return (
     <Section bare={bare} theme={theme}>
       <Container>
         <TabbedPanels
           ariaLabel="Feature tabs"
-          renderPanel={(tab) => <TabPanel surface={surface} tab={tab} />}
+          renderPanel={(tab) => <TabPanel tab={tab} />}
           rows={panels}
           tabSize={tabSize}
         />
