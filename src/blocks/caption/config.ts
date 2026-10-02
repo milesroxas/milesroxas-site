@@ -1,5 +1,5 @@
 import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, mediaSizeField, optionalFields, themeField } from '@/blocks/shared/fields'
 
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 
@@ -23,28 +23,24 @@ export const Caption: Block = {
       relationTo: 'media',
       required: true,
     },
-    {
-      name: 'size',
-      type: 'select',
-      defaultValue: 'full',
-      options: [
-        { label: 'Full width', value: 'full' },
-        { label: 'Inset', value: 'inset' },
-        { label: 'Small', value: 'small' },
+    ...optionalFields({
+      name: 'showCaptionOverride',
+      label: 'Override caption',
+      fields: [
+        {
+          name: 'captionOverride',
+          type: 'richText',
+          admin: {
+            description: "Replaces the media document's canonical caption for this placement only.",
+          },
+        },
       ],
-      admin: {
-        description:
-          'Presentation for this placement only; the media document itself stays layout-neutral.',
-      },
-    },
-    {
-      name: 'captionOverride',
-      type: 'richText',
-      admin: {
-        description:
-          "Optional. Replaces the media document's canonical caption for this placement only.",
-      },
-    },
-    themeField(),
+    }),
+    designFields([
+      mediaSizeField(
+        'Full width runs edge to edge across the page. Contained fills the page column; Inset and Small sit centred in it, all with rounded corners. Presentation for this placement only; the media document itself stays layout-neutral.',
+      ),
+      themeField(),
+    ]),
   ],
 }

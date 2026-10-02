@@ -1,4 +1,5 @@
 import type React from 'react'
+import { MEDIA_SIZE_CLASS } from '@/blocks/shared/media-size'
 import { Section } from '@/blocks/shared/section'
 import type { YouTubeBlock as YouTubeBlockProps } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -11,12 +12,6 @@ type Props = YouTubeBlockProps & {
   className?: string
   enableGutter?: boolean
   disableInnerContainer?: boolean
-}
-
-const sizeClasses: Record<NonNullable<YouTubeBlockProps['size']>, string> = {
-  full: '',
-  inset: 'mx-auto max-w-3xl',
-  small: 'mx-auto max-w-md',
 }
 
 /**
@@ -37,11 +32,15 @@ export const YouTubeBlock: React.FC<Props> = ({
   const video = parseYouTube(url)
   if (!video) return null
 
+  const sizeKey = size ?? 'contained'
+  // In rich text (`enableGutter` off) there is no column to leave, so Full fills the text measure.
+  const bleed = sizeKey === 'full' && enableGutter
+
   return (
     <Section bare={bare} spacing="loose" theme={theme}>
-      <div className={cn({ container: enableGutter }, className)}>
-        <div className={sizeClasses[size ?? 'full']}>
-          <LiteYouTube title={title} video={video} />
+      <div className={cn({ container: enableGutter && !bleed }, className)}>
+        <div className={MEDIA_SIZE_CLASS[sizeKey]}>
+          <LiteYouTube className={bleed ? 'rounded-none' : undefined} title={title} video={video} />
         </div>
       </div>
     </Section>

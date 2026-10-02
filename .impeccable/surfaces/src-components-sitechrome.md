@@ -17,7 +17,7 @@ Source of approval: Paper file "Scratchpad", page "Chrome — B revised" (11 fra
 
 THESIS: Pages are always visible as tabs; Ask is a separate action beside them. Refuses the hidden-menu takeover and the search-field-as-navigation capsule.
 
-OWN-WORLD: Simple glass (user-directed 2026-09-29, replacing the Codrops liquid glass port): one linear-gradient body (white 84% to 70%; thick 93% to 86%) over a 24px frost at 180% saturation (thick 40px); a 1px linear-gradient rim masked to the edge, bright at the top, near clear on the sides, a soft glow along the bottom; a 0.5px ink hairline and a soft lift. Dark glass (#3A3A3E 74% to #1E1E21 80%) over dark bands. Nothing stacks on the glass: no sheen, no veil, no scroll-edge fades, no fill in the collapsed phone tab. Legibility first. Corners are concentric rounded rectangles, never capsules, on the site's own radius scale (the cards' and media's): dock, Ask button, field, close and panel 8px (`--radius`) at every size; tabs and the send button 4px inside (`--radius-sm`); suggestion rows, sources, the handoff card and question bubbles 6px (`--radius-md`). IBM Plex Sans 13px in the dock, 600 selected / 500 rest, every label full ink. One orange Ask glyph. Selected tab is an 8% ink fill.
+OWN-WORLD: Minimal frosted glass (user-directed 2026-10-01, replacing the 2026-09-29 gradient-and-rim glass, which read forced in dark mode): one flat tint (white 78%, thick 90%; dark rgb(32 32 36) 72%, thick rgb(26 26 30) 88%) over a 20px frost at 140% saturation (thick 32px); a 1px hairline at 8% ink (white 8% in dark) and one soft drop shadow. No gradient, no rim, no bevel highlight. Dark glass over dark bands. Nothing stacks on the glass: no sheen, no veil, no scroll-edge fades, no fill in the collapsed phone tab. Legibility first. Corners are concentric rounded rectangles, never capsules, on the site's own radius scale (the cards' and media's): dock, Ask button, field, close and panel 8px (`--radius`) at every size; tabs and the send button 4px inside (`--radius-sm`); suggestion rows, sources, the handoff card and question bubbles 6px (`--radius-md`). IBM Plex Sans 13px in the dock, 600 selected / 500 rest, every label full ink. One orange Ask glyph. Selected tab is a 7% ink fill (9% white in dark).
 
 STORY: A reviewer lands, reads the work, sees Home · Work · Posts · Contact with the current page filled, asks a question when browsing is slower than asking, and reaches Miles from any answer.
 
@@ -29,7 +29,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
 ## Signature interaction
 
-Ask widens out of its button into the field while the tabs step back (fade, 0.96, 8px blur); the panel grows up from the field's top edge. Close plays the same path back.
+Ask widens out of its button into the field while the tabs step back (fade, 0.96, 8px blur); the button's label, carried inside the field, blurs out as the field's contents sharpen in; the panel grows up from the field's top edge. Close plays the same path back and lands as the button, label already in place.
 
 ## Open
 

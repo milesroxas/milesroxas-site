@@ -1,5 +1,5 @@
 import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, eyebrowFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { contentLexical } from '@/fields/contentLexical'
 import { blockVisualSlotFields } from '@/fields/visual'
@@ -23,7 +23,7 @@ export const SplitContentNarrow: Block = {
   interfaceName: 'SplitContentNarrowBlock',
   labels: { singular: 'Split narrow', plural: 'Split narrow' },
   fields: [
-    { name: 'eyebrow', type: 'text', admin: { description: 'Short kicker above the text.' } },
+    ...eyebrowFields(),
     { name: 'heading', type: 'text' },
     {
       name: 'body',
@@ -40,14 +40,17 @@ export const SplitContentNarrow: Block = {
       relationTo: 'media',
       required: true,
     }),
-    {
-      name: 'imagePosition',
-      type: 'select',
-      label: 'Layout',
-      defaultValue: 'left',
-      options: ['left', 'right'],
-      admin: { description: 'Arrange the image on the left or the right of the text.' },
-    },
-    themeField(),
+    designFields([
+      textSizeField(),
+      {
+        name: 'imagePosition',
+        type: 'select',
+        label: 'Layout',
+        defaultValue: 'left',
+        options: ['left', 'right'],
+        admin: { description: 'Arrange the image on the left or the right of the text.' },
+      },
+      themeField(),
+    ]),
   ],
 }

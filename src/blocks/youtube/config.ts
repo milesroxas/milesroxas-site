@@ -1,5 +1,5 @@
 import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, mediaSizeField, optionalFields, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { parseYouTube } from './video'
 
@@ -45,25 +45,25 @@ export const YouTube: Block = {
           'Paste any YouTube link. A start time in the link (the "Start at" box on YouTube\'s share panel) is kept.',
       },
     },
-    {
-      name: 'title',
-      type: 'text',
-      admin: {
-        description:
-          "Optional. Shown over the poster the way YouTube shows it, and read out as the play button's label.",
-      },
-    },
-    {
-      name: 'size',
-      type: 'select',
-      defaultValue: 'full',
-      options: [
-        { label: 'Full width', value: 'full' },
-        { label: 'Inset', value: 'inset' },
-        { label: 'Small', value: 'small' },
+    ...optionalFields({
+      name: 'showTitle',
+      label: 'Show title',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          admin: {
+            description:
+              "Shown over the poster the way YouTube shows it, and read out as the play button's label.",
+          },
+        },
       ],
-      admin: { description: 'Presentation for this placement, matching the Caption block.' },
-    },
-    themeField(),
+    }),
+    designFields([
+      mediaSizeField(
+        'Full width runs edge to edge across the page (inside rich text it fills the text column). Contained fills the page column; Inset and Small sit centred in it, all with rounded corners, matching the Caption block.',
+      ),
+      themeField(),
+    ]),
   ],
 }

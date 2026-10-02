@@ -1,6 +1,6 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { ASPECT_RATIO_CLASS } from '@/blocks/shared/aspect-ratio'
-import { eyebrowClassName } from '@/blocks/shared/typography'
+import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import { Visual } from '@/components/Visual'
@@ -40,7 +40,14 @@ export const FullMedia = ({
   bare?: boolean
   block: Pick<
     FullMediaBlock,
-    'aspectRatio' | 'contentPosition' | 'eyebrow' | 'heading' | 'showContent' | 'theme' | 'width'
+    | 'aspectRatio'
+    | 'contentPosition'
+    | 'eyebrow'
+    | 'heading'
+    | 'showContent'
+    | 'textSize'
+    | 'theme'
+    | 'width'
   >
   content: DefaultTypedEditorState | null | undefined
   visual: VisualValue
@@ -48,6 +55,7 @@ export const FullMedia = ({
   const showContent =
     block.showContent !== false && Boolean(block.eyebrow || block.heading || content)
   const contentRight = block.contentPosition === 'right'
+  const type = typeScale(block.textSize)
   const contained = block.width === 'contained'
   const aspectClass = contained
     ? ASPECT_RATIO_CLASS[block.aspectRatio ?? '16-9']
@@ -57,7 +65,7 @@ export const FullMedia = ({
       className={cn(
         'relative w-full overflow-hidden bg-muted',
         aspectClass,
-        contained && 'md:col-span-8',
+        contained && 'rounded-lg md:col-span-8',
       )}
       data-reveal="media"
     >
@@ -81,19 +89,14 @@ export const FullMedia = ({
         data-reveal
       >
         {block.eyebrow && <p className={eyebrowClassName}>{block.eyebrow}</p>}
-        {block.heading && <h2 className="text-heading-3 text-balance">{block.heading}</h2>}
+        {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
       </div>
       {content && (
         <div
           className={cn('md:col-span-3', contentRight ? 'md:col-start-6' : 'md:col-start-4')}
           data-reveal
         >
-          <RichText
-            className="text-base/6 lg:text-lg/7"
-            data={content}
-            enableGutter={false}
-            enableProse={false}
-          />
+          <RichText className={type.body} data={content} enableGutter={false} enableProse={false} />
         </div>
       )}
     </>

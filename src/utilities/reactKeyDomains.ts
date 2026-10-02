@@ -162,16 +162,3 @@ export const linkKeys = {
     return `link-${index}`
   },
 }
-
-/**
- * Marquee domain - keys for marquee items (duplicated for animation)
- */
-export const marqueeKeys = {
-  /**
-   * Generate key for a marquee item
-   */
-  fromItem: (text: string, index: number, arrayIndex?: number): string => {
-    const textHash = text.slice(0, 10).replace(/\s+/g, '-')
-    return getCompositeKey('marquee', arrayIndex ?? 0, index, textHash)
-  },
-}

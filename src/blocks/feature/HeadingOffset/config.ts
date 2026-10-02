@@ -1,5 +1,5 @@
 import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, optionalFields, textSizeField, themeField } from '@/blocks/shared/fields'
 
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { featureHeaderFields } from '../shared'
@@ -11,25 +11,17 @@ export const FeatureHeadingOffset: Block = {
   labels: { singular: 'Offset', plural: 'Offsets' },
   fields: [
     ...featureHeaderFields,
-    {
-      name: 'body',
-      type: 'richText',
-      admin: {
-        description: 'Supporting copy in the offset right column. Leave empty to pull the source.',
-      },
-    },
-    {
-      name: 'bodySize',
-      type: 'select',
-      label: 'Body size',
-      defaultValue: 'medium',
-      options: [
-        { label: 'Small', value: 'small' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'Large', value: 'large' },
+    ...optionalFields({
+      name: 'showBody',
+      label: 'Show supporting copy',
+      fields: [
+        {
+          name: 'body',
+          type: 'richText',
+          admin: { description: 'Supporting copy in the offset right column.' },
+        },
       ],
-      admin: { description: 'Type size of the supporting copy.' },
-    },
-    themeField(),
+    }),
+    designFields([textSizeField(), themeField()]),
   ],
 }

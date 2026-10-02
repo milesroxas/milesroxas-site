@@ -3,12 +3,14 @@ import type { ReactNode } from 'react'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import type { RichTransitionBlock } from '@/payload-types'
+import { cn } from '@/utilities/ui'
 import { BlockGrid } from '../shared/grid'
 import { Section } from '../shared/section'
 import {
   eyebrowClassName,
   type ProseHeadingLevel,
   proseHeadingClassNames,
+  typeScale,
 } from '../shared/typography'
 
 /**
@@ -22,7 +24,7 @@ import {
  */
 export type RichTransitionFields = Pick<
   RichTransitionBlock,
-  'body' | 'eyebrow' | 'heading' | 'headingLevel' | 'layout' | 'theme'
+  'body' | 'eyebrow' | 'heading' | 'headingLevel' | 'layout' | 'textSize' | 'theme'
 >
 
 type Layout = NonNullable<RichTransitionFields['layout']>
@@ -39,112 +41,71 @@ const Body = ({ className, data }: { className?: string; data: DefaultTypedEdito
   </div>
 )
 
-/**
- * Offset: the heading cluster starts one column in (columns 2-5), with the
- * body on a narrower measure underneath (columns 2-4). The default
- * section-heading arrangement on the composition grid.
- */
-const Offset = ({ body, eyebrow, heading }: RichTransitionFields) => (
-  <Container>
-    <BlockGrid>
-      <div className="text-stack md:col-span-4 md:col-start-2">
-        {eyebrow ? (
-          <p className={eyebrowClassName} data-reveal data-reveal-group="heading">
-            {eyebrow}
-          </p>
-        ) : null}
-        <h2 className="text-heading-1" data-reveal data-reveal-group="heading">
-          {heading}
-        </h2>
-      </div>
-      {body ? (
-        <div className="md:col-span-3 md:col-start-2">
-          <Body className="text-lg" data={body} />
-        </div>
-      ) : null}
-    </BlockGrid>
-  </Container>
-)
+const Eyebrow = ({ text }: { text?: string | null }) =>
+  text ? (
+    <p className={eyebrowClassName} data-reveal data-reveal-group="heading">
+      {text}
+    </p>
+  ) : null
 
-/**
- * Left: the same stack as Offset, flush with the page column. Heading cluster
- * in columns 1-4, body underneath in columns 1-3.
- */
-const Left = ({ body, eyebrow, heading }: RichTransitionFields) => (
-  <Container>
-    <BlockGrid>
-      <div className="text-stack md:col-span-4">
-        {eyebrow ? (
-          <p className={eyebrowClassName} data-reveal data-reveal-group="heading">
-            {eyebrow}
-          </p>
-        ) : null}
-        <h2 className="text-heading-1" data-reveal data-reveal-group="heading">
-          {heading}
-        </h2>
-      </div>
-      {body ? (
-        <div className="md:col-span-3">
-          <Body className="text-lg" data={body} />
-        </div>
-      ) : null}
-    </BlockGrid>
-  </Container>
-)
+/** Heading cluster over the body on the composition grid; each layout picks the columns. */
+const gridLayout =
+  (headingColumns: string, bodyColumns: string) =>
+  ({ body, eyebrow, heading, textSize }: LayoutProps) => {
+    const type = typeScale(textSize)
+    return (
+      <Container>
+        <BlockGrid>
+          <div className={cn('text-stack', headingColumns)}>
+            <Eyebrow text={eyebrow} />
+            <h2 className={type.title} data-reveal data-reveal-group="heading">
+              {heading}
+            </h2>
+          </div>
+          {body ? (
+            <div className={bodyColumns}>
+              <Body className={type.lead} data={body} />
+            </div>
+          ) : null}
+        </BlockGrid>
+      </Container>
+    )
+  }
+
+/** Offset: cluster one column in (2-5), body on a narrower measure under it (2-4). The default. */
+const Offset = gridLayout('md:col-span-4 md:col-start-2', 'md:col-span-3 md:col-start-2')
+
+/** Left: Offset flush with the page column (1-4, body 1-3). */
+const Left = gridLayout('md:col-span-4', 'md:col-span-3')
+
+/** Split: cluster in columns 1-4, body across the gap in columns 6-8. */
+const Split = gridLayout('md:col-span-4', 'md:col-span-3 md:col-start-6')
 
 /**
  * Centered: heading on a 768px measure over a 640px reading column, stacked
  * and centered on the band. Matches the Paper centered frame (1024px cluster,
  * body at `w-narrow`).
  */
-const Centered = ({ body, eyebrow, heading }: RichTransitionFields) => (
-  <Container>
-    <div className="text-stack mx-auto max-w-5xl text-center">
-      {eyebrow ? (
-        <p className={eyebrowClassName} data-reveal data-reveal-group="heading">
-          {eyebrow}
-        </p>
-      ) : null}
-      <h2 className="text-heading-1 mx-auto max-w-3xl" data-reveal data-reveal-group="heading">
-        {heading}
-      </h2>
-      {body ? <Body className="mx-auto max-w-160 text-base/7" data={body} /> : null}
-    </div>
-  </Container>
-)
-
-/** Split: heading cluster in columns 1-4, body across the gap in columns 6-8. */
-const Split = ({ body, eyebrow, heading }: RichTransitionFields) => (
-  <Container>
-    <BlockGrid>
-      <div className="text-stack md:col-span-4">
-        {eyebrow ? (
-          <p className={eyebrowClassName} data-reveal data-reveal-group="heading">
-            {eyebrow}
-          </p>
-        ) : null}
-        <h2 className="text-heading-1" data-reveal data-reveal-group="heading">
+const Centered = ({ body, eyebrow, heading, textSize }: LayoutProps) => {
+  const type = typeScale(textSize)
+  return (
+    <Container>
+      <div className="text-stack mx-auto max-w-5xl text-center">
+        <Eyebrow text={eyebrow} />
+        <h2 className={cn(type.title, 'mx-auto max-w-3xl')} data-reveal data-reveal-group="heading">
           {heading}
         </h2>
+        {body ? <Body className={cn(type.lead, 'mx-auto max-w-160')} data={body} /> : null}
       </div>
-      {body ? (
-        <div className="md:col-span-3 md:col-start-6">
-          <Body className="text-lg" data={body} />
-        </div>
-      ) : null}
-    </BlockGrid>
-  </Container>
-)
+    </Container>
+  )
+}
 
 /** Statement: display-sized heading, body as a short caption underneath. */
-const Statement = ({ body, eyebrow, heading }: RichTransitionFields) => (
+const Statement = ({ body, eyebrow, heading }: LayoutProps) => (
   <Container>
     <div className="text-stack mx-auto max-w-5xl text-center">
-      {eyebrow ? (
-        <p className={eyebrowClassName} data-reveal data-reveal-group="heading">
-          {eyebrow}
-        </p>
-      ) : null}
+      <Eyebrow text={eyebrow} />
       <h2 className="text-display" data-reveal data-reveal-group="heading">
         {heading}
       </h2>
@@ -207,11 +168,7 @@ const Prose = ({ body, eyebrow, heading, headingLevel, stacked }: LayoutProps) =
     <Container className={stacked ? undefined : proseBandBottomClassName}>
       <BlockGrid data-prose-opener>
         <div className="text-stack md:col-span-4 md:col-start-3">
-          {eyebrow ? (
-            <p className={eyebrowClassName} data-reveal data-reveal-group="heading">
-              {eyebrow}
-            </p>
-          ) : null}
+          <Eyebrow text={eyebrow} />
           <Heading
             className={proseHeadingClassNames[level]}
             data-reveal

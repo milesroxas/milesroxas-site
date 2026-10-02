@@ -801,20 +801,13 @@ export interface PostSectionBlock {
  * via the `definition` "RichTransitionBlock".
  */
 export interface RichTransitionBlock {
+  showEyebrow?: boolean | null;
+  /**
+   * A short kicker above the heading. Most headings read better without one.
+   */
   eyebrow?: string | null;
   heading: string;
-  /**
-   * How the copy sits on the band.
-   */
-  layout?: ('offset' | 'left' | 'centered' | 'split' | 'statement' | 'prose') | null;
-  /**
-   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
-   */
-  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
-  /**
-   * Outline level and type size for the Prose layout, set against the article body rather than the page headings.
-   */
-  headingLevel?: ('h2' | 'h3' | 'h4') | null;
+  showBody?: boolean | null;
   body?: {
     root: {
       type: string;
@@ -830,6 +823,22 @@ export interface RichTransitionBlock {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * How the copy sits on the band.
+   */
+  layout?: ('offset' | 'left' | 'centered' | 'split' | 'statement' | 'prose') | null;
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
+  /**
+   * Outline level and type size for the Prose layout, set against the article body rather than the page headings.
+   */
+  headingLevel?: ('h2' | 'h3' | 'h4') | null;
+  /**
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
+   */
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'richTransition';
@@ -839,13 +848,15 @@ export interface RichTransitionBlock {
  * via the `definition` "FeatureHeadingOffsetBlock".
  */
 export interface FeatureHeadingOffsetBlock {
+  showEyebrow?: boolean | null;
   /**
-   * Short kicker above the heading.
+   * A short kicker above the heading. Most headings read better without one.
    */
   eyebrow?: string | null;
   heading: string;
+  showBody?: boolean | null;
   /**
-   * Supporting copy in the offset right column. Leave empty to pull the source.
+   * Supporting copy in the offset right column.
    */
   body?: {
     root: {
@@ -863,9 +874,9 @@ export interface FeatureHeadingOffsetBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Type size of the supporting copy.
+   * Large sets the heading and copy one step up the type scale.
    */
-  bodySize?: ('small' | 'medium' | 'large') | null;
+  textSize?: ('small' | 'large') | null;
   /**
    * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
@@ -883,14 +894,12 @@ export interface FullMediaBlock {
    * Off renders the media on its own, with no copy beneath it.
    */
   showContent?: boolean | null;
+  showEyebrow?: boolean | null;
   /**
-   * Short kicker above the heading.
+   * A short kicker above the heading. Most headings read better without one.
    */
   eyebrow?: string | null;
   heading?: string | null;
-  /**
-   * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
-   */
   body?: {
     root: {
       type: string;
@@ -916,6 +925,10 @@ export interface FullMediaBlock {
   visualType?: ('media' | 'streakField' | 'lightLeak') | null;
   shader?: PlacedVisualConfig;
   /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
+  /**
    * Contained keeps the media in the page column. Full width bleeds edge to edge.
    */
   width?: ('contained' | 'full-width') | null;
@@ -940,8 +953,9 @@ export interface FullMediaBlock {
  * via the `definition` "MediaContentSplitBlock".
  */
 export interface MediaContentSplitBlock {
+  showEyebrow?: boolean | null;
   /**
-   * Short kicker above the heading.
+   * A short kicker above the heading. Most headings read better without one.
    */
   eyebrow?: string | null;
   heading?: string | null;
@@ -969,6 +983,10 @@ export interface MediaContentSplitBlock {
    */
   visualType?: ('media' | 'streakField' | 'lightLeak') | null;
   shader?: PlacedVisualConfig;
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
   /**
    * Arrange the media on the left or the right of the content.
    */
@@ -990,8 +1008,9 @@ export interface MediaContentSplitBlock {
  * via the `definition` "SplitContentNarrowBlock".
  */
 export interface SplitContentNarrowBlock {
+  showEyebrow?: boolean | null;
   /**
-   * Short kicker above the text.
+   * A short kicker above the heading. Most headings read better without one.
    */
   eyebrow?: string | null;
   heading?: string | null;
@@ -1020,6 +1039,10 @@ export interface SplitContentNarrowBlock {
   visualType?: ('media' | 'streakField' | 'lightLeak') | null;
   shader?: PlacedVisualConfig;
   /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
+  /**
    * Arrange the image on the left or the right of the text.
    */
   imagePosition?: ('left' | 'right') | null;
@@ -1036,8 +1059,9 @@ export interface SplitContentNarrowBlock {
  * via the `definition` "CarouselSplitBlock".
  */
 export interface CarouselSplitBlock {
+  showEyebrow?: boolean | null;
   /**
-   * Short kicker above the heading.
+   * A short kicker above the heading. Most headings read better without one.
    */
   eyebrow?: string | null;
   heading?: string | null;
@@ -1067,6 +1091,10 @@ export interface CarouselSplitBlock {
     caption?: string | null;
     id?: string | null;
   }[];
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
   /**
    * Arrange the deck on the left or the right of the copy.
    */
@@ -1120,6 +1148,10 @@ export interface ImagePairBlock {
    */
   landscapeMedia: number | Media;
   /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
+  /**
    * Arrange the portrait on the left or the right; the landscape fills the other column. On small screens the left image stacks first.
    */
   portraitPosition?: ('left' | 'right') | null;
@@ -1168,6 +1200,10 @@ export interface SplitImageOffsetBlock {
    */
   smallMedia: number | Media;
   /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
+  /**
    * Place the small image and caption on the left or the right of the large image.
    */
   captionPosition?: ('left' | 'right') | null;
@@ -1186,7 +1222,7 @@ export interface SplitImageOffsetBlock {
 export interface FeatureImageStatementBlock {
   media: number | Media;
   /**
-   * Large statement set beneath the image. Leave empty to pull the source.
+   * Set large beneath the image.
    */
   caption?: {
     root: {
@@ -1204,13 +1240,13 @@ export interface FeatureImageStatementBlock {
     [k: string]: unknown;
   } | null;
   /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
+  /**
    * Which edge the statement aligns to beneath the image.
    */
   textPosition?: ('left' | 'right') | null;
-  /**
-   * Small steps the statement down one type size.
-   */
-  textSize?: ('default' | 'small') | null;
   /**
    * Contained keeps the image in the site container; full bleeds edge to edge.
    */
@@ -1233,12 +1269,9 @@ export interface FeatureImageStatementBlock {
  */
 export interface CaptionBlock {
   media: number | Media;
+  showCaptionOverride?: boolean | null;
   /**
-   * Presentation for this placement only; the media document itself stays layout-neutral.
-   */
-  size?: ('full' | 'inset' | 'small') | null;
-  /**
-   * Optional. Replaces the media document's canonical caption for this placement only.
+   * Replaces the media document's canonical caption for this placement only.
    */
   captionOverride?: {
     root: {
@@ -1256,6 +1289,10 @@ export interface CaptionBlock {
     [k: string]: unknown;
   } | null;
   /**
+   * Full width runs edge to edge across the page. Contained fills the page column; Inset and Small sit centred in it, all with rounded corners. Presentation for this placement only; the media document itself stays layout-neutral.
+   */
+  size?: ('full' | 'contained' | 'inset' | 'small') | null;
+  /**
    * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
   theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
@@ -1272,14 +1309,15 @@ export interface YouTubeBlock {
    * Paste any YouTube link. A start time in the link (the "Start at" box on YouTube's share panel) is kept.
    */
   url: string;
+  showTitle?: boolean | null;
   /**
-   * Optional. Shown over the poster the way YouTube shows it, and read out as the play button's label.
+   * Shown over the poster the way YouTube shows it, and read out as the play button's label.
    */
   title?: string | null;
   /**
-   * Presentation for this placement, matching the Caption block.
+   * Full width runs edge to edge across the page (inside rich text it fills the text column). Contained fills the page column; Inset and Small sit centred in it, all with rounded corners, matching the Caption block.
    */
-  size?: ('full' | 'inset' | 'small') | null;
+  size?: ('full' | 'contained' | 'inset' | 'small') | null;
   /**
    * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
@@ -1316,6 +1354,10 @@ export interface RichTextBlock {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
   /**
    * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
@@ -4079,8 +4121,9 @@ export interface DiagramBlock {
  * via the `definition` "FaqBlock".
  */
 export interface FaqBlock {
+  showEyebrow?: boolean | null;
   /**
-   * Short kicker above the heading, e.g. "Questions".
+   * A short kicker above the heading. Most headings read better without one.
    */
   eyebrow?: string | null;
   heading: string;
@@ -4106,6 +4149,9 @@ export interface FaqBlock {
     };
     id?: string | null;
   }[];
+  /**
+   * A prompt and link at the end of the header row, for readers whose question is not listed.
+   */
   enableLink?: boolean | null;
   /**
    * Sits beside the link, e.g. "Did not find your answer?"
@@ -4126,6 +4172,10 @@ export interface FaqBlock {
     url?: string | null;
     label: string;
   };
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
   /**
    * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
@@ -4172,8 +4222,9 @@ export interface CarouselBlock {
  * via the `definition` "CarouselTabsBlock".
  */
 export interface CarouselTabsBlock {
+  showEyebrow?: boolean | null;
   /**
-   * Short kicker above the heading.
+   * A short kicker above the heading. Most headings read better without one.
    */
   eyebrow?: string | null;
   heading?: string | null;
@@ -4207,6 +4258,10 @@ export interface CarouselTabsBlock {
     }[];
     id?: string | null;
   }[];
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
   /**
    * Slides visible at once inside a tab panel, from tablet up. Phones always show one slide plus a sliver of its neighbours.
    */
@@ -4256,6 +4311,7 @@ export interface FeatureTabsBlock {
       };
       [k: string]: unknown;
     } | null;
+    showList?: boolean | null;
     subheading?: string | null;
     items?:
       | {
@@ -4269,12 +4325,17 @@ export interface FeatureTabsBlock {
      */
     visualType?: ('media' | 'streakField' | 'lightLeak') | null;
     shader?: PlacedVisualConfig;
+    showCallout?: boolean | null;
     /**
      * Short note shown as a card over the media.
      */
     caption?: string | null;
     id?: string | null;
   }[];
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
   /**
    * Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.
    */
@@ -4292,23 +4353,17 @@ export interface FeatureTabsBlock {
  * via the `definition` "InsightListBlock".
  */
 export interface InsightListBlock {
+  showEyebrow?: boolean | null;
   /**
-   * Short kicker above the heading, e.g. "Where clarity breaks down".
+   * A short kicker above the heading. Most headings read better without one.
    */
   eyebrow?: string | null;
   heading: string;
+  showSummary?: boolean | null;
   /**
    * Short supporting line under the heading.
    */
   summary?: string | null;
-  /**
-   * Side by side keeps the heading beside two insights per row. Stacked sets it above three per row. Ledger keeps the heading beside one ruled row per insight, title and description side by side.
-   */
-  layout?: ('side' | 'stacked' | 'ledger') | null;
-  /**
-   * Size of the SVG mark on every insight.
-   */
-  markSize?: ('small' | 'medium' | 'large') | null;
   items: {
     /**
      * An SVG mark. It renders in the text color of the band, so use a single-color line or fill mark.
@@ -4318,6 +4373,18 @@ export interface InsightListBlock {
     description: string;
     id?: string | null;
   }[];
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
+  /**
+   * Side by side keeps the heading beside two insights per row. Stacked sets it above three per row. Ledger keeps the heading beside one ruled row per insight, title and description side by side.
+   */
+  layout?: ('side' | 'stacked' | 'ledger') | null;
+  /**
+   * Size of the SVG mark on every insight.
+   */
+  markSize?: ('small' | 'medium' | 'large') | null;
   /**
    * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
    */
@@ -5912,12 +5979,15 @@ export interface PageSectionBlockSelect<T extends boolean = true> {
  * via the `definition` "RichTransitionBlock_select".
  */
 export interface RichTransitionBlockSelect<T extends boolean = true> {
+  showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
-  layout?: T;
-  theme?: T;
-  headingLevel?: T;
+  showBody?: T;
   body?: T;
+  layout?: T;
+  textSize?: T;
+  headingLevel?: T;
+  theme?: T;
   id?: T;
   blockName?: T;
 }
@@ -5926,10 +5996,12 @@ export interface RichTransitionBlockSelect<T extends boolean = true> {
  * via the `definition` "FeatureHeadingOffsetBlock_select".
  */
 export interface FeatureHeadingOffsetBlockSelect<T extends boolean = true> {
+  showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
+  showBody?: T;
   body?: T;
-  bodySize?: T;
+  textSize?: T;
   theme?: T;
   id?: T;
   blockName?: T;
@@ -5940,12 +6012,14 @@ export interface FeatureHeadingOffsetBlockSelect<T extends boolean = true> {
  */
 export interface FullMediaBlockSelect<T extends boolean = true> {
   showContent?: T;
+  showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
   body?: T;
   media?: T;
   visualType?: T;
   shader?: T | PlacedVisualConfigSelect<T>;
+  textSize?: T;
   width?: T;
   aspectRatio?: T;
   contentPosition?: T;
@@ -5958,12 +6032,14 @@ export interface FullMediaBlockSelect<T extends boolean = true> {
  * via the `definition` "MediaContentSplitBlock_select".
  */
 export interface MediaContentSplitBlockSelect<T extends boolean = true> {
+  showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
   body?: T;
   media?: T;
   visualType?: T;
   shader?: T | PlacedVisualConfigSelect<T>;
+  textSize?: T;
   layout?: T;
   aspectRatio?: T;
   theme?: T;
@@ -5975,12 +6051,14 @@ export interface MediaContentSplitBlockSelect<T extends boolean = true> {
  * via the `definition` "SplitContentNarrowBlock_select".
  */
 export interface SplitContentNarrowBlockSelect<T extends boolean = true> {
+  showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
   body?: T;
   media?: T;
   visualType?: T;
   shader?: T | PlacedVisualConfigSelect<T>;
+  textSize?: T;
   imagePosition?: T;
   theme?: T;
   id?: T;
@@ -5991,6 +6069,7 @@ export interface SplitContentNarrowBlockSelect<T extends boolean = true> {
  * via the `definition` "CarouselSplitBlock_select".
  */
 export interface CarouselSplitBlockSelect<T extends boolean = true> {
+  showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
   body?: T;
@@ -6001,6 +6080,7 @@ export interface CarouselSplitBlockSelect<T extends boolean = true> {
         caption?: T;
         id?: T;
       };
+  textSize?: T;
   carouselPosition?: T;
   slideSize?: T;
   showArrows?: T;
@@ -6017,6 +6097,7 @@ export interface ImagePairBlockSelect<T extends boolean = true> {
   body?: T;
   portraitMedia?: T;
   landscapeMedia?: T;
+  textSize?: T;
   portraitPosition?: T;
   textPosition?: T;
   theme?: T;
@@ -6032,6 +6113,7 @@ export interface SplitImageOffsetBlockSelect<T extends boolean = true> {
   body?: T;
   largeMedia?: T;
   smallMedia?: T;
+  textSize?: T;
   captionPosition?: T;
   theme?: T;
   id?: T;
@@ -6044,8 +6126,8 @@ export interface SplitImageOffsetBlockSelect<T extends boolean = true> {
 export interface FeatureImageStatementBlockSelect<T extends boolean = true> {
   media?: T;
   caption?: T;
-  textPosition?: T;
   textSize?: T;
+  textPosition?: T;
   imageWidth?: T;
   aspectRatio?: T;
   theme?: T;
@@ -6058,8 +6140,9 @@ export interface FeatureImageStatementBlockSelect<T extends boolean = true> {
  */
 export interface CaptionBlockSelect<T extends boolean = true> {
   media?: T;
-  size?: T;
+  showCaptionOverride?: T;
   captionOverride?: T;
+  size?: T;
   theme?: T;
   id?: T;
   blockName?: T;
@@ -6070,6 +6153,7 @@ export interface CaptionBlockSelect<T extends boolean = true> {
  */
 export interface YouTubeBlockSelect<T extends boolean = true> {
   url?: T;
+  showTitle?: T;
   title?: T;
   size?: T;
   theme?: T;
@@ -6084,6 +6168,7 @@ export interface RichTextBlockSelect<T extends boolean = true> {
   markdown?: T;
   replace?: T;
   body?: T;
+  textSize?: T;
   theme?: T;
   id?: T;
   blockName?: T;
@@ -6144,6 +6229,7 @@ export interface DiagramBlockSelect<T extends boolean = true> {
  * via the `definition` "FaqBlock_select".
  */
 export interface FaqBlockSelect<T extends boolean = true> {
+  showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
   items?:
@@ -6164,6 +6250,7 @@ export interface FaqBlockSelect<T extends boolean = true> {
         url?: T;
         label?: T;
       };
+  textSize?: T;
   theme?: T;
   id?: T;
   blockName?: T;
@@ -6192,6 +6279,7 @@ export interface CarouselBlockSelect<T extends boolean = true> {
  * via the `definition` "CarouselTabsBlock_select".
  */
 export interface CarouselTabsBlockSelect<T extends boolean = true> {
+  showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
   body?: T;
@@ -6208,6 +6296,7 @@ export interface CarouselTabsBlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  textSize?: T;
   slideSize?: T;
   showArrows?: T;
   tabSize?: T;
@@ -6226,6 +6315,7 @@ export interface FeatureTabsBlockSelect<T extends boolean = true> {
         title?: T;
         heading?: T;
         description?: T;
+        showList?: T;
         subheading?: T;
         items?:
           | T
@@ -6236,9 +6326,11 @@ export interface FeatureTabsBlockSelect<T extends boolean = true> {
         media?: T;
         visualType?: T;
         shader?: T | PlacedVisualConfigSelect<T>;
+        showCallout?: T;
         caption?: T;
         id?: T;
       };
+  textSize?: T;
   tabSize?: T;
   theme?: T;
   id?: T;
@@ -6249,11 +6341,11 @@ export interface FeatureTabsBlockSelect<T extends boolean = true> {
  * via the `definition` "InsightListBlock_select".
  */
 export interface InsightListBlockSelect<T extends boolean = true> {
+  showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
+  showSummary?: T;
   summary?: T;
-  layout?: T;
-  markSize?: T;
   items?:
     | T
     | {
@@ -6262,6 +6354,9 @@ export interface InsightListBlockSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
+  textSize?: T;
+  layout?: T;
+  markSize?: T;
   theme?: T;
   id?: T;
   blockName?: T;

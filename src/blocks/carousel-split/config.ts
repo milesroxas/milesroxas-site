@@ -4,7 +4,7 @@ import {
   showArrowsField,
   slideSizeField,
 } from '@/blocks/shared/carousel-fields'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, eyebrowFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { contentLexical } from '@/fields/contentLexical'
 
@@ -29,7 +29,7 @@ export const CarouselSplit: Block = {
   interfaceName: 'CarouselSplitBlock',
   labels: { singular: 'Carousel split', plural: 'Carousel splits' },
   fields: [
-    { name: 'eyebrow', type: 'text', admin: { description: 'Short kicker above the heading.' } },
+    ...eyebrowFields(),
     { name: 'heading', type: 'text' },
     {
       name: 'body',
@@ -38,20 +38,23 @@ export const CarouselSplit: Block = {
       admin: { description: 'The copy column beside the deck.' },
     },
     carouselSlidesField(),
-    {
-      name: 'carouselPosition',
-      type: 'select',
-      label: 'Layout',
-      defaultValue: 'right',
-      options: ['left', 'right'],
-      admin: { description: 'Arrange the deck on the left or the right of the copy.' },
-    },
-    slideSizeField(
-      'Slides visible at once within the deck column, from tablet up. Phones always show one slide plus a sliver of its neighbours.',
-    ),
-    showArrowsField(
-      'Previous/next buttons beside the slides. They take an outer gutter from the deck column, which is already the narrower half of a split.',
-    ),
-    themeField(),
+    designFields([
+      textSizeField(),
+      {
+        name: 'carouselPosition',
+        type: 'select',
+        label: 'Layout',
+        defaultValue: 'right',
+        options: ['left', 'right'],
+        admin: { description: 'Arrange the deck on the left or the right of the copy.' },
+      },
+      slideSizeField(
+        'Slides visible at once within the deck column, from tablet up. Phones always show one slide plus a sliver of its neighbours.',
+      ),
+      showArrowsField(
+        'Previous/next buttons beside the slides. They take an outer gutter from the deck column, which is already the narrower half of a split.',
+      ),
+      themeField(),
+    ]),
   ],
 }

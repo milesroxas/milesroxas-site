@@ -1,8 +1,10 @@
 import type React from 'react'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { Section } from '@/blocks/shared/section'
+import { typeScale } from '@/blocks/shared/typography'
 import RichText from '@/components/RichText'
 import type { FeatureHeadingOffsetBlock as FeatureHeadingOffsetBlockData } from '@/payload-types'
+import { cn } from '@/utilities/ui'
 
 /**
  * `bare` skips the themed band for callers that supply their own themed shell
@@ -10,24 +12,18 @@ import type { FeatureHeadingOffsetBlock as FeatureHeadingOffsetBlockData } from 
  */
 type FeatureHeadingOffsetBlockProps = Pick<
   FeatureHeadingOffsetBlockData,
-  'blockType' | 'body' | 'bodySize' | 'eyebrow' | 'heading' | 'theme'
+  'blockType' | 'body' | 'eyebrow' | 'heading' | 'textSize' | 'theme'
 > & { bare?: boolean }
-
-/** Editor-chosen type size of the supporting copy; `medium` is the original treatment. */
-const BODY_SIZE_CLASS: Record<NonNullable<FeatureHeadingOffsetBlockData['bodySize']>, string> = {
-  small: 'text-base text-muted-foreground md:text-lg/6',
-  medium: 'text-lg text-muted-foreground md:text-xl/6',
-  large: 'text-xl text-muted-foreground md:text-2xl/8',
-}
 
 export const FeatureHeadingOffsetBlock: React.FC<FeatureHeadingOffsetBlockProps> = ({
   eyebrow,
   heading,
   body,
-  bodySize,
+  textSize,
   bare,
   theme,
 }) => {
+  const type = typeScale(textSize)
   return (
     <Section bare={bare} theme={theme}>
       <div className="container">
@@ -38,14 +34,14 @@ export const FeatureHeadingOffsetBlock: React.FC<FeatureHeadingOffsetBlockProps>
                 {eyebrow}
               </p>
             ) : null}
-            <h2 className="text-heading-2" data-reveal>
+            <h2 className={type.title} data-reveal>
               {heading}
             </h2>
           </div>
           {body ? (
             <div className="md:col-span-3 md:col-start-6 md:pt-24" data-reveal>
               <RichText
-                className={BODY_SIZE_CLASS[bodySize ?? 'medium']}
+                className={cn(type.lead, 'text-muted-foreground')}
                 data={body}
                 enableGutter={false}
                 enableProse={false}

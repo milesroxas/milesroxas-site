@@ -2,6 +2,7 @@ import type React from 'react'
 import { ASPECT_RATIO_CLASS } from '@/blocks/shared/aspect-ratio'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { Section } from '@/blocks/shared/section'
+import { typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
@@ -43,7 +44,11 @@ export const FeatureImageStatementBlock: React.FC<FeatureImageStatementBlockProp
   const aspectClass = ASPECT_RATIO_CLASS[aspectRatio ?? 'responsive']
   const mediaFigure = (
     <div
-      className={cn('relative w-full bg-muted', aspectClass, !fullBleed && 'md:col-span-8')}
+      className={cn(
+        'relative w-full bg-muted',
+        aspectClass,
+        !fullBleed && 'overflow-hidden rounded-lg md:col-span-8',
+      )}
       data-reveal="media"
     >
       <Media fill htmlElement={null} imgClassName="object-cover" resource={media} size="100vw" />
@@ -55,7 +60,7 @@ export const FeatureImageStatementBlock: React.FC<FeatureImageStatementBlockProp
       data-reveal
     >
       <RichText
-        className={textSize === 'small' ? 'text-lead/relaxed' : 'text-heading-3/relaxed'}
+        className={typeScale(textSize).statement}
         data={caption}
         enableGutter={false}
         enableProse={false}

@@ -16,6 +16,7 @@ export const FeatureTabsBlock = (
     bare={props.bare}
     tabs={resolveRowVisuals(props.tabs)}
     tabSize={props.tabSize}
+    textSize={props.textSize}
     theme={props.theme}
   />
 )

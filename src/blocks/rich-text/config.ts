@@ -10,7 +10,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
 import { Banner } from '@/blocks/Banner/config'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { YouTube } from '@/blocks/youtube/config'
 import { markdownInputFields } from '@/fields/markdownInput'
@@ -62,6 +62,6 @@ export const RichTextBlock: Block = {
         ],
       }),
     },
-    themeField(),
+    designFields([textSizeField(), themeField()]),
   ],
 }

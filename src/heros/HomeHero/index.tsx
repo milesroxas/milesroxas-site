@@ -114,13 +114,14 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
 
   return (
     <div
-      data-theme="light"
       ref={containerRef}
       className="relative flex h-[90vh] w-full flex-col items-center overflow-hidden bg-background md:h-screen"
     >
       {/* Top marquee */}
       <div ref={topMarqueeRef} className="absolute top-[40vh] z-0 w-full opacity-0">
-        <div className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-black')}>
+        <div
+          className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-foreground')}
+        >
           {[...skillsText, ...skillsText].map((text, idx) => {
             const copyIndex = Math.floor(idx / skillsText.length)
             const itemIndex = idx % skillsText.length
@@ -156,7 +157,10 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
       {/* Bottom marquee */}
       <div ref={bottomMarqueeRef} className="absolute top-[50vh] z-20 w-full opacity-0">
         <div
-          className={cn(styles.marquee, 'flex flex-row items-center gap-12 font-mono text-black')}
+          className={cn(
+            styles.marquee,
+            'flex flex-row items-center gap-12 font-mono text-foreground',
+          )}
         >
           {[...experienceText, ...experienceText].map((text, idx) => {
             const copyIndex = Math.floor(idx / experienceText.length)
@@ -164,7 +168,7 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
             return (
               <div
                 key={getCompositeKey('experience', text, copyIndex, itemIndex)}
-                className={cn(styles.marqueeItem, 'whitespace-nowrap text-black')}
+                className={cn(styles.marqueeItem, 'whitespace-nowrap')}
               >
                 {text}
               </div>

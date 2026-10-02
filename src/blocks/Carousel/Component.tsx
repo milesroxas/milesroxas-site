@@ -136,12 +136,13 @@ const tallestAspectRatio = (slides: Slide[]): number | undefined => {
 }
 
 const CarouselSlide: React.FC<{
+  captionClassName?: string
   cornerClass: string
   gutterClass: string
   restSigned: number
   sizeClass: string
   slide: Slide
-}> = ({ cornerClass, gutterClass, restSigned, sizeClass, slide }) => {
+}> = ({ captionClassName, cornerClass, gutterClass, restSigned, sizeClass, slide }) => {
   const media = slide.media as PopulatedMedia
   // sas-site's Media carries a generated `poster` upload; here a video's still
   // is its Cloudflare Stream thumbnail, the one VideoMedia already paints.
@@ -177,7 +178,7 @@ const CarouselSlide: React.FC<{
           // per-frame writer as the pose (see ./use-carousel-effects), and this
           // rest-state opacity is that writer's frame 0.
           <p
-            className="mt-4 text-sm text-muted-foreground"
+            className={cn('mt-4 text-sm text-muted-foreground', captionClassName)}
             data-carousel-caption
             style={{ opacity: captionOpacity(restSigned) }}
           >
@@ -279,6 +280,9 @@ export const CarouselBlock: React.FC<Props> = (props) => {
     isFullWidth && size === 'full' && '@min-[calc(100vw-1.5rem)]:rounded-none',
   )
 
+  // Media may bleed; captions stay on the page column. Only a full-width slide leaves it (from `md`).
+  const captionClassName = isFullWidth && size === 'full' ? 'md:container' : undefined
+
   return (
     <Section bare={bare} spacing="loose" theme={theme}>
       <div className={cn({ container: enableGutter && !isFullWidth }, className)}>
@@ -313,6 +317,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
           >
             {renderableSlides.map((slide, index) => (
               <CarouselSlide
+                captionClassName={captionClassName}
                 cornerClass={cornerClass}
                 gutterClass={gutter.slide}
                 key={slide.id}

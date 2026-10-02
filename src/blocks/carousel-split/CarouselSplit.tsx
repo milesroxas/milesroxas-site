@@ -1,6 +1,6 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { CarouselBlock } from '@/blocks/Carousel/Component'
-import { eyebrowClassName } from '@/blocks/shared/typography'
+import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import type { CarouselSplitBlock as CarouselSplitBlockData } from '@/payload-types'
@@ -40,11 +40,19 @@ export const CarouselSplit = ({
   bare?: boolean
   block: Pick<
     CarouselSplitBlockData,
-    'carouselPosition' | 'eyebrow' | 'heading' | 'showArrows' | 'slides' | 'slideSize' | 'theme'
+    | 'carouselPosition'
+    | 'eyebrow'
+    | 'heading'
+    | 'showArrows'
+    | 'slides'
+    | 'slideSize'
+    | 'textSize'
+    | 'theme'
   >
   content: DefaultTypedEditorState | null | undefined
 }) => {
   const deckLeft = block.carouselPosition === 'left'
+  const type = typeScale(block.textSize)
   const inner = (
     <Container>
       <BlockGrid>
@@ -71,10 +79,10 @@ export const CarouselSplit = ({
           )}
         >
           {block.eyebrow && <p className={eyebrowClassName}>{block.eyebrow}</p>}
-          {block.heading && <h2 className="text-heading-3 text-balance">{block.heading}</h2>}
+          {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
           {content && (
             <RichText
-              className="text-base"
+              className={type.body}
               data={content}
               enableGutter={false}
               enableProse={false}

@@ -4,7 +4,13 @@ import {
   showArrowsField,
   slideSizeField,
 } from '@/blocks/shared/carousel-fields'
-import { tabSizeField, themeField } from '@/blocks/shared/fields'
+import {
+  designFields,
+  eyebrowFields,
+  tabSizeField,
+  textSizeField,
+  themeField,
+} from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { contentLexical } from '@/fields/contentLexical'
 
@@ -42,7 +48,7 @@ export const CarouselTabs: Block = {
   interfaceName: 'CarouselTabsBlock',
   labels: { singular: 'Carousel tabs', plural: 'Carousel tabs' },
   fields: [
-    { name: 'eyebrow', type: 'text', admin: { description: 'Short kicker above the heading.' } },
+    ...eyebrowFields(),
     { name: 'heading', type: 'text' },
     {
       name: 'body',
@@ -63,13 +69,16 @@ export const CarouselTabs: Block = {
         carouselSlidesField(),
       ],
     },
-    slideSizeField(
-      'Slides visible at once inside a tab panel, from tablet up. Phones always show one slide plus a sliver of its neighbours.',
-    ),
-    showArrowsField(
-      'Previous/next buttons beside the slides, in every tab. The panel is the page column, so they sit in its outer gutter.',
-    ),
-    tabSizeField(),
-    themeField(),
+    designFields([
+      textSizeField(),
+      slideSizeField(
+        'Slides visible at once inside a tab panel, from tablet up. Phones always show one slide plus a sliver of its neighbours.',
+      ),
+      showArrowsField(
+        'Previous/next buttons beside the slides, in every tab. The panel is the page column, so they sit in its outer gutter.',
+      ),
+      tabSizeField(),
+      themeField(),
+    ]),
   ],
 }

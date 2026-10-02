@@ -5,10 +5,11 @@ import { CarouselBlock } from '@/blocks/Carousel/Component'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { Section } from '@/blocks/shared/section'
 import { TabbedPanels } from '@/blocks/shared/tabs'
-import { eyebrowClassName } from '@/blocks/shared/typography'
+import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import type { CarouselTabsBlock as CarouselTabsBlockData } from '@/payload-types'
+import { cn } from '@/utilities/ui'
 
 type Tab = NonNullable<CarouselTabsBlockData['tabs']>[number]
 
@@ -45,22 +46,23 @@ export const CarouselTabs = ({
   bare?: boolean
   block: Pick<
     CarouselTabsBlockData,
-    'eyebrow' | 'heading' | 'showArrows' | 'slideSize' | 'tabs' | 'tabSize' | 'theme'
+    'eyebrow' | 'heading' | 'showArrows' | 'slideSize' | 'tabs' | 'tabSize' | 'textSize' | 'theme'
   >
   content?: DefaultTypedEditorState | null
 }) => {
   const tabs = (block.tabs ?? []).filter((tab) => tab.slides?.length)
   if (tabs.length === 0) return null
+  const type = typeScale(block.textSize)
 
   const inner = (
     <Container>
       <BlockGrid>
         <div className="text-stack lg:col-span-3 lg:row-start-1">
           {block.eyebrow && <p className={eyebrowClassName}>{block.eyebrow}</p>}
-          {block.heading && <h2 className="text-balance text-heading-3">{block.heading}</h2>}
+          {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
           {content && (
             <RichText
-              className="text-base"
+              className={type.body}
               data={content}
               enableGutter={false}
               enableProse={false}

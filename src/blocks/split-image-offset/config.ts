@@ -1,5 +1,5 @@
 import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 
 /**
@@ -45,17 +45,20 @@ export const SplitImageOffset: Block = {
       required: true,
       admin: { description: 'Cropped to 3:2. Shown above the caption.' },
     },
-    {
-      name: 'captionPosition',
-      type: 'select',
-      label: 'Layout',
-      defaultValue: 'left',
-      options: ['left', 'right'],
-      admin: {
-        description:
-          'Place the small image and caption on the left or the right of the large image.',
+    designFields([
+      textSizeField(),
+      {
+        name: 'captionPosition',
+        type: 'select',
+        label: 'Layout',
+        defaultValue: 'left',
+        options: ['left', 'right'],
+        admin: {
+          description:
+            'Place the small image and caption on the left or the right of the large image.',
+        },
       },
-    },
-    themeField(),
+      themeField(),
+    ]),
   ],
 }

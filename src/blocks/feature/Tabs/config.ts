@@ -1,5 +1,11 @@
 import type { Block } from 'payload'
-import { tabSizeField, themeField } from '@/blocks/shared/fields'
+import {
+  designFields,
+  optionalFields,
+  tabSizeField,
+  textSizeField,
+  themeField,
+} from '@/blocks/shared/fields'
 
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { blockVisualSlotFields } from '@/fields/visual'
@@ -31,18 +37,25 @@ export const FeatureTabs: Block = {
           type: 'richText',
           admin: { description: 'Tab body copy. Leave empty to pull the source.' },
         },
-        {
-          name: 'subheading',
-          type: 'text',
-          label: 'List heading',
-          defaultValue: 'Included',
-        },
-        {
-          name: 'items',
-          type: 'array',
-          labels: { singular: 'Item', plural: 'Items' },
-          fields: [{ name: 'text', type: 'text', required: true }],
-        },
+        ...optionalFields({
+          name: 'showList',
+          label: 'Show list',
+          contentOf: ['items'],
+          fields: [
+            {
+              name: 'subheading',
+              type: 'text',
+              label: 'List heading',
+              defaultValue: 'Included',
+            },
+            {
+              name: 'items',
+              type: 'array',
+              labels: { singular: 'Item', plural: 'Items' },
+              fields: [{ name: 'text', type: 'text', required: true }],
+            },
+          ],
+        }),
         // Each tab is its own visual slot (upload or Streak Field), the same
         // slot the heroes and media blocks carry.
         ...blockVisualSlotFields({
@@ -50,15 +63,20 @@ export const FeatureTabs: Block = {
           type: 'upload',
           relationTo: 'media',
         }),
-        {
-          name: 'caption',
-          type: 'textarea',
-          label: 'Media callout',
-          admin: { description: 'Short note shown as a card over the media.' },
-        },
+        ...optionalFields({
+          name: 'showCallout',
+          label: 'Show media callout',
+          fields: [
+            {
+              name: 'caption',
+              type: 'textarea',
+              label: 'Media callout',
+              admin: { description: 'Short note shown as a card over the media.' },
+            },
+          ],
+        }),
       ],
     },
-    tabSizeField(),
-    themeField(),
+    designFields([textSizeField(), tabSizeField(), themeField()]),
   ],
 }

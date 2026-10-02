@@ -7,6 +7,7 @@ import type {
 } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 import { Section } from '../shared/section'
+import { typeScale } from '../shared/typography'
 
 export const SplitImageOffset = ({
   bare = false,
@@ -16,13 +17,14 @@ export const SplitImageOffset = ({
   small,
 }: {
   bare?: boolean
-  block: Pick<SplitImageOffsetBlockType, 'captionPosition' | 'heading' | 'theme'>
+  block: Pick<SplitImageOffsetBlockType, 'captionPosition' | 'heading' | 'textSize' | 'theme'>
   content: DefaultTypedEditorState | null | undefined
   large: MediaDoc
   small: MediaDoc
 }) => {
   if (!content) return null
   const captionLeft = block.captionPosition === 'left'
+  const type = typeScale(block.textSize)
   // The small 3:2 image and its caption travel as one column beside the 5:4
   // image — top-aligned, with a fixed gap between them at every viewport. At
   // lg the right gutter drops and a trailing 0.25fr spacer column holds the
@@ -41,7 +43,7 @@ export const SplitImageOffset = ({
       >
         <div
           className={cn(
-            'relative aspect-5/4 w-full overflow-hidden bg-muted md:row-start-1 md:self-start',
+            'relative aspect-5/4 w-full overflow-hidden rounded-lg bg-muted md:row-start-1 md:self-start',
             captionLeft ? 'md:col-start-2' : 'md:col-start-1',
           )}
           data-reveal="media"
@@ -61,7 +63,7 @@ export const SplitImageOffset = ({
           )}
         >
           <div
-            className="relative aspect-3/2 w-4/5 overflow-hidden bg-muted md:w-full"
+            className="relative aspect-3/2 w-4/5 overflow-hidden rounded-lg bg-muted md:w-full"
             data-reveal="media"
           >
             <Media
@@ -74,10 +76,10 @@ export const SplitImageOffset = ({
           </div>
           <div className="flex w-4/5 max-w-80 flex-col gap-4 md:w-full" data-reveal>
             {block.heading && (
-              <h2 className="pr-8 text-heading-3 text-balance md:pr-24">{block.heading}</h2>
+              <h2 className={cn(type.heading, 'pr-8 text-balance md:pr-24')}>{block.heading}</h2>
             )}
             <RichText
-              className="text-lg/7"
+              className={type.body}
               data={content}
               enableGutter={false}
               enableProse={false}

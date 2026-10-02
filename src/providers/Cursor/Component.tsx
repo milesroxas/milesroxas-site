@@ -3,11 +3,30 @@
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { CursorContext } from './CursorProvider'
+import { CursorContext, type CursorVariant } from './CursorProvider'
 import styles from './cursor.module.css'
 
-// Register the plugin
 gsap.registerPlugin(useGSAP)
+
+// How each layer chases the pointer. The ring trails the dot; the label rides with the ring.
+const DOT_FOLLOW: gsap.TweenVars = { duration: 0.1, ease: 'power2.out' }
+const RING_FOLLOW: gsap.TweenVars = { duration: 0.2, ease: 'power3.out' }
+const STATE_CHANGE: gsap.TweenVars = { duration: 0.2, ease: 'power2.out', overwrite: 'auto' }
+const FADE: gsap.TweenVars = { duration: 0.3, ease: 'power2.out', overwrite: 'auto' }
+
+// White reads as inverse ink under `mix-blend-mode: difference`. The button ring takes `--brand`.
+const RING_VARIANTS: Record<CursorVariant, gsap.TweenVars> = {
+  default: { backgroundColor: 'transparent', borderColor: 'white', borderWidth: 1, scale: 1 },
+  text: { backgroundColor: 'transparent', borderColor: 'white', borderWidth: 1, scale: 1.5 },
+  button: { backgroundColor: 'rgba(255, 255, 255, 0.2)', borderWidth: 0.8, scale: 1.5 },
+  link: { backgroundColor: 'white', borderColor: 'transparent', borderWidth: 0, scale: 1.2 },
+  media: { backgroundColor: 'transparent', borderColor: 'white', borderWidth: 1, scale: 2 },
+  slider: { backgroundColor: 'transparent', borderColor: 'white', borderWidth: 1, scale: 1.5 },
+}
+
+const VARIANT_TEXT: Partial<Record<CursorVariant, string>> = { slider: 'Drag' }
+
+type Follower = { x: gsap.QuickToFunc; y: gsap.QuickToFunc }
 
 const Cursor = () => {
   const { variant, customText } = useContext(CursorContext)
@@ -15,253 +34,92 @@ const Cursor = () => {
   const cursorInnerRef = useRef<HTMLDivElement>(null)
   const cursorTextRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
-
-  // Mouse position ref for event handlers
-  const mousePos = useRef({ x: 0, y: 0 })
-
-  // Refs for quickTo functions
-  const outerQuickToRef = useRef<{
-    x: gsap.QuickToFunc
-    y: gsap.QuickToFunc
-  } | null>(null)
-
-  const innerQuickToRef = useRef<{
-    x: gsap.QuickToFunc
-    y: gsap.QuickToFunc
-  } | null>(null)
-
-  const textQuickToRef = useRef<{
-    x: gsap.QuickToFunc
-    y: gsap.QuickToFunc
-  } | null>(null)
-
-  // Define text content for different variants
-  const variantText: Record<string, string> = {
-    slider: 'Drag',
-  }
+  // Resolved after mount, so server and client render the same (nothing) first.
+  const [finePointer, setFinePointer] = useState(false)
+  const followersRef = useRef<Follower[]>([])
+  const placedRef = useRef(false)
 
   const showText = variant === 'slider'
 
-  const isMobile =
-    typeof window !== 'undefined' &&
-    ('ontouchstart' in window ||
-      navigator.maxTouchPoints > 0 ||
-      /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+  useEffect(() => {
+    setFinePointer(window.matchMedia('(hover: hover) and (pointer: fine)').matches)
+  }, [])
 
-  // Initialize GSAP animations
   useGSAP(() => {
     if (!cursorOuterRef.current || !cursorInnerRef.current || !cursorTextRef.current) return
 
-    // Set initial properties with proper centering offsets
-    gsap.set(cursorOuterRef.current, {
-      x: mousePos.current.x - 20, // Half of 40px width
-      y: mousePos.current.y - 20, // Half of 40px height
+    const layers: [HTMLDivElement, gsap.TweenVars][] = [
+      [cursorOuterRef.current, RING_FOLLOW],
+      [cursorInnerRef.current, DOT_FOLLOW],
+      [cursorTextRef.current, RING_FOLLOW],
+    ]
+
+    // Percent offsets center every layer on the pointer, so sizes live only in the CSS
+    followersRef.current = layers.map(([el, follow]) => {
+      gsap.set(el, { xPercent: -50, yPercent: -50 })
+      return { x: gsap.quickTo(el, 'x', follow), y: gsap.quickTo(el, 'y', follow) }
     })
+  }, [finePointer])
 
-    gsap.set(cursorInnerRef.current, {
-      x: mousePos.current.x - 6, // Half of 12px width
-      y: mousePos.current.y - 6, // Half of 12px height
-    })
-
-    gsap.set(cursorTextRef.current, {
-      x: mousePos.current.x,
-      y: mousePos.current.y,
-      xPercent: -50, // Center horizontally
-      yPercent: -50, // Center vertically
-    })
-
-    // Create quickTo functions for smooth cursor movement
-    outerQuickToRef.current = {
-      x: gsap.quickTo(cursorOuterRef.current, 'x', {
-        duration: 0.5,
-        ease: 'power3.out',
-      }),
-      y: gsap.quickTo(cursorOuterRef.current, 'y', {
-        duration: 0.5,
-        ease: 'power3.out',
-      }),
-    }
-
-    innerQuickToRef.current = {
-      x: gsap.quickTo(cursorInnerRef.current, 'x', {
-        duration: 0.1,
-        ease: 'power2.out',
-      }),
-      y: gsap.quickTo(cursorInnerRef.current, 'y', {
-        duration: 0.1,
-        ease: 'power2.out',
-      }),
-    }
-
-    textQuickToRef.current = {
-      x: gsap.quickTo(cursorTextRef.current, 'x', {
-        duration: 0.5,
-        ease: 'power3.out',
-      }),
-      y: gsap.quickTo(cursorTextRef.current, 'y', {
-        duration: 0.5,
-        ease: 'power3.out',
-      }),
-    }
-  }, [])
-
-  // Handle variant changes
   useGSAP(
     () => {
-      if (!cursorOuterRef.current || !cursorTextRef.current || !isVisible) return
+      const ring = cursorOuterRef.current
+      const dot = cursorInnerRef.current
+      const label = cursorTextRef.current
+      if (!ring || !dot || !label || !isVisible) return
 
-      // Define variant styles
-      const variantStyles = {
-        default: {
-          backgroundColor: 'transparent',
-          borderColor: 'white',
-          borderWidth: 1,
-          scale: 1,
-          duration: 0.2,
-          ease: 'power2.out',
-        },
-        text: {
-          backgroundColor: 'transparent',
-          borderColor: 'white',
-          borderWidth: 1,
-          scale: 1.5,
-          duration: 0.2,
-          ease: 'power2.out',
-        },
-        button: {
-          borderWidth: 0.8,
-          scale: 1.5,
-          borderColor: '#EA580C',
-          duration: 0.2,
-          ease: 'power2.out',
-        },
-        link: {
-          backgroundColor: 'white',
-          borderColor: 'transparent',
-          borderWidth: 0,
-          scale: 1.2,
-          duration: 0.2,
-          ease: 'power2.out',
-        },
-        media: {
-          backgroundColor: 'transparent',
-          borderColor: 'white',
-          borderWidth: 1,
-          scale: 2,
-          duration: 0.2,
-          ease: 'power2.out',
-        },
-        slider: {
-          backgroundColor: 'transparent',
-          borderColor: 'white',
-          borderWidth: 1,
-          scale: 1.5, // Adjusted for 40px base size
-          duration: 0.2,
-          ease: 'power2.out',
-        },
-      }
-
-      const style = variantStyles[variant] || variantStyles.default
-
-      // Animate only the visual properties, not position
-      gsap.to(cursorOuterRef.current, {
-        ...style,
-        overwrite: 'auto', // Prevent animation conflicts
+      gsap.to(ring, {
+        ...RING_VARIANTS[variant],
+        ...(variant === 'button' && {
+          borderColor: getComputedStyle(ring).getPropertyValue('--brand').trim(),
+        }),
+        ...STATE_CHANGE,
       })
-      if (!showText) {
-        // For variants without text, scale up the inner cursor
-        gsap.to(cursorInnerRef.current, {
-          scale: variant === 'default' ? 1 : 1.25, // Scale to 2x when hovering (non-default), 1x when not
-          opacity: 1,
-          backgroundColor: variant === 'default' ? 'white' : 'white',
-          visibility: 'visible',
-          duration: 0.2,
-          ease: 'power2.out',
-          overwrite: 'auto',
-        })
-      }
 
-      // Handle text visibility and content for variants with text
       if (showText) {
-        // First animate the inner cursor to shrink and fade out
-        gsap.to(cursorInnerRef.current, {
+        // The dot shrinks out, then the label fades in.
+        gsap.to(dot, {
+          ...STATE_CHANGE,
           opacity: 0,
-          scale: 0.5, // Reduce size more dramatically
-          duration: 0.2,
-          ease: 'power2.in',
+          scale: 0.5,
           onComplete: () => {
-            // After inner cursor animation completes, show the text
-            gsap.to(cursorTextRef.current, {
-              opacity: 1,
-              scale: 1,
-              duration: 0.3,
-              ease: 'power2.out',
-            })
-            // Hide the inner cursor after animation
-            gsap.set(cursorInnerRef.current, { visibility: 'hidden' })
+            gsap.set(dot, { visibility: 'hidden' })
+            gsap.to(label, { ...FADE, opacity: 1, scale: 1 })
           },
         })
       } else {
-        // Hide text first
-        gsap.to(cursorTextRef.current, {
-          opacity: 0,
-          duration: 0.2,
-          ease: 'power2.in',
-          onComplete: () => {
-            // After text is hidden, show the inner cursor
-            gsap.to(cursorInnerRef.current, {
-              scale: variant === 'default' ? 1 : 1.5, // Keep the same scale logic
-              visibility: 'visible',
-              duration: 0.2,
-              ease: 'power2.out',
-            })
-          },
+        gsap.to(label, { ...STATE_CHANGE, opacity: 0 })
+        gsap.to(dot, {
+          ...STATE_CHANGE,
+          opacity: 1,
+          scale: variant === 'default' ? 1 : 1.5,
+          visibility: 'visible',
         })
       }
     },
     { dependencies: [variant, isVisible, showText] },
   )
 
-  // Mouse event handlers
   useEffect(() => {
-    if (isMobile) return
+    if (!finePointer) return
 
     const onMouseMove = (e: MouseEvent) => {
-      if (!isVisible) setIsVisible(true)
-
-      mousePos.current = { x: e.clientX, y: e.clientY }
-
-      // Update cursor positions using quickTo
-      if (outerQuickToRef.current && innerQuickToRef.current && textQuickToRef.current) {
-        outerQuickToRef.current.x(e.clientX - 20)
-        outerQuickToRef.current.y(e.clientY - 20)
-        innerQuickToRef.current.x(e.clientX - 6)
-        innerQuickToRef.current.y(e.clientY - 6)
-
-        // Set the text position without any offset, since we're using xPercent/yPercent
-        textQuickToRef.current.x(e.clientX)
-        textQuickToRef.current.y(e.clientY)
-
-        // Make sure to apply the centering percentages
-        gsap.set(cursorTextRef.current, {
-          xPercent: -50,
-          yPercent: -50,
+      // First sighting lands on the pointer instead of flying in from the corner.
+      if (!placedRef.current) {
+        placedRef.current = true
+        gsap.set([cursorOuterRef.current, cursorInnerRef.current, cursorTextRef.current], {
+          x: e.clientX,
+          y: e.clientY,
         })
       }
-    }
-
-    const onMouseLeave = () => {
-      setIsVisible(false)
-    }
-
-    const onMouseEnter = () => {
       setIsVisible(true)
+      for (const follower of followersRef.current) {
+        follower.x(e.clientX)
+        follower.y(e.clientY)
+      }
     }
-
-    // Initialize cursor position
-    if (typeof window !== 'undefined') {
-      mousePos.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
-    }
+    const onMouseLeave = () => setIsVisible(false)
+    const onMouseEnter = () => setIsVisible(true)
 
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseleave', onMouseLeave)
@@ -272,64 +130,39 @@ const Cursor = () => {
       document.removeEventListener('mouseleave', onMouseLeave)
       document.removeEventListener('mouseenter', onMouseEnter)
     }
-  }, [isVisible, isMobile])
+  }, [finePointer])
 
-  // Handle visibility
   useGSAP(
     () => {
       if (!cursorOuterRef.current || !cursorInnerRef.current || !cursorTextRef.current) return
-
-      gsap.to([cursorOuterRef.current, cursorInnerRef.current], {
-        opacity: isVisible ? 1 : 0,
-        duration: 0.3,
-        ease: 'power2.inOut',
-      })
-
-      // Text element only visible when variants with text are active
-      if (showText && isVisible) {
-        gsap.to(cursorTextRef.current, {
-          opacity: 1,
-          duration: 0.3,
-          ease: 'power2.inOut',
-        })
-      } else {
-        gsap.to(cursorTextRef.current, {
-          opacity: 0,
-          duration: 0.2,
-          ease: 'power2.inOut',
-        })
-      }
+      const opacity = isVisible ? 1 : 0
+      gsap.to(cursorOuterRef.current, { ...FADE, opacity })
+      // The variant effect owns whichever of dot or label is hidden.
+      gsap.to(showText ? cursorTextRef.current : cursorInnerRef.current, { ...FADE, opacity })
     },
-    { dependencies: [isVisible, variant, showText] },
+    { dependencies: [isVisible] },
   )
 
-  if (isMobile) return null
+  if (!finePointer) return null
 
   return (
     <>
       <div
         ref={cursorOuterRef}
         className={`${styles.cursorOuter} ${variant === 'button' ? styles.cursorOuterBlurred : ''}`}
-        style={{
-          visibility: isVisible ? 'visible' : 'hidden',
-        }}
+        style={{ visibility: isVisible ? 'visible' : 'hidden' }}
       />
       <div
         ref={cursorInnerRef}
         className={styles.cursorInner}
-        style={{
-          visibility: isVisible ? 'visible' : 'hidden',
-        }}
+        style={{ visibility: isVisible ? 'visible' : 'hidden' }}
       />
       <div
         ref={cursorTextRef}
         className={`${styles.cursorText} ${variant === 'button' ? styles.cursorTextDark : ''}`}
-        style={{
-          visibility: isVisible && showText ? 'visible' : 'hidden',
-          opacity: 0,
-        }}
+        style={{ visibility: isVisible && showText ? 'visible' : 'hidden', opacity: 0 }}
       >
-        {customText || variantText[variant] || ''}
+        {customText || VARIANT_TEXT[variant] || ''}
       </div>
     </>
   )

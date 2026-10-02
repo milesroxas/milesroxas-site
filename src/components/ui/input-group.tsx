@@ -17,12 +17,11 @@ const inputGroupVariants = cva(
         // the send button inside its end. Its size and corners are the
         // chrome's tokens (globals.css, `--ask-field-*`), so the button's
         // corner stays concentric with the field's. The caller gives it its
-        // ground: glass where it floats, a tinted well on the sheet. Focused,
-        // the edge turns brand with a soft halo drawn as an outline, so a
-        // glass ground's own shadow never covers it. 16px text on phones
+        // ground: glass where it floats, a tinted well on the sheet. Focus
+        // draws no edge or halo; the caret marks it. 16px text on phones
         // (iOS focus zoom), 14px from md.
         field:
-          'h-(--ask-field-height) gap-2 rounded-(--ask-field-radius) pr-(--ask-field-inset) pl-3 has-data-[align=inline-end]:rounded-(--ask-field-radius) has-[[data-slot=input-group-control]:focus-visible]:border-brand has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:outline-3 has-[[data-slot=input-group-control]:focus-visible]:outline-brand/15 **:data-[slot=button]:rounded-(--ask-send-radius) [&>[data-slot=input-group-control]]:h-full [&>[data-slot=input-group-control]]:px-0 [&>[data-slot=input-group-control]]:text-base md:[&>[data-slot=input-group-control]]:text-sm',
+          'h-(--ask-field-height) gap-2 rounded-(--ask-field-radius) pr-(--ask-field-inset) pl-3 has-data-[align=inline-end]:rounded-(--ask-field-radius) has-[[data-slot=input-group-control]:focus-visible]:border-transparent has-[[data-slot=input-group-control]:focus-visible]:ring-0 **:data-[slot=button]:rounded-(--ask-send-radius) [&>[data-slot=input-group-control]]:h-full [&>[data-slot=input-group-control]]:px-0 [&>[data-slot=input-group-control]]:text-base md:[&>[data-slot=input-group-control]]:text-sm',
       },
     },
     defaultVariants: {

@@ -32,8 +32,8 @@ export const TextLeft: Story = {
   args: { textPosition: 'left' },
 }
 
-export const SmallText: Story = {
-  args: { textSize: 'small' },
+export const LargeText: Story = {
+  args: { textSize: 'large' },
 }
 
 export const FullBleed: Story = {

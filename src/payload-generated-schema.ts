@@ -36,21 +36,25 @@ export const enum_pages_transition_layout = pgEnum(
   "enum_pages_transition_layout",
   ["offset", "left", "centered", "split", "statement", "prose"],
 );
-export const enum_pages_transition_theme = pgEnum(
-  "enum_pages_transition_theme",
-  ["light", "dark", "neutral", "brand"],
+export const enum_pages_transition_text_size = pgEnum(
+  "enum_pages_transition_text_size",
+  ["small", "large"],
 );
 export const enum_pages_transition_heading_level = pgEnum(
   "enum_pages_transition_heading_level",
   ["h2", "h3", "h4"],
 );
-export const enum_pages_blocks_feature_heading_offset_body_size = pgEnum(
-  "enum_pages_blocks_feature_heading_offset_body_size",
-  ["small", "medium", "large"],
+export const enum_pages_transition_theme = pgEnum(
+  "enum_pages_transition_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_pages_blocks_feature_heading_offset_text_size = pgEnum(
+  "enum_pages_blocks_feature_heading_offset_text_size",
+  ["small", "large"],
 );
 export const enum_pages_blocks_feature_heading_offset_theme = pgEnum(
   "enum_pages_blocks_feature_heading_offset_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_full_media_visual_type = pgEnum(
   "enum_pages_full_media_visual_type",
@@ -69,6 +73,10 @@ export const enum_leak_hover_targets = pgEnum("enum_leak_hover_targets", [
   "interactive",
   "marked",
 ]);
+export const enum_pages_full_media_text_size = pgEnum(
+  "enum_pages_full_media_text_size",
+  ["small", "large"],
+);
 export const enum_pages_full_media_width = pgEnum(
   "enum_pages_full_media_width",
   ["contained", "full-width"],
@@ -83,7 +91,7 @@ export const enum_pages_full_media_content_position = pgEnum(
 );
 export const enum_pages_full_media_theme = pgEnum(
   "enum_pages_full_media_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_media_split_visual_type = pgEnum(
   "enum_pages_media_split_visual_type",
@@ -92,6 +100,10 @@ export const enum_pages_media_split_visual_type = pgEnum(
 export const enum_pages_media_split_shader_origin = pgEnum(
   "enum_pages_media_split_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum_pages_media_split_text_size = pgEnum(
+  "enum_pages_media_split_text_size",
+  ["small", "large"],
 );
 export const enum_pages_media_split_layout = pgEnum(
   "enum_pages_media_split_layout",
@@ -103,7 +115,7 @@ export const enum_pages_media_split_aspect_ratio = pgEnum(
 );
 export const enum_pages_media_split_theme = pgEnum(
   "enum_pages_media_split_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_split_narrow_visual_type = pgEnum(
   "enum_pages_split_narrow_visual_type",
@@ -113,13 +125,21 @@ export const enum_pages_split_narrow_shader_origin = pgEnum(
   "enum_pages_split_narrow_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum_pages_split_narrow_text_size = pgEnum(
+  "enum_pages_split_narrow_text_size",
+  ["small", "large"],
+);
 export const enum_pages_split_narrow_image_position = pgEnum(
   "enum_pages_split_narrow_image_position",
   ["left", "right"],
 );
 export const enum_pages_split_narrow_theme = pgEnum(
   "enum_pages_split_narrow_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_pages_blocks_carousel_split_text_size = pgEnum(
+  "enum_pages_blocks_carousel_split_text_size",
+  ["small", "large"],
 );
 export const enum_pages_blocks_carousel_split_carousel_position = pgEnum(
   "enum_pages_blocks_carousel_split_carousel_position",
@@ -131,7 +151,11 @@ export const enum_pages_blocks_carousel_split_slide_size = pgEnum(
 );
 export const enum_pages_blocks_carousel_split_theme = pgEnum(
   "enum_pages_blocks_carousel_split_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_pages_image_pair_text_size = pgEnum(
+  "enum_pages_image_pair_text_size",
+  ["small", "large"],
 );
 export const enum_pages_image_pair_portrait_position = pgEnum(
   "enum_pages_image_pair_portrait_position",
@@ -143,7 +167,11 @@ export const enum_pages_image_pair_text_position = pgEnum(
 );
 export const enum_pages_image_pair_theme = pgEnum(
   "enum_pages_image_pair_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_pages_split_offset_text_size = pgEnum(
+  "enum_pages_split_offset_text_size",
+  ["small", "large"],
 );
 export const enum_pages_split_offset_caption_position = pgEnum(
   "enum_pages_split_offset_caption_position",
@@ -151,15 +179,15 @@ export const enum_pages_split_offset_caption_position = pgEnum(
 );
 export const enum_pages_split_offset_theme = pgEnum(
   "enum_pages_split_offset_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_pages_image_statement_text_size = pgEnum(
+  "enum_pages_image_statement_text_size",
+  ["small", "large"],
 );
 export const enum_pages_image_statement_text_position = pgEnum(
   "enum_pages_image_statement_text_position",
   ["left", "right"],
-);
-export const enum_pages_image_statement_text_size = pgEnum(
-  "enum_pages_image_statement_text_size",
-  ["default", "small"],
 );
 export const enum_pages_image_statement_image_width = pgEnum(
   "enum_pages_image_statement_image_width",
@@ -171,33 +199,39 @@ export const enum_pages_image_statement_aspect_ratio = pgEnum(
 );
 export const enum_pages_image_statement_theme = pgEnum(
   "enum_pages_image_statement_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_caption_size = pgEnum("enum_pages_caption_size", [
   "full",
+  "contained",
   "inset",
   "small",
 ]);
 export const enum_pages_caption_theme = pgEnum("enum_pages_caption_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
 export const enum_pages_youtube_size = pgEnum("enum_pages_youtube_size", [
   "full",
+  "contained",
   "inset",
   "small",
 ]);
 export const enum_pages_youtube_theme = pgEnum("enum_pages_youtube_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
+export const enum_pages_rich_text_text_size = pgEnum(
+  "enum_pages_rich_text_text_size",
+  ["small", "large"],
+);
 export const enum_pages_rich_text_theme = pgEnum("enum_pages_rich_text_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -216,8 +250,8 @@ export const enum_pages_chart_width = pgEnum("enum_pages_chart_width", [
   "full",
 ]);
 export const enum_pages_chart_theme = pgEnum("enum_pages_chart_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -227,8 +261,8 @@ export const enum_pages_diagram_width = pgEnum("enum_pages_diagram_width", [
   "full",
 ]);
 export const enum_pages_diagram_theme = pgEnum("enum_pages_diagram_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -236,9 +270,13 @@ export const enum_pages_faq_link_type = pgEnum("enum_pages_faq_link_type", [
   "reference",
   "custom",
 ]);
+export const enum_pages_faq_text_size = pgEnum("enum_pages_faq_text_size", [
+  "small",
+  "large",
+]);
 export const enum_pages_faq_theme = pgEnum("enum_pages_faq_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -252,7 +290,11 @@ export const enum_pages_blocks_carousel_slide_size = pgEnum(
 );
 export const enum_pages_blocks_carousel_theme = pgEnum(
   "enum_pages_blocks_carousel_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_pages_blocks_carousel_tabs_text_size = pgEnum(
+  "enum_pages_blocks_carousel_tabs_text_size",
+  ["small", "large"],
 );
 export const enum_pages_blocks_carousel_tabs_slide_size = pgEnum(
   "enum_pages_blocks_carousel_tabs_slide_size",
@@ -264,7 +306,7 @@ export const enum_pages_blocks_carousel_tabs_tab_size = pgEnum(
 );
 export const enum_pages_blocks_carousel_tabs_theme = pgEnum(
   "enum_pages_blocks_carousel_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_blocks_feature_tabs_tabs_visual_type = pgEnum(
   "enum_pages_blocks_feature_tabs_tabs_visual_type",
@@ -274,13 +316,21 @@ export const enum_pages_blocks_feature_tabs_tabs_shader_origin = pgEnum(
   "enum_pages_blocks_feature_tabs_tabs_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum_pages_blocks_feature_tabs_text_size = pgEnum(
+  "enum_pages_blocks_feature_tabs_text_size",
+  ["small", "large"],
+);
 export const enum_pages_blocks_feature_tabs_tab_size = pgEnum(
   "enum_pages_blocks_feature_tabs_tab_size",
   ["default", "small"],
 );
 export const enum_pages_blocks_feature_tabs_theme = pgEnum(
   "enum_pages_blocks_feature_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_pages_insight_list_text_size = pgEnum(
+  "enum_pages_insight_list_text_size",
+  ["small", "large"],
 );
 export const enum_pages_insight_list_layout = pgEnum(
   "enum_pages_insight_list_layout",
@@ -292,7 +342,7 @@ export const enum_pages_insight_list_mark_size = pgEnum(
 );
 export const enum_pages_insight_list_theme = pgEnum(
   "enum_pages_insight_list_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_blocks_content_columns_sizes = pgEnum(
   "enum_pages_blocks_content_columns_sizes",
@@ -344,7 +394,7 @@ export const enum_pages_blocks_content_columns_post_variant = pgEnum(
 );
 export const enum_pages_blocks_content_columns_slider_theme = pgEnum(
   "enum_pages_blocks_content_columns_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_blocks_content_columns_slider_intro_content_size =
   pgEnum("enum_pages_blocks_content_columns_slider_intro_content_size", [
@@ -391,7 +441,7 @@ export const enum_pages_blocks_content_columns_you_tube_aspect_ratio = pgEnum(
 );
 export const enum_pages_blocks_content_theme = pgEnum(
   "enum_pages_blocks_content_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_blocks_content_container_width = pgEnum(
   "enum_pages_blocks_content_container_width",
@@ -414,10 +464,10 @@ export const enum_pages_blocks_content_space_mb = pgEnum(
   ["none", "sm", "md", "lg", "xl"],
 );
 export const enum_pages_section_theme = pgEnum("enum_pages_section_theme", [
-  "inherit",
-  "secondary",
-  "accent",
+  "default",
   "inverted",
+  "neutral",
+  "brand",
 ]);
 export const enum_pages_section_spacing = pgEnum("enum_pages_section_spacing", [
   "default",
@@ -433,7 +483,7 @@ export const enum_pages_section_stack = pgEnum("enum_pages_section_stack", [
 ]);
 export const enum_pages_blocks_slider_theme = pgEnum(
   "enum_pages_blocks_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_blocks_slider_intro_content_size = pgEnum(
   "enum_pages_blocks_slider_intro_content_size",
@@ -465,7 +515,7 @@ export const enum_pages_blocks_slider_space_mb = pgEnum(
 );
 export const enum_pages_blocks_archive_theme = pgEnum(
   "enum_pages_blocks_archive_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_blocks_archive_card_style = pgEnum(
   "enum_pages_blocks_archive_card_style",
@@ -513,7 +563,7 @@ export const enum_pages_blocks_media_block_aspect_ratio = pgEnum(
 );
 export const enum_pages_blocks_media_block_theme = pgEnum(
   "enum_pages_blocks_media_block_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_pages_blocks_media_block_caption_layout = pgEnum(
   "enum_pages_blocks_media_block_caption_layout",
@@ -570,21 +620,25 @@ export const enum___pages_v_transition_v_layout = pgEnum(
   "enum___pages_v_transition_v_layout",
   ["offset", "left", "centered", "split", "statement", "prose"],
 );
-export const enum___pages_v_transition_v_theme = pgEnum(
-  "enum___pages_v_transition_v_theme",
-  ["light", "dark", "neutral", "brand"],
+export const enum___pages_v_transition_v_text_size = pgEnum(
+  "enum___pages_v_transition_v_text_size",
+  ["small", "large"],
 );
 export const enum___pages_v_transition_v_heading_level = pgEnum(
   "enum___pages_v_transition_v_heading_level",
   ["h2", "h3", "h4"],
 );
-export const enum__pages_v_blocks_feature_heading_offset_body_size = pgEnum(
-  "enum__pages_v_blocks_feature_heading_offset_body_size",
-  ["small", "medium", "large"],
+export const enum___pages_v_transition_v_theme = pgEnum(
+  "enum___pages_v_transition_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__pages_v_blocks_feature_heading_offset_text_size = pgEnum(
+  "enum__pages_v_blocks_feature_heading_offset_text_size",
+  ["small", "large"],
 );
 export const enum__pages_v_blocks_feature_heading_offset_theme = pgEnum(
   "enum__pages_v_blocks_feature_heading_offset_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___pages_v_full_media_v_visual_type = pgEnum(
   "enum___pages_v_full_media_v_visual_type",
@@ -593,6 +647,10 @@ export const enum___pages_v_full_media_v_visual_type = pgEnum(
 export const enum___pages_v_full_media_v_shader_origin = pgEnum(
   "enum___pages_v_full_media_v_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum___pages_v_full_media_v_text_size = pgEnum(
+  "enum___pages_v_full_media_v_text_size",
+  ["small", "large"],
 );
 export const enum___pages_v_full_media_v_width = pgEnum(
   "enum___pages_v_full_media_v_width",
@@ -608,7 +666,7 @@ export const enum___pages_v_full_media_v_content_position = pgEnum(
 );
 export const enum___pages_v_full_media_v_theme = pgEnum(
   "enum___pages_v_full_media_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___pages_v_media_split_v_visual_type = pgEnum(
   "enum___pages_v_media_split_v_visual_type",
@@ -617,6 +675,10 @@ export const enum___pages_v_media_split_v_visual_type = pgEnum(
 export const enum___pages_v_media_split_v_shader_origin = pgEnum(
   "enum___pages_v_media_split_v_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum___pages_v_media_split_v_text_size = pgEnum(
+  "enum___pages_v_media_split_v_text_size",
+  ["small", "large"],
 );
 export const enum___pages_v_media_split_v_layout = pgEnum(
   "enum___pages_v_media_split_v_layout",
@@ -628,7 +690,7 @@ export const enum___pages_v_media_split_v_aspect_ratio = pgEnum(
 );
 export const enum___pages_v_media_split_v_theme = pgEnum(
   "enum___pages_v_media_split_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___pages_v_split_narrow_v_visual_type = pgEnum(
   "enum___pages_v_split_narrow_v_visual_type",
@@ -638,13 +700,21 @@ export const enum___pages_v_split_narrow_v_shader_origin = pgEnum(
   "enum___pages_v_split_narrow_v_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum___pages_v_split_narrow_v_text_size = pgEnum(
+  "enum___pages_v_split_narrow_v_text_size",
+  ["small", "large"],
+);
 export const enum___pages_v_split_narrow_v_image_position = pgEnum(
   "enum___pages_v_split_narrow_v_image_position",
   ["left", "right"],
 );
 export const enum___pages_v_split_narrow_v_theme = pgEnum(
   "enum___pages_v_split_narrow_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__pages_v_blocks_carousel_split_text_size = pgEnum(
+  "enum__pages_v_blocks_carousel_split_text_size",
+  ["small", "large"],
 );
 export const enum__pages_v_blocks_carousel_split_carousel_position = pgEnum(
   "enum__pages_v_blocks_carousel_split_carousel_position",
@@ -656,7 +726,11 @@ export const enum__pages_v_blocks_carousel_split_slide_size = pgEnum(
 );
 export const enum__pages_v_blocks_carousel_split_theme = pgEnum(
   "enum__pages_v_blocks_carousel_split_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___pages_v_image_pair_v_text_size = pgEnum(
+  "enum___pages_v_image_pair_v_text_size",
+  ["small", "large"],
 );
 export const enum___pages_v_image_pair_v_portrait_position = pgEnum(
   "enum___pages_v_image_pair_v_portrait_position",
@@ -668,7 +742,11 @@ export const enum___pages_v_image_pair_v_text_position = pgEnum(
 );
 export const enum___pages_v_image_pair_v_theme = pgEnum(
   "enum___pages_v_image_pair_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___pages_v_split_offset_v_text_size = pgEnum(
+  "enum___pages_v_split_offset_v_text_size",
+  ["small", "large"],
 );
 export const enum___pages_v_split_offset_v_caption_position = pgEnum(
   "enum___pages_v_split_offset_v_caption_position",
@@ -676,15 +754,15 @@ export const enum___pages_v_split_offset_v_caption_position = pgEnum(
 );
 export const enum___pages_v_split_offset_v_theme = pgEnum(
   "enum___pages_v_split_offset_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___pages_v_image_statement_v_text_size = pgEnum(
+  "enum___pages_v_image_statement_v_text_size",
+  ["small", "large"],
 );
 export const enum___pages_v_image_statement_v_text_position = pgEnum(
   "enum___pages_v_image_statement_v_text_position",
   ["left", "right"],
-);
-export const enum___pages_v_image_statement_v_text_size = pgEnum(
-  "enum___pages_v_image_statement_v_text_size",
-  ["default", "small"],
 );
 export const enum___pages_v_image_statement_v_image_width = pgEnum(
   "enum___pages_v_image_statement_v_image_width",
@@ -696,27 +774,31 @@ export const enum___pages_v_image_statement_v_aspect_ratio = pgEnum(
 );
 export const enum___pages_v_image_statement_v_theme = pgEnum(
   "enum___pages_v_image_statement_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___pages_v_caption_v_size = pgEnum(
   "enum___pages_v_caption_v_size",
-  ["full", "inset", "small"],
+  ["full", "contained", "inset", "small"],
 );
 export const enum___pages_v_caption_v_theme = pgEnum(
   "enum___pages_v_caption_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___pages_v_youtube_v_size = pgEnum(
   "enum___pages_v_youtube_v_size",
-  ["full", "inset", "small"],
+  ["full", "contained", "inset", "small"],
 );
 export const enum___pages_v_youtube_v_theme = pgEnum(
   "enum___pages_v_youtube_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___pages_v_rich_text_v_text_size = pgEnum(
+  "enum___pages_v_rich_text_v_text_size",
+  ["small", "large"],
 );
 export const enum___pages_v_rich_text_v_theme = pgEnum(
   "enum___pages_v_rich_text_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___pages_v_code_v_language = pgEnum(
   "enum___pages_v_code_v_language",
@@ -728,7 +810,7 @@ export const enum___pages_v_chart_v_width = pgEnum(
 );
 export const enum___pages_v_chart_v_theme = pgEnum(
   "enum___pages_v_chart_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___pages_v_diagram_v_width = pgEnum(
   "enum___pages_v_diagram_v_width",
@@ -736,15 +818,19 @@ export const enum___pages_v_diagram_v_width = pgEnum(
 );
 export const enum___pages_v_diagram_v_theme = pgEnum(
   "enum___pages_v_diagram_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___pages_v_faq_v_link_type = pgEnum(
   "enum___pages_v_faq_v_link_type",
   ["reference", "custom"],
 );
+export const enum___pages_v_faq_v_text_size = pgEnum(
+  "enum___pages_v_faq_v_text_size",
+  ["small", "large"],
+);
 export const enum___pages_v_faq_v_theme = pgEnum("enum___pages_v_faq_v_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -758,7 +844,11 @@ export const enum__pages_v_blocks_carousel_slide_size = pgEnum(
 );
 export const enum__pages_v_blocks_carousel_theme = pgEnum(
   "enum__pages_v_blocks_carousel_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__pages_v_blocks_carousel_tabs_text_size = pgEnum(
+  "enum__pages_v_blocks_carousel_tabs_text_size",
+  ["small", "large"],
 );
 export const enum__pages_v_blocks_carousel_tabs_slide_size = pgEnum(
   "enum__pages_v_blocks_carousel_tabs_slide_size",
@@ -770,7 +860,7 @@ export const enum__pages_v_blocks_carousel_tabs_tab_size = pgEnum(
 );
 export const enum__pages_v_blocks_carousel_tabs_theme = pgEnum(
   "enum__pages_v_blocks_carousel_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__pages_v_blocks_feature_tabs_tabs_visual_type = pgEnum(
   "enum__pages_v_blocks_feature_tabs_tabs_visual_type",
@@ -780,13 +870,21 @@ export const enum__pages_v_blocks_feature_tabs_tabs_shader_origin = pgEnum(
   "enum__pages_v_blocks_feature_tabs_tabs_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum__pages_v_blocks_feature_tabs_text_size = pgEnum(
+  "enum__pages_v_blocks_feature_tabs_text_size",
+  ["small", "large"],
+);
 export const enum__pages_v_blocks_feature_tabs_tab_size = pgEnum(
   "enum__pages_v_blocks_feature_tabs_tab_size",
   ["default", "small"],
 );
 export const enum__pages_v_blocks_feature_tabs_theme = pgEnum(
   "enum__pages_v_blocks_feature_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___pages_v_insight_list_v_text_size = pgEnum(
+  "enum___pages_v_insight_list_v_text_size",
+  ["small", "large"],
 );
 export const enum___pages_v_insight_list_v_layout = pgEnum(
   "enum___pages_v_insight_list_v_layout",
@@ -798,7 +896,7 @@ export const enum___pages_v_insight_list_v_mark_size = pgEnum(
 );
 export const enum___pages_v_insight_list_v_theme = pgEnum(
   "enum___pages_v_insight_list_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__pages_v_blocks_content_columns_sizes = pgEnum(
   "enum__pages_v_blocks_content_columns_sizes",
@@ -853,7 +951,7 @@ export const enum__pages_v_blocks_content_columns_post_variant = pgEnum(
 );
 export const enum__pages_v_blocks_content_columns_slider_theme = pgEnum(
   "enum__pages_v_blocks_content_columns_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__pages_v_blocks_content_columns_slider_intro_content_size =
   pgEnum("enum__pages_v_blocks_content_columns_slider_intro_content_size", [
@@ -902,7 +1000,7 @@ export const enum__pages_v_blocks_content_columns_you_tube_aspect_ratio =
   ]);
 export const enum__pages_v_blocks_content_theme = pgEnum(
   "enum__pages_v_blocks_content_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__pages_v_blocks_content_container_width = pgEnum(
   "enum__pages_v_blocks_content_container_width",
@@ -926,7 +1024,7 @@ export const enum__pages_v_blocks_content_space_mb = pgEnum(
 );
 export const enum___pages_v_section_v_theme = pgEnum(
   "enum___pages_v_section_v_theme",
-  ["inherit", "secondary", "accent", "inverted"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___pages_v_section_v_spacing = pgEnum(
   "enum___pages_v_section_v_spacing",
@@ -938,7 +1036,7 @@ export const enum___pages_v_section_v_stack = pgEnum(
 );
 export const enum__pages_v_blocks_slider_theme = pgEnum(
   "enum__pages_v_blocks_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__pages_v_blocks_slider_intro_content_size = pgEnum(
   "enum__pages_v_blocks_slider_intro_content_size",
@@ -970,7 +1068,7 @@ export const enum__pages_v_blocks_slider_space_mb = pgEnum(
 );
 export const enum__pages_v_blocks_archive_theme = pgEnum(
   "enum__pages_v_blocks_archive_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__pages_v_blocks_archive_card_style = pgEnum(
   "enum__pages_v_blocks_archive_card_style",
@@ -1018,7 +1116,7 @@ export const enum__pages_v_blocks_media_block_aspect_ratio = pgEnum(
 );
 export const enum__pages_v_blocks_media_block_theme = pgEnum(
   "enum__pages_v_blocks_media_block_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__pages_v_blocks_media_block_caption_layout = pgEnum(
   "enum__pages_v_blocks_media_block_caption_layout",
@@ -1072,21 +1170,25 @@ export const enum_posts_transition_layout = pgEnum(
   "enum_posts_transition_layout",
   ["offset", "left", "centered", "split", "statement", "prose"],
 );
-export const enum_posts_transition_theme = pgEnum(
-  "enum_posts_transition_theme",
-  ["light", "dark", "neutral", "brand"],
+export const enum_posts_transition_text_size = pgEnum(
+  "enum_posts_transition_text_size",
+  ["small", "large"],
 );
 export const enum_posts_transition_heading_level = pgEnum(
   "enum_posts_transition_heading_level",
   ["h2", "h3", "h4"],
 );
-export const enum_posts_blocks_feature_heading_offset_body_size = pgEnum(
-  "enum_posts_blocks_feature_heading_offset_body_size",
-  ["small", "medium", "large"],
+export const enum_posts_transition_theme = pgEnum(
+  "enum_posts_transition_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_posts_blocks_feature_heading_offset_text_size = pgEnum(
+  "enum_posts_blocks_feature_heading_offset_text_size",
+  ["small", "large"],
 );
 export const enum_posts_blocks_feature_heading_offset_theme = pgEnum(
   "enum_posts_blocks_feature_heading_offset_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_posts_full_media_visual_type = pgEnum(
   "enum_posts_full_media_visual_type",
@@ -1095,6 +1197,10 @@ export const enum_posts_full_media_visual_type = pgEnum(
 export const enum_posts_full_media_shader_origin = pgEnum(
   "enum_posts_full_media_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum_posts_full_media_text_size = pgEnum(
+  "enum_posts_full_media_text_size",
+  ["small", "large"],
 );
 export const enum_posts_full_media_width = pgEnum(
   "enum_posts_full_media_width",
@@ -1110,7 +1216,7 @@ export const enum_posts_full_media_content_position = pgEnum(
 );
 export const enum_posts_full_media_theme = pgEnum(
   "enum_posts_full_media_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_posts_media_split_visual_type = pgEnum(
   "enum_posts_media_split_visual_type",
@@ -1119,6 +1225,10 @@ export const enum_posts_media_split_visual_type = pgEnum(
 export const enum_posts_media_split_shader_origin = pgEnum(
   "enum_posts_media_split_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum_posts_media_split_text_size = pgEnum(
+  "enum_posts_media_split_text_size",
+  ["small", "large"],
 );
 export const enum_posts_media_split_layout = pgEnum(
   "enum_posts_media_split_layout",
@@ -1130,7 +1240,7 @@ export const enum_posts_media_split_aspect_ratio = pgEnum(
 );
 export const enum_posts_media_split_theme = pgEnum(
   "enum_posts_media_split_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_posts_split_narrow_visual_type = pgEnum(
   "enum_posts_split_narrow_visual_type",
@@ -1140,13 +1250,21 @@ export const enum_posts_split_narrow_shader_origin = pgEnum(
   "enum_posts_split_narrow_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum_posts_split_narrow_text_size = pgEnum(
+  "enum_posts_split_narrow_text_size",
+  ["small", "large"],
+);
 export const enum_posts_split_narrow_image_position = pgEnum(
   "enum_posts_split_narrow_image_position",
   ["left", "right"],
 );
 export const enum_posts_split_narrow_theme = pgEnum(
   "enum_posts_split_narrow_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_posts_blocks_carousel_split_text_size = pgEnum(
+  "enum_posts_blocks_carousel_split_text_size",
+  ["small", "large"],
 );
 export const enum_posts_blocks_carousel_split_carousel_position = pgEnum(
   "enum_posts_blocks_carousel_split_carousel_position",
@@ -1158,7 +1276,11 @@ export const enum_posts_blocks_carousel_split_slide_size = pgEnum(
 );
 export const enum_posts_blocks_carousel_split_theme = pgEnum(
   "enum_posts_blocks_carousel_split_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_posts_image_pair_text_size = pgEnum(
+  "enum_posts_image_pair_text_size",
+  ["small", "large"],
 );
 export const enum_posts_image_pair_portrait_position = pgEnum(
   "enum_posts_image_pair_portrait_position",
@@ -1170,7 +1292,11 @@ export const enum_posts_image_pair_text_position = pgEnum(
 );
 export const enum_posts_image_pair_theme = pgEnum(
   "enum_posts_image_pair_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_posts_split_offset_text_size = pgEnum(
+  "enum_posts_split_offset_text_size",
+  ["small", "large"],
 );
 export const enum_posts_split_offset_caption_position = pgEnum(
   "enum_posts_split_offset_caption_position",
@@ -1178,15 +1304,15 @@ export const enum_posts_split_offset_caption_position = pgEnum(
 );
 export const enum_posts_split_offset_theme = pgEnum(
   "enum_posts_split_offset_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_posts_image_statement_text_size = pgEnum(
+  "enum_posts_image_statement_text_size",
+  ["small", "large"],
 );
 export const enum_posts_image_statement_text_position = pgEnum(
   "enum_posts_image_statement_text_position",
   ["left", "right"],
-);
-export const enum_posts_image_statement_text_size = pgEnum(
-  "enum_posts_image_statement_text_size",
-  ["default", "small"],
 );
 export const enum_posts_image_statement_image_width = pgEnum(
   "enum_posts_image_statement_image_width",
@@ -1198,33 +1324,39 @@ export const enum_posts_image_statement_aspect_ratio = pgEnum(
 );
 export const enum_posts_image_statement_theme = pgEnum(
   "enum_posts_image_statement_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_posts_caption_size = pgEnum("enum_posts_caption_size", [
   "full",
+  "contained",
   "inset",
   "small",
 ]);
 export const enum_posts_caption_theme = pgEnum("enum_posts_caption_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
 export const enum_posts_youtube_size = pgEnum("enum_posts_youtube_size", [
   "full",
+  "contained",
   "inset",
   "small",
 ]);
 export const enum_posts_youtube_theme = pgEnum("enum_posts_youtube_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
+export const enum_posts_rich_text_text_size = pgEnum(
+  "enum_posts_rich_text_text_size",
+  ["small", "large"],
+);
 export const enum_posts_rich_text_theme = pgEnum("enum_posts_rich_text_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -1243,8 +1375,8 @@ export const enum_posts_chart_width = pgEnum("enum_posts_chart_width", [
   "full",
 ]);
 export const enum_posts_chart_theme = pgEnum("enum_posts_chart_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -1254,8 +1386,8 @@ export const enum_posts_diagram_width = pgEnum("enum_posts_diagram_width", [
   "full",
 ]);
 export const enum_posts_diagram_theme = pgEnum("enum_posts_diagram_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -1263,9 +1395,13 @@ export const enum_posts_faq_link_type = pgEnum("enum_posts_faq_link_type", [
   "reference",
   "custom",
 ]);
+export const enum_posts_faq_text_size = pgEnum("enum_posts_faq_text_size", [
+  "small",
+  "large",
+]);
 export const enum_posts_faq_theme = pgEnum("enum_posts_faq_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -1279,7 +1415,11 @@ export const enum_posts_blocks_carousel_slide_size = pgEnum(
 );
 export const enum_posts_blocks_carousel_theme = pgEnum(
   "enum_posts_blocks_carousel_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_posts_blocks_carousel_tabs_text_size = pgEnum(
+  "enum_posts_blocks_carousel_tabs_text_size",
+  ["small", "large"],
 );
 export const enum_posts_blocks_carousel_tabs_slide_size = pgEnum(
   "enum_posts_blocks_carousel_tabs_slide_size",
@@ -1291,7 +1431,7 @@ export const enum_posts_blocks_carousel_tabs_tab_size = pgEnum(
 );
 export const enum_posts_blocks_carousel_tabs_theme = pgEnum(
   "enum_posts_blocks_carousel_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_posts_blocks_feature_tabs_tabs_visual_type = pgEnum(
   "enum_posts_blocks_feature_tabs_tabs_visual_type",
@@ -1301,13 +1441,21 @@ export const enum_posts_blocks_feature_tabs_tabs_shader_origin = pgEnum(
   "enum_posts_blocks_feature_tabs_tabs_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum_posts_blocks_feature_tabs_text_size = pgEnum(
+  "enum_posts_blocks_feature_tabs_text_size",
+  ["small", "large"],
+);
 export const enum_posts_blocks_feature_tabs_tab_size = pgEnum(
   "enum_posts_blocks_feature_tabs_tab_size",
   ["default", "small"],
 );
 export const enum_posts_blocks_feature_tabs_theme = pgEnum(
   "enum_posts_blocks_feature_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_posts_insight_list_text_size = pgEnum(
+  "enum_posts_insight_list_text_size",
+  ["small", "large"],
 );
 export const enum_posts_insight_list_layout = pgEnum(
   "enum_posts_insight_list_layout",
@@ -1319,7 +1467,7 @@ export const enum_posts_insight_list_mark_size = pgEnum(
 );
 export const enum_posts_insight_list_theme = pgEnum(
   "enum_posts_insight_list_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_posts_blocks_content_columns_sizes = pgEnum(
   "enum_posts_blocks_content_columns_sizes",
@@ -1371,7 +1519,7 @@ export const enum_posts_blocks_content_columns_post_variant = pgEnum(
 );
 export const enum_posts_blocks_content_columns_slider_theme = pgEnum(
   "enum_posts_blocks_content_columns_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_posts_blocks_content_columns_slider_intro_content_size =
   pgEnum("enum_posts_blocks_content_columns_slider_intro_content_size", [
@@ -1418,7 +1566,7 @@ export const enum_posts_blocks_content_columns_you_tube_aspect_ratio = pgEnum(
 );
 export const enum_posts_blocks_content_theme = pgEnum(
   "enum_posts_blocks_content_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_posts_blocks_content_container_width = pgEnum(
   "enum_posts_blocks_content_container_width",
@@ -1441,10 +1589,10 @@ export const enum_posts_blocks_content_space_mb = pgEnum(
   ["none", "sm", "md", "lg", "xl"],
 );
 export const enum_posts_section_theme = pgEnum("enum_posts_section_theme", [
-  "inherit",
-  "secondary",
-  "accent",
+  "default",
   "inverted",
+  "neutral",
+  "brand",
 ]);
 export const enum_posts_section_spacing = pgEnum("enum_posts_section_spacing", [
   "default",
@@ -1489,21 +1637,25 @@ export const enum___posts_v_transition_v_layout = pgEnum(
   "enum___posts_v_transition_v_layout",
   ["offset", "left", "centered", "split", "statement", "prose"],
 );
-export const enum___posts_v_transition_v_theme = pgEnum(
-  "enum___posts_v_transition_v_theme",
-  ["light", "dark", "neutral", "brand"],
+export const enum___posts_v_transition_v_text_size = pgEnum(
+  "enum___posts_v_transition_v_text_size",
+  ["small", "large"],
 );
 export const enum___posts_v_transition_v_heading_level = pgEnum(
   "enum___posts_v_transition_v_heading_level",
   ["h2", "h3", "h4"],
 );
-export const enum__posts_v_blocks_feature_heading_offset_body_size = pgEnum(
-  "enum__posts_v_blocks_feature_heading_offset_body_size",
-  ["small", "medium", "large"],
+export const enum___posts_v_transition_v_theme = pgEnum(
+  "enum___posts_v_transition_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__posts_v_blocks_feature_heading_offset_text_size = pgEnum(
+  "enum__posts_v_blocks_feature_heading_offset_text_size",
+  ["small", "large"],
 );
 export const enum__posts_v_blocks_feature_heading_offset_theme = pgEnum(
   "enum__posts_v_blocks_feature_heading_offset_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___posts_v_full_media_v_visual_type = pgEnum(
   "enum___posts_v_full_media_v_visual_type",
@@ -1512,6 +1664,10 @@ export const enum___posts_v_full_media_v_visual_type = pgEnum(
 export const enum___posts_v_full_media_v_shader_origin = pgEnum(
   "enum___posts_v_full_media_v_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum___posts_v_full_media_v_text_size = pgEnum(
+  "enum___posts_v_full_media_v_text_size",
+  ["small", "large"],
 );
 export const enum___posts_v_full_media_v_width = pgEnum(
   "enum___posts_v_full_media_v_width",
@@ -1527,7 +1683,7 @@ export const enum___posts_v_full_media_v_content_position = pgEnum(
 );
 export const enum___posts_v_full_media_v_theme = pgEnum(
   "enum___posts_v_full_media_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___posts_v_media_split_v_visual_type = pgEnum(
   "enum___posts_v_media_split_v_visual_type",
@@ -1536,6 +1692,10 @@ export const enum___posts_v_media_split_v_visual_type = pgEnum(
 export const enum___posts_v_media_split_v_shader_origin = pgEnum(
   "enum___posts_v_media_split_v_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum___posts_v_media_split_v_text_size = pgEnum(
+  "enum___posts_v_media_split_v_text_size",
+  ["small", "large"],
 );
 export const enum___posts_v_media_split_v_layout = pgEnum(
   "enum___posts_v_media_split_v_layout",
@@ -1547,7 +1707,7 @@ export const enum___posts_v_media_split_v_aspect_ratio = pgEnum(
 );
 export const enum___posts_v_media_split_v_theme = pgEnum(
   "enum___posts_v_media_split_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___posts_v_split_narrow_v_visual_type = pgEnum(
   "enum___posts_v_split_narrow_v_visual_type",
@@ -1557,13 +1717,21 @@ export const enum___posts_v_split_narrow_v_shader_origin = pgEnum(
   "enum___posts_v_split_narrow_v_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum___posts_v_split_narrow_v_text_size = pgEnum(
+  "enum___posts_v_split_narrow_v_text_size",
+  ["small", "large"],
+);
 export const enum___posts_v_split_narrow_v_image_position = pgEnum(
   "enum___posts_v_split_narrow_v_image_position",
   ["left", "right"],
 );
 export const enum___posts_v_split_narrow_v_theme = pgEnum(
   "enum___posts_v_split_narrow_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__posts_v_blocks_carousel_split_text_size = pgEnum(
+  "enum__posts_v_blocks_carousel_split_text_size",
+  ["small", "large"],
 );
 export const enum__posts_v_blocks_carousel_split_carousel_position = pgEnum(
   "enum__posts_v_blocks_carousel_split_carousel_position",
@@ -1575,7 +1743,11 @@ export const enum__posts_v_blocks_carousel_split_slide_size = pgEnum(
 );
 export const enum__posts_v_blocks_carousel_split_theme = pgEnum(
   "enum__posts_v_blocks_carousel_split_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___posts_v_image_pair_v_text_size = pgEnum(
+  "enum___posts_v_image_pair_v_text_size",
+  ["small", "large"],
 );
 export const enum___posts_v_image_pair_v_portrait_position = pgEnum(
   "enum___posts_v_image_pair_v_portrait_position",
@@ -1587,7 +1759,11 @@ export const enum___posts_v_image_pair_v_text_position = pgEnum(
 );
 export const enum___posts_v_image_pair_v_theme = pgEnum(
   "enum___posts_v_image_pair_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___posts_v_split_offset_v_text_size = pgEnum(
+  "enum___posts_v_split_offset_v_text_size",
+  ["small", "large"],
 );
 export const enum___posts_v_split_offset_v_caption_position = pgEnum(
   "enum___posts_v_split_offset_v_caption_position",
@@ -1595,15 +1771,15 @@ export const enum___posts_v_split_offset_v_caption_position = pgEnum(
 );
 export const enum___posts_v_split_offset_v_theme = pgEnum(
   "enum___posts_v_split_offset_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___posts_v_image_statement_v_text_size = pgEnum(
+  "enum___posts_v_image_statement_v_text_size",
+  ["small", "large"],
 );
 export const enum___posts_v_image_statement_v_text_position = pgEnum(
   "enum___posts_v_image_statement_v_text_position",
   ["left", "right"],
-);
-export const enum___posts_v_image_statement_v_text_size = pgEnum(
-  "enum___posts_v_image_statement_v_text_size",
-  ["default", "small"],
 );
 export const enum___posts_v_image_statement_v_image_width = pgEnum(
   "enum___posts_v_image_statement_v_image_width",
@@ -1615,27 +1791,31 @@ export const enum___posts_v_image_statement_v_aspect_ratio = pgEnum(
 );
 export const enum___posts_v_image_statement_v_theme = pgEnum(
   "enum___posts_v_image_statement_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___posts_v_caption_v_size = pgEnum(
   "enum___posts_v_caption_v_size",
-  ["full", "inset", "small"],
+  ["full", "contained", "inset", "small"],
 );
 export const enum___posts_v_caption_v_theme = pgEnum(
   "enum___posts_v_caption_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___posts_v_youtube_v_size = pgEnum(
   "enum___posts_v_youtube_v_size",
-  ["full", "inset", "small"],
+  ["full", "contained", "inset", "small"],
 );
 export const enum___posts_v_youtube_v_theme = pgEnum(
   "enum___posts_v_youtube_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___posts_v_rich_text_v_text_size = pgEnum(
+  "enum___posts_v_rich_text_v_text_size",
+  ["small", "large"],
 );
 export const enum___posts_v_rich_text_v_theme = pgEnum(
   "enum___posts_v_rich_text_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___posts_v_code_v_language = pgEnum(
   "enum___posts_v_code_v_language",
@@ -1647,7 +1827,7 @@ export const enum___posts_v_chart_v_width = pgEnum(
 );
 export const enum___posts_v_chart_v_theme = pgEnum(
   "enum___posts_v_chart_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___posts_v_diagram_v_width = pgEnum(
   "enum___posts_v_diagram_v_width",
@@ -1655,15 +1835,19 @@ export const enum___posts_v_diagram_v_width = pgEnum(
 );
 export const enum___posts_v_diagram_v_theme = pgEnum(
   "enum___posts_v_diagram_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___posts_v_faq_v_link_type = pgEnum(
   "enum___posts_v_faq_v_link_type",
   ["reference", "custom"],
 );
+export const enum___posts_v_faq_v_text_size = pgEnum(
+  "enum___posts_v_faq_v_text_size",
+  ["small", "large"],
+);
 export const enum___posts_v_faq_v_theme = pgEnum("enum___posts_v_faq_v_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -1677,7 +1861,11 @@ export const enum__posts_v_blocks_carousel_slide_size = pgEnum(
 );
 export const enum__posts_v_blocks_carousel_theme = pgEnum(
   "enum__posts_v_blocks_carousel_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__posts_v_blocks_carousel_tabs_text_size = pgEnum(
+  "enum__posts_v_blocks_carousel_tabs_text_size",
+  ["small", "large"],
 );
 export const enum__posts_v_blocks_carousel_tabs_slide_size = pgEnum(
   "enum__posts_v_blocks_carousel_tabs_slide_size",
@@ -1689,7 +1877,7 @@ export const enum__posts_v_blocks_carousel_tabs_tab_size = pgEnum(
 );
 export const enum__posts_v_blocks_carousel_tabs_theme = pgEnum(
   "enum__posts_v_blocks_carousel_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__posts_v_blocks_feature_tabs_tabs_visual_type = pgEnum(
   "enum__posts_v_blocks_feature_tabs_tabs_visual_type",
@@ -1699,13 +1887,21 @@ export const enum__posts_v_blocks_feature_tabs_tabs_shader_origin = pgEnum(
   "enum__posts_v_blocks_feature_tabs_tabs_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum__posts_v_blocks_feature_tabs_text_size = pgEnum(
+  "enum__posts_v_blocks_feature_tabs_text_size",
+  ["small", "large"],
+);
 export const enum__posts_v_blocks_feature_tabs_tab_size = pgEnum(
   "enum__posts_v_blocks_feature_tabs_tab_size",
   ["default", "small"],
 );
 export const enum__posts_v_blocks_feature_tabs_theme = pgEnum(
   "enum__posts_v_blocks_feature_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___posts_v_insight_list_v_text_size = pgEnum(
+  "enum___posts_v_insight_list_v_text_size",
+  ["small", "large"],
 );
 export const enum___posts_v_insight_list_v_layout = pgEnum(
   "enum___posts_v_insight_list_v_layout",
@@ -1717,7 +1913,7 @@ export const enum___posts_v_insight_list_v_mark_size = pgEnum(
 );
 export const enum___posts_v_insight_list_v_theme = pgEnum(
   "enum___posts_v_insight_list_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__posts_v_blocks_content_columns_sizes = pgEnum(
   "enum__posts_v_blocks_content_columns_sizes",
@@ -1772,7 +1968,7 @@ export const enum__posts_v_blocks_content_columns_post_variant = pgEnum(
 );
 export const enum__posts_v_blocks_content_columns_slider_theme = pgEnum(
   "enum__posts_v_blocks_content_columns_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__posts_v_blocks_content_columns_slider_intro_content_size =
   pgEnum("enum__posts_v_blocks_content_columns_slider_intro_content_size", [
@@ -1821,7 +2017,7 @@ export const enum__posts_v_blocks_content_columns_you_tube_aspect_ratio =
   ]);
 export const enum__posts_v_blocks_content_theme = pgEnum(
   "enum__posts_v_blocks_content_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__posts_v_blocks_content_container_width = pgEnum(
   "enum__posts_v_blocks_content_container_width",
@@ -1845,7 +2041,7 @@ export const enum__posts_v_blocks_content_space_mb = pgEnum(
 );
 export const enum___posts_v_section_v_theme = pgEnum(
   "enum___posts_v_section_v_theme",
-  ["inherit", "secondary", "accent", "inverted"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___posts_v_section_v_spacing = pgEnum(
   "enum___posts_v_section_v_spacing",
@@ -1883,21 +2079,25 @@ export const enum_works_transition_layout = pgEnum(
   "enum_works_transition_layout",
   ["offset", "left", "centered", "split", "statement", "prose"],
 );
-export const enum_works_transition_theme = pgEnum(
-  "enum_works_transition_theme",
-  ["light", "dark", "neutral", "brand"],
+export const enum_works_transition_text_size = pgEnum(
+  "enum_works_transition_text_size",
+  ["small", "large"],
 );
 export const enum_works_transition_heading_level = pgEnum(
   "enum_works_transition_heading_level",
   ["h2", "h3", "h4"],
 );
-export const enum_works_blocks_feature_heading_offset_body_size = pgEnum(
-  "enum_works_blocks_feature_heading_offset_body_size",
-  ["small", "medium", "large"],
+export const enum_works_transition_theme = pgEnum(
+  "enum_works_transition_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_works_blocks_feature_heading_offset_text_size = pgEnum(
+  "enum_works_blocks_feature_heading_offset_text_size",
+  ["small", "large"],
 );
 export const enum_works_blocks_feature_heading_offset_theme = pgEnum(
   "enum_works_blocks_feature_heading_offset_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_full_media_visual_type = pgEnum(
   "enum_works_full_media_visual_type",
@@ -1906,6 +2106,10 @@ export const enum_works_full_media_visual_type = pgEnum(
 export const enum_works_full_media_shader_origin = pgEnum(
   "enum_works_full_media_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum_works_full_media_text_size = pgEnum(
+  "enum_works_full_media_text_size",
+  ["small", "large"],
 );
 export const enum_works_full_media_width = pgEnum(
   "enum_works_full_media_width",
@@ -1921,7 +2125,7 @@ export const enum_works_full_media_content_position = pgEnum(
 );
 export const enum_works_full_media_theme = pgEnum(
   "enum_works_full_media_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_media_split_visual_type = pgEnum(
   "enum_works_media_split_visual_type",
@@ -1930,6 +2134,10 @@ export const enum_works_media_split_visual_type = pgEnum(
 export const enum_works_media_split_shader_origin = pgEnum(
   "enum_works_media_split_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum_works_media_split_text_size = pgEnum(
+  "enum_works_media_split_text_size",
+  ["small", "large"],
 );
 export const enum_works_media_split_layout = pgEnum(
   "enum_works_media_split_layout",
@@ -1941,7 +2149,7 @@ export const enum_works_media_split_aspect_ratio = pgEnum(
 );
 export const enum_works_media_split_theme = pgEnum(
   "enum_works_media_split_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_split_narrow_visual_type = pgEnum(
   "enum_works_split_narrow_visual_type",
@@ -1951,13 +2159,21 @@ export const enum_works_split_narrow_shader_origin = pgEnum(
   "enum_works_split_narrow_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum_works_split_narrow_text_size = pgEnum(
+  "enum_works_split_narrow_text_size",
+  ["small", "large"],
+);
 export const enum_works_split_narrow_image_position = pgEnum(
   "enum_works_split_narrow_image_position",
   ["left", "right"],
 );
 export const enum_works_split_narrow_theme = pgEnum(
   "enum_works_split_narrow_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_works_blocks_carousel_split_text_size = pgEnum(
+  "enum_works_blocks_carousel_split_text_size",
+  ["small", "large"],
 );
 export const enum_works_blocks_carousel_split_carousel_position = pgEnum(
   "enum_works_blocks_carousel_split_carousel_position",
@@ -1969,7 +2185,11 @@ export const enum_works_blocks_carousel_split_slide_size = pgEnum(
 );
 export const enum_works_blocks_carousel_split_theme = pgEnum(
   "enum_works_blocks_carousel_split_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_works_image_pair_text_size = pgEnum(
+  "enum_works_image_pair_text_size",
+  ["small", "large"],
 );
 export const enum_works_image_pair_portrait_position = pgEnum(
   "enum_works_image_pair_portrait_position",
@@ -1981,7 +2201,11 @@ export const enum_works_image_pair_text_position = pgEnum(
 );
 export const enum_works_image_pair_theme = pgEnum(
   "enum_works_image_pair_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_works_split_offset_text_size = pgEnum(
+  "enum_works_split_offset_text_size",
+  ["small", "large"],
 );
 export const enum_works_split_offset_caption_position = pgEnum(
   "enum_works_split_offset_caption_position",
@@ -1989,15 +2213,15 @@ export const enum_works_split_offset_caption_position = pgEnum(
 );
 export const enum_works_split_offset_theme = pgEnum(
   "enum_works_split_offset_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_works_image_statement_text_size = pgEnum(
+  "enum_works_image_statement_text_size",
+  ["small", "large"],
 );
 export const enum_works_image_statement_text_position = pgEnum(
   "enum_works_image_statement_text_position",
   ["left", "right"],
-);
-export const enum_works_image_statement_text_size = pgEnum(
-  "enum_works_image_statement_text_size",
-  ["default", "small"],
 );
 export const enum_works_image_statement_image_width = pgEnum(
   "enum_works_image_statement_image_width",
@@ -2009,33 +2233,39 @@ export const enum_works_image_statement_aspect_ratio = pgEnum(
 );
 export const enum_works_image_statement_theme = pgEnum(
   "enum_works_image_statement_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_caption_size = pgEnum("enum_works_caption_size", [
   "full",
+  "contained",
   "inset",
   "small",
 ]);
 export const enum_works_caption_theme = pgEnum("enum_works_caption_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
 export const enum_works_youtube_size = pgEnum("enum_works_youtube_size", [
   "full",
+  "contained",
   "inset",
   "small",
 ]);
 export const enum_works_youtube_theme = pgEnum("enum_works_youtube_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
+export const enum_works_rich_text_text_size = pgEnum(
+  "enum_works_rich_text_text_size",
+  ["small", "large"],
+);
 export const enum_works_rich_text_theme = pgEnum("enum_works_rich_text_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -2054,8 +2284,8 @@ export const enum_works_chart_width = pgEnum("enum_works_chart_width", [
   "full",
 ]);
 export const enum_works_chart_theme = pgEnum("enum_works_chart_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -2065,8 +2295,8 @@ export const enum_works_diagram_width = pgEnum("enum_works_diagram_width", [
   "full",
 ]);
 export const enum_works_diagram_theme = pgEnum("enum_works_diagram_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -2074,9 +2304,13 @@ export const enum_works_faq_link_type = pgEnum("enum_works_faq_link_type", [
   "reference",
   "custom",
 ]);
+export const enum_works_faq_text_size = pgEnum("enum_works_faq_text_size", [
+  "small",
+  "large",
+]);
 export const enum_works_faq_theme = pgEnum("enum_works_faq_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -2090,7 +2324,11 @@ export const enum_works_blocks_carousel_slide_size = pgEnum(
 );
 export const enum_works_blocks_carousel_theme = pgEnum(
   "enum_works_blocks_carousel_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_works_blocks_carousel_tabs_text_size = pgEnum(
+  "enum_works_blocks_carousel_tabs_text_size",
+  ["small", "large"],
 );
 export const enum_works_blocks_carousel_tabs_slide_size = pgEnum(
   "enum_works_blocks_carousel_tabs_slide_size",
@@ -2102,7 +2340,7 @@ export const enum_works_blocks_carousel_tabs_tab_size = pgEnum(
 );
 export const enum_works_blocks_carousel_tabs_theme = pgEnum(
   "enum_works_blocks_carousel_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_blocks_feature_tabs_tabs_visual_type = pgEnum(
   "enum_works_blocks_feature_tabs_tabs_visual_type",
@@ -2112,13 +2350,21 @@ export const enum_works_blocks_feature_tabs_tabs_shader_origin = pgEnum(
   "enum_works_blocks_feature_tabs_tabs_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum_works_blocks_feature_tabs_text_size = pgEnum(
+  "enum_works_blocks_feature_tabs_text_size",
+  ["small", "large"],
+);
 export const enum_works_blocks_feature_tabs_tab_size = pgEnum(
   "enum_works_blocks_feature_tabs_tab_size",
   ["default", "small"],
 );
 export const enum_works_blocks_feature_tabs_theme = pgEnum(
   "enum_works_blocks_feature_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_works_insight_list_text_size = pgEnum(
+  "enum_works_insight_list_text_size",
+  ["small", "large"],
 );
 export const enum_works_insight_list_layout = pgEnum(
   "enum_works_insight_list_layout",
@@ -2130,7 +2376,7 @@ export const enum_works_insight_list_mark_size = pgEnum(
 );
 export const enum_works_insight_list_theme = pgEnum(
   "enum_works_insight_list_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_blocks_content_columns_sizes = pgEnum(
   "enum_works_blocks_content_columns_sizes",
@@ -2182,7 +2428,7 @@ export const enum_works_blocks_content_columns_post_variant = pgEnum(
 );
 export const enum_works_blocks_content_columns_slider_theme = pgEnum(
   "enum_works_blocks_content_columns_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_blocks_content_columns_slider_intro_content_size =
   pgEnum("enum_works_blocks_content_columns_slider_intro_content_size", [
@@ -2229,7 +2475,7 @@ export const enum_works_blocks_content_columns_you_tube_aspect_ratio = pgEnum(
 );
 export const enum_works_blocks_content_theme = pgEnum(
   "enum_works_blocks_content_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_blocks_content_container_width = pgEnum(
   "enum_works_blocks_content_container_width",
@@ -2252,10 +2498,10 @@ export const enum_works_blocks_content_space_mb = pgEnum(
   ["none", "sm", "md", "lg", "xl"],
 );
 export const enum_works_section_theme = pgEnum("enum_works_section_theme", [
-  "inherit",
-  "secondary",
-  "accent",
+  "default",
   "inverted",
+  "neutral",
+  "brand",
 ]);
 export const enum_works_section_spacing = pgEnum("enum_works_section_spacing", [
   "default",
@@ -2271,7 +2517,7 @@ export const enum_works_section_stack = pgEnum("enum_works_section_stack", [
 ]);
 export const enum_works_blocks_slider_theme = pgEnum(
   "enum_works_blocks_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_blocks_slider_intro_content_size = pgEnum(
   "enum_works_blocks_slider_intro_content_size",
@@ -2307,7 +2553,7 @@ export const enum_works_blocks_tabs_tabs_content_type = pgEnum(
 );
 export const enum_works_blocks_tabs_tabs_slider_theme = pgEnum(
   "enum_works_blocks_tabs_tabs_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_blocks_tabs_tabs_slider_style = pgEnum(
   "enum_works_blocks_tabs_tabs_slider_style",
@@ -2315,7 +2561,7 @@ export const enum_works_blocks_tabs_tabs_slider_style = pgEnum(
 );
 export const enum_works_blocks_tabs_theme = pgEnum(
   "enum_works_blocks_tabs_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_blocks_tabs_heading_style = pgEnum(
   "enum_works_blocks_tabs_heading_style",
@@ -2339,7 +2585,7 @@ export const enum_works_blocks_tabs_space_mb = pgEnum(
 );
 export const enum_works_blocks_archive_theme = pgEnum(
   "enum_works_blocks_archive_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_blocks_archive_card_style = pgEnum(
   "enum_works_blocks_archive_card_style",
@@ -2387,7 +2633,7 @@ export const enum_works_blocks_media_block_aspect_ratio = pgEnum(
 );
 export const enum_works_blocks_media_block_theme = pgEnum(
   "enum_works_blocks_media_block_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum_works_blocks_media_block_caption_layout = pgEnum(
   "enum_works_blocks_media_block_caption_layout",
@@ -2448,21 +2694,25 @@ export const enum___works_v_transition_v_layout = pgEnum(
   "enum___works_v_transition_v_layout",
   ["offset", "left", "centered", "split", "statement", "prose"],
 );
-export const enum___works_v_transition_v_theme = pgEnum(
-  "enum___works_v_transition_v_theme",
-  ["light", "dark", "neutral", "brand"],
+export const enum___works_v_transition_v_text_size = pgEnum(
+  "enum___works_v_transition_v_text_size",
+  ["small", "large"],
 );
 export const enum___works_v_transition_v_heading_level = pgEnum(
   "enum___works_v_transition_v_heading_level",
   ["h2", "h3", "h4"],
 );
-export const enum__works_v_blocks_feature_heading_offset_body_size = pgEnum(
-  "enum__works_v_blocks_feature_heading_offset_body_size",
-  ["small", "medium", "large"],
+export const enum___works_v_transition_v_theme = pgEnum(
+  "enum___works_v_transition_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__works_v_blocks_feature_heading_offset_text_size = pgEnum(
+  "enum__works_v_blocks_feature_heading_offset_text_size",
+  ["small", "large"],
 );
 export const enum__works_v_blocks_feature_heading_offset_theme = pgEnum(
   "enum__works_v_blocks_feature_heading_offset_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___works_v_full_media_v_visual_type = pgEnum(
   "enum___works_v_full_media_v_visual_type",
@@ -2471,6 +2721,10 @@ export const enum___works_v_full_media_v_visual_type = pgEnum(
 export const enum___works_v_full_media_v_shader_origin = pgEnum(
   "enum___works_v_full_media_v_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum___works_v_full_media_v_text_size = pgEnum(
+  "enum___works_v_full_media_v_text_size",
+  ["small", "large"],
 );
 export const enum___works_v_full_media_v_width = pgEnum(
   "enum___works_v_full_media_v_width",
@@ -2486,7 +2740,7 @@ export const enum___works_v_full_media_v_content_position = pgEnum(
 );
 export const enum___works_v_full_media_v_theme = pgEnum(
   "enum___works_v_full_media_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___works_v_media_split_v_visual_type = pgEnum(
   "enum___works_v_media_split_v_visual_type",
@@ -2495,6 +2749,10 @@ export const enum___works_v_media_split_v_visual_type = pgEnum(
 export const enum___works_v_media_split_v_shader_origin = pgEnum(
   "enum___works_v_media_split_v_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum___works_v_media_split_v_text_size = pgEnum(
+  "enum___works_v_media_split_v_text_size",
+  ["small", "large"],
 );
 export const enum___works_v_media_split_v_layout = pgEnum(
   "enum___works_v_media_split_v_layout",
@@ -2506,7 +2764,7 @@ export const enum___works_v_media_split_v_aspect_ratio = pgEnum(
 );
 export const enum___works_v_media_split_v_theme = pgEnum(
   "enum___works_v_media_split_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___works_v_split_narrow_v_visual_type = pgEnum(
   "enum___works_v_split_narrow_v_visual_type",
@@ -2516,13 +2774,21 @@ export const enum___works_v_split_narrow_v_shader_origin = pgEnum(
   "enum___works_v_split_narrow_v_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum___works_v_split_narrow_v_text_size = pgEnum(
+  "enum___works_v_split_narrow_v_text_size",
+  ["small", "large"],
+);
 export const enum___works_v_split_narrow_v_image_position = pgEnum(
   "enum___works_v_split_narrow_v_image_position",
   ["left", "right"],
 );
 export const enum___works_v_split_narrow_v_theme = pgEnum(
   "enum___works_v_split_narrow_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__works_v_blocks_carousel_split_text_size = pgEnum(
+  "enum__works_v_blocks_carousel_split_text_size",
+  ["small", "large"],
 );
 export const enum__works_v_blocks_carousel_split_carousel_position = pgEnum(
   "enum__works_v_blocks_carousel_split_carousel_position",
@@ -2534,7 +2800,11 @@ export const enum__works_v_blocks_carousel_split_slide_size = pgEnum(
 );
 export const enum__works_v_blocks_carousel_split_theme = pgEnum(
   "enum__works_v_blocks_carousel_split_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___works_v_image_pair_v_text_size = pgEnum(
+  "enum___works_v_image_pair_v_text_size",
+  ["small", "large"],
 );
 export const enum___works_v_image_pair_v_portrait_position = pgEnum(
   "enum___works_v_image_pair_v_portrait_position",
@@ -2546,7 +2816,11 @@ export const enum___works_v_image_pair_v_text_position = pgEnum(
 );
 export const enum___works_v_image_pair_v_theme = pgEnum(
   "enum___works_v_image_pair_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___works_v_split_offset_v_text_size = pgEnum(
+  "enum___works_v_split_offset_v_text_size",
+  ["small", "large"],
 );
 export const enum___works_v_split_offset_v_caption_position = pgEnum(
   "enum___works_v_split_offset_v_caption_position",
@@ -2554,15 +2828,15 @@ export const enum___works_v_split_offset_v_caption_position = pgEnum(
 );
 export const enum___works_v_split_offset_v_theme = pgEnum(
   "enum___works_v_split_offset_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___works_v_image_statement_v_text_size = pgEnum(
+  "enum___works_v_image_statement_v_text_size",
+  ["small", "large"],
 );
 export const enum___works_v_image_statement_v_text_position = pgEnum(
   "enum___works_v_image_statement_v_text_position",
   ["left", "right"],
-);
-export const enum___works_v_image_statement_v_text_size = pgEnum(
-  "enum___works_v_image_statement_v_text_size",
-  ["default", "small"],
 );
 export const enum___works_v_image_statement_v_image_width = pgEnum(
   "enum___works_v_image_statement_v_image_width",
@@ -2574,27 +2848,31 @@ export const enum___works_v_image_statement_v_aspect_ratio = pgEnum(
 );
 export const enum___works_v_image_statement_v_theme = pgEnum(
   "enum___works_v_image_statement_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___works_v_caption_v_size = pgEnum(
   "enum___works_v_caption_v_size",
-  ["full", "inset", "small"],
+  ["full", "contained", "inset", "small"],
 );
 export const enum___works_v_caption_v_theme = pgEnum(
   "enum___works_v_caption_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___works_v_youtube_v_size = pgEnum(
   "enum___works_v_youtube_v_size",
-  ["full", "inset", "small"],
+  ["full", "contained", "inset", "small"],
 );
 export const enum___works_v_youtube_v_theme = pgEnum(
   "enum___works_v_youtube_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___works_v_rich_text_v_text_size = pgEnum(
+  "enum___works_v_rich_text_v_text_size",
+  ["small", "large"],
 );
 export const enum___works_v_rich_text_v_theme = pgEnum(
   "enum___works_v_rich_text_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___works_v_code_v_language = pgEnum(
   "enum___works_v_code_v_language",
@@ -2606,7 +2884,7 @@ export const enum___works_v_chart_v_width = pgEnum(
 );
 export const enum___works_v_chart_v_theme = pgEnum(
   "enum___works_v_chart_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___works_v_diagram_v_width = pgEnum(
   "enum___works_v_diagram_v_width",
@@ -2614,15 +2892,19 @@ export const enum___works_v_diagram_v_width = pgEnum(
 );
 export const enum___works_v_diagram_v_theme = pgEnum(
   "enum___works_v_diagram_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___works_v_faq_v_link_type = pgEnum(
   "enum___works_v_faq_v_link_type",
   ["reference", "custom"],
 );
+export const enum___works_v_faq_v_text_size = pgEnum(
+  "enum___works_v_faq_v_text_size",
+  ["small", "large"],
+);
 export const enum___works_v_faq_v_theme = pgEnum("enum___works_v_faq_v_theme", [
-  "light",
-  "dark",
+  "default",
+  "inverted",
   "neutral",
   "brand",
 ]);
@@ -2636,7 +2918,11 @@ export const enum__works_v_blocks_carousel_slide_size = pgEnum(
 );
 export const enum__works_v_blocks_carousel_theme = pgEnum(
   "enum__works_v_blocks_carousel_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__works_v_blocks_carousel_tabs_text_size = pgEnum(
+  "enum__works_v_blocks_carousel_tabs_text_size",
+  ["small", "large"],
 );
 export const enum__works_v_blocks_carousel_tabs_slide_size = pgEnum(
   "enum__works_v_blocks_carousel_tabs_slide_size",
@@ -2648,7 +2934,7 @@ export const enum__works_v_blocks_carousel_tabs_tab_size = pgEnum(
 );
 export const enum__works_v_blocks_carousel_tabs_theme = pgEnum(
   "enum__works_v_blocks_carousel_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__works_v_blocks_feature_tabs_tabs_visual_type = pgEnum(
   "enum__works_v_blocks_feature_tabs_tabs_visual_type",
@@ -2658,13 +2944,21 @@ export const enum__works_v_blocks_feature_tabs_tabs_shader_origin = pgEnum(
   "enum__works_v_blocks_feature_tabs_tabs_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum__works_v_blocks_feature_tabs_text_size = pgEnum(
+  "enum__works_v_blocks_feature_tabs_text_size",
+  ["small", "large"],
+);
 export const enum__works_v_blocks_feature_tabs_tab_size = pgEnum(
   "enum__works_v_blocks_feature_tabs_tab_size",
   ["default", "small"],
 );
 export const enum__works_v_blocks_feature_tabs_theme = pgEnum(
   "enum__works_v_blocks_feature_tabs_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___works_v_insight_list_v_text_size = pgEnum(
+  "enum___works_v_insight_list_v_text_size",
+  ["small", "large"],
 );
 export const enum___works_v_insight_list_v_layout = pgEnum(
   "enum___works_v_insight_list_v_layout",
@@ -2676,7 +2970,7 @@ export const enum___works_v_insight_list_v_mark_size = pgEnum(
 );
 export const enum___works_v_insight_list_v_theme = pgEnum(
   "enum___works_v_insight_list_v_theme",
-  ["light", "dark", "neutral", "brand"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__works_v_blocks_content_columns_sizes = pgEnum(
   "enum__works_v_blocks_content_columns_sizes",
@@ -2731,7 +3025,7 @@ export const enum__works_v_blocks_content_columns_post_variant = pgEnum(
 );
 export const enum__works_v_blocks_content_columns_slider_theme = pgEnum(
   "enum__works_v_blocks_content_columns_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__works_v_blocks_content_columns_slider_intro_content_size =
   pgEnum("enum__works_v_blocks_content_columns_slider_intro_content_size", [
@@ -2780,7 +3074,7 @@ export const enum__works_v_blocks_content_columns_you_tube_aspect_ratio =
   ]);
 export const enum__works_v_blocks_content_theme = pgEnum(
   "enum__works_v_blocks_content_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__works_v_blocks_content_container_width = pgEnum(
   "enum__works_v_blocks_content_container_width",
@@ -2804,7 +3098,7 @@ export const enum__works_v_blocks_content_space_mb = pgEnum(
 );
 export const enum___works_v_section_v_theme = pgEnum(
   "enum___works_v_section_v_theme",
-  ["inherit", "secondary", "accent", "inverted"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum___works_v_section_v_spacing = pgEnum(
   "enum___works_v_section_v_spacing",
@@ -2816,7 +3110,7 @@ export const enum___works_v_section_v_stack = pgEnum(
 );
 export const enum__works_v_blocks_slider_theme = pgEnum(
   "enum__works_v_blocks_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__works_v_blocks_slider_intro_content_size = pgEnum(
   "enum__works_v_blocks_slider_intro_content_size",
@@ -2852,7 +3146,7 @@ export const enum__works_v_blocks_tabs_tabs_content_type = pgEnum(
 );
 export const enum__works_v_blocks_tabs_tabs_slider_theme = pgEnum(
   "enum__works_v_blocks_tabs_tabs_slider_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__works_v_blocks_tabs_tabs_slider_style = pgEnum(
   "enum__works_v_blocks_tabs_tabs_slider_style",
@@ -2860,7 +3154,7 @@ export const enum__works_v_blocks_tabs_tabs_slider_style = pgEnum(
 );
 export const enum__works_v_blocks_tabs_theme = pgEnum(
   "enum__works_v_blocks_tabs_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__works_v_blocks_tabs_heading_style = pgEnum(
   "enum__works_v_blocks_tabs_heading_style",
@@ -2884,7 +3178,7 @@ export const enum__works_v_blocks_tabs_space_mb = pgEnum(
 );
 export const enum__works_v_blocks_archive_theme = pgEnum(
   "enum__works_v_blocks_archive_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__works_v_blocks_archive_card_style = pgEnum(
   "enum__works_v_blocks_archive_card_style",
@@ -2932,7 +3226,7 @@ export const enum__works_v_blocks_media_block_aspect_ratio = pgEnum(
 );
 export const enum__works_v_blocks_media_block_theme = pgEnum(
   "enum__works_v_blocks_media_block_theme",
-  ["system", "light", "dark"],
+  ["default", "inverted", "neutral", "brand"],
 );
 export const enum__works_v_blocks_media_block_caption_layout = pgEnum(
   "enum__works_v_blocks_media_block_caption_layout",
@@ -3120,11 +3414,12 @@ export const pages_transition = pgTable(
     id: varchar("id").primaryKey(),
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
+    body: jsonb("body"),
     layout: enum_pages_transition_layout("layout").default("offset"),
-    theme: enum_pages_transition_theme("theme").default("light"),
+    textSize: enum_pages_transition_text_size("text_size").default("small"),
     headingLevel:
       enum_pages_transition_heading_level("heading_level").default("h2"),
-    body: jsonb("body"),
+    theme: enum_pages_transition_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3149,12 +3444,14 @@ export const pages_blocks_feature_heading_offset = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
-    bodySize:
-      enum_pages_blocks_feature_heading_offset_body_size("body_size").default(
-        "medium",
+    textSize:
+      enum_pages_blocks_feature_heading_offset_text_size("text_size").default(
+        "small",
       ),
     theme:
-      enum_pages_blocks_feature_heading_offset_theme("theme").default("light"),
+      enum_pages_blocks_feature_heading_offset_theme("theme").default(
+        "default",
+      ),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3212,6 +3509,7 @@ export const pages_full_media = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize: enum_pages_full_media_text_size("text_size").default("small"),
     width: enum_pages_full_media_width("width").default("contained"),
     aspectRatio:
       enum_pages_full_media_aspect_ratio("aspect_ratio").default("16-9"),
@@ -3219,7 +3517,7 @@ export const pages_full_media = pgTable(
       enum_pages_full_media_content_position("content_position").default(
         "left",
       ),
-    theme: enum_pages_full_media_theme("theme").default("light"),
+    theme: enum_pages_full_media_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3283,10 +3581,11 @@ export const pages_media_split = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize: enum_pages_media_split_text_size("text_size").default("small"),
     layout: enum_pages_media_split_layout("layout").default("left"),
     aspectRatio:
       enum_pages_media_split_aspect_ratio("aspect_ratio").default("16-9"),
-    theme: enum_pages_media_split_theme("theme").default("light"),
+    theme: enum_pages_media_split_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3350,9 +3649,10 @@ export const pages_split_narrow = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize: enum_pages_split_narrow_text_size("text_size").default("small"),
     imagePosition:
       enum_pages_split_narrow_image_position("image_position").default("left"),
-    theme: enum_pages_split_narrow_theme("theme").default("light"),
+    theme: enum_pages_split_narrow_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3409,6 +3709,8 @@ export const pages_blocks_carousel_split = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum_pages_blocks_carousel_split_text_size("text_size").default("small"),
     carouselPosition:
       enum_pages_blocks_carousel_split_carousel_position(
         "carousel_position",
@@ -3416,7 +3718,7 @@ export const pages_blocks_carousel_split = pgTable(
     slideSize:
       enum_pages_blocks_carousel_split_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
-    theme: enum_pages_blocks_carousel_split_theme("theme").default("light"),
+    theme: enum_pages_blocks_carousel_split_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3446,6 +3748,7 @@ export const pages_image_pair = pgTable(
     landscapeMedia: integer("landscape_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize: enum_pages_image_pair_text_size("text_size").default("small"),
     portraitPosition:
       enum_pages_image_pair_portrait_position("portrait_position").default(
         "left",
@@ -3454,7 +3757,7 @@ export const pages_image_pair = pgTable(
       enum_pages_image_pair_text_position("text_position").default(
         "under-portrait",
       ),
-    theme: enum_pages_image_pair_theme("theme").default("light"),
+    theme: enum_pages_image_pair_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3486,11 +3789,12 @@ export const pages_split_offset = pgTable(
     smallMedia: integer("small_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize: enum_pages_split_offset_text_size("text_size").default("small"),
     captionPosition:
       enum_pages_split_offset_caption_position("caption_position").default(
         "left",
       ),
-    theme: enum_pages_split_offset_theme("theme").default("light"),
+    theme: enum_pages_split_offset_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3518,10 +3822,10 @@ export const pages_image_statement = pgTable(
       onDelete: "set null",
     }),
     caption: jsonb("caption"),
+    textSize:
+      enum_pages_image_statement_text_size("text_size").default("small"),
     textPosition:
       enum_pages_image_statement_text_position("text_position").default("left"),
-    textSize:
-      enum_pages_image_statement_text_size("text_size").default("default"),
     imageWidth:
       enum_pages_image_statement_image_width("image_width").default(
         "contained",
@@ -3530,7 +3834,7 @@ export const pages_image_statement = pgTable(
       enum_pages_image_statement_aspect_ratio("aspect_ratio").default(
         "responsive",
       ),
-    theme: enum_pages_image_statement_theme("theme").default("light"),
+    theme: enum_pages_image_statement_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3556,9 +3860,9 @@ export const pages_caption = pgTable(
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
-    size: enum_pages_caption_size("size").default("full"),
     captionOverride: jsonb("caption_override"),
-    theme: enum_pages_caption_theme("theme").default("light"),
+    size: enum_pages_caption_size("size"),
+    theme: enum_pages_caption_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3583,8 +3887,8 @@ export const pages_youtube = pgTable(
     id: varchar("id").primaryKey(),
     url: varchar("url"),
     title: varchar("title"),
-    size: enum_pages_youtube_size("size").default("full"),
-    theme: enum_pages_youtube_theme("theme").default("light"),
+    size: enum_pages_youtube_size("size"),
+    theme: enum_pages_youtube_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3607,7 +3911,8 @@ export const pages_rich_text = pgTable(
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
     body: jsonb("body"),
-    theme: enum_pages_rich_text_theme("theme").default("light"),
+    textSize: enum_pages_rich_text_text_size("text_size").default("small"),
+    theme: enum_pages_rich_text_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3658,7 +3963,7 @@ export const pages_chart = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum_pages_chart_width("width").default("wide"),
-    theme: enum_pages_chart_theme("theme").default("light"),
+    theme: enum_pages_chart_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
     ),
@@ -3689,7 +3994,7 @@ export const pages_diagram = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum_pages_diagram_width("width").default("wide"),
-    theme: enum_pages_diagram_theme("theme").default("light"),
+    theme: enum_pages_diagram_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
     ),
@@ -3743,7 +4048,8 @@ export const pages_faq = pgTable(
     link_newTab: boolean("link_new_tab"),
     link_url: varchar("link_url"),
     link_label: varchar("link_label"),
-    theme: enum_pages_faq_theme("theme").default("light"),
+    textSize: enum_pages_faq_text_size("text_size").default("small"),
+    theme: enum_pages_faq_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3792,7 +4098,7 @@ export const pages_blocks_carousel = pgTable(
     showArrows: boolean("show_arrows").default(false),
     slideSize:
       enum_pages_blocks_carousel_slide_size("slide_size").default("full"),
-    theme: enum_pages_blocks_carousel_theme("theme").default("light"),
+    theme: enum_pages_blocks_carousel_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3865,12 +4171,14 @@ export const pages_blocks_carousel_tabs = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum_pages_blocks_carousel_tabs_text_size("text_size").default("small"),
     slideSize:
       enum_pages_blocks_carousel_tabs_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
     tabSize:
       enum_pages_blocks_carousel_tabs_tab_size("tab_size").default("default"),
-    theme: enum_pages_blocks_carousel_tabs_theme("theme").default("light"),
+    theme: enum_pages_blocks_carousel_tabs_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -3975,9 +4283,11 @@ export const pages_blocks_feature_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
+    textSize:
+      enum_pages_blocks_feature_tabs_text_size("text_size").default("small"),
     tabSize:
       enum_pages_blocks_feature_tabs_tab_size("tab_size").default("default"),
-    theme: enum_pages_blocks_feature_tabs_theme("theme").default("light"),
+    theme: enum_pages_blocks_feature_tabs_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -4026,9 +4336,10 @@ export const pages_insight_list = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     summary: varchar("summary"),
+    textSize: enum_pages_insight_list_text_size("text_size").default("small"),
     layout: enum_pages_insight_list_layout("layout").default("side"),
     markSize: enum_pages_insight_list_mark_size("mark_size").default("medium"),
-    theme: enum_pages_insight_list_theme("theme").default("light"),
+    theme: enum_pages_insight_list_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -4139,7 +4450,7 @@ export const pages_blocks_content_columns = pgTable(
       ),
     slider_theme:
       enum_pages_blocks_content_columns_slider_theme("slider_theme").default(
-        "system",
+        "default",
       ),
     slider_introContent_heading: varchar("slider_intro_content_heading"),
     slider_introContent_subheading: varchar("slider_intro_content_subheading"),
@@ -4217,7 +4528,7 @@ export const pages_blocks_content = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
-    theme: enum_pages_blocks_content_theme("theme").default("system"),
+    theme: enum_pages_blocks_content_theme("theme").default("default"),
     containerWidth:
       enum_pages_blocks_content_container_width("container_width").default(
         "contained",
@@ -4248,7 +4559,7 @@ export const pages_section = pgTable(
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
     customize: boolean("customize").default(false),
-    theme: enum_pages_section_theme("theme").default("inherit"),
+    theme: enum_pages_section_theme("theme").default("default"),
     spacing: enum_pages_section_spacing("spacing").default("default"),
     stack: enum_pages_section_stack("stack").default("default"),
     blockName: varchar("block_name"),
@@ -4297,7 +4608,7 @@ export const pages_blocks_slider = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
-    theme: enum_pages_blocks_slider_theme("theme").default("system"),
+    theme: enum_pages_blocks_slider_theme("theme").default("default"),
     introContent_heading: varchar("intro_content_heading"),
     introContent_subheading: varchar("intro_content_subheading"),
     introContent_size:
@@ -4355,7 +4666,7 @@ export const pages_blocks_archive = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
-    theme: enum_pages_blocks_archive_theme("theme").default("system"),
+    theme: enum_pages_blocks_archive_theme("theme").default("default"),
     cardStyle:
       enum_pages_blocks_archive_card_style("card_style").default("card"),
     introContent: jsonb("intro_content"),
@@ -4477,7 +4788,7 @@ export const pages_blocks_media_block = pgTable(
         "landscape",
       ),
     fullWidth: boolean("full_width").default(false),
-    theme: enum_pages_blocks_media_block_theme("theme").default("system"),
+    theme: enum_pages_blocks_media_block_theme("theme").default("default"),
     showCaption: boolean("show_caption").default(true),
     captionLayout:
       enum_pages_blocks_media_block_caption_layout("caption_layout").default(
@@ -4686,11 +4997,13 @@ export const __pages_v_transition_v = pgTable(
     id: serial("id").primaryKey(),
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
+    body: jsonb("body"),
     layout: enum___pages_v_transition_v_layout("layout").default("offset"),
-    theme: enum___pages_v_transition_v_theme("theme").default("light"),
+    textSize:
+      enum___pages_v_transition_v_text_size("text_size").default("small"),
     headingLevel:
       enum___pages_v_transition_v_heading_level("heading_level").default("h2"),
-    body: jsonb("body"),
+    theme: enum___pages_v_transition_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -4716,13 +5029,13 @@ export const _pages_v_blocks_feature_heading_offset = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
-    bodySize:
-      enum__pages_v_blocks_feature_heading_offset_body_size(
-        "body_size",
-      ).default("medium"),
+    textSize:
+      enum__pages_v_blocks_feature_heading_offset_text_size(
+        "text_size",
+      ).default("small"),
     theme:
       enum__pages_v_blocks_feature_heading_offset_theme("theme").default(
-        "light",
+        "default",
       ),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
@@ -4786,6 +5099,8 @@ export const __pages_v_full_media_v = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize:
+      enum___pages_v_full_media_v_text_size("text_size").default("small"),
     width: enum___pages_v_full_media_v_width("width").default("contained"),
     aspectRatio:
       enum___pages_v_full_media_v_aspect_ratio("aspect_ratio").default("16-9"),
@@ -4793,7 +5108,7 @@ export const __pages_v_full_media_v = pgTable(
       enum___pages_v_full_media_v_content_position("content_position").default(
         "left",
       ),
-    theme: enum___pages_v_full_media_v_theme("theme").default("light"),
+    theme: enum___pages_v_full_media_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -4858,10 +5173,12 @@ export const __pages_v_media_split_v = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize:
+      enum___pages_v_media_split_v_text_size("text_size").default("small"),
     layout: enum___pages_v_media_split_v_layout("layout").default("left"),
     aspectRatio:
       enum___pages_v_media_split_v_aspect_ratio("aspect_ratio").default("16-9"),
-    theme: enum___pages_v_media_split_v_theme("theme").default("light"),
+    theme: enum___pages_v_media_split_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -4926,11 +5243,13 @@ export const __pages_v_split_narrow_v = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize:
+      enum___pages_v_split_narrow_v_text_size("text_size").default("small"),
     imagePosition:
       enum___pages_v_split_narrow_v_image_position("image_position").default(
         "left",
       ),
-    theme: enum___pages_v_split_narrow_v_theme("theme").default("light"),
+    theme: enum___pages_v_split_narrow_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -4989,6 +5308,10 @@ export const _pages_v_blocks_carousel_split = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum__pages_v_blocks_carousel_split_text_size("text_size").default(
+        "small",
+      ),
     carouselPosition:
       enum__pages_v_blocks_carousel_split_carousel_position(
         "carousel_position",
@@ -4998,7 +5321,8 @@ export const _pages_v_blocks_carousel_split = pgTable(
         "full",
       ),
     showArrows: boolean("show_arrows").default(false),
-    theme: enum__pages_v_blocks_carousel_split_theme("theme").default("light"),
+    theme:
+      enum__pages_v_blocks_carousel_split_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5029,6 +5353,8 @@ export const __pages_v_image_pair_v = pgTable(
     landscapeMedia: integer("landscape_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize:
+      enum___pages_v_image_pair_v_text_size("text_size").default("small"),
     portraitPosition:
       enum___pages_v_image_pair_v_portrait_position(
         "portrait_position",
@@ -5037,7 +5363,7 @@ export const __pages_v_image_pair_v = pgTable(
       enum___pages_v_image_pair_v_text_position("text_position").default(
         "under-portrait",
       ),
-    theme: enum___pages_v_image_pair_v_theme("theme").default("light"),
+    theme: enum___pages_v_image_pair_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5074,11 +5400,13 @@ export const __pages_v_split_offset_v = pgTable(
     smallMedia: integer("small_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize:
+      enum___pages_v_split_offset_v_text_size("text_size").default("small"),
     captionPosition:
       enum___pages_v_split_offset_v_caption_position(
         "caption_position",
       ).default("left"),
-    theme: enum___pages_v_split_offset_v_theme("theme").default("light"),
+    theme: enum___pages_v_split_offset_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5107,13 +5435,11 @@ export const __pages_v_image_statement_v = pgTable(
       onDelete: "set null",
     }),
     caption: jsonb("caption"),
+    textSize:
+      enum___pages_v_image_statement_v_text_size("text_size").default("small"),
     textPosition:
       enum___pages_v_image_statement_v_text_position("text_position").default(
         "left",
-      ),
-    textSize:
-      enum___pages_v_image_statement_v_text_size("text_size").default(
-        "default",
       ),
     imageWidth:
       enum___pages_v_image_statement_v_image_width("image_width").default(
@@ -5123,7 +5449,7 @@ export const __pages_v_image_statement_v = pgTable(
       enum___pages_v_image_statement_v_aspect_ratio("aspect_ratio").default(
         "responsive",
       ),
-    theme: enum___pages_v_image_statement_v_theme("theme").default("light"),
+    theme: enum___pages_v_image_statement_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5150,9 +5476,9 @@ export const __pages_v_caption_v = pgTable(
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
-    size: enum___pages_v_caption_v_size("size").default("full"),
     captionOverride: jsonb("caption_override"),
-    theme: enum___pages_v_caption_v_theme("theme").default("light"),
+    size: enum___pages_v_caption_v_size("size"),
+    theme: enum___pages_v_caption_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5178,8 +5504,8 @@ export const __pages_v_youtube_v = pgTable(
     id: serial("id").primaryKey(),
     url: varchar("url"),
     title: varchar("title"),
-    size: enum___pages_v_youtube_v_size("size").default("full"),
-    theme: enum___pages_v_youtube_v_theme("theme").default("light"),
+    size: enum___pages_v_youtube_v_size("size"),
+    theme: enum___pages_v_youtube_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5203,7 +5529,9 @@ export const __pages_v_rich_text_v = pgTable(
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
     body: jsonb("body"),
-    theme: enum___pages_v_rich_text_v_theme("theme").default("light"),
+    textSize:
+      enum___pages_v_rich_text_v_text_size("text_size").default("small"),
+    theme: enum___pages_v_rich_text_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5256,7 +5584,7 @@ export const __pages_v_chart_v = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum___pages_v_chart_v_width("width").default("wide"),
-    theme: enum___pages_v_chart_v_theme("theme").default("light"),
+    theme: enum___pages_v_chart_v_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
     ),
@@ -5288,7 +5616,7 @@ export const __pages_v_diagram_v = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum___pages_v_diagram_v_width("width").default("wide"),
-    theme: enum___pages_v_diagram_v_theme("theme").default("light"),
+    theme: enum___pages_v_diagram_v_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
     ),
@@ -5344,7 +5672,8 @@ export const __pages_v_faq_v = pgTable(
     link_newTab: boolean("link_new_tab"),
     link_url: varchar("link_url"),
     link_label: varchar("link_label"),
-    theme: enum___pages_v_faq_v_theme("theme").default("light"),
+    textSize: enum___pages_v_faq_v_text_size("text_size").default("small"),
+    theme: enum___pages_v_faq_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5397,7 +5726,7 @@ export const _pages_v_blocks_carousel = pgTable(
     showArrows: boolean("show_arrows").default(false),
     slideSize:
       enum__pages_v_blocks_carousel_slide_size("slide_size").default("full"),
-    theme: enum__pages_v_blocks_carousel_theme("theme").default("light"),
+    theme: enum__pages_v_blocks_carousel_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5475,6 +5804,10 @@ export const _pages_v_blocks_carousel_tabs = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum__pages_v_blocks_carousel_tabs_text_size("text_size").default(
+        "small",
+      ),
     slideSize:
       enum__pages_v_blocks_carousel_tabs_slide_size("slide_size").default(
         "full",
@@ -5484,7 +5817,7 @@ export const _pages_v_blocks_carousel_tabs = pgTable(
       enum__pages_v_blocks_carousel_tabs_tab_size("tab_size").default(
         "default",
       ),
-    theme: enum__pages_v_blocks_carousel_tabs_theme("theme").default("light"),
+    theme: enum__pages_v_blocks_carousel_tabs_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5597,9 +5930,11 @@ export const _pages_v_blocks_feature_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
+    textSize:
+      enum__pages_v_blocks_feature_tabs_text_size("text_size").default("small"),
     tabSize:
       enum__pages_v_blocks_feature_tabs_tab_size("tab_size").default("default"),
-    theme: enum__pages_v_blocks_feature_tabs_theme("theme").default("light"),
+    theme: enum__pages_v_blocks_feature_tabs_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5650,10 +5985,12 @@ export const __pages_v_insight_list_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     summary: varchar("summary"),
+    textSize:
+      enum___pages_v_insight_list_v_text_size("text_size").default("small"),
     layout: enum___pages_v_insight_list_v_layout("layout").default("side"),
     markSize:
       enum___pages_v_insight_list_v_mark_size("mark_size").default("medium"),
-    theme: enum___pages_v_insight_list_v_theme("theme").default("light"),
+    theme: enum___pages_v_insight_list_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -5768,7 +6105,7 @@ export const _pages_v_blocks_content_columns = pgTable(
       ),
     slider_theme:
       enum__pages_v_blocks_content_columns_slider_theme("slider_theme").default(
-        "system",
+        "default",
       ),
     slider_introContent_heading: varchar("slider_intro_content_heading"),
     slider_introContent_subheading: varchar("slider_intro_content_subheading"),
@@ -5849,7 +6186,7 @@ export const _pages_v_blocks_content = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
-    theme: enum__pages_v_blocks_content_theme("theme").default("system"),
+    theme: enum__pages_v_blocks_content_theme("theme").default("default"),
     containerWidth:
       enum__pages_v_blocks_content_container_width("container_width").default(
         "contained",
@@ -5881,7 +6218,7 @@ export const __pages_v_section_v = pgTable(
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
     customize: boolean("customize").default(false),
-    theme: enum___pages_v_section_v_theme("theme").default("inherit"),
+    theme: enum___pages_v_section_v_theme("theme").default("default"),
     spacing: enum___pages_v_section_v_spacing("spacing").default("default"),
     stack: enum___pages_v_section_v_stack("stack").default("default"),
     _uuid: varchar("_uuid"),
@@ -5932,7 +6269,7 @@ export const _pages_v_blocks_slider = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
-    theme: enum__pages_v_blocks_slider_theme("theme").default("system"),
+    theme: enum__pages_v_blocks_slider_theme("theme").default("default"),
     introContent_heading: varchar("intro_content_heading"),
     introContent_subheading: varchar("intro_content_subheading"),
     introContent_size:
@@ -5992,7 +6329,7 @@ export const _pages_v_blocks_archive = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
-    theme: enum__pages_v_blocks_archive_theme("theme").default("system"),
+    theme: enum__pages_v_blocks_archive_theme("theme").default("default"),
     cardStyle:
       enum__pages_v_blocks_archive_card_style("card_style").default("card"),
     introContent: jsonb("intro_content"),
@@ -6126,7 +6463,7 @@ export const _pages_v_blocks_media_block = pgTable(
         "landscape",
       ),
     fullWidth: boolean("full_width").default(false),
-    theme: enum__pages_v_blocks_media_block_theme("theme").default("system"),
+    theme: enum__pages_v_blocks_media_block_theme("theme").default("default"),
     showCaption: boolean("show_caption").default(true),
     captionLayout:
       enum__pages_v_blocks_media_block_caption_layout("caption_layout").default(
@@ -6385,11 +6722,12 @@ export const posts_transition = pgTable(
     id: varchar("id").primaryKey(),
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
+    body: jsonb("body"),
     layout: enum_posts_transition_layout("layout").default("offset"),
-    theme: enum_posts_transition_theme("theme").default("light"),
+    textSize: enum_posts_transition_text_size("text_size").default("small"),
     headingLevel:
       enum_posts_transition_heading_level("heading_level").default("h2"),
-    body: jsonb("body"),
+    theme: enum_posts_transition_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6414,12 +6752,14 @@ export const posts_blocks_feature_heading_offset = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
-    bodySize:
-      enum_posts_blocks_feature_heading_offset_body_size("body_size").default(
-        "medium",
+    textSize:
+      enum_posts_blocks_feature_heading_offset_text_size("text_size").default(
+        "small",
       ),
     theme:
-      enum_posts_blocks_feature_heading_offset_theme("theme").default("light"),
+      enum_posts_blocks_feature_heading_offset_theme("theme").default(
+        "default",
+      ),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6477,6 +6817,7 @@ export const posts_full_media = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize: enum_posts_full_media_text_size("text_size").default("small"),
     width: enum_posts_full_media_width("width").default("contained"),
     aspectRatio:
       enum_posts_full_media_aspect_ratio("aspect_ratio").default("16-9"),
@@ -6484,7 +6825,7 @@ export const posts_full_media = pgTable(
       enum_posts_full_media_content_position("content_position").default(
         "left",
       ),
-    theme: enum_posts_full_media_theme("theme").default("light"),
+    theme: enum_posts_full_media_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6548,10 +6889,11 @@ export const posts_media_split = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize: enum_posts_media_split_text_size("text_size").default("small"),
     layout: enum_posts_media_split_layout("layout").default("left"),
     aspectRatio:
       enum_posts_media_split_aspect_ratio("aspect_ratio").default("16-9"),
-    theme: enum_posts_media_split_theme("theme").default("light"),
+    theme: enum_posts_media_split_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6615,9 +6957,10 @@ export const posts_split_narrow = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize: enum_posts_split_narrow_text_size("text_size").default("small"),
     imagePosition:
       enum_posts_split_narrow_image_position("image_position").default("left"),
-    theme: enum_posts_split_narrow_theme("theme").default("light"),
+    theme: enum_posts_split_narrow_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6674,6 +7017,8 @@ export const posts_blocks_carousel_split = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum_posts_blocks_carousel_split_text_size("text_size").default("small"),
     carouselPosition:
       enum_posts_blocks_carousel_split_carousel_position(
         "carousel_position",
@@ -6681,7 +7026,7 @@ export const posts_blocks_carousel_split = pgTable(
     slideSize:
       enum_posts_blocks_carousel_split_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
-    theme: enum_posts_blocks_carousel_split_theme("theme").default("light"),
+    theme: enum_posts_blocks_carousel_split_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6711,6 +7056,7 @@ export const posts_image_pair = pgTable(
     landscapeMedia: integer("landscape_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize: enum_posts_image_pair_text_size("text_size").default("small"),
     portraitPosition:
       enum_posts_image_pair_portrait_position("portrait_position").default(
         "left",
@@ -6719,7 +7065,7 @@ export const posts_image_pair = pgTable(
       enum_posts_image_pair_text_position("text_position").default(
         "under-portrait",
       ),
-    theme: enum_posts_image_pair_theme("theme").default("light"),
+    theme: enum_posts_image_pair_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6751,11 +7097,12 @@ export const posts_split_offset = pgTable(
     smallMedia: integer("small_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize: enum_posts_split_offset_text_size("text_size").default("small"),
     captionPosition:
       enum_posts_split_offset_caption_position("caption_position").default(
         "left",
       ),
-    theme: enum_posts_split_offset_theme("theme").default("light"),
+    theme: enum_posts_split_offset_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6783,10 +7130,10 @@ export const posts_image_statement = pgTable(
       onDelete: "set null",
     }),
     caption: jsonb("caption"),
+    textSize:
+      enum_posts_image_statement_text_size("text_size").default("small"),
     textPosition:
       enum_posts_image_statement_text_position("text_position").default("left"),
-    textSize:
-      enum_posts_image_statement_text_size("text_size").default("default"),
     imageWidth:
       enum_posts_image_statement_image_width("image_width").default(
         "contained",
@@ -6795,7 +7142,7 @@ export const posts_image_statement = pgTable(
       enum_posts_image_statement_aspect_ratio("aspect_ratio").default(
         "responsive",
       ),
-    theme: enum_posts_image_statement_theme("theme").default("light"),
+    theme: enum_posts_image_statement_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6821,9 +7168,9 @@ export const posts_caption = pgTable(
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
-    size: enum_posts_caption_size("size").default("full"),
     captionOverride: jsonb("caption_override"),
-    theme: enum_posts_caption_theme("theme").default("light"),
+    size: enum_posts_caption_size("size"),
+    theme: enum_posts_caption_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6848,8 +7195,8 @@ export const posts_youtube = pgTable(
     id: varchar("id").primaryKey(),
     url: varchar("url"),
     title: varchar("title"),
-    size: enum_posts_youtube_size("size").default("full"),
-    theme: enum_posts_youtube_theme("theme").default("light"),
+    size: enum_posts_youtube_size("size"),
+    theme: enum_posts_youtube_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6872,7 +7219,8 @@ export const posts_rich_text = pgTable(
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
     body: jsonb("body"),
-    theme: enum_posts_rich_text_theme("theme").default("light"),
+    textSize: enum_posts_rich_text_text_size("text_size").default("small"),
+    theme: enum_posts_rich_text_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -6923,7 +7271,7 @@ export const posts_chart = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum_posts_chart_width("width").default("wide"),
-    theme: enum_posts_chart_theme("theme").default("light"),
+    theme: enum_posts_chart_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
     ),
@@ -6954,7 +7302,7 @@ export const posts_diagram = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum_posts_diagram_width("width").default("wide"),
-    theme: enum_posts_diagram_theme("theme").default("light"),
+    theme: enum_posts_diagram_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
     ),
@@ -7008,7 +7356,8 @@ export const posts_faq = pgTable(
     link_newTab: boolean("link_new_tab"),
     link_url: varchar("link_url"),
     link_label: varchar("link_label"),
-    theme: enum_posts_faq_theme("theme").default("light"),
+    textSize: enum_posts_faq_text_size("text_size").default("small"),
+    theme: enum_posts_faq_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -7057,7 +7406,7 @@ export const posts_blocks_carousel = pgTable(
     showArrows: boolean("show_arrows").default(false),
     slideSize:
       enum_posts_blocks_carousel_slide_size("slide_size").default("full"),
-    theme: enum_posts_blocks_carousel_theme("theme").default("light"),
+    theme: enum_posts_blocks_carousel_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -7130,12 +7479,14 @@ export const posts_blocks_carousel_tabs = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum_posts_blocks_carousel_tabs_text_size("text_size").default("small"),
     slideSize:
       enum_posts_blocks_carousel_tabs_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
     tabSize:
       enum_posts_blocks_carousel_tabs_tab_size("tab_size").default("default"),
-    theme: enum_posts_blocks_carousel_tabs_theme("theme").default("light"),
+    theme: enum_posts_blocks_carousel_tabs_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -7240,9 +7591,11 @@ export const posts_blocks_feature_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
+    textSize:
+      enum_posts_blocks_feature_tabs_text_size("text_size").default("small"),
     tabSize:
       enum_posts_blocks_feature_tabs_tab_size("tab_size").default("default"),
-    theme: enum_posts_blocks_feature_tabs_theme("theme").default("light"),
+    theme: enum_posts_blocks_feature_tabs_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -7291,9 +7644,10 @@ export const posts_insight_list = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     summary: varchar("summary"),
+    textSize: enum_posts_insight_list_text_size("text_size").default("small"),
     layout: enum_posts_insight_list_layout("layout").default("side"),
     markSize: enum_posts_insight_list_mark_size("mark_size").default("medium"),
-    theme: enum_posts_insight_list_theme("theme").default("light"),
+    theme: enum_posts_insight_list_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -7404,7 +7758,7 @@ export const posts_blocks_content_columns = pgTable(
       ),
     slider_theme:
       enum_posts_blocks_content_columns_slider_theme("slider_theme").default(
-        "system",
+        "default",
       ),
     slider_introContent_heading: varchar("slider_intro_content_heading"),
     slider_introContent_subheading: varchar("slider_intro_content_subheading"),
@@ -7482,7 +7836,7 @@ export const posts_blocks_content = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
-    theme: enum_posts_blocks_content_theme("theme").default("system"),
+    theme: enum_posts_blocks_content_theme("theme").default("default"),
     containerWidth:
       enum_posts_blocks_content_container_width("container_width").default(
         "contained",
@@ -7513,7 +7867,7 @@ export const posts_section = pgTable(
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
     customize: boolean("customize").default(false),
-    theme: enum_posts_section_theme("theme").default("inherit"),
+    theme: enum_posts_section_theme("theme").default("default"),
     spacing: enum_posts_section_spacing("spacing").default("default"),
     stack: enum_posts_section_stack("stack").default("default"),
     blockName: varchar("block_name"),
@@ -7738,11 +8092,13 @@ export const __posts_v_transition_v = pgTable(
     id: serial("id").primaryKey(),
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
+    body: jsonb("body"),
     layout: enum___posts_v_transition_v_layout("layout").default("offset"),
-    theme: enum___posts_v_transition_v_theme("theme").default("light"),
+    textSize:
+      enum___posts_v_transition_v_text_size("text_size").default("small"),
     headingLevel:
       enum___posts_v_transition_v_heading_level("heading_level").default("h2"),
-    body: jsonb("body"),
+    theme: enum___posts_v_transition_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -7768,13 +8124,13 @@ export const _posts_v_blocks_feature_heading_offset = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
-    bodySize:
-      enum__posts_v_blocks_feature_heading_offset_body_size(
-        "body_size",
-      ).default("medium"),
+    textSize:
+      enum__posts_v_blocks_feature_heading_offset_text_size(
+        "text_size",
+      ).default("small"),
     theme:
       enum__posts_v_blocks_feature_heading_offset_theme("theme").default(
-        "light",
+        "default",
       ),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
@@ -7838,6 +8194,8 @@ export const __posts_v_full_media_v = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize:
+      enum___posts_v_full_media_v_text_size("text_size").default("small"),
     width: enum___posts_v_full_media_v_width("width").default("contained"),
     aspectRatio:
       enum___posts_v_full_media_v_aspect_ratio("aspect_ratio").default("16-9"),
@@ -7845,7 +8203,7 @@ export const __posts_v_full_media_v = pgTable(
       enum___posts_v_full_media_v_content_position("content_position").default(
         "left",
       ),
-    theme: enum___posts_v_full_media_v_theme("theme").default("light"),
+    theme: enum___posts_v_full_media_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -7910,10 +8268,12 @@ export const __posts_v_media_split_v = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize:
+      enum___posts_v_media_split_v_text_size("text_size").default("small"),
     layout: enum___posts_v_media_split_v_layout("layout").default("left"),
     aspectRatio:
       enum___posts_v_media_split_v_aspect_ratio("aspect_ratio").default("16-9"),
-    theme: enum___posts_v_media_split_v_theme("theme").default("light"),
+    theme: enum___posts_v_media_split_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -7978,11 +8338,13 @@ export const __posts_v_split_narrow_v = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize:
+      enum___posts_v_split_narrow_v_text_size("text_size").default("small"),
     imagePosition:
       enum___posts_v_split_narrow_v_image_position("image_position").default(
         "left",
       ),
-    theme: enum___posts_v_split_narrow_v_theme("theme").default("light"),
+    theme: enum___posts_v_split_narrow_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8041,6 +8403,10 @@ export const _posts_v_blocks_carousel_split = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum__posts_v_blocks_carousel_split_text_size("text_size").default(
+        "small",
+      ),
     carouselPosition:
       enum__posts_v_blocks_carousel_split_carousel_position(
         "carousel_position",
@@ -8050,7 +8416,8 @@ export const _posts_v_blocks_carousel_split = pgTable(
         "full",
       ),
     showArrows: boolean("show_arrows").default(false),
-    theme: enum__posts_v_blocks_carousel_split_theme("theme").default("light"),
+    theme:
+      enum__posts_v_blocks_carousel_split_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8081,6 +8448,8 @@ export const __posts_v_image_pair_v = pgTable(
     landscapeMedia: integer("landscape_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize:
+      enum___posts_v_image_pair_v_text_size("text_size").default("small"),
     portraitPosition:
       enum___posts_v_image_pair_v_portrait_position(
         "portrait_position",
@@ -8089,7 +8458,7 @@ export const __posts_v_image_pair_v = pgTable(
       enum___posts_v_image_pair_v_text_position("text_position").default(
         "under-portrait",
       ),
-    theme: enum___posts_v_image_pair_v_theme("theme").default("light"),
+    theme: enum___posts_v_image_pair_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8126,11 +8495,13 @@ export const __posts_v_split_offset_v = pgTable(
     smallMedia: integer("small_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize:
+      enum___posts_v_split_offset_v_text_size("text_size").default("small"),
     captionPosition:
       enum___posts_v_split_offset_v_caption_position(
         "caption_position",
       ).default("left"),
-    theme: enum___posts_v_split_offset_v_theme("theme").default("light"),
+    theme: enum___posts_v_split_offset_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8159,13 +8530,11 @@ export const __posts_v_image_statement_v = pgTable(
       onDelete: "set null",
     }),
     caption: jsonb("caption"),
+    textSize:
+      enum___posts_v_image_statement_v_text_size("text_size").default("small"),
     textPosition:
       enum___posts_v_image_statement_v_text_position("text_position").default(
         "left",
-      ),
-    textSize:
-      enum___posts_v_image_statement_v_text_size("text_size").default(
-        "default",
       ),
     imageWidth:
       enum___posts_v_image_statement_v_image_width("image_width").default(
@@ -8175,7 +8544,7 @@ export const __posts_v_image_statement_v = pgTable(
       enum___posts_v_image_statement_v_aspect_ratio("aspect_ratio").default(
         "responsive",
       ),
-    theme: enum___posts_v_image_statement_v_theme("theme").default("light"),
+    theme: enum___posts_v_image_statement_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8202,9 +8571,9 @@ export const __posts_v_caption_v = pgTable(
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
-    size: enum___posts_v_caption_v_size("size").default("full"),
     captionOverride: jsonb("caption_override"),
-    theme: enum___posts_v_caption_v_theme("theme").default("light"),
+    size: enum___posts_v_caption_v_size("size"),
+    theme: enum___posts_v_caption_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8230,8 +8599,8 @@ export const __posts_v_youtube_v = pgTable(
     id: serial("id").primaryKey(),
     url: varchar("url"),
     title: varchar("title"),
-    size: enum___posts_v_youtube_v_size("size").default("full"),
-    theme: enum___posts_v_youtube_v_theme("theme").default("light"),
+    size: enum___posts_v_youtube_v_size("size"),
+    theme: enum___posts_v_youtube_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8255,7 +8624,9 @@ export const __posts_v_rich_text_v = pgTable(
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
     body: jsonb("body"),
-    theme: enum___posts_v_rich_text_v_theme("theme").default("light"),
+    textSize:
+      enum___posts_v_rich_text_v_text_size("text_size").default("small"),
+    theme: enum___posts_v_rich_text_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8308,7 +8679,7 @@ export const __posts_v_chart_v = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum___posts_v_chart_v_width("width").default("wide"),
-    theme: enum___posts_v_chart_v_theme("theme").default("light"),
+    theme: enum___posts_v_chart_v_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
     ),
@@ -8340,7 +8711,7 @@ export const __posts_v_diagram_v = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum___posts_v_diagram_v_width("width").default("wide"),
-    theme: enum___posts_v_diagram_v_theme("theme").default("light"),
+    theme: enum___posts_v_diagram_v_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
     ),
@@ -8396,7 +8767,8 @@ export const __posts_v_faq_v = pgTable(
     link_newTab: boolean("link_new_tab"),
     link_url: varchar("link_url"),
     link_label: varchar("link_label"),
-    theme: enum___posts_v_faq_v_theme("theme").default("light"),
+    textSize: enum___posts_v_faq_v_text_size("text_size").default("small"),
+    theme: enum___posts_v_faq_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8449,7 +8821,7 @@ export const _posts_v_blocks_carousel = pgTable(
     showArrows: boolean("show_arrows").default(false),
     slideSize:
       enum__posts_v_blocks_carousel_slide_size("slide_size").default("full"),
-    theme: enum__posts_v_blocks_carousel_theme("theme").default("light"),
+    theme: enum__posts_v_blocks_carousel_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8527,6 +8899,10 @@ export const _posts_v_blocks_carousel_tabs = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum__posts_v_blocks_carousel_tabs_text_size("text_size").default(
+        "small",
+      ),
     slideSize:
       enum__posts_v_blocks_carousel_tabs_slide_size("slide_size").default(
         "full",
@@ -8536,7 +8912,7 @@ export const _posts_v_blocks_carousel_tabs = pgTable(
       enum__posts_v_blocks_carousel_tabs_tab_size("tab_size").default(
         "default",
       ),
-    theme: enum__posts_v_blocks_carousel_tabs_theme("theme").default("light"),
+    theme: enum__posts_v_blocks_carousel_tabs_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8649,9 +9025,11 @@ export const _posts_v_blocks_feature_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
+    textSize:
+      enum__posts_v_blocks_feature_tabs_text_size("text_size").default("small"),
     tabSize:
       enum__posts_v_blocks_feature_tabs_tab_size("tab_size").default("default"),
-    theme: enum__posts_v_blocks_feature_tabs_theme("theme").default("light"),
+    theme: enum__posts_v_blocks_feature_tabs_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8702,10 +9080,12 @@ export const __posts_v_insight_list_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     summary: varchar("summary"),
+    textSize:
+      enum___posts_v_insight_list_v_text_size("text_size").default("small"),
     layout: enum___posts_v_insight_list_v_layout("layout").default("side"),
     markSize:
       enum___posts_v_insight_list_v_mark_size("mark_size").default("medium"),
-    theme: enum___posts_v_insight_list_v_theme("theme").default("light"),
+    theme: enum___posts_v_insight_list_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -8820,7 +9200,7 @@ export const _posts_v_blocks_content_columns = pgTable(
       ),
     slider_theme:
       enum__posts_v_blocks_content_columns_slider_theme("slider_theme").default(
-        "system",
+        "default",
       ),
     slider_introContent_heading: varchar("slider_intro_content_heading"),
     slider_introContent_subheading: varchar("slider_intro_content_subheading"),
@@ -8901,7 +9281,7 @@ export const _posts_v_blocks_content = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
-    theme: enum__posts_v_blocks_content_theme("theme").default("system"),
+    theme: enum__posts_v_blocks_content_theme("theme").default("default"),
     containerWidth:
       enum__posts_v_blocks_content_container_width("container_width").default(
         "contained",
@@ -8933,7 +9313,7 @@ export const __posts_v_section_v = pgTable(
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
     customize: boolean("customize").default(false),
-    theme: enum___posts_v_section_v_theme("theme").default("inherit"),
+    theme: enum___posts_v_section_v_theme("theme").default("default"),
     spacing: enum___posts_v_section_v_spacing("spacing").default("default"),
     stack: enum___posts_v_section_v_stack("stack").default("default"),
     _uuid: varchar("_uuid"),
@@ -9211,11 +9591,12 @@ export const works_transition = pgTable(
     id: varchar("id").primaryKey(),
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
+    body: jsonb("body"),
     layout: enum_works_transition_layout("layout").default("offset"),
-    theme: enum_works_transition_theme("theme").default("light"),
+    textSize: enum_works_transition_text_size("text_size").default("small"),
     headingLevel:
       enum_works_transition_heading_level("heading_level").default("h2"),
-    body: jsonb("body"),
+    theme: enum_works_transition_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9240,12 +9621,14 @@ export const works_blocks_feature_heading_offset = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
-    bodySize:
-      enum_works_blocks_feature_heading_offset_body_size("body_size").default(
-        "medium",
+    textSize:
+      enum_works_blocks_feature_heading_offset_text_size("text_size").default(
+        "small",
       ),
     theme:
-      enum_works_blocks_feature_heading_offset_theme("theme").default("light"),
+      enum_works_blocks_feature_heading_offset_theme("theme").default(
+        "default",
+      ),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9303,6 +9686,7 @@ export const works_full_media = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize: enum_works_full_media_text_size("text_size").default("small"),
     width: enum_works_full_media_width("width").default("contained"),
     aspectRatio:
       enum_works_full_media_aspect_ratio("aspect_ratio").default("16-9"),
@@ -9310,7 +9694,7 @@ export const works_full_media = pgTable(
       enum_works_full_media_content_position("content_position").default(
         "left",
       ),
-    theme: enum_works_full_media_theme("theme").default("light"),
+    theme: enum_works_full_media_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9374,10 +9758,11 @@ export const works_media_split = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize: enum_works_media_split_text_size("text_size").default("small"),
     layout: enum_works_media_split_layout("layout").default("left"),
     aspectRatio:
       enum_works_media_split_aspect_ratio("aspect_ratio").default("16-9"),
-    theme: enum_works_media_split_theme("theme").default("light"),
+    theme: enum_works_media_split_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9441,9 +9826,10 @@ export const works_split_narrow = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize: enum_works_split_narrow_text_size("text_size").default("small"),
     imagePosition:
       enum_works_split_narrow_image_position("image_position").default("left"),
-    theme: enum_works_split_narrow_theme("theme").default("light"),
+    theme: enum_works_split_narrow_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9500,6 +9886,8 @@ export const works_blocks_carousel_split = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum_works_blocks_carousel_split_text_size("text_size").default("small"),
     carouselPosition:
       enum_works_blocks_carousel_split_carousel_position(
         "carousel_position",
@@ -9507,7 +9895,7 @@ export const works_blocks_carousel_split = pgTable(
     slideSize:
       enum_works_blocks_carousel_split_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
-    theme: enum_works_blocks_carousel_split_theme("theme").default("light"),
+    theme: enum_works_blocks_carousel_split_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9537,6 +9925,7 @@ export const works_image_pair = pgTable(
     landscapeMedia: integer("landscape_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize: enum_works_image_pair_text_size("text_size").default("small"),
     portraitPosition:
       enum_works_image_pair_portrait_position("portrait_position").default(
         "left",
@@ -9545,7 +9934,7 @@ export const works_image_pair = pgTable(
       enum_works_image_pair_text_position("text_position").default(
         "under-portrait",
       ),
-    theme: enum_works_image_pair_theme("theme").default("light"),
+    theme: enum_works_image_pair_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9577,11 +9966,12 @@ export const works_split_offset = pgTable(
     smallMedia: integer("small_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize: enum_works_split_offset_text_size("text_size").default("small"),
     captionPosition:
       enum_works_split_offset_caption_position("caption_position").default(
         "left",
       ),
-    theme: enum_works_split_offset_theme("theme").default("light"),
+    theme: enum_works_split_offset_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9609,10 +9999,10 @@ export const works_image_statement = pgTable(
       onDelete: "set null",
     }),
     caption: jsonb("caption"),
+    textSize:
+      enum_works_image_statement_text_size("text_size").default("small"),
     textPosition:
       enum_works_image_statement_text_position("text_position").default("left"),
-    textSize:
-      enum_works_image_statement_text_size("text_size").default("default"),
     imageWidth:
       enum_works_image_statement_image_width("image_width").default(
         "contained",
@@ -9621,7 +10011,7 @@ export const works_image_statement = pgTable(
       enum_works_image_statement_aspect_ratio("aspect_ratio").default(
         "responsive",
       ),
-    theme: enum_works_image_statement_theme("theme").default("light"),
+    theme: enum_works_image_statement_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9647,9 +10037,9 @@ export const works_caption = pgTable(
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
-    size: enum_works_caption_size("size").default("full"),
     captionOverride: jsonb("caption_override"),
-    theme: enum_works_caption_theme("theme").default("light"),
+    size: enum_works_caption_size("size"),
+    theme: enum_works_caption_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9674,8 +10064,8 @@ export const works_youtube = pgTable(
     id: varchar("id").primaryKey(),
     url: varchar("url"),
     title: varchar("title"),
-    size: enum_works_youtube_size("size").default("full"),
-    theme: enum_works_youtube_theme("theme").default("light"),
+    size: enum_works_youtube_size("size"),
+    theme: enum_works_youtube_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9698,7 +10088,8 @@ export const works_rich_text = pgTable(
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
     body: jsonb("body"),
-    theme: enum_works_rich_text_theme("theme").default("light"),
+    textSize: enum_works_rich_text_text_size("text_size").default("small"),
+    theme: enum_works_rich_text_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9749,7 +10140,7 @@ export const works_chart = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum_works_chart_width("width").default("wide"),
-    theme: enum_works_chart_theme("theme").default("light"),
+    theme: enum_works_chart_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
     ),
@@ -9780,7 +10171,7 @@ export const works_diagram = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum_works_diagram_width("width").default("wide"),
-    theme: enum_works_diagram_theme("theme").default("light"),
+    theme: enum_works_diagram_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
     ),
@@ -9834,7 +10225,8 @@ export const works_faq = pgTable(
     link_newTab: boolean("link_new_tab"),
     link_url: varchar("link_url"),
     link_label: varchar("link_label"),
-    theme: enum_works_faq_theme("theme").default("light"),
+    textSize: enum_works_faq_text_size("text_size").default("small"),
+    theme: enum_works_faq_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9883,7 +10275,7 @@ export const works_blocks_carousel = pgTable(
     showArrows: boolean("show_arrows").default(false),
     slideSize:
       enum_works_blocks_carousel_slide_size("slide_size").default("full"),
-    theme: enum_works_blocks_carousel_theme("theme").default("light"),
+    theme: enum_works_blocks_carousel_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -9956,12 +10348,14 @@ export const works_blocks_carousel_tabs = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum_works_blocks_carousel_tabs_text_size("text_size").default("small"),
     slideSize:
       enum_works_blocks_carousel_tabs_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
     tabSize:
       enum_works_blocks_carousel_tabs_tab_size("tab_size").default("default"),
-    theme: enum_works_blocks_carousel_tabs_theme("theme").default("light"),
+    theme: enum_works_blocks_carousel_tabs_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -10066,9 +10460,11 @@ export const works_blocks_feature_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
+    textSize:
+      enum_works_blocks_feature_tabs_text_size("text_size").default("small"),
     tabSize:
       enum_works_blocks_feature_tabs_tab_size("tab_size").default("default"),
-    theme: enum_works_blocks_feature_tabs_theme("theme").default("light"),
+    theme: enum_works_blocks_feature_tabs_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -10117,9 +10513,10 @@ export const works_insight_list = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     summary: varchar("summary"),
+    textSize: enum_works_insight_list_text_size("text_size").default("small"),
     layout: enum_works_insight_list_layout("layout").default("side"),
     markSize: enum_works_insight_list_mark_size("mark_size").default("medium"),
-    theme: enum_works_insight_list_theme("theme").default("light"),
+    theme: enum_works_insight_list_theme("theme").default("default"),
     blockName: varchar("block_name"),
   },
   (columns) => [
@@ -10230,7 +10627,7 @@ export const works_blocks_content_columns = pgTable(
       ),
     slider_theme:
       enum_works_blocks_content_columns_slider_theme("slider_theme").default(
-        "system",
+        "default",
       ),
     slider_introContent_heading: varchar("slider_intro_content_heading"),
     slider_introContent_subheading: varchar("slider_intro_content_subheading"),
@@ -10308,7 +10705,7 @@ export const works_blocks_content = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
-    theme: enum_works_blocks_content_theme("theme").default("system"),
+    theme: enum_works_blocks_content_theme("theme").default("default"),
     containerWidth:
       enum_works_blocks_content_container_width("container_width").default(
         "contained",
@@ -10339,7 +10736,7 @@ export const works_section = pgTable(
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
     customize: boolean("customize").default(false),
-    theme: enum_works_section_theme("theme").default("inherit"),
+    theme: enum_works_section_theme("theme").default("default"),
     spacing: enum_works_section_spacing("spacing").default("default"),
     stack: enum_works_section_stack("stack").default("default"),
     blockName: varchar("block_name"),
@@ -10388,7 +10785,7 @@ export const works_blocks_slider = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
-    theme: enum_works_blocks_slider_theme("theme").default("system"),
+    theme: enum_works_blocks_slider_theme("theme").default("default"),
     introContent_heading: varchar("intro_content_heading"),
     introContent_subheading: varchar("intro_content_subheading"),
     introContent_size:
@@ -10458,7 +10855,7 @@ export const works_blocks_tabs_tabs = pgTable(
     richText: jsonb("rich_text"),
     slider_theme:
       enum_works_blocks_tabs_tabs_slider_theme("slider_theme").default(
-        "system",
+        "default",
       ),
     slider_style:
       enum_works_blocks_tabs_tabs_slider_style("slider_style").default(
@@ -10483,7 +10880,7 @@ export const works_blocks_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
-    theme: enum_works_blocks_tabs_theme("theme").default("system"),
+    theme: enum_works_blocks_tabs_theme("theme").default("default"),
     heading_style:
       enum_works_blocks_tabs_heading_style("heading_style").default("default"),
     heading_eyebrow: varchar("heading_eyebrow"),
@@ -10514,7 +10911,7 @@ export const works_blocks_archive = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
-    theme: enum_works_blocks_archive_theme("theme").default("system"),
+    theme: enum_works_blocks_archive_theme("theme").default("default"),
     cardStyle:
       enum_works_blocks_archive_card_style("card_style").default("card"),
     introContent: jsonb("intro_content"),
@@ -10636,7 +11033,7 @@ export const works_blocks_media_block = pgTable(
         "landscape",
       ),
     fullWidth: boolean("full_width").default(false),
-    theme: enum_works_blocks_media_block_theme("theme").default("system"),
+    theme: enum_works_blocks_media_block_theme("theme").default("default"),
     showCaption: boolean("show_caption").default(true),
     captionLayout:
       enum_works_blocks_media_block_caption_layout("caption_layout").default(
@@ -10862,11 +11259,13 @@ export const __works_v_transition_v = pgTable(
     id: serial("id").primaryKey(),
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
+    body: jsonb("body"),
     layout: enum___works_v_transition_v_layout("layout").default("offset"),
-    theme: enum___works_v_transition_v_theme("theme").default("light"),
+    textSize:
+      enum___works_v_transition_v_text_size("text_size").default("small"),
     headingLevel:
       enum___works_v_transition_v_heading_level("heading_level").default("h2"),
-    body: jsonb("body"),
+    theme: enum___works_v_transition_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -10892,13 +11291,13 @@ export const _works_v_blocks_feature_heading_offset = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
-    bodySize:
-      enum__works_v_blocks_feature_heading_offset_body_size(
-        "body_size",
-      ).default("medium"),
+    textSize:
+      enum__works_v_blocks_feature_heading_offset_text_size(
+        "text_size",
+      ).default("small"),
     theme:
       enum__works_v_blocks_feature_heading_offset_theme("theme").default(
-        "light",
+        "default",
       ),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
@@ -10962,6 +11361,8 @@ export const __works_v_full_media_v = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize:
+      enum___works_v_full_media_v_text_size("text_size").default("small"),
     width: enum___works_v_full_media_v_width("width").default("contained"),
     aspectRatio:
       enum___works_v_full_media_v_aspect_ratio("aspect_ratio").default("16-9"),
@@ -10969,7 +11370,7 @@ export const __works_v_full_media_v = pgTable(
       enum___works_v_full_media_v_content_position("content_position").default(
         "left",
       ),
-    theme: enum___works_v_full_media_v_theme("theme").default("light"),
+    theme: enum___works_v_full_media_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11034,10 +11435,12 @@ export const __works_v_media_split_v = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize:
+      enum___works_v_media_split_v_text_size("text_size").default("small"),
     layout: enum___works_v_media_split_v_layout("layout").default("left"),
     aspectRatio:
       enum___works_v_media_split_v_aspect_ratio("aspect_ratio").default("16-9"),
-    theme: enum___works_v_media_split_v_theme("theme").default("light"),
+    theme: enum___works_v_media_split_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11102,11 +11505,13 @@ export const __works_v_split_narrow_v = pgTable(
         onDelete: "set null",
       },
     ),
+    textSize:
+      enum___works_v_split_narrow_v_text_size("text_size").default("small"),
     imagePosition:
       enum___works_v_split_narrow_v_image_position("image_position").default(
         "left",
       ),
-    theme: enum___works_v_split_narrow_v_theme("theme").default("light"),
+    theme: enum___works_v_split_narrow_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11165,6 +11570,10 @@ export const _works_v_blocks_carousel_split = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum__works_v_blocks_carousel_split_text_size("text_size").default(
+        "small",
+      ),
     carouselPosition:
       enum__works_v_blocks_carousel_split_carousel_position(
         "carousel_position",
@@ -11174,7 +11583,8 @@ export const _works_v_blocks_carousel_split = pgTable(
         "full",
       ),
     showArrows: boolean("show_arrows").default(false),
-    theme: enum__works_v_blocks_carousel_split_theme("theme").default("light"),
+    theme:
+      enum__works_v_blocks_carousel_split_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11205,6 +11615,8 @@ export const __works_v_image_pair_v = pgTable(
     landscapeMedia: integer("landscape_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize:
+      enum___works_v_image_pair_v_text_size("text_size").default("small"),
     portraitPosition:
       enum___works_v_image_pair_v_portrait_position(
         "portrait_position",
@@ -11213,7 +11625,7 @@ export const __works_v_image_pair_v = pgTable(
       enum___works_v_image_pair_v_text_position("text_position").default(
         "under-portrait",
       ),
-    theme: enum___works_v_image_pair_v_theme("theme").default("light"),
+    theme: enum___works_v_image_pair_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11250,11 +11662,13 @@ export const __works_v_split_offset_v = pgTable(
     smallMedia: integer("small_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    textSize:
+      enum___works_v_split_offset_v_text_size("text_size").default("small"),
     captionPosition:
       enum___works_v_split_offset_v_caption_position(
         "caption_position",
       ).default("left"),
-    theme: enum___works_v_split_offset_v_theme("theme").default("light"),
+    theme: enum___works_v_split_offset_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11283,13 +11697,11 @@ export const __works_v_image_statement_v = pgTable(
       onDelete: "set null",
     }),
     caption: jsonb("caption"),
+    textSize:
+      enum___works_v_image_statement_v_text_size("text_size").default("small"),
     textPosition:
       enum___works_v_image_statement_v_text_position("text_position").default(
         "left",
-      ),
-    textSize:
-      enum___works_v_image_statement_v_text_size("text_size").default(
-        "default",
       ),
     imageWidth:
       enum___works_v_image_statement_v_image_width("image_width").default(
@@ -11299,7 +11711,7 @@ export const __works_v_image_statement_v = pgTable(
       enum___works_v_image_statement_v_aspect_ratio("aspect_ratio").default(
         "responsive",
       ),
-    theme: enum___works_v_image_statement_v_theme("theme").default("light"),
+    theme: enum___works_v_image_statement_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11326,9 +11738,9 @@ export const __works_v_caption_v = pgTable(
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
-    size: enum___works_v_caption_v_size("size").default("full"),
     captionOverride: jsonb("caption_override"),
-    theme: enum___works_v_caption_v_theme("theme").default("light"),
+    size: enum___works_v_caption_v_size("size"),
+    theme: enum___works_v_caption_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11354,8 +11766,8 @@ export const __works_v_youtube_v = pgTable(
     id: serial("id").primaryKey(),
     url: varchar("url"),
     title: varchar("title"),
-    size: enum___works_v_youtube_v_size("size").default("full"),
-    theme: enum___works_v_youtube_v_theme("theme").default("light"),
+    size: enum___works_v_youtube_v_size("size"),
+    theme: enum___works_v_youtube_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11379,7 +11791,9 @@ export const __works_v_rich_text_v = pgTable(
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
     body: jsonb("body"),
-    theme: enum___works_v_rich_text_v_theme("theme").default("light"),
+    textSize:
+      enum___works_v_rich_text_v_text_size("text_size").default("small"),
+    theme: enum___works_v_rich_text_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11432,7 +11846,7 @@ export const __works_v_chart_v = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum___works_v_chart_v_width("width").default("wide"),
-    theme: enum___works_v_chart_v_theme("theme").default("light"),
+    theme: enum___works_v_chart_v_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
     ),
@@ -11464,7 +11878,7 @@ export const __works_v_diagram_v = pgTable(
     dataSource_label: varchar("data_source_label"),
     dataSource_href: varchar("data_source_href"),
     width: enum___works_v_diagram_v_width("width").default("wide"),
-    theme: enum___works_v_diagram_v_theme("theme").default("light"),
+    theme: enum___works_v_diagram_v_theme("theme").default("default"),
     spec: jsonb("spec").default(
       sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
     ),
@@ -11520,7 +11934,8 @@ export const __works_v_faq_v = pgTable(
     link_newTab: boolean("link_new_tab"),
     link_url: varchar("link_url"),
     link_label: varchar("link_label"),
-    theme: enum___works_v_faq_v_theme("theme").default("light"),
+    textSize: enum___works_v_faq_v_text_size("text_size").default("small"),
+    theme: enum___works_v_faq_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11573,7 +11988,7 @@ export const _works_v_blocks_carousel = pgTable(
     showArrows: boolean("show_arrows").default(false),
     slideSize:
       enum__works_v_blocks_carousel_slide_size("slide_size").default("full"),
-    theme: enum__works_v_blocks_carousel_theme("theme").default("light"),
+    theme: enum__works_v_blocks_carousel_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11651,6 +12066,10 @@ export const _works_v_blocks_carousel_tabs = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    textSize:
+      enum__works_v_blocks_carousel_tabs_text_size("text_size").default(
+        "small",
+      ),
     slideSize:
       enum__works_v_blocks_carousel_tabs_slide_size("slide_size").default(
         "full",
@@ -11660,7 +12079,7 @@ export const _works_v_blocks_carousel_tabs = pgTable(
       enum__works_v_blocks_carousel_tabs_tab_size("tab_size").default(
         "default",
       ),
-    theme: enum__works_v_blocks_carousel_tabs_theme("theme").default("light"),
+    theme: enum__works_v_blocks_carousel_tabs_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11773,9 +12192,11 @@ export const _works_v_blocks_feature_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
+    textSize:
+      enum__works_v_blocks_feature_tabs_text_size("text_size").default("small"),
     tabSize:
       enum__works_v_blocks_feature_tabs_tab_size("tab_size").default("default"),
-    theme: enum__works_v_blocks_feature_tabs_theme("theme").default("light"),
+    theme: enum__works_v_blocks_feature_tabs_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11826,10 +12247,12 @@ export const __works_v_insight_list_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     summary: varchar("summary"),
+    textSize:
+      enum___works_v_insight_list_v_text_size("text_size").default("small"),
     layout: enum___works_v_insight_list_v_layout("layout").default("side"),
     markSize:
       enum___works_v_insight_list_v_mark_size("mark_size").default("medium"),
-    theme: enum___works_v_insight_list_v_theme("theme").default("light"),
+    theme: enum___works_v_insight_list_v_theme("theme").default("default"),
     _uuid: varchar("_uuid"),
     blockName: varchar("block_name"),
   },
@@ -11944,7 +12367,7 @@ export const _works_v_blocks_content_columns = pgTable(
       ),
     slider_theme:
       enum__works_v_blocks_content_columns_slider_theme("slider_theme").default(
-        "system",
+        "default",
       ),
     slider_introContent_heading: varchar("slider_intro_content_heading"),
     slider_introContent_subheading: varchar("slider_intro_content_subheading"),
@@ -12025,7 +12448,7 @@ export const _works_v_blocks_content = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
-    theme: enum__works_v_blocks_content_theme("theme").default("system"),
+    theme: enum__works_v_blocks_content_theme("theme").default("default"),
     containerWidth:
       enum__works_v_blocks_content_container_width("container_width").default(
         "contained",
@@ -12057,7 +12480,7 @@ export const __works_v_section_v = pgTable(
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
     customize: boolean("customize").default(false),
-    theme: enum___works_v_section_v_theme("theme").default("inherit"),
+    theme: enum___works_v_section_v_theme("theme").default("default"),
     spacing: enum___works_v_section_v_spacing("spacing").default("default"),
     stack: enum___works_v_section_v_stack("stack").default("default"),
     _uuid: varchar("_uuid"),
@@ -12108,7 +12531,7 @@ export const _works_v_blocks_slider = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
-    theme: enum__works_v_blocks_slider_theme("theme").default("system"),
+    theme: enum__works_v_blocks_slider_theme("theme").default("default"),
     introContent_heading: varchar("intro_content_heading"),
     introContent_subheading: varchar("intro_content_subheading"),
     introContent_size:
@@ -12182,7 +12605,7 @@ export const _works_v_blocks_tabs_tabs = pgTable(
     richText: jsonb("rich_text"),
     slider_theme:
       enum__works_v_blocks_tabs_tabs_slider_theme("slider_theme").default(
-        "system",
+        "default",
       ),
     slider_style:
       enum__works_v_blocks_tabs_tabs_slider_style("slider_style").default(
@@ -12208,7 +12631,7 @@ export const _works_v_blocks_tabs = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
-    theme: enum__works_v_blocks_tabs_theme("theme").default("system"),
+    theme: enum__works_v_blocks_tabs_theme("theme").default("default"),
     heading_style:
       enum__works_v_blocks_tabs_heading_style("heading_style").default(
         "default",
@@ -12242,7 +12665,7 @@ export const _works_v_blocks_archive = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
-    theme: enum__works_v_blocks_archive_theme("theme").default("system"),
+    theme: enum__works_v_blocks_archive_theme("theme").default("default"),
     cardStyle:
       enum__works_v_blocks_archive_card_style("card_style").default("card"),
     introContent: jsonb("intro_content"),
@@ -12376,7 +12799,7 @@ export const _works_v_blocks_media_block = pgTable(
         "landscape",
       ),
     fullWidth: boolean("full_width").default(false),
-    theme: enum__works_v_blocks_media_block_theme("theme").default("system"),
+    theme: enum__works_v_blocks_media_block_theme("theme").default("default"),
     showCaption: boolean("show_caption").default(true),
     captionLayout:
       enum__works_v_blocks_media_block_caption_layout("caption_layout").default(
@@ -19368,37 +19791,44 @@ type DatabaseSchema = {
   enum_pages_hero_links_link_type: typeof enum_pages_hero_links_link_type;
   enum_pages_hero_links_link_appearance: typeof enum_pages_hero_links_link_appearance;
   enum_pages_transition_layout: typeof enum_pages_transition_layout;
-  enum_pages_transition_theme: typeof enum_pages_transition_theme;
+  enum_pages_transition_text_size: typeof enum_pages_transition_text_size;
   enum_pages_transition_heading_level: typeof enum_pages_transition_heading_level;
-  enum_pages_blocks_feature_heading_offset_body_size: typeof enum_pages_blocks_feature_heading_offset_body_size;
+  enum_pages_transition_theme: typeof enum_pages_transition_theme;
+  enum_pages_blocks_feature_heading_offset_text_size: typeof enum_pages_blocks_feature_heading_offset_text_size;
   enum_pages_blocks_feature_heading_offset_theme: typeof enum_pages_blocks_feature_heading_offset_theme;
   enum_pages_full_media_visual_type: typeof enum_pages_full_media_visual_type;
   enum_pages_full_media_shader_origin: typeof enum_pages_full_media_shader_origin;
   enum_visual_surface: typeof enum_visual_surface;
   enum_leak_hover_targets: typeof enum_leak_hover_targets;
+  enum_pages_full_media_text_size: typeof enum_pages_full_media_text_size;
   enum_pages_full_media_width: typeof enum_pages_full_media_width;
   enum_pages_full_media_aspect_ratio: typeof enum_pages_full_media_aspect_ratio;
   enum_pages_full_media_content_position: typeof enum_pages_full_media_content_position;
   enum_pages_full_media_theme: typeof enum_pages_full_media_theme;
   enum_pages_media_split_visual_type: typeof enum_pages_media_split_visual_type;
   enum_pages_media_split_shader_origin: typeof enum_pages_media_split_shader_origin;
+  enum_pages_media_split_text_size: typeof enum_pages_media_split_text_size;
   enum_pages_media_split_layout: typeof enum_pages_media_split_layout;
   enum_pages_media_split_aspect_ratio: typeof enum_pages_media_split_aspect_ratio;
   enum_pages_media_split_theme: typeof enum_pages_media_split_theme;
   enum_pages_split_narrow_visual_type: typeof enum_pages_split_narrow_visual_type;
   enum_pages_split_narrow_shader_origin: typeof enum_pages_split_narrow_shader_origin;
+  enum_pages_split_narrow_text_size: typeof enum_pages_split_narrow_text_size;
   enum_pages_split_narrow_image_position: typeof enum_pages_split_narrow_image_position;
   enum_pages_split_narrow_theme: typeof enum_pages_split_narrow_theme;
+  enum_pages_blocks_carousel_split_text_size: typeof enum_pages_blocks_carousel_split_text_size;
   enum_pages_blocks_carousel_split_carousel_position: typeof enum_pages_blocks_carousel_split_carousel_position;
   enum_pages_blocks_carousel_split_slide_size: typeof enum_pages_blocks_carousel_split_slide_size;
   enum_pages_blocks_carousel_split_theme: typeof enum_pages_blocks_carousel_split_theme;
+  enum_pages_image_pair_text_size: typeof enum_pages_image_pair_text_size;
   enum_pages_image_pair_portrait_position: typeof enum_pages_image_pair_portrait_position;
   enum_pages_image_pair_text_position: typeof enum_pages_image_pair_text_position;
   enum_pages_image_pair_theme: typeof enum_pages_image_pair_theme;
+  enum_pages_split_offset_text_size: typeof enum_pages_split_offset_text_size;
   enum_pages_split_offset_caption_position: typeof enum_pages_split_offset_caption_position;
   enum_pages_split_offset_theme: typeof enum_pages_split_offset_theme;
-  enum_pages_image_statement_text_position: typeof enum_pages_image_statement_text_position;
   enum_pages_image_statement_text_size: typeof enum_pages_image_statement_text_size;
+  enum_pages_image_statement_text_position: typeof enum_pages_image_statement_text_position;
   enum_pages_image_statement_image_width: typeof enum_pages_image_statement_image_width;
   enum_pages_image_statement_aspect_ratio: typeof enum_pages_image_statement_aspect_ratio;
   enum_pages_image_statement_theme: typeof enum_pages_image_statement_theme;
@@ -19406,6 +19836,7 @@ type DatabaseSchema = {
   enum_pages_caption_theme: typeof enum_pages_caption_theme;
   enum_pages_youtube_size: typeof enum_pages_youtube_size;
   enum_pages_youtube_theme: typeof enum_pages_youtube_theme;
+  enum_pages_rich_text_text_size: typeof enum_pages_rich_text_text_size;
   enum_pages_rich_text_theme: typeof enum_pages_rich_text_theme;
   enum_pages_code_language: typeof enum_pages_code_language;
   enum_pages_chart_width: typeof enum_pages_chart_width;
@@ -19413,17 +19844,21 @@ type DatabaseSchema = {
   enum_pages_diagram_width: typeof enum_pages_diagram_width;
   enum_pages_diagram_theme: typeof enum_pages_diagram_theme;
   enum_pages_faq_link_type: typeof enum_pages_faq_link_type;
+  enum_pages_faq_text_size: typeof enum_pages_faq_text_size;
   enum_pages_faq_theme: typeof enum_pages_faq_theme;
   enum_pages_blocks_carousel_width: typeof enum_pages_blocks_carousel_width;
   enum_pages_blocks_carousel_slide_size: typeof enum_pages_blocks_carousel_slide_size;
   enum_pages_blocks_carousel_theme: typeof enum_pages_blocks_carousel_theme;
+  enum_pages_blocks_carousel_tabs_text_size: typeof enum_pages_blocks_carousel_tabs_text_size;
   enum_pages_blocks_carousel_tabs_slide_size: typeof enum_pages_blocks_carousel_tabs_slide_size;
   enum_pages_blocks_carousel_tabs_tab_size: typeof enum_pages_blocks_carousel_tabs_tab_size;
   enum_pages_blocks_carousel_tabs_theme: typeof enum_pages_blocks_carousel_tabs_theme;
   enum_pages_blocks_feature_tabs_tabs_visual_type: typeof enum_pages_blocks_feature_tabs_tabs_visual_type;
   enum_pages_blocks_feature_tabs_tabs_shader_origin: typeof enum_pages_blocks_feature_tabs_tabs_shader_origin;
+  enum_pages_blocks_feature_tabs_text_size: typeof enum_pages_blocks_feature_tabs_text_size;
   enum_pages_blocks_feature_tabs_tab_size: typeof enum_pages_blocks_feature_tabs_tab_size;
   enum_pages_blocks_feature_tabs_theme: typeof enum_pages_blocks_feature_tabs_theme;
+  enum_pages_insight_list_text_size: typeof enum_pages_insight_list_text_size;
   enum_pages_insight_list_layout: typeof enum_pages_insight_list_layout;
   enum_pages_insight_list_mark_size: typeof enum_pages_insight_list_mark_size;
   enum_pages_insight_list_theme: typeof enum_pages_insight_list_theme;
@@ -19493,35 +19928,42 @@ type DatabaseSchema = {
   enum__pages_v_version_hero_links_link_type: typeof enum__pages_v_version_hero_links_link_type;
   enum__pages_v_version_hero_links_link_appearance: typeof enum__pages_v_version_hero_links_link_appearance;
   enum___pages_v_transition_v_layout: typeof enum___pages_v_transition_v_layout;
-  enum___pages_v_transition_v_theme: typeof enum___pages_v_transition_v_theme;
+  enum___pages_v_transition_v_text_size: typeof enum___pages_v_transition_v_text_size;
   enum___pages_v_transition_v_heading_level: typeof enum___pages_v_transition_v_heading_level;
-  enum__pages_v_blocks_feature_heading_offset_body_size: typeof enum__pages_v_blocks_feature_heading_offset_body_size;
+  enum___pages_v_transition_v_theme: typeof enum___pages_v_transition_v_theme;
+  enum__pages_v_blocks_feature_heading_offset_text_size: typeof enum__pages_v_blocks_feature_heading_offset_text_size;
   enum__pages_v_blocks_feature_heading_offset_theme: typeof enum__pages_v_blocks_feature_heading_offset_theme;
   enum___pages_v_full_media_v_visual_type: typeof enum___pages_v_full_media_v_visual_type;
   enum___pages_v_full_media_v_shader_origin: typeof enum___pages_v_full_media_v_shader_origin;
+  enum___pages_v_full_media_v_text_size: typeof enum___pages_v_full_media_v_text_size;
   enum___pages_v_full_media_v_width: typeof enum___pages_v_full_media_v_width;
   enum___pages_v_full_media_v_aspect_ratio: typeof enum___pages_v_full_media_v_aspect_ratio;
   enum___pages_v_full_media_v_content_position: typeof enum___pages_v_full_media_v_content_position;
   enum___pages_v_full_media_v_theme: typeof enum___pages_v_full_media_v_theme;
   enum___pages_v_media_split_v_visual_type: typeof enum___pages_v_media_split_v_visual_type;
   enum___pages_v_media_split_v_shader_origin: typeof enum___pages_v_media_split_v_shader_origin;
+  enum___pages_v_media_split_v_text_size: typeof enum___pages_v_media_split_v_text_size;
   enum___pages_v_media_split_v_layout: typeof enum___pages_v_media_split_v_layout;
   enum___pages_v_media_split_v_aspect_ratio: typeof enum___pages_v_media_split_v_aspect_ratio;
   enum___pages_v_media_split_v_theme: typeof enum___pages_v_media_split_v_theme;
   enum___pages_v_split_narrow_v_visual_type: typeof enum___pages_v_split_narrow_v_visual_type;
   enum___pages_v_split_narrow_v_shader_origin: typeof enum___pages_v_split_narrow_v_shader_origin;
+  enum___pages_v_split_narrow_v_text_size: typeof enum___pages_v_split_narrow_v_text_size;
   enum___pages_v_split_narrow_v_image_position: typeof enum___pages_v_split_narrow_v_image_position;
   enum___pages_v_split_narrow_v_theme: typeof enum___pages_v_split_narrow_v_theme;
+  enum__pages_v_blocks_carousel_split_text_size: typeof enum__pages_v_blocks_carousel_split_text_size;
   enum__pages_v_blocks_carousel_split_carousel_position: typeof enum__pages_v_blocks_carousel_split_carousel_position;
   enum__pages_v_blocks_carousel_split_slide_size: typeof enum__pages_v_blocks_carousel_split_slide_size;
   enum__pages_v_blocks_carousel_split_theme: typeof enum__pages_v_blocks_carousel_split_theme;
+  enum___pages_v_image_pair_v_text_size: typeof enum___pages_v_image_pair_v_text_size;
   enum___pages_v_image_pair_v_portrait_position: typeof enum___pages_v_image_pair_v_portrait_position;
   enum___pages_v_image_pair_v_text_position: typeof enum___pages_v_image_pair_v_text_position;
   enum___pages_v_image_pair_v_theme: typeof enum___pages_v_image_pair_v_theme;
+  enum___pages_v_split_offset_v_text_size: typeof enum___pages_v_split_offset_v_text_size;
   enum___pages_v_split_offset_v_caption_position: typeof enum___pages_v_split_offset_v_caption_position;
   enum___pages_v_split_offset_v_theme: typeof enum___pages_v_split_offset_v_theme;
-  enum___pages_v_image_statement_v_text_position: typeof enum___pages_v_image_statement_v_text_position;
   enum___pages_v_image_statement_v_text_size: typeof enum___pages_v_image_statement_v_text_size;
+  enum___pages_v_image_statement_v_text_position: typeof enum___pages_v_image_statement_v_text_position;
   enum___pages_v_image_statement_v_image_width: typeof enum___pages_v_image_statement_v_image_width;
   enum___pages_v_image_statement_v_aspect_ratio: typeof enum___pages_v_image_statement_v_aspect_ratio;
   enum___pages_v_image_statement_v_theme: typeof enum___pages_v_image_statement_v_theme;
@@ -19529,6 +19971,7 @@ type DatabaseSchema = {
   enum___pages_v_caption_v_theme: typeof enum___pages_v_caption_v_theme;
   enum___pages_v_youtube_v_size: typeof enum___pages_v_youtube_v_size;
   enum___pages_v_youtube_v_theme: typeof enum___pages_v_youtube_v_theme;
+  enum___pages_v_rich_text_v_text_size: typeof enum___pages_v_rich_text_v_text_size;
   enum___pages_v_rich_text_v_theme: typeof enum___pages_v_rich_text_v_theme;
   enum___pages_v_code_v_language: typeof enum___pages_v_code_v_language;
   enum___pages_v_chart_v_width: typeof enum___pages_v_chart_v_width;
@@ -19536,17 +19979,21 @@ type DatabaseSchema = {
   enum___pages_v_diagram_v_width: typeof enum___pages_v_diagram_v_width;
   enum___pages_v_diagram_v_theme: typeof enum___pages_v_diagram_v_theme;
   enum___pages_v_faq_v_link_type: typeof enum___pages_v_faq_v_link_type;
+  enum___pages_v_faq_v_text_size: typeof enum___pages_v_faq_v_text_size;
   enum___pages_v_faq_v_theme: typeof enum___pages_v_faq_v_theme;
   enum__pages_v_blocks_carousel_width: typeof enum__pages_v_blocks_carousel_width;
   enum__pages_v_blocks_carousel_slide_size: typeof enum__pages_v_blocks_carousel_slide_size;
   enum__pages_v_blocks_carousel_theme: typeof enum__pages_v_blocks_carousel_theme;
+  enum__pages_v_blocks_carousel_tabs_text_size: typeof enum__pages_v_blocks_carousel_tabs_text_size;
   enum__pages_v_blocks_carousel_tabs_slide_size: typeof enum__pages_v_blocks_carousel_tabs_slide_size;
   enum__pages_v_blocks_carousel_tabs_tab_size: typeof enum__pages_v_blocks_carousel_tabs_tab_size;
   enum__pages_v_blocks_carousel_tabs_theme: typeof enum__pages_v_blocks_carousel_tabs_theme;
   enum__pages_v_blocks_feature_tabs_tabs_visual_type: typeof enum__pages_v_blocks_feature_tabs_tabs_visual_type;
   enum__pages_v_blocks_feature_tabs_tabs_shader_origin: typeof enum__pages_v_blocks_feature_tabs_tabs_shader_origin;
+  enum__pages_v_blocks_feature_tabs_text_size: typeof enum__pages_v_blocks_feature_tabs_text_size;
   enum__pages_v_blocks_feature_tabs_tab_size: typeof enum__pages_v_blocks_feature_tabs_tab_size;
   enum__pages_v_blocks_feature_tabs_theme: typeof enum__pages_v_blocks_feature_tabs_theme;
+  enum___pages_v_insight_list_v_text_size: typeof enum___pages_v_insight_list_v_text_size;
   enum___pages_v_insight_list_v_layout: typeof enum___pages_v_insight_list_v_layout;
   enum___pages_v_insight_list_v_mark_size: typeof enum___pages_v_insight_list_v_mark_size;
   enum___pages_v_insight_list_v_theme: typeof enum___pages_v_insight_list_v_theme;
@@ -19616,35 +20063,42 @@ type DatabaseSchema = {
   enum_posts_hero_links_link_type: typeof enum_posts_hero_links_link_type;
   enum_posts_hero_links_link_appearance: typeof enum_posts_hero_links_link_appearance;
   enum_posts_transition_layout: typeof enum_posts_transition_layout;
-  enum_posts_transition_theme: typeof enum_posts_transition_theme;
+  enum_posts_transition_text_size: typeof enum_posts_transition_text_size;
   enum_posts_transition_heading_level: typeof enum_posts_transition_heading_level;
-  enum_posts_blocks_feature_heading_offset_body_size: typeof enum_posts_blocks_feature_heading_offset_body_size;
+  enum_posts_transition_theme: typeof enum_posts_transition_theme;
+  enum_posts_blocks_feature_heading_offset_text_size: typeof enum_posts_blocks_feature_heading_offset_text_size;
   enum_posts_blocks_feature_heading_offset_theme: typeof enum_posts_blocks_feature_heading_offset_theme;
   enum_posts_full_media_visual_type: typeof enum_posts_full_media_visual_type;
   enum_posts_full_media_shader_origin: typeof enum_posts_full_media_shader_origin;
+  enum_posts_full_media_text_size: typeof enum_posts_full_media_text_size;
   enum_posts_full_media_width: typeof enum_posts_full_media_width;
   enum_posts_full_media_aspect_ratio: typeof enum_posts_full_media_aspect_ratio;
   enum_posts_full_media_content_position: typeof enum_posts_full_media_content_position;
   enum_posts_full_media_theme: typeof enum_posts_full_media_theme;
   enum_posts_media_split_visual_type: typeof enum_posts_media_split_visual_type;
   enum_posts_media_split_shader_origin: typeof enum_posts_media_split_shader_origin;
+  enum_posts_media_split_text_size: typeof enum_posts_media_split_text_size;
   enum_posts_media_split_layout: typeof enum_posts_media_split_layout;
   enum_posts_media_split_aspect_ratio: typeof enum_posts_media_split_aspect_ratio;
   enum_posts_media_split_theme: typeof enum_posts_media_split_theme;
   enum_posts_split_narrow_visual_type: typeof enum_posts_split_narrow_visual_type;
   enum_posts_split_narrow_shader_origin: typeof enum_posts_split_narrow_shader_origin;
+  enum_posts_split_narrow_text_size: typeof enum_posts_split_narrow_text_size;
   enum_posts_split_narrow_image_position: typeof enum_posts_split_narrow_image_position;
   enum_posts_split_narrow_theme: typeof enum_posts_split_narrow_theme;
+  enum_posts_blocks_carousel_split_text_size: typeof enum_posts_blocks_carousel_split_text_size;
   enum_posts_blocks_carousel_split_carousel_position: typeof enum_posts_blocks_carousel_split_carousel_position;
   enum_posts_blocks_carousel_split_slide_size: typeof enum_posts_blocks_carousel_split_slide_size;
   enum_posts_blocks_carousel_split_theme: typeof enum_posts_blocks_carousel_split_theme;
+  enum_posts_image_pair_text_size: typeof enum_posts_image_pair_text_size;
   enum_posts_image_pair_portrait_position: typeof enum_posts_image_pair_portrait_position;
   enum_posts_image_pair_text_position: typeof enum_posts_image_pair_text_position;
   enum_posts_image_pair_theme: typeof enum_posts_image_pair_theme;
+  enum_posts_split_offset_text_size: typeof enum_posts_split_offset_text_size;
   enum_posts_split_offset_caption_position: typeof enum_posts_split_offset_caption_position;
   enum_posts_split_offset_theme: typeof enum_posts_split_offset_theme;
-  enum_posts_image_statement_text_position: typeof enum_posts_image_statement_text_position;
   enum_posts_image_statement_text_size: typeof enum_posts_image_statement_text_size;
+  enum_posts_image_statement_text_position: typeof enum_posts_image_statement_text_position;
   enum_posts_image_statement_image_width: typeof enum_posts_image_statement_image_width;
   enum_posts_image_statement_aspect_ratio: typeof enum_posts_image_statement_aspect_ratio;
   enum_posts_image_statement_theme: typeof enum_posts_image_statement_theme;
@@ -19652,6 +20106,7 @@ type DatabaseSchema = {
   enum_posts_caption_theme: typeof enum_posts_caption_theme;
   enum_posts_youtube_size: typeof enum_posts_youtube_size;
   enum_posts_youtube_theme: typeof enum_posts_youtube_theme;
+  enum_posts_rich_text_text_size: typeof enum_posts_rich_text_text_size;
   enum_posts_rich_text_theme: typeof enum_posts_rich_text_theme;
   enum_posts_code_language: typeof enum_posts_code_language;
   enum_posts_chart_width: typeof enum_posts_chart_width;
@@ -19659,17 +20114,21 @@ type DatabaseSchema = {
   enum_posts_diagram_width: typeof enum_posts_diagram_width;
   enum_posts_diagram_theme: typeof enum_posts_diagram_theme;
   enum_posts_faq_link_type: typeof enum_posts_faq_link_type;
+  enum_posts_faq_text_size: typeof enum_posts_faq_text_size;
   enum_posts_faq_theme: typeof enum_posts_faq_theme;
   enum_posts_blocks_carousel_width: typeof enum_posts_blocks_carousel_width;
   enum_posts_blocks_carousel_slide_size: typeof enum_posts_blocks_carousel_slide_size;
   enum_posts_blocks_carousel_theme: typeof enum_posts_blocks_carousel_theme;
+  enum_posts_blocks_carousel_tabs_text_size: typeof enum_posts_blocks_carousel_tabs_text_size;
   enum_posts_blocks_carousel_tabs_slide_size: typeof enum_posts_blocks_carousel_tabs_slide_size;
   enum_posts_blocks_carousel_tabs_tab_size: typeof enum_posts_blocks_carousel_tabs_tab_size;
   enum_posts_blocks_carousel_tabs_theme: typeof enum_posts_blocks_carousel_tabs_theme;
   enum_posts_blocks_feature_tabs_tabs_visual_type: typeof enum_posts_blocks_feature_tabs_tabs_visual_type;
   enum_posts_blocks_feature_tabs_tabs_shader_origin: typeof enum_posts_blocks_feature_tabs_tabs_shader_origin;
+  enum_posts_blocks_feature_tabs_text_size: typeof enum_posts_blocks_feature_tabs_text_size;
   enum_posts_blocks_feature_tabs_tab_size: typeof enum_posts_blocks_feature_tabs_tab_size;
   enum_posts_blocks_feature_tabs_theme: typeof enum_posts_blocks_feature_tabs_theme;
+  enum_posts_insight_list_text_size: typeof enum_posts_insight_list_text_size;
   enum_posts_insight_list_layout: typeof enum_posts_insight_list_layout;
   enum_posts_insight_list_mark_size: typeof enum_posts_insight_list_mark_size;
   enum_posts_insight_list_theme: typeof enum_posts_insight_list_theme;
@@ -19712,35 +20171,42 @@ type DatabaseSchema = {
   enum__posts_v_version_hero_links_link_type: typeof enum__posts_v_version_hero_links_link_type;
   enum__posts_v_version_hero_links_link_appearance: typeof enum__posts_v_version_hero_links_link_appearance;
   enum___posts_v_transition_v_layout: typeof enum___posts_v_transition_v_layout;
-  enum___posts_v_transition_v_theme: typeof enum___posts_v_transition_v_theme;
+  enum___posts_v_transition_v_text_size: typeof enum___posts_v_transition_v_text_size;
   enum___posts_v_transition_v_heading_level: typeof enum___posts_v_transition_v_heading_level;
-  enum__posts_v_blocks_feature_heading_offset_body_size: typeof enum__posts_v_blocks_feature_heading_offset_body_size;
+  enum___posts_v_transition_v_theme: typeof enum___posts_v_transition_v_theme;
+  enum__posts_v_blocks_feature_heading_offset_text_size: typeof enum__posts_v_blocks_feature_heading_offset_text_size;
   enum__posts_v_blocks_feature_heading_offset_theme: typeof enum__posts_v_blocks_feature_heading_offset_theme;
   enum___posts_v_full_media_v_visual_type: typeof enum___posts_v_full_media_v_visual_type;
   enum___posts_v_full_media_v_shader_origin: typeof enum___posts_v_full_media_v_shader_origin;
+  enum___posts_v_full_media_v_text_size: typeof enum___posts_v_full_media_v_text_size;
   enum___posts_v_full_media_v_width: typeof enum___posts_v_full_media_v_width;
   enum___posts_v_full_media_v_aspect_ratio: typeof enum___posts_v_full_media_v_aspect_ratio;
   enum___posts_v_full_media_v_content_position: typeof enum___posts_v_full_media_v_content_position;
   enum___posts_v_full_media_v_theme: typeof enum___posts_v_full_media_v_theme;
   enum___posts_v_media_split_v_visual_type: typeof enum___posts_v_media_split_v_visual_type;
   enum___posts_v_media_split_v_shader_origin: typeof enum___posts_v_media_split_v_shader_origin;
+  enum___posts_v_media_split_v_text_size: typeof enum___posts_v_media_split_v_text_size;
   enum___posts_v_media_split_v_layout: typeof enum___posts_v_media_split_v_layout;
   enum___posts_v_media_split_v_aspect_ratio: typeof enum___posts_v_media_split_v_aspect_ratio;
   enum___posts_v_media_split_v_theme: typeof enum___posts_v_media_split_v_theme;
   enum___posts_v_split_narrow_v_visual_type: typeof enum___posts_v_split_narrow_v_visual_type;
   enum___posts_v_split_narrow_v_shader_origin: typeof enum___posts_v_split_narrow_v_shader_origin;
+  enum___posts_v_split_narrow_v_text_size: typeof enum___posts_v_split_narrow_v_text_size;
   enum___posts_v_split_narrow_v_image_position: typeof enum___posts_v_split_narrow_v_image_position;
   enum___posts_v_split_narrow_v_theme: typeof enum___posts_v_split_narrow_v_theme;
+  enum__posts_v_blocks_carousel_split_text_size: typeof enum__posts_v_blocks_carousel_split_text_size;
   enum__posts_v_blocks_carousel_split_carousel_position: typeof enum__posts_v_blocks_carousel_split_carousel_position;
   enum__posts_v_blocks_carousel_split_slide_size: typeof enum__posts_v_blocks_carousel_split_slide_size;
   enum__posts_v_blocks_carousel_split_theme: typeof enum__posts_v_blocks_carousel_split_theme;
+  enum___posts_v_image_pair_v_text_size: typeof enum___posts_v_image_pair_v_text_size;
   enum___posts_v_image_pair_v_portrait_position: typeof enum___posts_v_image_pair_v_portrait_position;
   enum___posts_v_image_pair_v_text_position: typeof enum___posts_v_image_pair_v_text_position;
   enum___posts_v_image_pair_v_theme: typeof enum___posts_v_image_pair_v_theme;
+  enum___posts_v_split_offset_v_text_size: typeof enum___posts_v_split_offset_v_text_size;
   enum___posts_v_split_offset_v_caption_position: typeof enum___posts_v_split_offset_v_caption_position;
   enum___posts_v_split_offset_v_theme: typeof enum___posts_v_split_offset_v_theme;
-  enum___posts_v_image_statement_v_text_position: typeof enum___posts_v_image_statement_v_text_position;
   enum___posts_v_image_statement_v_text_size: typeof enum___posts_v_image_statement_v_text_size;
+  enum___posts_v_image_statement_v_text_position: typeof enum___posts_v_image_statement_v_text_position;
   enum___posts_v_image_statement_v_image_width: typeof enum___posts_v_image_statement_v_image_width;
   enum___posts_v_image_statement_v_aspect_ratio: typeof enum___posts_v_image_statement_v_aspect_ratio;
   enum___posts_v_image_statement_v_theme: typeof enum___posts_v_image_statement_v_theme;
@@ -19748,6 +20214,7 @@ type DatabaseSchema = {
   enum___posts_v_caption_v_theme: typeof enum___posts_v_caption_v_theme;
   enum___posts_v_youtube_v_size: typeof enum___posts_v_youtube_v_size;
   enum___posts_v_youtube_v_theme: typeof enum___posts_v_youtube_v_theme;
+  enum___posts_v_rich_text_v_text_size: typeof enum___posts_v_rich_text_v_text_size;
   enum___posts_v_rich_text_v_theme: typeof enum___posts_v_rich_text_v_theme;
   enum___posts_v_code_v_language: typeof enum___posts_v_code_v_language;
   enum___posts_v_chart_v_width: typeof enum___posts_v_chart_v_width;
@@ -19755,17 +20222,21 @@ type DatabaseSchema = {
   enum___posts_v_diagram_v_width: typeof enum___posts_v_diagram_v_width;
   enum___posts_v_diagram_v_theme: typeof enum___posts_v_diagram_v_theme;
   enum___posts_v_faq_v_link_type: typeof enum___posts_v_faq_v_link_type;
+  enum___posts_v_faq_v_text_size: typeof enum___posts_v_faq_v_text_size;
   enum___posts_v_faq_v_theme: typeof enum___posts_v_faq_v_theme;
   enum__posts_v_blocks_carousel_width: typeof enum__posts_v_blocks_carousel_width;
   enum__posts_v_blocks_carousel_slide_size: typeof enum__posts_v_blocks_carousel_slide_size;
   enum__posts_v_blocks_carousel_theme: typeof enum__posts_v_blocks_carousel_theme;
+  enum__posts_v_blocks_carousel_tabs_text_size: typeof enum__posts_v_blocks_carousel_tabs_text_size;
   enum__posts_v_blocks_carousel_tabs_slide_size: typeof enum__posts_v_blocks_carousel_tabs_slide_size;
   enum__posts_v_blocks_carousel_tabs_tab_size: typeof enum__posts_v_blocks_carousel_tabs_tab_size;
   enum__posts_v_blocks_carousel_tabs_theme: typeof enum__posts_v_blocks_carousel_tabs_theme;
   enum__posts_v_blocks_feature_tabs_tabs_visual_type: typeof enum__posts_v_blocks_feature_tabs_tabs_visual_type;
   enum__posts_v_blocks_feature_tabs_tabs_shader_origin: typeof enum__posts_v_blocks_feature_tabs_tabs_shader_origin;
+  enum__posts_v_blocks_feature_tabs_text_size: typeof enum__posts_v_blocks_feature_tabs_text_size;
   enum__posts_v_blocks_feature_tabs_tab_size: typeof enum__posts_v_blocks_feature_tabs_tab_size;
   enum__posts_v_blocks_feature_tabs_theme: typeof enum__posts_v_blocks_feature_tabs_theme;
+  enum___posts_v_insight_list_v_text_size: typeof enum___posts_v_insight_list_v_text_size;
   enum___posts_v_insight_list_v_layout: typeof enum___posts_v_insight_list_v_layout;
   enum___posts_v_insight_list_v_mark_size: typeof enum___posts_v_insight_list_v_mark_size;
   enum___posts_v_insight_list_v_theme: typeof enum___posts_v_insight_list_v_theme;
@@ -19808,35 +20279,42 @@ type DatabaseSchema = {
   enum_works_hero_links_link_type: typeof enum_works_hero_links_link_type;
   enum_works_hero_links_link_appearance: typeof enum_works_hero_links_link_appearance;
   enum_works_transition_layout: typeof enum_works_transition_layout;
-  enum_works_transition_theme: typeof enum_works_transition_theme;
+  enum_works_transition_text_size: typeof enum_works_transition_text_size;
   enum_works_transition_heading_level: typeof enum_works_transition_heading_level;
-  enum_works_blocks_feature_heading_offset_body_size: typeof enum_works_blocks_feature_heading_offset_body_size;
+  enum_works_transition_theme: typeof enum_works_transition_theme;
+  enum_works_blocks_feature_heading_offset_text_size: typeof enum_works_blocks_feature_heading_offset_text_size;
   enum_works_blocks_feature_heading_offset_theme: typeof enum_works_blocks_feature_heading_offset_theme;
   enum_works_full_media_visual_type: typeof enum_works_full_media_visual_type;
   enum_works_full_media_shader_origin: typeof enum_works_full_media_shader_origin;
+  enum_works_full_media_text_size: typeof enum_works_full_media_text_size;
   enum_works_full_media_width: typeof enum_works_full_media_width;
   enum_works_full_media_aspect_ratio: typeof enum_works_full_media_aspect_ratio;
   enum_works_full_media_content_position: typeof enum_works_full_media_content_position;
   enum_works_full_media_theme: typeof enum_works_full_media_theme;
   enum_works_media_split_visual_type: typeof enum_works_media_split_visual_type;
   enum_works_media_split_shader_origin: typeof enum_works_media_split_shader_origin;
+  enum_works_media_split_text_size: typeof enum_works_media_split_text_size;
   enum_works_media_split_layout: typeof enum_works_media_split_layout;
   enum_works_media_split_aspect_ratio: typeof enum_works_media_split_aspect_ratio;
   enum_works_media_split_theme: typeof enum_works_media_split_theme;
   enum_works_split_narrow_visual_type: typeof enum_works_split_narrow_visual_type;
   enum_works_split_narrow_shader_origin: typeof enum_works_split_narrow_shader_origin;
+  enum_works_split_narrow_text_size: typeof enum_works_split_narrow_text_size;
   enum_works_split_narrow_image_position: typeof enum_works_split_narrow_image_position;
   enum_works_split_narrow_theme: typeof enum_works_split_narrow_theme;
+  enum_works_blocks_carousel_split_text_size: typeof enum_works_blocks_carousel_split_text_size;
   enum_works_blocks_carousel_split_carousel_position: typeof enum_works_blocks_carousel_split_carousel_position;
   enum_works_blocks_carousel_split_slide_size: typeof enum_works_blocks_carousel_split_slide_size;
   enum_works_blocks_carousel_split_theme: typeof enum_works_blocks_carousel_split_theme;
+  enum_works_image_pair_text_size: typeof enum_works_image_pair_text_size;
   enum_works_image_pair_portrait_position: typeof enum_works_image_pair_portrait_position;
   enum_works_image_pair_text_position: typeof enum_works_image_pair_text_position;
   enum_works_image_pair_theme: typeof enum_works_image_pair_theme;
+  enum_works_split_offset_text_size: typeof enum_works_split_offset_text_size;
   enum_works_split_offset_caption_position: typeof enum_works_split_offset_caption_position;
   enum_works_split_offset_theme: typeof enum_works_split_offset_theme;
-  enum_works_image_statement_text_position: typeof enum_works_image_statement_text_position;
   enum_works_image_statement_text_size: typeof enum_works_image_statement_text_size;
+  enum_works_image_statement_text_position: typeof enum_works_image_statement_text_position;
   enum_works_image_statement_image_width: typeof enum_works_image_statement_image_width;
   enum_works_image_statement_aspect_ratio: typeof enum_works_image_statement_aspect_ratio;
   enum_works_image_statement_theme: typeof enum_works_image_statement_theme;
@@ -19844,6 +20322,7 @@ type DatabaseSchema = {
   enum_works_caption_theme: typeof enum_works_caption_theme;
   enum_works_youtube_size: typeof enum_works_youtube_size;
   enum_works_youtube_theme: typeof enum_works_youtube_theme;
+  enum_works_rich_text_text_size: typeof enum_works_rich_text_text_size;
   enum_works_rich_text_theme: typeof enum_works_rich_text_theme;
   enum_works_code_language: typeof enum_works_code_language;
   enum_works_chart_width: typeof enum_works_chart_width;
@@ -19851,17 +20330,21 @@ type DatabaseSchema = {
   enum_works_diagram_width: typeof enum_works_diagram_width;
   enum_works_diagram_theme: typeof enum_works_diagram_theme;
   enum_works_faq_link_type: typeof enum_works_faq_link_type;
+  enum_works_faq_text_size: typeof enum_works_faq_text_size;
   enum_works_faq_theme: typeof enum_works_faq_theme;
   enum_works_blocks_carousel_width: typeof enum_works_blocks_carousel_width;
   enum_works_blocks_carousel_slide_size: typeof enum_works_blocks_carousel_slide_size;
   enum_works_blocks_carousel_theme: typeof enum_works_blocks_carousel_theme;
+  enum_works_blocks_carousel_tabs_text_size: typeof enum_works_blocks_carousel_tabs_text_size;
   enum_works_blocks_carousel_tabs_slide_size: typeof enum_works_blocks_carousel_tabs_slide_size;
   enum_works_blocks_carousel_tabs_tab_size: typeof enum_works_blocks_carousel_tabs_tab_size;
   enum_works_blocks_carousel_tabs_theme: typeof enum_works_blocks_carousel_tabs_theme;
   enum_works_blocks_feature_tabs_tabs_visual_type: typeof enum_works_blocks_feature_tabs_tabs_visual_type;
   enum_works_blocks_feature_tabs_tabs_shader_origin: typeof enum_works_blocks_feature_tabs_tabs_shader_origin;
+  enum_works_blocks_feature_tabs_text_size: typeof enum_works_blocks_feature_tabs_text_size;
   enum_works_blocks_feature_tabs_tab_size: typeof enum_works_blocks_feature_tabs_tab_size;
   enum_works_blocks_feature_tabs_theme: typeof enum_works_blocks_feature_tabs_theme;
+  enum_works_insight_list_text_size: typeof enum_works_insight_list_text_size;
   enum_works_insight_list_layout: typeof enum_works_insight_list_layout;
   enum_works_insight_list_mark_size: typeof enum_works_insight_list_mark_size;
   enum_works_insight_list_theme: typeof enum_works_insight_list_theme;
@@ -19941,35 +20424,42 @@ type DatabaseSchema = {
   enum__works_v_version_hero_links_link_type: typeof enum__works_v_version_hero_links_link_type;
   enum__works_v_version_hero_links_link_appearance: typeof enum__works_v_version_hero_links_link_appearance;
   enum___works_v_transition_v_layout: typeof enum___works_v_transition_v_layout;
-  enum___works_v_transition_v_theme: typeof enum___works_v_transition_v_theme;
+  enum___works_v_transition_v_text_size: typeof enum___works_v_transition_v_text_size;
   enum___works_v_transition_v_heading_level: typeof enum___works_v_transition_v_heading_level;
-  enum__works_v_blocks_feature_heading_offset_body_size: typeof enum__works_v_blocks_feature_heading_offset_body_size;
+  enum___works_v_transition_v_theme: typeof enum___works_v_transition_v_theme;
+  enum__works_v_blocks_feature_heading_offset_text_size: typeof enum__works_v_blocks_feature_heading_offset_text_size;
   enum__works_v_blocks_feature_heading_offset_theme: typeof enum__works_v_blocks_feature_heading_offset_theme;
   enum___works_v_full_media_v_visual_type: typeof enum___works_v_full_media_v_visual_type;
   enum___works_v_full_media_v_shader_origin: typeof enum___works_v_full_media_v_shader_origin;
+  enum___works_v_full_media_v_text_size: typeof enum___works_v_full_media_v_text_size;
   enum___works_v_full_media_v_width: typeof enum___works_v_full_media_v_width;
   enum___works_v_full_media_v_aspect_ratio: typeof enum___works_v_full_media_v_aspect_ratio;
   enum___works_v_full_media_v_content_position: typeof enum___works_v_full_media_v_content_position;
   enum___works_v_full_media_v_theme: typeof enum___works_v_full_media_v_theme;
   enum___works_v_media_split_v_visual_type: typeof enum___works_v_media_split_v_visual_type;
   enum___works_v_media_split_v_shader_origin: typeof enum___works_v_media_split_v_shader_origin;
+  enum___works_v_media_split_v_text_size: typeof enum___works_v_media_split_v_text_size;
   enum___works_v_media_split_v_layout: typeof enum___works_v_media_split_v_layout;
   enum___works_v_media_split_v_aspect_ratio: typeof enum___works_v_media_split_v_aspect_ratio;
   enum___works_v_media_split_v_theme: typeof enum___works_v_media_split_v_theme;
   enum___works_v_split_narrow_v_visual_type: typeof enum___works_v_split_narrow_v_visual_type;
   enum___works_v_split_narrow_v_shader_origin: typeof enum___works_v_split_narrow_v_shader_origin;
+  enum___works_v_split_narrow_v_text_size: typeof enum___works_v_split_narrow_v_text_size;
   enum___works_v_split_narrow_v_image_position: typeof enum___works_v_split_narrow_v_image_position;
   enum___works_v_split_narrow_v_theme: typeof enum___works_v_split_narrow_v_theme;
+  enum__works_v_blocks_carousel_split_text_size: typeof enum__works_v_blocks_carousel_split_text_size;
   enum__works_v_blocks_carousel_split_carousel_position: typeof enum__works_v_blocks_carousel_split_carousel_position;
   enum__works_v_blocks_carousel_split_slide_size: typeof enum__works_v_blocks_carousel_split_slide_size;
   enum__works_v_blocks_carousel_split_theme: typeof enum__works_v_blocks_carousel_split_theme;
+  enum___works_v_image_pair_v_text_size: typeof enum___works_v_image_pair_v_text_size;
   enum___works_v_image_pair_v_portrait_position: typeof enum___works_v_image_pair_v_portrait_position;
   enum___works_v_image_pair_v_text_position: typeof enum___works_v_image_pair_v_text_position;
   enum___works_v_image_pair_v_theme: typeof enum___works_v_image_pair_v_theme;
+  enum___works_v_split_offset_v_text_size: typeof enum___works_v_split_offset_v_text_size;
   enum___works_v_split_offset_v_caption_position: typeof enum___works_v_split_offset_v_caption_position;
   enum___works_v_split_offset_v_theme: typeof enum___works_v_split_offset_v_theme;
-  enum___works_v_image_statement_v_text_position: typeof enum___works_v_image_statement_v_text_position;
   enum___works_v_image_statement_v_text_size: typeof enum___works_v_image_statement_v_text_size;
+  enum___works_v_image_statement_v_text_position: typeof enum___works_v_image_statement_v_text_position;
   enum___works_v_image_statement_v_image_width: typeof enum___works_v_image_statement_v_image_width;
   enum___works_v_image_statement_v_aspect_ratio: typeof enum___works_v_image_statement_v_aspect_ratio;
   enum___works_v_image_statement_v_theme: typeof enum___works_v_image_statement_v_theme;
@@ -19977,6 +20467,7 @@ type DatabaseSchema = {
   enum___works_v_caption_v_theme: typeof enum___works_v_caption_v_theme;
   enum___works_v_youtube_v_size: typeof enum___works_v_youtube_v_size;
   enum___works_v_youtube_v_theme: typeof enum___works_v_youtube_v_theme;
+  enum___works_v_rich_text_v_text_size: typeof enum___works_v_rich_text_v_text_size;
   enum___works_v_rich_text_v_theme: typeof enum___works_v_rich_text_v_theme;
   enum___works_v_code_v_language: typeof enum___works_v_code_v_language;
   enum___works_v_chart_v_width: typeof enum___works_v_chart_v_width;
@@ -19984,17 +20475,21 @@ type DatabaseSchema = {
   enum___works_v_diagram_v_width: typeof enum___works_v_diagram_v_width;
   enum___works_v_diagram_v_theme: typeof enum___works_v_diagram_v_theme;
   enum___works_v_faq_v_link_type: typeof enum___works_v_faq_v_link_type;
+  enum___works_v_faq_v_text_size: typeof enum___works_v_faq_v_text_size;
   enum___works_v_faq_v_theme: typeof enum___works_v_faq_v_theme;
   enum__works_v_blocks_carousel_width: typeof enum__works_v_blocks_carousel_width;
   enum__works_v_blocks_carousel_slide_size: typeof enum__works_v_blocks_carousel_slide_size;
   enum__works_v_blocks_carousel_theme: typeof enum__works_v_blocks_carousel_theme;
+  enum__works_v_blocks_carousel_tabs_text_size: typeof enum__works_v_blocks_carousel_tabs_text_size;
   enum__works_v_blocks_carousel_tabs_slide_size: typeof enum__works_v_blocks_carousel_tabs_slide_size;
   enum__works_v_blocks_carousel_tabs_tab_size: typeof enum__works_v_blocks_carousel_tabs_tab_size;
   enum__works_v_blocks_carousel_tabs_theme: typeof enum__works_v_blocks_carousel_tabs_theme;
   enum__works_v_blocks_feature_tabs_tabs_visual_type: typeof enum__works_v_blocks_feature_tabs_tabs_visual_type;
   enum__works_v_blocks_feature_tabs_tabs_shader_origin: typeof enum__works_v_blocks_feature_tabs_tabs_shader_origin;
+  enum__works_v_blocks_feature_tabs_text_size: typeof enum__works_v_blocks_feature_tabs_text_size;
   enum__works_v_blocks_feature_tabs_tab_size: typeof enum__works_v_blocks_feature_tabs_tab_size;
   enum__works_v_blocks_feature_tabs_theme: typeof enum__works_v_blocks_feature_tabs_theme;
+  enum___works_v_insight_list_v_text_size: typeof enum___works_v_insight_list_v_text_size;
   enum___works_v_insight_list_v_layout: typeof enum___works_v_insight_list_v_layout;
   enum___works_v_insight_list_v_mark_size: typeof enum___works_v_insight_list_v_mark_size;
   enum___works_v_insight_list_v_theme: typeof enum___works_v_insight_list_v_theme;

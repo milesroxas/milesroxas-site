@@ -1,6 +1,7 @@
 import type React from 'react'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { ordinalLabel } from '@/blocks/shared/numbering'
+import { type TextSize, typeScale } from '@/blocks/shared/typography'
 import type { InsightListBlock as InsightListBlockData } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaURL'
 import { cn } from '@/utilities/ui'
@@ -73,8 +74,6 @@ const Mark: React.FC<{ media: InsightItem['media']; size: InsightMarkSize }> = (
 }
 
 const ordinalClassName = 'font-mono text-xs/none tracking-widest text-muted-foreground'
-const titleClassName = 'text-xl/7 font-medium'
-const descriptionClassName = 'text-base text-muted-foreground'
 
 type InsightProps = {
   className?: string
@@ -83,6 +82,7 @@ type InsightProps = {
   index: number
   item: InsightItem
   markSize: InsightMarkSize
+  textSize?: TextSize | null
 }
 
 /**
@@ -98,31 +98,35 @@ const InsightStack: React.FC<InsightProps> = ({
   index,
   item,
   markSize,
-}) => (
-  <li
-    className={cn(
-      'flex flex-col border-t border-border',
-      compact ? 'gap-2 pt-4' : 'gap-5 pt-5',
-      className,
-    )}
-    data-reveal
-    data-reveal-group={group}
-  >
-    {compact ? null : (
-      <div className="flex items-center justify-between">
-        <Mark media={item.media} size={markSize} />
-        <span className={ordinalClassName}>{ordinalLabel(index)}</span>
+  textSize,
+}) => {
+  const type = typeScale(textSize)
+  return (
+    <li
+      className={cn(
+        'flex flex-col border-t border-border',
+        compact ? 'gap-2 pt-4' : 'gap-5 pt-5',
+        className,
+      )}
+      data-reveal
+      data-reveal-group={group}
+    >
+      {compact ? null : (
+        <div className="flex items-center justify-between">
+          <Mark media={item.media} size={markSize} />
+          <span className={ordinalClassName}>{ordinalLabel(index)}</span>
+        </div>
+      )}
+      <div className={cn('flex flex-col', compact ? 'gap-1' : 'gap-2')}>
+        <h3 className={cn(type.lead, 'font-medium', compact && 'flex items-baseline gap-3')}>
+          {compact ? <span className={ordinalClassName}>{ordinalLabel(index)}</span> : null}
+          {item.title}
+        </h3>
+        <p className={cn(type.body, 'text-muted-foreground')}>{item.description}</p>
       </div>
-    )}
-    <div className={cn('flex flex-col', compact ? 'gap-1' : 'gap-2')}>
-      <h3 className={cn(titleClassName, compact && 'flex items-baseline gap-3')}>
-        {compact ? <span className={ordinalClassName}>{ordinalLabel(index)}</span> : null}
-        {item.title}
-      </h3>
-      <p className={descriptionClassName}>{item.description}</p>
-    </div>
-  </li>
-)
+    </li>
+  )
+}
 
 /**
  * The ledger row: the insight laid across the list's columns as two lanes,
@@ -145,32 +149,36 @@ const InsightRow: React.FC<InsightProps> = ({
   index,
   item,
   markSize,
-}) => (
-  <BlockGrid
-    as="li"
-    className={cn('items-baseline gap-y-2 border-t border-border py-5', className)}
-    data-reveal
-    data-reveal-group={group}
-    subgrid
-  >
-    <div className="flex items-start gap-6 md:col-span-3">
-      {compact ? null : <Mark media={item.media} size={markSize} />}
-      <h3
-        className={cn(
-          titleClassName,
-          'flex items-center self-baseline',
-          compact ? null : MARK_SIZE_CLASS[markSize].line,
-        )}
-      >
-        {item.title}
-      </h3>
-    </div>
-    <div className="flex items-baseline justify-between gap-6 md:col-span-3">
-      <p className={descriptionClassName}>{item.description}</p>
-      <span className={cn(ordinalClassName, 'w-6 shrink-0 text-end')}>{ordinalLabel(index)}</span>
-    </div>
-  </BlockGrid>
-)
+  textSize,
+}) => {
+  const type = typeScale(textSize)
+  return (
+    <BlockGrid
+      as="li"
+      className={cn('items-baseline gap-y-2 border-t border-border py-5', className)}
+      data-reveal
+      data-reveal-group={group}
+      subgrid
+    >
+      <div className="flex items-start gap-6 md:col-span-3">
+        {compact ? null : <Mark media={item.media} size={markSize} />}
+        <h3
+          className={cn(
+            type.lead,
+            'flex items-center self-baseline font-medium',
+            compact ? null : MARK_SIZE_CLASS[markSize].line,
+          )}
+        >
+          {item.title}
+        </h3>
+      </div>
+      <div className="flex items-baseline justify-between gap-6 md:col-span-3">
+        <p className={cn(type.body, 'text-muted-foreground')}>{item.description}</p>
+        <span className={cn(ordinalClassName, 'w-6 shrink-0 text-end')}>{ordinalLabel(index)}</span>
+      </div>
+    </BlockGrid>
+  )
+}
 
 /**
  * One insight in either arrangement (see `InsightArrangement`). `group` is

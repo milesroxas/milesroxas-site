@@ -1,7 +1,9 @@
-import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import type { Block, Condition } from 'payload'
+import { designFields, eyebrowFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { blockVisualSlotFields } from '@/fields/visual'
+
+const showContent: Condition = (_, siblingData) => Boolean(siblingData?.showContent)
 
 /**
  * Media, optionally over a two-column content row (eyebrow + heading beside the
@@ -38,27 +40,16 @@ export const FullMedia: Block = {
         description: 'Off renders the media on its own, with no copy beneath it.',
       },
     },
-    {
-      name: 'eyebrow',
-      type: 'text',
-      admin: {
-        condition: (_, siblingData) => Boolean(siblingData?.showContent),
-        description: 'Short kicker above the heading.',
-      },
-    },
+    ...eyebrowFields({ condition: showContent }),
     {
       name: 'heading',
       type: 'text',
-      admin: { condition: (_, siblingData) => Boolean(siblingData?.showContent) },
+      admin: { condition: showContent },
     },
     {
       name: 'body',
       type: 'richText',
-      admin: {
-        condition: (_, siblingData) => Boolean(siblingData?.showContent),
-        description:
-          'Shown when source is "Custom", or as a Work or Lab Page override for canonical content.',
-      },
+      admin: { condition: showContent },
     },
     ...blockVisualSlotFields({
       name: 'media',
@@ -70,45 +61,48 @@ export const FullMedia: Block = {
           'Contained uses the aspect ratio below. Full width crops to 16:9 on small screens and 21:9 from md up.',
       },
     }),
-    {
-      name: 'width',
-      type: 'select',
-      defaultValue: 'contained',
-      options: [
-        { label: 'Contained', value: 'contained' },
-        { label: 'Full width', value: 'full-width' },
-      ],
-      admin: {
-        description:
-          'Contained keeps the media in the page column. Full width bleeds edge to edge.',
+    designFields([
+      textSizeField({ condition: showContent }),
+      {
+        name: 'width',
+        type: 'select',
+        defaultValue: 'contained',
+        options: [
+          { label: 'Contained', value: 'contained' },
+          { label: 'Full width', value: 'full-width' },
+        ],
+        admin: {
+          description:
+            'Contained keeps the media in the page column. Full width bleeds edge to edge.',
+        },
       },
-    },
-    {
-      name: 'aspectRatio',
-      type: 'select',
-      defaultValue: '16-9',
-      options: [
-        { label: '16:9', value: '16-9' },
-        { label: '3:2', value: '3-2' },
-        { label: '21:9', value: '21-9' },
-      ],
-      admin: {
-        condition: (_, siblingData) => siblingData?.width === 'contained',
-        description: 'Crop for contained media.',
+      {
+        name: 'aspectRatio',
+        type: 'select',
+        defaultValue: '16-9',
+        options: [
+          { label: '16:9', value: '16-9' },
+          { label: '3:2', value: '3-2' },
+          { label: '21:9', value: '21-9' },
+        ],
+        admin: {
+          condition: (_, siblingData) => siblingData?.width === 'contained',
+          description: 'Crop for contained media.',
+        },
       },
-    },
-    {
-      name: 'contentPosition',
-      type: 'select',
-      label: 'Layout',
-      defaultValue: 'left',
-      options: ['left', 'right'],
-      admin: {
-        condition: (_, siblingData) => Boolean(siblingData?.showContent),
-        description:
-          'Arrange the content row on the left or the right below the media (desktop only; smaller screens always sit left).',
+      {
+        name: 'contentPosition',
+        type: 'select',
+        label: 'Layout',
+        defaultValue: 'left',
+        options: ['left', 'right'],
+        admin: {
+          condition: showContent,
+          description:
+            'Arrange the content row on the left or the right below the media (desktop only; smaller screens always sit left).',
+        },
       },
-    },
-    themeField(),
+      themeField(),
+    ]),
   ],
 }

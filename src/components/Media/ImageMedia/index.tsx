@@ -3,14 +3,11 @@
 import type { StaticImageData } from 'next/image'
 import NextImage from 'next/image'
 import type React from 'react'
-import { cssVariables } from '@/cssVariables'
 import type { Media as MediaType } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaURL'
 import { cn } from '@/utilities/ui'
 
 import type { Props as MediaProps } from '../types'
-
-const { breakpoints } = cssVariables
 
 // A base64 encoded image to use as a placeholder while the image is loading
 const placeholderBlur =
@@ -66,12 +63,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
 
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
 
-  // NOTE: this is used by the browser to determine which image to download at different screen sizes
-  const sizes = sizeFromProps
-    ? sizeFromProps
-    : Object.entries(breakpoints)
-        .map(([, value]) => `(max-width: ${value}px) ${value * 2}w`)
-        .join(', ')
+  const sizes = sizeFromProps || '100vw'
 
   // `fill` images position against their direct parent (next/image requires it be
   // positioned). The <picture> must therefore be the containing block, spanning the

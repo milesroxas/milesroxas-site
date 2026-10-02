@@ -10,7 +10,7 @@ import { RichTransition } from './RichTransition'
  */
 type RichTransitionBlockProps = Pick<
   RichTransitionBlockData,
-  'blockType' | 'body' | 'eyebrow' | 'heading' | 'headingLevel' | 'layout' | 'theme'
+  'blockType' | 'body' | 'eyebrow' | 'heading' | 'headingLevel' | 'layout' | 'textSize' | 'theme'
 > & { bare?: boolean }
 
 export const RichTransitionBlock: React.FC<RichTransitionBlockProps> = ({
@@ -20,6 +20,7 @@ export const RichTransitionBlock: React.FC<RichTransitionBlockProps> = ({
   heading,
   headingLevel,
   layout,
+  textSize,
   theme,
 }) => (
   <RichTransition
@@ -30,6 +31,7 @@ export const RichTransitionBlock: React.FC<RichTransitionBlockProps> = ({
     heading={heading}
     headingLevel={headingLevel}
     layout={layout}
+    textSize={textSize}
     theme={theme}
   />
 )

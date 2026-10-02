@@ -5,6 +5,7 @@ import type React from 'react'
 import { useState } from 'react'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { ordinalLabel } from '@/blocks/shared/numbering'
+import { type TextSize, type TypeScale, typeScale } from '@/blocks/shared/typography'
 import RichText from '@/components/RichText'
 import type { FaqBlock } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -56,13 +57,14 @@ const PlusMinus = () => (
  * slot plus gap (3.5rem) and the glyph slot plus gap (2.75rem), so its
  * measure is the question's.
  */
-const FaqRow: React.FC<{ index: number; item: FaqItem; open: boolean }> = ({
+const FaqRow: React.FC<{ index: number; item: FaqItem; open: boolean; type: TypeScale }> = ({
   index,
   item,
   open,
+  type,
 }) => (
   <AccordionPrimitive.Item className="border-b border-border" value={item.id}>
-    <AccordionPrimitive.Header className="text-lg/relaxed">
+    <AccordionPrimitive.Header className={cn(type.lead, 'leading-relaxed')}>
       <AccordionPrimitive.Trigger className="group pressable pressable-subtle flex w-full items-start gap-6 py-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/30">
         <span
           aria-hidden="true"
@@ -83,7 +85,7 @@ const FaqRow: React.FC<{ index: number; item: FaqItem; open: boolean }> = ({
       <div>
         <div className="ps-14 pe-11 pt-3 pb-7">
           <RichText
-            className="text-base/relaxed text-muted-foreground"
+            className={cn(type.body, 'leading-relaxed text-muted-foreground')}
             data={item.answer}
             enableGutter={false}
             enableProse={false}
@@ -101,7 +103,11 @@ const FaqRow: React.FC<{ index: number; item: FaqItem; open: boolean }> = ({
  * `md` the second column drops it and the grid's row gap is zeroed, so the
  * two columns read as one continuous list.
  */
-export const FaqAccordion: React.FC<{ items: FaqItem[] }> = ({ items }) => {
+export const FaqAccordion: React.FC<{ items: FaqItem[]; textSize?: TextSize | null }> = ({
+  items,
+  textSize,
+}) => {
+  const type = typeScale(textSize)
   const [open, setOpen] = useState(items[0]?.id ?? '')
   const [lead, trail] = splitColumns(items)
   const columns = [lead, trail]
@@ -126,6 +132,7 @@ export const FaqAccordion: React.FC<{ items: FaqItem[] }> = ({ items }) => {
                   item={item}
                   key={item.id}
                   open={open === item.id}
+                  type={type}
                 />
               ))}
             </div>

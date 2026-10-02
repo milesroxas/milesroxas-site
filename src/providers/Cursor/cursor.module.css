@@ -7,7 +7,6 @@
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  transition: opacity 0.2s ease;
   will-change: transform;
   border: 1px solid white;
   mix-blend-mode: difference;
@@ -16,7 +15,6 @@
 .cursorOuterBlurred {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background-color: rgba(255, 255, 255, 0.2);
   mix-blend-mode: normal;
 }
 
@@ -45,7 +43,6 @@
   pointer-events: none;
   z-index: 9999;
   mix-blend-mode: difference;
-  transform: translate(-50%, -50%);
   text-align: center;
   white-space: nowrap;
   text-transform: uppercase;

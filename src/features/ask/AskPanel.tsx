@@ -112,9 +112,9 @@ const cornerOf = (element: Element) =>
   Number.parseFloat(getComputedStyle(element).borderTopLeftRadius)
 
 /**
- * The field's open clip: past its box, so its shadow and focus halo are never
- * cut while it grows, with a corner concentric with the field's own. At rest
- * the clip is dropped altogether.
+ * The field's open clip: past its box, so its shadow is never cut while it
+ * grows, with a corner concentric with the field's own. At rest the clip is
+ * dropped altogether.
  */
 const openClip = (field: HTMLElement) =>
   `inset(-${FIELD_REACH}px round ${cornerOf(field) + FIELD_REACH}px)`
@@ -127,21 +127,35 @@ function seedClip(field: HTMLElement, trigger: HTMLElement | null) {
   return `inset(${t.top - f.top}px ${f.right - t.right}px ${f.bottom - t.bottom}px ${t.left - f.left}px round ${cornerOf(trigger)}px)`
 }
 
+/** Places the field's seed (the button's label) on the dock's button, in the field's own box. */
+function placeSeed(seed: HTMLElement, field: HTMLElement, trigger: HTMLElement | null) {
+  if (!trigger) return
+  const f = field.getBoundingClientRect()
+  const t = trigger.getBoundingClientRect()
+  seed.style.left = `${t.left - f.left - field.clientLeft}px`
+  seed.style.top = `${t.top - f.top - field.clientTop}px`
+  seed.style.width = `${t.width}px`
+  seed.style.height = `${t.height}px`
+}
+
 type MorphRefs = {
   scrim: RefObject<HTMLDivElement | null>
   surface: RefObject<HTMLDivElement | null>
   panel: RefObject<HTMLElement | null>
   field: RefObject<HTMLDivElement | null>
+  seed: RefObject<HTMLSpanElement | null>
   close: RefObject<HTMLButtonElement | null>
 }
 
 /**
  * The morph between the dock's Ask button and the open panel, both ways, on
  * the Web Animations API: the field's clip opens out of the button's shape,
- * its contents sharpen in behind the edge, the close button follows, and the
- * panel rises out of the field's top edge on the settle curve. Closing plays
- * the same path back, faster, from wherever the opening had reached, so a
- * second press mid-flight reverses instead of restarting.
+ * the button's label (the field's seed) blurs out as the field's contents
+ * sharpen in behind the edge, the close button follows, and the panel rises
+ * out of the field's top edge on the settle curve. Closing plays the same
+ * path back, faster, from wherever the opening had reached, so a second
+ * press mid-flight reverses instead of restarting: the field closes onto the
+ * label as it sharpens back in, and lands as the button itself.
  *
  * Opened from the keyboard, or closed with Escape, it skips the morph: a
  * shortcut should never wait on an animation. Reduced motion is a 150ms
@@ -169,19 +183,21 @@ function useAskMorph({
     surface: createRef(),
     panel: createRef(),
     field: createRef(),
+    seed: createRef(),
     close: createRef(),
   }))
   const running = useRef<Animation[]>([])
 
   useLayoutEffect(() => {
-    const { scrim, surface, panel, field, close } = {
+    const { scrim, surface, panel, field, seed, close } = {
       scrim: refs.scrim.current,
       surface: refs.surface.current,
       panel: refs.panel.current,
       field: refs.field.current,
+      seed: refs.seed.current,
       close: refs.close.current,
     }
-    if (!mounted || !scrim || !surface || !panel || !field || !close) {
+    if (!mounted || !scrim || !surface || !panel || !field || !seed || !close) {
       // Unmounted: the next open starts from the button, not from a run on nodes that are gone.
       running.current = []
       return
@@ -194,6 +210,7 @@ function useAskMorph({
     const from = {
       clip: interrupted ? getComputedStyle(field).clipPath : null,
       panel: interrupted ? Number(getComputedStyle(panel).opacity) : null,
+      seed: interrupted ? Number(getComputedStyle(seed).opacity) : null,
     }
     for (const animation of running.current) animation.cancel()
     running.current = []
@@ -202,7 +219,8 @@ function useAskMorph({
     const batch: Animation[] = []
     const play = (element: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions) =>
       batch.push(element.animate(keyframes, { fill: 'both', ...options }))
-    const fieldContent = Array.from(field.children)
+    const fieldContent = Array.from(field.children).filter((element) => element !== seed)
+    placeSeed(seed, field, triggerRef.current)
 
     if (reducedMotion) {
       const fade = open ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }]
@@ -221,6 +239,14 @@ function useAskMorph({
           easing: EASE_DRAWER,
         },
       )
+      play(
+        seed,
+        [
+          { opacity: from.seed ?? 1, filter: 'blur(0px)' },
+          { opacity: 0, filter: 'blur(2px)' },
+        ],
+        { duration: 120, easing: EASE_OUT },
+      )
       for (const element of fieldContent)
         play(
           element,
@@ -228,7 +254,7 @@ function useAskMorph({
             { opacity: 0, filter: 'blur(2px)' },
             { opacity: 1, filter: 'blur(0px)' },
           ],
-          { duration: 200, delay: 100, easing: EASE_OUT },
+          { duration: 200, delay: 60, easing: EASE_OUT },
         )
       play(
         close,
@@ -270,12 +296,19 @@ function useAskMorph({
           easing: EASE_DRAWER,
         },
       )
+      play(
+        seed,
+        [
+          { opacity: from.seed ?? 0, filter: 'blur(2px)' },
+          { opacity: 1, filter: 'blur(0px)' },
+        ],
+        { duration: 160, delay: 120, easing: EASE_OUT },
+      )
       play(scrim, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: 'ease' })
     }
     running.current = batch
 
-    // Open and settled, nothing stays held: the panel owns its shadow and the
-    // field its halo. A close holds its last frame until the surface unmounts.
+    // Open and settled, nothing stays held. A close holds its last frame until the surface unmounts.
     if (open)
       Promise.all(batch.map((animation) => animation.finished)).then(
         () => {
@@ -309,6 +342,15 @@ function AskDialog({
 
   useEffect(() => onPresenceChange(mounted), [mounted, onPresenceChange])
 
+  // Ask grows out of the dock's button, so it wears the dock's ground (the band polarity it stamps).
+  const [ground, setGround] = useState<string>()
+  useLayoutEffect(() => {
+    if (open)
+      setGround(
+        triggerRef.current?.closest('[data-chrome]')?.getAttribute('data-theme') ?? undefined,
+      )
+  }, [open, triggerRef])
+
   // Focus goes back to the dock the moment Ask closes, not once the exit has played.
   const wasOpen = useRef(open)
   useEffect(() => {
@@ -324,13 +366,14 @@ function AskDialog({
       {mounted && (
         <>
           <DialogPrimitive.Overlay
-            className="fixed inset-0 z-50 bg-foreground/20"
+            className="fixed inset-0 z-50 bg-foreground/20 dark:bg-black/50"
             forceMount
             ref={refs.scrim}
           />
           <DialogPrimitive.Content
             className="ask-surface"
             data-chrome=""
+            data-theme={ground}
             forceMount
             onCloseAutoFocus={(event) => event.preventDefault()}
             onEscapeKeyDown={() => {
@@ -363,6 +406,7 @@ function AskDialog({
                 fieldClassName="chrome-material border-transparent"
                 fieldRef={refs.field}
                 inputRef={inputRef}
+                seedRef={refs.seed}
               />
               <DialogPrimitive.Close
                 className="ask-close chrome-material chrome-focus pressable"
@@ -425,7 +469,7 @@ function AskSheet({
           event.preventDefault()
           sheetRef.current?.focus({ preventScroll: true })
         }}
-        overlayClassName="bg-foreground/22 supports-backdrop-filter:backdrop-blur-none"
+        overlayClassName="bg-foreground/22 supports-backdrop-filter:backdrop-blur-none dark:bg-black/50"
         data-chrome=""
         ref={sheetRef}
         showCloseButton={false}
@@ -473,7 +517,8 @@ function AskSheet({
  * The one-line field: Enter sends, the button sends or stops. The desktop
  * field leads with Ask's mark; on a phone the sheet's title already carries
  * it. The placeholder follows the conversation: an invitation before the
- * first question, a follow-up after.
+ * first question, a follow-up after. The desktop field also carries its
+ * seed, the dock button's label, which only the morph shows.
  */
 function AskField({
   chat,
@@ -481,12 +526,14 @@ function AskField({
   fieldClassName,
   fieldRef,
   inputRef,
+  seedRef,
 }: {
   chat: AskChat
   className?: string
   fieldClassName?: string
   fieldRef?: RefObject<HTMLDivElement | null>
   inputRef: RefObject<HTMLInputElement | null>
+  seedRef?: RefObject<HTMLSpanElement | null>
 }) {
   const { question, setQuestion, submit, busy, canSend, stop, messages } = chat
   return (
@@ -513,6 +560,12 @@ function AskField({
           iconClassName={askComposerIcon}
           onStop={stop}
         />
+        {seedRef && (
+          <span aria-hidden className="ask-seed" ref={seedRef}>
+            <AskGlyph className="size-4 text-(--chrome-glyph)" />
+            Ask
+          </span>
+        )}
       </InputGroup>
     </form>
   )

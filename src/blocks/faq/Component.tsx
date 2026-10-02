@@ -1,7 +1,7 @@
 import type React from 'react'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { Section } from '@/blocks/shared/section'
-import { eyebrowClassName } from '@/blocks/shared/typography'
+import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import { CMSLink } from '@/components/Link'
 import { resolveCmsLinkHref } from '@/components/Link/resolve-href'
@@ -15,7 +15,15 @@ import { FaqAccordion, type FaqItem } from './Component.client'
  */
 type FaqBlockProps = Pick<
   FaqBlockData,
-  'blockType' | 'enableLink' | 'eyebrow' | 'heading' | 'items' | 'link' | 'prompt' | 'theme'
+  | 'blockType'
+  | 'enableLink'
+  | 'eyebrow'
+  | 'heading'
+  | 'items'
+  | 'link'
+  | 'prompt'
+  | 'textSize'
+  | 'theme'
 > & { bare?: boolean }
 
 /**
@@ -54,6 +62,7 @@ export const FaqBlock: React.FC<FaqBlockProps> = ({
   items,
   link,
   prompt,
+  textSize,
   theme,
 }) => {
   const questions: FaqItem[] = (items ?? []).map((item, index) => ({
@@ -80,7 +89,7 @@ export const FaqBlock: React.FC<FaqBlockProps> = ({
                 {eyebrow}
               </p>
             ) : null}
-            <h2 className="text-heading-3" data-reveal data-reveal-group="heading">
+            <h2 className={typeScale(textSize).heading} data-reveal data-reveal-group="heading">
               {heading}
             </h2>
           </div>
@@ -96,7 +105,7 @@ export const FaqBlock: React.FC<FaqBlockProps> = ({
             </div>
           ) : null}
         </BlockGrid>
-        <FaqAccordion items={questions} />
+        <FaqAccordion items={questions} textSize={textSize} />
       </Container>
     </Section>
   )

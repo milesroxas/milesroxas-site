@@ -38,6 +38,12 @@ export const WithoutGutter: Story = {
   },
 }
 
+export const FullWidth: Story = {
+  args: {
+    size: 'full',
+  },
+}
+
 export const Inset: Story = {
   args: {
     size: 'inset',

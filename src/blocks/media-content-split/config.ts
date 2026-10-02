@@ -1,5 +1,5 @@
 import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, eyebrowFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { contentLexical } from '@/fields/contentLexical'
 import { blockVisualSlotFields } from '@/fields/visual'
@@ -24,7 +24,7 @@ export const MediaContentSplit: Block = {
   interfaceName: 'MediaContentSplitBlock',
   labels: { singular: 'Split', plural: 'Splits' },
   fields: [
-    { name: 'eyebrow', type: 'text', admin: { description: 'Short kicker above the heading.' } },
+    ...eyebrowFields(),
     { name: 'heading', type: 'text' },
     {
       name: 'body',
@@ -41,27 +41,30 @@ export const MediaContentSplit: Block = {
       relationTo: 'media',
       required: true,
     }),
-    {
-      name: 'layout',
-      type: 'select',
-      label: 'Layout',
-      defaultValue: 'left',
-      options: ['left', 'right'],
-      admin: {
-        description: 'Arrange the media on the left or the right of the content.',
+    designFields([
+      textSizeField(),
+      {
+        name: 'layout',
+        type: 'select',
+        label: 'Layout',
+        defaultValue: 'left',
+        options: ['left', 'right'],
+        admin: {
+          description: 'Arrange the media on the left or the right of the content.',
+        },
       },
-    },
-    {
-      name: 'aspectRatio',
-      type: 'select',
-      defaultValue: '16-9',
-      options: [
-        { label: '16:9', value: '16-9' },
-        { label: '3:2', value: '3-2' },
-        { label: '21:9', value: '21-9' },
-      ],
-      admin: { description: 'Crop for the media column.' },
-    },
-    themeField(),
+      {
+        name: 'aspectRatio',
+        type: 'select',
+        defaultValue: '16-9',
+        options: [
+          { label: '16:9', value: '16-9' },
+          { label: '3:2', value: '3-2' },
+          { label: '21:9', value: '21-9' },
+        ],
+        admin: { description: 'Crop for the media column.' },
+      },
+      themeField(),
+    ]),
   ],
 }

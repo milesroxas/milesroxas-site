@@ -1,5 +1,5 @@
 import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 
 /**
@@ -44,28 +44,31 @@ export const ImagePair: Block = {
       required: true,
       admin: { description: 'Cropped to 16:10.' },
     },
-    {
-      name: 'portraitPosition',
-      type: 'select',
-      label: 'Layout: primary media',
-      defaultValue: 'left',
-      options: ['left', 'right'],
-      admin: {
-        description:
-          'Arrange the portrait on the left or the right; the landscape fills the other column. On small screens the left image stacks first.',
+    designFields([
+      textSizeField(),
+      {
+        name: 'portraitPosition',
+        type: 'select',
+        label: 'Layout: primary media',
+        defaultValue: 'left',
+        options: ['left', 'right'],
+        admin: {
+          description:
+            'Arrange the portrait on the left or the right; the landscape fills the other column. On small screens the left image stacks first.',
+        },
       },
-    },
-    {
-      name: 'textPosition',
-      type: 'select',
-      label: 'Layout: content',
-      defaultValue: 'under-portrait',
-      options: ['under-portrait', 'under-landscape'],
-      admin: {
-        description:
-          'Which image the text sits under. Under the portrait it stays compact; under the landscape it runs larger and wider.',
+      {
+        name: 'textPosition',
+        type: 'select',
+        label: 'Layout: content',
+        defaultValue: 'under-portrait',
+        options: ['under-portrait', 'under-landscape'],
+        admin: {
+          description:
+            'Which image the text sits under. Under the portrait it stays compact; under the landscape it runs larger and wider.',
+        },
       },
-    },
-    themeField(),
+      themeField(),
+    ]),
   ],
 }

@@ -16,7 +16,15 @@ function supportsNativeHls(): boolean {
 }
 
 export const VideoMedia: React.FC<MediaProps> = (props) => {
-  const { autoPlay = true, onClick, onLoad, resource, videoClassName, priority = false } = props
+  const {
+    autoPlay = true,
+    fill,
+    onClick,
+    onLoad,
+    resource,
+    videoClassName,
+    priority = false,
+  } = props
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const hlsRef = useRef<{ destroy: () => void } | null>(null)
@@ -116,7 +124,8 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
       <video
         poster={posterUrl}
         autoPlay={autoPlay && strategy.shouldAutoplay}
-        className={cn(videoClassName)}
+        // `fill` covers the caller's aspect frame, as ImageMedia's fill image does.
+        className={cn(fill && 'absolute inset-0 size-full object-cover', videoClassName)}
         controls={false}
         loop
         muted

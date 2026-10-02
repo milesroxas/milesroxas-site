@@ -1,5 +1,6 @@
 import type { StaticImageData } from 'next/image'
 import type React from 'react'
+import { MEDIA_SIZE_CLASS, type MediaSize } from '@/blocks/shared/media-size'
 import { Section } from '@/blocks/shared/section'
 // Payload website-template pattern: RichText renders embedded blocks, blocks render rich text
 // fallow-ignore-next-line circular-dependency
@@ -22,10 +23,12 @@ type Props = CaptionBlockProps & {
   disableInnerContainer?: boolean
 }
 
-const sizeClasses: Record<NonNullable<CaptionBlockProps['size']>, string> = {
-  full: '',
-  inset: 'mx-auto max-w-3xl',
-  small: 'mx-auto max-w-md',
+/** `sizes` hints matching each MEDIA_SIZE_CLASS cap (max-w-3xl = 768px, max-w-md = 448px). */
+const sizeHints: Record<MediaSize, string> = {
+  full: '100vw',
+  contained: '100vw',
+  inset: '(min-width: 768px) 768px, 100vw',
+  small: '(min-width: 448px) 448px, 100vw',
 }
 
 export const CaptionBlock: React.FC<Props> = (props) => {
@@ -58,18 +61,15 @@ export const CaptionBlock: React.FC<Props> = (props) => {
       (mediaDoc && (mediaDoc.url || mediaDoc.filename || mediaDoc.mimeType?.startsWith('video'))),
   )
 
+  const sizeKey = size ?? 'contained'
+  // Full width: media leaves the column and drops its radius; the caption text stays in it.
+  const bleed = sizeKey === 'full'
+  const mediaClassName = cn('h-auto w-full', !bleed && 'rounded-lg', imgClassName)
+
   return (
     <Section bare={bare} spacing="loose" theme={theme}>
-      <div
-        className={cn(
-          '',
-          {
-            container: enableGutter,
-          },
-          className,
-        )}
-      >
-        <div className={sizeClasses[size ?? 'full']}>
+      <div className={cn({ container: enableGutter && !bleed }, className)}>
+        <div className={MEDIA_SIZE_CLASS[sizeKey]}>
           {hasRenderableMedia && (
             // No border on the media itself: `border` takes its colour from the
             // base `* { @apply border-border }` reset, and --border is a light
@@ -78,10 +78,11 @@ export const CaptionBlock: React.FC<Props> = (props) => {
             // the only media call site in the app that framed the asset — the
             // radius alone matches the rest.
             <Media
-              imgClassName={cn('rounded-lg', imgClassName)}
+              imgClassName={mediaClassName}
               resource={mediaDoc}
+              size={sizeHints[sizeKey]}
               src={staticImage}
-              videoClassName={cn('rounded-lg', imgClassName)}
+              videoClassName={mediaClassName}
             />
           )}
           {caption && (
@@ -89,7 +90,7 @@ export const CaptionBlock: React.FC<Props> = (props) => {
               className={cn(
                 'mt-6',
                 {
-                  container: !disableInnerContainer,
+                  container: bleed ? enableGutter : !disableInnerContainer,
                 },
                 captionClassName,
               )}

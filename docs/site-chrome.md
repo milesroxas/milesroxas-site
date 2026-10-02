@@ -49,24 +49,23 @@ The chrome on every public route: the top bar, the dock and the Ask panel. The a
 
 One material for every floating surface, stated once in `globals.css`
 (`.chrome-material` for controls, `.chrome-panel` for the Ask panel and
-sheet). It is one layer, lit from above:
+sheet). It is one quiet layer, and the frost is the whole effect:
 
-- **Body**: one linear gradient, a touch denser at the top, over a backdrop
-  blur with a 180% saturation lift. The `background` shorthand clears any
-  fill a component brings, so nothing stacks on the glass.
-- **Rim**: a 1px stroke in the surface's `::before`, a linear gradient masked
-  to the edge (`mask-composite: exclude`). Bright along the top edge, near
-  clear down the sides, a softer glow along the bottom. A glass surface must
-  be a positioned box for its rim.
-- **Hairline and lift**: a half-pixel ink ring and a drop shadow.
+- **Body**: one flat tint over a backdrop blur with a light (140%)
+  saturation lift. The `background` shorthand clears any fill a component
+  brings, so nothing stacks on the glass. No gradient, rim or sheen.
+- **Hairline and lift**: a 1px ring at 8% ink (white in dark) and one soft
+  drop shadow. In the dark material the surface sits one step above the
+  page's near-black, so it reads by its tint and hairline, not a highlight.
 
-The values are the `[data-chrome]` tokens (`--chrome-glass-*`,
-`--chrome-rim-*`, `--chrome-frost*`). Legibility comes first: the tint is
-dense enough for full-ink labels over photos and text, and the dock turns
-dark over dark bands instead of thinning. The gradient stops are registered
-`@property` colours, so the light/dark swap and hover cross-fade in 240ms.
-Hover moves the glass halfway to solid. Reduce transparency makes it solid
-and unfrosted; increase contrast adds an ink border and drops the rim.
+The values are the `[data-chrome]` tokens (`--chrome-glass`,
+`--chrome-glass-thick`, `--chrome-frost*`, `--chrome-hairline`,
+`--chrome-lift*`). Legibility comes first: the tint is dense enough for
+full-ink labels over photos and text, and the dock turns dark over dark bands
+instead of thinning. The tint is a registered `@property` colour
+(`--glass-tint`), so the light/dark swap and hover cross-fade in 240ms. Hover
+moves the glass halfway to solid. Reduce transparency makes it solid and
+unfrosted; increase contrast adds an ink border.
 
 ## Bands under the chrome
 
@@ -86,8 +85,12 @@ button uses the same hook.
   slides the clip on `--ease-spring` (damping 1, response 0.35s).
 - Ask widens out of its button into the field (Web Animations API, clip-path),
   the tabs step back (fade, 0.96, 8px blur), the panel rises out of the
-  field's top edge. Closing plays the same path back. Keyboard opens and
-  Escape closes skip the morph.
+  field's top edge. The field carries a copy of the button's label (its
+  seed, `.ask-seed`), placed on the button: opening, the label blurs out as
+  the field's contents sharpen in; closing, the field closes onto the label
+  as it sharpens back in and lands as the button, so the hand-back to the
+  dock is invisible. Keyboard opens and Escape closes skip the morph.
+- The scrim dims: foreground at 20% in light, black at 50% in dark.
 - Reduced motion turns every move into a cross-fade. Reduced transparency makes
   the glass solid with a hairline; increased contrast adds an ink border and
   inverts the current tab.

@@ -6,6 +6,7 @@ import type { ImagePairBlock, Media as MediaDoc } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 import { BlockGrid } from '../shared/grid'
 import { Section } from '../shared/section'
+import { typeScale } from '../shared/typography'
 
 /**
  * Two figures side by side on the composition grid: the 16:10 landscape spans
@@ -23,7 +24,10 @@ export const ImagePair = ({
   portrait,
 }: {
   bare?: boolean
-  block: Pick<ImagePairBlock, 'heading' | 'portraitPosition' | 'textPosition' | 'theme'>
+  block: Pick<
+    ImagePairBlock,
+    'heading' | 'portraitPosition' | 'textPosition' | 'textSize' | 'theme'
+  >
   content: DefaultTypedEditorState | null | undefined
   landscape: MediaDoc
   portrait: MediaDoc
@@ -31,12 +35,13 @@ export const ImagePair = ({
   if (!content) return null
   const portraitRight = block.portraitPosition === 'right'
   const textUnderLandscape = block.textPosition === 'under-landscape'
+  const type = typeScale(block.textSize)
   const landscapeStart = portraitRight ? 'md:col-start-1' : 'md:col-start-4'
   const portraitStart = portraitRight ? 'md:col-start-6' : 'md:col-start-1'
   const portraitFigure = (
     <div
       className={cn(
-        'relative aspect-4/5 w-full overflow-hidden bg-muted md:col-span-3 md:row-start-1',
+        'relative aspect-4/5 w-full overflow-hidden rounded-lg bg-muted md:col-span-3 md:row-start-1',
         portraitStart,
       )}
       data-reveal="media"
@@ -53,7 +58,7 @@ export const ImagePair = ({
   const landscapeFigure = (
     <div
       className={cn(
-        'relative aspect-16/10 w-full overflow-hidden bg-muted md:col-span-5 md:row-start-1',
+        'relative aspect-16/10 w-full overflow-hidden rounded-lg bg-muted md:col-span-5 md:row-start-1',
         landscapeStart,
       )}
       data-reveal="media"
@@ -79,8 +84,8 @@ export const ImagePair = ({
           )}
           data-reveal
         >
-          {block.heading && <h2 className="text-heading-3 text-balance">{block.heading}</h2>}
-          <RichText className="text-lg/7" data={content} enableGutter={false} enableProse={false} />
+          {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
+          <RichText className={type.body} data={content} enableGutter={false} enableProse={false} />
         </div>
       </BlockGrid>
     </Container>

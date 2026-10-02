@@ -1,5 +1,5 @@
 import type { Block } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import { designFields, eyebrowFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 import { link } from '@/fields/link'
 
@@ -27,17 +27,8 @@ export const Faq: Block = {
   interfaceName: 'FaqBlock',
   labels: { singular: 'FAQ', plural: 'FAQs' },
   fields: [
-    {
-      type: 'row',
-      fields: [
-        {
-          name: 'eyebrow',
-          type: 'text',
-          admin: { width: '33%', description: 'Short kicker above the heading, e.g. "Questions".' },
-        },
-        { name: 'heading', type: 'text', required: true, admin: { width: '67%' } },
-      ],
-    },
+    ...eyebrowFields(),
+    { name: 'heading', type: 'text', required: true },
     {
       name: 'items',
       type: 'array',
@@ -55,34 +46,30 @@ export const Faq: Block = {
         },
       ],
     },
+    // Toggle-plus-link shape, so the link's required label never blocks saving a block with no link.
     {
-      type: 'collapsible',
-      label: 'Contact link',
+      name: 'enableLink',
+      type: 'checkbox',
+      label: 'Show contact link',
       admin: {
-        initCollapsed: true,
         description:
-          'A prompt and link at the end of the header row for readers whose question is not listed.',
+          'A prompt and link at the end of the header row, for readers whose question is not listed.',
       },
-      fields: [
-        // Same toggle-plus-link shape as the Content block, so the link's
-        // required label never blocks saving a block that has no link.
-        { name: 'enableLink', type: 'checkbox', label: 'Show contact link' },
-        {
-          name: 'prompt',
-          type: 'text',
-          admin: {
-            condition: (_, siblingData) => Boolean(siblingData?.enableLink),
-            description: 'Sits beside the link, e.g. "Did not find your answer?"',
-          },
-        },
-        link({
-          appearances: false,
-          overrides: {
-            admin: { condition: (_, siblingData) => Boolean(siblingData?.enableLink) },
-          },
-        }),
-      ],
     },
-    themeField(),
+    {
+      name: 'prompt',
+      type: 'text',
+      admin: {
+        condition: (_, siblingData) => Boolean(siblingData?.enableLink),
+        description: 'Sits beside the link, e.g. "Did not find your answer?"',
+      },
+    },
+    link({
+      appearances: false,
+      overrides: {
+        admin: { condition: (_, siblingData) => Boolean(siblingData?.enableLink) },
+      },
+    }),
+    designFields([textSizeField(), themeField()]),
   ],
 }

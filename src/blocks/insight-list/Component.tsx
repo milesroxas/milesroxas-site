@@ -1,7 +1,7 @@
 import type React from 'react'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { Section } from '@/blocks/shared/section'
-import { eyebrowClassName } from '@/blocks/shared/typography'
+import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import type { InsightListBlock as InsightListBlockData } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -13,7 +13,15 @@ import { hasInsightMarks, Insight, type InsightArrangement } from './Insight'
  */
 type InsightListBlockProps = Pick<
   InsightListBlockData,
-  'blockType' | 'eyebrow' | 'heading' | 'items' | 'layout' | 'markSize' | 'summary' | 'theme'
+  | 'blockType'
+  | 'eyebrow'
+  | 'heading'
+  | 'items'
+  | 'layout'
+  | 'markSize'
+  | 'summary'
+  | 'textSize'
+  | 'theme'
 > & { bare?: boolean }
 
 type Layout = NonNullable<InsightListBlockData['layout']>
@@ -52,6 +60,7 @@ export const InsightListBlock: React.FC<InsightListBlockProps> = ({
   layout,
   markSize,
   summary,
+  textSize,
   theme,
 }) => {
   const insights = items ?? []
@@ -60,6 +69,7 @@ export const InsightListBlock: React.FC<InsightListBlockProps> = ({
   const arrangement = LAYOUT[layout ?? 'side']
   const size = markSize ?? 'medium'
   const compact = !hasInsightMarks(insights)
+  const type = typeScale(textSize)
 
   return (
     <Section bare={bare} theme={theme}>
@@ -75,12 +85,12 @@ export const InsightListBlock: React.FC<InsightListBlockProps> = ({
                 {eyebrow}
               </p>
             ) : null}
-            <h2 className="text-heading-3" data-reveal data-reveal-group="heading">
+            <h2 className={type.heading} data-reveal data-reveal-group="heading">
               {heading}
             </h2>
             {summary ? (
               <p
-                className="text-base text-muted-foreground"
+                className={cn(type.body, 'text-muted-foreground')}
                 data-reveal
                 data-reveal-group="heading"
               >
@@ -103,6 +113,7 @@ export const InsightListBlock: React.FC<InsightListBlockProps> = ({
                 item={item}
                 key={item.id ?? index}
                 markSize={size}
+                textSize={textSize}
               />
             ))}
           </BlockGrid>

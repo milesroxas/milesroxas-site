@@ -1,5 +1,11 @@
 import type { Block, Field } from 'payload'
-import { themeField } from '@/blocks/shared/fields'
+import {
+  designFields,
+  eyebrowFields,
+  optionalFields,
+  textSizeField,
+  themeField,
+} from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 
 /**
@@ -52,58 +58,19 @@ export const InsightList: Block = {
   interfaceName: 'InsightListBlock',
   labels: { singular: 'Insight list', plural: 'Insight lists' },
   fields: [
-    {
-      type: 'row',
+    ...eyebrowFields(),
+    { name: 'heading', type: 'text', required: true },
+    ...optionalFields({
+      name: 'showSummary',
+      label: 'Show summary',
       fields: [
         {
-          name: 'eyebrow',
-          type: 'text',
-          admin: {
-            width: '33%',
-            description: 'Short kicker above the heading, e.g. "Where clarity breaks down".',
-          },
-        },
-        { name: 'heading', type: 'text', required: true, admin: { width: '67%' } },
-      ],
-    },
-    {
-      name: 'summary',
-      type: 'textarea',
-      admin: { description: 'Short supporting line under the heading.' },
-    },
-    {
-      type: 'row',
-      fields: [
-        {
-          name: 'layout',
-          type: 'select',
-          label: 'Layout',
-          defaultValue: 'side',
-          options: [
-            { label: 'Side by side', value: 'side' },
-            { label: 'Stacked', value: 'stacked' },
-            { label: 'Ledger', value: 'ledger' },
-          ],
-          admin: {
-            width: '50%',
-            description:
-              'Side by side keeps the heading beside two insights per row. Stacked sets it above three per row. Ledger keeps the heading beside one ruled row per insight, title and description side by side.',
-          },
-        },
-        {
-          name: 'markSize',
-          type: 'select',
-          label: 'Mark size',
-          defaultValue: 'medium',
-          options: [
-            { label: 'Small', value: 'small' },
-            { label: 'Medium', value: 'medium' },
-            { label: 'Large', value: 'large' },
-          ],
-          admin: { width: '50%', description: 'Size of the SVG mark on every insight.' },
+          name: 'summary',
+          type: 'textarea',
+          admin: { description: 'Short supporting line under the heading.' },
         },
       ],
-    },
+    }),
     {
       name: 'items',
       type: 'array',
@@ -113,6 +80,36 @@ export const InsightList: Block = {
       admin: { initCollapsed: true },
       fields: insightItemFields,
     },
-    themeField(),
+    designFields([
+      textSizeField(),
+      {
+        name: 'layout',
+        type: 'select',
+        label: 'Layout',
+        defaultValue: 'side',
+        options: [
+          { label: 'Side by side', value: 'side' },
+          { label: 'Stacked', value: 'stacked' },
+          { label: 'Ledger', value: 'ledger' },
+        ],
+        admin: {
+          description:
+            'Side by side keeps the heading beside two insights per row. Stacked sets it above three per row. Ledger keeps the heading beside one ruled row per insight, title and description side by side.',
+        },
+      },
+      {
+        name: 'markSize',
+        type: 'select',
+        label: 'Mark size',
+        defaultValue: 'medium',
+        options: [
+          { label: 'Small', value: 'small' },
+          { label: 'Medium', value: 'medium' },
+          { label: 'Large', value: 'large' },
+        ],
+        admin: { description: 'Size of the SVG mark on every insight.' },
+      },
+      themeField(),
+    ]),
   ],
 }

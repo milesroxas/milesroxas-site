@@ -1,6 +1,6 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { ASPECT_RATIO_CLASS } from '@/blocks/shared/aspect-ratio'
-import { eyebrowClassName } from '@/blocks/shared/typography'
+import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import { Visual } from '@/components/Visual'
@@ -35,18 +35,19 @@ export const MediaContentSplit = ({
   bare?: boolean
   block: Pick<
     MediaContentSplitBlockData,
-    'aspectRatio' | 'eyebrow' | 'heading' | 'layout' | 'theme'
+    'aspectRatio' | 'eyebrow' | 'heading' | 'layout' | 'textSize' | 'theme'
   >
   content: DefaultTypedEditorState | null | undefined
   visual: VisualValue
 }) => {
   const mediaRight = block.layout === 'right'
+  const type = typeScale(block.textSize)
   const inner = (
     <Container>
       <BlockGrid className="items-center">
         <div
           className={cn(
-            'relative w-full self-start overflow-hidden bg-muted md:col-span-4 md:row-start-1',
+            'relative w-full self-start overflow-hidden rounded-lg bg-muted md:col-span-4 md:row-start-1',
             ASPECT_RATIO_CLASS[block.aspectRatio ?? '16-9'],
             mediaRight && 'md:col-start-5',
           )}
@@ -73,14 +74,14 @@ export const MediaContentSplit = ({
             </p>
           )}
           {block.heading && (
-            <h2 className="text-heading-3 text-balance" data-reveal>
+            <h2 className={cn(type.heading, 'text-balance')} data-reveal>
               {block.heading}
             </h2>
           )}
           {content && (
             <div data-reveal>
               <RichText
-                className="text-base/6 lg:text-lg/7"
+                className={type.body}
                 data={content}
                 enableGutter={false}
                 enableProse={false}

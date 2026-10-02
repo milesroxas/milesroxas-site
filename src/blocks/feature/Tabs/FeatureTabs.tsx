@@ -5,6 +5,7 @@ import { BlockGrid } from '@/blocks/shared/grid'
 import type { RowWithVisual } from '@/blocks/shared/row-visuals'
 import { Section } from '@/blocks/shared/section'
 import { TabbedPanels } from '@/blocks/shared/tabs'
+import { type TypeScale, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import { Visual } from '@/components/Visual'
@@ -21,6 +22,7 @@ type FeatureTabsProps = {
   bare?: boolean
   tabs: FeatureTab[]
   tabSize?: FeatureTabsBlockData['tabSize']
+  textSize?: FeatureTabsBlockData['textSize']
   theme?: FeatureTabsBlockData['theme']
 }
 
@@ -35,14 +37,14 @@ const MEDIA_SIZES = '(max-width: 1024px) 100vw, 62vw'
  * the grid's gap, the plate at 3:2: three columns of a 768px page cannot hold
  * a heading, and a 16:9 plate there is shallower than its caption card.
  */
-const TabPanel: React.FC<{ tab: FeatureTab }> = ({ tab }) => (
+const TabPanel: React.FC<{ tab: FeatureTab; type: TypeScale }> = ({ tab, type }) => (
   <BlockGrid>
     <div className="flex flex-col justify-between gap-12 md:col-span-8 lg:col-span-3">
       <div className="text-stack">
-        <h3 className="text-heading-3">{tab.heading}</h3>
+        <h3 className={type.heading}>{tab.heading}</h3>
         {tab.description ? (
           <RichText
-            className="text-sm md:text-base"
+            className={type.body}
             data={tab.description}
             enableGutter={false}
             enableProse={false}
@@ -66,7 +68,7 @@ const TabPanel: React.FC<{ tab: FeatureTab }> = ({ tab }) => (
         </div>
       ) : null}
     </div>
-    <div className="relative aspect-3/2 overflow-hidden md:col-span-8 lg:col-span-5 lg:aspect-16/9">
+    <div className="relative aspect-3/2 overflow-hidden rounded-lg md:col-span-8 lg:col-span-5 lg:aspect-16/9">
       {tab.visual ? (
         <Visual
           fill
@@ -91,16 +93,24 @@ const TabPanel: React.FC<{ tab: FeatureTab }> = ({ tab }) => (
  * block's panel inside it. `bare` skips the band for a caller whose shell
  * already painted one.
  */
-export const FeatureTabs: React.FC<FeatureTabsProps> = ({ bare, tabs, tabSize, theme }) => {
+export const FeatureTabs: React.FC<FeatureTabsProps> = ({
+  bare,
+  tabs,
+  tabSize,
+  textSize,
+  theme,
+}) => {
   const panels = tabs ?? []
   if (panels.length === 0) return null
+
+  const type = typeScale(textSize)
 
   return (
     <Section bare={bare} theme={theme}>
       <Container>
         <TabbedPanels
           ariaLabel="Feature tabs"
-          renderPanel={(tab) => <TabPanel tab={tab} />}
+          renderPanel={(tab) => <TabPanel tab={tab} type={type} />}
           rows={panels}
           tabSize={tabSize}
         />

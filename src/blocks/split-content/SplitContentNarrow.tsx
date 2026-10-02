@@ -7,7 +7,7 @@ import type { SplitContentNarrowBlock } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 import { BlockGrid } from '../shared/grid'
 import { Section } from '../shared/section'
-import { eyebrowClassName } from '../shared/typography'
+import { eyebrowClassName, typeScale } from '../shared/typography'
 
 /**
  * Presentational split on the composition grid: narrow text column beside a
@@ -43,18 +43,22 @@ export const SplitContentNarrow = ({
   visual,
 }: {
   bare?: boolean
-  block: Pick<SplitContentNarrowBlock, 'eyebrow' | 'heading' | 'imagePosition' | 'theme'>
+  block: Pick<
+    SplitContentNarrowBlock,
+    'eyebrow' | 'heading' | 'imagePosition' | 'textSize' | 'theme'
+  >
   content: DefaultTypedEditorState | null | undefined
   visual: VisualValue
 }) => {
   if (!content) return null
   const imageLeft = block.imagePosition === 'left'
+  const type = typeScale(block.textSize)
   const inner = (
     <Container>
       <BlockGrid>
         <div
           className={cn(
-            'relative aspect-5/4 w-full self-start overflow-hidden bg-muted md:aspect-3/2',
+            'relative aspect-5/4 w-full self-start overflow-hidden rounded-lg bg-muted md:aspect-3/2',
             'md:col-span-5 md:row-start-1 lg:col-span-6',
             !imageLeft && 'md:col-start-4 lg:col-start-3',
           )}
@@ -81,13 +85,13 @@ export const SplitContentNarrow = ({
             </p>
           )}
           {block.heading && (
-            <h2 className="text-heading-3 text-balance" data-reveal>
+            <h2 className={cn(type.heading, 'text-balance')} data-reveal>
               {block.heading}
             </h2>
           )}
           <div data-reveal>
             <RichText
-              className="text-base"
+              className={type.body}
               data={content}
               enableGutter={false}
               enableProse={false}
