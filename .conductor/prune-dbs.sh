@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Drop payload_* databases that no live Conductor workspace references.
+# Drop Conductor workspace databases that no live workspace references.
 # Orphans appear when an archive ran while Docker was down, or (before DB
 # identity was keyed on the workspace directory) when a workspace was renamed.
+# Only databases setup marked as workspace DBs (lib.sh WORKSPACE_DB_MARK) are
+# candidates; a hand-made worktree's payload_x is never touched.
 #
 #   bash .conductor/prune-dbs.sh          # dry run — lists what would be dropped
 #   bash .conductor/prune-dbs.sh --yes    # drop them
@@ -40,7 +42,8 @@ while IFS= read -r db; do
   [ -n "$db" ] || continue
   case "$live" in *" $db "*) continue ;; esac
   orphans+=("$db")
-done < <(psql_c -tAc "SELECT datname FROM pg_database WHERE datname LIKE 'payload\\_%' ORDER BY 1")
+done < <(psql_c -tAc "SELECT datname FROM pg_database WHERE datname LIKE 'payload\\_%'
+  AND shobj_description(oid, 'pg_database') = '$WORKSPACE_DB_MARK' ORDER BY 1")
 
 if [ "${#orphans[@]}" -eq 0 ]; then
   echo "conductor: no orphan workspace databases (workspaces: $WORKSPACES_DIR)"

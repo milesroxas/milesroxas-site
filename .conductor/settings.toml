@@ -7,17 +7,37 @@
 # docker container. Archive drops that database. Human docs: docs/conductor.md.
 # Personal overrides go in .conductor/settings.local.toml (gitignored).
 
+# Files to copy from the root checkout. The default (.env*) would also copy
+# .env.production.pulled (Neon production credentials) into every workspace.
+# setup.sh copies .env itself; this keeps a workspace usable if setup fails.
+file_include_globs = ".env"
+
 [scripts]
 setup = "bash .conductor/setup.sh"
 archive = "bash .conductor/archive.sh"
 # Workspaces are fully isolated (own port, own DB) — safe to run several at once.
 run_mode = "concurrent"
 
+# Run scripts need the local Docker container and the root .env: local only.
 [scripts.run.dev]
 command = "bash .conductor/run-dev.sh"
 default = true
 icon = "play"
+available_in = ["local"]
 
 [scripts.run.storybook]
 command = "bash .conductor/run-storybook.sh"
 icon = "book"
+available_in = ["local"]
+
+[[preview_urls]]
+name = "Site"
+url = "http://localhost:$CONDUCTOR_PORT"
+
+[[preview_urls]]
+name = "Admin"
+url = "http://localhost:$CONDUCTOR_PORT/admin"
+
+[[preview_urls]]
+name = "Storybook"
+url = "http://localhost:$((CONDUCTOR_PORT + 1))"

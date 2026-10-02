@@ -4,9 +4,10 @@ Same setup as sas-site. [Conductor](https://www.conductor.build/docs) runs sever
 
 ## First-time setup
 
-1. Add this repo in Conductor. It clones to `~/conductor/repos/milesroxas-site`.
+1. Give Conductor its own clone at `~/conductor/repos/milesroxas-site`: either Conductor → Add repository → **Open GitHub project** (it clones there), or `git clone git@github.com:milesroxas/milesroxas-site.git ~/conductor/repos/milesroxas-site` and then **Open project** on that folder. Never add your main checkout with Open project: it would become the root, and `setup.sh` runs `git pull` in the root on every new workspace.
 2. `cp .env ~/conductor/repos/milesroxas-site/.env` from your main checkout.
 3. Make sure the main dev DB `payload` has content (dev TUI → Pull production content). New workspaces clone it.
+4. Workspaces branch from `main` (the repository's default branch in Conductor). Shared settings in `.conductor/settings.toml` take effect from `main` only.
 
 ## What a workspace gets
 
@@ -14,7 +15,9 @@ Same setup as sas-site. [Conductor](https://www.conductor.build/docs) runs sever
 |-------|---------------------|
 | Worktree | `~/conductor/workspaces/milesroxas-site/<city>` — Conductor also adds a `<branch-name>` symlink beside it once the branch is renamed |
 | `.env` | Copied from the Conductor root checkout (`$CONDUCTOR_ROOT_PATH` = `~/conductor/repos/milesroxas-site`, Conductor's own clone — **not** your main checkout). Keep that `.env` in sync with your main one; only `POSTGRES_URL` and `NEXT_PUBLIC_SERVER_URL` are rewritten per workspace |
+| Files to copy | Only `.env` (`file_include_globs`). Conductor's default `.env*` would also copy `.env.production.pulled`, which holds Neon production credentials |
 | Ports | `$CONDUCTOR_PORT` for Next, `+1` for Storybook (Conductor reserves `CONDUCTOR_PORT..+9`) |
+| Open button | Site, Admin (`/admin`) and Storybook URLs for the workspace ports (`preview_urls`) |
 | Database | `payload_<city>` in the one shared `milesroxas-postgres-1` container (port 54330), cloned from the main dev DB `payload` |
 | Vercel Blob, Cloudflare, Resend, … | Shared with your main checkout — same keys, same stores |
 
@@ -30,13 +33,15 @@ Never create `.env.local` in a workspace. Next.js loads it **over** `.env`, and 
 | `run-dev.sh` | Run ▶ (default) | Re-ensure postgres + DB, `next dev -p $CONDUCTOR_PORT` |
 | `run-storybook.sh` | Run ▶ Storybook | `storybook dev -p $((CONDUCTOR_PORT+1))` |
 | `archive.sh` | Before archive | Drop the workspace DB. Never fails the archive |
-| `prune-dbs.sh` | Manual | Drop `payload_*` DBs no live workspace references (dry run unless `--yes`) |
+| `prune-dbs.sh` | Manual | Drop workspace DBs no live workspace references (dry run unless `--yes`) |
 
-All of them source `lib.sh`, run from the workspace directory, and only touch the DB named in the workspace's `.env`.
+All of them source `lib.sh`, run from the workspace directory, and only touch the DB named in the workspace's `.env`. The run scripts are `available_in = ["local"]`: they need the local Docker container and the root `.env`.
 
 ### Database identity
 
-The DB is keyed on the workspace **directory** (`payload_<city>`), and once `.env` exists its `POSTGRES_URL` is the source of truth. It is deliberately not keyed on `$CONDUCTOR_WORKSPACE_NAME`: Conductor renames the workspace to the branch name after the first chat, so a name-keyed DB got re-created under the new name on the next Run and the archive dropped the wrong one — orphans accumulated at ~50 MB each. Reclaim any leftovers:
+The DB is keyed on the workspace **directory** (`payload_<city>`), and once `.env` exists its `POSTGRES_URL` is the source of truth. It is deliberately not keyed on `$CONDUCTOR_WORKSPACE_NAME`: Conductor renames the workspace to the branch name after the first chat, so a name-keyed DB got re-created under the new name on the next Run and the archive dropped the wrong one — orphans accumulated at ~50 MB each.
+
+Setup marks each workspace DB with the comment `conductor-workspace`, and `prune-dbs.sh` only considers marked DBs. A hand-made worktree DB (`payload_x`, see below) has no mark, so prune never drops it. Reclaim any leftovers:
 
 ```bash
 bash .conductor/prune-dbs.sh        # list orphans
@@ -83,7 +88,7 @@ After rebasing, `pnpm dev` push re-syncs the workspace DB. If push warns about d
 
 ## Worktrees outside Conductor
 
-A hand-made worktree (`git worktree add …`) that copies the main `.env` shares the `payload` DB and port 3000 with the main checkout. Two branches pushing different schemas into one DB fight each other (columns added/dropped on every restart, data-loss prompts). Either run that branch in Conductor, or give it its own DB the same way: `CREATE DATABASE payload_x TEMPLATE payload` and point its `.env` at it.
+A hand-made worktree (`git worktree add …`) that copies the main `.env` shares the `payload` DB and port 3000 with the main checkout. Two branches pushing different schemas into one DB fight each other (columns added/dropped on every restart, data-loss prompts). Either run that branch in Conductor, or give it its own DB the same way: `CREATE DATABASE payload_x TEMPLATE payload` and point its `.env` at it. Prune does not touch that DB; drop it yourself when the worktree goes.
 
 ## Troubleshooting
 

@@ -182,6 +182,15 @@ drop_workspace_db() {
   psql_c -c "DROP DATABASE IF EXISTS \"$1\" WITH (FORCE)"
 }
 
+# prune-dbs.sh drops only databases carrying this comment, so a hand-made
+# worktree DB (payload_x, docs/conductor.md) is never taken for an orphan.
+# CREATE DATABASE … TEMPLATE does not copy comments.
+WORKSPACE_DB_MARK="conductor-workspace"
+
+mark_workspace_db() {
+  psql_c -c "COMMENT ON DATABASE \"$1\" IS '$WORKSPACE_DB_MARK'"
+}
+
 # Clone the main dev DB ('payload' — itself a production restore, see MIGRATIONS.md
 # "Reset local database") into the workspace DB.
 # Fast path: CREATE DATABASE … TEMPLATE copies files in ~1s but needs no other
@@ -238,7 +247,12 @@ seed_db_from_production() {
 #                Conductor root, or a logged-in vercel CLI); falls back to local.
 # Sets WORKSPACE_DB_SOURCE = existing | local | production | empty.
 ensure_workspace_db() {
-  local from="${1:-local}"
+  create_workspace_db "${1:-local}"
+  mark_workspace_db "$DB_NAME"
+}
+
+create_workspace_db() {
+  local from="$1"
   WORKSPACE_DB_SOURCE="existing"
   if db_exists "$DB_NAME"; then
     return 0
@@ -269,7 +283,10 @@ ensure_workspace_db() {
   fi
 
   # Nothing to copy from — empty DB; drizzle push builds the schema on first Run.
+  # The image's initdb script enables pgvector only in 'payload'; Ask's
+  # ask_embeddings table needs it before push.
   psql_c -c "CREATE DATABASE \"$DB_NAME\""
+  psql_c -d "$DB_NAME" -c "CREATE EXTENSION IF NOT EXISTS vector"
   WORKSPACE_DB_SOURCE="empty"
   echo "conductor: $DB_NAME created empty ('$MAIN_DB' does not exist yet)"
 }
