@@ -5,23 +5,17 @@ import { useCallback, useEffect, useState } from 'react'
 import type { BackfillSummary } from '@/features/ask/backfill'
 import { formatWhen } from './formatWhen'
 
-/**
- * Site Info › Ask action panel: rebuilds the Ask embedding index from every
- * published document and global (POST /api/ask/reindex). Publishing keeps the
- * index current on its own; this is the repair for drift, or the first pass
- * after content is imported or the extractor changes. Unchanged chunks keep
- * their vectors, so pressing it on an up-to-date corpus is cheap.
- *
- * On open it reads the last completed pass (GET /api/ask/reindex, stored by
- * the pass itself, so a CLI rebuild counts too) and says when that was.
- */
-export function RebuildIndexPanel() {
-  const {
-    config: {
-      routes: { api },
-    },
-  } = useConfig()
+/** Says how a finished rebuild went: a warning when some documents failed. */
+function announceRebuild(result: BackfillSummary) {
+  if (result.failures.length > 0) {
+    toast.warning(`Index rebuilt with ${result.failures.length} failed document(s).`)
+  } else {
+    toast.success('Ask index rebuilt.')
+  }
+}
 
+/** The last completed pass, read on mount, and the rebuild that replaces it. */
+function useIndexRebuild(api: string) {
   const [busy, setBusy] = useState(false)
   const [summary, setSummary] = useState<BackfillSummary | null>(null)
   const [loaded, setLoaded] = useState(false)
@@ -60,17 +54,34 @@ export function RebuildIndexPanel() {
       }
       const result = body as BackfillSummary
       setSummary(result)
-      if (result.failures.length > 0) {
-        toast.warning(`Index rebuilt with ${result.failures.length} failed document(s).`)
-      } else {
-        toast.success('Ask index rebuilt.')
-      }
+      announceRebuild(result)
     } catch {
       toast.error('Network error. Try again.')
     } finally {
       setBusy(false)
     }
   }, [api])
+
+  return { busy, summary, loaded, rebuild }
+}
+
+/**
+ * Site Info › Ask action panel: rebuilds the Ask embedding index from every
+ * published document and global (POST /api/ask/reindex). Publishing keeps the
+ * index current on its own; this is the repair for drift, or the first pass
+ * after content is imported or the extractor changes. Unchanged chunks keep
+ * their vectors, so pressing it on an up-to-date corpus is cheap.
+ *
+ * On open it reads the last completed pass (GET /api/ask/reindex, stored by
+ * the pass itself, so a CLI rebuild counts too) and says when that was.
+ */
+export function RebuildIndexPanel() {
+  const {
+    config: {
+      routes: { api },
+    },
+  } = useConfig()
+  const { busy, summary, loaded, rebuild } = useIndexRebuild(api)
 
   return (
     <div className="field-type" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

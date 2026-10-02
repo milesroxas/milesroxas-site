@@ -2,14 +2,12 @@
 
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { CarouselBlock } from '@/blocks/Carousel/Component'
+import { CopyStack } from '@/blocks/shared/cells'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { Section } from '@/blocks/shared/section'
 import { TabbedPanels } from '@/blocks/shared/tabs'
-import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
-import RichText from '@/components/RichText'
 import type { CarouselTabsBlock as CarouselTabsBlockData } from '@/payload-types'
-import { cn } from '@/utilities/ui'
 
 type Tab = NonNullable<CarouselTabsBlockData['tabs']>[number]
 
@@ -52,49 +50,40 @@ export const CarouselTabs = ({
 }) => {
   const tabs = (block.tabs ?? []).filter((tab) => tab.slides?.length)
   if (tabs.length === 0) return null
-  const type = typeScale(block.textSize)
 
-  const inner = (
-    <Container>
-      <BlockGrid>
-        <div className="text-stack lg:col-span-3 lg:row-start-1">
-          {block.eyebrow && <p className={eyebrowClassName}>{block.eyebrow}</p>}
-          {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
-          {content && (
-            <RichText
-              className={type.body}
-              data={content}
-              enableGutter={false}
-              enableProse={false}
-            />
-          )}
-        </div>
-        <div className="lg:col-span-5 lg:col-start-4 lg:row-start-1">
-          <TabbedPanels<Tab>
-            align="start"
-            ariaLabel="Carousel tabs"
-            renderPanel={(tab) => (
-              <CarouselBlock
-                bare
-                blockType="carousel"
-                enableGutter={false}
-                showArrows={block.showArrows}
-                slideSize={block.slideSize}
-                slides={tab.slides}
-                width="contained"
-              />
-            )}
-            rows={tabs}
-            tabSize={block.tabSize}
-          />
-        </div>
-      </BlockGrid>
-    </Container>
-  )
-  if (bare) return inner
   return (
-    <Section spacing="loose" theme={block.theme}>
-      {inner}
+    <Section bare={bare} spacing="loose" theme={block.theme}>
+      <Container>
+        <BlockGrid>
+          <div className="text-stack lg:col-span-3 lg:row-start-1">
+            <CopyStack
+              content={content}
+              eyebrow={block.eyebrow}
+              heading={block.heading}
+              textSize={block.textSize}
+            />
+          </div>
+          <div className="lg:col-span-5 lg:col-start-4 lg:row-start-1">
+            <TabbedPanels<Tab>
+              align="start"
+              ariaLabel="Carousel tabs"
+              renderPanel={(tab) => (
+                <CarouselBlock
+                  bare
+                  blockType="carousel"
+                  enableGutter={false}
+                  showArrows={block.showArrows}
+                  slideSize={block.slideSize}
+                  slides={tab.slides}
+                  width="contained"
+                />
+              )}
+              rows={tabs}
+              tabSize={block.tabSize}
+            />
+          </div>
+        </BlockGrid>
+      </Container>
     </Section>
   )
 }

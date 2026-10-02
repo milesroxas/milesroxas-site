@@ -1,5 +1,5 @@
-import type { PayloadRequest } from 'payload'
-import type { Inquiry } from '@/payload-types'
+import type { Payload, PayloadRequest } from 'payload'
+import type { Inquiry, SiteInfo } from '@/payload-types'
 import {
   INQUIRY_BUDGETS,
   INQUIRY_TIMELINES,
@@ -12,7 +12,7 @@ import { sendInquiryNotificationEmail, sendInquiryReceivedEmail } from './emails
 /** How much of the brief travels in the notification before it is cut. */
 const EXCERPT_MAX_LENGTH = 400
 
-export const inquiryAdminUrl = (id: number | string) =>
+const inquiryAdminUrl = (id: number | string) =>
   `${getServerSideURL()}/admin/collections/inquiries/${id}`
 
 const excerpt = (message: string) =>
@@ -24,7 +24,7 @@ const excerpt = (message: string) =>
  * The structured answers, as label/value lines. Only what was actually
  * answered — an empty row in a notification is noise, not information.
  */
-export const inquirySummary = (inquiry: Inquiry): { label: string; value: string }[] => {
+const inquirySummary = (inquiry: Inquiry): { label: string; value: string }[] => {
   const rows: { label: string; value: string }[] = []
 
   const budget = inquiryOptionLabel(INQUIRY_BUDGETS, inquiry.budget)
@@ -49,6 +49,63 @@ function inquiryRecipients(inquiry: Pick<Inquiry, 'assignedTo'>): string[] {
 }
 
 /**
+ * No owner yet (the usual case for a new inquiry): the Site Info contact
+ * address catches it, so a lead never lands silently.
+ */
+function withContactFallback(
+  payload: Payload,
+  subscribed: string[],
+  siteInfo: SiteInfo | null,
+): string[] {
+  if (subscribed.length > 0) return subscribed
+  if (siteInfo?.contactEmail) {
+    payload.logger.info('Inquiry: notifying the Site Info contact email.')
+    return [siteInfo.contactEmail]
+  }
+  payload.logger.error(
+    'An inquiry arrived with no notification recipients and no site contact email.',
+  )
+  return subscribed
+}
+
+/** The studio's notification. Never rejects: a failed send is logged. */
+function notifyTeam(payload: Payload, inquiry: Inquiry, recipients: string[]) {
+  if (recipients.length === 0) return Promise.resolve()
+  return sendInquiryNotificationEmail({
+    payload,
+    to: recipients,
+    adminUrl: inquiryAdminUrl(inquiry.id),
+    company: inquiry.company ?? undefined,
+    excerpt: excerpt(inquiry.message),
+    reference: inquiry.reference ?? '',
+    senderEmail: inquiry.email,
+    senderName: inquiry.name,
+    summary: inquirySummary(inquiry),
+    typeLabel: inquiryOptionLabel(INQUIRY_TYPES, inquiry.type) ?? 'Inquiry',
+  }).catch((err: unknown) => {
+    payload.logger.error({
+      msg: `Inquiry ${inquiry.reference}: team notification failed`,
+      err,
+    })
+  })
+}
+
+/** The visitor's receipt. Never rejects: a failed send is logged. */
+function notifySender(payload: Payload, inquiry: Inquiry, siteInfo: SiteInfo | null) {
+  return sendInquiryReceivedEmail({
+    payload,
+    to: inquiry.email,
+    reference: inquiry.reference ?? '',
+    responseTime: siteInfo?.inquiries?.responseTime ?? 'within 2 business days',
+    scheduleUrl: siteInfo?.inquiries?.scheduleUrl ?? undefined,
+    // First name only: the receipt should read like a person replying.
+    senderName: inquiry.name.split(' ')[0] ?? inquiry.name,
+  }).catch((err: unknown) => {
+    payload.logger.error({ msg: `Inquiry ${inquiry.reference}: receipt to sender failed`, err })
+  })
+}
+
+/**
  * Fan out the two emails a new inquiry produces: the studio's notification and
  * the visitor's receipt.
  *
@@ -62,7 +119,6 @@ function inquiryRecipients(inquiry: Pick<Inquiry, 'assignedTo'>): string[] {
  */
 export async function deliverInquiryEmails(req: PayloadRequest, inquiry: Inquiry) {
   const { payload } = req
-  const typeLabel = inquiryOptionLabel(INQUIRY_TYPES, inquiry.type) ?? 'Inquiry'
 
   const [siteInfo, subscribed] = await Promise.all([
     payload.findGlobal({ slug: 'site-info', depth: 0, req }).catch((err: unknown) => {
@@ -72,52 +128,10 @@ export async function deliverInquiryEmails(req: PayloadRequest, inquiry: Inquiry
     Promise.resolve(inquiryRecipients(inquiry)),
   ])
 
-  // No owner yet (the usual case for a new inquiry): the Site Info contact
-  // address catches it, so a lead never lands silently.
-  let recipients = subscribed
-  if (recipients.length === 0) {
-    if (siteInfo?.contactEmail) {
-      recipients = [siteInfo.contactEmail]
-      payload.logger.info('Inquiry: notifying the Site Info contact email.')
-    } else {
-      payload.logger.error(
-        'An inquiry arrived with no notification recipients and no site contact email.',
-      )
-    }
-  }
+  const recipients = withContactFallback(payload, subscribed, siteInfo)
 
-  const notifyTeam =
-    recipients.length > 0
-      ? sendInquiryNotificationEmail({
-          payload,
-          to: recipients,
-          adminUrl: inquiryAdminUrl(inquiry.id),
-          company: inquiry.company ?? undefined,
-          excerpt: excerpt(inquiry.message),
-          reference: inquiry.reference ?? '',
-          senderEmail: inquiry.email,
-          senderName: inquiry.name,
-          summary: inquirySummary(inquiry),
-          typeLabel,
-        }).catch((err: unknown) => {
-          payload.logger.error({
-            msg: `Inquiry ${inquiry.reference}: team notification failed`,
-            err,
-          })
-        })
-      : Promise.resolve()
-
-  const notifySender = sendInquiryReceivedEmail({
-    payload,
-    to: inquiry.email,
-    reference: inquiry.reference ?? '',
-    responseTime: siteInfo?.inquiries?.responseTime ?? 'within 2 business days',
-    scheduleUrl: siteInfo?.inquiries?.scheduleUrl ?? undefined,
-    // First name only: the receipt should read like a person replying.
-    senderName: inquiry.name.split(' ')[0] ?? inquiry.name,
-  }).catch((err: unknown) => {
-    payload.logger.error({ msg: `Inquiry ${inquiry.reference}: receipt to sender failed`, err })
-  })
-
-  await Promise.all([notifyTeam, notifySender])
+  await Promise.all([
+    notifyTeam(payload, inquiry, recipients),
+    notifySender(payload, inquiry, siteInfo),
+  ])
 }

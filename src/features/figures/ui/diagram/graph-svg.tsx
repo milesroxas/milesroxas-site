@@ -53,6 +53,71 @@ const NodeShape = ({
   )
 }
 
+type PlacedEdge = GraphLayout['edges'][number]
+type Edge = GraphSpec['edges'][number]
+
+/** One edge: its path, its arrowhead and its label, in the step of the node it leaves. */
+const GraphEdge = ({ edge, source, step }: { edge: PlacedEdge; source: Edge; step: number }) => {
+  const dashed = source.style === 'dashed'
+  return (
+    <g>
+      <path
+        className="figure-step figure-edge fill-none stroke-muted-foreground"
+        d={roundedPath(edge.points)}
+        strokeDasharray={dashed && !source.animated ? '5 5' : undefined}
+        strokeWidth={NODE_STROKE}
+        style={stepStyle(step)}
+        {...(source.animated
+          ? { 'data-march': '' }
+          : dashed
+            ? {}
+            : { 'data-draw': '', pathLength: 1 })}
+      />
+      <g className="figure-step figure-mark" style={stepStyle(step)}>
+        <polygon className="fill-muted-foreground" points={arrowHead(edge.points)} />
+        {edge.label ? (
+          <>
+            <rect
+              className="fill-background"
+              height={edge.label.height}
+              rx={4}
+              width={edge.label.width}
+              x={edge.label.x}
+              y={edge.label.y}
+            />
+            <TextLines
+              className="fill-muted-foreground text-xs"
+              lines={[edge.label.text]}
+              x={edge.label.x + edge.label.width / 2}
+              y={edge.label.y + edge.label.height / 2}
+            />
+          </>
+        ) : null}
+      </g>
+    </g>
+  )
+}
+
+const GraphNode = ({ node, placed, step }: { node: Node; placed: Placed; step: number }) => (
+  <g className="figure-step" style={stepStyle(step)}>
+    <NodeShape
+      className={
+        node.emphasis
+          ? 'fill-foreground stroke-foreground'
+          : 'fill-background stroke-muted-foreground'
+      }
+      node={placed}
+      shape={node.shape}
+    />
+    <TextLines
+      className={cn('text-sm', node.emphasis ? 'fill-background' : 'fill-foreground')}
+      lines={placed.lines}
+      x={placed.x + placed.width / 2}
+      y={placed.y + placed.height / 2}
+    />
+  </g>
+)
+
 /**
  * A flow or state graph drawn from its stored layout. Server SVG, no script:
  * the entrance and the marching dashes are CSS keyed off the block's reveal
@@ -87,44 +152,7 @@ export const GraphSvg = ({
         if (!source) return null
         // An edge follows the node it leaves, so the figure reads in the direction it runs.
         const step = (order.get(source.from) ?? 0) + 1
-        const dashed = source.style === 'dashed'
-        return (
-          <g key={edge.index}>
-            <path
-              className="figure-step figure-edge fill-none stroke-muted-foreground"
-              d={roundedPath(edge.points)}
-              strokeDasharray={dashed && !source.animated ? '5 5' : undefined}
-              strokeWidth={NODE_STROKE}
-              style={stepStyle(step)}
-              {...(source.animated
-                ? { 'data-march': '' }
-                : dashed
-                  ? {}
-                  : { 'data-draw': '', pathLength: 1 })}
-            />
-            <g className="figure-step figure-mark" style={stepStyle(step)}>
-              <polygon className="fill-muted-foreground" points={arrowHead(edge.points)} />
-              {edge.label ? (
-                <>
-                  <rect
-                    className="fill-background"
-                    height={edge.label.height}
-                    rx={4}
-                    width={edge.label.width}
-                    x={edge.label.x}
-                    y={edge.label.y}
-                  />
-                  <TextLines
-                    className="fill-muted-foreground text-xs"
-                    lines={[edge.label.text]}
-                    x={edge.label.x + edge.label.width / 2}
-                    y={edge.label.y + edge.label.height / 2}
-                  />
-                </>
-              ) : null}
-            </g>
-          </g>
-        )
+        return <GraphEdge edge={edge} key={edge.index} source={source} step={step} />
       })}
 
       {/* After the edges: an edge entering a group passes under its label, and the halo breaks it cleanly. */}
@@ -144,23 +172,7 @@ export const GraphSvg = ({
         const node = nodes.get(placed.id)
         if (!node) return null
         return (
-          <g className="figure-step" key={placed.id} style={stepStyle(order.get(placed.id) ?? 0)}>
-            <NodeShape
-              className={
-                node.emphasis
-                  ? 'fill-foreground stroke-foreground'
-                  : 'fill-background stroke-muted-foreground'
-              }
-              node={placed}
-              shape={node.shape}
-            />
-            <TextLines
-              className={cn('text-sm', node.emphasis ? 'fill-background' : 'fill-foreground')}
-              lines={placed.lines}
-              x={placed.x + placed.width / 2}
-              y={placed.y + placed.height / 2}
-            />
-          </g>
+          <GraphNode key={placed.id} node={node} placed={placed} step={order.get(placed.id) ?? 0} />
         )
       })}
     </DiagramSvg>

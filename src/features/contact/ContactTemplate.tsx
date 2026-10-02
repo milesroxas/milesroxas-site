@@ -2,7 +2,15 @@
 
 import { IconAlertCircle } from '@tabler/icons-react'
 import type React from 'react'
-import { type RefObject, useEffect, useId, useRef, useState } from 'react'
+import {
+  type Dispatch,
+  type RefObject,
+  type SetStateAction,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react'
 import { postInquiry } from '@/blocks/shared/form/post-inquiry'
 import { Container } from '@/components/Container'
 import { Button } from '@/components/ui/button'
@@ -169,40 +177,69 @@ function Intro({ copy, email }: { copy: ContactPageCopy; email: string | null })
   )
 }
 
-function Compose({
-  copy,
-  email,
-  onSent,
-  responseTime,
-}: {
-  copy: ContactPageCopy
-  email: string | null
-  onSent: (receipt: Receipt) => void
-  responseTime: string
-}) {
-  const ids = {
-    name: useId(),
-    email: useId(),
-    message: useId(),
-    status: useId(),
-  }
+/** The control's link to its problem, when it has one. */
+const problemProps = (error: string | undefined, id: string) => ({
+  'aria-describedby': error ? `${id}-error` : undefined,
+  'aria-invalid': error ? true : undefined,
+})
+
+/** The message counter, once the message is close enough to the limit to need one. */
+const messageCounter = (count: number) =>
+  count >= COUNTER_FROM ? (
+    <span aria-live="polite">
+      {count.toLocaleString()} / {INQUIRY_MESSAGE_MAX_LENGTH.toLocaleString()}
+    </span>
+  ) : null
+
+/** The three values and their checks: quiet until the first send, then every edit re-checks. */
+function useCheckedValues() {
   const nameRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
   const messageRef = useRef<HTMLTextAreaElement>(null)
   const controls = { name: nameRef, email: emailRef, message: messageRef }
-  const honeypotRef = useRef<HTMLInputElement>(null)
-  const askRef = useRef<AskHandoffIds | null>(null)
 
   const [values, setValues] = useState<Values>({ name: '', email: '', message: '' })
   const [errors, setErrors] = useState<Errors>({})
   /** After the first send, every edit re-checks; before it, nothing nags. */
   const [attempted, setAttempted] = useState(false)
-  const [sending, setSending] = useState(false)
-  const [failure, setFailure] = useState<string | null>(null)
+
+  const edit = (field: FieldName, value: string) => {
+    const next = { ...values, [field]: value }
+    setValues(next)
+    // Once a send was tried, the whole form re-checks; before that, only a
+    // field already flagged (an address checked on blur) clears as it is fixed.
+    if (attempted) setErrors(validate(next))
+    else if (errors[field]) setErrors((current) => ({ ...current, [field]: validate(next)[field] }))
+  }
+
+  // Checked on leaving the field only once something is typed: an empty field
+  // is not a mistake until the visitor tries to send.
+  const checkEmail = () => {
+    if (values.email.trim() && !isValidEmailAddress(normalizeEmailAddress(values.email)))
+      setErrors((current) => ({ ...current, email: INQUIRY_EMAIL_INVALID }))
+  }
+
+  /** Flags every problem and focuses the first; true when there is none. */
+  const checkAll = () => {
+    setAttempted(true)
+    const found = validate(values)
+    setErrors(found)
+    const first = FIELD_ORDER.find((field) => found[field])
+    if (first) controls[first].current?.focus()
+    return !first
+  }
+
+  return { checkAll, checkEmail, controls, edit, errors, setValues, values }
+}
+
+/**
+ * From Ask: the questions open the message. Read once the browser is here,
+ * so the page itself stays static.
+ */
+function useAskPrefill(setValues: Dispatch<SetStateAction<Values>>) {
+  const askRef = useRef<AskHandoffIds | null>(null)
   const [fromAsk, setFromAsk] = useState(false)
 
-  // From Ask: the questions open the message. Read once the browser is here,
-  // so the page itself stays static.
   useEffect(() => {
     const prefill = readAskHandoff()
     if (!prefill) return
@@ -213,32 +250,31 @@ function Compose({
         : { ...current, message: prefill.message.slice(0, INQUIRY_MESSAGE_MAX_LENGTH) },
     )
     setFromAsk(true)
-  }, [])
+  }, [setValues])
+
+  return { askRef, fromAsk }
+}
+
+/** The compose form's state: its values, when they are checked, and the send. */
+function useCompose(onSent: (receipt: Receipt) => void) {
+  const { checkAll, edit, setValues, ...fields } = useCheckedValues()
+  const { askRef, fromAsk } = useAskPrefill(setValues)
+  const honeypotRef = useRef<HTMLInputElement>(null)
+  const [sending, setSending] = useState(false)
+  const [failure, setFailure] = useState<string | null>(null)
 
   const update = (field: FieldName) => (value: string) => {
-    const next = { ...values, [field]: value }
-    setValues(next)
+    edit(field, value)
     setFailure(null)
-    // Once a send was tried, the whole form re-checks; before that, only a
-    // field already flagged (an address checked on blur) clears as it is fixed.
-    if (attempted) setErrors(validate(next))
-    else if (errors[field]) setErrors((current) => ({ ...current, [field]: validate(next)[field] }))
   }
 
   async function send(event?: React.FormEvent<HTMLFormElement>) {
     event?.preventDefault()
-    if (sending) return
-    setAttempted(true)
-    const found = validate(values)
-    setErrors(found)
-    const first = FIELD_ORDER.find((field) => found[field])
-    if (first) {
-      controls[first].current?.focus()
-      return
-    }
+    if (sending || !checkAll()) return
 
     setSending(true)
     setFailure(null)
+    const { values } = fields
     const sent = {
       name: values.name.trim(),
       email: normalizeEmailAddress(values.email),
@@ -261,123 +297,182 @@ function Compose({
     }
   }
 
-  const count = values.message.length
+  // ⌘/Ctrl + Enter sends from inside the message, as in a mail client.
+  const sendOnModEnter = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      void send()
+    }
+  }
+
+  return { ...fields, failure, fromAsk, honeypotRef, send, sendOnModEnter, sending, update }
+}
+
+type ComposeForm = ReturnType<typeof useCompose>
+
+function Compose({
+  copy,
+  email,
+  onSent,
+  responseTime,
+}: {
+  copy: ContactPageCopy
+  email: string | null
+  onSent: (receipt: Receipt) => void
+  responseTime: string
+}) {
+  const ids = {
+    name: useId(),
+    email: useId(),
+    message: useId(),
+    status: useId(),
+  }
+  const form = useCompose(onSent)
 
   return (
     <>
       <Intro copy={copy} email={email} />
 
       <form
-        aria-describedby={failure ? ids.status : undefined}
+        aria-describedby={form.failure ? ids.status : undefined}
         className="flex flex-col gap-10 lg:col-span-6 lg:col-start-7"
         noValidate
-        onSubmit={send}
+        onSubmit={form.send}
       >
-        <ContactField error={errors.name} htmlFor={ids.name} label="Name">
-          <Input
-            aria-describedby={errors.name ? `${ids.name}-error` : undefined}
-            aria-invalid={errors.name ? true : undefined}
-            autoComplete="name"
-            className="text-foreground"
-            id={ids.name}
-            maxLength={200}
-            name="name"
-            onChange={(event) => update('name')(event.target.value)}
-            // A blank placeholder, so the rule darkens once there is a value.
-            placeholder=" "
-            ref={nameRef}
-            value={values.name}
-            variant="line"
-          />
-        </ContactField>
+        <NameField form={form} id={ids.name} />
+        <EmailField form={form} id={ids.email} />
+        <MessageField form={form} id={ids.message} placeholder={copy.messagePlaceholder} />
 
-        <ContactField error={errors.email} htmlFor={ids.email} label="Email">
-          <Input
-            aria-describedby={errors.email ? `${ids.email}-error` : undefined}
-            aria-invalid={errors.email ? true : undefined}
-            autoComplete="email"
-            className="text-foreground"
-            id={ids.email}
-            inputMode="email"
-            name="email"
-            // Checked on leaving the field only once something is typed: an
-            // empty field is not a mistake until the visitor tries to send.
-            onBlur={() => {
-              if (values.email.trim() && !isValidEmailAddress(normalizeEmailAddress(values.email)))
-                setErrors((current) => ({ ...current, email: INQUIRY_EMAIL_INVALID }))
-            }}
-            onChange={(event) => update('email')(event.target.value)}
-            placeholder="you@company.com"
-            ref={emailRef}
-            spellCheck={false}
-            type="email"
-            value={values.email}
-            variant="line"
-          />
-        </ContactField>
-
-        <ContactField
-          error={errors.message}
-          htmlFor={ids.message}
-          label="Message"
-          meta={
-            count >= COUNTER_FROM ? (
-              <span aria-live="polite">
-                {count.toLocaleString()} / {INQUIRY_MESSAGE_MAX_LENGTH.toLocaleString()}
-              </span>
-            ) : null
-          }
-          note={fromAsk ? 'Your questions from Ask are included. Edit anything.' : null}
-        >
-          <FieldPanel>
-            <Textarea
-              aria-describedby={errors.message ? `${ids.message}-error` : undefined}
-              aria-invalid={errors.message ? true : undefined}
-              className="text-foreground"
-              id={ids.message}
-              maxLength={INQUIRY_MESSAGE_MAX_LENGTH}
-              name="message"
-              onChange={(event) => update('message')(event.target.value)}
-              // ⌘/Ctrl + Enter sends from inside the message, as in a mail client.
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
-                  event.preventDefault()
-                  void send()
-                }
-              }}
-              placeholder={copy.messagePlaceholder}
-              ref={messageRef}
-              value={values.message}
-              variant="bare"
-            />
-          </FieldPanel>
-        </ContactField>
-
-        <div className="flex flex-col gap-5">
-          {failure ? (
-            <FieldError className={ENTER_NOTE} id={ids.status}>
-              <IconAlertCircle aria-hidden />
-              {failure}
-            </FieldError>
-          ) : null}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <Button aria-disabled={sending || undefined} size="xl" type="submit">
-              {sending ? <Spinner /> : null}
-              {sending ? 'Sending…' : copy.submitLabel}
-            </Button>
-            <p className="text-muted-foreground text-sm/5">
-              {fillContactTokens(copy.submitNote, { responseTime })}
-            </p>
-          </div>
-        </div>
+        <SendRow
+          copy={copy}
+          failure={form.failure}
+          responseTime={responseTime}
+          sending={form.sending}
+          statusId={ids.status}
+        />
 
         {/* Honeypot. Off-screen rather than display:none, because bots that skip
             hidden fields still fill this one in; the intake drops what it catches. */}
         <div aria-hidden="true" className="absolute left-[-9999px]">
-          <input autoComplete="off" name="role" ref={honeypotRef} tabIndex={-1} />
+          <input autoComplete="off" name="role" ref={form.honeypotRef} tabIndex={-1} />
         </div>
       </form>
     </>
+  )
+}
+
+function NameField({ form, id }: { form: ComposeForm; id: string }) {
+  return (
+    <ContactField error={form.errors.name} htmlFor={id} label="Name">
+      <Input
+        {...problemProps(form.errors.name, id)}
+        autoComplete="name"
+        className="text-foreground"
+        id={id}
+        maxLength={200}
+        name="name"
+        onChange={(event) => form.update('name')(event.target.value)}
+        // A blank placeholder, so the rule darkens once there is a value.
+        placeholder=" "
+        ref={form.controls.name}
+        value={form.values.name}
+        variant="line"
+      />
+    </ContactField>
+  )
+}
+
+function EmailField({ form, id }: { form: ComposeForm; id: string }) {
+  return (
+    <ContactField error={form.errors.email} htmlFor={id} label="Email">
+      <Input
+        {...problemProps(form.errors.email, id)}
+        autoComplete="email"
+        className="text-foreground"
+        id={id}
+        inputMode="email"
+        name="email"
+        onBlur={form.checkEmail}
+        onChange={(event) => form.update('email')(event.target.value)}
+        placeholder="you@company.com"
+        ref={form.controls.email}
+        spellCheck={false}
+        type="email"
+        value={form.values.email}
+        variant="line"
+      />
+    </ContactField>
+  )
+}
+
+function MessageField({
+  form,
+  id,
+  placeholder,
+}: {
+  form: ComposeForm
+  id: string
+  placeholder: string
+}) {
+  return (
+    <ContactField
+      error={form.errors.message}
+      htmlFor={id}
+      label="Message"
+      meta={messageCounter(form.values.message.length)}
+      note={form.fromAsk ? 'Your questions from Ask are included. Edit anything.' : null}
+    >
+      <FieldPanel>
+        <Textarea
+          {...problemProps(form.errors.message, id)}
+          className="text-foreground"
+          id={id}
+          maxLength={INQUIRY_MESSAGE_MAX_LENGTH}
+          name="message"
+          onChange={(event) => form.update('message')(event.target.value)}
+          onKeyDown={form.sendOnModEnter}
+          placeholder={placeholder}
+          ref={form.controls.message}
+          value={form.values.message}
+          variant="bare"
+        />
+      </FieldPanel>
+    </ContactField>
+  )
+}
+
+/** The send button with its reply promise, and the send's failure when there is one. */
+function SendRow({
+  copy,
+  failure,
+  responseTime,
+  sending,
+  statusId,
+}: {
+  copy: ContactPageCopy
+  failure: string | null
+  responseTime: string
+  sending: boolean
+  statusId: string
+}) {
+  return (
+    <div className="flex flex-col gap-5">
+      {failure ? (
+        <FieldError className={ENTER_NOTE} id={statusId}>
+          <IconAlertCircle aria-hidden />
+          {failure}
+        </FieldError>
+      ) : null}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <Button aria-disabled={sending || undefined} size="xl" type="submit">
+          {sending ? <Spinner /> : null}
+          {sending ? 'Sending…' : copy.submitLabel}
+        </Button>
+        <p className="text-muted-foreground text-sm/5">
+          {fillContactTokens(copy.submitNote, { responseTime })}
+        </p>
+      </div>
+    </div>
   )
 }
 

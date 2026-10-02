@@ -20,7 +20,7 @@ const stroke = {
   xmlns: 'http://www.w3.org/2000/svg',
 } as const
 
-export function HomeGlyph(props: GlyphProps) {
+function HomeGlyph(props: GlyphProps) {
   return (
     <svg aria-hidden="true" {...stroke} {...props}>
       <path d="M2.75 7 8 2.75 13.25 7v5.75a.5.5 0 0 1-.5.5H9.75V9.75h-3.5v3.5h-3a.5.5 0 0 1-.5-.5V7Z" />
@@ -28,7 +28,7 @@ export function HomeGlyph(props: GlyphProps) {
   )
 }
 
-export function WorkGlyph(props: GlyphProps) {
+function WorkGlyph(props: GlyphProps) {
   return (
     <svg aria-hidden="true" {...stroke} {...props}>
       <rect height="4.5" rx="1" width="4.5" x="2.5" y="2.5" />
@@ -41,7 +41,7 @@ export function WorkGlyph(props: GlyphProps) {
 
 const SHEET = 'M4.25 2.25h5l2.5 2.5v8.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V2.75a.5.5 0 0 1 .5-.5Z'
 
-export function PostsGlyph(props: GlyphProps) {
+function PostsGlyph(props: GlyphProps) {
   return (
     <svg aria-hidden="true" {...stroke} {...props}>
       <path d={SHEET} />
@@ -50,7 +50,7 @@ export function PostsGlyph(props: GlyphProps) {
   )
 }
 
-export function PageGlyph(props: GlyphProps) {
+function PageGlyph(props: GlyphProps) {
   return (
     <svg aria-hidden="true" {...stroke} {...props}>
       <path d={SHEET} />
@@ -58,7 +58,7 @@ export function PageGlyph(props: GlyphProps) {
   )
 }
 
-export function ContactGlyph(props: GlyphProps) {
+function ContactGlyph(props: GlyphProps) {
   return (
     <svg aria-hidden="true" {...stroke} {...props}>
       <rect height="8.5" rx="1.75" width="11.5" x="2.25" y="3.75" />

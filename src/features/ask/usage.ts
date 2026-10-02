@@ -21,7 +21,7 @@
 import type { Payload } from 'payload'
 
 export const OPENAI_ADMIN_KEY_VAR = 'OPENAI_ADMIN_API_KEY'
-export const OPENAI_PROJECT_ID_VAR = 'OPENAI_PROJECT_ID'
+const OPENAI_PROJECT_ID_VAR = 'OPENAI_PROJECT_ID'
 
 const OPENAI_API_URL = 'https://api.openai.com/v1'
 /** Daily buckets; the usage endpoints cap `limit` at 31 for `1d`. */
@@ -66,16 +66,16 @@ export type UsageReport = {
 
 /* OpenAI response shapes, only the fields read. */
 
-export type UsageBucket<T> = { start_time: number; end_time: number; results: T[] }
+type UsageBucket<T> = { start_time: number; end_time: number; results: T[] }
 
 type Page<T> = { data: UsageBucket<T>[]; has_more?: boolean; next_page?: string | null }
 
-export type CostResult = {
+type CostResult = {
   amount: { value: number; currency: string }
   line_item?: string | null
 }
 
-export type CompletionsResult = {
+type CompletionsResult = {
   input_tokens: number
   input_cached_tokens?: number
   output_tokens: number
@@ -83,7 +83,7 @@ export type CompletionsResult = {
   model?: string | null
 }
 
-export type EmbeddingsResult = {
+type EmbeddingsResult = {
   input_tokens: number
   num_model_requests: number
   model?: string | null
@@ -122,22 +122,20 @@ type ReportInput = {
 }
 
 const byAmountDesc = <T extends { amount: number }>(a: T, b: T) => b.amount - a.amount
+const byRequestsDesc = <T extends { requests: number }>(a: T, b: T) => b.requests - a.requests
 
-/** Pure aggregation over the raw buckets. */
-export function buildUsageReport(input: ReportInput): UsageReport {
-  const today = utcDayStart(input.nowMs)
-  const start = windowStart(input.nowMs)
-  const now = new Date(today)
-  const monthStart = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)
-  const last30Start = today - (WINDOW_DAYS - 1) * DAY_MS
-
+/** Spend per day and per line item, with the month-to-date and 30-day totals. */
+function sumCosts(
+  buckets: UsageBucket<CostResult>[],
+  { monthStart, last30Start }: { monthStart: number; last30Start: number },
+): { currency: string; spend: UsageReport['spend'] } {
   let currency = 'usd'
   const byDay = new Map<string, number>()
   const byLineItem = new Map<string, number>()
   let monthToDate = 0
   let last30Days = 0
 
-  for (const bucket of input.costs) {
+  for (const bucket of buckets) {
     const bucketMs = bucket.start_time * 1000
     const date = dayKey(bucketMs)
     let dayTotal = byDay.get(date) ?? 0
@@ -153,50 +151,7 @@ export function buildUsageReport(input: ReportInput): UsageReport {
     byDay.set(date, dayTotal)
   }
 
-  const completionsByModel = new Map<string, UsageReport['completions']['byModel'][number]>()
-  const completions = { inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, requests: 0 }
-  for (const bucket of input.completions) {
-    for (const result of bucket.results) {
-      const model = result.model ?? 'unknown'
-      const row = completionsByModel.get(model) ?? {
-        model,
-        inputTokens: 0,
-        cachedInputTokens: 0,
-        outputTokens: 0,
-        requests: 0,
-      }
-      row.inputTokens += result.input_tokens
-      row.cachedInputTokens += result.input_cached_tokens ?? 0
-      row.outputTokens += result.output_tokens
-      row.requests += result.num_model_requests
-      completionsByModel.set(model, row)
-      completions.inputTokens += result.input_tokens
-      completions.cachedInputTokens += result.input_cached_tokens ?? 0
-      completions.outputTokens += result.output_tokens
-      completions.requests += result.num_model_requests
-    }
-  }
-
-  const embeddingsByModel = new Map<string, UsageReport['embeddings']['byModel'][number]>()
-  const embeddings = { inputTokens: 0, requests: 0 }
-  for (const bucket of input.embeddings) {
-    for (const result of bucket.results) {
-      const model = result.model ?? 'unknown'
-      const row = embeddingsByModel.get(model) ?? { model, inputTokens: 0, requests: 0 }
-      row.inputTokens += result.input_tokens
-      row.requests += result.num_model_requests
-      embeddingsByModel.set(model, row)
-      embeddings.inputTokens += result.input_tokens
-      embeddings.requests += result.num_model_requests
-    }
-  }
-
-  const byRequestsDesc = <T extends { requests: number }>(a: T, b: T) => b.requests - a.requests
-
   return {
-    fetchedAt: new Date(input.nowMs).toISOString(),
-    window: { start: dayKey(start), end: dayKey(today) },
-    projectId: input.projectId,
     currency,
     spend: {
       monthToDate,
@@ -208,15 +163,90 @@ export function buildUsageReport(input: ReportInput): UsageReport {
         .map(([date, amount]) => ({ date, amount }))
         .sort((a, b) => a.date.localeCompare(b.date)),
     },
-    completions: {
-      ...completions,
-      byModel: [...completionsByModel.values()].sort(byRequestsDesc),
-    },
-    embeddings: {
-      ...embeddings,
-      byModel: [...embeddingsByModel.values()].sort(byRequestsDesc),
-    },
   }
+}
+
+/** Adds each count onto the same key of `into`. */
+function addCounts<Counts extends Record<string, number>>(into: Counts, counts: Counts): void {
+  for (const key of Object.keys(counts) as (keyof Counts)[]) {
+    into[key] = (into[key] + counts[key]) as Counts[keyof Counts]
+  }
+}
+
+/**
+ * Each result's counts summed per model and overall, from `zero`; the models
+ * ranked by requests, an unnamed one as `unknown`.
+ */
+function sumByModel<
+  Result extends { model?: string | null },
+  Counts extends Record<string, number> & { requests: number },
+>(
+  buckets: UsageBucket<Result>[],
+  zero: Counts,
+  countsOf: (result: Result) => Counts,
+): Counts & { byModel: (Counts & { model: string })[] } {
+  const byModel = new Map<string, Counts & { model: string }>()
+  const totals = { ...zero }
+  for (const bucket of buckets) {
+    for (const result of bucket.results) {
+      const model = result.model ?? 'unknown'
+      const row = byModel.get(model) ?? { model, ...zero }
+      const counts = countsOf(result)
+      addCounts<Counts>(row, counts)
+      byModel.set(model, row)
+      addCounts(totals, counts)
+    }
+  }
+  return { ...totals, byModel: [...byModel.values()].sort(byRequestsDesc) }
+}
+
+/** Pure aggregation over the raw buckets. */
+export function buildUsageReport(input: ReportInput): UsageReport {
+  const today = utcDayStart(input.nowMs)
+  const now = new Date(today)
+  const { currency, spend } = sumCosts(input.costs, {
+    monthStart: Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+    last30Start: today - (WINDOW_DAYS - 1) * DAY_MS,
+  })
+
+  return {
+    fetchedAt: new Date(input.nowMs).toISOString(),
+    window: { start: dayKey(windowStart(input.nowMs)), end: dayKey(today) },
+    projectId: input.projectId,
+    currency,
+    spend,
+    completions: sumByModel(
+      input.completions,
+      { inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, requests: 0 },
+      (result) => ({
+        inputTokens: result.input_tokens,
+        cachedInputTokens: result.input_cached_tokens ?? 0,
+        outputTokens: result.output_tokens,
+        requests: result.num_model_requests,
+      }),
+    ),
+    embeddings: sumByModel(input.embeddings, { inputTokens: 0, requests: 0 }, (result) => ({
+      inputTokens: result.input_tokens,
+      requests: result.num_model_requests,
+    })),
+  }
+}
+
+/** The query string for one page of buckets: an array param repeats its key. */
+function bucketQuery(
+  params: Record<string, string | string[]>,
+  page: string | null | undefined,
+): URLSearchParams {
+  const search = new URLSearchParams()
+  for (const [key, value] of Object.entries(params)) {
+    if (Array.isArray(value)) {
+      for (const item of value) search.append(key, item)
+    } else {
+      search.set(key, value)
+    }
+  }
+  if (page) search.set('page', page)
+  return search
 }
 
 /** Follows `next_page` until the window is exhausted. */
@@ -229,17 +259,7 @@ async function fetchAllBuckets<T>(
   let page: string | null | undefined
 
   do {
-    const search = new URLSearchParams()
-    for (const [key, value] of Object.entries(params)) {
-      if (Array.isArray(value)) {
-        for (const item of value) search.append(key, item)
-      } else {
-        search.set(key, value)
-      }
-    }
-    if (page) search.set('page', page)
-
-    const res = await fetch(`${OPENAI_API_URL}${path}?${search}`, {
+    const res = await fetch(`${OPENAI_API_URL}${path}?${bucketQuery(params, page)}`, {
       headers: { Authorization: `Bearer ${adminKey}` },
       cache: 'no-store',
     })

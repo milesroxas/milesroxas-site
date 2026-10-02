@@ -1,13 +1,40 @@
 import Image from 'next/image'
+import { type ComponentProps, type ReactNode, Suspense } from 'react'
 import { cn } from '@/utilities/ui'
 import type { BlendMode, Surface } from '../studio/effect'
+import { FailureBoundary } from '../ui/failure-boundary'
 import type { VisualSurface } from './descriptor'
 import type { PosterImage, VisualPosters } from './posters'
 
 /** The poster/canvas crossfade, as the class both layers carry and the time the release waits out. */
 export const CROSSFADE_MS = 500
-export const crossfadeClass = (shown: boolean) =>
+const crossfadeClass = (shown: boolean) =>
   cn('absolute inset-0 transition-opacity duration-500', shown ? 'opacity-100' : 'opacity-0')
+
+/** A slot frame's box: filling the nearest positioned ancestor, or the full width. */
+export const frameClass = (fill: boolean) => (fill ? 'absolute inset-0' : 'relative w-full')
+
+/**
+ * The live effect's layer over the stills: it fades in once its generation
+ * has drawn, and a runtime that throws or fails to load reaches `onError`.
+ */
+export function LiveLayer({
+  ready,
+  onError,
+  children,
+  ...layer
+}: { ready: boolean; onError: () => void; children: ReactNode } & Pick<
+  ComponentProps<'div'>,
+  'aria-hidden' | 'style'
+>) {
+  return (
+    <div {...layer} className={crossfadeClass(ready)}>
+      <FailureBoundary onError={onError}>
+        <Suspense fallback={null}>{children}</Suspense>
+      </FailureBoundary>
+    </div>
+  )
+}
 
 type Face = {
   poster: PosterImage

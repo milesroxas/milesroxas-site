@@ -7,7 +7,7 @@ import { PROJECT_ROOT, VERCEL_PULL_ENV_FILE } from './constants'
  * Double-quoted values get dotenv's escapes: `vercel env pull` writes a value
  * stored with a trailing newline as `"…\n"`, and callers trim the result.
  */
-export function parseEnvValue(content: string, key: string): string | undefined {
+function parseEnvValue(content: string, key: string): string | undefined {
   for (const raw of content.split(/\r?\n/)) {
     const line = raw.trim()
     if (!line || line.startsWith('#')) continue

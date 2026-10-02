@@ -24,9 +24,7 @@ export const analyticsCaptureEnabled = () =>
  * internal-user filter only hides traffic at query time, so without this the
  * team's own visits and recordings still count against the allowance.
  */
-export const INTERNAL_TRAFFIC_COOKIE = 'mr_internal'
-
-export const INTERNAL_TRAFFIC_PARAM = 'internal'
+const INTERNAL_TRAFFIC_COOKIE = 'mr_internal'
 
 export function hasInternalTrafficCookie(cookieHeader: string | null | undefined): boolean {
   if (!cookieHeader) return false

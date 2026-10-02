@@ -1,5 +1,10 @@
 import { cn } from '@/utilities/ui'
-import { layoutSequence, SEQUENCE_LINE_HEIGHT, type SequenceVariant } from '../../layout/sequence'
+import {
+  layoutSequence,
+  SEQUENCE_LINE_HEIGHT,
+  type SequenceLayout,
+  type SequenceVariant,
+} from '../../layout/sequence'
 import type { SequenceSpec } from '../../spec/diagram'
 import { TextLines } from '../text-lines'
 import { type DiagramNaming, DiagramSvg } from './diagram-svg'
@@ -7,6 +12,45 @@ import { arrowHead, stepStyle } from './svg'
 
 /** A narrow header holds the same name in less room, so it sets it a size down. */
 const HEADER_TYPE: Record<SequenceVariant, string> = { narrow: 'text-xs', wide: 'text-sm' }
+
+/** An actor's header (a pill for a person) and the lifeline under it. */
+const ActorColumn = ({
+  actor,
+  headerType,
+  layout: { header, tailY },
+  person,
+}: {
+  actor: SequenceLayout['actors'][number]
+  headerType: string
+  layout: SequenceLayout
+  person: boolean
+}) => (
+  <g className="figure-step" style={stepStyle(0)}>
+    <line
+      className="stroke-border"
+      x1={actor.x}
+      x2={actor.x}
+      y1={header.y + header.height}
+      y2={tailY}
+    />
+    <rect
+      className="fill-background stroke-muted-foreground"
+      strokeWidth={1.5}
+      height={header.height}
+      rx={person ? header.height / 2 : 8}
+      width={header.width}
+      x={actor.x - header.width / 2}
+      y={header.y}
+    />
+    <TextLines
+      className={cn('fill-foreground', headerType)}
+      lineHeight={SEQUENCE_LINE_HEIGHT}
+      lines={actor.lines}
+      x={actor.x}
+      y={header.y + header.height / 2}
+    />
+  </g>
+)
 
 /**
  * A sequence diagram in both forms; `DiagramFigure` shows the one that fits
@@ -21,36 +65,17 @@ export const SequenceSvg = ({
   ...naming
 }: DiagramNaming & { spec: SequenceSpec; variant: SequenceVariant }) => {
   const layout = layoutSequence(spec)[variant]
-  const { header } = layout
 
   return (
     <DiagramSvg {...naming} height={layout.height} width={layout.width}>
       {layout.actors.map((actor, index) => (
-        <g className="figure-step" key={actor.id} style={stepStyle(0)}>
-          <line
-            className="stroke-border"
-            x1={actor.x}
-            x2={actor.x}
-            y1={header.y + header.height}
-            y2={layout.tailY}
-          />
-          <rect
-            className="fill-background stroke-muted-foreground"
-            strokeWidth={1.5}
-            height={header.height}
-            rx={spec.actors[index]?.role === 'person' ? header.height / 2 : 8}
-            width={header.width}
-            x={actor.x - header.width / 2}
-            y={header.y}
-          />
-          <TextLines
-            className={cn('fill-foreground', HEADER_TYPE[variant])}
-            lineHeight={SEQUENCE_LINE_HEIGHT}
-            lines={actor.lines}
-            x={actor.x}
-            y={header.y + header.height / 2}
-          />
-        </g>
+        <ActorColumn
+          actor={actor}
+          headerType={HEADER_TYPE[variant]}
+          key={actor.id}
+          layout={layout}
+          person={spec.actors[index]?.role === 'person'}
+        />
       ))}
 
       {layout.messages.map((message) => {

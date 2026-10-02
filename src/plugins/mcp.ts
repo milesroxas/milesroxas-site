@@ -1,5 +1,5 @@
 import { type MCPPluginConfig, mcpPlugin } from '@payloadcms/plugin-mcp'
-import type { CollectionSlug, Field, GroupField, Plugin } from 'payload'
+import type { CollapsibleField, CollectionSlug, Field, GroupField, Plugin } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { ASK_QUESTION_RETENTION_DAYS } from '@/features/ask/retention'
 import { withMcpDeleteConfirmation } from '@/plugins/mcp-delete-confirmation'
@@ -147,12 +147,50 @@ const CONTROLS_COMPONENT = '@/components/McpCapabilityControls'
  * ('collection' | 'global'), the source of the odd type hierarchy in the
  * sidebar.
  */
-const capabilityGroup = (field: Field): Extract<GroupField, { name: string }> | null => {
+type CapabilityGroup = Extract<GroupField, { name: string }>
+
+const capabilityGroup = (field: Field): CapabilityGroup | null => {
   if (field.type !== 'collapsible' || field.fields.length !== 1) return null
   const [group] = field.fields
   if (group.type !== 'group' || !('name' in group)) return null
   return group.label === 'collection' || group.label === 'global' ? group : null
 }
+
+/** One section without its group heading or checkbox descriptions, led by its own "Select all". */
+const restyledSection = (
+  field: CollapsibleField,
+  group: CapabilityGroup,
+  ops: string[],
+  label: string,
+): Field => ({
+  ...field,
+  admin: { ...field.admin, className: 'mcp-capability-section' },
+  label,
+  fields: [
+    {
+      ...group,
+      fields: [
+        {
+          name: 'toggleAll',
+          type: 'ui',
+          admin: {
+            components: {
+              Field: {
+                clientProps: { ops, section: group.name },
+                path: `${CONTROLS_COMPONENT}#SectionToggleAll`,
+              },
+            },
+          },
+        },
+        ...group.fields.map(
+          (f): Field =>
+            f.type === 'checkbox' ? { ...f, admin: { ...f.admin, description: undefined } } : f,
+        ),
+      ],
+      label: false,
+    },
+  ],
+})
 
 /**
  * Restyles the generated capability sections and adds bulk controls:
@@ -172,36 +210,7 @@ const withCapabilityControls = (fields: Field[]): Field[] => {
     const ops = group.fields.flatMap((f) => (f.type === 'checkbox' && 'name' in f ? [f.name] : []))
     const label = typeof field.label === 'string' ? field.label : group.name
     sections.push({ label, ops, path: group.name })
-
-    return {
-      ...field,
-      admin: { ...field.admin, className: 'mcp-capability-section' },
-      label,
-      fields: [
-        {
-          ...group,
-          fields: [
-            {
-              name: 'toggleAll',
-              type: 'ui',
-              admin: {
-                components: {
-                  Field: {
-                    clientProps: { ops, section: group.name },
-                    path: `${CONTROLS_COMPONENT}#SectionToggleAll`,
-                  },
-                },
-              },
-            },
-            ...group.fields.map(
-              (f): Field =>
-                f.type === 'checkbox' ? { ...f, admin: { ...f.admin, description: undefined } } : f,
-            ),
-          ],
-          label: false,
-        },
-      ],
-    }
+    return restyledSection(field, group, ops, label)
   })
 
   const firstSectionIndex = fields.findIndex((field) => capabilityGroup(field) !== null)

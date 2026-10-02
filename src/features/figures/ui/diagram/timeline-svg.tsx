@@ -11,6 +11,46 @@ type WideEvent = TimelineLayout['wide']['events'][number]
 const blockHeight = (event: WideEvent, spec: TimelineSpec): number =>
   (event.lines.length + (spec.events[event.index]?.ref ? 1 : 0)) * LINE_HEIGHT + 4
 
+/** An event on the proportional axis: its dot, its label, and its tag when it has one. */
+const WideEventMark = ({
+  axisY,
+  event,
+  source,
+  step,
+}: {
+  axisY: number
+  event: WideEvent
+  source: TimelineSpec['events'][number]
+  step: number
+}) => (
+  <g className="figure-step" style={stepStyle(step)}>
+    <circle
+      className="fill-foreground stroke-background"
+      cx={event.x}
+      cy={axisY}
+      r={5}
+      strokeWidth={2}
+    />
+    <TextLines
+      className="fill-foreground text-sm"
+      halo
+      lineHeight={LINE_HEIGHT}
+      lines={event.lines}
+      x={event.labelX}
+      y={event.labelY + (event.lines.length * LINE_HEIGHT) / 2}
+    />
+    {source.ref ? (
+      <TextLines
+        className="fill-muted-foreground text-xs"
+        halo
+        lines={[source.ref]}
+        x={event.labelX}
+        y={event.labelY + (event.lines.length + 0.5) * LINE_HEIGHT}
+      />
+    ) : null}
+  </g>
+)
+
 /** Proportional axis: events sit where their dates fall, labels stacked into lanes so none overlap. */
 const Wide = ({ layout, spec }: { layout: TimelineLayout['wide']; spec: TimelineSpec }) => (
   <>
@@ -58,32 +98,13 @@ const Wide = ({ layout, spec }: { layout: TimelineLayout['wide']; spec: Timeline
       const source = spec.events[event.index]
       if (!source) return null
       return (
-        <g className="figure-step" key={event.index} style={stepStyle(order + 1)}>
-          <circle
-            className="fill-foreground stroke-background"
-            cx={event.x}
-            cy={layout.axisY}
-            r={5}
-            strokeWidth={2}
-          />
-          <TextLines
-            className="fill-foreground text-sm"
-            halo
-            lineHeight={LINE_HEIGHT}
-            lines={event.lines}
-            x={event.labelX}
-            y={event.labelY + (event.lines.length * LINE_HEIGHT) / 2}
-          />
-          {source.ref ? (
-            <TextLines
-              className="fill-muted-foreground text-xs"
-              halo
-              lines={[source.ref]}
-              x={event.labelX}
-              y={event.labelY + (event.lines.length + 0.5) * LINE_HEIGHT}
-            />
-          ) : null}
-        </g>
+        <WideEventMark
+          axisY={layout.axisY}
+          event={event}
+          key={event.index}
+          source={source}
+          step={order + 1}
+        />
       )
     })}
   </>

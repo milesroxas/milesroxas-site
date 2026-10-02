@@ -12,7 +12,7 @@
 import { isLexicalState, textStrings } from './lexical'
 import type { Block } from './rules'
 
-export type Carried = { media: Set<number>; text: Set<string> }
+type Carried = { media: Set<number>; text: Set<string> }
 
 const MEDIA_KEYS = new Set(['media', 'image', 'portraitMedia', 'landscapeMedia'])
 
@@ -52,12 +52,26 @@ const selectedGroup = (record: Record<string, unknown>): string | null => {
 const SKIP_KEYS = new Set(['space', 'link', 'links', 'work', 'post', 'introContentSettings'])
 
 /**
+ * Whether a record's child is left out: a content group the record does not
+ * select, a subtree that is not copy, or a Media block caption it hides.
+ *
+ * A Columns column stores every content group and renders the one its
+ * `content` selects; a Tab slider tab does the same with `contentType`. Only
+ * what renders is carried: the others are leftovers of an earlier choice that
+ * no visitor sees.
+ */
+const isSkipped = (record: Block, selected: string | null, key: string): boolean =>
+  (selected !== null && COLUMN_GROUPS.has(key) && key !== selected) ||
+  SKIP_KEYS.has(key) ||
+  (key === 'richText' && record.blockType === 'mediaBlock' && record.showCaption !== true)
+
+/**
  * Everything the preservation check follows in a layout: media ids under the
  * media keys, strings under the text keys, and every Lexical text node.
  * `hidden` drops what a block does not show (a caption behind
  * `showCaption: false`).
  */
-export const collect = (
+const collect = (
   value: unknown,
   carried: Carried = { media: new Set(), text: new Set() },
 ): Carried => {
@@ -67,15 +81,14 @@ export const collect = (
       for (const child of node) walk(child, key)
       return
     }
-    if (typeof node === 'number') {
-      if (MEDIA_KEYS.has(key)) carried.media.add(node)
-      return
-    }
-    if (typeof node === 'string') {
-      if (TEXT_KEYS.has(key) && node.trim()) carried.text.add(node.trim())
-      return
-    }
-    if (typeof node !== 'object') return
+    if (typeof node === 'object') walkObject(node, key)
+    else collectLeaf(node, key)
+  }
+  const collectLeaf = (node: unknown, key: string) => {
+    if (typeof node === 'number' && MEDIA_KEYS.has(key)) carried.media.add(node)
+    if (typeof node === 'string' && TEXT_KEYS.has(key) && node.trim()) carried.text.add(node.trim())
+  }
+  const walkObject = (node: object, key: string) => {
     if (isLexicalState(node)) {
       for (const text of textStrings(node)) carried.text.add(text)
       // Lexical block nodes (Insights) keep their fields: walk them for strings too.
@@ -87,21 +100,9 @@ export const collect = (
       carried.media.add(record.id)
       return
     }
-    // A Columns column stores every content group and renders the one its
-    // `content` selects; a Tab slider tab does the same with `contentType`.
-    // Only what renders is carried: the others are leftovers of an earlier
-    // choice that no visitor sees.
     const selected = selectedGroup(record)
     for (const [childKey, child] of Object.entries(record)) {
-      if (selected && COLUMN_GROUPS.has(childKey) && childKey !== selected) continue
-      if (SKIP_KEYS.has(childKey)) continue
-      if (
-        childKey === 'richText' &&
-        record.blockType === 'mediaBlock' &&
-        record.showCaption !== true
-      )
-        continue
-      walk(child, childKey)
+      if (!isSkipped(record, selected, childKey)) walk(child, childKey)
     }
   }
   const walkFields = (state: unknown) => {

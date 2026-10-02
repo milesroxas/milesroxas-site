@@ -1,9 +1,9 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { Container } from '@/components/Container'
-import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import type { ImagePairBlock, Media as MediaDoc } from '@/payload-types'
 import { cn } from '@/utilities/ui'
+import { MediaCell } from '../shared/cells'
 import { BlockGrid } from '../shared/grid'
 import { Section } from '../shared/section'
 import { typeScale } from '../shared/typography'
@@ -39,61 +39,48 @@ export const ImagePair = ({
   const landscapeStart = portraitRight ? 'md:col-start-1' : 'md:col-start-4'
   const portraitStart = portraitRight ? 'md:col-start-6' : 'md:col-start-1'
   const portraitFigure = (
-    <div
+    <MediaCell
       className={cn(
         'relative aspect-4/5 w-full overflow-hidden rounded-lg bg-muted md:col-span-3 md:row-start-1',
         portraitStart,
       )}
-      data-reveal="media"
-    >
-      <Media
-        fill
-        htmlElement={null}
-        imgClassName="object-cover"
-        resource={portrait}
-        size="(max-width: 768px) 100vw, 33vw"
-      />
-    </div>
+      resource={portrait}
+      size="(max-width: 768px) 100vw, 33vw"
+    />
   )
   const landscapeFigure = (
-    <div
+    <MediaCell
       className={cn(
         'relative aspect-16/10 w-full overflow-hidden rounded-lg bg-muted md:col-span-5 md:row-start-1',
         landscapeStart,
       )}
-      data-reveal="media"
-    >
-      <Media
-        fill
-        htmlElement={null}
-        imgClassName="object-cover"
-        resource={landscape}
-        size="(max-width: 768px) 100vw, 66vw"
-      />
-    </div>
+      resource={landscape}
+      size="(max-width: 768px) 100vw, 66vw"
+    />
   )
-  const inner = (
-    <Container>
-      <BlockGrid>
-        {portraitRight ? landscapeFigure : portraitFigure}
-        {portraitRight ? portraitFigure : landscapeFigure}
-        <div
-          className={cn(
-            'text-stack md:col-span-3 md:row-start-2',
-            textUnderLandscape ? landscapeStart : portraitStart,
-          )}
-          data-reveal
-        >
-          {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
-          <RichText className={type.body} data={content} enableGutter={false} enableProse={false} />
-        </div>
-      </BlockGrid>
-    </Container>
-  )
-  if (bare) return inner
   return (
-    <Section spacing="loose" theme={block.theme}>
-      {inner}
+    <Section bare={bare} spacing="loose" theme={block.theme}>
+      <Container>
+        <BlockGrid>
+          {portraitRight ? landscapeFigure : portraitFigure}
+          {portraitRight ? portraitFigure : landscapeFigure}
+          <div
+            className={cn(
+              'text-stack md:col-span-3 md:row-start-2',
+              textUnderLandscape ? landscapeStart : portraitStart,
+            )}
+            data-reveal
+          >
+            {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
+            <RichText
+              className={type.body}
+              data={content}
+              enableGutter={false}
+              enableProse={false}
+            />
+          </div>
+        </BlockGrid>
+      </Container>
     </Section>
   )
 }

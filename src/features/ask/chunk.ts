@@ -82,11 +82,11 @@ function splitByParagraphs(text: string): string[] {
   })
 }
 
-export function chunkMarkdown(markdown: string): MarkdownChunk[] {
-  const sections = splitIntoSections(markdown)
-
-  // Merge tiny sections forward so a lone heading or one-liner rides with the
-  // content that follows it.
+/**
+ * Merge tiny sections forward so a lone heading or one-liner rides with the
+ * content that follows it.
+ */
+function mergeTinySections(sections: Section[]): Section[] {
   const merged: Section[] = []
   for (const section of sections) {
     const previous = merged.at(-1)
@@ -102,9 +102,12 @@ export function chunkMarkdown(markdown: string): MarkdownChunk[] {
       merged.push({ headingPath: [...section.headingPath], lines: [...section.lines] })
     }
   }
+  return merged
+}
 
+export function chunkMarkdown(markdown: string): MarkdownChunk[] {
   const chunks: MarkdownChunk[] = []
-  for (const section of merged) {
+  for (const section of mergeTinySections(splitIntoSections(markdown))) {
     const text = section.lines.join('\n').trim()
     if (!text) continue
 

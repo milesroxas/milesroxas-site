@@ -12,7 +12,7 @@ import { cn } from '@/utilities/ui'
  * same item inside a reading column. Either caller places the item on the
  * composition grid; the item owns only its own stack.
  */
-export type InsightMarkSize = NonNullable<InsightListBlockData['markSize']>
+type InsightMarkSize = NonNullable<InsightListBlockData['markSize']>
 export type InsightItem = NonNullable<InsightListBlockData['items']>[number]
 
 /**

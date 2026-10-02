@@ -2,9 +2,10 @@
 
 import { Canvas } from '@react-three/fiber'
 import cn from 'clsx'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useDeviceDetection } from '@/hooks/use-device-detection'
 import { ContextGuard } from '@/lib/webgl/components/context-guard'
+import { useOverlayInView } from './overlay'
 import {
   bindPointerInput,
   createPointerInput,
@@ -23,21 +24,10 @@ import { resolveStreakTuning, type StreakFieldProps } from './streak-field-tunin
  * unsupported (WebGPURenderer only accepts TSL node materials).
  *
  * Props, defaults and the tuning type live in `./streak-field-tuning.ts`
- * (Three-free, so the visual contract can read them) and are re-exported
- * here so the barrel's surface is unchanged.
+ * (Three-free, so the visual contract can read them); the props type is
+ * re-exported here.
  */
-export {
-  STREAK_FIELD_DEFAULTS,
-  STREAK_FIELD_NOISES,
-  type StreakFieldInk,
-  type StreakFieldLayout,
-  type StreakFieldMotion,
-  type StreakFieldNoise,
-  type StreakFieldProps,
-  type StreakFieldShape,
-  type StreakFieldSurface,
-  type StreakFieldTuning,
-} from './streak-field-tuning'
+export type { StreakFieldProps } from './streak-field-tuning'
 
 // Hoisted so JSX never allocates fresh objects per render (perf-avoid-inline-objects).
 const GL_CONFIG = { antialias: false, powerPreference: 'high-performance' } as const
@@ -76,25 +66,11 @@ export function StreakField({ className, force = false, ...deltas }: StreakField
   const rootRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<PointerInput>(createPointerInput())
   const { hasGPU } = useDeviceDetection()
-  // Off-screen fields keep their context but stop rendering, so one on a
-  // section costs nothing while that section is scrolled away.
-  const [inView, setInView] = useState(true)
 
   const dprRange = useMemo<[number, number]>(() => [1, dpr], [dpr])
 
   const enabled = hasGPU || force
-
-  useEffect(() => {
-    const root = rootRef.current
-    if (!enabled || !root) return
-    const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry?.isIntersecting ?? true),
-      // Start rendering just before it scrolls in, so it is never caught mid-fade.
-      { rootMargin: '10%' },
-    )
-    observer.observe(root)
-    return () => observer.disconnect()
-  }, [enabled])
+  const inView = useOverlayInView(rootRef, enabled)
 
   useEffect(() => {
     if (!enabled || !interactive) return

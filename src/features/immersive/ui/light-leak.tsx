@@ -2,21 +2,15 @@
 
 import cn from 'clsx'
 import type { CSSProperties } from 'react'
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useId, useMemo, useRef, useState } from 'react'
 import { useDeviceDetection } from '@/hooks/use-device-detection'
 import { GPU_PRIORITY } from '@/lib/webgl/gpu-budget'
 import { useGpuLease } from '@/lib/webgl/use-gpu-lease'
 import { LightLeakRuntime } from './light-leak-runtime'
 import { type LightLeakProps, resolveLeakTuning } from './light-leak-tuning'
+import { useOverlayInView } from './overlay'
 
-export {
-  LEAK_EXCITE_TARGETS,
-  type LeakExciteTargets,
-  LIGHT_LEAK_DEFAULTS,
-  type LightLeakBlendMode,
-  type LightLeakProps,
-  type LightLeakTint,
-} from './light-leak-tuning'
+export type { LightLeakProps } from './light-leak-tuning'
 
 /**
  * A film light-leak overlay: a single GLSL pass of spectral dispersion sampled
@@ -57,9 +51,6 @@ export function LightLeak({ className, force = false, scrollSource, ...deltas }:
   const { blendMode } = tuning
   const rootRef = useRef<HTMLDivElement>(null)
   const { hasGPU } = useDeviceDetection()
-  // Off-screen overlays keep their context but stop rendering, so a leak on a
-  // section costs nothing while that section is scrolled away.
-  const [inView, setInView] = useState(true)
   const [lost, setLost] = useState(false)
   const handleFailure = useCallback(() => setLost(true), [])
 
@@ -70,18 +61,7 @@ export function LightLeak({ className, force = false, scrollSource, ...deltas }:
   // cheap, and the leak must not pop in on every scroll past its section.
   const id = useId()
   const enabled = useGpuLease(id, wanted, 'leak', GPU_PRIORITY.overlay)
-
-  useEffect(() => {
-    const root = rootRef.current
-    if (!enabled || !root) return
-    const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry?.isIntersecting ?? true),
-      // Start rendering just before it scrolls in, so it is never caught mid-fade.
-      { rootMargin: '10%' },
-    )
-    observer.observe(root)
-    return () => observer.disconnect()
-  }, [enabled])
+  const inView = useOverlayInView(rootRef, enabled)
 
   if (!enabled) return null
 

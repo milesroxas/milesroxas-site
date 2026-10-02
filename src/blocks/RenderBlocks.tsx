@@ -32,6 +32,35 @@ type SectionChildBlock = NonNullable<PageSectionBlock['blocks']>[number]
 
 type FlatBlock = Exclude<LayoutBlock, { blockType: 'section' }> | SectionChildBlock
 
+const legacyBlockBody = (block: FlatBlock) => {
+  switch (block.blockType) {
+    case 'archive':
+      return <ArchiveBlock {...block} />
+    case 'content':
+      return <ContentBlock {...block} />
+    case 'cta':
+      return <CallToActionBlock {...block} />
+    case 'formBlock':
+      return <FormBlock {...(block as PayloadFormBlock)} />
+    case 'mediaBlock':
+      return <MediaBlock {...block} />
+    case 'slider':
+      return <SliderBlock {...(block as PayloadSliderBlock)} />
+    case 'tabs':
+      return <TabsBlock {...block} />
+    case 'callout':
+      return <CallOutBlock {...block} />
+    default:
+      return undefined
+  }
+}
+
+const legacyWrapperClassName = (block: FlatBlock) => {
+  if (block.blockType !== 'content') return 'block-wrapper'
+  const isFullWidth = block.containerWidth === 'fullWidth'
+  return `block-wrapper ${isFullWidth ? 'w-full' : ''}`
+}
+
 /**
  * This site's own blocks, each in the `block-wrapper` it has always had: the
  * wrapper and the block carry their own theme and spacing. Unchanged by the
@@ -39,68 +68,13 @@ type FlatBlock = Exclude<LayoutBlock, { blockType: 'section' }> | SectionChildBl
  * inside a Section too, where it keeps the same wrapper.
  */
 const renderLegacyBlock = (block: FlatBlock, blockKey: React.Key) => {
-  switch (block.blockType) {
-    case 'archive':
-      return (
-        <div key={blockKey} className="block-wrapper">
-          <ArchiveBlock {...block} />
-        </div>
-      )
-
-    case 'content': {
-      const isFullWidth = block.containerWidth === 'fullWidth'
-      return (
-        <div key={blockKey} className={`block-wrapper ${isFullWidth ? 'w-full' : ''}`}>
-          <ContentBlock {...block} />
-        </div>
-      )
-    }
-
-    case 'cta':
-      return (
-        <div key={blockKey} className="block-wrapper">
-          <CallToActionBlock {...block} />
-        </div>
-      )
-
-    case 'formBlock':
-      return (
-        <div key={blockKey} className="block-wrapper">
-          <FormBlock {...(block as PayloadFormBlock)} />
-        </div>
-      )
-
-    case 'mediaBlock':
-      return (
-        <div key={blockKey} className="block-wrapper">
-          <MediaBlock {...block} />
-        </div>
-      )
-
-    case 'slider':
-      return (
-        <div key={blockKey} className="block-wrapper">
-          <SliderBlock {...(block as PayloadSliderBlock)} />
-        </div>
-      )
-
-    case 'tabs':
-      return (
-        <div key={blockKey} className="block-wrapper">
-          <TabsBlock {...block} />
-        </div>
-      )
-
-    case 'callout':
-      return (
-        <div key={blockKey} className="block-wrapper">
-          <CallOutBlock {...block} />
-        </div>
-      )
-
-    default:
-      return undefined
-  }
+  const body = legacyBlockBody(block)
+  if (body === undefined) return undefined
+  return (
+    <div key={blockKey} className={legacyWrapperClassName(block)}>
+      {body}
+    </div>
+  )
 }
 
 /**

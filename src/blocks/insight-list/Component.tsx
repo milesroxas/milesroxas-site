@@ -52,6 +52,43 @@ const LAYOUT: Record<
   },
 }
 
+const InsightListHeading = ({
+  className,
+  eyebrow,
+  heading,
+  summary,
+  textSize,
+}: Pick<InsightListBlockProps, 'eyebrow' | 'heading' | 'summary' | 'textSize'> & {
+  className: string
+}) => {
+  const type = typeScale(textSize)
+  return (
+    <div className={cn('text-stack', className)}>
+      {eyebrow ? (
+        <p
+          className={cn(eyebrowClassName, 'tracking-widest uppercase')}
+          data-reveal
+          data-reveal-group="heading"
+        >
+          {eyebrow}
+        </p>
+      ) : null}
+      <h2 className={type.heading} data-reveal data-reveal-group="heading">
+        {heading}
+      </h2>
+      {summary ? (
+        <p
+          className={cn(type.body, 'text-muted-foreground')}
+          data-reveal
+          data-reveal-group="heading"
+        >
+          {summary}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
 export const InsightListBlock: React.FC<InsightListBlockProps> = ({
   bare,
   eyebrow,
@@ -69,35 +106,18 @@ export const InsightListBlock: React.FC<InsightListBlockProps> = ({
   const arrangement = LAYOUT[layout ?? 'side']
   const size = markSize ?? 'medium'
   const compact = !hasInsightMarks(insights)
-  const type = typeScale(textSize)
 
   return (
     <Section bare={bare} theme={theme}>
       <Container>
         <BlockGrid className="md:items-start">
-          <div className={cn('text-stack', arrangement.heading)}>
-            {eyebrow ? (
-              <p
-                className={cn(eyebrowClassName, 'tracking-widest uppercase')}
-                data-reveal
-                data-reveal-group="heading"
-              >
-                {eyebrow}
-              </p>
-            ) : null}
-            <h2 className={type.heading} data-reveal data-reveal-group="heading">
-              {heading}
-            </h2>
-            {summary ? (
-              <p
-                className={cn(type.body, 'text-muted-foreground')}
-                data-reveal
-                data-reveal-group="heading"
-              >
-                {summary}
-              </p>
-            ) : null}
-          </div>
+          <InsightListHeading
+            className={arrangement.heading}
+            eyebrow={eyebrow}
+            heading={heading}
+            summary={summary}
+            textSize={textSize}
+          />
           <BlockGrid
             as="ol"
             className={cn('md:col-span-6 md:col-start-3', arrangement.list)}

@@ -26,22 +26,12 @@ export type ContentsPanelProps = {
   onJump: (entry: ContentsEntry | null) => void
 }
 
-/**
- * Desktop: a non-modal disclosure. No scrim and no focus trap, so reading
- * continues behind it; Escape, a press outside, or scrolling on closes it.
- */
-function ContentsCard({
-  id,
-  open,
-  entries,
-  current,
-  anchorRef,
-  onClose,
-  onJump,
-}: ContentsPanelProps) {
-  const layerRef = useRef<HTMLDivElement>(null)
-  const { mounted, animating } = usePresence(layerRef, open)
-
+/** Escape, a press outside the anchor, or reading on closes the open card. */
+function useCardDismissal(
+  open: boolean,
+  anchorRef: ContentsPanelProps['anchorRef'],
+  onClose: ContentsPanelProps['onClose'],
+) {
   useEffect(() => {
     if (!open) return
     const onKeyDown = (event: KeyboardEvent) => {
@@ -63,6 +53,24 @@ function ContentsCard({
       document.removeEventListener('pointerdown', onPointerDown)
     }
   }, [open, anchorRef, onClose])
+}
+
+/**
+ * Desktop: a non-modal disclosure. No scrim and no focus trap, so reading
+ * continues behind it; Escape, a press outside, or scrolling on closes it.
+ */
+function ContentsCard({
+  id,
+  open,
+  entries,
+  current,
+  anchorRef,
+  onClose,
+  onJump,
+}: ContentsPanelProps) {
+  const layerRef = useRef<HTMLDivElement>(null)
+  const { mounted, animating } = usePresence(layerRef, open)
+  useCardDismissal(open, anchorRef, onClose)
 
   if (!mounted) return null
   return (
@@ -103,6 +111,30 @@ function ContentsCard({
   )
 }
 
+/** The sheet's surface; `dragged` drops the exit animation a drag has already played. */
+const sheetClassName = (dragged: boolean) =>
+  cn(
+    'contents-sheet gap-0 rounded-sheet px-2 pb-3 shadow-[0_-8px_40px_rgb(0_0_0/0.2)]',
+    'data-[side=bottom]:inset-x-2 data-[side=bottom]:bottom-[max(0.5rem,env(safe-area-inset-bottom))] data-[side=bottom]:border-t-0',
+    'duration-300 ease-(--ease-out-quint) data-closed:duration-200',
+    'data-[side=bottom]:data-open:slide-in-from-bottom-full data-[side=bottom]:data-closed:slide-out-to-bottom-full',
+    'motion-reduce:data-[side=bottom]:data-open:slide-in-from-bottom-0 motion-reduce:data-[side=bottom]:data-closed:slide-out-to-bottom-0',
+    dragged && 'data-closed:animate-none',
+  )
+
+/** The drag handle. It is small; its hit area also covers the label row under it. */
+function SheetHandle({ dragHandlers }: { dragHandlers: ReturnType<typeof useSheetDrag> }) {
+  return (
+    <div
+      aria-hidden
+      className="relative flex h-6 shrink-0 touch-none items-center justify-center before:absolute before:inset-x-0 before:top-0 before:h-15"
+      {...dragHandlers}
+    >
+      <span className="h-1.25 w-9 rounded-full bg-foreground/20" />
+    </div>
+  )
+}
+
 /**
  * Phone: a floating sheet with a scrim, in thumb reach. Tap the scrim, press
  * Escape, or drag it down by the handle. A jump waits for the sheet to leave:
@@ -122,14 +154,7 @@ function ContentsSheet({ id, open, entries, current, onClose, onJump }: Contents
     <Sheet onOpenChange={(next) => !next && onClose()} open={open}>
       <SheetContent
         aria-describedby={undefined}
-        className={cn(
-          'contents-sheet gap-0 rounded-sheet px-2 pb-3 shadow-[0_-8px_40px_rgb(0_0_0/0.2)]',
-          'data-[side=bottom]:inset-x-2 data-[side=bottom]:bottom-[max(0.5rem,env(safe-area-inset-bottom))] data-[side=bottom]:border-t-0',
-          'duration-300 ease-(--ease-out-quint) data-closed:duration-200',
-          'data-[side=bottom]:data-open:slide-in-from-bottom-full data-[side=bottom]:data-closed:slide-out-to-bottom-full',
-          'motion-reduce:data-[side=bottom]:data-open:slide-in-from-bottom-0 motion-reduce:data-[side=bottom]:data-closed:slide-out-to-bottom-0',
-          dragged && 'data-closed:animate-none',
-        )}
+        className={sheetClassName(dragged)}
         data-lenis-prevent
         id={id}
         onCloseAutoFocus={(event) => {
@@ -155,14 +180,7 @@ function ContentsSheet({ id, open, entries, current, onClose, onJump }: Contents
         side="bottom"
       >
         <SheetTitle className="sr-only">{CONTENTS_LIST_LABEL}</SheetTitle>
-        <div
-          aria-hidden
-          // The handle is small; its hit area also covers the label row under it.
-          className="relative flex h-6 shrink-0 touch-none items-center justify-center before:absolute before:inset-x-0 before:top-0 before:h-15"
-          {...dragHandlers}
-        >
-          <span className="h-1.25 w-9 rounded-full bg-foreground/20" />
-        </div>
+        <SheetHandle dragHandlers={dragHandlers} />
         <nav aria-label={CONTENTS_LIST_LABEL}>
           <ContentsList
             current={current}

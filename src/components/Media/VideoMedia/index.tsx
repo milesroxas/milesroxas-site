@@ -2,12 +2,14 @@
 
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
-
+import type { Media as MediaType } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaURL'
 import { cn } from '@/utilities/ui'
 import { getVideoLoadingStrategy } from '@/utilities/videoOptimization'
 
 import type { Props as MediaProps } from '../types'
+
+type VideoStrategy = ReturnType<typeof getVideoLoadingStrategy>
 
 /** Check if the browser natively supports HLS (Safari, iOS). */
 function supportsNativeHls(): boolean {
@@ -15,31 +17,57 @@ function supportsNativeHls(): boolean {
   return video.canPlayType('application/vnd.apple.mpegurl') !== ''
 }
 
-export const VideoMedia: React.FC<MediaProps> = (props) => {
-  const {
-    autoPlay = true,
-    fill,
-    onClick,
-    onLoad,
-    resource,
-    videoClassName,
-    priority = false,
-  } = props
+/** The Cloudflare Stream HLS URL, once the stream is ready to play. */
+function readyStreamUrl(resource: MediaType): string | undefined {
+  const hlsUrl = resource.cloudflareStreamPlaybackUrl as string | undefined
+  const isReady = resource.cloudflareStreamReady as boolean | undefined
+  return hlsUrl && isReady ? hlsUrl : undefined
+}
 
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const hlsRef = useRef<{ destroy: () => void } | null>(null)
-  const hasRetriedRef = useRef(false)
-  const [strategy, setStrategy] = useState<{
-    preload: 'none' | 'metadata' | 'auto'
-    shouldAutoplay: boolean
-    shouldLoadSource: boolean
-  }>(() => ({
+function fallbackSrcFor({ filename, url }: MediaType): string {
+  return url && typeof url === 'string'
+    ? getMediaUrl(url)
+    : getMediaUrl(`/api/media/file/${filename}`)
+}
+
+/** Poster improves FCP/LCP by showing an image immediately while video loads */
+function posterUrlFor(resource: MediaType) {
+  return (
+    resource.cloudflareStreamThumbnailUrl ??
+    (resource.sizes?.thumbnail?.url ? getMediaUrl(resource.sizes.thumbnail.url) : undefined) ??
+    (resource.thumbnailURL ? getMediaUrl(resource.thumbnailURL) : undefined)
+  )
+}
+
+async function playIfPaused(video: HTMLVideoElement | null) {
+  if (!video?.paused) return
+  try {
+    await video.play()
+  } catch {
+    // Autoplay can be blocked in edge cases; nothing to do.
+  }
+}
+
+/** Reloads and plays once per element after a playback error. */
+async function retryOnce(video: HTMLVideoElement | null, hasRetriedRef: React.RefObject<boolean>) {
+  if (!video || hasRetriedRef.current) return
+  hasRetriedRef.current = true
+  try {
+    video.load()
+    await video.play()
+  } catch {
+    // If retry fails, let the browser surface the failure (poster/fallback).
+  }
+}
+
+/** Priority videos start with their final strategy; the rest decide on mount (needs navigator). */
+function useVideoStrategy(priority: boolean, resource: MediaProps['resource']) {
+  const [strategy, setStrategy] = useState<VideoStrategy>(() => ({
     preload: priority ? 'auto' : 'metadata',
     shouldAutoplay: priority,
     shouldLoadSource: priority,
   }))
 
-  // Determine loading strategy on mount (needs navigator). Skip for priority — initial state is correct.
   useEffect(() => {
     if (priority) return
     const result = getVideoLoadingStrategy(
@@ -49,14 +77,22 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
     setStrategy(result)
   }, [priority, resource])
 
-  // Set up HLS.js for Cloudflare Stream playback (dynamic import to avoid blocking main bundle)
+  return strategy
+}
+
+/** Cloudflare Stream playback through HLS.js (dynamic import to avoid blocking main bundle) */
+function useHlsStream(
+  videoRef: React.RefObject<HTMLVideoElement | null>,
+  resource: MediaProps['resource'],
+) {
+  const hlsRef = useRef<{ destroy: () => void } | null>(null)
+
   useEffect(() => {
     const video = videoRef.current
     if (!video || !resource || typeof resource !== 'object') return
 
-    const hlsUrl = resource.cloudflareStreamPlaybackUrl as string | undefined
-    const isReady = resource.cloudflareStreamReady as boolean | undefined
-    if (!hlsUrl || !isReady) return
+    const hlsUrl = readyStreamUrl(resource)
+    if (!hlsUrl) return
 
     // Safari supports HLS natively — just set the src
     if (supportsNativeHls()) {
@@ -85,12 +121,19 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
       hlsInstance?.destroy()
       hlsRef.current = null
     }
-  }, [resource])
+  }, [resource, videoRef])
+}
 
-  // For non-priority videos, start playback when the element becomes visible
+/** For non-priority videos, start playback when the element becomes visible */
+function usePlayWhenVisible(
+  videoRef: React.RefObject<HTMLVideoElement | null>,
+  autoPlay: boolean,
+  priority: boolean,
+  shouldAutoplay: boolean,
+) {
   useEffect(() => {
     const video = videoRef.current
-    if (!video || !autoPlay || priority || strategy.shouldAutoplay) return
+    if (!video || !autoPlay || priority || shouldAutoplay) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -104,64 +147,50 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
 
     observer.observe(video)
     return () => observer.disconnect()
-  }, [autoPlay, priority, strategy.shouldAutoplay])
+  }, [autoPlay, priority, shouldAutoplay, videoRef])
+}
 
-  if (resource && typeof resource === 'object') {
-    const { filename, url } = resource
-    const hlsUrl = resource.cloudflareStreamPlaybackUrl as string | undefined
-    const isReady = resource.cloudflareStreamReady as boolean | undefined
-    const useCloudflare = hlsUrl && isReady
-    const fallbackSrc =
-      url && typeof url === 'string' ? getMediaUrl(url) : getMediaUrl(`/api/media/file/${filename}`)
+export const VideoMedia: React.FC<MediaProps> = (props) => {
+  const {
+    autoPlay = true,
+    fill,
+    onClick,
+    onLoad,
+    resource,
+    videoClassName,
+    priority = false,
+  } = props
 
-    // Poster improves FCP/LCP by showing an image immediately while video loads
-    const posterUrl =
-      resource.cloudflareStreamThumbnailUrl ??
-      (resource.sizes?.thumbnail?.url ? getMediaUrl(resource.sizes.thumbnail.url) : undefined) ??
-      (resource.thumbnailURL ? getMediaUrl(resource.thumbnailURL) : undefined)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const hasRetriedRef = useRef(false)
+  const strategy = useVideoStrategy(priority, resource)
+  useHlsStream(videoRef, resource)
+  usePlayWhenVisible(videoRef, autoPlay, priority, strategy.shouldAutoplay)
 
-    return (
-      <video
-        poster={posterUrl}
-        autoPlay={autoPlay && strategy.shouldAutoplay}
-        // `fill` covers the caller's aspect frame, as ImageMedia's fill image does.
-        className={cn(fill && 'absolute inset-0 size-full object-cover', videoClassName)}
-        controls={false}
-        loop
-        muted
-        onClick={onClick}
-        playsInline
-        ref={videoRef}
-        preload={strategy.preload}
-        onCanPlay={async () => {
-          const video = videoRef.current
-          if (!video?.paused) return
-          if (!autoPlay || !strategy.shouldAutoplay) return
-          try {
-            await video.play()
-          } catch {
-            // Autoplay can be blocked in edge cases; nothing to do.
-          }
-        }}
-        onLoadedData={() => {
-          onLoad?.()
-        }}
-        onError={async () => {
-          const video = videoRef.current
-          if (!video || hasRetriedRef.current) return
-          hasRetriedRef.current = true
-          try {
-            video.load()
-            await video.play()
-          } catch {
-            // If retry fails, let the browser surface the failure (poster/fallback).
-          }
-        }}
-      >
-        {!useCloudflare && <source src={fallbackSrc} type="video/mp4" />}
-      </video>
-    )
-  }
+  if (!resource || typeof resource !== 'object') return null
 
-  return null
+  return (
+    <video
+      poster={posterUrlFor(resource)}
+      autoPlay={autoPlay && strategy.shouldAutoplay}
+      // `fill` covers the caller's aspect frame, as ImageMedia's fill image does.
+      className={cn(fill && 'absolute inset-0 size-full object-cover', videoClassName)}
+      controls={false}
+      loop
+      muted
+      onClick={onClick}
+      playsInline
+      ref={videoRef}
+      preload={strategy.preload}
+      onCanPlay={async () => {
+        if (autoPlay && strategy.shouldAutoplay) await playIfPaused(videoRef.current)
+      }}
+      onLoadedData={() => {
+        onLoad?.()
+      }}
+      onError={() => retryOnce(videoRef.current, hasRetriedRef)}
+    >
+      {!readyStreamUrl(resource) && <source src={fallbackSrcFor(resource)} type="video/mp4" />}
+    </video>
+  )
 }

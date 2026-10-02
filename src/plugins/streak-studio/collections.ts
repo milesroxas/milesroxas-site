@@ -1,6 +1,12 @@
 import { sql } from '@payloadcms/db-vercel-postgres'
-import { APIError, type CollectionConfig, type Field } from 'payload'
+import {
+  APIError,
+  type CollectionBeforeChangeHook,
+  type CollectionConfig,
+  type Field,
+} from 'payload'
 import { authenticated } from '@/access/authenticated'
+import type { Effect } from '@/features/immersive/studio/effect'
 import { DEFAULT_EFFECT, EFFECT_OPTIONS, effectOf } from '@/features/immersive/studio/effects'
 import { emptyRecipe, validateRecipe } from '@/features/immersive/studio/recipe'
 import { recipeJsonSchema } from '@/features/immersive/studio/recipe-schema'
@@ -23,6 +29,44 @@ const published = (field: Field): Field =>
     admin: { hidden: true },
     access: { create: internal, update: internal },
   }) as Field
+
+type ChangeArgs = Parameters<CollectionBeforeChangeHook>[0]
+
+/** Writes to a saved look serialize on it; a changed `archived` is written to its row at once. */
+async function lockForChange({ data, req, originalDoc }: ChangeArgs) {
+  if (!originalDoc?.id) return
+  await lockLook(req, originalDoc.id)
+  if (typeof data.archived !== 'boolean' || data.archived === originalDoc.archived) return
+  const db = await transactionDB(req)
+  await db.execute(
+    sql`UPDATE streak_looks SET archived = ${data.archived} WHERE id = ${originalDoc.id}`,
+  )
+}
+
+/**
+ * A published look always has its posters: Publish in Studio is the one way
+ * to publish new output. Publishing what is already published (Payload's
+ * Revert to published) changes nothing the site shows.
+ */
+async function requireStudioPublish({ data, req, originalDoc }: ChangeArgs, effect: Effect) {
+  const id: number | undefined = originalDoc?.id
+  const live = id
+    ? await req.payload.findByID({
+        collection: LOOKS_SLUG,
+        id,
+        draft: false,
+        depth: 0,
+        disableErrors: true,
+        req,
+      })
+    : null
+  const unchanged =
+    live?._status === 'published' &&
+    storedRecipeHash(effect.id, live.recipe) ===
+      recipeHash(effect.id, data.recipe ?? originalDoc?.recipe)
+  if (!unchanged)
+    throw new APIError('Use Publish in Studio: it renders the posters the site needs.', 400)
+}
 
 /**
  * A look is one effect (`@/features/immersive/studio/effects`), authored. It is
@@ -59,16 +103,9 @@ export const StreakLooks: CollectionConfig = {
   endpoints: lookEndpoints,
   hooks: {
     beforeChange: [
-      async ({ data, req, originalDoc, operation, context }) => {
-        if (originalDoc?.id) {
-          await lockLook(req, originalDoc.id)
-          if (typeof data.archived === 'boolean' && data.archived !== originalDoc.archived) {
-            const db = await transactionDB(req)
-            await db.execute(
-              sql`UPDATE streak_looks SET archived = ${data.archived} WHERE id = ${originalDoc.id}`,
-            )
-          }
-        }
+      async (args) => {
+        const { data, req, originalDoc, operation, context } = args
+        await lockForChange(args)
         // The effect is open until the look is first published, then fixed:
         // every published state, poster and slot that uses the look was made
         // for that effect. The stage changes it together with the recipe.
@@ -77,28 +114,8 @@ export const StreakLooks: CollectionConfig = {
         if (data.recipe) studioInput(() => validateRecipe(effect, data.recipe))
         if (operation === 'create') data.createdBy = req.user?.id
         data.updatedBy = req.user?.id ?? originalDoc?.updatedBy
-        // A published look always has its posters: Publish in Studio is the
-        // one way to publish new output. Publishing what is already published
-        // (Payload's Revert to published) changes nothing the site shows.
-        if (data._status === 'published' && !context[PUBLISH]) {
-          const id: number | undefined = originalDoc?.id
-          const live = id
-            ? await req.payload.findByID({
-                collection: LOOKS_SLUG,
-                id,
-                draft: false,
-                depth: 0,
-                disableErrors: true,
-                req,
-              })
-            : null
-          const unchanged =
-            live?._status === 'published' &&
-            storedRecipeHash(effect.id, live.recipe) ===
-              recipeHash(effect.id, data.recipe ?? originalDoc?.recipe)
-          if (!unchanged)
-            throw new APIError('Use Publish in Studio: it renders the posters the site needs.', 400)
-        }
+        if (data._status === 'published' && !context[PUBLISH])
+          await requireStudioPublish(args, effect)
         return data
       },
     ],

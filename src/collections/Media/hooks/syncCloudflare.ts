@@ -158,6 +158,18 @@ async function syncVideo(doc: MediaDoc, fileUrl: string, req: PayloadRequest, cf
   doc.cloudflareStreamReady = false
 }
 
+/** Which Cloudflare product a file syncs to, by MIME type: Images, Stream, or neither. */
+function syncKind(mimeType: string | undefined): 'image' | 'video' | null {
+  if (mimeType?.startsWith('image/')) return 'image'
+  if (mimeType?.startsWith('video/')) return 'video'
+  return null
+}
+
+/** The file was replaced while Cloudflare still holds assets made from the old one. */
+const hasStaleAssets = (doc: MediaDoc, previousDoc: MediaDoc | undefined) =>
+  Boolean(previousDoc?.filename && doc.filename && previousDoc.filename !== doc.filename) &&
+  Boolean(doc.cloudflareImageId || doc.cloudflareStreamUid)
+
 export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   doc,
   previousDoc,
@@ -167,13 +179,8 @@ export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   // Skip if this update was triggered by the hook itself
   if (context?.skipCloudflareSync) return doc
 
-  const mimeType = doc.mimeType as string | undefined
-  if (!mimeType) return doc
-
-  const isImage = mimeType.startsWith('image/')
-  const isVideo = mimeType.startsWith('video/')
-
-  if (!isImage && !isVideo) return doc
+  const kind = syncKind(doc.mimeType as string | undefined)
+  if (!kind) return doc
 
   const fileUrl = resolveMediaUrl(doc)
   if (!fileUrl) return doc
@@ -181,20 +188,16 @@ export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   // Lazily import to keep this server-only and avoid circular deps
   const cf = await import('../../../utilities/cloudflare')
 
-  const fileReplaced = Boolean(
-    previousDoc?.filename && doc.filename && previousDoc.filename !== doc.filename,
-  )
-
   try {
-    if (fileReplaced && (doc.cloudflareImageId || doc.cloudflareStreamUid)) {
+    if (hasStaleAssets(doc, previousDoc)) {
       await purgeStaleAssets(doc, req, cf)
     }
 
-    if (isImage && !doc.cloudflareImageId) {
+    if (kind === 'image' && !doc.cloudflareImageId) {
       await syncImage(doc, fileUrl, req, cf)
     }
 
-    if (isVideo && !doc.cloudflareStreamUid) {
+    if (kind === 'video' && !doc.cloudflareStreamUid) {
       await syncVideo(doc, fileUrl, req, cf)
     }
   } catch (err) {

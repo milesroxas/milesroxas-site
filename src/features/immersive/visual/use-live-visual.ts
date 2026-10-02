@@ -70,49 +70,42 @@ export type LiveVisualOptions = {
   onStatusChange?: (status: LiveVisualStatus) => void
 }
 
-export function useLiveVisual<Reason extends string>({
-  rootRef,
-  placement,
-  kind,
-  allowed,
-  active,
-  identity,
-  supports,
-  admission = 'auto',
-  onStatusChange,
-}: LiveVisualOptions) {
-  const id = useId()
+/** The probe found a hardware WebGL2 context that meets the effect's own requirement. */
+const deviceSupports = (
+  capability: StreakCapability | null,
+  supports: LiveVisualOptions['supports'],
+): boolean =>
+  Boolean(capability?.webgl2) &&
+  !capability?.software &&
+  (!supports || (capability !== null && supports(capability)))
 
-  // Eligibility: policy first (no probe for a poster-only placement), then
-  // the visitor's preferences, then the device.
+/**
+ * Eligibility: policy first (no probe for a poster-only placement), then the
+ * visitor's preferences, then the device. A failure ends it for good.
+ */
+function useEligibility(
+  { placement, allowed, supports, admission }: LiveVisualOptions,
+  failure: string | null,
+) {
   const hydrated = useHydrated()
+  // Nothing is eligible before hydration or after a failure.
+  const unblocked = hydrated && !failure
   const policyAllows = placementAllowsLive(placement) && allowed
   const reducedMotion = usePrefersReducedMotion()
   const coarsePointer = useCoarsePointer()
-  const [paused] = useMotionPaused()
-  const [failure, setFailure] = useState<Reason | 'chunk' | null>(null)
-  const probeWanted = hydrated && policyAllows && !reducedMotion && !coarsePointer && !failure
+  const probeWanted = unblocked && policyAllows && !reducedMotion && !coarsePointer
   const capability = useStreakCapability(probeWanted)
   // Stories only (see `admission`): the lifecycle without the gates.
-  const forced = admission === 'force' && hydrated && !failure
-  const eligible =
-    forced ||
-    (probeWanted &&
-      Boolean(capability?.webgl2) &&
-      !capability?.software &&
-      (!supports || (capability !== null && supports(capability))))
+  const forced = admission === 'force' && unblocked
+  const eligible = forced || (probeWanted && deviceSupports(capability, supports))
+  return { capability, eligible }
+}
 
-  // Presence: draw only while near, visible, uncovered and settled.
-  const near = useNearViewport(rootRef)
-  const documentVisible = useDocumentVisible()
-  // The menu placement is the docked window itself, inside the covering frame.
-  const covered = usePageCovered(placement !== 'menu')
-  const wanted = eligible && !paused && near && documentVisible && !covered && active
-  const admitted = useGpuLease(id, wanted, kind, ADMISSION_PRIORITY[placement])
-  const live = wanted && admitted
-
-  // Mounting and generations. The runtime mounts on first admission and
-  // stays through short suspensions; a long one releases it.
+/**
+ * Mounting and generations. The runtime mounts on first admission and stays
+ * through short suspensions; a long one releases it.
+ */
+function useRuntimeMount(identity: string, live: boolean, failure: string | null) {
   const [mounted, setMounted] = useState(false)
   const [generation, setGeneration] = useState(0)
   const [readyGeneration, setReadyGeneration] = useState<number | null>(null)
@@ -143,23 +136,63 @@ export function useLiveVisual<Reason extends string>({
   }, [live, mounted])
 
   const handleReady = useCallback((readyFor: number) => setReadyGeneration(readyFor), [])
-  const fail = useCallback((reason: Reason | 'chunk') => {
-    setFailure(reason)
+  const unmount = useCallback(() => {
     setMounted(false)
     setReadyGeneration(null)
   }, [])
+  const ready = mounted && readyGeneration === generation
+  return { mounted, generation, ready, handleReady, unmount }
+}
+
+/** What the owner publishes on its root: the status, and the failure once there is one. */
+export const liveStatusAttributes = (status: LiveVisualStatus, failure: string | null) => ({
+  'data-visual-status': status,
+  ...(failure ? { 'data-visual-failure': failure } : {}),
+})
+
+function liveStatus(
+  failure: string | null,
+  mounted: boolean,
+  ready: boolean,
+  live: boolean,
+): LiveVisualStatus {
+  if (failure) return 'failed'
+  if (!mounted) return 'poster'
+  if (!ready) return 'preparing'
+  return live ? 'live' : 'suspended'
+}
+
+export function useLiveVisual<Reason extends string>(options: LiveVisualOptions) {
+  const { rootRef, placement, kind, active, identity, onStatusChange } = options
+  const id = useId()
+  const [failure, setFailure] = useState<Reason | 'chunk' | null>(null)
+  const { capability, eligible } = useEligibility(options, failure)
+
+  // Presence: draw only while unpaused, near, visible, uncovered and settled.
+  const [paused] = useMotionPaused()
+  const near = useNearViewport(rootRef)
+  const documentVisible = useDocumentVisible()
+  // The menu placement is the docked window itself, inside the covering frame.
+  const covered = usePageCovered(placement !== 'menu')
+  const wanted = eligible && !paused && near && documentVisible && !covered && active
+  const admitted = useGpuLease(id, wanted, kind, ADMISSION_PRIORITY[placement])
+  const live = wanted && admitted
+
+  const { mounted, generation, ready, handleReady, unmount } = useRuntimeMount(
+    identity,
+    live,
+    failure,
+  )
+  const fail = useCallback(
+    (reason: Reason | 'chunk') => {
+      setFailure(reason)
+      unmount()
+    },
+    [unmount],
+  )
   const failChunk = useCallback(() => fail('chunk'), [fail])
 
-  const ready = mounted && readyGeneration === generation
-  const status: LiveVisualStatus = failure
-    ? 'failed'
-    : !mounted
-      ? 'poster'
-      : !ready
-        ? 'preparing'
-        : live
-          ? 'live'
-          : 'suspended'
+  const status = liveStatus(failure, mounted, ready, live)
   useEffect(() => onStatusChange?.(status), [status, onStatusChange])
 
   return {

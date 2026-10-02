@@ -1,6 +1,6 @@
 import type { Payload } from 'payload'
-import { CONTENT_SURFACES, GLOBAL_SURFACES } from '@/shared/content/surfaces'
-import { syncGlobal, syncSurfaceDoc } from './indexSync'
+import { CONTENT_SURFACES, type ContentSurface, GLOBAL_SURFACES } from '@/shared/content/surfaces'
+import { type SyncResult, syncGlobal, syncSurfaceDoc } from './indexSync'
 
 /**
  * One full pass over the corpus: every published document on every content
@@ -48,6 +48,42 @@ export async function backfillAskIndex(payload: Payload): Promise<BackfillSummar
   return running
 }
 
+/** Counts one synced document; a document that is not public (null) adds nothing. */
+function tally(payload: Payload, summary: BackfillSummary, label: string, result: SyncResult) {
+  if (!result) return
+  summary.documents += 1
+  summary.chunks += result.chunks
+  summary.embedded += result.embedded
+  payload.logger.debug({ msg: 'ask backfill: synced', label, ...result })
+}
+
+/** Every published document on one content surface. */
+async function syncSurface(payload: Payload, surface: ContentSurface, summary: BackfillSummary) {
+  const { docs } = await payload.find({
+    collection: surface.collection,
+    depth: 0,
+    draft: false,
+    limit: 500,
+    pagination: false,
+    where: { _status: { equals: 'published' } },
+  })
+
+  for (const doc of docs) {
+    const label = `${surface.collection}:${doc.id}`
+    try {
+      tally(payload, summary, label, await syncSurfaceDoc(payload, surface, doc))
+    } catch (err) {
+      summary.failures.push(label)
+      payload.logger.error({ msg: 'ask backfill: document failed', label, err })
+    }
+  }
+  payload.logger.info({
+    msg: 'ask backfill: surface done',
+    surface: surface.collection,
+    docs: docs.length,
+  })
+}
+
 async function run(payload: Payload): Promise<BackfillSummary> {
   const startedAt = Date.now()
   const summary: BackfillSummary = {
@@ -59,43 +95,11 @@ async function run(payload: Payload): Promise<BackfillSummary> {
     durationMs: 0,
   }
 
-  const record = (label: string, result: { chunks: number; embedded: number } | null) => {
-    if (!result) return
-    summary.documents += 1
-    summary.chunks += result.chunks
-    summary.embedded += result.embedded
-    payload.logger.debug({ msg: 'ask backfill: synced', label, ...result })
-  }
-
-  for (const surface of CONTENT_SURFACES) {
-    const { docs } = await payload.find({
-      collection: surface.collection,
-      depth: 0,
-      draft: false,
-      limit: 500,
-      pagination: false,
-      where: { _status: { equals: 'published' } },
-    })
-
-    for (const doc of docs) {
-      const label = `${surface.collection}:${doc.id}`
-      try {
-        record(label, await syncSurfaceDoc(payload, surface, doc))
-      } catch (err) {
-        summary.failures.push(label)
-        payload.logger.error({ msg: 'ask backfill: document failed', label, err })
-      }
-    }
-    payload.logger.info({
-      msg: 'ask backfill: surface done',
-      surface: surface.collection,
-      docs: docs.length,
-    })
-  }
+  for (const surface of CONTENT_SURFACES) await syncSurface(payload, surface, summary)
 
   for (const surface of GLOBAL_SURFACES) {
     try {
-      record(surface.global, await syncGlobal(payload, surface))
+      tally(payload, summary, surface.global, await syncGlobal(payload, surface))
     } catch (err) {
       summary.failures.push(surface.global)
       payload.logger.error({ msg: 'ask backfill: global failed', global: surface.global, err })

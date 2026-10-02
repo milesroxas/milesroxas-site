@@ -165,7 +165,7 @@ export const text = (content: string, format = 0, style?: TextStyle): Serialized
   ...(style ? { $: { [TEXT_STYLE_STATE_KEY]: style } } : {}),
 })
 
-export const listItem = (...children: SerializedNode[]): SerializedNode => ({
+const listItem = (...children: SerializedNode[]): SerializedNode => ({
   type: 'listitem',
   children,
   direction: 'ltr',
@@ -175,7 +175,7 @@ export const listItem = (...children: SerializedNode[]): SerializedNode => ({
   version: 1,
 })
 
-export const unorderedList = (...items: SerializedNode[]): SerializedNode => ({
+const unorderedList = (...items: SerializedNode[]): SerializedNode => ({
   type: 'list',
   listType: 'bullet',
   tag: 'ul',

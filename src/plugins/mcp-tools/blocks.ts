@@ -35,7 +35,7 @@ export type OutlineRow = {
   text?: string
 }
 
-export const SNIPPET_CHARS = 200
+const SNIPPET_CHARS = 200
 
 const isRecord = (value: unknown): value is Doc => typeof value === 'object' && value !== null
 
@@ -131,7 +131,7 @@ export function blockText(block: Doc): string {
   return parts.join(' ').replace(/\s+/g, ' ').trim()
 }
 
-export const outlineRow = (row: BlockRow): OutlineRow => {
+const outlineRow = (row: BlockRow): OutlineRow => {
   const children = listBlocks(row.block).length
   const text = blockText(row.block).slice(0, SNIPPET_CHARS)
   return {

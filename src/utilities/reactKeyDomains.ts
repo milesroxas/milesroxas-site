@@ -3,7 +3,7 @@
  */
 
 import type { Post, Work } from '@/payload-types'
-import { getCompositeKey, getEntityKey, getSlugKey } from './reactKeys'
+import { getEntityKey, getSlugKey } from './reactKeys'
 
 /**
  * Block domain - keys for Payload CMS blocks
@@ -97,27 +97,6 @@ export const slideKeys = {
       }
     }
     return `slide-${index}`
-  },
-}
-
-/**
- * Code domain - keys for code tokens and lines
- */
-export const codeKeys = {
-  /**
-   * Generate key for a code line
-   */
-  fromLine: (line: Array<{ content: string }>, index: number): string => {
-    const lineContent = line.map((token) => token.content).join('')
-    const hash = lineContent.slice(0, 20).replace(/\s+/g, '-')
-    return getCompositeKey('line', index, hash)
-  },
-
-  /**
-   * Generate key for a code token
-   */
-  fromToken: (token: { content: string }, tokenIndex: number, lineIndex: number): string => {
-    return getCompositeKey('token', lineIndex, tokenIndex, token.content.slice(0, 10))
   },
 }
 

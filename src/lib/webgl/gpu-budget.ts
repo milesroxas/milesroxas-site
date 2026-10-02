@@ -32,7 +32,7 @@ export const GPU_LIVE_CEILING = 3
 export const STREAK_KIND_CEILING = 1
 
 /** Per-kind caps; a kind without one is bounded only by the total. */
-export const GPU_KIND_CEILINGS: Partial<Record<GpuLeaseKind, number>> = {
+const GPU_KIND_CEILINGS: Partial<Record<GpuLeaseKind, number>> = {
   streak: STREAK_KIND_CEILING,
 }
 

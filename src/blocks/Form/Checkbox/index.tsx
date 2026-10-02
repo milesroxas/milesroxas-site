@@ -5,6 +5,7 @@ import { Checkbox as CheckboxUi } from '@/components/ui/legacy-checkbox'
 import { Label } from '@/components/ui/legacy-label'
 
 import { FormError } from '../Error'
+import { RequiredMark } from '../shared'
 import type { RegisterFieldProps } from '../types'
 import { Width } from '../Width'
 
@@ -32,11 +33,7 @@ export const Checkbox: React.FC<CheckboxField & RegisterFieldProps> = ({
           }}
         />
         <Label htmlFor={name}>
-          {required && (
-            <span className="required">
-              * <span className="sr-only">(required)</span>
-            </span>
-          )}
+          {required && <RequiredMark />}
           {label}
         </Label>
       </div>

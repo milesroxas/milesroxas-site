@@ -2,25 +2,11 @@
  * The id behind a Payload relationship value, whether the query populated it
  * into a document or left it as a bare id. Returns null for an empty field.
  */
-export const relationshipId = (value: unknown): number | string | null => {
+const relationshipId = (value: unknown): number | string | null => {
   if (typeof value === 'number' || typeof value === 'string') return value
   if (value && typeof value === 'object' && 'id' in value)
     return (value as { id: number | string }).id
   return null
-}
-
-/**
- * Numeric id behind a Payload relationship value. Undefined when the field is
- * empty or holds a non-numeric id, so callers can pass the result straight to
- * a query that only accepts numeric ids.
- */
-export const numericRelationshipId = (value: unknown): number | undefined => {
-  if (typeof value === 'number') return value
-  if (typeof value === 'object' && value !== null && 'id' in value) {
-    const { id } = value as { id?: unknown }
-    return typeof id === 'number' ? id : undefined
-  }
-  return undefined
 }
 
 /** Ids behind a list of relationship values, with empty entries dropped. */

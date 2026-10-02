@@ -8,7 +8,7 @@ import { PLACEMENT_LIMITS, type VisualPlacement } from './placement'
  */
 const STREAK_LIVE_DEFAULT = true
 
-export const streakLiveEnabled = (): boolean =>
+const streakLiveEnabled = (): boolean =>
   process.env.NEXT_PUBLIC_STREAK_LIVE === 'off' ? false : STREAK_LIVE_DEFAULT
 
 /** Whether this placement may attempt a live field at all (rollout and placement policy). */

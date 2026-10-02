@@ -39,39 +39,15 @@ type AskWidgetProps = {
   terms?: AskHandoffTerms
 }
 
-export function AskWidget({
-  transport,
-  initialMessages,
-  placeholder = ASK_PLACEHOLDER,
-  terms = ASK_HANDOFF_TERMS_FALLBACK,
-}: AskWidgetProps) {
-  const {
-    question,
-    setQuestion,
-    messages,
-    status,
-    error,
-    busy,
-    canSend,
-    submit,
-    stop,
-    sent,
-    markSent,
-    feedback,
-  } = useAskChat({
-    transport,
-    initialMessages,
-  })
-  const hasTranscript = messages.length > 0
-
-  /**
-   * The transcript card grows in above the composer on the first send (the
-   * `0fr → 1fr` track below), which can carry the composer below the fold.
-   * Once the growth has settled, scroll by exactly the hidden amount, nearest
-   * edge semantics, so a composer already in view never moves. Lenis is the
-   * document's only scroll writer (docs/animations.md); without a root Lenis
-   * (reduced motion, stories) the native scroll is the only writer anyway.
-   */
+/**
+ * The transcript card grows in above the composer on the first send (the
+ * `0fr → 1fr` track below), which can carry the composer below the fold.
+ * Once the growth has settled, scroll by exactly the hidden amount, nearest
+ * edge semantics, so a composer already in view never moves. Lenis is the
+ * document's only scroll writer (docs/animations.md); without a root Lenis
+ * (reduced motion, stories) the native scroll is the only writer anyway.
+ */
+function useComposerReveal(hasTranscript: boolean) {
   const lenis = useLenis()
   const reducedMotion = usePrefersReducedMotion()
   const formRef = useRef<HTMLFormElement>(null)
@@ -97,53 +73,28 @@ export function AskWidget({
     wasEmpty.current = false
   }, [hasTranscript, reducedMotion, revealComposer])
 
+  return { formRef, revealComposer }
+}
+
+export function AskWidget({
+  transport,
+  initialMessages,
+  placeholder = ASK_PLACEHOLDER,
+  terms = ASK_HANDOFF_TERMS_FALLBACK,
+}: AskWidgetProps) {
+  const chat = useAskChat({
+    transport,
+    initialMessages,
+  })
+  const { question, setQuestion, messages, error, busy, canSend, submit, stop } = chat
+  const hasTranscript = messages.length > 0
+  const { formRef, revealComposer } = useComposerReveal(hasTranscript)
+
   return (
     <div className="flex flex-col">
-      {/* The transcript's row transitions from collapsed to content height, so
-          the composer travels instead of teleporting on the first send. The
-          card fades in alongside; it never slides, the growing clip is the
-          motion. `data-lenis-prevent` hands wheel input to the transcript's
-          own scroller instead of the page. */}
-      <div
-        className={cn(
-          'grid motion-safe:transition-[grid-template-rows] motion-safe:duration-300 motion-safe:ease-out-quint',
-          hasTranscript ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
-        )}
-        onTransitionEnd={(event) => {
-          if (event.target !== event.currentTarget || event.propertyName !== 'grid-template-rows')
-            return
-          revealComposer()
-        }}
-      >
-        <div className="min-h-0 overflow-hidden">
-          {hasTranscript && (
-            <Card
-              data-lenis-prevent
-              className="mb-4 h-[min(60svh,32rem)] gap-0 py-0 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-300"
-            >
-              <CardContent className="min-h-0 flex-1 overflow-hidden p-0">
-                <MessageScrollerProvider autoScroll>
-                  <MessageScroller>
-                    <MessageScrollerViewport>
-                      <MessageScrollerContent className="p-(--card-spacing)">
-                        <TranscriptItems
-                          feedback={feedback}
-                          messages={messages}
-                          onSent={markSent}
-                          sent={sent}
-                          status={status}
-                          terms={terms}
-                        />
-                      </MessageScrollerContent>
-                    </MessageScrollerViewport>
-                    <MessageScrollerButton />
-                  </MessageScroller>
-                </MessageScrollerProvider>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </div>
+      <TranscriptTrack onGrown={revealComposer} open={hasTranscript}>
+        {hasTranscript && <TranscriptCard chat={chat} terms={terms} />}
+      </TranscriptTrack>
 
       {error && (
         <p role="alert" className={`mb-4 text-destructive text-sm ${transcriptItemEnter}`}>
@@ -165,5 +116,73 @@ export function AskWidget({
         </InputGroup>
       </form>
     </div>
+  )
+}
+
+/**
+ * The transcript's row transitions from collapsed to content height, so the
+ * composer travels instead of teleporting on the first send. The card fades
+ * in alongside; it never slides, the growing clip is the motion.
+ */
+function TranscriptTrack({
+  open,
+  onGrown,
+  children,
+}: {
+  open: boolean
+  onGrown: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div
+      className={cn(
+        'grid motion-safe:transition-[grid-template-rows] motion-safe:duration-300 motion-safe:ease-out-quint',
+        open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+      )}
+      onTransitionEnd={(event) => {
+        if (event.target !== event.currentTarget || event.propertyName !== 'grid-template-rows')
+          return
+        onGrown()
+      }}
+    >
+      <div className="min-h-0 overflow-hidden">{children}</div>
+    </div>
+  )
+}
+
+/** `data-lenis-prevent` hands wheel input to the transcript's own scroller instead of the page. */
+function TranscriptCard({
+  chat,
+  terms,
+}: {
+  chat: ReturnType<typeof useAskChat>
+  terms: AskHandoffTerms
+}) {
+  const { messages, status, sent, markSent, feedback } = chat
+  return (
+    <Card
+      data-lenis-prevent
+      className="mb-4 h-[min(60svh,32rem)] gap-0 py-0 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-300"
+    >
+      <CardContent className="min-h-0 flex-1 overflow-hidden p-0">
+        <MessageScrollerProvider autoScroll>
+          <MessageScroller>
+            <MessageScrollerViewport>
+              <MessageScrollerContent className="p-(--card-spacing)">
+                <TranscriptItems
+                  feedback={feedback}
+                  messages={messages}
+                  onSent={markSent}
+                  sent={sent}
+                  status={status}
+                  terms={terms}
+                />
+              </MessageScrollerContent>
+            </MessageScrollerViewport>
+            <MessageScrollerButton />
+          </MessageScroller>
+        </MessageScrollerProvider>
+      </CardContent>
+    </Card>
   )
 }

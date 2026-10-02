@@ -13,9 +13,7 @@ gsap.registerPlugin(SplitText, ScrollTrigger, useGSAP)
 
 const { isPreview } = getEnv()
 
-export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
-  const container = useRef<HTMLDivElement>(null)
-
+const useFontsLoaded = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false)
 
   useEffect(() => {
@@ -41,6 +39,14 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
       }
     }
   }, [])
+
+  return fontsLoaded
+}
+
+export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
+  const container = useRef<HTMLDivElement>(null)
+
+  const fontsLoaded = useFontsLoaded()
 
   useGSAP(
     () => {

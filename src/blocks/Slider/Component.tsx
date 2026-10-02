@@ -46,12 +46,10 @@ const SlideContent: React.FC<SlideContentProps> = ({
   fullWidth,
   isSingleStyle = false,
 }) => {
-  const mediaSize = isSingleStyle
-    ? fullWidth
-      ? '100vw'
-      : '(max-width: 1024px) 100vw, 1024px'
-    : fullWidth
-      ? '100vw'
+  const mediaSize = fullWidth
+    ? '100vw'
+    : isSingleStyle
+      ? '(max-width: 1024px) 100vw, 1024px'
       : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, (max-width: 2000px) 80vw, 65vw'
 
   const mediaClassName = isSingleStyle
@@ -178,6 +176,38 @@ const DefaultStyleSlider: React.FC<{
   </div>
 )
 
+const SliderIntro: React.FC<{
+  fullWidth: boolean
+  introContent: NonNullable<SliderBlockType['introContent']>
+}> = ({ fullWidth, introContent }) => {
+  const alignClasses = {
+    'text-left': introContent.align === 'left' || !introContent.align,
+    'text-center': introContent.align === 'center',
+  }
+
+  return (
+    <div className={cn({ container: !fullWidth, 'px-8 md:px-14': fullWidth }, 'mb-12')}>
+      {introContent.heading && (
+        <h2
+          className={cn('mb-2', {
+            ...alignClasses,
+            'font-medium text-xl': introContent.size === 'base' || !introContent.size,
+            'font-medium text-2xl': introContent.size === 'lg',
+            'font-medium text-3xl': introContent.size === 'xl',
+          })}
+        >
+          {introContent.heading}
+        </h2>
+      )}
+      {introContent.subheading && (
+        <p className={cn('px-8 text-muted-foreground md:px-14', alignClasses)}>
+          {introContent.subheading}
+        </p>
+      )}
+    </div>
+  )
+}
+
 export const SliderBlock: React.FC<SliderBlockProps> = ({
   theme,
   id,
@@ -213,44 +243,19 @@ export const SliderBlock: React.FC<SliderBlockProps> = ({
   return (
     <div className={cn(sectionThemeClass(theme), 'w-full', className)} id={`block-${id}`}>
       <div style={spacingStyles}>
-        {introContent && (
-          <div className={cn({ container: !fullWidth, 'px-8 md:px-14': fullWidth }, 'mb-12')}>
-            {introContent.heading && (
-              <h2
-                className={cn('mb-2', {
-                  'text-left': introContent.align === 'left' || !introContent.align,
-                  'text-center': introContent.align === 'center',
-                  'font-medium text-xl': introContent.size === 'base' || !introContent.size,
-                  'font-medium text-2xl': introContent.size === 'lg',
-                  'font-medium text-3xl': introContent.size === 'xl',
-                })}
-              >
-                {introContent.heading}
-              </h2>
-            )}
-            {introContent.subheading && (
-              <p
-                className={cn('px-8 text-muted-foreground md:px-14', {
-                  'text-left': introContent.align === 'left' || !introContent.align,
-                  'text-center': introContent.align === 'center',
-                })}
-              >
-                {introContent.subheading}
-              </p>
-            )}
-          </div>
-        )}
+        {introContent && <SliderIntro fullWidth={fullWidth} introContent={introContent} />}
 
-        {style === 'single' && slides ? (
-          <SingleStyleSlider slides={slides} setApi={setApi} fullWidth={fullWidth} />
-        ) : slides ? (
-          <DefaultStyleSlider
-            slides={slides}
-            setApi={setApi}
-            currentIndex={currentIndex}
-            fullWidth={fullWidth}
-          />
-        ) : null}
+        {slides &&
+          (style === 'single' ? (
+            <SingleStyleSlider slides={slides} setApi={setApi} fullWidth={fullWidth} />
+          ) : (
+            <DefaultStyleSlider
+              slides={slides}
+              setApi={setApi}
+              currentIndex={currentIndex}
+              fullWidth={fullWidth}
+            />
+          ))}
       </div>
     </div>
   )

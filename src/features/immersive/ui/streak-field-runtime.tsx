@@ -2,9 +2,8 @@
 
 import { Canvas, useFrame } from '@react-three/fiber'
 import { type RefObject, useCallback, useEffect, useMemo, useRef } from 'react'
-import type { WebGLRenderer } from 'three'
 import { ContextGuard } from '@/lib/webgl/components/context-guard'
-import { FailureBoundary } from './failure-boundary'
+import { FailureBoundary, useCanvasFailure } from './failure-boundary'
 import {
   bindPointerInput,
   createPointerInput,
@@ -112,42 +111,18 @@ export function StreakFieldRuntime({
   rootRef,
 }: StreakFieldRuntimeProps) {
   const inputRef = useRef<PointerInput>(createPointerInput())
-  const failed = useRef(false)
   const interactive = isInteractive(tuning)
   const animated = isAnimated(tuning)
   const dprRange = useMemo<[number, number]>(() => [1, dpr], [dpr])
-
-  const fail = useCallback(
-    (reason: StreakFailureReason) => {
-      if (failed.current) return
-      failed.current = true
-      onFailure(reason)
-    },
-    [onFailure],
-  )
+  const { fail, handleCreated, handleError, handleContextLost, handleFirstFrame } =
+    useCanvasFailure<StreakFailureReason>(onFailure, generation, onReady)
 
   useEffect(() => {
     if (!active || !interactive) return
     return bindPointerInput(inputRef.current)
   }, [active, interactive])
 
-  const handleCreated = useCallback(
-    ({ gl }: { gl: WebGLRenderer }) => {
-      // Three reports compile and link failures here instead of throwing;
-      // without this hook a broken program draws nothing and looks "ready".
-      gl.debug.onShaderError = () => fail('shader')
-    },
-    [fail],
-  )
-
-  const handleContextLost = useCallback(() => fail('context-lost'), [fail])
-
-  const handleFirstFrame = useCallback(() => {
-    if (!failed.current) onReady(generation)
-  }, [generation, onReady])
-
   const handleFlowUnsupported = useCallback(() => fail('flow-unsupported'), [fail])
-  const handleError = useCallback(() => fail('context'), [fail])
 
   return (
     <FailureBoundary onError={handleError}>
@@ -176,5 +151,3 @@ export function StreakFieldRuntime({
     </FailureBoundary>
   )
 }
-
-export default StreakFieldRuntime

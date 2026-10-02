@@ -1,12 +1,42 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { type CSSProperties, useMemo, useRef, useState } from 'react'
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import type { VisualPlacement } from '../visual/placement'
 import { STUDIO_GROUND, type Surface } from './effect'
 import { type EffectId, effectOf } from './effects'
 import { type Recipe, snapshotRecipe } from './recipe'
 import { EFFECT_SCENES } from './scenes'
+
+type StudioPreviewProps = {
+  effect: EffectId
+  recipe: Recipe
+  placement: VisualPlacement
+  surface: Surface
+  paused: boolean
+  generation: number
+}
+
+const COPY_STYLE: CSSProperties = {
+  position: 'absolute',
+  left: '8%',
+  top: '35%',
+  pointerEvents: 'none',
+  maxWidth: '65%',
+}
+
+const stageStyle = (surface: Surface): CSSProperties => ({
+  position: 'relative',
+  isolation: 'isolate',
+  width: '100%',
+  height: '100%',
+  minHeight: 300,
+  background: STUDIO_GROUND[surface],
+  color: surface === 'dark' ? 'white' : '#111',
+})
+
+const SLOW_MESSAGE =
+  'Preview stopped because this device could not keep up. Reduce detail or density.'
 
 /** The Studio's stage: a look's draft, live, on a ground, at a placement's budget. */
 export function StudioPreview({
@@ -16,14 +46,7 @@ export function StudioPreview({
   surface,
   paused,
   generation,
-}: {
-  effect: EffectId
-  recipe: Recipe
-  placement: VisualPlacement
-  surface: Surface
-  paused: boolean
-  generation: number
-}) {
+}: StudioPreviewProps) {
   const root = useRef<HTMLDivElement>(null)
   const reducedMotion = usePrefersReducedMotion()
   const [error, setError] = useState('')
@@ -37,33 +60,14 @@ export function StudioPreview({
   const Live = EFFECT_SCENES[effectId].Live
 
   const copy = (
-    <div
-      style={{
-        position: 'absolute',
-        left: '8%',
-        top: '35%',
-        pointerEvents: 'none',
-        maxWidth: '65%',
-      }}
-    >
+    <div style={COPY_STYLE}>
       <strong style={{ fontSize: 32 }}>Your next visual.</strong>
       <p>Check contrast with real content {blend ? 'under' : 'over'} the effect.</p>
     </div>
   )
 
   return (
-    <div
-      ref={root}
-      style={{
-        position: 'relative',
-        isolation: 'isolate',
-        width: '100%',
-        height: '100%',
-        minHeight: 300,
-        background: STUDIO_GROUND[surface],
-        color: surface === 'dark' ? 'white' : '#111',
-      }}
-    >
+    <div ref={root} style={stageStyle(surface)}>
       {/* A blended effect washes over the page's content; one drawn with
           alpha is the ground the content sits on. */}
       {blend && copy}
@@ -78,11 +82,7 @@ export function StudioPreview({
             active={!ready || (!paused && !reducedMotion && placement !== 'card')}
             onReady={() => setReady(true)}
             onFailure={(reason) => setError(`Preview stopped: ${reason}.`)}
-            onSlow={() =>
-              setError(
-                'Preview stopped because this device could not keep up. Reduce detail or density.',
-              )
-            }
+            onSlow={() => setError(SLOW_MESSAGE)}
           />
         </div>
       )}

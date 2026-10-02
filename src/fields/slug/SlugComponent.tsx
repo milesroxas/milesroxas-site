@@ -13,23 +13,18 @@ type SlugComponentProps = {
   checkboxFieldPath: string
 } & TextFieldClientProps
 
-export const SlugComponent: React.FC<SlugComponentProps> = ({
-  field,
+/** While the lock checkbox is on, keeps the slug formatted from the field it follows. */
+const useAutoSlug = ({
+  checkboxFieldPath,
   fieldToUse,
-  checkboxFieldPath: checkboxFieldPathFromProps,
-  path,
-  readOnly: readOnlyFromProps,
+  setValue,
+  value,
+}: {
+  checkboxFieldPath: string
+  fieldToUse: string
+  setValue: (value: string) => void
+  value: string
 }) => {
-  const { label } = field
-
-  const checkboxFieldPath = path?.includes('.')
-    ? `${path}.${checkboxFieldPathFromProps}`
-    : checkboxFieldPathFromProps
-
-  const { value, setValue } = useField<string>({ path: path || field.name })
-
-  const { dispatchFields } = useForm()
-
   // The value of the checkbox
   // We're using separate useFormFields to minimise re-renders
   const checkboxValue = useFormFields(([fields]) => {
@@ -52,6 +47,28 @@ export const SlugComponent: React.FC<SlugComponentProps> = ({
       }
     }
   }, [targetFieldValue, checkboxValue, setValue, value])
+
+  return checkboxValue
+}
+
+export const SlugComponent: React.FC<SlugComponentProps> = ({
+  field,
+  fieldToUse,
+  checkboxFieldPath: checkboxFieldPathFromProps,
+  path,
+  readOnly: readOnlyFromProps,
+}) => {
+  const { label } = field
+
+  const checkboxFieldPath = path?.includes('.')
+    ? `${path}.${checkboxFieldPathFromProps}`
+    : checkboxFieldPathFromProps
+
+  const { value, setValue } = useField<string>({ path: path || field.name })
+
+  const { dispatchFields } = useForm()
+
+  const checkboxValue = useAutoSlug({ checkboxFieldPath, fieldToUse, setValue, value })
 
   const handleLock = useCallback(
     (e: React.MouseEvent<Element>) => {

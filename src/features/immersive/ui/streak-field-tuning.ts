@@ -1,14 +1,11 @@
 import { resolveTuning } from '../resolve-tuning'
-import { STREAK_FIELD_NOISES } from './streak-field-shader'
+import type { STREAK_FIELD_NOISES } from './streak-field-shader'
 
 /**
  * The Streak Field's public knobs and their defaults, kept apart from the
  * Three/R3F scene so the visual contract (`../visual`) and the lazy slot can
- * compose a tuning without loading the renderer chunk. `./streak-field.tsx`
- * re-exports everything here, so `@/features/immersive` is unchanged.
+ * compose a tuning without loading the renderer chunk.
  */
-
-export { STREAK_FIELD_NOISES }
 
 /** A 0..1 RGB colour for the streaks. */
 export type StreakFieldInk = readonly [number, number, number]

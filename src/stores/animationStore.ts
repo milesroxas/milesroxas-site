@@ -49,12 +49,6 @@ export function useResetAnimationOnRouteChange() {
   }, [pathname, resetAnimations, prevPathname])
 }
 
-// Utility to force reset animation state (useful in error handling)
-export function forceResetAnimations() {
-  const store = useAnimationStore.getState()
-  store.resetAnimations()
-}
-
 // Utility to ensure animations complete after a timeout (useful for recovery)
 export function ensureAnimationsComplete(timeoutMs = 3000) {
   setTimeout(() => {

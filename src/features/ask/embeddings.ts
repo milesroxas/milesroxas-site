@@ -41,6 +41,58 @@ export async function embedQuestions(questions: string[]): Promise<number[][]> {
   return embeddings
 }
 
+type StoredChunk = {
+  chunk_index: number
+  title: string
+  slug: string
+  heading_path: string | null
+  text: string
+  embedding: string
+}
+
+const headingPathOf = (chunk: MarkdownChunk): string | null => chunk.headingPath.join(' > ') || null
+
+/** A document's rows as stored, in chunk order, each vector as its text literal. */
+async function storedChunks(payload: Payload, doc: DocRef): Promise<StoredChunk[]> {
+  const { rows } = await drizzle(payload).execute(sql`
+    SELECT chunk_index, title, slug, heading_path, text, embedding::text AS embedding
+    FROM ask_embeddings
+    WHERE collection = ${doc.collection} AND doc_id = ${doc.docId}
+    ORDER BY chunk_index
+  `)
+  return rows as StoredChunk[]
+}
+
+/** The same chunks under the same headings, title and slug as the stored rows. */
+const sameRows = (stored: StoredChunk[], doc: DocRef, chunks: MarkdownChunk[]): boolean =>
+  stored.length === chunks.length &&
+  stored.every(
+    (row, i) =>
+      row.text === chunks[i].text &&
+      row.heading_path === headingPathOf(chunks[i]) &&
+      row.title === doc.title &&
+      row.slug === doc.slug,
+  )
+
+/**
+ * Every chunk's vector literal by its text: a stored vector where the text is
+ * already in the table, the rest embedded in one call.
+ */
+async function chunkVectors(stored: StoredChunk[], chunks: MarkdownChunk[]) {
+  const vectorByText = new Map(stored.map((row) => [row.text, row.embedding]))
+  const missing = chunks.filter((chunk) => !vectorByText.has(chunk.text))
+  if (missing.length > 0) {
+    const { embeddings } = await embedMany({
+      model: askEmbeddingModel,
+      values: missing.map((chunk) => chunk.text),
+    })
+    for (const [i, chunk] of missing.entries()) {
+      vectorByText.set(chunk.text, toVectorLiteral(embeddings[i]))
+    }
+  }
+  return { vectorByText, embedded: missing.length }
+}
+
 /**
  * Replaces a document's rows with the given chunks. Chunk text that is
  * already in the table keeps its stored vector, so re-publishing a document
@@ -61,51 +113,15 @@ export async function replaceDocEmbeddings(
     return { embedded: 0 }
   }
 
-  const { rows: existing } = await db.execute(sql`
-    SELECT chunk_index, title, slug, heading_path, text, embedding::text AS embedding
-    FROM ask_embeddings
-    WHERE collection = ${doc.collection} AND doc_id = ${doc.docId}
-    ORDER BY chunk_index
-  `)
-  const stored = existing as {
-    chunk_index: number
-    title: string
-    slug: string
-    heading_path: string | null
-    text: string
-    embedding: string
-  }[]
-
-  const headingPath = (chunk: MarkdownChunk): string | null => chunk.headingPath.join(' > ') || null
-
+  const stored = await storedChunks(payload, doc)
   // Nothing changed at all: leave the rows (and their updated_at) alone.
-  const unchanged =
-    stored.length === chunks.length &&
-    stored.every(
-      (row, i) =>
-        row.text === chunks[i].text &&
-        row.heading_path === headingPath(chunks[i]) &&
-        row.title === doc.title &&
-        row.slug === doc.slug,
-    )
-  if (unchanged) return { embedded: 0 }
+  if (sameRows(stored, doc, chunks)) return { embedded: 0 }
 
-  const vectorByText = new Map(stored.map((row) => [row.text, row.embedding]))
-  const missing = chunks.filter((chunk) => !vectorByText.has(chunk.text))
-  if (missing.length > 0) {
-    const { embeddings } = await embedMany({
-      model: askEmbeddingModel,
-      values: missing.map((chunk) => chunk.text),
-    })
-    for (const [i, chunk] of missing.entries()) {
-      vectorByText.set(chunk.text, toVectorLiteral(embeddings[i]))
-    }
-  }
-
+  const { vectorByText, embedded } = await chunkVectors(stored, chunks)
   const values = chunks.map(
     (chunk) =>
       sql`(${doc.collection}, ${doc.docId}, ${chunk.index}, ${doc.title}, ${doc.slug},
-          ${headingPath(chunk)}, ${chunk.text}, ${vectorByText.get(chunk.text)}::vector)`,
+          ${headingPathOf(chunk)}, ${chunk.text}, ${vectorByText.get(chunk.text)}::vector)`,
   )
 
   await db.execute(
@@ -116,7 +132,7 @@ export async function replaceDocEmbeddings(
     VALUES ${sql.join(values, sql`, `)}
   `)
 
-  return { embedded: missing.length }
+  return { embedded }
 }
 
 export async function deleteDocEmbeddings(

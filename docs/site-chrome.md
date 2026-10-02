@@ -100,6 +100,6 @@ button uses the same hook.
 The card → detail page FLIP (`src/hooks/useCardTransition.ts`) hides the
 chrome (`useChromeStore.setVisible(false)`) as its clone fills the screen.
 The destination brings it back: `HighImpact` at 70% of the clone's landing,
-`PostHero` and the work and post page clients through `restoreChrome()`. A
+the work and post page clients through `restoreChrome()`. A
 page that never does gets it back after two seconds (`SiteChromeClient`).
 `transitionPhase` in the same store tracks the clone for the heroes.

@@ -2,9 +2,9 @@ import type { Field, GroupField } from 'payload'
 
 import deepMerge from '@/utilities/deepMerge'
 
-export type SectionHeadingStyle = 'default' | 'center'
+type SectionHeadingStyle = 'default' | 'center'
 
-export const headingOptions: Record<SectionHeadingStyle, { label: string; value: string }> = {
+const headingOptions: Record<SectionHeadingStyle, { label: string; value: string }> = {
   default: {
     label: 'Default',
     value: 'default',

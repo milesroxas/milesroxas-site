@@ -52,6 +52,98 @@ const LeadingLane = ({ children, current }: { children: ReactNode; current?: boo
 
 const position = (index: number) => String(index + 1).padStart(2, '0')
 
+type Select = (event: MouseEvent, entry: ContentsEntry | null) => void
+
+/**
+ * A long index opens with the current row in view. One read on open, by
+ * offsets inside the list's own scroller, so the page never moves.
+ */
+function useCurrentRowInView() {
+  const viewportRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const viewport = viewportRef.current
+    const row = viewport?.querySelector<HTMLElement>('[aria-current]')
+    if (!viewport || !row) return
+    viewport.scrollTop = row.offsetTop - (viewport.clientHeight - row.offsetHeight) / 2
+  }, [])
+  return viewportRef
+}
+
+/** The label over the list, and where the reader is in it. */
+function ListHeader({ current, total }: { current: number; total: number }) {
+  return (
+    <div className="flex h-9 shrink-0 items-center justify-between px-3 font-mono text-xs/4 tracking-[0.08em] text-muted-foreground">
+      <span className="uppercase">{CONTENTS_LIST_LABEL}</span>
+      <span>
+        {Math.max(current, 0) + 1} / {total}
+      </span>
+    </div>
+  )
+}
+
+/** One section's row: a real in-page link, numbered, marked when it is the one being read. */
+function SectionRow({
+  density,
+  entry,
+  index,
+  isCurrent,
+  onSelect,
+}: {
+  density: ContentsDensity
+  entry: ContentsEntry
+  index: number
+  isCurrent: boolean
+  onSelect: Select
+}) {
+  return (
+    <li>
+      <a
+        aria-current={isCurrent ? 'location' : undefined}
+        className={rowClassName(density, isCurrent)}
+        href={`#${entry.id}`}
+        onClick={(event) => onSelect(event, entry)}
+      >
+        <LeadingLane current={isCurrent}>{position(index)}</LeadingLane>
+        <span className="min-w-0 grow truncate">{entry.label}</span>
+        <span className="flex size-5 shrink-0 items-center justify-center">
+          {isCurrent && <span className="size-2 rounded-full bg-foreground" />}
+        </span>
+      </a>
+    </li>
+  )
+}
+
+/** The list's foot, past a rule: the jump back to the top of the page. */
+function BackToTop({
+  className,
+  density,
+  onSelect,
+}: {
+  className?: string
+  density: ContentsDensity
+  onSelect: Select
+}) {
+  return (
+    <>
+      {/* The rule spans exactly the rows' own width, so its ends and a
+          highlighted row's edges agree, with equal air on both sides. */}
+      <div className="shrink-0 py-1.5">
+        <div className="h-px bg-border" />
+      </div>
+      <button
+        className={cn(rowClassName(density), className)}
+        onClick={(event) => onSelect(event, null)}
+        type="button"
+      >
+        <LeadingLane>
+          <IconArrowUp aria-hidden className="size-4" />
+        </LeadingLane>
+        Back to top
+      </button>
+    </>
+  )
+}
+
 export function ContentsList({
   entries,
   current,
@@ -69,22 +161,13 @@ export function ContentsList({
   /** Room for whatever shares the last row (the card's close control). */
   topRowClassName?: string
 }) {
-  const viewportRef = useRef<HTMLDivElement>(null)
-
-  // A long index opens with the current row in view. One read on open, by
-  // offsets inside the list's own scroller, so the page never moves.
-  useEffect(() => {
-    const viewport = viewportRef.current
-    const row = viewport?.querySelector<HTMLElement>('[aria-current]')
-    if (!viewport || !row) return
-    viewport.scrollTop = row.offsetTop - (viewport.clientHeight - row.offsetHeight) / 2
-  }, [])
+  const viewportRef = useCurrentRowInView()
 
   // The rows are real in-page links (shareable, readable with no script), so
   // Lenis's `anchors` handler would also answer the click, from the window,
   // and its scroll would replace ours along with the focus move riding on it.
   // Stopping the event at the row keeps one writer per jump.
-  const jump = (event: MouseEvent, entry: ContentsEntry | null) => {
+  const jump: Select = (event, entry) => {
     event.preventDefault()
     event.stopPropagation()
     onJump(entry)
@@ -92,12 +175,7 @@ export function ContentsList({
 
   return (
     <div className={cn('flex min-h-0 flex-col', className)}>
-      <div className="flex h-9 shrink-0 items-center justify-between px-3 font-mono text-xs/4 tracking-[0.08em] text-muted-foreground">
-        <span className="uppercase">{CONTENTS_LIST_LABEL}</span>
-        <span>
-          {Math.max(current, 0) + 1} / {entries.length}
-        </span>
-      </div>
+      <ListHeader current={current} total={entries.length} />
       {/* The list is the only part that scrolls, and the wheel stays in it.
           Each surface sets the cap (`--contents-list-max`, globals.css). */}
       <ScrollArea
@@ -108,42 +186,19 @@ export function ContentsList({
         viewportRef={viewportRef}
       >
         <ol className="flex flex-col">
-          {entries.map((entry, index) => {
-            const isCurrent = index === current
-            return (
-              <li key={entry.id}>
-                <a
-                  aria-current={isCurrent ? 'location' : undefined}
-                  className={rowClassName(density, isCurrent)}
-                  href={`#${entry.id}`}
-                  onClick={(event) => jump(event, entry)}
-                >
-                  <LeadingLane current={isCurrent}>{position(index)}</LeadingLane>
-                  <span className="min-w-0 grow truncate">{entry.label}</span>
-                  <span className="flex size-5 shrink-0 items-center justify-center">
-                    {isCurrent && <span className="size-2 rounded-full bg-foreground" />}
-                  </span>
-                </a>
-              </li>
-            )
-          })}
+          {entries.map((entry, index) => (
+            <SectionRow
+              density={density}
+              entry={entry}
+              index={index}
+              isCurrent={index === current}
+              key={entry.id}
+              onSelect={jump}
+            />
+          ))}
         </ol>
       </ScrollArea>
-      {/* The rule spans exactly the rows' own width, so its ends and a
-          highlighted row's edges agree, with equal air on both sides. */}
-      <div className="shrink-0 py-1.5">
-        <div className="h-px bg-border" />
-      </div>
-      <button
-        className={cn(rowClassName(density), topRowClassName)}
-        onClick={(event) => jump(event, null)}
-        type="button"
-      >
-        <LeadingLane>
-          <IconArrowUp aria-hidden className="size-4" />
-        </LeadingLane>
-        Back to top
-      </button>
+      <BackToTop className={topRowClassName} density={density} onSelect={jump} />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 /** RFC 5321 caps the full address at 254 octets. */
-export const EMAIL_MAX_LENGTH = 254
+const EMAIL_MAX_LENGTH = 254
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 

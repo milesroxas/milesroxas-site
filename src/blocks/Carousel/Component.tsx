@@ -135,6 +135,43 @@ const tallestAspectRatio = (slides: Slide[]): number | undefined => {
   return tallest
 }
 
+/** Slide and track classes for one deck, from its size, its width and its media. */
+const deckLayout = (
+  slides: Slide[],
+  slideSize: CarouselBlockProps['slideSize'],
+  isFullWidth: boolean,
+) => {
+  const size = slideSize ?? 'full'
+  const slideAspect = tallestAspectRatio(slides)
+  const sizeClass = cn(
+    (isFullWidth && fullWidthSizeClasses[size]) || slideSizeClasses[size],
+    slideAspect !== undefined && SLIDE_HEIGHT_CAP,
+  )
+  // A corner radius reads as a card edge, which needs room around it. A slide
+  // that runs the whole window has none, and the curve gets cut off against
+  // the browser edge, so it squares off. Only a full-width block with
+  // full-width slides can span the window, and even then only when the
+  // height cap isn't holding it in from the edges, so the slide asks its own
+  // width (the item is a size container): a slide within a scrollbar's width
+  // of the window squares off, one inset any further keeps its corners. Below
+  // `md` the slide is always peeking, inset on both sides, and the query never
+  // matches.
+  const cornerClass = cn(
+    'rounded-lg',
+    isFullWidth && size === 'full' && '@min-[calc(100vw-1.5rem)]:rounded-none',
+  )
+
+  // Media may bleed; captions stay on the page column. Only a full-width slide leaves it (from `md`).
+  const captionClassName = isFullWidth && size === 'full' ? 'md:container' : undefined
+
+  const trackStyle =
+    slideAspect !== undefined
+      ? ({ '--carousel-slide-aspect': slideAspect.toFixed(4) } as CSSProperties)
+      : undefined
+
+  return { captionClassName, cornerClass, gutter: slideGutterClasses[size], sizeClass, trackStyle }
+}
+
 const CarouselSlide: React.FC<{
   captionClassName?: string
   cornerClass: string
@@ -231,6 +268,31 @@ const CarouselArrows: React.FC<{ isFullWidth: boolean }> = ({ isFullWidth }) => 
   </>
 )
 
+const CAROUSEL_OPTS: React.ComponentProps<typeof Carousel>['opts'] = {
+  loop: true,
+  // The pose in ./visual-state is symmetric about the active slide,
+  // so the track is centred at every size: the active slide sits in
+  // the middle with an equal sliver of each neighbour. At
+  // `basis-full` this is identical to `start` — the slide is the
+  // column — so one rule covers every size.
+  align: 'center',
+}
+
+/** The embla api, plus the SVG filter ids and nodes the per-frame effects write through. */
+const useDeckEffects = () => {
+  const [api, setApi] = useState<CarouselApi>()
+  const filterIdBase = useId()
+  const caId = `${filterIdBase}-ca`
+  const dissolveId = `${filterIdBase}-dissolve`
+  const caOffsets = useRef<{ red: SVGFEOffsetElement | null; blue: SVGFEOffsetElement | null }>({
+    red: null,
+    blue: null,
+  })
+  const dissolveMap = useRef<SVGFEDisplacementMapElement | null>(null)
+  useCarouselEffects({ api, caId, caOffsets, dissolveId, dissolveMap })
+  return { caId, caOffsets, dissolveId, dissolveMap, setApi }
+}
+
 export const CarouselBlock: React.FC<Props> = (props) => {
   const {
     bare,
@@ -243,45 +305,18 @@ export const CarouselBlock: React.FC<Props> = (props) => {
     width,
   } = props
 
-  const [api, setApi] = useState<CarouselApi>()
-  const filterIdBase = useId()
-  const caId = `${filterIdBase}-ca`
-  const dissolveId = `${filterIdBase}-dissolve`
-  const caOffsets = useRef<{ red: SVGFEOffsetElement | null; blue: SVGFEOffsetElement | null }>({
-    red: null,
-    blue: null,
-  })
-  const dissolveMap = useRef<SVGFEDisplacementMapElement | null>(null)
-  useCarouselEffects({ api, caId, caOffsets, dissolveId, dissolveMap })
+  const { caId, caOffsets, dissolveId, dissolveMap, setApi } = useDeckEffects()
 
   const renderableSlides = renderableSlidesOf(slides)
 
   if (!renderableSlides.length) return null
 
   const isFullWidth = width === 'full-width'
-  const size = slideSize ?? 'full'
-  const slideAspect = tallestAspectRatio(renderableSlides)
-  const sizeClass = cn(
-    (isFullWidth && fullWidthSizeClasses[size]) || slideSizeClasses[size],
-    slideAspect !== undefined && SLIDE_HEIGHT_CAP,
+  const { captionClassName, cornerClass, gutter, sizeClass, trackStyle } = deckLayout(
+    renderableSlides,
+    slideSize,
+    isFullWidth,
   )
-  const gutter = slideGutterClasses[size]
-  // A corner radius reads as a card edge, which needs room around it. A slide
-  // that runs the whole window has none, and the curve gets cut off against
-  // the browser edge, so it squares off. Only a full-width block with
-  // full-width slides can span the window, and even then only when the
-  // height cap isn't holding it in from the edges, so the slide asks its own
-  // width (the item is a size container): a slide within a scrollbar's width
-  // of the window squares off, one inset any further keeps its corners. Below
-  // `md` the slide is always peeking, inset on both sides, and the query never
-  // matches.
-  const cornerClass = cn(
-    'rounded-lg',
-    isFullWidth && size === 'full' && '@min-[calc(100vw-1.5rem)]:rounded-none',
-  )
-
-  // Media may bleed; captions stay on the page column. Only a full-width slide leaves it (from `md`).
-  const captionClassName = isFullWidth && size === 'full' ? 'md:container' : undefined
 
   return (
     <Section bare={bare} spacing="loose" theme={theme}>
@@ -295,26 +330,11 @@ export const CarouselBlock: React.FC<Props> = (props) => {
         {/* Only the md+ contained layout reserves outer gutter room for the arrows. */}
         <Carousel
           className={cn(showArrows && !isFullWidth && 'md:mx-12')}
-          opts={{
-            loop: true,
-            // The pose in ./visual-state is symmetric about the active slide,
-            // so the track is centred at every size: the active slide sits in
-            // the middle with an equal sliver of each neighbour. At
-            // `basis-full` this is identical to `start` — the slide is the
-            // column — so one rule covers every size.
-            align: 'center',
-          }}
+          opts={CAROUSEL_OPTS}
           setApi={setApi}
         >
           {/* items-center: slides keep their media's natural aspect ratio, so shorter slides align to the vertical middle of the tallest. */}
-          <CarouselContent
-            className={cn(gutter.track, 'items-center')}
-            style={
-              slideAspect !== undefined
-                ? ({ '--carousel-slide-aspect': slideAspect.toFixed(4) } as CSSProperties)
-                : undefined
-            }
-          >
+          <CarouselContent className={cn(gutter.track, 'items-center')} style={trackStyle}>
             {renderableSlides.map((slide, index) => (
               <CarouselSlide
                 captionClassName={captionClassName}

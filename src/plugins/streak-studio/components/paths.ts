@@ -8,5 +8,3 @@ export const RECIPE_FIELD = 'recipe'
 export const EFFECT_FIELD = 'effect'
 
 export const LOOKS_SLUG = 'streak-looks'
-export const RELEASES_SLUG = 'streak-releases'
-export const RENDERS_SLUG = 'streak-renders'

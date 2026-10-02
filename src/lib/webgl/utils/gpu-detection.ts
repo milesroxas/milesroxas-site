@@ -69,8 +69,3 @@ export function detectGPUCapability(): GPUCapability {
 
   return cachedCapability
 }
-
-export function isWebGPUAvailable(): boolean {
-  if (typeof window === 'undefined') return false
-  return 'gpu' in navigator
-}

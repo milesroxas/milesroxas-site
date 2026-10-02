@@ -15,16 +15,18 @@ const QUICK_STATUSES: { label: string; value: InquiryStatus }[] = [
 const panelStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 8 }
 const noteStyle: React.CSSProperties = { fontSize: 12, margin: 0 }
 
-/**
- * Sidebar panel that turns "read this request" into "answer it": open a reply
- * with the reference already in the subject, take ownership, or record what
- * happened — each one action instead of edit-then-save.
- *
- * Every button writes through form state and then saves, so the document, its
- * timestamps (`repliedAt`), and the inbox counts all move together.
- */
-export function InquiryActions() {
-  const { id } = useDocumentInfo()
+/** A reply with the reference in its subject, so the answer threads back to this request. */
+function replyMailto(email: string | undefined, name: unknown, reference: string | undefined) {
+  if (!email) return undefined
+  const firstName = typeof name === 'string' ? (name.split(' ')[0] ?? name) : ''
+  const subject = `Re: your note to the studio${reference ? ` (${reference})` : ''}`
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+    `Hi ${firstName},\n\n`,
+  )}`
+}
+
+/** Status and ownership changes, each written through form state and then saved. */
+function useInquiryTriage() {
   const { user } = useAuth()
   const { submit } = useForm()
   const { refresh: refreshCounts } = useInquiryCounts()
@@ -33,9 +35,6 @@ export function InquiryActions() {
   const { value: assignedTo, setValue: setAssignedTo } = useField<number | string>({
     path: 'assignedTo',
   })
-  const { value: email } = useField<string>({ path: 'email' })
-  const { value: name } = useField<string>({ path: 'name' })
-  const { value: reference } = useField<string>({ path: 'reference' })
 
   const save = useCallback(async () => {
     try {
@@ -63,16 +62,29 @@ export function InquiryActions() {
     await save()
   }, [save, setAssignedTo, setStatus, status, user?.id])
 
+  const isMine = Boolean(user?.id) && String(assignedTo ?? '') === String(user?.id)
+
+  return { applyStatus, assignToMe, isMine, status }
+}
+
+/**
+ * Sidebar panel that turns "read this request" into "answer it": open a reply
+ * with the reference already in the subject, take ownership, or record what
+ * happened — each one action instead of edit-then-save.
+ *
+ * Every button writes through form state and then saves, so the document, its
+ * timestamps (`repliedAt`), and the inbox counts all move together.
+ */
+export function InquiryActions() {
+  const { id } = useDocumentInfo()
+  const { applyStatus, assignToMe, isMine, status } = useInquiryTriage()
+  const { value: email } = useField<string>({ path: 'email' })
+  const { value: name } = useField<string>({ path: 'name' })
+  const { value: reference } = useField<string>({ path: 'reference' })
+
   if (!id) return null
 
-  const firstName = typeof name === 'string' ? (name.split(' ')[0] ?? name) : ''
-  const mailto = email
-    ? `mailto:${email}?subject=${encodeURIComponent(
-        `Re: your note to the studio${reference ? ` (${reference})` : ''}`,
-      )}&body=${encodeURIComponent(`Hi ${firstName},\n\n`)}`
-    : undefined
-
-  const isMine = Boolean(user?.id) && String(assignedTo ?? '') === String(user?.id)
+  const mailto = replyMailto(email, name, reference)
 
   return (
     <div className="field-type" style={panelStyle}>

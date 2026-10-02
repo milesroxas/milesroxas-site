@@ -59,7 +59,7 @@ const FOCUS = ['passing', 'part', 'subject'] as const
 export type FindFocus = (typeof FOCUS)[number]
 
 /** Ask Jev about one passage. The topic is in the state, so the questions are fixed text. */
-export const FIND_QUESTIONS = {
+const FIND_QUESTIONS = {
   mentions: noul('Does `passage` mention or discuss `topic`?', {
     true: 'The passage names the topic, or talks about it in other words: a synonym, a product, client or place name that stands for it, or a description of it.',
     false:

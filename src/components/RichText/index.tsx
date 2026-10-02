@@ -171,7 +171,7 @@ const variantClasses = {
   emphasis: 'text-muted-foreground [&_strong]:font-normal [&_strong]:text-foreground',
 } as const
 
-export type RichTextVariant = keyof typeof variantClasses
+type RichTextVariant = keyof typeof variantClasses
 
 type Props = {
   data: DefaultTypedEditorState

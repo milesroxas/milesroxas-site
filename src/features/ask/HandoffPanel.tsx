@@ -3,7 +3,7 @@
 import { IconAlertCircle, IconArrowRight, IconArrowUpRight, IconCheck } from '@tabler/icons-react'
 import Link from 'next/link'
 import type React from 'react'
-import { type Ref, useEffect, useId, useRef, useState } from 'react'
+import { type Ref, type RefObject, useEffect, useId, useRef, useState } from 'react'
 import { postInquiry } from '@/blocks/shared/form/post-inquiry'
 import { Button } from '@/components/ui/button'
 import {
@@ -70,6 +70,108 @@ function inView(element: HTMLElement | null) {
 const finePointer = () =>
   typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches
 
+/** Where a handoff opens: its receipt once sent, the form for an address already typed, else the offer. */
+const initialPanel = (sent: boolean, kind: AskHandoffKind, suggestedEmail: string | null): Panel =>
+  sent ? SENT : kind === 'contact_details' && suggestedEmail ? FORM : OFFER
+
+/** Lands focus and scroll for the panel a swap arrived at. */
+function settleOn(
+  panel: Panel,
+  {
+    root,
+    name,
+    itemId,
+    reducedMotion,
+    scrollToMessage,
+  }: {
+    root: HTMLDivElement | null
+    name: HTMLInputElement | null
+    itemId: string
+    reducedMotion: boolean
+    scrollToMessage: ReturnType<typeof useMessageScroller>['scrollToMessage']
+  },
+) {
+  if (panel === FORM) {
+    if (name && (lastInputWasKeyboard() || finePointer())) name.focus({ preventScroll: true })
+    // Already in full view (a tall panel), nothing moves: the lead line and
+    // the question stay above the form they travel with. Otherwise it is
+    // aligned to its top, not brought "nearest": on a short panel the form
+    // is taller than the transcript, and the scroller's own pin to the end
+    // would leave the promise line above the fold, which is the whole
+    // reason the visitor is being asked for an address.
+    if (!inView(root))
+      scrollToMessage(itemId, { align: 'start', behavior: reducedMotion ? 'auto' : 'smooth' })
+  }
+  if (panel === SENT) focusForKeyboard(root, { preventScroll: true })
+  // Cancelled: keyboard focus goes back to the chip that opened the form.
+  if (panel === OFFER) focusForKeyboard(root?.querySelector('button'), { preventScroll: true })
+}
+
+/**
+ * The swap between a handoff's panels, and where focus and scroll land once
+ * the incoming one has settled (its nodes are visible, its height is final).
+ * Deferred a frame: under reduced motion the swap settles synchronously,
+ * before the state it set has rendered.
+ */
+function usePanelSwap({
+  rootRef,
+  nameRef,
+  itemId,
+  panel,
+  setPanel,
+}: {
+  rootRef: RefObject<HTMLDivElement | null>
+  nameRef: RefObject<HTMLInputElement | null>
+  itemId: string
+  panel: Panel
+  setPanel: (panel: Panel) => void
+}) {
+  const reducedMotion = usePrefersReducedMotion()
+  const { scrollToMessage } = useMessageScroller()
+  /** Where the swap in flight is headed; `panel` still reads the outgoing state until it lands. */
+  const headingTo = useRef<Panel>(panel)
+
+  useEffect(() => trackInputModality(), [])
+
+  const swapTo = useRevealSwap({
+    rootRef,
+    active: panel,
+    // The swap deals in indices; only the three above are ever passed to it.
+    onSwap: (index) => setPanel(index as Panel),
+    onSettled: () => {
+      requestAnimationFrame(() =>
+        settleOn(headingTo.current, {
+          root: rootRef.current,
+          name: nameRef.current,
+          itemId,
+          reducedMotion,
+          scrollToMessage,
+        }),
+      )
+    },
+    morphHeight: true,
+    scaleMedia: false,
+  })
+
+  return (next: Panel) => {
+    headingTo.current = next
+    swapTo(next)
+  }
+}
+
+const handoffCardClass = (prominent: boolean) =>
+  cn(
+    // The ground arrives on the swap's own beat, so the offer's transparent
+    // row becomes the form's muted surface while the height morphs.
+    'motion-safe:transition-colors motion-safe:ease-out-quint',
+    // The offer is a row, not a card: no ground, no padding, and nothing
+    // clipped (the chip's focus ring reaches past the row's box). `!` on
+    // the two that the inset variant also sets through a data attribute
+    // of its own, which would otherwise win on source order.
+    !prominent &&
+      'data-[panel=offer]:overflow-visible data-[panel=offer]:py-0 data-[panel=offer]:rounded-none! data-[panel=offer]:bg-transparent!',
+  )
+
 type HandoffProps = {
   kind: AskHandoffKind
   /** Site Info's promise, from the resolved handoff or the surface's own copy of it. */
@@ -128,56 +230,10 @@ export function Handoff({
   const nameRef = useRef<HTMLInputElement>(null)
   const [suggestedEmail] = useState(() => askHandoffEmail(messages))
   const [panel, setPanel] = useState<Panel>(() =>
-    sentReceipt ? SENT : kind === 'contact_details' && suggestedEmail ? FORM : OFFER,
+    initialPanel(sentReceipt !== null, kind, suggestedEmail),
   )
   const [receipt, setReceipt] = useState<AskHandoffReceipt | null>(sentReceipt)
-  const reducedMotion = usePrefersReducedMotion()
-  const { scrollToMessage } = useMessageScroller()
-  /** Where the swap in flight is headed; `panel` still reads the outgoing state until it lands. */
-  const headingTo = useRef<Panel>(panel)
-
-  useEffect(() => trackInputModality(), [])
-
-  /**
-   * Once the incoming panel has settled (its nodes are visible, its height
-   * is final). Deferred a frame: under reduced motion the swap settles
-   * synchronously, before the state it set has rendered.
-   */
-  const settle = () => {
-    requestAnimationFrame(() => {
-      if (headingTo.current === FORM) {
-        const name = nameRef.current
-        if (name && (lastInputWasKeyboard() || finePointer())) name.focus({ preventScroll: true })
-        // Already in full view (a tall panel), nothing moves: the lead line and
-        // the question stay above the form they travel with. Otherwise it is
-        // aligned to its top, not brought "nearest": on a short panel the form
-        // is taller than the transcript, and the scroller's own pin to the end
-        // would leave the promise line above the fold, which is the whole
-        // reason the visitor is being asked for an address.
-        if (!inView(rootRef.current))
-          scrollToMessage(itemId, { align: 'start', behavior: reducedMotion ? 'auto' : 'smooth' })
-      }
-      if (headingTo.current === SENT) focusForKeyboard(rootRef.current, { preventScroll: true })
-      // Cancelled: keyboard focus goes back to the chip that opened the form.
-      if (headingTo.current === OFFER)
-        focusForKeyboard(rootRef.current?.querySelector('button'), { preventScroll: true })
-    })
-  }
-
-  const swapTo = useRevealSwap({
-    rootRef,
-    active: panel,
-    // The swap deals in indices; only the three above are ever passed to it.
-    onSwap: (index) => setPanel(index as Panel),
-    onSettled: settle,
-    morphHeight: true,
-    scaleMedia: false,
-  })
-
-  const go = (next: Panel) => {
-    headingTo.current = next
-    swapTo(next)
-  }
+  const go = usePanelSwap({ rootRef, nameRef, itemId, panel, setPanel })
 
   return (
     <Card
@@ -186,17 +242,7 @@ export function Handoff({
       role={panel === SENT ? 'status' : undefined}
       tabIndex={panel === SENT ? -1 : undefined}
       variant="inset"
-      className={cn(
-        // The ground arrives on the swap's own beat, so the offer's transparent
-        // row becomes the form's muted surface while the height morphs.
-        'motion-safe:transition-colors motion-safe:ease-out-quint',
-        // The offer is a row, not a card: no ground, no padding, and nothing
-        // clipped (the chip's focus ring reaches past the row's box). `!` on
-        // the two that the inset variant also sets through a data attribute
-        // of its own, which would otherwise win on source order.
-        !prominent &&
-          'data-[panel=offer]:overflow-visible data-[panel=offer]:py-0 data-[panel=offer]:rounded-none! data-[panel=offer]:bg-transparent!',
-      )}
+      className={handoffCardClass(prominent)}
       style={{ transitionDuration: `${SCROLL_REVEAL_SWAP.textDuration * 1000}ms` }}
     >
       {panel === OFFER && (
@@ -266,6 +312,17 @@ function HandoffOffer({
   )
 }
 
+type HandoffFormProps = {
+  kind: AskHandoffKind
+  messages: AskUIMessage[]
+  nameRef: Ref<HTMLInputElement>
+  onCancel: () => void
+  onSent: (receipt: AskHandoffReceipt) => void
+  suggestedEmail: string | null
+  terms: AskHandoffTerms
+  turn: string | null
+}
+
 /**
  * An address the visitor already wrote in the chat starts the email field,
  * marked "From your message" until they change it. Send waits for both
@@ -281,58 +338,25 @@ function HandoffForm({
   suggestedEmail,
   terms,
   turn,
-}: {
-  kind: AskHandoffKind
-  messages: AskUIMessage[]
-  nameRef: Ref<HTMLInputElement>
-  onCancel: () => void
-  onSent: (receipt: AskHandoffReceipt) => void
-  suggestedEmail: string | null
-  terms: AskHandoffTerms
-  turn: string | null
-}) {
+}: HandoffFormProps) {
   const statusId = useId()
   const feedback = useAskFeedback()
   const [name, setName] = useState('')
   const [email, setEmail] = useState(suggestedEmail ?? '')
-  const [error, setError] = useState<string | null>(null)
-  const [sending, setSending] = useState(false)
-
-  async function send(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const address = normalizeEmailAddress(email)
-    const message = askHandoffMessage(messages)
-    if (!isValidEmailAddress(address)) return setError(INQUIRY_EMAIL_INVALID)
-    if (!message) return
-    setError(null)
-    setSending(true)
-    try {
-      const { reference } = await postInquiry({
-        name: name.trim(),
-        email: address,
-        message,
-        type: ASK_HANDOFFS[kind].form,
-        ...askInquiryFields({ conversation: feedback.conversation, turn }),
-      })
-      onSent({ email: address, reference })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong. Try again.')
-    } finally {
-      setSending(false)
-    }
-  }
+  const { error, setError, sending, send } = useHandoffSend({
+    kind,
+    messages,
+    turn,
+    conversation: feedback.conversation,
+    name,
+    email,
+    onSent,
+  })
 
   return (
     // `contents`, so the card's own stack spaces the form's parts.
     <form className="contents" noValidate onSubmit={send}>
-      <CardHeader data-swap="text">
-        {/* The form's own caption, not conversation body: it reads one step
-            down from the transcript on a phone, where the panel is short and
-            every line costs the send action its place above the fold. */}
-        <CardDescription className="max-md:text-sm/5">
-          {askHandoffPromise(terms.responseTime)}
-        </CardDescription>
-      </CardHeader>
+      <HandoffPromise terms={terms} />
       <CardContent data-swap="text">
         <ContactFields
           email={email}
@@ -357,17 +381,93 @@ function HandoffForm({
           statusId={statusId}
         />
       </CardContent>
-      <CardFooter data-swap="text">
-        <span>Prefer the full form?</span>
-        <Button asChild size="clear" variant="link">
-          <HandoffLink feedback={feedback} href={ASK_HANDOFF_HREF} messages={messages} turn={turn}>
-            Contact page
-            <IconArrowRight data-icon="inline-end" />
-          </HandoffLink>
-        </Button>
-      </CardFooter>
+      <ContactPageFooter feedback={feedback} messages={messages} turn={turn} />
     </form>
   )
+}
+
+/**
+ * The form's own caption, not conversation body: it reads one step down from
+ * the transcript on a phone, where the panel is short and every line costs
+ * the send action its place above the fold.
+ */
+function HandoffPromise({ terms }: { terms: AskHandoffTerms }) {
+  return (
+    <CardHeader data-swap="text">
+      <CardDescription className="max-md:text-sm/5">
+        {askHandoffPromise(terms.responseTime)}
+      </CardDescription>
+    </CardHeader>
+  )
+}
+
+function ContactPageFooter({
+  feedback,
+  messages,
+  turn,
+}: Pick<HandoffLinkProps, 'feedback' | 'messages' | 'turn'>) {
+  return (
+    <CardFooter data-swap="text">
+      <span>Prefer the full form?</span>
+      <Button asChild size="clear" variant="link">
+        <HandoffLink feedback={feedback} href={ASK_HANDOFF_HREF} messages={messages} turn={turn}>
+          Contact page
+          <IconArrowRight data-icon="inline-end" />
+        </HandoffLink>
+      </Button>
+    </CardFooter>
+  )
+}
+
+/**
+ * Posts the handoff to the inquiries intake: the address checked first with
+ * the intake's own rule and words, the visitor's questions as the message.
+ */
+function useHandoffSend({
+  kind,
+  messages,
+  turn,
+  conversation,
+  name,
+  email,
+  onSent,
+}: {
+  kind: AskHandoffKind
+  messages: AskUIMessage[]
+  turn: string | null
+  conversation: string
+  name: string
+  email: string
+  onSent: (receipt: AskHandoffReceipt) => void
+}) {
+  const [error, setError] = useState<string | null>(null)
+  const [sending, setSending] = useState(false)
+
+  async function send(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const address = normalizeEmailAddress(email)
+    const message = askHandoffMessage(messages)
+    if (!isValidEmailAddress(address)) return setError(INQUIRY_EMAIL_INVALID)
+    if (!message) return
+    setError(null)
+    setSending(true)
+    try {
+      const { reference } = await postInquiry({
+        name: name.trim(),
+        email: address,
+        message,
+        type: ASK_HANDOFFS[kind].form,
+        ...askInquiryFields({ conversation, turn }),
+      })
+      onSent({ email: address, reference })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Try again.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return { error, setError, sending, send }
 }
 
 /** Name and address in one inset block, labelled for AutoFill. */

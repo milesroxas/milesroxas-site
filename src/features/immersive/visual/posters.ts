@@ -18,10 +18,10 @@ import type { EffectVisual, PosterMediaSource } from './descriptor'
  */
 export const STREAK_POSTER_SIZE = { width: 1600, height: 900 } as const
 
-export type StreakPosterSurface = 'dark' | 'light'
+type StreakPosterSurface = 'dark' | 'light'
 
 /** MIME the menu and social fallbacks report for a preset poster. */
-export const STREAK_POSTER_MIME = 'image/webp'
+const STREAK_POSTER_MIME = 'image/webp'
 
 export type PosterImage = {
   src: string
@@ -35,7 +35,7 @@ export type PosterImage = {
  * The URL for a poster upload, through the path images use here: the
  * Cloudflare Images delivery URL when the media has synced, else the stored file.
  */
-export const mediaPosterImage = (media: PosterMediaSource): PosterImage | null => {
+const mediaPosterImage = (media: PosterMediaSource): PosterImage | null => {
   const src =
     (media as { cloudflareImageUrl?: string | null }).cloudflareImageUrl ||
     getMediaUrl(media.url, media.updatedAt)
@@ -49,7 +49,7 @@ export const mediaPosterImage = (media: PosterMediaSource): PosterImage | null =
   }
 }
 
-export const presetPosterImage = (
+const presetPosterImage = (
   effect: Effect,
   look: string,
   surface: StreakPosterSurface,

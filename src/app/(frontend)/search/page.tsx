@@ -1,6 +1,6 @@
 import configPromise from '@payload-config'
 import type { Metadata } from 'next/types'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import type { CardPostData } from '@/components/Card/Posts/Component'
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { Search } from '@/search/Component'
@@ -11,6 +11,19 @@ type Args = {
     q: string
   }>
 }
+
+const SEARCHED_FIELDS = ['title', 'meta.description', 'meta.title', 'slug'] as const
+
+/**
+ * The index also holds pages and works since the Ask keyword fallback reads it
+ * (composer Phase 5); this page lists posts, as it always has.
+ */
+function postsMatching(query: string): Where {
+  const posts: Where = { 'doc.relationTo': { equals: 'posts' } }
+  if (!query) return posts
+  return { ...posts, or: SEARCHED_FIELDS.map((field) => ({ [field]: { like: query } })) }
+}
+
 export default async function Page({ searchParams: searchParamsPromise }: Args) {
   const { q: query } = await searchParamsPromise
   const payload = await getPayload({ config: configPromise })
@@ -28,37 +41,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
     },
     // pagination: false reduces overhead if you don't need totalDocs
     pagination: false,
-    // The index also holds pages and works since the Ask keyword fallback
-    // reads it (composer Phase 5); this page lists posts, as it always has.
-    ...(query
-      ? {
-          where: {
-            'doc.relationTo': { equals: 'posts' },
-            or: [
-              {
-                title: {
-                  like: query,
-                },
-              },
-              {
-                'meta.description': {
-                  like: query,
-                },
-              },
-              {
-                'meta.title': {
-                  like: query,
-                },
-              },
-              {
-                slug: {
-                  like: query,
-                },
-              },
-            ],
-          },
-        }
-      : { where: { 'doc.relationTo': { equals: 'posts' } } }),
+    where: postsMatching(query),
   })
 
   return (

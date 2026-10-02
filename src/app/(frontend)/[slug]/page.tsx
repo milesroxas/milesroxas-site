@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
 import { cache } from 'react'
+import { slugWhere } from '@/app/(frontend)/slug-where'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
@@ -102,12 +103,7 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
     depth: 3,
     limit: 1,
     pagination: false,
-    where: {
-      and: [
-        { slug: { equals: slug } },
-        ...(draft ? [] : [{ _status: { equals: 'published' as const } }]),
-      ],
-    },
+    where: slugWhere(slug, draft),
   })
 
   return result.docs?.[0] || null

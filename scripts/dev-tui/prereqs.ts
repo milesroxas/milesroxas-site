@@ -1,7 +1,7 @@
 import { execa } from 'execa'
 import { PROJECT_ROOT } from './constants'
 
-export async function which(cmd: string): Promise<string | null> {
+async function which(cmd: string): Promise<string | null> {
   try {
     const r = await execa('which', [cmd], { reject: false })
     if (r.exitCode === 0 && r.stdout.trim()) {
@@ -26,9 +26,7 @@ export async function which(cmd: string): Promise<string | null> {
   return null
 }
 
-export async function checkDockerAvailable(): Promise<
-  { ok: true } | { ok: false; message: string }
-> {
+async function checkDockerAvailable(): Promise<{ ok: true } | { ok: false; message: string }> {
   const docker = await which('docker')
   if (!docker) {
     return { ok: false, message: 'docker not found in PATH' }
@@ -43,9 +41,7 @@ export async function checkDockerAvailable(): Promise<
   return { ok: true }
 }
 
-export async function checkComposePostgresUp(): Promise<
-  { ok: true } | { ok: false; message: string }
-> {
+async function checkComposePostgresUp(): Promise<{ ok: true } | { ok: false; message: string }> {
   const r = await execa('docker', ['compose', 'ps', 'postgres'], {
     cwd: PROJECT_ROOT,
     reject: false,

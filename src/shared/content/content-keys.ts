@@ -1,8 +1,8 @@
 /**
  * Which document keys carry reader-facing content, shared by every walk over
- * a page's stored shape: the RAG corpus extractor (`./extract`) and the
- * reading-time counter (`@/blocks/shared/reading-time`). One list, so a new
- * text field is taught to both walkers at once.
+ * a page's stored shape: the RAG corpus extractor (`./extract`) and the MCP
+ * block tools (`@/plugins/mcp-tools/blocks`). One list, so a new text field is
+ * taught to both walkers at once.
  *
  * Keys are compared lowercase with a trailing `override` stripped, because an
  * override field holds the same substance as the field it replaces.
@@ -46,7 +46,7 @@ export const CONTENT_TEXT_KEYS = new Set([
   'text',
   // A figure's plain-language description (blocks/figures): what a chart or
   // diagram shows, which is all of it a text corpus can hold. Not rendered
-  // copy — a reading-time walk drops it (see NON_RENDERED_TEXT_KEYS).
+  // copy.
   'textalternative',
   'thesis',
   'title',
@@ -77,10 +77,3 @@ export const CONTENT_SKIP_KEYS = new Set([
   'spec',
   'updatedat',
 ])
-
-/**
- * Text keys a corpus reads but a visitor never does: alternative text is for
- * a screen reader and a language model, so charging a sighted reader for it
- * would add minutes no one spends.
- */
-export const NON_RENDERED_TEXT_KEYS = new Set(['textalternative'])

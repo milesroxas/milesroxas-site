@@ -186,7 +186,7 @@ const MAX_PREFILL_CHARS = 600
 const PREFILL_HEADING = 'From my Ask conversation:'
 
 /** What the visitor asked, oldest first, capped to the latest few. */
-export function userQuestions(messages: UIMessage[]): string[] {
+function userQuestions(messages: UIMessage[]): string[] {
   return messages
     .filter((message) => message.role === 'user')
     .map((message) => messageText(message).trim())

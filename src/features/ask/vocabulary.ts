@@ -37,7 +37,7 @@ export const ASK_GROUNDED_OUTCOMES = [
   'partial',
 ] as const satisfies readonly AskOutcome[]
 
-/** Which path in `retrieveSources()` produced a turn's sources. */
+/** Which path in `prepareRetrieval()`'s search produced a turn's sources. */
 export const ASK_RETRIEVAL_PATHS = [
   { label: 'Embedding', value: 'embedding' },
   { label: 'Keyword', value: 'keyword' },

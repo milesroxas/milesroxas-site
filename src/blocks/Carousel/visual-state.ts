@@ -5,21 +5,21 @@
  * every scroll frame — the two can never drift.
  */
 
-export const INACTIVE_SCALE = 0.8
-export const INACTIVE_OPACITY = 0.5
+const INACTIVE_SCALE = 0.8
+const INACTIVE_OPACITY = 0.5
 /** Coverflow: inactive slides turn their outer edge away from the viewer. */
-export const INACTIVE_ROTATE_DEG = 7
+const INACTIVE_ROTATE_DEG = 7
 /**
  * Per-slide camera distance. CSS `perspective` on an ancestor only reaches its
  * direct children, so each slide carries its own perspective() in its
  * transform — without it the rotateY renders as a flat horizontal squash.
  */
-export const PERSPECTIVE_PX = 1200
+const PERSPECTIVE_PX = 1200
 /** Depth-of-field: recession and defocus grow per snap of distance from the active slide. */
-export const DEPTH_PER_SNAP_PX = 90
-export const BLUR_PER_SNAP_PX = 2
+const DEPTH_PER_SNAP_PX = 90
+const BLUR_PER_SNAP_PX = 2
 /** Distance cap (in snaps) so far loop slides don't shrink/blur into mush. */
-export const MAX_SNAP_DISTANCE = 2.5
+const MAX_SNAP_DISTANCE = 2.5
 
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max)
@@ -31,7 +31,7 @@ export const clamp = (value: number, min: number, max: number) =>
  * than as a slide continuing off-frame — so the ink is gone a third of a snap
  * out, while the media is still only slightly recessed.
  */
-export const CAPTION_FADE_SNAPS = 0.35
+const CAPTION_FADE_SNAPS = 0.35
 
 /**
  * Caption ink at a signed snap distance, on the same scroll position every

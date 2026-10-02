@@ -5,6 +5,7 @@ import { useLenis } from 'lenis/react'
 import {
   type ComponentType,
   type ReactNode,
+  type RefObject,
   useCallback,
   useEffect,
   useId,
@@ -99,41 +100,14 @@ function Arrival({ extended }: { extended: boolean }) {
   )
 }
 
+type ArrivalState = 'pending' | 'extended' | 'done'
+
 /**
- * The Contents button: a floating index of the page's section headings, for
- * the collections that opt in (`showContents`). Render it inside the page's
- * `<article>`; that is the scope it indexes. The button itself is portaled to
- * the body, beside the site chrome, so it floats above the chrome's scroll
- * edges rather than inside the article's stacking context under them.
- *
- * One button is both the trigger and the close control. It never moves: the
- * card grows out from under it and the button becomes the card's close slot,
- * so opening and closing are two presses on the same spot.
+ * The arrival pill's lifecycle: claimed on the first showing of a visit (the
+ * index warms then too), collapsed after a hold or a little scroll.
  */
-export function ContentsButton() {
-  const scopeRef = useRef<HTMLSpanElement>(null)
-  const anchorRef = useRef<HTMLDivElement>(null)
-  const triggerRef = useRef<HTMLButtonElement>(null)
-  const ringRef = useRef<SVGCircleElement>(null)
-  const panelId = useId()
-  const lenis = useLenis()
-  const sheet = useIsMobile()
-
-  const { entries, current, visible } = useContentsTracking(scopeRef, ringRef)
-  const [host, setHost] = useState<HTMLElement | null>(null)
-  useEffect(() => setHost(document.body), [])
-  const ground = useBandGround(anchorRef, host !== null)
-  const [open, setOpen] = useState(false)
-  const [Panel, warmPanel] = useContentsPanel()
-  const [arrival, setArrival] = useState<'pending' | 'extended' | 'done'>('pending')
-
-  const enabled = entries.length >= CONTENTS_MIN_ENTRIES
-  const shown = enabled && visible
-
-  useEffect(() => trackInputModality(), [])
-
-  // Leaving the article (hero above, closing band below) puts the index away.
-  if (!shown && open) setOpen(false)
+function useArrival(shown: boolean, warmPanel: () => void) {
+  const [arrival, setArrival] = useState<ArrivalState>('pending')
 
   useEffect(() => {
     if (!shown) return
@@ -158,35 +132,131 @@ export function ContentsButton() {
     }
   }, [arrival])
 
-  const close = useCallback<ContentsPanelProps['onClose']>((options) => {
-    setOpen(false)
-    if (options?.restoreFocus) focusForKeyboard(triggerRef.current, { preventScroll: true })
-  }, [])
+  return [arrival, setArrival] as const
+}
 
-  // Lenis is the only writer of the scroll position. Without it (reduced
-  // motion turns the provider off) the jump lands instantly, natively.
+/**
+ * Scroll to a section (or the top, for null) and land keyboard focus on it.
+ * Lenis is the only writer of the scroll position. Without it (reduced motion
+ * turns the provider off) the jump lands instantly, natively.
+ */
+function scrollToEntry(lenis: ReturnType<typeof useLenis>, entry: ContentsEntry | null) {
+  const target = entry?.element ?? null
+  const land = () => focusForKeyboard(target, { preventScroll: true })
+  window.history.replaceState(
+    window.history.state,
+    '',
+    entry ? `#${entry.id}` : window.location.pathname + window.location.search,
+  )
+  if (lenis) lenis.scrollTo(target ?? 0, { onComplete: land })
+  else {
+    if (target) target.scrollIntoView()
+    else window.scrollTo(0, 0)
+    land()
+  }
+}
+
+/** The body, once mounted: the button portals beside the site chrome, never server-side. */
+function usePortalHost() {
+  const [host, setHost] = useState<HTMLElement | null>(null)
+  useEffect(() => setHost(document.body), [])
+  return host
+}
+
+/** Whether the index is open, and the ways it closes: dismissed, jumped from, or left behind. */
+function useContentsOpen(shown: boolean, triggerRef: RefObject<HTMLButtonElement | null>) {
+  const lenis = useLenis()
+  const [open, setOpen] = useState(false)
+
+  // Leaving the article (hero above, closing band below) puts the index away.
+  if (!shown && open) setOpen(false)
+
+  const close = useCallback<ContentsPanelProps['onClose']>(
+    (options) => {
+      setOpen(false)
+      if (options?.restoreFocus) focusForKeyboard(triggerRef.current, { preventScroll: true })
+    },
+    [triggerRef],
+  )
+
   const jump = useCallback(
     (entry: ContentsEntry | null) => {
       setOpen(false)
-      const target = entry?.element ?? null
-      const land = () => focusForKeyboard(target, { preventScroll: true })
-      window.history.replaceState(
-        window.history.state,
-        '',
-        entry ? `#${entry.id}` : window.location.pathname + window.location.search,
-      )
-      if (lenis) lenis.scrollTo(target ?? 0, { onComplete: land })
-      else {
-        if (target) target.scrollIntoView()
-        else window.scrollTo(0, 0)
-        land()
-      }
+      scrollToEntry(lenis, entry)
     },
     [lenis],
   )
 
+  return { close, jump, open, setOpen }
+}
+
+/** The trigger's accessible name: the index, and where the reader is in it. */
+const triggerLabel = (section: ContentsEntry | undefined, current: number, total: number) =>
+  section ? `${LABEL}, section ${current + 1} of ${total}, ${section.label}` : LABEL
+
+/** Everything the button tracks and decides; the component only renders it. */
+function useContentsButton() {
+  const scopeRef = useRef<HTMLSpanElement>(null)
+  const anchorRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const ringRef = useRef<SVGCircleElement>(null)
+  const panelId = useId()
+  const sheet = useIsMobile()
+
+  const { entries, current, visible } = useContentsTracking(scopeRef, ringRef)
+  const host = usePortalHost()
+  const ground = useBandGround(anchorRef, host !== null)
+
+  const enabled = entries.length >= CONTENTS_MIN_ENTRIES
+  const shown = enabled && visible
+
+  const { close, jump, open, setOpen } = useContentsOpen(shown, triggerRef)
+  const [Panel, warmPanel] = useContentsPanel()
+
+  useEffect(() => trackInputModality(), [])
+
+  const [arrival, setArrival] = useArrival(shown, warmPanel)
+
+  const toggle = () => {
+    setArrival('done')
+    warmPanel()
+    setOpen((value) => !value)
+  }
+
+  return {
+    refs: { anchorRef, ringRef, scopeRef, triggerRef },
+    close,
+    current,
+    enabled,
+    entries,
+    extended: arrival === 'extended' && !open,
+    ground,
+    host,
+    jump,
+    open,
+    Panel,
+    panelId,
+    sheet,
+    shown,
+    toggle,
+    warmPanel,
+  }
+}
+
+/**
+ * The Contents button: a floating index of the page's section headings, for
+ * the collections that opt in (`showContents`). Render it inside the page's
+ * `<article>`; that is the scope it indexes. The button itself is portaled to
+ * the body, beside the site chrome, so it floats above the chrome's scroll
+ * edges rather than inside the article's stacking context under them.
+ *
+ * One button is both the trigger and the close control. It never moves: the
+ * card grows out from under it and the button becomes the card's close slot,
+ * so opening and closing are two presses on the same spot.
+ */
+export function ContentsButton() {
+  const { refs, current, entries, extended, open, Panel, panelId, ...state } = useContentsButton()
   const section = entries[current]
-  const extended = arrival === 'extended' && !open
 
   const anchor = (
     <div
@@ -195,90 +265,35 @@ export function ContentsButton() {
       data-chrome=""
       data-open={open}
       // The band under the button decides its surface, as it does the bars'.
-      data-theme={ground}
-      data-visible={shown}
-      ref={anchorRef}
+      data-theme={state.ground}
+      data-visible={state.shown}
+      ref={refs.anchorRef}
     >
-      {enabled && (
+      {state.enabled && (
         <>
-          <button
-            aria-controls={panelId}
-            aria-expanded={open}
-            aria-label={
-              section
-                ? `${LABEL}, section ${current + 1} of ${entries.length}, ${section.label}`
-                : LABEL
-            }
-            className="group/trigger pressable peer relative z-10 flex size-14 cursor-pointer items-center justify-center rounded-full text-popover-foreground outline-hidden"
-            onClick={() => {
-              setArrival('done')
-              warmPanel()
-              setOpen((value) => !value)
-            }}
-            // Warm the index the moment a press is likely.
-            onFocus={warmPanel}
-            onPointerEnter={warmPanel}
-            ref={triggerRef}
-            type="button"
-          >
-            <span
-              className={cn(
-                'absolute inset-0 rounded-full transition-[scale,background-color,box-shadow] duration-200 ease-(--ease-out-quint) motion-reduce:transition-none',
-                // Keyboard focus: the primary ring outside the progress ring, a gap between.
-                'group-focus-visible/trigger:ring-2 group-focus-visible/trigger:ring-primary group-focus-visible/trigger:ring-offset-2 group-focus-visible/trigger:ring-offset-background',
-                open ? SURFACE.open : SURFACE.rest,
-              )}
-            />
-            <Arrival extended={extended} />
-            {/* Reading progress. Decorative: the accessible name carries it. */}
-            <svg
-              aria-hidden="true"
-              className="absolute inset-0 size-full -rotate-90 transition-opacity duration-200 group-data-[arrival=extended]:opacity-0 group-data-[open=true]:opacity-0 motion-reduce:transition-none"
-              fill="none"
-              strokeWidth="2"
-              viewBox="0 0 56 56"
-            >
-              <circle className="stroke-foreground/10" cx="28" cy="28" r="25" />
-              <circle
-                cx="28"
-                cy="28"
-                pathLength="1"
-                r="25"
-                ref={ringRef}
-                stroke="currentColor"
-                strokeDasharray="1"
-                strokeDashoffset="1"
-                strokeLinecap="round"
-              />
-            </svg>
-            <Glyph hidden={open || extended}>
-              <IconList className="size-5" />
-            </Glyph>
-            <Glyph hidden={!open}>
-              <IconX className="size-4" />
-            </Glyph>
-          </button>
+          <Trigger
+            extended={extended}
+            label={triggerLabel(section, current, entries.length)}
+            onToggle={state.toggle}
+            onWarm={state.warmPanel}
+            open={open}
+            panelId={panelId}
+            ringRef={refs.ringRef}
+            triggerRef={refs.triggerRef}
+          />
           {/* The one place the section's name lives outside the index. */}
-          {section && !open && (
-            <span
-              aria-hidden
-              className="pointer-events-none absolute top-1/2 right-full mr-2.5 flex h-7 -translate-y-1/2 items-center gap-2 rounded-lg bg-foreground px-2.5 text-xs/4 font-medium whitespace-nowrap text-background opacity-0 transition-opacity duration-150 group-data-[arrival=extended]:hidden peer-hover:opacity-100 peer-hover:delay-300 peer-focus-visible:opacity-100 motion-reduce:transition-none"
-            >
-              <span className="font-mono">{String(current + 1).padStart(2, '0')}</span>
-              {section.label}
-            </span>
-          )}
+          {section && !open && <SectionHint label={section.label} number={current + 1} />}
           {/* Mounted once fetched, open or not, so the card can play its exit. */}
           {Panel && (
             <Panel
-              anchorRef={anchorRef}
+              anchorRef={refs.anchorRef}
               current={current}
               entries={entries}
               id={panelId}
-              onClose={close}
-              onJump={jump}
+              onClose={state.close}
+              onJump={state.jump}
               open={open}
-              sheet={sheet}
+              sheet={state.sheet}
             />
           )}
         </>
@@ -288,9 +303,112 @@ export function ContentsButton() {
 
   return (
     <>
-      <span hidden ref={scopeRef} />
-      {host && createPortal(anchor, host)}
+      <span hidden ref={refs.scopeRef} />
+      {state.host && createPortal(anchor, state.host)}
     </>
+  )
+}
+
+/** The one press target: it opens the index and, once open, is the card's close control. */
+function Trigger({
+  extended,
+  label,
+  onToggle,
+  onWarm,
+  open,
+  panelId,
+  ringRef,
+  triggerRef,
+}: {
+  extended: boolean
+  label: string
+  onToggle: () => void
+  onWarm: () => void
+  open: boolean
+  panelId: string
+  ringRef: RefObject<SVGCircleElement | null>
+  triggerRef: RefObject<HTMLButtonElement | null>
+}) {
+  return (
+    <button
+      aria-controls={panelId}
+      aria-expanded={open}
+      aria-label={label}
+      className="group/trigger pressable peer relative z-10 flex size-14 cursor-pointer items-center justify-center rounded-full text-popover-foreground outline-hidden"
+      onClick={onToggle}
+      // Warm the index the moment a press is likely.
+      onFocus={onWarm}
+      onPointerEnter={onWarm}
+      ref={triggerRef}
+      type="button"
+    >
+      <TriggerFace extended={extended} open={open} ringRef={ringRef} />
+    </button>
+  )
+}
+
+/** What the trigger shows: its surface, the arrival pill, reading progress and the glyph. */
+function TriggerFace({
+  extended,
+  open,
+  ringRef,
+}: {
+  extended: boolean
+  open: boolean
+  ringRef: RefObject<SVGCircleElement | null>
+}) {
+  return (
+    <>
+      <span
+        className={cn(
+          'absolute inset-0 rounded-full transition-[scale,background-color,box-shadow] duration-200 ease-(--ease-out-quint) motion-reduce:transition-none',
+          // Keyboard focus: the primary ring outside the progress ring, a gap between.
+          'group-focus-visible/trigger:ring-2 group-focus-visible/trigger:ring-primary group-focus-visible/trigger:ring-offset-2 group-focus-visible/trigger:ring-offset-background',
+          open ? SURFACE.open : SURFACE.rest,
+        )}
+      />
+      <Arrival extended={extended} />
+      {/* Reading progress. Decorative: the accessible name carries it. */}
+      <svg
+        aria-hidden="true"
+        className="absolute inset-0 size-full -rotate-90 transition-opacity duration-200 group-data-[arrival=extended]:opacity-0 group-data-[open=true]:opacity-0 motion-reduce:transition-none"
+        fill="none"
+        strokeWidth="2"
+        viewBox="0 0 56 56"
+      >
+        <circle className="stroke-foreground/10" cx="28" cy="28" r="25" />
+        <circle
+          cx="28"
+          cy="28"
+          pathLength="1"
+          r="25"
+          ref={ringRef}
+          stroke="currentColor"
+          strokeDasharray="1"
+          strokeDashoffset="1"
+          strokeLinecap="round"
+        />
+      </svg>
+      <Glyph hidden={open || extended}>
+        <IconList className="size-5" />
+      </Glyph>
+      <Glyph hidden={!open}>
+        <IconX className="size-4" />
+      </Glyph>
+    </>
+  )
+}
+
+/** The current section's number and name, on hover or keyboard focus of the trigger. */
+function SectionHint({ label, number }: { label: string; number: number }) {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute top-1/2 right-full mr-2.5 flex h-7 -translate-y-1/2 items-center gap-2 rounded-lg bg-foreground px-2.5 text-xs/4 font-medium whitespace-nowrap text-background opacity-0 transition-opacity duration-150 group-data-[arrival=extended]:hidden peer-hover:opacity-100 peer-hover:delay-300 peer-focus-visible:opacity-100 motion-reduce:transition-none"
+    >
+      <span className="font-mono">{String(number).padStart(2, '0')}</span>
+      {label}
+    </span>
   )
 }
 

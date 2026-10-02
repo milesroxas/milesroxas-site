@@ -22,6 +22,7 @@ import {
   stateOf,
   topNodes,
   withoutBlankNodes,
+  withTag,
 } from './lexical'
 
 export type Block = { blockType?: string; id?: string | null; [key: string]: unknown }
@@ -67,7 +68,7 @@ export type Unit = {
 export type MediaInfo = Map<number, { width?: number | null; height?: number | null }>
 
 /** Heading at or under this many characters; longer section headings are statements. */
-export const SHORT_HEADING_CHARS = 80
+const SHORT_HEADING_CHARS = 80
 
 /**
  * Legacy `theme`: `dark` is a forced-dark band, `light` and `system` are the
@@ -75,7 +76,7 @@ export const SHORT_HEADING_CHARS = 80
  * `inverted`, `light` and `system` to `default`), so both spellings read the
  * same and a pre-migration snapshot restores as it did.
  */
-export const bandOf = (theme: unknown): Band =>
+const bandOf = (theme: unknown): Band =>
   theme === 'dark' || theme === 'inverted' ? 'dark' : 'light'
 
 const mediaId = (value: unknown): number | null => {
@@ -107,7 +108,7 @@ const columnsOf = (block: Block): Column[] =>
   Array.isArray(block.columns) ? (block.columns as Column[]) : []
 
 /** A Columns block that holds a work or a post card stays as it is (it is a listing, not copy). */
-export const isListingContent = (block: Block): boolean =>
+const isListingContent = (block: Block): boolean =>
   block.blockType === 'content' &&
   columnsOf(block).some((column) => column.content === 'work' || column.content === 'post')
 
@@ -195,22 +196,16 @@ type Run = { title: string; description: string }
  * heading with nothing under it).
  */
 const runsOf = (nodes: LexicalNode[]): Run[] | null => {
-  const runs: Run[] = []
-  let current: { title: string; paragraphs: string[] } | null = null
+  const runs: { title: string; paragraphs: string[] }[] = []
   for (const node of nodes) {
+    const last = runs[runs.length - 1]
     if (hasLink(node)) return null
-    if (isHeading(node)) {
-      if (current && current.paragraphs.length === 0) return null
-      if (current) runs.push({ title: current.title, description: current.paragraphs.join('\n\n') })
-      current = { title: plainText(node).trim(), paragraphs: [] }
-      continue
-    }
-    if (node.type !== 'paragraph' || !current) return null
-    current.paragraphs.push(plainText(node).trim())
+    if (isHeading(node)) runs.push({ title: plainText(node).trim(), paragraphs: [] })
+    else if (node.type === 'paragraph' && last) last.paragraphs.push(plainText(node).trim())
+    else return null
   }
-  if (!current || current.paragraphs.length === 0) return null
-  runs.push({ title: current.title, description: current.paragraphs.join('\n\n') })
-  return runs
+  if (!runs.length || runs.some((run) => run.paragraphs.length === 0)) return null
+  return runs.map(({ title, paragraphs }) => ({ title, description: paragraphs.join('\n\n') }))
 }
 
 /** The lone heading a column holds (one heading node, or one short paragraph), or null. */
@@ -230,17 +225,15 @@ const textUnits = (columns: Column[], source: string, band: Band): Unit[] => {
   const bodies = columns.map((column) => withoutBlankNodes(topNodes(column.text?.richText)))
   const like = columns[0]?.text?.richText
   if (bodies.length === 0) return []
+  const unit = (rule: RuleId, opens: boolean, block: Block): Unit[] => [
+    { rule, source, band, opens, blocks: [block] },
+  ]
 
   if (bodies.length === 1) {
-    return [
-      {
-        rule: 'T1',
-        source,
-        band,
-        opens: false,
-        blocks: [{ blockType: 'richText', body: stateOf(richTextNodes(bodies[0]), like) }],
-      },
-    ]
+    return unit('T1', false, {
+      blockType: 'richText',
+      body: stateOf(richTextNodes(bodies[0]), like),
+    })
   }
 
   // Runs of heading-then-paragraphs read as prose, at the level the Insight
@@ -249,48 +242,26 @@ const textUnits = (columns: Column[], source: string, band: Band): Unit[] => {
   // recognise the shape, and its plain-text titles would drop inline marks.
   const runs = bodies.map(runsOf)
   if (runs.every((run): run is Run[] => run !== null)) {
-    return [
-      {
-        rule: 'T2',
-        source,
-        band,
-        opens: false,
-        blocks: [
-          { blockType: 'richText', body: stateOf(clampHeadings(bodies.flat(), ['h3']), like) },
-        ],
-      },
-    ]
+    return unit('T2', false, {
+      blockType: 'richText',
+      body: stateOf(clampHeadings(bodies.flat(), ['h3']), like),
+    })
   }
 
   const lone = loneHeadingOf(bodies[0])
   if (lone) {
-    return [
-      {
-        rule: 'T3',
-        source,
-        band,
-        opens: true,
-        blocks: [
-          {
-            blockType: 'richTransition',
-            heading: lone,
-            ...SECTION_OPENER_LAYOUT,
-            body: stateOf(headingsAsParagraphs(bodies.slice(1).flat()), like),
-          },
-        ],
-      },
-    ]
+    return unit('T3', true, {
+      blockType: 'richTransition',
+      heading: lone,
+      ...SECTION_OPENER_LAYOUT,
+      body: stateOf(headingsAsParagraphs(bodies.slice(1).flat()), like),
+    })
   }
 
-  return [
-    {
-      rule: 'T4',
-      source,
-      band,
-      opens: false,
-      blocks: [{ blockType: 'richText', body: stateOf(richTextNodes(bodies.flat()), like) }],
-    },
-  ]
+  return unit('T4', false, {
+    blockType: 'richText',
+    body: stateOf(richTextNodes(bodies.flat()), like),
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -336,7 +307,7 @@ const sliderIntroUnit = (slider: Block, source: string, band: Band): Unit | null
   }
 }
 
-export const sliderUnits = (slider: Block, source: string, band: Band): Unit[] => {
+const sliderUnits = (slider: Block, source: string, band: Band): Unit[] => {
   const slides = slidesOf(slider)
   const units: Unit[] = []
   const intro = sliderIntroUnit(slider, source, band)
@@ -458,7 +429,84 @@ const isPortrait = (id: number, media: MediaInfo): boolean => {
   return Boolean(width && height && height >= width)
 }
 
-export const contentUnits = (block: Block, media: MediaInfo): Unit[] => {
+/** YouTube columns (C4) and slider columns (C5, after their S2 opener), in column order. */
+const embedUnits = (columns: Column[], source: string, band: Band): Unit[] =>
+  columns.flatMap((column): Unit[] => {
+    const url = str(column.youTube?.url)
+    if (column.content === 'youTube' && url) {
+      return [
+        {
+          rule: 'C4',
+          source,
+          band,
+          opens: false,
+          blocks: [{ blockType: 'youtube', url, size: 'full' }],
+        },
+      ]
+    }
+    if (column.content !== 'slider' || !column.slider) return []
+    return sliderUnits(column.slider, source, band).map((unit) => ({
+      ...unit,
+      rule: unit.rule === 'S1' ? 'C5' : unit.rule,
+    }))
+  })
+
+/** One text column beside one media column (C1): a Split narrow, the media on its side. */
+const splitNarrowUnit = (
+  columns: Column[],
+  text: Column,
+  mediaColumn: Column,
+  source: string,
+  band: Band,
+): Unit => {
+  const mediaFirst = columns.indexOf(mediaColumn) < columns.indexOf(text)
+  const nodes = withoutBlankNodes(topNodes(text.text?.richText))
+  const [first, ...after] = nodes
+  const leading = first && isHeading(first) ? plainText(first).trim() : ''
+  const body = leading ? after : nodes
+  return {
+    rule: 'C1',
+    source,
+    band,
+    opens: false,
+    blocks: [
+      {
+        blockType: 'splitContentNarrow',
+        ...(leading ? { heading: leading } : {}),
+        body: stateOf(
+          body.map((node) => withTag(node, 'h4')),
+          text.text?.richText,
+        ),
+        media: mediaId(mediaColumn.media?.media),
+        imagePosition: mediaFirst ? 'left' : 'right',
+      },
+    ],
+  }
+}
+
+/** Two media columns and no copy (C2): an Image pair. */
+const imagePairUnit = (medias: Column[], media: MediaInfo, source: string, band: Band): Unit => {
+  const [a, b] = medias.map((column) => mediaId(column.media?.media) as number)
+  // The square or portrait image takes the portrait frame; with two of a
+  // kind the first does, as it came first.
+  const portraitFirst = isPortrait(a, media) || !isPortrait(b, media)
+  return {
+    rule: 'C2',
+    source,
+    band,
+    opens: false,
+    blocks: [
+      {
+        blockType: 'imagePair',
+        portraitMedia: portraitFirst ? a : b,
+        landscapeMedia: portraitFirst ? b : a,
+        portraitPosition: portraitFirst ? 'left' : 'right',
+      },
+    ],
+  }
+}
+
+const contentUnits = (block: Block, media: MediaInfo): Unit[] => {
   const source = String(block.id ?? 'content')
   const band = bandOf(block.theme)
   const columns = columnsOf(block).filter((column) => !isSpacer(column))
@@ -466,99 +514,34 @@ export const contentUnits = (block: Block, media: MediaInfo): Unit[] => {
   const split = carouselSplitUnits(columns, source, band)
   if (split) return split
 
-  const units: Unit[] = []
-
-  for (const column of columns.filter((c) => c.content === 'sectionHeading')) {
-    units.push(sectionHeadingUnit(column, source, band))
-  }
-
+  const headings = columns
+    .filter((column) => column.content === 'sectionHeading')
+    .map((column) => sectionHeadingUnit(column, source, band))
   const rest = columns.filter((column) => column.content !== 'sectionHeading')
   const texts = rest.filter((column) => column.content === 'text')
   const medias = rest.filter(
     (column) => column.content === 'media' && mediaId(column.media?.media) !== null,
   )
+  const units = [...headings, ...embedUnits(rest, source, band)]
 
-  for (const column of rest) {
-    if (column.content === 'youTube' && str(column.youTube?.url)) {
-      units.push({
-        rule: 'C4',
-        source,
-        band,
-        opens: false,
-        blocks: [{ blockType: 'youtube', url: str(column.youTube?.url), size: 'full' }],
-      })
-    }
-    if (column.content === 'slider' && column.slider) {
-      for (const unit of sliderUnits(column.slider, source, band))
-        units.push({ ...unit, rule: unit.rule === 'S1' ? 'C5' : unit.rule })
-    }
+  // One text and one media column with nothing else beside them.
+  if (medias.length === 1 && texts.length === 1 && rest.length === 2) {
+    return [...units, splitNarrowUnit(rest, texts[0], medias[0], source, band)]
   }
-
-  const others = rest.filter(
-    (column) => !['text', 'media', 'youTube', 'slider'].includes(String(column.content)),
-  )
-  if (medias.length === 1 && texts.length === 1 && others.length === 0 && rest.length === 2) {
-    const mediaFirst = rest.indexOf(medias[0]) < rest.indexOf(texts[0])
-    const nodes = withoutBlankNodes(topNodes(texts[0].text?.richText))
-    const [first, ...after] = nodes
-    const leading = first && isHeading(first) ? plainText(first).trim() : ''
-    const body = leading ? after : nodes
-    units.push({
-      rule: 'C1',
-      source,
-      band,
-      opens: false,
-      blocks: [
-        {
-          blockType: 'splitContentNarrow',
-          ...(leading ? { heading: leading } : {}),
-          body: stateOf(
-            body.map((node) => (isHeading(node) ? { ...node, tag: 'h4' } : node)),
-            texts[0].text?.richText,
-          ),
-          media: mediaId(medias[0].media?.media),
-          imagePosition: mediaFirst ? 'left' : 'right',
-        },
-      ],
-    })
-    return units
-  }
-
   if (medias.length === 2 && texts.length === 0) {
-    const [a, b] = medias.map((column) => mediaId(column.media?.media) as number)
-    const aPortrait = isPortrait(a, media)
-    const bPortrait = isPortrait(b, media)
-    // The square or portrait image takes the portrait frame; with two of a
-    // kind the first does, as it came first.
-    const portraitFirst = aPortrait || !bPortrait
-    units.push({
-      rule: 'C2',
-      source,
-      band,
-      opens: false,
-      blocks: [
-        {
-          blockType: 'imagePair',
-          portraitMedia: portraitFirst ? a : b,
-          landscapeMedia: portraitFirst ? b : a,
-          portraitPosition: portraitFirst ? 'left' : 'right',
-        },
-      ],
-    })
-    return units
+    return [...units, imagePairUnit(medias, media, source, band)]
   }
 
-  for (const column of medias) {
-    units.push({
+  const captions = medias.map(
+    (column): Unit => ({
       rule: 'C3',
       source,
       band,
       opens: false,
       blocks: [{ blockType: 'caption', media: mediaId(column.media?.media), size: 'full' }],
-    })
-  }
-  units.push(...textUnits(texts, source, band))
-  return units
+    }),
+  )
+  return [...units, ...captions, ...textUnits(texts, source, band)]
 }
 
 // ---------------------------------------------------------------------------
@@ -566,66 +549,75 @@ export const contentUnits = (block: Block, media: MediaInfo): Unit[] => {
 // ---------------------------------------------------------------------------
 
 /** The caption a legacy Media block shows: on, and not empty. */
-export const visibleCaption = (block: Block): unknown =>
+const visibleCaption = (block: Block): unknown =>
   block.showCaption === true && !isBlankState(block.richText) ? block.richText : null
 
-export const mediaBlockUnits = (block: Block): Unit[] => {
-  const source = String(block.id ?? 'mediaBlock')
-  const band = bandOf(block.theme)
+const mediaUnit = (block: Block, rule: RuleId, next: Block): Unit => ({
+  rule,
+  source: String(block.id ?? 'mediaBlock'),
+  band: bandOf(block.theme),
+  opens: false,
+  blocks: [next],
+})
+
+/**
+ * A Media block with no caption on show (M1, M2). Stacked's full-bleed width
+ * crops to 16:9, then 21:9 from `md`. The legacy block only ever cropped when
+ * its `aspectRatio` was set, so a media authored as `original` keeps its own
+ * shape and takes Caption even when it ran the window: a cropped 3D render is
+ * a worse loss than a contained one.
+ */
+const bareMediaUnit = (block: Block, media: number): Unit =>
+  block.fullWidth === true && block.aspectRatio !== 'original'
+    ? mediaUnit(block, 'M2', {
+        blockType: 'fullMedia',
+        media,
+        showContent: false,
+        width: 'full-width',
+      })
+    : mediaUnit(block, 'M1', { blockType: 'caption', media, size: 'full' })
+
+/** A Media block with its caption, by the legacy caption layout (M3, M4, M5). */
+const captionedMediaUnit = (block: Block, media: number, caption: unknown): Unit => {
+  const fullWidth = block.fullWidth === true
+  const layout = String(block.captionLayout ?? 'center')
+  const nodes = withoutBlankNodes(topNodes(caption))
+  const body = stateOf(nodes, caption)
+  if (layout === 'left' || layout === 'right') {
+    return mediaUnit(block, 'M3', {
+      blockType: 'fullMedia',
+      media,
+      showContent: true,
+      body,
+      contentPosition: layout,
+      width: fullWidth ? 'full-width' : 'contained',
+      ...(fullWidth ? {} : { aspectRatio: '16-9' }),
+    })
+  }
+  if (layout === 'split-left' || layout === 'split-right') {
+    return mediaUnit(block, 'M4', {
+      blockType: 'splitContentNarrow',
+      media,
+      body: stateOf(
+        nodes.map((node) => withTag(node, 'h4')),
+        caption,
+      ),
+      imagePosition: layout === 'split-left' ? 'left' : 'right',
+    })
+  }
+  return mediaUnit(block, 'M5', {
+    blockType: 'caption',
+    media,
+    size: 'full',
+    captionOverride: body,
+  })
+}
+
+const mediaBlockUnits = (block: Block): Unit[] => {
   const media = mediaId(block.media)
   if (media === null) return []
   const caption = visibleCaption(block)
-  const fullWidth = block.fullWidth === true
-  const layout = String(block.captionLayout ?? 'center')
-  const unit = (rule: RuleId, next: Block): Unit => ({
-    rule,
-    source,
-    band,
-    opens: false,
-    blocks: [next],
-  })
-
-  if (!caption) {
-    // Stacked's full-bleed width crops to 16:9, then 21:9 from `md`. The
-    // legacy block only ever cropped when its `aspectRatio` was set, so a
-    // media authored as `original` keeps its own shape and takes Caption
-    // even when it ran the window: a cropped 3D render is a worse loss than
-    // a contained one.
-    return fullWidth && block.aspectRatio !== 'original'
-      ? [unit('M2', { blockType: 'fullMedia', media, showContent: false, width: 'full-width' })]
-      : [unit('M1', { blockType: 'caption', media, size: 'full' })]
-  }
-
-  const body = stateOf(withoutBlankNodes(topNodes(caption)), caption)
-  if (layout === 'left' || layout === 'right') {
-    return [
-      unit('M3', {
-        blockType: 'fullMedia',
-        media,
-        showContent: true,
-        body,
-        contentPosition: layout,
-        width: fullWidth ? 'full-width' : 'contained',
-        ...(fullWidth ? {} : { aspectRatio: '16-9' }),
-      }),
-    ]
-  }
-  if (layout === 'split-left' || layout === 'split-right') {
-    return [
-      unit('M4', {
-        blockType: 'splitContentNarrow',
-        media,
-        body: stateOf(
-          withoutBlankNodes(topNodes(caption)).map((node) =>
-            isHeading(node) ? { ...node, tag: 'h4' } : node,
-          ),
-          caption,
-        ),
-        imagePosition: layout === 'split-left' ? 'left' : 'right',
-      }),
-    ]
-  }
-  return [unit('M5', { blockType: 'caption', media, size: 'full', captionOverride: body })]
+  return [caption ? captionedMediaUnit(block, media, caption) : bareMediaUnit(block, media)]
 }
 
 // ---------------------------------------------------------------------------
@@ -740,7 +732,7 @@ const flattenedTabsUnit = (block: Block, source: string, band: Band): Unit | nul
   return blocks.length ? { rule: 'TB2', source, band, opens: true, blocks } : null
 }
 
-export const tabsUnits = (block: Block): Unit[] => {
+const tabsUnits = (block: Block): Unit[] => {
   const source = String(block.id ?? 'tabs')
   const band = bandOf(block.theme)
   const unit = carouselTabsUnit(block, source, band) ?? flattenedTabsUnit(block, source, band)
@@ -748,7 +740,7 @@ export const tabsUnits = (block: Block): Unit[] => {
 }
 
 /** Blocks the transform converts. Everything else passes through at the top level. */
-export const CONVERTED_BLOCKS = new Set(['content', 'mediaBlock', 'slider', 'tabs'])
+const CONVERTED_BLOCKS = new Set(['content', 'mediaBlock', 'slider', 'tabs'])
 
 /** Whether a block will be converted (a Columns block with a listing stays). */
 export const isConvertible = (block: Block): boolean =>

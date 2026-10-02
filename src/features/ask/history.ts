@@ -2,7 +2,7 @@ import type { UIMessage } from 'ai'
 import { ASK_HANDOFFS, type AskUIMessage, handoffOf } from './handoff'
 
 /** Cap on the combined text of the whole transcript: the history is client-supplied. */
-export const ASK_HISTORY_MAX_CHARS = 8_000
+const ASK_HISTORY_MAX_CHARS = 8_000
 
 type TextPart = Extract<UIMessage['parts'][number], { type: 'text' }>
 
@@ -31,11 +31,7 @@ export function askHistory(
     if (message.role !== 'user' && message.role !== 'assistant') return null
     if (!Array.isArray(message.parts)) return null
 
-    const parts: TextPart[] = message.parts.filter((part): part is TextPart => part.type === 'text')
-    if (parts.length === 0 && message.role === 'assistant') {
-      const lead = handoffLead(message)
-      if (lead) parts.push({ type: 'text', text: lead })
-    }
+    const parts = textParts(message)
     for (const part of parts) totalChars += part.text.length
     if (totalChars > maxChars) return null
 
@@ -43,6 +39,16 @@ export function askHistory(
   }
 
   return history
+}
+
+/** A message's text parts; a handoff-only reply's lead line stands in for the text it never had. */
+function textParts(message: UIMessage): TextPart[] {
+  const parts: TextPart[] = message.parts.filter((part): part is TextPart => part.type === 'text')
+  if (parts.length === 0 && message.role === 'assistant') {
+    const lead = handoffLead(message)
+    if (lead) parts.push({ type: 'text', text: lead })
+  }
+  return parts
 }
 
 /** The lead line the visitor saw for a handoff-only reply, or null when the turn carried no valid handoff. */

@@ -23,14 +23,14 @@ import type { Jev } from './jev'
 /** A Choice takes up to 255 options. No page on the site is near it; a longer one is cut and says so. */
 export const LOCATE_MAX_BLOCKS = 255
 
-export const LOCATE_CANDIDATES = 5
+const LOCATE_CANDIDATES = 5
 
 /**
  * `found` needs both: the Noul says a block fits, and the Choice is not split
  * between blocks. sas-site's starting values; read them against real
  * instructions on this site before moving them.
  */
-export const LOCATE_THRESHOLDS = {
+const LOCATE_THRESHOLDS = {
   /** `exists` at or above which some block fits the instruction. */
   exists: 0.5,
   /** `where` confidence at or above which the top block is the one. */

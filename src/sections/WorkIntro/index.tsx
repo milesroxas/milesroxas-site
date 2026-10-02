@@ -4,27 +4,12 @@ import RichText from '@/components/RichText'
 import type { WorkIntro as WorkIntroData } from '@/payload-types'
 import { WorkIntroSection } from './Section.client'
 
-/**
- * The fullest summary a Content Hub record holds: the intro band has room for
- * the medium copy, so the shorter summaries only stand in when an editor left
- * it blank.
- */
-export const introSummary = (
-  summaries:
-    | { medium?: string | null; oneLine?: string | null; short?: string | null }
-    | null
-    | undefined,
-) => {
-  const { medium, short, oneLine } = summaries ?? {}
-  return medium || short || oneLine
-}
-
 type Props = {
   eyebrow?: WorkIntroData['eyebrow']
   title: WorkIntroData['title']
   /** The authored introduction copy; wins over `summary`. */
   body?: WorkIntroData['body']
-  /** Canonical summary from the Content Hub (`introSummary`). Blank lines split paragraphs. */
+  /** Canonical summary from the Content Hub. Blank lines split paragraphs. */
   summary?: string | null
 }
 

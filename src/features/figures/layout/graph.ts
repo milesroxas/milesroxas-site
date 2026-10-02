@@ -114,6 +114,39 @@ const absoluteOrigins = (root: ElkNode): Map<string, { x: number; y: number }> =
   return origins
 }
 
+type Origins = ReturnType<typeof absoluteOrigins>
+
+/** An edge's route and label, moved from its container's frame to the canvas. */
+function placeEdge(edge: ElkExtendedEdge, origins: Origins, rootId: string) {
+  const origin = origins.get((edge as { container?: string }).container ?? rootId) ?? {
+    x: 0,
+    y: 0,
+  }
+  const at = (point: { x: number; y: number }): [number, number] => [
+    round(origin.x + point.x),
+    round(origin.y + point.y),
+  ]
+  const [label] = edge.labels ?? []
+  return {
+    index: Number(edge.id.slice(1)),
+    label:
+      label?.text !== undefined
+        ? {
+            height: round(label.height),
+            text: label.text,
+            width: round(label.width),
+            x: round(origin.x + (label.x ?? 0)),
+            y: round(origin.y + (label.y ?? 0)),
+          }
+        : undefined,
+    points: (edge.sections ?? []).flatMap((section) => [
+      at(section.startPoint),
+      ...(section.bendPoints ?? []).map(at),
+      at(section.endPoint),
+    ]),
+  }
+}
+
 export async function layoutGraph(spec: GraphSpec, direction: Direction): Promise<GraphLayout> {
   // Loaded on first use: the engine is a few megabytes of compiled Java and
   // only a save that carries a changed diagram needs it.
@@ -135,35 +168,7 @@ export async function layoutGraph(spec: GraphSpec, direction: Direction): Promis
   }
 
   return {
-    edges: (root.edges ?? []).map((edge) => {
-      const origin = origins.get((edge as { container?: string }).container ?? root.id) ?? {
-        x: 0,
-        y: 0,
-      }
-      const at = (point: { x: number; y: number }): [number, number] => [
-        round(origin.x + point.x),
-        round(origin.y + point.y),
-      ]
-      const [label] = edge.labels ?? []
-      return {
-        index: Number(edge.id.slice(1)),
-        label:
-          label?.text !== undefined
-            ? {
-                height: round(label.height),
-                text: label.text,
-                width: round(label.width),
-                x: round(origin.x + (label.x ?? 0)),
-                y: round(origin.y + (label.y ?? 0)),
-              }
-            : undefined,
-        points: (edge.sections ?? []).flatMap((section) => [
-          at(section.startPoint),
-          ...(section.bendPoints ?? []).map(at),
-          at(section.endPoint),
-        ]),
-      }
-    }),
+    edges: (root.edges ?? []).map((edge) => placeEdge(edge, origins, root.id)),
     groups: (root.children ?? []).flatMap((node) => {
       const group = labels.get(node.id)
       return group ? [{ ...placed(node), id: group.id, label: group.label }] : []

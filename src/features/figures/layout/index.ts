@@ -46,7 +46,7 @@ export async function specHash(spec: DiagramSpec): Promise<string> {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
-export const storesLayout = (
+const storesLayout = (
   spec: DiagramSpec,
 ): spec is Extract<DiagramSpec, { kind: 'flow' | 'state' }> =>
   spec.kind === 'flow' || spec.kind === 'state'

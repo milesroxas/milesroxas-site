@@ -1,7 +1,7 @@
 import type { MessageField } from '@payloadcms/plugin-form-builder/types'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type React from 'react'
-import RichText from '@/components/RichText/Legacy'
+import RichText from '@/components/RichText/LegacyBase'
 import { Width } from '../Width'
 
 export const Message: React.FC<MessageField> = ({ message }) => {

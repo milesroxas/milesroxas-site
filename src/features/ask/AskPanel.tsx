@@ -147,6 +147,176 @@ type MorphRefs = {
   close: RefObject<HTMLButtonElement | null>
 }
 
+const createMorphRefs = (): MorphRefs => ({
+  scrim: createRef(),
+  surface: createRef(),
+  panel: createRef(),
+  field: createRef(),
+  seed: createRef(),
+  close: createRef(),
+})
+
+type MorphNodes = {
+  scrim: HTMLDivElement
+  surface: HTMLDivElement
+  panel: HTMLElement
+  field: HTMLDivElement
+  seed: HTMLSpanElement
+  close: HTMLButtonElement
+}
+
+/** The morph's nodes, or null while any of them is missing. */
+function morphNodes(refs: MorphRefs): MorphNodes | null {
+  const scrim = refs.scrim.current
+  const surface = refs.surface.current
+  const panel = refs.panel.current
+  const field = refs.field.current
+  const seed = refs.seed.current
+  const close = refs.close.current
+  if (!scrim || !surface || !panel || !field || !seed || !close) return null
+  return { scrim, surface, panel, field, seed, close }
+}
+
+/** Where an interrupted run had reached; nulls when nothing was running. */
+type MorphFrom = { clip: string | null; panel: number | null; seed: number | null }
+
+function reachedFrom({ field, panel, seed }: MorphNodes, interrupted: boolean): MorphFrom {
+  return {
+    clip: interrupted ? getComputedStyle(field).clipPath : null,
+    panel: interrupted ? Number(getComputedStyle(panel).opacity) : null,
+    seed: interrupted ? Number(getComputedStyle(seed).opacity) : null,
+  }
+}
+
+type Play = (element: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions) => void
+
+/** Everything one run animates: the nodes, the field's contents, the button, and where to start. */
+type MorphStage = MorphNodes & {
+  content: Element[]
+  trigger: HTMLElement | null
+  from: MorphFrom
+}
+
+/** Reduced motion: the surface and the scrim cross-fade. */
+function playFade(play: Play, { surface, scrim }: MorphNodes, open: boolean) {
+  const fade = open ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }]
+  play(surface, fade, { duration: 150, easing: 'ease' })
+  play(scrim, fade, { duration: 150, easing: 'ease' })
+}
+
+function playOpen(
+  play: Play,
+  { scrim, field, seed, content, close, panel, trigger, from }: MorphStage,
+) {
+  play(scrim, [{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease' })
+  play(
+    field,
+    [{ clipPath: from.clip ?? seedClip(field, trigger) }, { clipPath: openClip(field) }],
+    {
+      duration: 380,
+      easing: EASE_DRAWER,
+    },
+  )
+  play(
+    seed,
+    [
+      { opacity: from.seed ?? 1, filter: 'blur(0px)' },
+      { opacity: 0, filter: 'blur(2px)' },
+    ],
+    { duration: 120, easing: EASE_OUT },
+  )
+  for (const element of content)
+    play(
+      element,
+      [
+        { opacity: 0, filter: 'blur(2px)' },
+        { opacity: 1, filter: 'blur(0px)' },
+      ],
+      { duration: 200, delay: 60, easing: EASE_OUT },
+    )
+  play(
+    close,
+    [
+      { opacity: 0, scale: 0.8 },
+      { opacity: 1, scale: 1 },
+    ],
+    { duration: 240, delay: 140, easing: EASE_OUT },
+  )
+  play(
+    panel,
+    [
+      { opacity: from.panel ?? 0, scale: 0.96, translate: '0 12px' },
+      { opacity: 1, scale: 1, translate: '0 0' },
+    ],
+    { duration: 340, delay: 60, easing: EASE_OUT },
+  )
+}
+
+function playClose(
+  play: Play,
+  { panel, close, content, field, seed, scrim, trigger, from }: MorphStage,
+) {
+  play(
+    panel,
+    [
+      { opacity: from.panel ?? 1, scale: 1, translate: '0 0' },
+      { opacity: 0, scale: 0.97, translate: '0 8px' },
+    ],
+    { duration: 180, easing: EASE_OUT },
+  )
+  play(close, [{ opacity: 1 }, { opacity: 0, scale: 0.8 }], { duration: 120, easing: EASE_OUT })
+  for (const element of content)
+    play(element, [{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: EASE_OUT })
+  play(
+    field,
+    [{ clipPath: from.clip ?? openClip(field) }, { clipPath: seedClip(field, trigger) }],
+    {
+      duration: 240,
+      delay: 40,
+      easing: EASE_DRAWER,
+    },
+  )
+  play(
+    seed,
+    [
+      { opacity: from.seed ?? 0, filter: 'blur(2px)' },
+      { opacity: 1, filter: 'blur(0px)' },
+    ],
+    { duration: 160, delay: 120, easing: EASE_OUT },
+  )
+  play(scrim, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: 'ease' })
+}
+
+function playMorph(
+  play: Play,
+  stage: MorphStage,
+  { open, reducedMotion }: { open: boolean; reducedMotion: boolean },
+) {
+  if (reducedMotion) playFade(play, stage, open)
+  else if (open) playOpen(play, stage)
+  else playClose(play, stage)
+}
+
+/** Cancels the run in flight. A reversal starts where it had reached, read before it is dropped. */
+function cancelRun(running: RefObject<Animation[]>, nodes: MorphNodes): MorphFrom {
+  const from = reachedFrom(nodes, running.current.length > 0)
+  for (const animation of running.current) animation.cancel()
+  running.current = []
+  return from
+}
+
+/** Open and settled, nothing stays held: the run is dropped unless a newer one replaced it. */
+function releaseWhenSettled(batch: Animation[], running: RefObject<Animation[]>) {
+  Promise.all(batch.map((animation) => animation.finished)).then(
+    () => {
+      if (running.current !== batch) return
+      for (const animation of batch) animation.cancel()
+      running.current = []
+    },
+    () => {},
+  )
+}
+
 /**
  * The morph between the dock's Ask button and the open panel, both ways, on
  * the Web Animations API: the field's clip opens out of the button's shape,
@@ -178,26 +348,12 @@ function useAskMorph({
   reducedMotion: boolean
   triggerRef: RefObject<HTMLButtonElement | null>
 }): MorphRefs {
-  const [refs] = useState<MorphRefs>(() => ({
-    scrim: createRef(),
-    surface: createRef(),
-    panel: createRef(),
-    field: createRef(),
-    seed: createRef(),
-    close: createRef(),
-  }))
+  const [refs] = useState(createMorphRefs)
   const running = useRef<Animation[]>([])
 
   useLayoutEffect(() => {
-    const { scrim, surface, panel, field, seed, close } = {
-      scrim: refs.scrim.current,
-      surface: refs.surface.current,
-      panel: refs.panel.current,
-      field: refs.field.current,
-      seed: refs.seed.current,
-      close: refs.close.current,
-    }
-    if (!mounted || !scrim || !surface || !panel || !field || !seed || !close) {
+    const nodes = morphNodes(refs)
+    if (!mounted || !nodes) {
       // Unmounted: the next open starts from the button, not from a run on nodes that are gone.
       running.current = []
       return
@@ -205,119 +361,21 @@ function useAskMorph({
     const skip = instant || (!open && escaped.current)
     if (open) escaped.current = false
 
-    // A reversal starts where the last run had reached, read before it is dropped.
-    const interrupted = running.current.length > 0
-    const from = {
-      clip: interrupted ? getComputedStyle(field).clipPath : null,
-      panel: interrupted ? Number(getComputedStyle(panel).opacity) : null,
-      seed: interrupted ? Number(getComputedStyle(seed).opacity) : null,
-    }
-    for (const animation of running.current) animation.cancel()
-    running.current = []
+    const from = cancelRun(running, nodes)
     if (skip) return
 
     const batch: Animation[] = []
-    const play = (element: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions) =>
+    const play: Play = (element, keyframes, options) =>
       batch.push(element.animate(keyframes, { fill: 'both', ...options }))
-    const fieldContent = Array.from(field.children).filter((element) => element !== seed)
-    placeSeed(seed, field, triggerRef.current)
+    const content = Array.from(nodes.field.children).filter((element) => element !== nodes.seed)
+    const trigger = triggerRef.current
+    placeSeed(nodes.seed, nodes.field, trigger)
 
-    if (reducedMotion) {
-      const fade = open ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }]
-      play(surface, fade, { duration: 150, easing: 'ease' })
-      play(scrim, fade, { duration: 150, easing: 'ease' })
-    } else if (open) {
-      play(scrim, [{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease' })
-      play(
-        field,
-        [
-          { clipPath: from.clip ?? seedClip(field, triggerRef.current) },
-          { clipPath: openClip(field) },
-        ],
-        {
-          duration: 380,
-          easing: EASE_DRAWER,
-        },
-      )
-      play(
-        seed,
-        [
-          { opacity: from.seed ?? 1, filter: 'blur(0px)' },
-          { opacity: 0, filter: 'blur(2px)' },
-        ],
-        { duration: 120, easing: EASE_OUT },
-      )
-      for (const element of fieldContent)
-        play(
-          element,
-          [
-            { opacity: 0, filter: 'blur(2px)' },
-            { opacity: 1, filter: 'blur(0px)' },
-          ],
-          { duration: 200, delay: 60, easing: EASE_OUT },
-        )
-      play(
-        close,
-        [
-          { opacity: 0, scale: 0.8 },
-          { opacity: 1, scale: 1 },
-        ],
-        { duration: 240, delay: 140, easing: EASE_OUT },
-      )
-      play(
-        panel,
-        [
-          { opacity: from.panel ?? 0, scale: 0.96, translate: '0 12px' },
-          { opacity: 1, scale: 1, translate: '0 0' },
-        ],
-        { duration: 340, delay: 60, easing: EASE_OUT },
-      )
-    } else {
-      play(
-        panel,
-        [
-          { opacity: from.panel ?? 1, scale: 1, translate: '0 0' },
-          { opacity: 0, scale: 0.97, translate: '0 8px' },
-        ],
-        { duration: 180, easing: EASE_OUT },
-      )
-      play(close, [{ opacity: 1 }, { opacity: 0, scale: 0.8 }], { duration: 120, easing: EASE_OUT })
-      for (const element of fieldContent)
-        play(element, [{ opacity: 1 }, { opacity: 0 }], { duration: 100, easing: EASE_OUT })
-      play(
-        field,
-        [
-          { clipPath: from.clip ?? openClip(field) },
-          { clipPath: seedClip(field, triggerRef.current) },
-        ],
-        {
-          duration: 240,
-          delay: 40,
-          easing: EASE_DRAWER,
-        },
-      )
-      play(
-        seed,
-        [
-          { opacity: from.seed ?? 0, filter: 'blur(2px)' },
-          { opacity: 1, filter: 'blur(0px)' },
-        ],
-        { duration: 160, delay: 120, easing: EASE_OUT },
-      )
-      play(scrim, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: 'ease' })
-    }
+    playMorph(play, { ...nodes, content, trigger, from }, { open, reducedMotion })
     running.current = batch
 
-    // Open and settled, nothing stays held. A close holds its last frame until the surface unmounts.
-    if (open)
-      Promise.all(batch.map((animation) => animation.finished)).then(
-        () => {
-          if (running.current !== batch) return
-          for (const animation of batch) animation.cancel()
-          running.current = []
-        },
-        () => {},
-      )
+    // A close holds its last frame until the surface unmounts.
+    if (open) releaseWhenSettled(batch, running)
   }, [open, mounted, instant, escaped, reducedMotion, triggerRef, refs])
 
   return refs
@@ -341,22 +399,8 @@ function AskDialog({
   const refs = useAskMorph({ open, mounted, instant, escaped, reducedMotion, triggerRef })
 
   useEffect(() => onPresenceChange(mounted), [mounted, onPresenceChange])
-
-  // Ask grows out of the dock's button, so it wears the dock's ground (the band polarity it stamps).
-  const [ground, setGround] = useState<string>()
-  useLayoutEffect(() => {
-    if (open)
-      setGround(
-        triggerRef.current?.closest('[data-chrome]')?.getAttribute('data-theme') ?? undefined,
-      )
-  }, [open, triggerRef])
-
-  // Focus goes back to the dock the moment Ask closes, not once the exit has played.
-  const wasOpen = useRef(open)
-  useEffect(() => {
-    if (wasOpen.current && !open) triggerRef.current?.focus({ preventScroll: true })
-    wasOpen.current = open
-  }, [open, triggerRef])
+  const ground = useDockGround(open, triggerRef)
+  useFocusReturn(open, triggerRef)
 
   return (
     <DialogPrimitive.Root onOpenChange={onOpenChange} open={open}>
@@ -388,38 +432,87 @@ function AskDialog({
               refs.surface.current = element
             }}
           >
-            <section className="ask-panel chrome-panel" ref={refs.panel}>
-              <header className="ask-panel-header">
-                <DialogPrimitive.Title className="font-semibold text-[0.9375rem]/5">
-                  Ask
-                </DialogPrimitive.Title>
-                <DialogPrimitive.Description className="text-muted-foreground text-xs/4">
-                  {ASK_SCOPE}
-                </DialogPrimitive.Description>
-              </header>
-              {children}
-            </section>
-            <div className="flex items-center gap-2">
-              <AskField
-                chat={chat}
-                className="flex-1"
-                fieldClassName="chrome-material border-transparent"
-                fieldRef={refs.field}
-                inputRef={inputRef}
-                seedRef={refs.seed}
-              />
-              <DialogPrimitive.Close
-                className="ask-close chrome-material chrome-focus pressable"
-                ref={refs.close}
-              >
-                <IconX aria-hidden className="size-3.5" stroke={2} />
-                <span className="sr-only">Close Ask</span>
-              </DialogPrimitive.Close>
-            </div>
+            <DialogPanel panelRef={refs.panel}>{children}</DialogPanel>
+            <DialogFieldRow chat={chat} inputRef={inputRef} refs={refs} />
           </DialogPrimitive.Content>
         </>
       )}
     </DialogPrimitive.Root>
+  )
+}
+
+/** Ask grows out of the dock's button, so it wears the dock's ground (the band polarity it stamps). */
+function useDockGround(open: boolean, triggerRef: RefObject<HTMLButtonElement | null>) {
+  const [ground, setGround] = useState<string>()
+  useLayoutEffect(() => {
+    if (open)
+      setGround(
+        triggerRef.current?.closest('[data-chrome]')?.getAttribute('data-theme') ?? undefined,
+      )
+  }, [open, triggerRef])
+  return ground
+}
+
+/** Focus goes back to the dock the moment Ask closes, not once the exit has played. */
+function useFocusReturn(open: boolean, triggerRef: RefObject<HTMLButtonElement | null>) {
+  const wasOpen = useRef(open)
+  useEffect(() => {
+    if (wasOpen.current && !open) triggerRef.current?.focus({ preventScroll: true })
+    wasOpen.current = open
+  }, [open, triggerRef])
+}
+
+/** The dialog's panel: its title and scope, then what Ask holds. */
+function DialogPanel({
+  panelRef,
+  children,
+}: {
+  panelRef: RefObject<HTMLElement | null>
+  children: React.ReactNode
+}) {
+  return (
+    <section className="ask-panel chrome-panel" ref={panelRef}>
+      <header className="ask-panel-header">
+        <DialogPrimitive.Title className="font-semibold text-[0.9375rem]/5">
+          Ask
+        </DialogPrimitive.Title>
+        <DialogPrimitive.Description className="text-muted-foreground text-xs/4">
+          {ASK_SCOPE}
+        </DialogPrimitive.Description>
+      </header>
+      {children}
+    </section>
+  )
+}
+
+/** The field where the dock's button was, carrying its seed, and the close button beside it. */
+function DialogFieldRow({
+  chat,
+  inputRef,
+  refs,
+}: {
+  chat: AskChat
+  inputRef: RefObject<HTMLInputElement | null>
+  refs: MorphRefs
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <AskField
+        chat={chat}
+        className="flex-1"
+        fieldClassName="chrome-material border-transparent"
+        fieldRef={refs.field}
+        inputRef={inputRef}
+        seedRef={refs.seed}
+      />
+      <DialogPrimitive.Close
+        className="ask-close chrome-material chrome-focus pressable"
+        ref={refs.close}
+      >
+        <IconX aria-hidden className="size-3.5" stroke={2} />
+        <span className="sr-only">Close Ask</span>
+      </DialogPrimitive.Close>
+    </div>
   )
 }
 
@@ -475,41 +568,69 @@ function AskSheet({
         showCloseButton={false}
         side="bottom"
       >
-        <div
-          aria-hidden
-          // The grabber is small; its hit area also covers the title row under it.
-          className="relative flex h-2.75 shrink-0 touch-none items-end justify-center before:absolute before:inset-x-0 before:top-0 before:h-14"
-          {...dragHandlers}
-        >
-          <span className="h-1.25 w-9 rounded-full bg-foreground/25" />
-        </div>
-        <div className="flex h-11 shrink-0 items-center justify-between pr-3 pl-5">
-          <SheetTitle className="flex items-center gap-1.5 font-semibold text-base/5">
-            <AskGlyph className="size-4 text-brand" />
-            Ask
-          </SheetTitle>
-          <SheetDescription className="sr-only">{ASK_SCOPE}</SheetDescription>
-          <button
-            className="pressable relative flex size-7 items-center justify-center rounded-md bg-foreground/8 text-foreground/75 after:absolute after:size-11"
-            onClick={() => onOpenChange(false)}
-            type="button"
-          >
-            <IconX aria-hidden className="size-3" stroke={2.25} />
-            <span className="sr-only">Close Ask</span>
-          </button>
-        </div>
+        <SheetHeader dragHandlers={dragHandlers} onClose={() => onOpenChange(false)} />
         {children}
-        <div className="flex shrink-0 flex-col gap-2 px-3 pt-2 pb-5">
-          <AskField
-            chat={chat}
-            // Glass on glass loses its edge: on the sheet the field is a tinted well.
-            fieldClassName="border-transparent bg-foreground/6 dark:bg-foreground/6"
-            inputRef={inputRef}
-          />
-          <p className="text-center text-muted-foreground text-xs/4">{ASK_NOTICE_SHORT}</p>
-        </div>
+        <SheetField chat={chat} inputRef={inputRef} />
       </SheetContent>
     </Sheet>
+  )
+}
+
+/** The sheet's foot: the field, and the AI notice under it. */
+function SheetField({
+  chat,
+  inputRef,
+}: {
+  chat: AskChat
+  inputRef: RefObject<HTMLInputElement | null>
+}) {
+  return (
+    <div className="flex shrink-0 flex-col gap-2 px-3 pt-2 pb-5">
+      <AskField
+        chat={chat}
+        // Glass on glass loses its edge: on the sheet the field is a tinted well.
+        fieldClassName="border-transparent bg-foreground/6 dark:bg-foreground/6"
+        inputRef={inputRef}
+      />
+      <p className="text-center text-muted-foreground text-xs/4">{ASK_NOTICE_SHORT}</p>
+    </div>
+  )
+}
+
+/** The sheet's grabber, then its title row with the close button. */
+function SheetHeader({
+  dragHandlers,
+  onClose,
+}: {
+  dragHandlers: ReturnType<typeof useSheetDrag>
+  onClose: () => void
+}) {
+  return (
+    <>
+      <div
+        aria-hidden
+        // The grabber is small; its hit area also covers the title row under it.
+        className="relative flex h-2.75 shrink-0 touch-none items-end justify-center before:absolute before:inset-x-0 before:top-0 before:h-14"
+        {...dragHandlers}
+      >
+        <span className="h-1.25 w-9 rounded-full bg-foreground/25" />
+      </div>
+      <div className="flex h-11 shrink-0 items-center justify-between pr-3 pl-5">
+        <SheetTitle className="flex items-center gap-1.5 font-semibold text-base/5">
+          <AskGlyph className="size-4 text-brand" />
+          Ask
+        </SheetTitle>
+        <SheetDescription className="sr-only">{ASK_SCOPE}</SheetDescription>
+        <button
+          className="pressable relative flex size-7 items-center justify-center rounded-md bg-foreground/8 text-foreground/75 after:absolute after:size-11"
+          onClick={onClose}
+          type="button"
+        >
+          <IconX aria-hidden className="size-3" stroke={2.25} />
+          <span className="sr-only">Close Ask</span>
+        </button>
+      </div>
+    </>
   )
 }
 
@@ -587,24 +708,8 @@ function AskBody({
   suggestions: string[]
   terms: AskHandoffTerms
 }) {
-  const { messages, status, error, sent, markSent, feedback, sendQuestion, question } = chat
-  const failure = error ? (
-    <div
-      className={cn(
-        'mx-5 mb-4 flex items-start gap-2 rounded-md bg-destructive/6 px-3 py-2.5 md:mx-4.5',
-        transcriptItemEnter,
-      )}
-      role="alert"
-    >
-      <IconAlertCircle aria-hidden className="mt-px size-4.5 shrink-0 text-destructive" />
-      <div className="flex flex-col gap-0.5">
-        <p className="font-medium text-destructive text-sm/5">{errorText(error)}</p>
-        {question && (
-          <p className="text-[0.8125rem]/[1.125rem] text-muted-foreground">{ASK_RETRY}</p>
-        )}
-      </div>
-    </div>
-  ) : null
+  const { messages, error, sendQuestion, question } = chat
+  const failure = error ? failureNotice(error, question) : null
 
   if (messages.length === 0) {
     const intro = sheet ? (
@@ -613,24 +718,7 @@ function AskBody({
     // A failed first question stands alone: the error, and the question back in the field.
     const list =
       !failure && suggestions.length > 0 ? (
-        <ul aria-label="Suggested questions" className="flex flex-col gap-1.5 max-md:pt-1 md:gap-1">
-          {suggestions.map((suggestion) => (
-            <li key={suggestion}>
-              <button
-                className="ask-suggestion chrome-focus pressable pressable-subtle"
-                onClick={() => sendQuestion(suggestion)}
-                type="button"
-              >
-                <span className="min-w-0 flex-1">{suggestion}</span>
-                <IconArrowUpLeft
-                  aria-hidden
-                  className="size-4 shrink-0 text-muted-foreground"
-                  stroke={1.75}
-                />
-              </button>
-            </li>
-          ))}
-        </ul>
+        <AskSuggestions onPick={sendQuestion} suggestions={suggestions} />
       ) : null
     return (
       <>
@@ -649,29 +737,94 @@ function AskBody({
 
   return (
     <>
-      <MessageScrollerProvider autoScroll>
-        <MessageScroller>
-          <MessageScrollerViewport className="ask-transcript" data-lenis-prevent>
-            <MessageScrollerContent className="gap-4 px-5 pt-4 pb-4 md:px-4.5">
-              <TranscriptItems
-                // The panel and the sheet grow up out of the field, so the
-                // transcript follows the bottom there and a short reply never
-                // holds a gap under it.
-                anchorQuestions={false}
-                feedback={feedback}
-                messages={messages}
-                notice={!sheet}
-                onSent={markSent}
-                sent={sent}
-                status={status}
-                terms={terms}
-              />
-            </MessageScrollerContent>
-          </MessageScrollerViewport>
-          <MessageScrollerButton />
-        </MessageScroller>
-      </MessageScrollerProvider>
+      <AskTranscript chat={chat} sheet={sheet} terms={terms} />
       {failure}
     </>
+  )
+}
+
+/** A failed question: the problem, and the way on once the question is back in the field. */
+function failureNotice(error: Error, question: string) {
+  return (
+    <div
+      className={cn(
+        'mx-5 mb-4 flex items-start gap-2 rounded-md bg-destructive/6 px-3 py-2.5 md:mx-4.5',
+        transcriptItemEnter,
+      )}
+      role="alert"
+    >
+      <IconAlertCircle aria-hidden className="mt-px size-4.5 shrink-0 text-destructive" />
+      <div className="flex flex-col gap-0.5">
+        <p className="font-medium text-destructive text-sm/5">{errorText(error)}</p>
+        {question && (
+          <p className="text-[0.8125rem]/[1.125rem] text-muted-foreground">{ASK_RETRY}</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function AskSuggestions({
+  suggestions,
+  onPick,
+}: {
+  suggestions: string[]
+  onPick: (question: string) => void
+}) {
+  return (
+    <ul aria-label="Suggested questions" className="flex flex-col gap-1.5 max-md:pt-1 md:gap-1">
+      {suggestions.map((suggestion) => (
+        <li key={suggestion}>
+          <button
+            className="ask-suggestion chrome-focus pressable pressable-subtle"
+            onClick={() => onPick(suggestion)}
+            type="button"
+          >
+            <span className="min-w-0 flex-1">{suggestion}</span>
+            <IconArrowUpLeft
+              aria-hidden
+              className="size-4 shrink-0 text-muted-foreground"
+              stroke={1.75}
+            />
+          </button>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function AskTranscript({
+  chat,
+  sheet,
+  terms,
+}: {
+  chat: AskChat
+  sheet: boolean
+  terms: AskHandoffTerms
+}) {
+  const { messages, status, sent, markSent, feedback } = chat
+  return (
+    <MessageScrollerProvider autoScroll>
+      <MessageScroller>
+        <MessageScrollerViewport className="ask-transcript" data-lenis-prevent>
+          <MessageScrollerContent className="gap-4 px-5 pt-4 pb-4 md:px-4.5">
+            <TranscriptItems
+              // The panel and the sheet grow up out of the field, so the
+              // transcript follows the bottom there and a short reply never
+              // holds a gap under it.
+              anchorQuestions={false}
+              feedback={feedback}
+              messages={messages}
+              notice={!sheet}
+              onSent={markSent}
+              sent={sent}
+              status={status}
+              terms={terms}
+            />
+          </MessageScrollerContent>
+        </MessageScrollerViewport>
+        <MessageScrollerButton />
+      </MessageScroller>
+    </MessageScrollerProvider>
   )
 }

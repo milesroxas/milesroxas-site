@@ -1,41 +1,9 @@
 import type { EmailField } from '@payloadcms/plugin-form-builder/types'
 import type React from 'react'
-import { Input } from '@/components/ui/legacy-input'
-import { Label } from '@/components/ui/legacy-label'
 
-import { FormError } from '../Error'
+import { TextInputField } from '../shared'
 import type { RegisterFieldProps } from '../types'
-import { Width } from '../Width'
 
-export const Email: React.FC<EmailField & RegisterFieldProps> = ({
-  name,
-  defaultValue,
-  errors,
-  label,
-  register,
-  required,
-  width,
-}) => {
-  return (
-    <Width width={width}>
-      <Label htmlFor={name}>
-        {label}
-
-        {required && (
-          <span className="required">
-            * <span className="sr-only">(required)</span>
-          </span>
-        )}
-      </Label>
-      <Input
-        defaultValue={defaultValue}
-        id={name}
-        placeholder={label ?? ''}
-        type="text"
-        {...register(name, { pattern: /^\S[^\s@]*@\S+$/, required })}
-      />
-
-      {errors[name] && <FormError name={name} />}
-    </Width>
-  )
-}
+export const Email: React.FC<EmailField & RegisterFieldProps> = (props) => (
+  <TextInputField {...props} rules={{ pattern: /^\S[^\s@]*@\S+$/, required: props.required }} />
+)

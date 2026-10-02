@@ -13,12 +13,6 @@ export interface ControlledFieldProps {
   errors: FieldErrors<FieldValues>
 }
 
-// Submission data structure
-export interface FormSubmissionData {
-  field: string
-  value: unknown
-}
-
 // Error state structure
 export interface FormErrorState {
   message: string
@@ -30,9 +24,6 @@ export interface FormSubmissionResponse {
   errors?: Array<{ message: string }>
   status?: string
 }
-
-// Helper type for field width
-export type FieldWidth = number | string | undefined
 
 // Row structure for layout
 export type FieldRow = FormFieldBlock[]

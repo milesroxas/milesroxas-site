@@ -10,7 +10,7 @@
 import type { SiteInfo } from '@/payload-types'
 import { optionLabel, type SelectOption } from './options'
 
-export type InquiryOption = SelectOption
+type InquiryOption = SelectOption
 
 /**
  * Which kind of form a request came from. Declared per form (Forms → sidebar,
@@ -51,42 +51,6 @@ export const INQUIRY_TIMELINES = [
   { label: '3–6 months', value: '3-6-months' },
   { label: 'Just exploring', value: 'exploring' },
 ] as const satisfies readonly InquiryOption[]
-
-/**
- * Where a form field's answer lands on an inquiry.
- *
- * A form-builder submission is flat `{field, value}` pairs, so a form that
- * feeds the inbox says explicitly which of its fields is the name, which is
- * the brief, and so on. Explicit rather than by convention on the field name:
- * an editor renaming "email" to "Your email" must not silently empty a column.
- */
-export const INQUIRY_FIELD_TARGETS = [
-  { label: 'Name', value: 'name' },
-  { label: 'Email address', value: 'email' },
-  { label: 'Company', value: 'company' },
-  { label: 'Current site', value: 'website' },
-  { label: 'What they need', value: 'capabilities' },
-  { label: 'Budget', value: 'budget' },
-  { label: 'Timeline', value: 'timeline' },
-  { label: 'The brief', value: 'message' },
-] as const satisfies readonly InquiryOption[]
-
-/** How a form's answers are stored: the generic log, or the triaged inbox. */
-export const FORM_DELIVERY = [
-  { label: 'Form submissions', value: 'submissions' },
-  { label: 'Inquiries inbox', value: 'inquiries' },
-] as const satisfies readonly InquiryOption[]
-
-/**
- * Copy for a form that asks its steps one at a time. The Forms sidebar seeds
- * these as defaults and the stepper falls back to them, so a form saved before
- * the group existed reads the same as one saved after.
- */
-export const FORM_STEP_COPY = {
-  continueLabel: 'Continue',
-  editLabel: 'Edit',
-  note: 'Nothing is sent until the last step.',
-} as const
 
 /** Longest brief the form accepts, and the counter's denominator. */
 export const INQUIRY_MESSAGE_MAX_LENGTH = 1200

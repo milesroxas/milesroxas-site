@@ -62,36 +62,61 @@ export const History: UIFieldClientComponent = () => {
   return (
     <ul data-streak-studio="panel" className="flex flex-col divide-y divide-border">
       {history.map((state, index) => (
-        <li key={state.id} className="flex flex-wrap items-center gap-4 py-3">
-          <span
-            className="block h-9 w-16 shrink-0 overflow-hidden rounded-sm border border-border"
-            style={{ backgroundColor: STUDIO_GROUND.dark }}
-          >
-            {state.poster && (
-              // biome-ignore lint/performance/noImgElement: admin-only poster thumb; next/image is not loaded in the Payload admin
-              <img src={state.poster} alt="" className="size-full object-cover" loading="lazy" />
-            )}
-          </span>
-          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="text-xs font-medium">{when(state.at)}</span>
-            <span className="text-[11px] text-muted-foreground">
-              {[index === 0 && 'On the site now', state.key === draftKey && 'matches the draft']
-                .filter(Boolean)
-                .join(' · ')}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            {state.key !== draftKey && (
-              <Button type="button" variant="ghost" size="sm" onClick={() => restoreState(state)}>
-                Restore as draft
-              </Button>
-            )}
-            <Button type="button" variant="ghost" size="sm" onClick={() => compare(state)}>
-              Compare on stage
-            </Button>
-          </div>
-        </li>
+        <HistoryRow
+          key={state.id}
+          state={state}
+          onSite={index === 0}
+          matchesDraft={state.key === draftKey}
+          onRestore={() => restoreState(state)}
+          onCompare={() => compare(state)}
+        />
       ))}
     </ul>
+  )
+}
+
+function HistoryRow({
+  state,
+  onSite,
+  matchesDraft,
+  onRestore,
+  onCompare,
+}: {
+  state: PublishedState
+  onSite: boolean
+  matchesDraft: boolean
+  onRestore: () => void
+  onCompare: () => void
+}) {
+  return (
+    <li className="flex flex-wrap items-center gap-4 py-3">
+      <span
+        className="block h-9 w-16 shrink-0 overflow-hidden rounded-sm border border-border"
+        style={{ backgroundColor: STUDIO_GROUND.dark }}
+      >
+        {state.poster && (
+          // biome-ignore lint/performance/noImgElement: admin-only poster thumb; next/image is not loaded in the Payload admin
+          <img src={state.poster} alt="" className="size-full object-cover" loading="lazy" />
+        )}
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-xs font-medium">{when(state.at)}</span>
+        <span className="text-[11px] text-muted-foreground">
+          {[onSite && 'On the site now', matchesDraft && 'matches the draft']
+            .filter(Boolean)
+            .join(' · ')}
+        </span>
+      </div>
+      <div className="flex items-center gap-1">
+        {!matchesDraft && (
+          <Button type="button" variant="ghost" size="sm" onClick={onRestore}>
+            Restore as draft
+          </Button>
+        )}
+        <Button type="button" variant="ghost" size="sm" onClick={onCompare}>
+          Compare on stage
+        </Button>
+      </div>
+    </li>
   )
 }

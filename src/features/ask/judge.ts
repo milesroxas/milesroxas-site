@@ -37,10 +37,10 @@ export const ASK_JUDGE_MODEL = 'jev-1.13.0'
  * six timed out and most batches lost a passage. 800 ms clears both, and a
  * timeout still only costs the judge-off path, where the model takes seconds.
  */
-export const ASK_JUDGE_TIMEOUT_MS = 800
+const ASK_JUDGE_TIMEOUT_MS = 800
 
 /** `off` is today's code path, `shadow` observes and decides nothing, `on` decides. */
-export const ASK_JUDGE_MODES = ['off', 'shadow', 'on'] as const
+const ASK_JUDGE_MODES = ['off', 'shadow', 'on'] as const
 
 export type AskJudgeMode = (typeof ASK_JUDGE_MODES)[number]
 

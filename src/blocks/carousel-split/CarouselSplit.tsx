@@ -1,8 +1,7 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { CarouselBlock } from '@/blocks/Carousel/Component'
-import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
+import { CopyStack } from '@/blocks/shared/cells'
 import { Container } from '@/components/Container'
-import RichText from '@/components/RichText'
 import type { CarouselSplitBlock as CarouselSplitBlockData } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 import { BlockGrid } from '../shared/grid'
@@ -52,50 +51,41 @@ export const CarouselSplit = ({
   content: DefaultTypedEditorState | null | undefined
 }) => {
   const deckLeft = block.carouselPosition === 'left'
-  const type = typeScale(block.textSize)
-  const inner = (
-    <Container>
-      <BlockGrid>
-        <div
-          className={cn(
-            'w-full self-start md:col-span-5 md:row-start-1 lg:col-span-6',
-            !deckLeft && 'md:col-start-4 lg:col-start-3',
-          )}
-        >
-          <CarouselBlock
-            bare
-            blockType="carousel"
-            enableGutter={false}
-            showArrows={block.showArrows}
-            slideSize={block.slideSize}
-            slides={block.slides}
-            width="contained"
-          />
-        </div>
-        <div
-          className={cn(
-            'text-stack md:col-span-3 md:row-start-1 lg:col-span-2',
-            deckLeft && 'md:col-start-6 lg:col-start-7',
-          )}
-        >
-          {block.eyebrow && <p className={eyebrowClassName}>{block.eyebrow}</p>}
-          {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
-          {content && (
-            <RichText
-              className={type.body}
-              data={content}
-              enableGutter={false}
-              enableProse={false}
-            />
-          )}
-        </div>
-      </BlockGrid>
-    </Container>
-  )
-  if (bare) return inner
   return (
-    <Section spacing="loose" theme={block.theme}>
-      {inner}
+    <Section bare={bare} spacing="loose" theme={block.theme}>
+      <Container>
+        <BlockGrid>
+          <div
+            className={cn(
+              'w-full self-start md:col-span-5 md:row-start-1 lg:col-span-6',
+              !deckLeft && 'md:col-start-4 lg:col-start-3',
+            )}
+          >
+            <CarouselBlock
+              bare
+              blockType="carousel"
+              enableGutter={false}
+              showArrows={block.showArrows}
+              slideSize={block.slideSize}
+              slides={block.slides}
+              width="contained"
+            />
+          </div>
+          <div
+            className={cn(
+              'text-stack md:col-span-3 md:row-start-1 lg:col-span-2',
+              deckLeft && 'md:col-start-6 lg:col-start-7',
+            )}
+          >
+            <CopyStack
+              content={content}
+              eyebrow={block.eyebrow}
+              heading={block.heading}
+              textSize={block.textSize}
+            />
+          </div>
+        </BlockGrid>
+      </Container>
     </Section>
   )
 }

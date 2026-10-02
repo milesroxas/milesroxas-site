@@ -1,9 +1,9 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { ASPECT_RATIO_CLASS } from '@/blocks/shared/aspect-ratio'
+import { VisualCell } from '@/blocks/shared/cells'
 import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
-import { Visual } from '@/components/Visual'
 import type { Visual as VisualValue } from '@/features/immersive/visual'
 import type { FullMediaBlock } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -31,55 +31,28 @@ import { Section } from '../shared/section'
  * (the work-page renderer wraps blocks in a full-viewport reveal section).
  * The `data-reveal` markers are inert unless such a shell animates them.
  */
-export const FullMedia = ({
-  bare = false,
+type FullMediaBlockFields = Pick<
+  FullMediaBlock,
+  | 'aspectRatio'
+  | 'contentPosition'
+  | 'eyebrow'
+  | 'heading'
+  | 'showContent'
+  | 'textSize'
+  | 'theme'
+  | 'width'
+>
+
+const FullMediaContent = ({
   block,
   content,
-  visual,
 }: {
-  bare?: boolean
-  block: Pick<
-    FullMediaBlock,
-    | 'aspectRatio'
-    | 'contentPosition'
-    | 'eyebrow'
-    | 'heading'
-    | 'showContent'
-    | 'textSize'
-    | 'theme'
-    | 'width'
-  >
+  block: FullMediaBlockFields
   content: DefaultTypedEditorState | null | undefined
-  visual: VisualValue
 }) => {
-  const showContent =
-    block.showContent !== false && Boolean(block.eyebrow || block.heading || content)
   const contentRight = block.contentPosition === 'right'
   const type = typeScale(block.textSize)
-  const contained = block.width === 'contained'
-  const aspectClass = contained
-    ? ASPECT_RATIO_CLASS[block.aspectRatio ?? '16-9']
-    : 'aspect-16/9 md:aspect-21/9'
-  const mediaFrame = (
-    <div
-      className={cn(
-        'relative w-full overflow-hidden bg-muted',
-        aspectClass,
-        contained && 'rounded-lg md:col-span-8',
-      )}
-      data-reveal="media"
-    >
-      <Visual
-        fill
-        htmlElement={null}
-        imgClassName="object-cover"
-        placement="block"
-        size="100vw"
-        visual={visual}
-      />
-    </div>
-  )
-  const contentCells = showContent ? (
+  return (
     <>
       <div
         className={cn(
@@ -100,28 +73,54 @@ export const FullMedia = ({
         </div>
       )}
     </>
-  ) : null
-  const inner = contained ? (
-    <Container>
-      <BlockGrid>
-        {mediaFrame}
-        {contentCells}
-      </BlockGrid>
-    </Container>
-  ) : (
-    <div className="flex flex-col gap-grid">
-      {mediaFrame}
-      {contentCells && (
-        <Container>
-          <BlockGrid>{contentCells}</BlockGrid>
-        </Container>
-      )}
-    </div>
   )
-  if (bare) return inner
+}
+
+export const FullMedia = ({
+  bare = false,
+  block,
+  content,
+  visual,
+}: {
+  bare?: boolean
+  block: FullMediaBlockFields
+  content: DefaultTypedEditorState | null | undefined
+  visual: VisualValue
+}) => {
+  const showContent =
+    block.showContent !== false && Boolean(block.eyebrow || block.heading || content)
+  const contained = block.width === 'contained'
+  const mediaFrame = (
+    <VisualCell
+      className={cn(
+        'relative w-full overflow-hidden bg-muted',
+        contained ? ASPECT_RATIO_CLASS[block.aspectRatio ?? '16-9'] : 'aspect-16/9 md:aspect-21/9',
+        contained && 'rounded-lg md:col-span-8',
+      )}
+      size="100vw"
+      visual={visual}
+    />
+  )
+  const contentCells = showContent ? <FullMediaContent block={block} content={content} /> : null
   return (
-    <Section spacing="loose" theme={block.theme}>
-      {inner}
+    <Section bare={bare} spacing="loose" theme={block.theme}>
+      {contained ? (
+        <Container>
+          <BlockGrid>
+            {mediaFrame}
+            {contentCells}
+          </BlockGrid>
+        </Container>
+      ) : (
+        <div className="flex flex-col gap-grid">
+          {mediaFrame}
+          {contentCells && (
+            <Container>
+              <BlockGrid>{contentCells}</BlockGrid>
+            </Container>
+          )}
+        </div>
+      )}
     </Section>
   )
 }

@@ -13,7 +13,7 @@ import { activeTabIndex, type ChromeTab } from './tabs'
 /** A page that never hands the chrome back (an interrupted transition) gets it back after this. */
 const RESTORE_FALLBACK_MS = 2000
 
-export type SiteChromeAsk = {
+type SiteChromeAsk = {
   suggestions: string[]
   terms: AskHandoffTerms
 }
@@ -32,26 +32,12 @@ const isAskShortcut = (event: KeyboardEvent) =>
   !event.shiftKey
 
 /**
- * The site's chrome, on every public page: the top bar (wordmark, the
- * page's place, the clock) and the dock (the pages and Ask).
- *
- * The current tab follows the route, and follows a press at once: the fill
- * moves on the tap, not once the next page has loaded. During the card →
- * case study transition the chrome steps out of the way (`useChromeStore`).
+ * Ask's open state. `viaKeyboard` is whether the last open or close came from
+ * the keyboard: that one plays no morph. While Ask is on, the shortcut toggles it.
  */
-export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
-  const pathname = usePathname()
-  const phone = useIsMobile()
-  const visible = useChromeStore((state) => state.visible)
-  const setVisible = useChromeStore((state) => state.setVisible)
-
-  const [pressed, setPressed] = useState<{ on: string; index: number } | null>(null)
-  const active = pressed && pressed.on === pathname ? pressed.index : activeTabIndex(tabs, pathname)
-
-  const triggerRef = useRef<HTMLButtonElement>(null)
+function useAskToggle(ask: SiteChromeAsk | null) {
   const [askOpen, setAskOpen] = useState(false)
   const [askPresent, setAskPresent] = useState(false)
-  // Whether the last open or close came from the keyboard: that one plays no morph.
   const [viaKeyboard, setViaKeyboard] = useState(false)
   const toggleAsk = useCallback((open: boolean, keyboard: boolean) => {
     setViaKeyboard(keyboard)
@@ -75,13 +61,45 @@ export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [ask, toggleAsk])
 
-  // A transition that never reached its hero still hands the chrome back.
+  return { askOpen, askPresent, setAskPresent, viaKeyboard, toggleAsk, changeAskFromPanel }
+}
+
+/** A transition that never reached its hero still hands the chrome back. */
+function useRestoreFallback(
+  visible: boolean,
+  setVisible: (visible: boolean) => void,
+  pathname: string,
+) {
   // biome-ignore lint/correctness/useExhaustiveDependencies(pathname): each new page restarts the fallback
   useEffect(() => {
     if (visible) return
     const timer = window.setTimeout(() => setVisible(true), RESTORE_FALLBACK_MS)
     return () => window.clearTimeout(timer)
   }, [visible, setVisible, pathname])
+}
+
+/**
+ * The site's chrome, on every public page: the top bar (wordmark, the
+ * page's place, the clock) and the dock (the pages and Ask).
+ *
+ * The current tab follows the route, and follows a press at once: the fill
+ * moves on the tap, not once the next page has loaded. During the card →
+ * case study transition the chrome steps out of the way (`useChromeStore`).
+ */
+export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
+  const pathname = usePathname()
+  const phone = useIsMobile()
+  const visible = useChromeStore((state) => state.visible)
+  const setVisible = useChromeStore((state) => state.setVisible)
+
+  const [pressed, setPressed] = useState<{ on: string; index: number } | null>(null)
+  const active = pressed && pressed.on === pathname ? pressed.index : activeTabIndex(tabs, pathname)
+
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const { askOpen, askPresent, setAskPresent, viaKeyboard, toggleAsk, changeAskFromPanel } =
+    useAskToggle(ask)
+
+  useRestoreFallback(visible, setVisible, pathname)
 
   return (
     <div className="contents" data-hidden={visible ? undefined : ''} id="site-chrome">

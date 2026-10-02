@@ -51,7 +51,7 @@ function useMinimizedTabs(enabled: boolean) {
 const shortcutKeys = () =>
   /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘K' : 'Ctrl K'
 
-export type DockAsk = {
+type DockAsk = {
   triggerRef: RefObject<HTMLButtonElement | null>
   /** The panel is open or still playing its exit: the button's place is taken by the field. */
   present: boolean
@@ -65,6 +65,68 @@ type DockProps = {
   onSelect: (index: number) => void
   /** Null when Site Info › Ask › Hide Ask is on. */
   ask: DockAsk | null
+}
+
+/** The current tab alone, shown while the bar is minimized; a tap brings the bar back. */
+function DockMini({
+  tab,
+  minimized,
+  onRestore,
+}: {
+  tab: ChromeTab
+  minimized: boolean
+  onRestore: () => void
+}) {
+  const Glyph = glyphForPath(tab.href)
+  return (
+    <button
+      aria-hidden={!minimized}
+      aria-label={`${tab.label}. Show all pages`}
+      className="dock-mini chrome-material chrome-focus"
+      data-shown={minimized || undefined}
+      onClick={onRestore}
+      tabIndex={minimized ? 0 : -1}
+      type="button"
+    >
+      <span className="dock-mini-fill">
+        <Glyph className="size-5" />
+        {tab.label}
+      </span>
+    </button>
+  )
+}
+
+function DockAskButton({ ask }: { ask: DockAsk }) {
+  return (
+    <TooltipProvider delayDuration={TOOLTIP_DELAY_MS}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            aria-expanded={ask.open}
+            aria-haspopup="dialog"
+            aria-keyshortcuts="Meta+K Control+K"
+            className="dock-ask chrome-material chrome-focus"
+            data-present={ask.present || undefined}
+            onClick={ask.onOpen}
+            // Focus handed back after a pointer close is not a request
+            // for the tooltip; keyboard focus still shows the shortcut.
+            onFocus={(event) => {
+              if (!event.currentTarget.matches(':focus-visible')) event.preventDefault()
+            }}
+            ref={ask.triggerRef}
+            type="button"
+          >
+            <AskGlyph className="size-6 text-(--chrome-glyph) md:size-4" />
+            <span className="max-md:sr-only">Ask</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent className="max-md:hidden" side="top" sideOffset={8}>
+          Ask
+          <Kbd>{shortcutKeys()}</Kbd>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }
 
 /**
@@ -82,7 +144,6 @@ export function Dock({ tabs, active, onSelect, ask }: DockProps) {
   const phone = useIsMobile()
   const [minimized, restore] = useMinimizedTabs(phone && active >= 0)
   const current = tabs[active]
-  const CurrentGlyph = current ? glyphForPath(current.href) : null
 
   return (
     <div
@@ -94,54 +155,10 @@ export function Dock({ tabs, active, onSelect, ask }: DockProps) {
     >
       <div className="dock-tabs-slot">
         <PageTabs active={active} minimized={minimized} onSelect={onSelect} tabs={tabs} />
-        {current && CurrentGlyph && (
-          <button
-            aria-hidden={!minimized}
-            aria-label={`${current.label}. Show all pages`}
-            className="dock-mini chrome-material chrome-focus"
-            data-shown={minimized || undefined}
-            onClick={restore}
-            tabIndex={minimized ? 0 : -1}
-            type="button"
-          >
-            <span className="dock-mini-fill">
-              <CurrentGlyph className="size-5" />
-              {current.label}
-            </span>
-          </button>
-        )}
+        {current && <DockMini minimized={minimized} onRestore={restore} tab={current} />}
       </div>
 
-      {ask && (
-        <TooltipProvider delayDuration={TOOLTIP_DELAY_MS}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                aria-expanded={ask.open}
-                aria-haspopup="dialog"
-                aria-keyshortcuts="Meta+K Control+K"
-                className="dock-ask chrome-material chrome-focus"
-                data-present={ask.present || undefined}
-                onClick={ask.onOpen}
-                // Focus handed back after a pointer close is not a request
-                // for the tooltip; keyboard focus still shows the shortcut.
-                onFocus={(event) => {
-                  if (!event.currentTarget.matches(':focus-visible')) event.preventDefault()
-                }}
-                ref={ask.triggerRef}
-                type="button"
-              >
-                <AskGlyph className="size-6 text-(--chrome-glyph) md:size-4" />
-                <span className="max-md:sr-only">Ask</span>
-              </button>
-            </TooltipTrigger>
-            <TooltipContent className="max-md:hidden" side="top" sideOffset={8}>
-              Ask
-              <Kbd>{shortcutKeys()}</Kbd>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
+      {ask && <DockAskButton ask={ask} />}
     </div>
   )
 }

@@ -1,1 +1,1 @@
-export { RevealSection, type RevealSectionProps } from './RevealSection'
+export { RevealSection } from './RevealSection'

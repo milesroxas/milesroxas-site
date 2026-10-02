@@ -2,9 +2,9 @@ import type { Field, GroupField } from 'payload'
 
 import deepMerge from '@/utilities/deepMerge'
 
-export type SpacingSize = 'none' | 'sm' | 'md' | 'lg' | 'xl'
+type SpacingSize = 'none' | 'sm' | 'md' | 'lg' | 'xl'
 
-export const spacingOptions: Record<SpacingSize, { label: string; value: string }> = {
+const spacingOptions: Record<SpacingSize, { label: string; value: string }> = {
   none: {
     label: 'None',
     value: 'none',

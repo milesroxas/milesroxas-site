@@ -1,10 +1,9 @@
 'use client'
 
 import { Canvas } from '@react-three/fiber'
-import { type RefObject, useCallback, useEffect, useMemo, useRef } from 'react'
-import type { WebGLRenderer } from 'three'
+import { type RefObject, useEffect, useMemo, useRef } from 'react'
 import { ContextGuard } from '@/lib/webgl/components/context-guard'
-import { FailureBoundary } from './failure-boundary'
+import { FailureBoundary, useCanvasFailure } from './failure-boundary'
 import {
   bindLeakInput,
   createLeakInput,
@@ -54,17 +53,9 @@ export function LightLeakRuntime({
   onFailure,
 }: LightLeakRuntimeProps) {
   const inputRef = useRef<LeakInput>(createLeakInput())
-  const failed = useRef(false)
   const dprRange = useMemo<[number, number]>(() => [1, tuning.dpr], [tuning.dpr])
-
-  const fail = useCallback(
-    (reason: LeakFailureReason) => {
-      if (failed.current) return
-      failed.current = true
-      onFailure(reason)
-    },
-    [onFailure],
-  )
+  const { handleCreated, handleError, handleContextLost, handleFirstFrame } =
+    useCanvasFailure<LeakFailureReason>(onFailure, generation, onReady)
 
   // Hover is read out of the tuning rather than off `tuning` itself: the
   // object is new on every render, and rebinding the band's listeners each
@@ -80,20 +71,6 @@ export function LightLeakRuntime({
       section: sectionExcite,
     })
   }, [active, excite, exciteTargets, sectionExcite, rootRef])
-
-  const handleCreated = useCallback(
-    ({ gl }: { gl: WebGLRenderer }) => {
-      // Three reports compile and link failures here instead of throwing;
-      // without this hook a broken program draws nothing and looks "ready".
-      gl.debug.onShaderError = () => fail('shader')
-    },
-    [fail],
-  )
-  const handleError = useCallback(() => fail('context'), [fail])
-  const handleContextLost = useCallback(() => fail('context-lost'), [fail])
-  const handleFirstFrame = useCallback(() => {
-    if (!failed.current) onReady?.(generation)
-  }, [generation, onReady])
 
   return (
     <FailureBoundary onError={handleError}>

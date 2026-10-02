@@ -1,12 +1,4 @@
 import {
-  MetaDescriptionField,
-  MetaImageField,
-  MetaTitleField,
-  OverviewField,
-  PreviewField,
-} from '@payloadcms/plugin-seo/fields'
-
-import {
   BlocksFeature,
   FixedToolbarFeature,
   HeadingFeature,
@@ -21,6 +13,7 @@ import { Banner } from '@/blocks/Banner/config'
 
 import { Code } from '@/blocks/Code/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
+import { seoTab } from '@/collections/shared/seoTab'
 import { contentsButtonField } from '@/fields/pageFields'
 import { pageIntroField } from '@/fields/pageHero'
 import { postLayoutBlocks } from '@/fields/pageLayoutBlocks'
@@ -166,42 +159,7 @@ export const Posts: CollectionConfig<'posts'> = {
           ],
           label: 'Related & Categories',
         },
-        {
-          name: 'meta',
-          label: 'SEO',
-          fields: [
-            OverviewField({
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-              imagePath: 'meta.image',
-            }),
-            MetaTitleField({
-              hasGenerateFn: true,
-            }),
-            MetaImageField({
-              relationTo: 'media',
-            }),
-
-            MetaDescriptionField({}),
-            PreviewField({
-              // if the `generateUrl` function is configured
-              hasGenerateFn: true,
-
-              // field paths to match the target field for data
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-            }),
-            {
-              name: 'noIndex',
-              type: 'checkbox',
-              label: 'No Index',
-              defaultValue: false,
-              admin: {
-                description: 'Prevent search engines from indexing this page',
-              },
-            },
-          ],
-        },
+        seoTab(),
       ],
     },
     {

@@ -4,13 +4,11 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import Link from 'next/link'
 import type React from 'react'
-import { useRef } from 'react'
-import { Media } from '@/components/Media'
 import { Badge } from '@/components/ui/badge'
-import { useCardTransition } from '@/hooks/useCardTransition'
 import type { Work } from '@/payload-types'
 import { CursorButton } from '@/providers/Cursor/components/CursorInteractions'
 import { cn } from '@/utilities/ui'
+import { type CardAspect, CardImage, useCardLink } from '../shared'
 
 export type CardWorkData = Pick<Work, 'slug' | 'meta' | 'title' | 'hero'>
 
@@ -20,7 +18,7 @@ interface WorkCardProps {
   relationTo?: 'works'
   title?: string
   index?: number
-  aspect?: 'wide' | 'portrait' | 'square'
+  aspect?: CardAspect
   imageRef?: React.RefObject<HTMLDivElement | null>
   showDescription?: boolean
 }
@@ -38,32 +36,13 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   const { slug, title, hero } = doc || {}
   const description = hero?.richText
   const href = `/${relationTo}/${slug}`
-
-  const localImageRef = useRef<HTMLDivElement>(null)
-  const imageRef = imageRefProp ?? localImageRef
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  const handleTransition = useCardTransition({ href, imageRef, scope: containerRef })
-
-  const aspectRatios = { wide: 16 / 9, portrait: 3 / 4, square: 1 } as const
-  const aspectValue = aspectRatios[aspect]
+  const { containerRef, imageRef, handleTransition } = useCardLink(href, imageRefProp)
 
   return (
     <article ref={containerRef} className={cn('h-full', className)}>
       <CursorButton>
         <Link href={href} onClick={handleTransition} className="not-prose">
-          <div ref={imageRef} className="relative mb-6 w-full" style={{ aspectRatio: aspectValue }}>
-            {hero && (
-              <Media
-                resource={hero.media}
-                priority={index === 0}
-                loading={index === 0 ? 'eager' : 'lazy'}
-                className="h-full w-full object-cover"
-                imgClassName="rounded-sm overflow-hidden"
-                videoClassName="rounded-sm overflow-hidden"
-              />
-            )}
-          </div>
+          <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
 
           {(titleFromProps || title) && (
             <div className="flex items-start justify-between gap-2">

@@ -8,7 +8,13 @@ import { cn } from '@/utilities/ui'
 import { ASK_READING } from './copy'
 import { type AskFeedback, AskFeedbackProvider } from './feedback'
 import { type AskHandoffReceipt, type AskHandoffSent, Handoff } from './HandoffPanel'
-import { ASK_HANDOFFS, type AskHandoffTerms, type AskUIMessage, handoffOf } from './handoff'
+import {
+  ASK_HANDOFFS,
+  type AskHandoff,
+  type AskHandoffTerms,
+  type AskUIMessage,
+  handoffOf,
+} from './handoff'
 import { messageText } from './messageText'
 import { handoffAfterLead, transcriptItemEnter } from './motion'
 import { AskRating } from './Rating'
@@ -38,6 +44,26 @@ export function errorText(error: Error): string {
  */
 const hasReply = (message: AskUIMessage, live: boolean) =>
   messageText(message) !== '' || (!live && handoffOf(message) !== null)
+
+type TranscriptItemsProps = {
+  messages: AskUIMessage[]
+  status: ChatStatus
+  /** Open with the AI notice. Off where the surface states it under its field (the phone sheet). */
+  notice?: boolean
+  /**
+   * Pin each new question to the top of the scroller, as a page-length
+   * transcript reads. Off where the transcript grows up out of its field
+   * (the dock's panel and sheet): it follows the bottom, as Messages does,
+   * so a short reply never leaves a reserved gap under it.
+   */
+  anchorQuestions?: boolean
+  /** Site Info's promise, for the quiet offer that carries no resolved handoff of its own. */
+  terms: AskHandoffTerms
+  /** The handoff the visitor has sent in this conversation, if any. */
+  sent: AskHandoffSent | null
+  onSent: (messageId: string, receipt: AskHandoffReceipt) => void
+  feedback: AskFeedback
+}
 
 /**
  * The transcript body shared by every Ask surface: the message list, the
@@ -72,25 +98,7 @@ export function TranscriptItems({
   feedback,
   notice = true,
   anchorQuestions = true,
-}: {
-  messages: AskUIMessage[]
-  status: ChatStatus
-  /** Open with the AI notice. Off where the surface states it under its field (the phone sheet). */
-  notice?: boolean
-  /**
-   * Pin each new question to the top of the scroller, as a page-length
-   * transcript reads. Off where the transcript grows up out of its field
-   * (the dock's panel and sheet): it follows the bottom, as Messages does,
-   * so a short reply never leaves a reserved gap under it.
-   */
-  anchorQuestions?: boolean
-  /** Site Info's promise, for the quiet offer that carries no resolved handoff of its own. */
-  terms: AskHandoffTerms
-  /** The handoff the visitor has sent in this conversation, if any. */
-  sent: AskHandoffSent | null
-  onSent: (messageId: string, receipt: AskHandoffReceipt) => void
-  feedback: AskFeedback
-}) {
+}: TranscriptItemsProps) {
   const last = messages.at(-1)
   const lastIsAssistant = last?.role === 'assistant'
   const awaitingReply = lastIsAssistant && !hasReply(last, status === 'streaming')
@@ -125,23 +133,35 @@ export function TranscriptItems({
           terms={terms}
         />
       ))}
-      {pending && (
-        <MessageScrollerItem messageId="pending">
-          <p
-            className={`flex items-center gap-2.5 text-muted-foreground text-sm/5 ${transcriptItemEnter}`}
-            role="status"
-          >
-            <span aria-hidden className="ask-reading">
-              <span />
-              <span />
-              <span />
-            </span>
-            {ASK_READING}
-          </p>
-        </MessageScrollerItem>
-      )}
+      {pending && <PendingItem />}
     </AskFeedbackProvider>
   )
+}
+
+/** The Thinking shimmer, held while a reply has nothing to read yet. */
+function PendingItem() {
+  return (
+    <MessageScrollerItem messageId="pending">
+      <p
+        className={`flex items-center gap-2.5 text-muted-foreground text-sm/5 ${transcriptItemEnter}`}
+        role="status"
+      >
+        <span aria-hidden className="ask-reading">
+          <span />
+          <span />
+          <span />
+        </span>
+        {ASK_READING}
+      </p>
+    </MessageScrollerItem>
+  )
+}
+
+type TurnHandoffProps = {
+  messages: AskUIMessage[]
+  sent: AskHandoffSent | null
+  terms: AskHandoffTerms
+  onSent: (messageId: string, receipt: AskHandoffReceipt) => void
 }
 
 /**
@@ -157,7 +177,7 @@ function TranscriptTurn({
   live,
   closes,
   ...handoffProps
-}: {
+}: TurnHandoffProps & {
   message: AskUIMessage
   previous: AskUIMessage | undefined
   /** A question pins itself to the scroller's top as it lands. */
@@ -166,18 +186,13 @@ function TranscriptTurn({
   live: boolean
   /** The settled reply that ends the transcript, with nothing sent yet. */
   closes: boolean
-  messages: AskUIMessage[]
-  sent: AskHandoffSent | null
-  terms: AskHandoffTerms
-  onSent: (messageId: string, receipt: AskHandoffReceipt) => void
 }) {
   const reply = message.role === 'assistant' && !live
   const text = messageText(message)
   const handoff = reply ? handoffOf(message) : null
   const lead = handoff && text === '' ? ASK_HANDOFFS[handoff.reason].lead : null
   const turn = reply && previous?.role === 'user' ? previous.id : null
-  const { sent } = handoffProps
-  const sentHere = sent?.messageId === message.id
+  const sentHere = handoffProps.sent?.messageId === message.id
   const offersHandoff = sentHere || (closes && reply)
   const footId = `${message.id}:foot`
 
@@ -198,41 +213,79 @@ function TranscriptTurn({
       )}
       {(turn || offersHandoff) && (
         <MessageScrollerItem messageId={footId}>
-          {/* The reply's foot: the rating at the start, the way to Miles at the
-              end, on one row. Once the offer opens into its form or its
-              receipt, that takes the row's full width under the rating. */}
-          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-            {/* A handoff-only reply has no answer to rate: its handoff
-                signal records how the visitor took it. */}
-            {turn && lead === null && (
-              <div className={transcriptItemEnter}>
-                <AskRating turn={turn} />
-              </div>
-            )}
-            {offersHandoff && (
-              <div
-                className={cn(
-                  'ml-auto has-[[data-panel=form],[data-panel=sent]]:ml-0 has-[[data-panel=form],[data-panel=sent]]:basis-full',
-                  transcriptItemEnter,
-                  lead !== null && ['ml-0 basis-full', handoffAfterLead],
-                )}
-              >
-                <Handoff
-                  itemId={footId}
-                  kind={handoff?.reason ?? 'none'}
-                  messages={handoffProps.messages}
-                  onSent={(receipt) => handoffProps.onSent(message.id, receipt)}
-                  prominent={lead !== null}
-                  receipt={sentHere && sent ? sent.receipt : null}
-                  terms={handoff ?? handoffProps.terms}
-                  turn={turn}
-                />
-              </div>
-            )}
-          </div>
+          <TurnFoot
+            footId={footId}
+            handoff={handoff}
+            leadOnly={lead !== null}
+            messageId={message.id}
+            offersHandoff={offersHandoff}
+            sentHere={sentHere}
+            turn={turn}
+            {...handoffProps}
+          />
         </MessageScrollerItem>
       )}
     </>
+  )
+}
+
+/**
+ * The reply's foot: the rating at the start, the way to Miles at the end, on
+ * one row. Once the offer opens into its form or its receipt, that takes the
+ * row's full width under the rating.
+ */
+function TurnFoot({
+  footId,
+  messageId,
+  turn,
+  handoff,
+  leadOnly,
+  offersHandoff,
+  sentHere,
+  messages,
+  sent,
+  terms,
+  onSent,
+}: TurnHandoffProps & {
+  footId: string
+  messageId: string
+  turn: string | null
+  handoff: AskHandoff | null
+  /** The handoff is the whole reply, after its lead line. */
+  leadOnly: boolean
+  offersHandoff: boolean
+  sentHere: boolean
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+      {/* A handoff-only reply has no answer to rate: its handoff
+          signal records how the visitor took it. */}
+      {turn && !leadOnly && (
+        <div className={transcriptItemEnter}>
+          <AskRating turn={turn} />
+        </div>
+      )}
+      {offersHandoff && (
+        <div
+          className={cn(
+            'ml-auto has-[[data-panel=form],[data-panel=sent]]:ml-0 has-[[data-panel=form],[data-panel=sent]]:basis-full',
+            transcriptItemEnter,
+            leadOnly && ['ml-0 basis-full', handoffAfterLead],
+          )}
+        >
+          <Handoff
+            itemId={footId}
+            kind={handoff?.reason ?? 'none'}
+            messages={messages}
+            onSent={(receipt) => onSent(messageId, receipt)}
+            prominent={leadOnly}
+            receipt={sentHere && sent ? sent.receipt : null}
+            terms={handoff ?? terms}
+            turn={turn}
+          />
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -268,7 +321,7 @@ function AskReply({ children }: { children: string }) {
  * they would head an empty bubble and then be pushed down by every delta.
  * The group rises in once the answer settles.
  */
-export function AskMessage({
+function AskMessage({
   message,
   streaming = false,
 }: {

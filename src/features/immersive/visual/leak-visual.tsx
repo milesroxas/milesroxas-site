@@ -4,7 +4,7 @@ import {
   type ComponentType,
   lazy,
   type ReactNode,
-  Suspense,
+  type RefObject,
   useEffect,
   useMemo,
   useRef,
@@ -12,17 +12,16 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/utilities/ui'
-import { FailureBoundary } from '../ui/failure-boundary'
 import type { LeakFailureReason, LightLeakRuntimeProps } from '../ui/light-leak-runtime'
-import { originMirror } from '../ui/light-leak-tuning'
+import { type LeakMirror, originMirror } from '../ui/light-leak-tuning'
 import { composeLeakTuning } from './compose'
 import type { LeakVisualDescriptor, VisualSurface } from './descriptor'
 import { useGroundSurface } from './hooks'
 import { VISUAL_BLEED_ATTR, VISUAL_HOST_ATTR } from './host'
 import type { VisualPlacement } from './placement'
-import { crossfadeClass, VisualPosterStack } from './poster'
+import { frameClass, LiveLayer, VisualPosterStack } from './poster'
 import { visualPosters } from './posters'
-import { type LiveVisualOptions, useLiveVisual } from './use-live-visual'
+import { type LiveVisualOptions, liveStatusAttributes, useLiveVisual } from './use-live-visual'
 
 /**
  * The light leak as page media, poster first, on the shared slot lifecycle
@@ -63,33 +62,38 @@ export type LeakVisualProps = Omit<Partial<LayerProps>, 'bleeding'> &
     media?: ReactNode
   }
 
-function LeakLayer({
-  descriptor,
-  placement,
-  surface,
-  priority,
-  sizes,
-  active,
-  imgClassName,
-  bleeding,
-  admission,
-  onStatusChange,
-}: LayerProps) {
-  const rootRef = useRef<HTMLDivElement>(null)
-  const posters = useMemo(() => visualPosters({ kind: 'lightLeak', descriptor }), [descriptor])
-  const mirror = useMemo(() => originMirror(descriptor.origin), [descriptor.origin])
+/** Everything that changes what is drawn: a new identity is a new generation. */
+const leakIdentity = (descriptor: LeakVisualDescriptor) =>
+  `${descriptor.release?.sourceHash ?? descriptor.look}:${descriptor.speed}:${descriptor.intensity}:${descriptor.pointer}:${descriptor.targets}:${descriptor.sectionExcite}:${descriptor.origin}`
 
-  const { status, failure, mounted, live, ready, generation, handleReady, fail, failChunk } =
-    useLiveVisual<LeakFailureReason>({
-      rootRef,
-      placement,
-      kind: 'leak',
-      allowed: !descriptor.degraded,
-      active,
-      identity: `${descriptor.release?.sourceHash ?? descriptor.look}:${descriptor.speed}:${descriptor.intensity}:${descriptor.pointer}:${descriptor.targets}:${descriptor.sectionExcite}:${descriptor.origin}`,
-      admission,
-      onStatusChange,
-    })
+/** The stills are rendered with the light entering top right; a mirrored origin flips them. */
+const mirrorClass = (mirror: LeakMirror) =>
+  cn(mirror[0] && '-scale-x-100', mirror[1] && '-scale-y-100')
+
+type LeakLiveOptions = Pick<
+  LayerProps,
+  'descriptor' | 'placement' | 'surface' | 'active' | 'admission' | 'onStatusChange'
+>
+
+/**
+ * The shared slot lifecycle for a leak, the leak's tuning for each ground (the
+ * stills composite with each face's blend), and the face for the ground the
+ * layer lands on.
+ */
+function useLeakLive(
+  rootRef: RefObject<HTMLDivElement | null>,
+  { descriptor, placement, surface, active, admission, onStatusChange }: LeakLiveOptions,
+) {
+  const lifecycle = useLiveVisual<LeakFailureReason>({
+    rootRef,
+    placement,
+    kind: 'leak',
+    allowed: !descriptor.degraded,
+    active,
+    identity: leakIdentity(descriptor),
+    admission,
+    onStatusChange,
+  })
 
   const ground = useGroundSurface(rootRef)
   const faces = useMemo(
@@ -104,6 +108,22 @@ function LeakLayer({
     () => ({ dark: faces.dark.blendMode, light: faces.light.blendMode }),
     [faces],
   )
+  return { ...lifecycle, tuning, blend }
+}
+
+function LeakLayer({
+  descriptor,
+  surface,
+  priority,
+  sizes,
+  imgClassName,
+  bleeding,
+  ...lifecycle
+}: LayerProps) {
+  const rootRef = useRef<HTMLDivElement>(null)
+  const posters = useMemo(() => visualPosters({ kind: 'lightLeak', descriptor }), [descriptor])
+  const mirror = useMemo(() => originMirror(descriptor.origin), [descriptor.origin])
+  const slot = useLeakLive(rootRef, { ...lifecycle, descriptor, surface })
 
   return (
     <div
@@ -111,78 +131,78 @@ function LeakLayer({
       aria-hidden
       className="pointer-events-none absolute inset-0 overflow-hidden"
       data-visual-layer="lightLeak"
-      data-visual-status={status}
+      {...liveStatusAttributes(slot.status, slot.failure)}
       {...(bleeding ? { [VISUAL_BLEED_ATTR]: '' } : {})}
-      {...(failure ? { 'data-visual-failure': failure } : {})}
     >
       <VisualPosterStack
-        blend={blend}
-        // The stills are rendered with the light entering top right.
-        imgClassName={cn(mirror[0] && '-scale-x-100', mirror[1] && '-scale-y-100', imgClassName)}
+        blend={slot.blend}
+        imgClassName={cn(mirrorClass(mirror), imgClassName)}
         posters={posters}
-        priority={priority}
-        shown={!ready}
-        sizes={sizes}
+        // A bleeding layer is as wide as the page and is never first paint.
+        priority={priority && !bleeding}
+        shown={!slot.ready}
+        sizes={bleeding ? '100vw' : sizes}
         surface={surface}
       />
-      {mounted && (
-        <div className={crossfadeClass(ready)} style={{ mixBlendMode: tuning.blendMode }}>
-          <FailureBoundary onError={failChunk}>
-            <Suspense fallback={null}>
-              <LightLeakRuntime
-                active={live}
-                generation={generation}
-                mirror={mirror}
-                onFailure={fail}
-                onReady={handleReady}
-                rootRef={rootRef}
-                tuning={tuning}
-              />
-            </Suspense>
-          </FailureBoundary>
-        </div>
+      {slot.mounted && (
+        <LiveLayer
+          onError={slot.failChunk}
+          ready={slot.ready}
+          style={{ mixBlendMode: slot.tuning.blendMode }}
+        >
+          <LightLeakRuntime
+            active={slot.live}
+            generation={slot.generation}
+            mirror={mirror}
+            onFailure={slot.fail}
+            onReady={slot.handleReady}
+            rootRef={rootRef}
+            tuning={slot.tuning}
+          />
+        </LiveLayer>
       )}
     </div>
   )
 }
 
+/**
+ * The block root a bleeding leak portals onto, or `null` when it has none.
+ * `undefined` until looked for: a bleeding leak never paints contained first.
+ */
+function useBleedHost(frameRef: RefObject<HTMLElement | null>, bleed: boolean) {
+  const [host, setHost] = useState<Element | null | undefined>(undefined)
+  useEffect(() => {
+    setHost(bleed ? (frameRef.current?.closest(`[${VISUAL_HOST_ATTR}]`) ?? null) : null)
+  }, [bleed, frameRef])
+  return host
+}
+
 export function LeakVisual({
   descriptor,
-  placement,
   surface: landed = 'auto',
   priority = false,
   sizes = '100vw',
   active = true,
   className,
   fill = false,
-  imgClassName,
   media,
-  admission,
-  onStatusChange,
+  ...layerProps
 }: LeakVisualProps) {
   // The editor's pin outranks the ground the slot landed on. A bleeding leak
   // never carries one (`resolveLeakDescriptor`): its band is its ground.
   const surface = descriptor.surface ?? landed
   const frameRef = useRef<HTMLDivElement>(null)
-  // `undefined` until looked for: a bleeding leak never paints contained first.
-  const [host, setHost] = useState<Element | null | undefined>(undefined)
-  useEffect(() => {
-    setHost(descriptor.bleed ? (frameRef.current?.closest(`[${VISUAL_HOST_ATTR}]`) ?? null) : null)
-  }, [descriptor.bleed])
+  const host = useBleedHost(frameRef, descriptor.bleed)
 
   const bleeding = descriptor.bleed && host !== null
   const layer = (
     <LeakLayer
+      {...layerProps}
       active={active}
-      admission={admission}
       bleeding={bleeding}
       descriptor={descriptor}
-      imgClassName={imgClassName}
-      onStatusChange={onStatusChange}
-      placement={placement}
-      // A bleeding layer is as wide as the page and is never first paint.
-      priority={priority && !bleeding}
-      sizes={bleeding ? '100vw' : sizes}
+      priority={priority}
+      sizes={sizes}
       surface={surface}
     />
   )
@@ -192,7 +212,7 @@ export function LeakVisual({
       ref={frameRef}
       className={cn(
         'overflow-hidden',
-        fill ? 'absolute inset-0' : 'relative w-full',
+        frameClass(fill),
         !bleeding && 'isolate bg-background',
         className,
       )}

@@ -27,7 +27,7 @@ export const SECTION_SPACING_OPTIONS = [
 
 export type SectionBlockSpacing = (typeof SECTION_SPACING_OPTIONS)[number]['value']
 
-export const SECTION_SPACING_TO_BAND: Record<SectionBlockSpacing, BandSpacing> = {
+const SECTION_SPACING_TO_BAND: Record<SectionBlockSpacing, BandSpacing> = {
   default: 'normal',
   tight: 'tight',
   loose: 'loose',

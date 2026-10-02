@@ -21,6 +21,7 @@ import {
   type LightLeakTuning,
   NO_MIRROR,
 } from './light-leak-tuning'
+import { mapOverlayPointer, signalFirstFrame } from './overlay'
 
 /**
  * The light leak's scene and its DOM input, apart from any canvas: the page
@@ -201,20 +202,6 @@ export function bindLeakInput(input: LeakInput, options: LeakInputOptions): () =
   }
 }
 
-/**
- * Read the overlay rect only on frames where the pointer actually moved: idle
- * frames cost no layout, and the rect stays correct for an overlay that
- * scrolls with its section.
- */
-function refreshOverlayPointer(input: LeakInput, root: HTMLElement | null) {
-  if (!input.moved) return
-  input.moved = false
-  const rect = root?.getBoundingClientRect()
-  if (!rect || rect.width === 0 || rect.height === 0) return
-  input.x = (input.clientX - rect.left) / rect.width
-  input.y = 1 - (input.clientY - rect.top) / rect.height
-}
-
 /** Normalized on the CPU so the fragment stage skips a per-pixel normalize. */
 function setDispersionDirection(
   target: Vector2,
@@ -243,58 +230,131 @@ export type LeakSceneProps = {
   fixedDelta?: number
 }
 
-export function LeakScene({
-  rootRef,
-  inputRef,
-  scrollSource,
-  tuning,
-  mirror = NO_MIRROR,
-  onFirstFrame,
-  fixedDelta,
-}: LeakSceneProps) {
-  const {
-    samples,
-    blendMode,
-    timeScale,
-    warpAmount,
-    warpScale,
-    morph,
-    morphScale,
-    exciteEase,
-    pointerEase,
-    hoverBloom,
-    dispersion,
-    dispersionEnergy,
-    dispersionExcite,
-    dispersionDirection,
-    gain,
-    gainEnergy,
-    gainExcite,
-    saturation,
-    saturationExcite,
-    grain,
-    grainLuminance,
-    vignette,
-    inkChroma,
-    inkDensity,
-    coolTint,
-    warmTint,
-    amber,
-    blobWarm,
-    streak,
-    streakAngle,
-    streakSpread,
-    blobCool,
-    slats,
-    slatAngle,
-    slatTopSpread,
-    slatBottomSpread,
-    slatFrequency,
-    slatFrequencyExcite,
-    slatSharpness,
-  } = tuning
+/** The leak's uniforms at rest. */
+function createLeakUniforms() {
+  return {
+    uT: { value: 0 },
+    uPhase: { value: 0 },
+    uGrainSeed: { value: 0 },
+    uResolution: { value: new Vector2(1, 1) },
+    uPointer: { value: new Vector2(0.5, 0.5) },
+    uMirror: { value: new Vector2(0, 0) },
+    uWarpAmount: { value: 0 },
+    uWarpScale: { value: 1 },
+    uMorphAmt: { value: 0 },
+    uMorphScale: { value: 1 },
+    uDispAmt: { value: 0 },
+    uDispDir: { value: new Vector2(0.55, 1).normalize() },
+    uGainTotal: { value: 0 },
+    uSatTotal: { value: 0 },
+    uGrain: { value: 0 },
+    uGrainLum: { value: 0 },
+    uVignette: { value: 0 },
+    uAbsorb: { value: 0 },
+    uInkChroma: { value: 1 },
+    uInkDensity: { value: 0 },
+    uCoolTint: { value: new Vector3(1, 1, 1) },
+    uWarmTint: { value: new Vector3(1, 1, 1) },
+    uAmber: { value: new Vector3(0, 0, 0) },
+    uBlobWarm: { value: 0 },
+    uBlobStreak: { value: 0 },
+    uStreakAngle: { value: 0 },
+    uStreakSpread: { value: 0.1 },
+    uBlobCool: { value: 0 },
+    uSlats: { value: 0 },
+    uSlatAngle: { value: 0 },
+    uSlatTopSpread: { value: 0.3 },
+    uSlatBottomSpread: { value: 0.3 },
+    uSlatRefSpread: { value: 0.3 },
+    uSlatFreq: { value: 24 },
+    uSlatSharp: { value: 1 },
+    uHoverAmt: { value: 0 },
+  }
+}
 
-  const materialRef = useRef<ShaderMaterial>(null)
+type LeakUniforms = ShaderMaterial['uniforms']
+
+/**
+ * Resolved values. Every curve that mixes scroll energy (`e`) or hover
+ * excitement (`x`) into a parameter is folded here rather than in the shader,
+ * so the response math lives in one readable place and the fragment stage
+ * does less work.
+ */
+function writeResponseUniforms(u: LeakUniforms, tuning: LightLeakTuning, e: number, x: number) {
+  u.uDispAmt.value = tuning.dispersion + e * tuning.dispersionEnergy + x * tuning.dispersionExcite
+  u.uGainTotal.value = tuning.gain + e * tuning.gainEnergy + x * tuning.gainExcite
+  u.uSatTotal.value = tuning.saturation + x * tuning.saturationExcite
+  u.uSlatFreq.value = tuning.slatFrequency + x * tuning.slatFrequencyExcite
+  u.uMorphAmt.value = tuning.morph * e
+  u.uHoverAmt.value = x * tuning.hoverBloom
+}
+
+/**
+ * Static look. Written every frame rather than in a prop-change effect (as the
+ * demand-frameloop effects do) because this overlay always animates: a frame
+ * is running anyway, and ~20 float writes on it cost nothing next to a
+ * 30-entry dependency array.
+ */
+function writeLookUniforms(u: LeakUniforms, tuning: LightLeakTuning) {
+  u.uWarpAmount.value = tuning.warpAmount
+  u.uWarpScale.value = tuning.warpScale
+  u.uMorphScale.value = tuning.morphScale
+  u.uGrain.value = tuning.grain
+  u.uGrainLum.value = tuning.grainLuminance
+  u.uVignette.value = tuning.vignette
+  // Polarity is a uniform rather than a #define on purpose: a theme toggle
+  // must not relink the program mid-session (a new material, a compile stall
+  // and a dropped frame) when a coherent branch costs nothing.
+  u.uAbsorb.value = isAbsorptive(tuning.blendMode) ? 1 : 0
+  u.uInkChroma.value = tuning.inkChroma
+  u.uInkDensity.value = tuning.inkDensity
+  u.uCoolTint.value.fromArray(tuning.coolTint)
+  u.uWarmTint.value.fromArray(tuning.warmTint)
+  u.uAmber.value.fromArray(tuning.amber)
+  u.uBlobWarm.value = tuning.blobWarm
+  u.uBlobStreak.value = tuning.streak
+  u.uStreakAngle.value = tuning.streakAngle
+  u.uStreakSpread.value = tuning.streakSpread
+  u.uBlobCool.value = tuning.blobCool
+  u.uSlats.value = tuning.slats
+  u.uSlatAngle.value = tuning.slatAngle
+  u.uSlatTopSpread.value = tuning.slatTopSpread
+  u.uSlatBottomSpread.value = tuning.slatBottomSpread
+  // Folded here: both ends are uniforms, so the fan's reference width is
+  // constant across the draw.
+  u.uSlatRefSpread.value = 0.5 * (tuning.slatTopSpread + tuning.slatBottomSpread)
+  u.uSlatSharp.value = tuning.slatSharpness
+}
+
+/**
+ * Ease the pointer uniform toward the input. The pointer is mapped in the
+ * element's own box; the field it lands on may be mirrored.
+ */
+function easePointer(
+  u: LeakUniforms,
+  input: LeakInput,
+  mirror: LeakMirror,
+  ease: number,
+  dt: number,
+) {
+  const pointerX = mirror[0] ? 1 - input.x : input.x
+  const pointerY = mirror[1] ? 1 - input.y : input.y
+  u.uPointer.value.set(
+    MathUtils.damp(u.uPointer.value.x, pointerX, ease, dt),
+    MathUtils.damp(u.uPointer.value.y, pointerY, ease, dt),
+  )
+  u.uMirror.value.set(mirror[0] ? 1 : 0, mirror[1] ? 1 : 0)
+}
+
+type LeakFrameOptions = Omit<LeakSceneProps, 'mirror'> & {
+  materialRef: RefObject<ShaderMaterial | null>
+  mirror: LeakMirror
+}
+
+/** The leak's frame: integrate time and scroll, ease hover and the pointer, write the uniforms. */
+function useLeakFrame(options: LeakFrameOptions) {
+  const { materialRef, rootRef, inputRef, scrollSource, tuning, mirror, onFirstFrame, fixedDelta } =
+    options
   // Atomic selectors: a bare useThree() re-renders on any R3F state change
   // (perf-zustand-selectors).
   const size = useThree((state) => state.size)
@@ -310,58 +370,12 @@ export function LeakScene({
   const time = useRef({ field: 0, elapsed: 0 })
   const framesDrawn = useRef(0)
 
-  const fragmentShader = useMemo(() => createFragmentShader(samples), [samples])
-
-  // Initial values only: R3F copies this into the material, so every runtime
-  // update goes through materialRef.current.uniforms, never this object.
-  const uniforms = useMemo(
-    () => ({
-      uT: { value: 0 },
-      uPhase: { value: 0 },
-      uGrainSeed: { value: 0 },
-      uResolution: { value: new Vector2(1, 1) },
-      uPointer: { value: new Vector2(0.5, 0.5) },
-      uMirror: { value: new Vector2(0, 0) },
-      uWarpAmount: { value: 0 },
-      uWarpScale: { value: 1 },
-      uMorphAmt: { value: 0 },
-      uMorphScale: { value: 1 },
-      uDispAmt: { value: 0 },
-      uDispDir: { value: new Vector2(0.55, 1).normalize() },
-      uGainTotal: { value: 0 },
-      uSatTotal: { value: 0 },
-      uGrain: { value: 0 },
-      uGrainLum: { value: 0 },
-      uVignette: { value: 0 },
-      uAbsorb: { value: 0 },
-      uInkChroma: { value: 1 },
-      uInkDensity: { value: 0 },
-      uCoolTint: { value: new Vector3(1, 1, 1) },
-      uWarmTint: { value: new Vector3(1, 1, 1) },
-      uAmber: { value: new Vector3(0, 0, 0) },
-      uBlobWarm: { value: 0 },
-      uBlobStreak: { value: 0 },
-      uStreakAngle: { value: 0 },
-      uStreakSpread: { value: 0.1 },
-      uBlobCool: { value: 0 },
-      uSlats: { value: 0 },
-      uSlatAngle: { value: 0 },
-      uSlatTopSpread: { value: 0.3 },
-      uSlatBottomSpread: { value: 0.3 },
-      uSlatRefSpread: { value: 0.3 },
-      uSlatFreq: { value: 24 },
-      uSlatSharp: { value: 1 },
-      uHoverAmt: { value: 0 },
-    }),
-    [],
-  )
-
   useFrame((_, delta) => {
     const material = materialRef.current
     if (!material) return
     const u = material.uniforms
     const dt = Math.min(fixedDelta ?? delta, MAX_DELTA)
-    time.current.field += dt * timeScale
+    time.current.field += dt * tuning.timeScale
     time.current.elapsed += dt
 
     // A fixed-step capture has no page under it: the field rests.
@@ -372,79 +386,30 @@ export function LeakScene({
 
     // Hover excitement eases in and out slowly, so the flare is a wash.
     const input = inputRef.current
-    excite.current = MathUtils.damp(excite.current, input.exciteTarget, exciteEase, dt)
+    excite.current = MathUtils.damp(excite.current, input.exciteTarget, tuning.exciteEase, dt)
 
-    refreshOverlayPointer(input, rootRef.current)
-    // The pointer is mapped in the element's own box; the field it lands on
-    // may be mirrored.
-    const pointerX = mirror[0] ? 1 - input.x : input.x
-    const pointerY = mirror[1] ? 1 - input.y : input.y
-    u.uPointer.value.set(
-      MathUtils.damp(u.uPointer.value.x, pointerX, pointerEase, dt),
-      MathUtils.damp(u.uPointer.value.y, pointerY, pointerEase, dt),
-    )
-    u.uMirror.value.set(mirror[0] ? 1 : 0, mirror[1] ? 1 : 0)
+    mapOverlayPointer(input, rootRef.current)
+    easePointer(u, input, mirror, tuning.pointerEase, dt)
 
-    const e = scroll.current.energy
-    const x = excite.current
-
-    // Resolved values. Every curve that mixes energy or excitement into a
-    // parameter is folded here rather than in the shader, so the response math
-    // lives in one readable place and the fragment stage does less work.
     u.uT.value = time.current.field + scroll.current.phase
     u.uPhase.value = scroll.current.phase
     u.uGrainSeed.value = time.current.elapsed
     u.uResolution.value.set(size.width * pixelRatio, size.height * pixelRatio)
-
-    u.uDispAmt.value = dispersion + e * dispersionEnergy + x * dispersionExcite
-    u.uGainTotal.value = gain + e * gainEnergy + x * gainExcite
-    u.uSatTotal.value = saturation + x * saturationExcite
-    u.uSlatFreq.value = slatFrequency + x * slatFrequencyExcite
-    u.uMorphAmt.value = morph * e
-    u.uHoverAmt.value = x * hoverBloom
-
-    setDispersionDirection(u.uDispDir.value, dispersionDirection, mirror)
-
-    // Static look. Written here rather than in a prop-change effect (as the
-    // demand-frameloop effects do) because this overlay always animates: a
-    // frame is running anyway, and ~20 float writes on it cost nothing next to
-    // a 30-entry dependency array.
-    u.uWarpAmount.value = warpAmount
-    u.uWarpScale.value = warpScale
-    u.uMorphScale.value = morphScale
-    u.uGrain.value = grain
-    u.uGrainLum.value = grainLuminance
-    u.uVignette.value = vignette
-    // Polarity is a uniform rather than a #define on purpose: a theme toggle
-    // must not relink the program mid-session (a new material, a compile stall
-    // and a dropped frame) when a coherent branch costs nothing.
-    u.uAbsorb.value = isAbsorptive(blendMode) ? 1 : 0
-    u.uInkChroma.value = inkChroma
-    u.uInkDensity.value = inkDensity
-    u.uCoolTint.value.fromArray(coolTint)
-    u.uWarmTint.value.fromArray(warmTint)
-    u.uAmber.value.fromArray(amber)
-    u.uBlobWarm.value = blobWarm
-    u.uBlobStreak.value = streak
-    u.uStreakAngle.value = streakAngle
-    u.uStreakSpread.value = streakSpread
-    u.uBlobCool.value = blobCool
-    u.uSlats.value = slats
-    u.uSlatAngle.value = slatAngle
-    u.uSlatTopSpread.value = slatTopSpread
-    u.uSlatBottomSpread.value = slatBottomSpread
-    // Folded here: both ends are uniforms, so the fan's reference width is
-    // constant across the draw.
-    u.uSlatRefSpread.value = 0.5 * (slatTopSpread + slatBottomSpread)
-    u.uSlatSharp.value = slatSharpness
-
-    // R3F draws after this callback returns; the next animation frame is the
-    // earliest moment that draw has been issued, so readiness waits for it.
-    if (framesDrawn.current === 0) {
-      framesDrawn.current = 1
-      if (onFirstFrame) requestAnimationFrame(() => onFirstFrame())
-    }
+    writeResponseUniforms(u, tuning, scroll.current.energy, excite.current)
+    setDispersionDirection(u.uDispDir.value, tuning.dispersionDirection, mirror)
+    writeLookUniforms(u, tuning)
+    signalFirstFrame(framesDrawn, onFirstFrame)
   })
+}
+
+export function LeakScene({ mirror = NO_MIRROR, ...props }: LeakSceneProps) {
+  const { samples } = props.tuning
+  const materialRef = useRef<ShaderMaterial>(null)
+  const fragmentShader = useMemo(() => createFragmentShader(samples), [samples])
+  // Initial values only: R3F copies this into the material, so every runtime
+  // update goes through materialRef.current.uniforms, never this object.
+  const uniforms = useMemo(() => createLeakUniforms(), [])
+  useLeakFrame({ ...props, materialRef, mirror })
 
   return (
     <mesh frustumCulled={false}>

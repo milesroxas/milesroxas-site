@@ -21,9 +21,9 @@ import type { StreakFieldProps } from '../ui/streak-field'
  */
 export const STREAK_LOOK_REVISION = 2
 
-export type StreakLookMotion = 'drift' | 'flow'
+type StreakLookMotion = 'drift' | 'flow'
 
-export type StreakLook = {
+type StreakLook = {
   id: string
   label: string
   /** One line for the admin picker. */

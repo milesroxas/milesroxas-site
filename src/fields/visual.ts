@@ -94,7 +94,7 @@ const slotOffers =
   }
 
 /** `media` was `required`; it stays required unless the slot chose an effect. */
-export const requiredUnlessEffect: Validate = (value, args) => {
+const requiredUnlessEffect: Validate = (value, args) => {
   if (value !== null && value !== undefined && value !== '') return true
   const siblingData = (args as { siblingData?: { visualType?: unknown } }).siblingData
   return isEffectId(siblingData?.visualType) ? true : 'This field is required.'
@@ -364,7 +364,7 @@ export type ShaderFieldArgs = {
  * slot's effects declares them, so a slot that cannot draw a light leak stores
  * no columns for one; the interface name follows, one per shape.
  */
-export const shaderField = ({
+const shaderField = ({
   name = 'shader',
   label = 'Effect',
   effects = [DEFAULT_EFFECT],
@@ -456,7 +456,7 @@ export type VisualSlotArgs = Pick<
  * shader group. A `required` upload becomes required-unless-effect, since
  * hiding does not relax `required`.
  */
-export const visualSlotFields = (
+const visualSlotFields = (
   media: UploadField,
   {
     ambient = false,

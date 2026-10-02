@@ -2,8 +2,6 @@ import type { StaticImageData } from 'next/image'
 import type React from 'react'
 import { MEDIA_SIZE_CLASS, type MediaSize } from '@/blocks/shared/media-size'
 import { Section } from '@/blocks/shared/section'
-// Payload website-template pattern: RichText renders embedded blocks, blocks render rich text
-// fallow-ignore-next-line circular-dependency
 import RichText from '@/components/RichText'
 import type { CaptionBlock as CaptionBlockProps, Media as MediaDoc } from '@/payload-types'
 import { hasRichTextContent } from '@/utilities/hasRichTextContent'
@@ -31,6 +29,30 @@ const sizeHints: Record<MediaSize, string> = {
   small: '(min-width: 448px) 448px, 100vw',
 }
 
+/** The populated media, the caption to show (a non-empty override wins) and whether anything mounts. */
+const resolveCaptionMedia = ({
+  captionOverride,
+  media,
+  staticImage,
+}: Pick<Props, 'captionOverride' | 'media' | 'staticImage'>) => {
+  // Lexical may leave `media` as an id when depth is too low; callers that
+  // render rich text must query with enough depth to populate uploads.
+  const mediaDoc = media && typeof media === 'object' ? media : null
+
+  let caption: MediaDoc['caption'] | undefined
+  if (captionOverride && hasRichTextContent(captionOverride)) caption = captionOverride
+  else if (mediaDoc) caption = mediaDoc.caption
+
+  // Videos may rely on filename + CDN rather than a populated `url`; don't
+  // require `url` or image-only fields to mount the player.
+  const hasRenderableMedia = Boolean(
+    staticImage ||
+      (mediaDoc && (mediaDoc.url || mediaDoc.filename || mediaDoc.mimeType?.startsWith('video'))),
+  )
+
+  return { caption, hasRenderableMedia, mediaDoc }
+}
+
 export const CaptionBlock: React.FC<Props> = (props) => {
   const {
     bare,
@@ -46,20 +68,11 @@ export const CaptionBlock: React.FC<Props> = (props) => {
     disableInnerContainer,
   } = props
 
-  // Lexical may leave `media` as an id when depth is too low; callers that
-  // render rich text must query with enough depth to populate uploads.
-  const mediaDoc = media && typeof media === 'object' ? media : null
-
-  let caption: MediaDoc['caption'] | undefined
-  if (captionOverride && hasRichTextContent(captionOverride)) caption = captionOverride
-  else if (mediaDoc) caption = mediaDoc.caption
-
-  // Videos may rely on filename + CDN rather than a populated `url`; don't
-  // require `url` or image-only fields to mount the player.
-  const hasRenderableMedia = Boolean(
-    staticImage ||
-      (mediaDoc && (mediaDoc.url || mediaDoc.filename || mediaDoc.mimeType?.startsWith('video'))),
-  )
+  const { caption, hasRenderableMedia, mediaDoc } = resolveCaptionMedia({
+    captionOverride,
+    media,
+    staticImage,
+  })
 
   const sizeKey = size ?? 'contained'
   // Full width: media leaves the column and drops its radius; the caption text stays in it.

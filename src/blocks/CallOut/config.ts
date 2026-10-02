@@ -1,11 +1,6 @@
-import {
-  FixedToolbarFeature,
-  HeadingFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
+import { headingLexical } from '@/fields/headingLexical'
 
 export const CallOut: Block = {
   slug: 'callout',
@@ -15,16 +10,7 @@ export const CallOut: Block = {
     {
       name: 'richText',
       type: 'richText',
-      editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [
-            ...rootFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: headingLexical(),
       label: false,
     },
   ],

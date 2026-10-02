@@ -9,6 +9,27 @@ import { useChromeStore } from '@/stores/chromeStore'
 
 gsap.registerPlugin(Flip, useGSAP)
 
+/** Clones the media over itself, fixed in place, and stashes it for the destination hero to pick up. */
+function stashClone(mediaEl: HTMLElement): HTMLElement {
+  const clone = mediaEl.cloneNode(true) as HTMLElement
+  clone.classList.add('page-transition-clone')
+  window.__PAGE_TRANSITION_CLONE = clone
+  document.body.appendChild(clone)
+
+  const rect = mediaEl.getBoundingClientRect()
+  Object.assign(clone.style, {
+    position: 'fixed',
+    top: `${rect.top}px`,
+    left: `${rect.left}px`,
+    width: `${rect.width}px`,
+    height: `${rect.height}px`,
+    objectFit: 'cover',
+    zIndex: '10000',
+  })
+
+  return clone
+}
+
 interface UseCardTransitionArgs {
   href: string
   imageRef: React.RefObject<HTMLDivElement | null>
@@ -18,7 +39,7 @@ interface UseCardTransitionArgs {
 /**
  * Shared card → detail page hero transition.
  * Clones the card media, FLIP-expands it to full screen, then navigates.
- * The destination hero (HighImpact/PostHero) picks up the clone and
+ * The destination hero (HighImpact) picks up the clone and
  * animates it into place for a seamless entry.
  */
 export function useCardTransition({ href, imageRef, scope }: UseCardTransitionArgs) {
@@ -41,25 +62,15 @@ export function useCardTransition({ href, imageRef, scope }: UseCardTransitionAr
 
     setTransitionPhase('initial')
 
-    // clone & stash for the destination hero to pick up
-    const clone = mediaEl.cloneNode(true) as HTMLElement
-    clone.classList.add('page-transition-clone')
-    window.__PAGE_TRANSITION_CLONE = clone
-    document.body.appendChild(clone)
-
-    const rect = mediaEl.getBoundingClientRect()
-    Object.assign(clone.style, {
-      position: 'fixed',
-      top: `${rect.top}px`,
-      left: `${rect.left}px`,
-      width: `${rect.width}px`,
-      height: `${rect.height}px`,
-      objectFit: 'cover',
-      zIndex: '10000',
-    })
+    const clone = stashClone(mediaEl)
 
     // Hide original immediately
     mediaEl.style.visibility = 'hidden'
+
+    const navigate = () => {
+      router.push(href)
+      setChromeVisible(false)
+    }
 
     // FLIP to full-screen - get initial state first
     const state = Flip.getState(clone)
@@ -77,14 +88,8 @@ export function useCardTransition({ href, imageRef, scope }: UseCardTransitionAr
       onStart: () => {
         setTransitionPhase('clone-animating')
       },
-      onComplete: () => {
-        router.push(href)
-        setChromeVisible(false)
-      },
-      onInterrupt: () => {
-        router.push(href)
-        setChromeVisible(false)
-      },
+      onComplete: navigate,
+      onInterrupt: navigate,
     })
   })
 }

@@ -1,11 +1,5 @@
-import {
-  MetaDescriptionField,
-  MetaImageField,
-  MetaTitleField,
-  OverviewField,
-  PreviewField,
-} from '@payloadcms/plugin-seo/fields'
 import type { CollectionConfig } from 'payload'
+import { seoTab } from '@/collections/shared/seoTab'
 import { contentsButtonField } from '@/fields/pageFields'
 import { pageLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
@@ -77,42 +71,7 @@ export const Pages: CollectionConfig<'pages'> = {
           ],
           label: 'Composition',
         },
-        {
-          name: 'meta',
-          label: 'SEO',
-          fields: [
-            OverviewField({
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-              imagePath: 'meta.image',
-            }),
-            MetaTitleField({
-              hasGenerateFn: true,
-            }),
-            MetaImageField({
-              relationTo: 'media',
-            }),
-
-            MetaDescriptionField({}),
-            PreviewField({
-              // if the `generateUrl` function is configured
-              hasGenerateFn: true,
-
-              // field paths to match the target field for data
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-            }),
-            {
-              name: 'noIndex',
-              type: 'checkbox',
-              label: 'No Index',
-              defaultValue: false,
-              admin: {
-                description: 'Prevent search engines from indexing this page',
-              },
-            },
-          ],
-        },
+        seoTab(),
       ],
     },
     {

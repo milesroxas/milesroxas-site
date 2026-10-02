@@ -5,9 +5,6 @@ import type { Page, Post } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 import { resolveCmsLinkHref } from './resolve-href'
 
-// Export TransitionLink component
-export { default as TransitionLink } from './TransitionLink'
-
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
   children?: React.ReactNode
@@ -48,36 +45,23 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const handleClick = onClick
     ? (e: React.MouseEvent) => {
         e.preventDefault()
-        onClick(href || url || '')
+        onClick(href)
       }
     : undefined
 
+  const link = (
+    <Link className={cn(className)} href={href} {...newTabProps} onClick={handleClick}>
+      {label}
+      {children}
+    </Link>
+  )
+
   /* Ensure we don't break any styles set by richText */
-  if (appearance === 'inline') {
-    return (
-      <Link
-        className={cn(className)}
-        href={href || url || ''}
-        {...newTabProps}
-        onClick={handleClick}
-      >
-        {label && label}
-        {children && children}
-      </Link>
-    )
-  }
+  if (appearance === 'inline') return link
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link
-        className={cn(className)}
-        href={href || url || ''}
-        {...newTabProps}
-        onClick={handleClick}
-      >
-        {label && label}
-        {children && children}
-      </Link>
+      {link}
     </Button>
   )
 }

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useSyncExternalStore } from 'react'
 import { countDocs, whereIn } from '@/components/admin/rest'
 import { INQUIRY_OPEN_STATUSES } from '@/shared/content/inquiry'
 
-export type InquiryCounts = {
+type InquiryCounts = {
   /** Nobody has picked these up yet. */
   new: number
   /** New or in progress — everything still owed an answer. */

@@ -42,7 +42,7 @@ export const SPACING_SCALE = {
 
 export type BandSpacing = keyof typeof SPACING_SCALE
 
-export const BAND_SPACING = {
+const BAND_SPACING = {
   none: SPACING_SCALE.none.band,
   tight: SPACING_SCALE.tight.band,
   normal: SPACING_SCALE.normal.band,

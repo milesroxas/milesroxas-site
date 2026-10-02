@@ -145,6 +145,18 @@ export const lookOptions = (effect: Effect) =>
     description,
   }))
 
+const inRange = (n: unknown, min: number, max: number) =>
+  typeof n === 'number' && Number.isFinite(n) && n >= min && n <= max
+
+/** `length` numbers, each from `min` to `max`. */
+const isTuple = (value: unknown, length: number, min: number, max: number) =>
+  Array.isArray(value) && value.length === length && value.every((n) => inRange(n, min, max))
+
+function optionsError(key: string, spec: OptionsParameter, value: unknown, resolved: boolean) {
+  const allowed = resolved ? [...spec.options, ...(spec.derived ?? [])] : spec.options
+  return typeof value === 'string' && allowed.includes(value) ? null : `Invalid ${key}.`
+}
+
 /**
  * The rule one value has to meet for its parameter. Returns the reason it does
  * not, or `null`. `resolved` reads a value out of a tuning the effect produced
@@ -156,21 +168,12 @@ export function parameterError(
   value: unknown,
   { resolved = false } = {},
 ): string | null {
-  const inRange = (n: unknown, min: number, max: number) =>
-    typeof n === 'number' && Number.isFinite(n) && n >= min && n <= max
-  if ('options' in spec) {
-    const allowed = resolved ? [...spec.options, ...(spec.derived ?? [])] : spec.options
-    return typeof value === 'string' && allowed.includes(value) ? null : `Invalid ${key}.`
-  }
+  if ('options' in spec) return optionsError(key, spec, value, resolved)
   if ('toggle' in spec) return typeof value === 'boolean' ? null : `${key} must be on or off.`
   if ('color' in spec)
-    return Array.isArray(value) && value.length === 3 && value.every((n) => inRange(n, 0, 1))
-      ? null
-      : `${key} must be three color values from 0 to 1.`
+    return isTuple(value, 3, 0, 1) ? null : `${key} must be three color values from 0 to 1.`
   if ('vector' in spec)
-    return Array.isArray(value) &&
-      value.length === spec.vector &&
-      value.every((n) => inRange(n, spec.min, spec.max))
+    return isTuple(value, spec.vector, spec.min, spec.max)
       ? null
       : `${key} must be ${spec.vector} values between ${spec.min} and ${spec.max}.`
   return inRange(value, spec.min, spec.max)

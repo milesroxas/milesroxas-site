@@ -37,14 +37,8 @@ export const plainText = (node: LexicalNode | undefined): string => {
   return (node.children ?? []).map(plainText).join('')
 }
 
-/** A state's words, block by block, blank blocks dropped. */
-export const blockTexts = (state: unknown): string[] =>
-  topNodes(state)
-    .map((node) => plainText(node).trim())
-    .filter(Boolean)
-
 /** Whether a node says nothing: no text, no inline block, no upload. */
-export const isBlankNode = (node: LexicalNode): boolean => {
+const isBlankNode = (node: LexicalNode): boolean => {
   if (node.type === 'block' || node.type === 'upload' || node.type === 'inlineBlock') return false
   if (node.type === 'text') return !(node.text ?? '').trim()
   return (node.children ?? []).every(isBlankNode)

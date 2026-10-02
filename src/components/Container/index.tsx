@@ -9,7 +9,7 @@ import { cn } from '@/utilities/ui'
  * - full: edge to edge, no gutters — viewport bleed
  * - narrow: 40rem / 640px — single-column reading
  */
-export const containerWidthClasses = {
+const containerWidthClasses = {
   default: 'container',
   narrow: 'container container-narrow',
   full: 'container-full',

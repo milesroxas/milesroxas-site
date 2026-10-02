@@ -27,6 +27,64 @@ type Week = {
 const percent = (part: number, whole: number) =>
   whole === 0 ? '0%' : `${Math.round((part / whole) * 100)}%`
 
+/** The week's counts and its newest unseen gaps, all over the same window. */
+async function loadWeek(api: string, since: string, signal: AbortSignal) {
+  const count = (collection: string, query: string) =>
+    countDocs(api, collection, `${since}&${query}`, signal)
+
+  const [asked, grounded, gapCount, down, handedOff, leads, list] = await Promise.all([
+    count('ask-questions', ''),
+    count('ask-questions', GROUNDED_QUERY),
+    count('ask-questions', ASK_QUERIES.gaps),
+    count('ask-questions', ASK_QUERIES.thumbsDown),
+    count('ask-questions', ASK_QUERIES.handedOff),
+    count('inquiries', FROM_ASK_QUERY),
+    listDocs<AskQuestion>(
+      api,
+      'ask-questions',
+      `limit=${PREVIEW_LIMIT}&sort=-createdAt&${ASK_QUERIES.newGaps}`,
+      signal,
+    ),
+  ])
+  const week: Week = { asked, grounded, gaps: gapCount, down, handedOff, leads }
+  return { gaps: list, week }
+}
+
+/** Each count, linked to the list it was counted from. */
+function WeekCounts({
+  admin,
+  listUrl,
+  since,
+  week,
+}: {
+  admin: string
+  listUrl: string
+  since: string
+  week: Week
+}) {
+  return (
+    <>
+      <Link href={`${listUrl}?${since}`}>{week.asked} asked</Link>
+      {' · '}
+      <Link href={`${listUrl}?${since}&${GROUNDED_QUERY}`}>
+        {percent(week.grounded, week.asked)} answered from the site
+      </Link>
+      {' · '}
+      <Link href={`${listUrl}?${since}&${ASK_QUERIES.gaps}`}>{week.gaps} content gaps</Link>
+      {' · '}
+      <Link href={`${listUrl}?${since}&${ASK_QUERIES.thumbsDown}`}>{week.down} thumbs down</Link>
+      {' · '}
+      <Link href={`${listUrl}?${since}&${ASK_QUERIES.handedOff}`}>
+        {week.handedOff} went to a person
+      </Link>
+      {' · '}
+      <Link href={`${admin}/collections/inquiries?${since}&${FROM_ASK_QUERY}`}>
+        {week.leads} inquiries from Ask
+      </Link>
+    </>
+  )
+}
+
 /**
  * The week in Ask, under the inquiries card: how much was asked, how much
  * of it the site could answer, how the visitors rated it, how many went on
@@ -49,27 +107,12 @@ export function AskDashboard() {
 
   useEffect(() => {
     const controller = new AbortController()
-    const count = (collection: string, query: string) =>
-      countDocs(api, collection, `${since}&${query}`, controller.signal)
 
     const load = async () => {
       try {
-        const [asked, grounded, gapCount, down, handedOff, leads, list] = await Promise.all([
-          count('ask-questions', ''),
-          count('ask-questions', GROUNDED_QUERY),
-          count('ask-questions', ASK_QUERIES.gaps),
-          count('ask-questions', ASK_QUERIES.thumbsDown),
-          count('ask-questions', ASK_QUERIES.handedOff),
-          count('inquiries', FROM_ASK_QUERY),
-          listDocs<AskQuestion>(
-            api,
-            'ask-questions',
-            `limit=${PREVIEW_LIMIT}&sort=-createdAt&${ASK_QUERIES.newGaps}`,
-            controller.signal,
-          ),
-        ])
-        setWeek({ asked, grounded, gaps: gapCount, down, handedOff, leads })
-        setGaps(list)
+        const loaded = await loadWeek(api, since, controller.signal)
+        setWeek(loaded.week)
+        setGaps(loaded.gaps)
       } catch {
         // Aborted on unmount, or offline. The card keeps its quiet line.
       }
@@ -85,27 +128,7 @@ export function AskDashboard() {
         {!week || week.asked === 0 ? (
           'Nothing asked this week.'
         ) : (
-          <>
-            <Link href={`${listUrl}?${since}`}>{week.asked} asked</Link>
-            {' · '}
-            <Link href={`${listUrl}?${since}&${GROUNDED_QUERY}`}>
-              {percent(week.grounded, week.asked)} answered from the site
-            </Link>
-            {' · '}
-            <Link href={`${listUrl}?${since}&${ASK_QUERIES.gaps}`}>{week.gaps} content gaps</Link>
-            {' · '}
-            <Link href={`${listUrl}?${since}&${ASK_QUERIES.thumbsDown}`}>
-              {week.down} thumbs down
-            </Link>
-            {' · '}
-            <Link href={`${listUrl}?${since}&${ASK_QUERIES.handedOff}`}>
-              {week.handedOff} went to a person
-            </Link>
-            {' · '}
-            <Link href={`${admin}/collections/inquiries?${since}&${FROM_ASK_QUERY}`}>
-              {week.leads} inquiries from Ask
-            </Link>
-          </>
+          <WeekCounts admin={admin} listUrl={listUrl} since={since} week={week} />
         )}
       </p>
 

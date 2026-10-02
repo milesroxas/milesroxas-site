@@ -37,11 +37,11 @@ import { isStreakLookId, type StreakLookId } from './looks'
  */
 
 /** The visual kinds an editor can choose. Missing/null keeps legacy media behavior. */
-export const VISUAL_TYPES = ['media', ...EFFECT_IDS] as const
+const VISUAL_TYPES = ['media', ...EFFECT_IDS] as const
 export type VisualType = (typeof VISUAL_TYPES)[number]
 
 /** Menu preview choice: inherit the destination's visual, or pick one for hover only. */
-export const MENU_PREVIEW_TYPES = ['automatic', 'media', 'streakField'] as const
+const MENU_PREVIEW_TYPES = ['automatic', 'media', 'streakField'] as const
 export type MenuPreviewType = (typeof MENU_PREVIEW_TYPES)[number]
 
 /** Bounded editor multipliers. Ranges are the first-release proposal, tuned visually. */
@@ -181,7 +181,7 @@ export const isValidStreakSeed = (value: unknown): value is number =>
   isFiniteNumber(value) && Number.isInteger(value) && value >= 0 && value <= STREAK_SEED_MAX
 
 /** A stored multiplier normalized to its range; null and non-finite fall to the default. */
-export const normalizeStreakMultiplier = (
+const normalizeStreakMultiplier = (
   value: unknown,
   range: { min: number; max: number; default: number },
 ): number => (isFiniteNumber(value) ? clamp(value, range.min, range.max) : range.default)
@@ -320,20 +320,6 @@ export const resolveOpening = (
   return { ground, media, surface: visualSurface(ground) }
 }
 
-/**
- * What a hero opening hands off to the takeover menu: the media plate when the
- * page sets one, the effect grounding the band otherwise. The heroes mark that
- * same element `data-hero-media` (`HeroGround`'s `handoff`), so the menu's
- * preview and the page's dissolve target can never disagree.
- */
-export const openingHandoffVisual = (
-  slot: StoredVisualSlot | null | undefined,
-  options: ResolveVisualOptions = {},
-): Visual | null => {
-  const { ground, media } = resolveOpening(slot, options)
-  return media ? { kind: 'media', media } : ground
-}
-
 const POSTER_MEDIA_KEYS = ['filename', 'updatedAt', 'url', 'width', 'height', 'mimeType'] as const
 
 /**
@@ -388,12 +374,8 @@ export const parseStreakDescriptor = (
 }
 
 /** The face an effect's editor pinned it to. Media, and an effect that follows its ground, are `null`. */
-export const visualSurface = (visual: Visual | null | undefined): Surface | null =>
+const visualSurface = (visual: Visual | null | undefined): Surface | null =>
   visual && visual.kind !== 'media' ? visual.descriptor.surface : null
-
-/** The media document behind a visual, when it is one. An effect returns null, whatever it shows under itself. */
-export const visualMedia = (visual: Visual | null | undefined): Media | null =>
-  visual?.kind === 'media' ? visual.media : null
 
 /** A menu preview slot as Payload stores it, beside the destination's own visual. */
 export type StoredMenuPreviewSlot = {

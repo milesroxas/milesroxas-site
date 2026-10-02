@@ -11,17 +11,17 @@ import { sectionBlock } from '@/blocks/section/config'
 import { sectionChildBlocks, sectionNestableBlocks } from '@/blocks/shared/section-blocks'
 import { TabsBlock } from '@/blocks/Tabs/config'
 
-export const PageSection = sectionBlock({
+const PageSection = sectionBlock({
   blocks: sectionChildBlocks,
   interfaceName: 'PageSectionBlock',
 })
 
-export const WorkSection = sectionBlock({
+const WorkSection = sectionBlock({
   blocks: sectionChildBlocks,
   interfaceName: 'WorkSectionBlock',
 })
 
-export const PostSection = sectionBlock({
+const PostSection = sectionBlock({
   blocks: sectionChildBlocks,
   interfaceName: 'PostSectionBlock',
 })

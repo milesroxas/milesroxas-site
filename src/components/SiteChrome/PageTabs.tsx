@@ -15,6 +15,23 @@ const opensElsewhere = (event: MouseEvent, tab: ChromeTab) =>
   event.shiftKey ||
   event.altKey
 
+/** Clips the fill to `tab`, or lifts it when no tab owns the page. */
+function placeIndicator(indicator: HTMLSpanElement, tab: HTMLAnchorElement | null | undefined) {
+  if (!tab) {
+    indicator.removeAttribute('data-placed')
+    return
+  }
+  const left = tab.offsetLeft - indicator.offsetLeft
+  const right = indicator.offsetWidth - left - tab.offsetWidth
+  indicator.style.setProperty('--tab-left', `${left}px`)
+  indicator.style.setProperty('--tab-right', `${right}px`)
+  // The first placement lands where it belongs; only later moves slide.
+  if (!indicator.hasAttribute('data-placed')) {
+    indicator.setAttribute('data-placed', '')
+    requestAnimationFrame(() => indicator.setAttribute('data-ready', ''))
+  }
+}
+
 type PageTabsProps = {
   tabs: ChromeTab[]
   /** Index of the current page's tab, or -1 when no tab owns the page. */
@@ -46,22 +63,7 @@ export function PageTabs({ tabs, active, onSelect, minimized, className }: PageT
   useLayoutEffect(() => {
     const indicator = indicatorRef.current
     if (!indicator) return
-    const place = () => {
-      const tab = tabRefs.current[active]
-      if (!tab) {
-        indicator.removeAttribute('data-placed')
-        return
-      }
-      const left = tab.offsetLeft - indicator.offsetLeft
-      const right = indicator.offsetWidth - left - tab.offsetWidth
-      indicator.style.setProperty('--tab-left', `${left}px`)
-      indicator.style.setProperty('--tab-right', `${right}px`)
-      // The first placement lands where it belongs; only later moves slide.
-      if (!indicator.hasAttribute('data-placed')) {
-        indicator.setAttribute('data-placed', '')
-        requestAnimationFrame(() => indicator.setAttribute('data-ready', ''))
-      }
-    }
+    const place = () => placeIndicator(indicator, tabRefs.current[active])
     place()
     const observer = new ResizeObserver(place)
     observer.observe(indicator)

@@ -122,38 +122,23 @@ const isCodeListing = (value: object): value is CodeListing => {
 const fencedListing = ({ code, language }: CodeListing): string[] =>
   code.trim() ? [`\`\`\`${str(language)}\n${code}\n\`\`\``] : []
 
-function walkValue(value: unknown, key: string, out: Part[]): void {
-  if (value === null || value === undefined) return
+function walkText(value: string, normalized: string, out: Part[]): void {
+  const text = value.trim()
+  if (!text || !CONTENT_TEXT_KEYS.has(normalized)) return
+  out.push(CONTENT_HEADING_KEYS.has(normalized) ? `## ${text}` : text)
+}
 
-  const normalized = normalizeKey(key)
-  if (CONTENT_SKIP_KEYS.has(normalized) || normalized.startsWith('internal')) return
-
-  const relation = RELATION_KEYS[normalized]
-  if (relation) {
-    for (const id of numericIds(value)) out.push({ collection: relation, id })
+function walkArray(value: unknown[], key: string, normalized: string, out: Part[]): void {
+  const render = STRUCTURED_KEYS[normalized]
+  if (render) {
+    const text = render(value)
+    if (text) out.push(text)
     return
   }
+  for (const item of value) walkValue(item, key, out)
+}
 
-  if (typeof value === 'string') {
-    const text = value.trim()
-    if (!text || !CONTENT_TEXT_KEYS.has(normalized)) return
-    out.push(CONTENT_HEADING_KEYS.has(normalized) ? `## ${text}` : text)
-    return
-  }
-
-  if (Array.isArray(value)) {
-    const render = STRUCTURED_KEYS[normalized]
-    if (render) {
-      const text = render(value)
-      if (text) out.push(text)
-      return
-    }
-    for (const item of value) walkValue(item, key, out)
-    return
-  }
-
-  if (typeof value !== 'object') return
-
+function walkObject(value: object, out: Part[]): void {
   if (isLexicalState(value)) {
     const markdown = lexicalToMarkdownString(value)
     if (markdown) out.push(markdown)
@@ -170,12 +155,61 @@ function walkValue(value: unknown, key: string, out: Part[]): void {
   }
 }
 
+function walkValue(value: unknown, key: string, out: Part[]): void {
+  if (value === null || value === undefined) return
+
+  const normalized = normalizeKey(key)
+  if (CONTENT_SKIP_KEYS.has(normalized) || normalized.startsWith('internal')) return
+
+  const relation = RELATION_KEYS[normalized]
+  if (relation) {
+    for (const id of numericIds(value)) out.push({ collection: relation, id })
+    return
+  }
+
+  if (typeof value === 'string') walkText(value, normalized, out)
+  else if (Array.isArray(value)) walkArray(value, key, normalized, out)
+  else if (typeof value === 'object') walkObject(value, out)
+}
+
 /** No relation is followed here (see `RELATION_KEYS`), so nothing resolves. */
 async function resolveRelations(
   _payload: Payload,
   _refs: RelationRef[],
 ): Promise<Map<string, string>> {
   return new Map()
+}
+
+/** A reference's rendered substance the first time it appears, undefined after. */
+function renderOnce(
+  ref: RelationRef,
+  rendered: Map<string, string>,
+  seen: Set<string>,
+): string | undefined {
+  const key = `${ref.collection}:${ref.id}`
+  const text = rendered.get(key)
+  if (!text || seen.has(key)) return undefined
+  seen.add(key)
+  return text
+}
+
+/** The run of references to `collection` starting at `start`, and the index after it. */
+function collectTermRun(
+  parts: Part[],
+  start: number,
+  collection: RelationCollection,
+  take: (ref: RelationRef) => string | undefined,
+): { names: string[]; end: number } {
+  const names: string[] = []
+  let end = start
+  while (end < parts.length) {
+    const next = parts[end]
+    if (typeof next === 'string' || next.collection !== collection) break
+    const name = take(next)
+    if (name) names.push(name)
+    end += 1
+  }
+  return { names, end }
 }
 
 /**
@@ -192,6 +226,7 @@ async function renderParts(payload: Payload, parts: Part[]): Promise<string[]> {
 
   const out: string[] = []
   const seen = new Set<string>()
+  const take = (ref: RelationRef) => renderOnce(ref, rendered, seen)
   let i = 0
   while (i < parts.length) {
     const part = parts[i]
@@ -203,28 +238,14 @@ async function renderParts(payload: Payload, parts: Part[]): Promise<string[]> {
 
     const label = TERM_LABEL[part.collection]
     if (label) {
-      const names: string[] = []
-      while (i < parts.length) {
-        const next = parts[i]
-        if (typeof next === 'string' || next.collection !== part.collection) break
-        const key = `${next.collection}:${next.id}`
-        const name = rendered.get(key)
-        if (name && !seen.has(key)) {
-          seen.add(key)
-          names.push(name)
-        }
-        i += 1
-      }
+      const { names, end } = collectTermRun(parts, i, part.collection, take)
       if (names.length) out.push(`${label}: ${names.join(', ')}`)
+      i = end
       continue
     }
 
-    const key = `${part.collection}:${part.id}`
-    const text = rendered.get(key)
-    if (text && !seen.has(key)) {
-      seen.add(key)
-      out.push(text)
-    }
+    const text = take(part)
+    if (text) out.push(text)
     i += 1
   }
   return out
@@ -258,18 +279,20 @@ export async function extractDocMarkdown(
   return rendered.join('\n\n').slice(0, MAX_DOC_CHARS)
 }
 
-/** Company facts from Site Info, written as prose an answer can quote. */
-function renderSiteInfo(info: SiteInfo): string {
-  const lines: string[] = []
-  const name = str(info.name) || 'Miles Roxas'
-  lines.push(`# ${name}`)
+/** `Label: value` as a one-line list, or nothing when the value is empty. */
+const labelledLine = (label: string, value: unknown): string[] =>
+  str(value) ? [`${label}: ${str(value)}`] : []
+
+function siteInfoIntro(info: SiteInfo, name: string): string[] {
+  const lines = [`# ${name}`]
   if (str(info.tagline)) lines.push(str(info.tagline))
   if (str(info.description)) lines.push(str(info.description))
-  if (str(info.legalName) && str(info.legalName) !== name)
-    lines.push(`Legal name: ${str(info.legalName)}`)
+  if (str(info.legalName) !== name) lines.push(...labelledLine('Legal name', info.legalName))
   if (typeof info.foundingYear === 'number') lines.push(`Founded in ${info.foundingYear}.`)
+  return lines
+}
 
-  const address = info.address
+function siteInfoPlace(address: SiteInfo['address']): string {
   const street = str(address?.streetAddress)
   const cityLine = [
     str(address?.city),
@@ -277,15 +300,22 @@ function renderSiteInfo(info: SiteInfo): string {
   ]
     .filter(Boolean)
     .join(', ')
-  const place = [street, cityLine, str(address?.country)].filter(Boolean).join(', ')
+  return [street, cityLine, str(address?.country)].filter(Boolean).join(', ')
+}
+
+/** Company facts from Site Info, written as prose an answer can quote. */
+function renderSiteInfo(info: SiteInfo): string {
+  const name = str(info.name) || 'Miles Roxas'
+  const lines = siteInfoIntro(info, name)
+
+  const place = siteInfoPlace(info.address)
   if (place) lines.push(`## Where we are\nStudio address: ${place}.`)
 
-  const contact: string[] = []
-  if (str(info.contactEmail)) contact.push(`Email: ${str(info.contactEmail)}`)
-  if (str(info.inquiries?.responseTime))
-    contact.push(`Inquiry response time: ${str(info.inquiries?.responseTime)}`)
-  if (str(info.inquiries?.scheduleUrl))
-    contact.push(`Book a call: ${str(info.inquiries?.scheduleUrl)}`)
+  const contact = [
+    ...labelledLine('Email', info.contactEmail),
+    ...labelledLine('Inquiry response time', info.inquiries?.responseTime),
+    ...labelledLine('Book a call', info.inquiries?.scheduleUrl),
+  ]
   if (contact.length) lines.push(`## Contact\n${contact.join('\n')}`)
 
   const profiles = (info.socialProfiles ?? []).flatMap((profile) =>

@@ -35,7 +35,12 @@ import { getPayload, type Payload } from 'payload'
 import { OVERRIDES } from './composer/overrides'
 import { checkPreservation } from './composer/preserve'
 import { type Block, isConvertible, type MediaInfo } from './composer/rules'
-import { describeLayout, transformLayout, transformPostContent } from './composer/transform'
+import {
+  describeLayout,
+  type LayoutResult,
+  transformLayout,
+  transformPostContent,
+} from './composer/transform'
 
 type Collection = 'works' | 'pages' | 'posts'
 
@@ -191,46 +196,63 @@ async function restore(payload: Payload, file: string) {
   if (failed.length) throw new Error(`Not restored exactly: ${failed.join(', ')}`)
 }
 
+/** The latest version of every document in a collection, a pending draft included. */
+async function latestDocs(payload: Payload, collection: Collection): Promise<Doc[]> {
+  const { docs } = await payload.find({
+    collection,
+    draft: true,
+    depth: 0,
+    limit: 500,
+    pagination: false,
+  })
+  return docs as Doc[]
+}
+
+/** A draft this script composed that is not live yet. */
+const isComposedDraft = (draft: Doc): boolean => {
+  const layout = draft.layout ?? []
+  const composed = layout.some((block) => block.blockType === 'section') && !hasLegacy(layout)
+  return composed && draft._status !== 'published'
+}
+
+async function publishDraft(
+  payload: Payload,
+  collection: Collection,
+  draft: Doc,
+): Promise<'skipped' | 'published' | 'failed'> {
+  const name = label(collection, draft)
+  const live = await publishedOf(payload, collection, draft.id)
+  if (!live) {
+    payload.logger.info(`skip ${name}: never published, stays a draft`)
+    return 'skipped'
+  }
+  // Publish the latest draft as it stands: every field of it, not just
+  // the layout, so what goes live is exactly what live preview showed.
+  await payload.update({
+    collection,
+    id: draft.id,
+    data: { ...writable(draft), _status: 'published' } as never,
+    draft: false,
+    depth: 0,
+    context,
+  })
+  if (!(await landed(payload, collection, draft.id, sectionCount(draft.layout), false))) {
+    payload.logger.error(`NOT published ${name}: the save rolled back`)
+    return 'failed'
+  }
+  payload.logger.info(`published ${name}`)
+  return 'published'
+}
+
 async function publish(payload: Payload, only: string | null) {
   let published = 0
   const failed: string[] = []
   for (const collection of COLLECTIONS) {
-    const { docs } = await payload.find({
-      collection,
-      draft: true,
-      depth: 0,
-      limit: 500,
-      pagination: false,
-    })
-    for (const draft of docs as Doc[]) {
-      if (only && only !== label(collection, draft)) continue
-      const layout = draft.layout ?? []
-      const composed = layout.some((block) => block.blockType === 'section') && !hasLegacy(layout)
-      if (!composed || draft._status === 'published') continue
-      const live = await publishedOf(payload, collection, draft.id)
-      if (!live) {
-        payload.logger.info(`skip ${label(collection, draft)}: never published, stays a draft`)
-        continue
-      }
-      // Publish the latest draft as it stands: every field of it, not just
-      // the layout, so what goes live is exactly what live preview showed.
-      const { id: _id, updatedAt: _updatedAt, ...data } = draft as Doc & Record<string, unknown>
-      delete (data as Record<string, unknown>).createdAt
-      await payload.update({
-        collection,
-        id: draft.id,
-        data: { ...data, _status: 'published' } as never,
-        draft: false,
-        depth: 0,
-        context,
-      })
-      if (!(await landed(payload, collection, draft.id, sectionCount(layout), false))) {
-        failed.push(label(collection, draft))
-        payload.logger.error(`NOT published ${label(collection, draft)}: the save rolled back`)
-        continue
-      }
-      published += 1
-      payload.logger.info(`published ${label(collection, draft)}`)
+    for (const draft of await latestDocs(payload, collection)) {
+      if ((only && only !== label(collection, draft)) || !isComposedDraft(draft)) continue
+      const outcome = await publishDraft(payload, collection, draft)
+      if (outcome === 'published') published += 1
+      if (outcome === 'failed') failed.push(label(collection, draft))
     }
   }
   payload.logger.info(`Published ${published} documents. Redeploy to refresh cached pages.`)
@@ -271,94 +293,84 @@ function assertTarget() {
   console.log(`Target database: ${host} (preview, not ${productionEndpoint})`)
 }
 
-async function run() {
-  const dryRun = process.argv.includes('--dry-run')
-  const only = arg('--only')
-  const restoreFile = arg('--restore')
+type Write = { collection: Collection; doc: Doc; layout: Block[] }
 
-  assertTarget()
-  const payload = await getPayload({ config })
-  if (restoreFile) return restore(payload, restoreFile)
-  if (process.argv.includes('--publish')) return publish(payload, only)
+/** A write run's work, gathered in memory before anything is written. */
+type Plan = { snapshot: SnapshotEntry[]; writes: Write[]; failures: string[] }
 
-  const media = await mediaInfo(payload)
-  const snapshot: SnapshotEntry[] = []
-  const writes: { collection: Collection; doc: Doc; layout: Block[] }[] = []
-  const failures: string[] = []
+type PlanContext = { payload: Payload; media: MediaInfo; dryRun: boolean }
 
-  for (const collection of COLLECTIONS) {
-    const { docs } = await payload.find({
-      collection,
-      draft: true,
-      depth: 0,
-      limit: 500,
-      pagination: false,
-    })
-    for (const doc of docs as Doc[]) {
-      const name = label(collection, doc)
-      if (only && only !== name) continue
+/** Posts split their body into a layout once; works and pages transform their layout. */
+const convert = (collection: Collection, doc: Doc, media: MediaInfo): LayoutResult => {
+  const layout = doc.layout ?? []
+  if (collection !== 'posts') return transformLayout(layout, media, OVERRIDES)
+  return layout.length ? { layout, changed: false, report: [] } : transformPostContent(doc.content)
+}
 
-      const layout = doc.layout ?? []
-      const result =
-        collection === 'posts'
-          ? layout.length
-            ? { layout, changed: false, report: [] }
-            : transformPostContent(doc.content)
-          : transformLayout(layout, media, OVERRIDES)
+/** What a converted document reports: its name and flags, then its layout before and after. */
+const reportLines = (
+  collection: Collection,
+  doc: Doc,
+  live: Doc | null,
+  result: LayoutResult,
+  dryRun: boolean,
+): string[] => {
+  const pending = doc._status === 'draft' && live !== null
+  return [
+    `${dryRun ? '[dry-run] ' : ''}${label(collection, doc)}${pending ? '  ⚠ has an unpublished draft: --publish would ship it too' : ''}${live ? '' : '  (never published)'}`,
+    `  before: ${collection === 'posts' ? 'content (Lexical body)' : describeLayout(doc.layout ?? [])}`,
+    `  after:  ${describeLayout(result.layout)}`,
+    ...result.report.map(
+      (line) => `    ${line.rule.padEnd(4)} ${line.source} → ${line.produced.join(', ')}`,
+    ),
+  ]
+}
 
-      if (!result.changed) {
-        payload.logger.info(`unchanged ${name}`)
-        continue
-      }
-
-      const legacy =
-        collection === 'posts' ? [{ blockType: 'post', content: doc.content } as Block] : layout
-      const preservation = checkPreservation(legacy, result.layout)
-      const live = await publishedOf(payload, collection, doc.id)
-      const pending = doc._status === 'draft' && live !== null
-      const lines = [
-        `${dryRun ? '[dry-run] ' : ''}${name}${pending ? '  ⚠ has an unpublished draft: --publish would ship it too' : ''}${live ? '' : '  (never published)'}`,
-        `  before: ${collection === 'posts' ? 'content (Lexical body)' : describeLayout(layout)}`,
-        `  after:  ${describeLayout(result.layout)}`,
-        ...result.report.map(
-          (line) => `    ${line.rule.padEnd(4)} ${line.source} → ${line.produced.join(', ')}`,
-        ),
-      ]
-      if (!preservation.ok) {
-        lines.push(
-          `  ✗ preservation failed: skipped. Missing media ${JSON.stringify(preservation.missingMedia)}, text ${JSON.stringify(preservation.missingText.slice(0, 5))}`,
-        )
-        failures.push(name)
-      }
-      payload.logger.info(lines.join('\n'))
-      if (!preservation.ok) continue
-
-      snapshot.push({
-        collection,
-        id: doc.id,
-        slug: doc.slug ?? null,
-        published: live as Record<string, unknown> | null,
-        draft: doc._status === 'draft' ? (doc as Record<string, unknown>) : null,
-      })
-      writes.push({ collection, doc, layout: result.layout })
-    }
+/**
+ * Converts one document in memory and reports it. One that converts and keeps
+ * everything joins the plan; one that fails preservation is skipped.
+ */
+async function planDoc(
+  { dryRun, media, payload }: PlanContext,
+  plan: Plan,
+  collection: Collection,
+  doc: Doc,
+) {
+  const name = label(collection, doc)
+  const result = convert(collection, doc, media)
+  if (!result.changed) {
+    payload.logger.info(`unchanged ${name}`)
+    return
   }
 
-  if (dryRun) {
-    payload.logger.info(
-      `Dry run: ${writes.length} documents would be written as drafts; ${failures.length} failed preservation${failures.length ? ` (${failures.join(', ')})` : ''}.`,
+  const legacy =
+    collection === 'posts'
+      ? [{ blockType: 'post', content: doc.content } as Block]
+      : (doc.layout ?? [])
+  const preservation = checkPreservation(legacy, result.layout)
+  const live = await publishedOf(payload, collection, doc.id)
+  const lines = reportLines(collection, doc, live, result, dryRun)
+  if (!preservation.ok) {
+    lines.push(
+      `  ✗ preservation failed: skipped. Missing media ${JSON.stringify(preservation.missingMedia)}, text ${JSON.stringify(preservation.missingText.slice(0, 5))}`,
     )
-    return
+    plan.failures.push(name)
   }
+  payload.logger.info(lines.join('\n'))
+  if (!preservation.ok) return
 
-  // A run that converts nothing has nothing to undo, and an empty snapshot
-  // would sort newest and shadow the real restore point.
-  if (snapshot.length === 0) {
-    payload.logger.info('Nothing to convert: no snapshot written.')
-    return
-  }
+  plan.snapshot.push({
+    collection,
+    id: doc.id,
+    slug: doc.slug ?? null,
+    published: live as Record<string, unknown> | null,
+    draft: doc._status === 'draft' ? (doc as Record<string, unknown>) : null,
+  })
+  plan.writes.push({ collection, doc, layout: result.layout })
+}
 
-  // Every input goes to disk before the first write, so --restore can undo all of it.
+/** Every input goes to disk before the first write, so --restore can undo all of it. */
+function writeSnapshot(payload: Payload, snapshot: SnapshotEntry[]) {
   const dir = path.resolve('scripts/snapshots')
   fs.mkdirSync(dir, { recursive: true })
   const file = path.join(
@@ -369,7 +381,9 @@ async function run() {
   payload.logger.info(
     `Snapshot of ${snapshot.length} layouts: ${path.relative(process.cwd(), file)}`,
   )
+}
 
+async function writeDrafts(payload: Payload, writes: Write[]) {
   const unsaved: string[] = []
   for (const { collection, doc, layout } of writes) {
     await payload.update({
@@ -389,6 +403,44 @@ async function run() {
   }
   if (unsaved.length)
     throw new Error(`${unsaved.length} drafts did not save: ${unsaved.join(', ')}`)
+}
+
+async function run() {
+  const dryRun = process.argv.includes('--dry-run')
+  const only = arg('--only')
+  const restoreFile = arg('--restore')
+
+  assertTarget()
+  const payload = await getPayload({ config })
+  if (restoreFile) return restore(payload, restoreFile)
+  if (process.argv.includes('--publish')) return publish(payload, only)
+
+  const planning: PlanContext = { payload, media: await mediaInfo(payload), dryRun }
+  const plan: Plan = { snapshot: [], writes: [], failures: [] }
+  for (const collection of COLLECTIONS) {
+    for (const doc of await latestDocs(payload, collection)) {
+      if (only && only !== label(collection, doc)) continue
+      await planDoc(planning, plan, collection, doc)
+    }
+  }
+  const { failures, snapshot, writes } = plan
+
+  if (dryRun) {
+    payload.logger.info(
+      `Dry run: ${writes.length} documents would be written as drafts; ${failures.length} failed preservation${failures.length ? ` (${failures.join(', ')})` : ''}.`,
+    )
+    return
+  }
+
+  // A run that converts nothing has nothing to undo, and an empty snapshot
+  // would sort newest and shadow the real restore point.
+  if (snapshot.length === 0) {
+    payload.logger.info('Nothing to convert: no snapshot written.')
+    return
+  }
+
+  writeSnapshot(payload, snapshot)
+  await writeDrafts(payload, writes)
   payload.logger.info(
     `Wrote ${writes.length} drafts. Check them in live preview, then run --publish. ${failures.length} skipped on preservation.`,
   )

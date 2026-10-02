@@ -89,6 +89,21 @@ const excerpt = (text: string, index: number, length: number): string => {
 
 type Found = { path: string; text: string }
 
+/** Keys that hold identifiers or data, never copy. */
+const isDataKey = (key: string): boolean => SKIP_KEYS.has(key) || key.startsWith('_')
+
+const childPath = (path: string, key: string | number): string =>
+  path ? `${path}.${key}` : String(key)
+
+/** Whether a Lexical node is code, or sits inside code. */
+const isCodeNode = (node: Doc, inCode: boolean): boolean => {
+  const format = typeof node.format === 'number' ? node.format : 0
+  return inCode || node.type === 'code' || Boolean(format & LEXICAL_CODE)
+}
+
+/** A Lexical node's own `type` and `format`: settings, not copy. */
+const isLexicalSetting = (key: string): boolean => key === 'type' || key === 'format'
+
 /**
  * Every string of copy in `data` that differs from `original` at the same
  * path: plain string fields and Lexical text nodes, skipping identifiers,
@@ -96,33 +111,35 @@ type Found = { path: string; text: string }
  */
 function changedCopy(data: unknown, original: unknown): Found[] {
   const found: Found[] = []
+  const walkChildren = (
+    node: Doc,
+    path: string,
+    inCode: boolean,
+    skip: (key: string) => boolean,
+  ) => {
+    for (const [childKey, child] of Object.entries(node)) {
+      if (skip(childKey)) continue
+      walk(child, childPath(path, childKey), childKey, inCode)
+    }
+  }
+  const collect = (text: string, path: string, key: string, inCode: boolean) => {
+    if (!inCode && !isDataKey(key) && text !== at(original, path)) found.push({ path, text })
+  }
   const walk = (value: unknown, path: string, key: string, inCode: boolean): void => {
     if (typeof value === 'string') {
-      if (inCode || SKIP_KEYS.has(key) || key.startsWith('_')) return
-      if (value === at(original, path)) return
-      found.push({ path, text: value })
+      collect(value, path, key, inCode)
       return
     }
     if (Array.isArray(value)) {
-      for (const [index, item] of value.entries()) {
-        walk(item, path ? `${path}.${index}` : String(index), key, inCode)
-      }
+      for (const [index, item] of value.entries()) walk(item, childPath(path, index), key, inCode)
       return
     }
     if (!isRecord(value)) return
     // A Lexical node: its `text` is copy unless the node is code.
     if (typeof value.type === 'string') {
-      const format = typeof value.format === 'number' ? value.format : 0
-      const code = inCode || value.type === 'code' || Boolean(format & LEXICAL_CODE)
-      for (const [childKey, child] of Object.entries(value)) {
-        if (childKey === 'type' || childKey === 'format') continue
-        walk(child, path ? `${path}.${childKey}` : childKey, childKey, code)
-      }
-      return
-    }
-    for (const [childKey, child] of Object.entries(value)) {
-      if (SKIP_KEYS.has(childKey) || childKey.startsWith('_')) continue
-      walk(child, path ? `${path}.${childKey}` : childKey, childKey, inCode)
+      walkChildren(value, path, isCodeNode(value, inCode), isLexicalSetting)
+    } else {
+      walkChildren(value, path, inCode, isDataKey)
     }
   }
   walk(data, '', '', false)
@@ -176,7 +193,7 @@ async function isVisitorEmail(req: PayloadRequest, email: string): Promise<boole
   return counts.some((result) => result.totalDocs > 0)
 }
 
-export async function visitorEmailProblems(
+async function visitorEmailProblems(
   req: PayloadRequest,
   data: unknown,
   original: unknown,
@@ -224,12 +241,7 @@ export const checkMcpCollectionWrite: CollectionBeforeChangeHook = async ({
   return data
 }
 
-export const checkMcpGlobalWrite: GlobalBeforeChangeHook = async ({
-  data,
-  global,
-  originalDoc,
-  req,
-}) => {
+const checkMcpGlobalWrite: GlobalBeforeChangeHook = async ({ data, global, originalDoc, req }) => {
   await refuseBadCopy(req, global.slug, data, originalDoc)
   return data
 }

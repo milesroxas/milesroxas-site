@@ -1,10 +1,10 @@
 import type React from 'react'
 import { ASPECT_RATIO_CLASS } from '@/blocks/shared/aspect-ratio'
+import { MediaCell } from '@/blocks/shared/cells'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { Section } from '@/blocks/shared/section'
 import { typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
-import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import type { FeatureImageStatementBlock as FeatureImageStatementBlockData } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -43,16 +43,15 @@ export const FeatureImageStatementBlock: React.FC<FeatureImageStatementBlockProp
   const fullBleed = imageWidth === 'full'
   const aspectClass = ASPECT_RATIO_CLASS[aspectRatio ?? 'responsive']
   const mediaFigure = (
-    <div
+    <MediaCell
       className={cn(
         'relative w-full bg-muted',
         aspectClass,
         !fullBleed && 'overflow-hidden rounded-lg md:col-span-8',
       )}
-      data-reveal="media"
-    >
-      <Media fill htmlElement={null} imgClassName="object-cover" resource={media} size="100vw" />
-    </div>
+      resource={media}
+      size="100vw"
+    />
   )
   const captionCell = caption ? (
     <div

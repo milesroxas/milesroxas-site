@@ -59,8 +59,8 @@ export type PreparedRetrieval = {
  * run), or a transient embedding-API failure.
  *
  * The endpoint knows nothing about any of this: `prepareRetrieval(payload,
- * queries)` is the seam (`retrieveSources` for one query, searched at once),
- * and an empty result still means "refuse rather than guess".
+ * queries)` is the seam, and an empty result still means "refuse rather than
+ * guess".
  */
 
 /**
@@ -207,12 +207,6 @@ export function pageRetrievalQuery(question: string, pageTitle: string): string 
 const nearestToEmbedding = (payload: Payload, embedding: number[], minSimilarity: number) =>
   queryNearestChunks(payload, embedding, { limit: CHUNK_CANDIDATES, minSimilarity })
 
-/** The candidate chunks for a query, as the passage check sees them (scripts/ask-judge-eval.ts). */
-export async function nearestChunks(payload: Payload, query: string): Promise<NearestChunk[]> {
-  const [embedding] = await embedQuestions([query])
-  return nearestToEmbedding(payload, embedding, CHECKED_MIN_SIMILARITY)
-}
-
 async function retrieveByKeywords(payload: Payload, question: string): Promise<RetrievedSource[]> {
   const terms = extractTerms(question)
   if (terms.length === 0) return []
@@ -328,9 +322,4 @@ export function prepareRetrieval(payload: Payload, queries: string[]): PreparedR
       return { sources, path: sources.length > 0 ? 'keyword' : 'none', chunks }
     },
   }
-}
-
-/** The sources for a question and the path that found them (`none` when nothing did). */
-export function retrieveSources(payload: Payload, question: string): Promise<Retrieval> {
-  return prepareRetrieval(payload, [question]).search()
 }

@@ -194,7 +194,7 @@ export const tabSizeField = (): SelectField => ({
  * options are that scale's keys and nothing else. Each block states its own
  * condition and description.
  */
-export const proseHeadingLevelField = ({
+const proseHeadingLevelField = ({
   admin,
   defaultValue = 'h2',
 }: {

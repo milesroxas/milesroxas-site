@@ -13,6 +13,44 @@ import styles from './homeHero.module.css'
 
 type HeroProps = Page['hero']
 
+const EXPERIENCE_TEXT = [
+  'Co-Founder',
+  'Creative Director',
+  'Web Designer',
+  'Brand Designer',
+  'Product Design',
+  'Design Engineer',
+]
+
+const SKILLS_TEXT = [
+  'Brand Identity Development',
+  'Visual Identity Design',
+  'Web Design',
+  'Web Development',
+  'Product Strategy',
+  'Product Design',
+  'Design Engineer',
+  '3D Modeling & Rendering',
+]
+
+/** The items twice over, so the marquee loops without a gap. */
+const MarqueeItems = ({ items, keyPrefix }: { items: string[]; keyPrefix: string }) => (
+  <>
+    {[...items, ...items].map((text, idx) => {
+      const copyIndex = Math.floor(idx / items.length)
+      const itemIndex = idx % items.length
+      return (
+        <div
+          key={getCompositeKey(keyPrefix, text, copyIndex, itemIndex)}
+          className={cn(styles.marqueeItem, 'whitespace-nowrap')}
+        >
+          {text}
+        </div>
+      )
+    })}
+  </>
+)
+
 export const HomeHero: React.FC<HeroProps> = ({ media }) => {
   const setHeroAnimationComplete = useAnimationStore((s) => s.setHeroAnimationComplete)
 
@@ -92,26 +130,6 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
     }
   }, [])
 
-  const experienceText = [
-    'Co-Founder',
-    'Creative Director',
-    'Web Designer',
-    'Brand Designer',
-    'Product Design',
-    'Design Engineer',
-  ]
-
-  const skillsText = [
-    'Brand Identity Development',
-    'Visual Identity Design',
-    'Web Design',
-    'Web Development',
-    'Product Strategy',
-    'Product Design',
-    'Design Engineer',
-    '3D Modeling & Rendering',
-  ]
-
   return (
     <div
       ref={containerRef}
@@ -122,18 +140,7 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
         <div
           className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-foreground')}
         >
-          {[...skillsText, ...skillsText].map((text, idx) => {
-            const copyIndex = Math.floor(idx / skillsText.length)
-            const itemIndex = idx % skillsText.length
-            return (
-              <div
-                key={getCompositeKey('skill', text, copyIndex, itemIndex)}
-                className={cn(styles.marqueeItem, 'whitespace-nowrap')}
-              >
-                {text}
-              </div>
-            )
-          })}
+          <MarqueeItems items={SKILLS_TEXT} keyPrefix="skill" />
         </div>
       </div>
 
@@ -162,18 +169,7 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => {
             'flex flex-row items-center gap-12 font-mono text-foreground',
           )}
         >
-          {[...experienceText, ...experienceText].map((text, idx) => {
-            const copyIndex = Math.floor(idx / experienceText.length)
-            const itemIndex = idx % experienceText.length
-            return (
-              <div
-                key={getCompositeKey('experience', text, copyIndex, itemIndex)}
-                className={cn(styles.marqueeItem, 'whitespace-nowrap')}
-              >
-                {text}
-              </div>
-            )
-          })}
+          <MarqueeItems items={EXPERIENCE_TEXT} keyPrefix="experience" />
         </div>
       </div>
     </div>

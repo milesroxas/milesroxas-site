@@ -95,13 +95,24 @@ const formatMoney = (amount: number, currency: string) =>
     maximumFractionDigits: amount < 1 ? 4 : 2,
   }).format(amount)
 
-export function UsagePanel() {
-  const {
-    config: {
-      routes: { api },
-    },
-  } = useConfig()
+/** The panel's state once the stored report is read. */
+function loadedState(ok: boolean, body: UsageResponse): State {
+  if (!ok) return { kind: 'ready', report: null, error: body.error ?? 'Could not load usage.' }
+  if (body.configured === false) return { kind: 'unconfigured' }
+  return { kind: 'ready', report: body.report ?? null, error: null }
+}
 
+/** A failed refresh keeps the last report on screen. */
+const refreshFailed =
+  (error: string) =>
+  (prev: State): State => ({
+    kind: 'ready',
+    report: prev.kind === 'ready' ? prev.report : null,
+    error,
+  })
+
+/** The stored report on mount, and the refresh that replaces it. */
+function useUsageReport(api: string) {
   const [state, setState] = useState<State>({ kind: 'loading' })
   const [refreshing, setRefreshing] = useState(false)
 
@@ -115,13 +126,7 @@ export function UsagePanel() {
           signal: controller.signal,
         })
         const body = (await res.json().catch(() => ({}))) as UsageResponse
-        if (!res.ok) {
-          setState({ kind: 'ready', report: null, error: body.error ?? 'Could not load usage.' })
-        } else if (body.configured === false) {
-          setState({ kind: 'unconfigured' })
-        } else {
-          setState({ kind: 'ready', report: body.report ?? null, error: null })
-        }
+        setState(loadedState(res.ok, body))
       } catch {
         if (controller.signal.aborted) return
         setState({ kind: 'ready', report: null, error: 'Network error. Try again.' })
@@ -131,7 +136,7 @@ export function UsagePanel() {
     return () => controller.abort()
   }, [api])
 
-  // The only path that reaches OpenAI. A failed refresh keeps the last report on screen.
+  // The only path that reaches OpenAI.
   const refresh = useCallback(async () => {
     setRefreshing(true)
     try {
@@ -140,24 +145,27 @@ export function UsagePanel() {
       if (res.status === 503 && body.configured === false) {
         setState({ kind: 'unconfigured' })
       } else if (!res.ok || !body.report) {
-        setState((prev) => ({
-          kind: 'ready',
-          report: prev.kind === 'ready' ? prev.report : null,
-          error: body.error ?? 'The usage request failed.',
-        }))
+        setState(refreshFailed(body.error ?? 'The usage request failed.'))
       } else {
         setState({ kind: 'ready', report: body.report, error: null })
       }
     } catch {
-      setState((prev) => ({
-        kind: 'ready',
-        report: prev.kind === 'ready' ? prev.report : null,
-        error: 'Network error. Try again.',
-      }))
+      setState(refreshFailed('Network error. Try again.'))
     } finally {
       setRefreshing(false)
     }
   }, [api])
+
+  return { state, refreshing, refresh }
+}
+
+export function UsagePanel() {
+  const {
+    config: {
+      routes: { api },
+    },
+  } = useConfig()
+  const { state, refreshing, refresh } = useUsageReport(api)
 
   return (
     <div className="field-type" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -233,56 +241,11 @@ function Report({ report }: { report: UsageReport }) {
       </div>
 
       {spend.byLineItem.length > 0 ? (
-        <table style={tableStyle}>
-          <thead>
-            <tr>
-              <th style={headCellStyle}>Cost by line item, 30 days</th>
-              <th style={headNumCellStyle}>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {spend.byLineItem.map((row) => (
-              <tr key={row.lineItem}>
-                <td style={cellStyle}>{row.lineItem}</td>
-                <td style={numCellStyle}>{formatMoney(row.amount, currency)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <LineItemTable currency={currency} rows={spend.byLineItem} />
       ) : null}
 
       {completions.byModel.length > 0 || embeddings.byModel.length > 0 ? (
-        <table style={tableStyle}>
-          <thead>
-            <tr>
-              <th style={headCellStyle}>Tokens by model, 30 days</th>
-              <th style={headNumCellStyle}>Requests</th>
-              <th style={headNumCellStyle}>Input</th>
-              <th style={headNumCellStyle}>Cached</th>
-              <th style={headNumCellStyle}>Output</th>
-            </tr>
-          </thead>
-          <tbody>
-            {completions.byModel.map((row) => (
-              <tr key={`c-${row.model}`}>
-                <td style={cellStyle}>{row.model}</td>
-                <td style={numCellStyle}>{tokens.format(row.requests)}</td>
-                <td style={numCellStyle}>{tokens.format(row.inputTokens)}</td>
-                <td style={numCellStyle}>{tokens.format(row.cachedInputTokens)}</td>
-                <td style={numCellStyle}>{tokens.format(row.outputTokens)}</td>
-              </tr>
-            ))}
-            {embeddings.byModel.map((row) => (
-              <tr key={`e-${row.model}`}>
-                <td style={cellStyle}>{row.model}</td>
-                <td style={numCellStyle}>{tokens.format(row.requests)}</td>
-                <td style={numCellStyle}>{tokens.format(row.inputTokens)}</td>
-                <td style={numCellStyle}>–</td>
-                <td style={numCellStyle}>–</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ModelTable completions={completions.byModel} embeddings={embeddings.byModel} />
       ) : null}
 
       <p style={{ ...noteStyle, color: 'var(--theme-elevation-500)' }}>
@@ -294,6 +257,101 @@ function Report({ report }: { report: UsageReport }) {
         for credits left.
       </p>
     </>
+  )
+}
+
+function LineItemTable({
+  currency,
+  rows,
+}: {
+  currency: string
+  rows: UsageReport['spend']['byLineItem']
+}) {
+  return (
+    <table style={tableStyle}>
+      <thead>
+        <tr>
+          <th style={headCellStyle}>Cost by line item, 30 days</th>
+          <th style={headNumCellStyle}>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr key={row.lineItem}>
+            <td style={cellStyle}>{row.lineItem}</td>
+            <td style={numCellStyle}>{formatMoney(row.amount, currency)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+function ModelTable({
+  completions,
+  embeddings,
+}: {
+  completions: UsageReport['completions']['byModel']
+  embeddings: UsageReport['embeddings']['byModel']
+}) {
+  return (
+    <table style={tableStyle}>
+      <thead>
+        <tr>
+          <th style={headCellStyle}>Tokens by model, 30 days</th>
+          <th style={headNumCellStyle}>Requests</th>
+          <th style={headNumCellStyle}>Input</th>
+          <th style={headNumCellStyle}>Cached</th>
+          <th style={headNumCellStyle}>Output</th>
+        </tr>
+      </thead>
+      <tbody>
+        {completions.map((row) => (
+          <ModelRow
+            cached={row.cachedInputTokens}
+            input={row.inputTokens}
+            key={`c-${row.model}`}
+            model={row.model}
+            output={row.outputTokens}
+            requests={row.requests}
+          />
+        ))}
+        {embeddings.map((row) => (
+          <ModelRow
+            input={row.inputTokens}
+            key={`e-${row.model}`}
+            model={row.model}
+            requests={row.requests}
+          />
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+/** One model's tokens; an embedding model has no cached or output tokens to show. */
+function ModelRow({
+  model,
+  requests,
+  input,
+  cached,
+  output,
+}: {
+  model: string
+  requests: number
+  input: number
+  cached?: number
+  output?: number
+}) {
+  const count = (value: number | undefined) => (value === undefined ? '–' : tokens.format(value))
+  return (
+    <tr>
+      <td style={cellStyle}>{model}</td>
+      <td style={numCellStyle}>{tokens.format(requests)}</td>
+      <td style={numCellStyle}>{tokens.format(input)}</td>
+      <td style={numCellStyle}>{count(cached)}</td>
+      <td style={numCellStyle}>{count(output)}</td>
+    </tr>
   )
 }
 

@@ -96,6 +96,69 @@ const narrowPitch = (actors: number): number =>
     Math.max(NARROW.pitchMin, Math.floor((NARROW.width - PAD * 2) / actors)),
   )
 
+/** What every message in one form is placed against. */
+type MessageFrame = {
+  centre: (index: number) => number
+  column: Map<string, number>
+  firstRow: number
+  form: Form
+  labelChars: number
+  width: number
+}
+
+/** A message's route (a loop when it stays on its lifeline) and its label, on its own row. */
+function layoutMessage(
+  message: Message,
+  index: number,
+  { centre, column, firstRow, form, labelChars, width }: MessageFrame,
+): SequenceLayout['messages'][number] {
+  const y = firstRow + index * ROW_HEIGHT
+  const fromX = centre(column.get(message.from) ?? 0)
+  const toX = centre(column.get(message.to) ?? 0)
+  const self = fromX === toX
+  // The loop climbs from its row, so every mark ends on the row line and the rows keep one rhythm.
+  const loopTop = y - SELF_LOOP.height
+  const points: Point[] = self
+    ? [
+        [fromX, loopTop],
+        [fromX + SELF_LOOP.width, loopTop],
+        [fromX + SELF_LOOP.width, y],
+        [fromX, y],
+      ]
+    : [
+        [fromX, y],
+        [toX, y],
+      ]
+
+  if (self && form.selfLabel === 'beside')
+    return {
+      index,
+      label: {
+        anchor: 'start',
+        lines: wrapLabel(message.label, labelChars, 2),
+        x: fromX + SELF_LOOP.width + 8,
+        y: y - SELF_LOOP.height / 2,
+      },
+      points,
+    }
+
+  // Above its mark, held inside the canvas: on a narrow pitch a label outruns the span it names.
+  // One line over a loop, which already stands a row's height above the line.
+  const lines = wrapLabel(message.label, labelChars, self ? 1 : 2)
+  const half = labelWidth(lines) / 2
+  const mid = self ? fromX + SELF_LOOP.width / 2 : (fromX + toX) / 2
+  return {
+    index,
+    label: {
+      anchor: 'middle',
+      lines,
+      x: Math.min(Math.max(mid, PAD + half), Math.max(PAD + half, width - PAD - half)),
+      y: (self ? loopTop : y) - LABEL_LIFT - (lines.length * SEQUENCE_LINE_HEIGHT) / 2,
+    },
+    points,
+  }
+}
+
 function layoutForm(spec: SequenceSpec, variant: SequenceVariant): SequenceLayout {
   const form = FORMS[variant]
   const column = new Map(spec.actors.map((actor, index) => [actor.id, index]))
@@ -115,6 +178,7 @@ function layoutForm(spec: SequenceSpec, variant: SequenceVariant): SequenceLayou
     form.labelMaxChars,
     Math.floor((width - PAD * 2) / TEXT_METRICS.smallCharWidth),
   )
+  const frame: MessageFrame = { centre, column, firstRow, form, labelChars, width }
 
   return {
     actors: spec.actors.map((actor, index) => ({
@@ -124,53 +188,7 @@ function layoutForm(spec: SequenceSpec, variant: SequenceVariant): SequenceLayou
     })),
     header: { height: form.headerHeight, width: headerWidth, y: PAD },
     height: tailY + PAD,
-    messages: spec.messages.map((message, index) => {
-      const y = firstRow + index * ROW_HEIGHT
-      const fromX = centre(column.get(message.from) ?? 0)
-      const toX = centre(column.get(message.to) ?? 0)
-      const self = fromX === toX
-      // The loop climbs from its row, so every mark ends on the row line and the rows keep one rhythm.
-      const loopTop = y - SELF_LOOP.height
-      const points: Point[] = self
-        ? [
-            [fromX, loopTop],
-            [fromX + SELF_LOOP.width, loopTop],
-            [fromX + SELF_LOOP.width, y],
-            [fromX, y],
-          ]
-        : [
-            [fromX, y],
-            [toX, y],
-          ]
-
-      if (self && form.selfLabel === 'beside')
-        return {
-          index,
-          label: {
-            anchor: 'start',
-            lines: wrapLabel(message.label, labelChars, 2),
-            x: fromX + SELF_LOOP.width + 8,
-            y: y - SELF_LOOP.height / 2,
-          },
-          points,
-        }
-
-      // Above its mark, held inside the canvas: on a narrow pitch a label outruns the span it names.
-      // One line over a loop, which already stands a row's height above the line.
-      const lines = wrapLabel(message.label, labelChars, self ? 1 : 2)
-      const half = labelWidth(lines) / 2
-      const mid = self ? fromX + SELF_LOOP.width / 2 : (fromX + toX) / 2
-      return {
-        index,
-        label: {
-          anchor: 'middle',
-          lines,
-          x: Math.min(Math.max(mid, PAD + half), Math.max(PAD + half, width - PAD - half)),
-          y: (self ? loopTop : y) - LABEL_LIFT - (lines.length * SEQUENCE_LINE_HEIGHT) / 2,
-        },
-        points,
-      }
-    }),
+    messages: spec.messages.map((message, index) => layoutMessage(message, index, frame)),
     tailY,
     width,
   }

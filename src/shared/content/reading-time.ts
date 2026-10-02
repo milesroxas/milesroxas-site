@@ -5,7 +5,7 @@ import { lexicalToMarkdownString } from './lexicalToMarkdown'
  * the low end because this site's pieces carry diagrams and figures the
  * reader stops on.
  */
-export const READING_WORDS_PER_MINUTE = 200
+const READING_WORDS_PER_MINUTE = 200
 
 /**
  * Lines of a code listing per minute. A listing is read line by line rather
@@ -13,7 +13,7 @@ export const READING_WORDS_PER_MINUTE = 200
  * dense line and overstates a long one; roughly three seconds a line is the
  * pace of actually following the code.
  */
-export const READING_CODE_LINES_PER_MINUTE = 20
+const READING_CODE_LINES_PER_MINUTE = 20
 
 /**
  * What a piece of content costs a reader, kept as prose and code separately
@@ -21,13 +21,6 @@ export const READING_CODE_LINES_PER_MINUTE = 20
  * body a page renders and turned into minutes once, at the end.
  */
 export type ReadingCost = { codeLines: number; words: number }
-
-export const NO_READING_COST: ReadingCost = { codeLines: 0, words: 0 }
-
-export const addReadingCost = (a: ReadingCost, b: ReadingCost): ReadingCost => ({
-  codeLines: a.codeLines + b.codeLines,
-  words: a.words + b.words,
-})
 
 /**
  * Line-leading furniture: list bullets and numbers, task boxes, heading
@@ -54,15 +47,12 @@ const proseWords = (lines: readonly string[]): number =>
     .split(/\s+/)
     .filter((token) => IS_WORD.test(token)).length
 
-const countCodeLines = (code: string): number =>
-  code.split('\n').filter((line) => line.trim()).length
-
 /**
  * Reading cost of a markdown string, with fenced listings taken out of the
  * prose and charged by the line. Splitting on the fence lines rather than by
  * regex keeps an unterminated fence from swallowing the rest of the document.
  */
-export const markdownReadingCost = (markdown: string): ReadingCost => {
+const markdownReadingCost = (markdown: string): ReadingCost => {
   const prose: string[] = []
   let codeLines = 0
   let inFence = false
@@ -81,12 +71,6 @@ export const markdownReadingCost = (markdown: string): ReadingCost => {
 
   return { codeLines, words: proseWords(prose) }
 }
-
-/** Reading cost of a code listing held in its own field (a composition Code block). */
-export const codeReadingCost = (code: string): ReadingCost => ({
-  codeLines: countCodeLines(code),
-  words: 0,
-})
 
 /**
  * Reading cost of a Lexical body. The markdown serialization is walked rather

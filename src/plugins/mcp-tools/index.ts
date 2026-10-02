@@ -55,11 +55,7 @@ type McpTool = NonNullable<NonNullable<MCPPluginConfig['mcp']>['tools']>[number]
 type SiteTool = Omit<McpTool, 'parameters'> & { parameters: Record<string, z.ZodTypeAny> }
 
 /** Collections with blocks in them. A slug not listed has no block to reach. */
-export const BLOCK_COLLECTIONS = [
-  'pages',
-  'works',
-  'posts',
-] as const satisfies readonly CollectionSlug[]
+const BLOCK_COLLECTIONS = ['pages', 'works', 'posts'] as const satisfies readonly CollectionSlug[]
 
 type Target = (typeof BLOCK_COLLECTIONS)[number]
 

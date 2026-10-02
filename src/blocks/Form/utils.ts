@@ -42,7 +42,7 @@ export function groupFieldsIntoRows(fields: FormFieldBlock[]): FieldRow[] {
  * @param field - Form field block
  * @returns Numeric width value (defaults to 100 if not specified)
  */
-export function getFieldWidth(field: FormFieldBlock): number {
+function getFieldWidth(field: FormFieldBlock): number {
   if (!('width' in field) || !field.width) {
     return 100
   }

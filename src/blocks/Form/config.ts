@@ -1,11 +1,6 @@
-import {
-  FixedToolbarFeature,
-  HeadingFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
 import type { Block } from 'payload'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
+import { headingLexical } from '@/fields/headingLexical'
 import { sectionSpacing } from '@/fields/sectionSpacing'
 
 export const FormBlock: Block = {
@@ -44,16 +39,7 @@ export const FormBlock: Block = {
       admin: {
         condition: (_, { enableIntro }) => Boolean(enableIntro),
       },
-      editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [
-            ...rootFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: headingLexical(),
       label: 'Intro Content',
     },
   ],

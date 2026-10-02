@@ -1,13 +1,11 @@
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { Container } from '@/components/Container'
-import RichText from '@/components/RichText'
-import { Visual } from '@/components/Visual'
 import type { Visual as VisualValue } from '@/features/immersive/visual'
 import type { SplitContentNarrowBlock } from '@/payload-types'
 import { cn } from '@/utilities/ui'
+import { CopyStack, VisualCell } from '../shared/cells'
 import { BlockGrid } from '../shared/grid'
 import { Section } from '../shared/section'
-import { eyebrowClassName, typeScale } from '../shared/typography'
 
 /**
  * Presentational split on the composition grid: narrow text column beside a
@@ -52,59 +50,35 @@ export const SplitContentNarrow = ({
 }) => {
   if (!content) return null
   const imageLeft = block.imagePosition === 'left'
-  const type = typeScale(block.textSize)
-  const inner = (
-    <Container>
-      <BlockGrid>
-        <div
-          className={cn(
-            'relative aspect-5/4 w-full self-start overflow-hidden rounded-lg bg-muted md:aspect-3/2',
-            'md:col-span-5 md:row-start-1 lg:col-span-6',
-            !imageLeft && 'md:col-start-4 lg:col-start-3',
-          )}
-          data-reveal="media"
-        >
-          <Visual
-            fill
-            htmlElement={null}
-            imgClassName="object-cover"
-            placement="block"
+  return (
+    <Section bare={bare} spacing="loose" theme={block.theme}>
+      <Container>
+        <BlockGrid>
+          <VisualCell
+            className={cn(
+              'relative aspect-5/4 w-full self-start overflow-hidden rounded-lg bg-muted md:aspect-3/2',
+              'md:col-span-5 md:row-start-1 lg:col-span-6',
+              !imageLeft && 'md:col-start-4 lg:col-start-3',
+            )}
             size="(max-width: 768px) 100vw, 72vw"
             visual={visual}
           />
-        </div>
-        <div
-          className={cn(
-            'text-stack md:col-span-3 md:row-start-1 lg:col-span-2',
-            imageLeft && 'md:col-start-6 lg:col-start-7',
-          )}
-        >
-          {block.eyebrow && (
-            <p className={eyebrowClassName} data-reveal>
-              {block.eyebrow}
-            </p>
-          )}
-          {block.heading && (
-            <h2 className={cn(type.heading, 'text-balance')} data-reveal>
-              {block.heading}
-            </h2>
-          )}
-          <div data-reveal>
-            <RichText
-              className={type.body}
-              data={content}
-              enableGutter={false}
-              enableProse={false}
+          <div
+            className={cn(
+              'text-stack md:col-span-3 md:row-start-1 lg:col-span-2',
+              imageLeft && 'md:col-start-6 lg:col-start-7',
+            )}
+          >
+            <CopyStack
+              content={content}
+              eyebrow={block.eyebrow}
+              heading={block.heading}
+              reveal
+              textSize={block.textSize}
             />
           </div>
-        </div>
-      </BlockGrid>
-    </Container>
-  )
-  if (bare) return inner
-  return (
-    <Section spacing="loose" theme={block.theme}>
-      {inner}
+        </BlockGrid>
+      </Container>
     </Section>
   )
 }

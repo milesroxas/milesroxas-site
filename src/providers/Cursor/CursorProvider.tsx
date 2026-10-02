@@ -1,27 +1,9 @@
 'use client'
 
-import { createContext, type ReactNode, useContext, useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import Cursor from './Component'
+import { CursorContext, type CursorVariant } from './context'
 
-// Types
-export type CursorVariant = 'default' | 'text' | 'button' | 'link' | 'media' | 'slider'
-
-interface CursorContextType {
-  variant: CursorVariant
-  setVariant: (variant: CursorVariant) => void
-  customText?: string
-  setCustomText: (text: string | undefined) => void
-}
-
-// Cursor Context
-export const CursorContext = createContext<CursorContextType>({
-  variant: 'default',
-  setVariant: () => {},
-  customText: undefined,
-  setCustomText: () => {},
-})
-
-// Cursor Provider
 export const CursorProvider = ({ children }: { children: ReactNode }) => {
   const [variant, setVariant] = useState<CursorVariant>('default')
   const [customText, setCustomText] = useState<string | undefined>(undefined)
@@ -33,6 +15,3 @@ export const CursorProvider = ({ children }: { children: ReactNode }) => {
     </CursorContext.Provider>
   )
 }
-
-// Custom Hook for Cursor Context
-export const useCursor = () => useContext(CursorContext)

@@ -19,7 +19,7 @@ import {
  *
  * Dimensions match text-embedding-3-small (see features/ask/model.ts).
  */
-export const EMBEDDING_DIMENSIONS = 1536
+const EMBEDDING_DIMENSIONS = 1536
 
 export const askEmbeddingsTable = pgTable(
   'ask_embeddings',

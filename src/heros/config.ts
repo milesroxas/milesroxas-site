@@ -1,11 +1,6 @@
-import {
-  FixedToolbarFeature,
-  HeadingFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
 import type { Condition, Field, UploadField } from 'payload'
 
+import { headingLexical } from '@/fields/headingLexical'
 import { linkGroup } from '@/fields/linkGroup'
 import { heroVisualSlotFields } from '@/fields/visual'
 
@@ -94,16 +89,7 @@ export const heroField = (): Field => ({
       admin: {
         condition: (_, { showContent } = {}) => showContent,
       },
-      editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [
-            ...rootFeatures,
-            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
+      editor: headingLexical(),
       label: false,
     },
     linkGroup({

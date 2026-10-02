@@ -13,7 +13,7 @@ import {
 import { Slider } from '@/components/ui/slider'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import type { Parameter, RangeParameter } from '@/features/immersive/studio/effect'
+import type { Parameter, RangeParameter, VectorParameter } from '@/features/immersive/studio/effect'
 import {
   type Dependency,
   decimals,
@@ -32,6 +32,33 @@ export type RowParameter = { name: string; spec: Parameter; copy: ParameterCopy;
 
 const controlId = (name: string) => `studio-${name}`
 
+/** `next` held to the range and rounded to the field's places. */
+const clampTo = (next: number, min: number, max: number, places: number) =>
+  Number(Math.min(max, Math.max(min, next)).toFixed(places))
+
+/** What a field shows while it is typed in; outside an edit it follows `value`. */
+function useFieldDraft(value: string) {
+  const [draft, setDraft] = useState(value)
+  const [editing, setEditing] = useState(false)
+  useEffect(() => {
+    if (!editing) setDraft(value)
+  }, [value, editing])
+  return { draft, setDraft, setEditing }
+}
+
+type ValueFieldProps = {
+  value: number
+  min: number
+  max: number
+  step?: number
+  places: number
+  disabled?: boolean
+  invalid?: boolean
+  label: string
+  className?: string
+  onCommit: (next: number) => void
+}
+
 /**
  * A number typed into the value field. It commits on Enter or blur, clamped
  * to the parameter's range and rounded to its step; Escape reverts; Shift
@@ -49,31 +76,15 @@ function ValueField({
   label,
   className,
   onCommit,
-}: {
-  value: number
-  min: number
-  max: number
-  step?: number
-  places: number
-  disabled?: boolean
-  invalid?: boolean
-  label: string
-  className?: string
-  onCommit: (next: number) => void
-}) {
+}: ValueFieldProps) {
   const shown = String(Number(value.toFixed(places)))
-  const [draft, setDraft] = useState(shown)
-  const [editing, setEditing] = useState(false)
-  useEffect(() => {
-    if (!editing) setDraft(shown)
-  }, [shown, editing])
+  const { draft, setDraft, setEditing } = useFieldDraft(shown)
 
   const commit = () => {
     setEditing(false)
     const parsed = Number.parseFloat(draft)
     if (!Number.isFinite(parsed)) return setDraft(shown)
-    const clamped = Math.min(max, Math.max(min, parsed))
-    onCommit(Number(clamped.toFixed(places)))
+    onCommit(clampTo(parsed, min, max, places))
   }
 
   const keys = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -89,7 +100,7 @@ function ValueField({
     } else if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && event.shiftKey) {
       event.preventDefault()
       const direction = event.key === 'ArrowUp' ? 1 : -1
-      onCommit(Number(Math.min(max, Math.max(min, value + direction * step * 10)).toFixed(places)))
+      onCommit(clampTo(value + direction * step * 10, min, max, places))
     }
   }
 
@@ -232,22 +243,32 @@ function RowShell({
       {children}
       {/* The reason wraps on a narrow panel, so the line sizes to its content:
           a fixed height here spills into the row below. */}
-      {inactive && (
-        <p className="col-span-2 col-start-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 pb-1.5 text-[11px]/4 text-muted-foreground">
-          {inactive.reason}
-          {inactive.fix && (
-            <button
-              type="button"
-              className="pressable cursor-pointer whitespace-nowrap text-muted-foreground underline underline-offset-2 hover:text-foreground"
-              onClick={() => onFix(inactive.fix)}
-            >
-              {inactive.fixLabel}
-            </button>
-          )}
-        </p>
-      )}
+      {inactive && <InactiveReason inactive={inactive} onFix={onFix} />}
       {note}
     </div>
+  )
+}
+
+function InactiveReason({
+  inactive,
+  onFix,
+}: {
+  inactive: Dependency
+  onFix: (fix: Dependency['fix']) => void
+}) {
+  return (
+    <p className="col-span-2 col-start-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 pb-1.5 text-[11px]/4 text-muted-foreground">
+      {inactive.reason}
+      {inactive.fix && (
+        <button
+          type="button"
+          className="pressable cursor-pointer whitespace-nowrap text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          onClick={() => onFix(inactive.fix)}
+        >
+          {inactive.fixLabel}
+        </button>
+      )}
+    </p>
   )
 }
 
@@ -264,157 +285,232 @@ type RowProps = {
   onFix: (fix: Dependency['fix']) => void
 }
 
-export function ParameterRow({
-  parameter,
+export function ParameterRow(props: RowProps) {
+  const { parameter, changed, inactive, onReset, onFix } = props
+  return (
+    <RowShell
+      parameter={parameter}
+      changed={changed}
+      inactive={inactive}
+      onReset={onReset}
+      onFix={onFix}
+    >
+      {controlFor(props)}
+    </RowShell>
+  )
+}
+
+type ControlProps = {
+  name: string
+  copy: ParameterCopy
+  disabled: boolean
+  onChange: (next: unknown) => void
+}
+
+/** The controls a row holds, by the kind of parameter it is. */
+function controlFor({
+  parameter: { name, spec, copy, fallback },
   value,
   changed,
   inactive,
   invalid,
   hint,
   onChange,
-  onReset,
-  onFix,
-}: RowProps) {
-  const { name, spec, copy, fallback } = parameter
-  const disabled = Boolean(inactive)
-  const shell = { parameter, changed, inactive, onReset, onFix }
-
+}: RowProps): ReactNode {
+  const control = { name, copy, disabled: Boolean(inactive), onChange }
   if ('options' in spec || 'toggle' in spec) {
     const toggle = 'toggle' in spec
-    const options = toggle ? TOGGLE : spec.options
-    const current = toggle ? TOGGLE[Number(value)] : String(value)
-    const choose = (next: string) => next && onChange(toggle ? next === 'on' : next)
+    const choice = {
+      options: toggle ? TOGGLE : spec.options,
+      current: toggle ? TOGGLE[Number(value)] : String(value),
+      choose: (next: string) => next && onChange(toggle ? next === 'on' : next),
+    }
     // A discrete control fills the control column, the way the slider and the
     // select beside it do: three controls that stop on the same rule read as
     // one column, and a two-option toggle at that width is still a control
     // rather than a target.
-    if (options.length <= 2) {
-      return (
-        <RowShell {...shell}>
-          <ToggleGroup
-            type="single"
-            variant="segmented"
-            size="sm"
-            value={current}
-            disabled={disabled}
-            onValueChange={choose}
-          >
-            {options.map((option) => {
-              const item = (
-                <ToggleGroupItem
-                  key={option}
-                  value={option}
-                  id={option === current ? controlId(name) : undefined}
-                >
-                  {optionLabel(copy, option)}
-                </ToggleGroupItem>
-              )
-              // A toggle's two states say what they are; an option earns a line.
-              return copy.options?.[option] ? (
-                <Tooltip key={option}>
-                  <TooltipTrigger asChild>{item}</TooltipTrigger>
-                  <TooltipContent side="bottom" sideOffset={6}>
-                    {copy.options[option]}
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                item
-              )
-            })}
-          </ToggleGroup>
-        </RowShell>
-      )
-    }
-    return (
-      <RowShell {...shell}>
-        <Select value={current} disabled={disabled} onValueChange={choose}>
-          <SelectTrigger size="field" id={controlId(name)} className="w-full max-w-56">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent align="end">
-            {options.map((option) => (
-              <SelectItem key={option} value={option} description={copy.options?.[option]}>
-                {optionLabel(copy, option)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {/* A count the code owns, not a value the editor sets: it belongs in
-            the value column with the numbers, not inside the trigger. */}
-        {hint && (
-          <span className="text-right font-mono text-[11px]/3.5 text-muted-foreground tabular-nums">
-            {hint}
-          </span>
-        )}
-      </RowShell>
-    )
+    if (choice.options.length <= 2) return <ChoiceToggle {...control} {...choice} />
+    return <ChoiceSelect {...control} {...choice} hint={hint} />
   }
-
-  if ('color' in spec) {
-    const rgb = value as readonly number[]
-    const hex = toHex(rgb)
-    return (
-      <RowShell {...shell}>
-        <div className="flex items-center gap-2 justify-self-start">
-          <label
-            className="relative size-6.5 shrink-0 cursor-pointer overflow-hidden rounded-md border border-input"
-            style={{ backgroundColor: hex }}
-            aria-label={`${copy.label} swatch`}
-          >
-            <input
-              type="color"
-              id={controlId(name)}
-              className="absolute inset-0 size-full cursor-pointer opacity-0"
-              value={hex}
-              disabled={disabled}
-              onChange={(event) => {
-                const next = fromHex(event.target.value)
-                if (next) onChange(next)
-              }}
-            />
-          </label>
-          <HexField value={hex} disabled={disabled} label={copy.label} onCommit={onChange} />
-        </div>
-      </RowShell>
-    )
-  }
-
+  if ('color' in spec) return <ColorControl {...control} value={value as readonly number[]} />
   if ('vector' in spec) {
-    const values = value as readonly number[]
-    const places = decimals(spec)
-    return (
-      <RowShell {...shell}>
-        {/* A vector has no one slider to give: its numbers share the control
-            and value columns, and still end on the rule every row ends on. */}
-        <div className="col-span-2 flex items-center gap-1">
-          {values.map((component, index) => (
-            <ValueField
-              key={index}
-              className="min-w-0 flex-1 px-1"
-              value={component}
-              min={spec.min}
-              max={spec.max}
-              step={spec.step}
-              places={places}
-              disabled={disabled}
-              label={`${copy.label} ${index + 1}`}
-              onCommit={(next) => onChange(values.map((v, i) => (i === index ? next : v)))}
-            />
-          ))}
-        </div>
-      </RowShell>
-    )
+    return <VectorControl {...control} spec={spec} values={value as readonly number[]} />
   }
+  return (
+    <RangeControl
+      {...control}
+      spec={spec}
+      value={Number(value)}
+      fallback={fallback}
+      changed={changed}
+      invalid={invalid}
+    />
+  )
+}
 
-  const number = Number(value)
+type Choice = {
+  options: readonly string[]
+  current: string
+  choose: (next: string) => unknown
+}
+
+function ChoiceToggle({ name, copy, disabled, options, current, choose }: ControlProps & Choice) {
+  return (
+    <ToggleGroup
+      type="single"
+      variant="segmented"
+      size="sm"
+      value={current}
+      disabled={disabled}
+      onValueChange={choose}
+    >
+      {options.map((option) => {
+        const item = (
+          <ToggleGroupItem
+            key={option}
+            value={option}
+            id={option === current ? controlId(name) : undefined}
+          >
+            {optionLabel(copy, option)}
+          </ToggleGroupItem>
+        )
+        // A toggle's two states say what they are; an option earns a line.
+        return copy.options?.[option] ? (
+          <Tooltip key={option}>
+            <TooltipTrigger asChild>{item}</TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={6}>
+              {copy.options[option]}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          item
+        )
+      })}
+    </ToggleGroup>
+  )
+}
+
+function ChoiceSelect({
+  name,
+  copy,
+  disabled,
+  options,
+  current,
+  choose,
+  hint,
+}: ControlProps & Choice & { hint?: string }) {
+  return (
+    <>
+      <Select value={current} disabled={disabled} onValueChange={choose}>
+        <SelectTrigger size="field" id={controlId(name)} className="w-full max-w-56">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent align="end">
+          {options.map((option) => (
+            <SelectItem key={option} value={option} description={copy.options?.[option]}>
+              {optionLabel(copy, option)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {/* A count the code owns, not a value the editor sets: it belongs in
+          the value column with the numbers, not inside the trigger. */}
+      {hint && (
+        <span className="text-right font-mono text-[11px]/3.5 text-muted-foreground tabular-nums">
+          {hint}
+        </span>
+      )}
+    </>
+  )
+}
+
+function ColorControl({
+  name,
+  copy,
+  disabled,
+  onChange,
+  value,
+}: ControlProps & { value: readonly number[] }) {
+  const hex = toHex(value)
+  return (
+    <div className="flex items-center gap-2 justify-self-start">
+      <label
+        className="relative size-6.5 shrink-0 cursor-pointer overflow-hidden rounded-md border border-input"
+        style={{ backgroundColor: hex }}
+        aria-label={`${copy.label} swatch`}
+      >
+        <input
+          type="color"
+          id={controlId(name)}
+          className="absolute inset-0 size-full cursor-pointer opacity-0"
+          value={hex}
+          disabled={disabled}
+          onChange={(event) => {
+            const next = fromHex(event.target.value)
+            if (next) onChange(next)
+          }}
+        />
+      </label>
+      <HexField value={hex} disabled={disabled} label={copy.label} onCommit={onChange} />
+    </div>
+  )
+}
+
+function VectorControl({
+  copy,
+  disabled,
+  onChange,
+  spec,
+  values,
+}: ControlProps & { spec: VectorParameter; values: readonly number[] }) {
+  const places = decimals(spec)
+  return (
+    // A vector has no one slider to give: its numbers share the control
+    // and value columns, and still end on the rule every row ends on.
+    <div className="col-span-2 flex items-center gap-1">
+      {values.map((component, index) => (
+        <ValueField
+          key={index}
+          className="min-w-0 flex-1 px-1"
+          value={component}
+          min={spec.min}
+          max={spec.max}
+          step={spec.step}
+          places={places}
+          disabled={disabled}
+          label={`${copy.label} ${index + 1}`}
+          onCommit={(next) => onChange(values.map((v, i) => (i === index ? next : v)))}
+        />
+      ))}
+    </div>
+  )
+}
+
+function RangeControl({
+  name,
+  copy,
+  disabled,
+  onChange,
+  spec,
+  value,
+  fallback,
+  changed,
+  invalid,
+}: ControlProps & {
+  spec: RangeParameter
+  value: number
+  fallback: unknown
+  changed: boolean
+  invalid?: boolean
+}) {
   const signed = spec.min < 0
   const places = decimals(spec)
   return (
-    <RowShell {...shell}>
+    <>
       <Slider
         id={controlId(name)}
         aria-label={copy.label}
-        value={[number]}
+        value={[value]}
         min={spec.min}
         max={spec.max}
         step={spec.step}
@@ -431,7 +527,7 @@ export function ParameterRow({
       />
       <ValueField
         className="w-full"
-        value={number}
+        value={value}
         min={spec.min}
         max={spec.max}
         step={spec.step}
@@ -441,7 +537,7 @@ export function ParameterRow({
         label={copy.label}
         onCommit={onChange}
       />
-    </RowShell>
+    </>
   )
 }
 
@@ -456,11 +552,7 @@ function HexField({
   label: string
   onCommit: (next: [number, number, number]) => void
 }) {
-  const [draft, setDraft] = useState(value)
-  const [editing, setEditing] = useState(false)
-  useEffect(() => {
-    if (!editing) setDraft(value)
-  }, [value, editing])
+  const { draft, setDraft, setEditing } = useFieldDraft(value)
   const commit = () => {
     setEditing(false)
     const next = fromHex(draft)
@@ -493,6 +585,16 @@ function HexField({
   )
 }
 
+type RangePairProps = {
+  low: RowParameter & { value: number }
+  high: RowParameter & { value: number }
+  label: string
+  changed: boolean
+  error?: string
+  onChange: (next: Record<string, number>) => void
+  onReset: () => void
+}
+
 /**
  * A low and a high bound on one track with two thumbs. Dragging cannot cross
  * them; only the fields can, and then the server's own message shows under
@@ -506,15 +608,7 @@ export function RangePairRow({
   error,
   onChange,
   onReset,
-}: {
-  low: RowParameter & { value: number }
-  high: RowParameter & { value: number }
-  label: string
-  changed: boolean
-  error?: string
-  onChange: (next: Record<string, number>) => void
-  onReset: () => void
-}) {
+}: RangePairProps) {
   const spec = low.spec as RangeParameter
   const places = decimals(spec)
   const invalid = low.value > high.value
@@ -539,13 +633,7 @@ export function RangePairRow({
       changed={changed}
       onReset={onReset}
       onFix={() => {}}
-      note={
-        error ? (
-          <p role="alert" className="col-span-2 col-start-2 text-[11px]/3.5 text-destructive">
-            {error}
-          </p>
-        ) : undefined
-      }
+      note={error ? <RowError>{error}</RowError> : undefined}
     >
       <Slider
         id={controlId(low.name)}
@@ -567,5 +655,13 @@ export function RangePairRow({
         {field(high, (next) => set(low.value, next))}
       </div>
     </RowShell>
+  )
+}
+
+function RowError({ children }: { children: ReactNode }) {
+  return (
+    <p role="alert" className="col-span-2 col-start-2 text-[11px]/3.5 text-destructive">
+      {children}
+    </p>
   )
 }
