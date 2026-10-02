@@ -21,6 +21,8 @@ interface WorkCardProps {
   aspect?: CardAspect
   imageRef?: React.RefObject<HTMLDivElement | null>
   showDescription?: boolean
+  /** Title size; a list under a section heading passes a smaller step. */
+  titleClassName?: string
 }
 
 export const WorkCard: React.FC<WorkCardProps> = ({
@@ -32,6 +34,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   aspect = 'wide',
   imageRef: imageRefProp,
   showDescription = false,
+  titleClassName = 'font-light text-3xl',
 }) => {
   const { slug, title, hero } = doc || {}
   const description = hero?.richText
@@ -46,7 +49,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
           {(titleFromProps || title) && (
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-light text-3xl">{titleFromProps || title}</h3>
+              <h3 className={titleClassName}>{titleFromProps || title}</h3>
               <Badge variant="work">Work</Badge>
             </div>
           )}

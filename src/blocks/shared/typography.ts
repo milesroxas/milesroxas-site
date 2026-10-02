@@ -60,22 +60,23 @@ export const proseBodyClassNames: Record<TextSize, string> = {
  * `text-heading-1` beside 16px body is a page title standing inside an
  * article, and the two read as separate documents rather than one passage.
  *
- * So the levels are plain Tailwind sizes, a 1.25 ladder over that body:
- * 30 / 24 / 20px. Their default line heights (2.25rem, 2rem, 1.75rem) sit on
- * or just above the body's 28px line, so the passage keeps one rhythm, and
- * the two larger steps take `tracking-tight` because the text-box-trimmed
- * cluster otherwise reads loose at those sizes. At h4 the step over the body
- * is only 4px, so weight carries the hierarchy instead, the way the in-prose
- * headings do (`prose-h4:font-medium` in components/RichText).
+ * It also sits under the page's own h1: a case study's title is
+ * `text-heading-3` (24 to 30px) and a post's tops out at 36px, so a section
+ * h2 must stay a step below 24px on a phone. The levels are a ~1.2 ladder
+ * over that body, growing with it at `xl` (body 16 then 18px):
+ * h2 20 to 24px (`text-lead`, fluid), h3 18 then 20px, h4 16 then 18px. h3
+ * and h4 sit at or just above body size, so weight carries them, the way the
+ * in-prose headings do (`prose-h3:font-medium` in components/RichText). No
+ * negative tracking: nothing here is larger than the h1, which has none.
  *
  * Levels are not restated in `em`: the gaps around the heading already are
  * (`text-stack`), so the whole cluster tracks whichever level the editor
  * picks. The level select is `proseHeadingLevelField` (`./fields.ts`).
  */
 export const proseHeadingClassNames = {
-  h2: 'text-3xl tracking-tight',
-  h3: 'text-2xl tracking-tight',
-  h4: 'text-xl font-medium',
+  h2: 'text-lead leading-snug',
+  h3: 'text-lg font-medium xl:text-xl',
+  h4: 'text-base font-medium xl:text-lg',
 } as const
 
 export type ProseHeadingLevel = keyof typeof proseHeadingClassNames

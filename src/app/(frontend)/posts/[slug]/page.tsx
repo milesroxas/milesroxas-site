@@ -63,7 +63,7 @@ function MorePosts({ post }: { post: PostDoc }) {
   if (post.hideRelatedPosts || !post.relatedPosts || post.relatedPosts.length === 0) return null
   return (
     <section className="bg-tertiary py-12">
-      <h2 className="container pb-4 font-light text-5xl text-tertiary-foreground">More posts</h2>
+      <h2 className="container pb-4 text-lead text-tertiary-foreground leading-snug">More posts</h2>
       <RelatedPosts docs={post.relatedPosts.filter((post) => typeof post === 'object')} />
     </section>
   )

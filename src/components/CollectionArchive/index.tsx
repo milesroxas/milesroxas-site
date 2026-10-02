@@ -30,7 +30,7 @@ export const CollectionArchive: React.FC<Props> = (props) => {
             if (typeof result === 'object' && result !== null && result.slug) {
               return (
                 <div className="col-span-4" key={`work-${result.slug}`}>
-                  <WorkCard doc={result} relationTo="works" />
+                  <WorkCard doc={result} relationTo="works" titleClassName="text-lg xl:text-xl" />
                 </div>
               )
             }

@@ -29,7 +29,8 @@ export default function ArchiveBlockClient({
       )}
     >
       {introContent && (
-        <div className="container mb-16 px-8 md:px-20">
+        // The intro opens a section, so its h2 takes the prose h2 step, not legacy `prose-custom`'s 36px.
+        <div className="container mb-16 px-8 md:px-20 [&_.prose-custom_h2]:font-normal [&_.prose-custom_h2]:text-lead [&_.prose-custom_h2]:leading-snug">
           <RichText
             className="ms-0 max-w-3xl text-muted-foreground"
             data={introContent}

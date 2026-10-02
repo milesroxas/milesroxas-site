@@ -119,12 +119,13 @@ const Statement = ({ body, eyebrow, heading }: LayoutProps) => (
  * (`proseHeadingClassNames`), the same one a Story beats heading uses, so an
  * opener and the beats under it never drift apart.
  *
- * The deck steps with the heading: 18px under an h2 is a standfirst, body
- * size under the lower two, both on the body's 28px line so the deck and the
- * beats below it share a baseline.
+ * The deck steps with the heading: 18px under an h2 is a standfirst from
+ * `md` (16px on a phone, where the h2 is only 20px), body size under the
+ * lower two, all on the body's 28px line so the deck and the beats below it
+ * share a baseline.
  */
 const proseBodyClasses: Record<ProseHeadingLevel, string> = {
-  h2: 'text-lg/7',
+  h2: 'text-base/7 md:text-lg/7',
   h3: 'text-base/7',
   h4: 'text-base/7',
 }

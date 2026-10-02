@@ -190,12 +190,12 @@ export default function RichText(props: Props) {
         {
           container: enableGutter,
           'max-w-none': !enableGutter,
-          /* Article scale: bridge Tailwind Typography to the fluid type
-             tokens. h1/h2 step down one visual level inside a reading column;
-             h3/h4 take medium — at near-body sizes weight, not size, carries
-             hierarchy. */
+          /* Article scale: the prose heading ladder (`proseHeadingClassNames`
+             in blocks/shared/typography), so in-body headings stay below the
+             page's h1. h3/h4 take medium — at near-body sizes weight, not
+             size, carries hierarchy. */
           'mx-auto prose dark:prose-invert': enableProse,
-          'prose-h1:text-heading-2 prose-h2:text-heading-3 prose-h3:text-lead prose-h3:leading-snug prose-h3:font-medium prose-h4:font-medium':
+          'prose-h1:text-heading-3 prose-h2:text-lead prose-h2:leading-snug prose-h2:font-normal prose-h3:text-lg prose-h3:font-medium xl:prose-h3:text-xl prose-h4:font-medium':
             enableProse,
         },
         variantClasses[variant],
