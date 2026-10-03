@@ -35,12 +35,13 @@ function useNewYorkTime(): { label: string; iso: string } | null {
 
 /**
  * Miles's local time. The label is quiet, the time is the value, set in
- * mono so the digits hold still as the minutes change.
+ * mono so the digits hold still as the minutes change. On a narrow phone
+ * the two stack, so the centred wordmark keeps a gap beside them.
  */
 export function Clock() {
   const time = useNewYorkTime()
   return (
-    <p className="flex items-center gap-1.5 text-xs/4 md:gap-2 md:text-[0.8125rem]/[1.125rem]">
+    <p className="flex items-center gap-1.5 text-xs/4 max-[30rem]:flex-col max-[30rem]:items-end max-[30rem]:gap-0 md:gap-2 md:text-[0.8125rem]/[1.125rem]">
       <span className="text-(--chrome-ink-quiet)">New York</span>
       {/* Width held for "12:00 PM" so the label never shifts when the time
           lands; set flush right so the row keeps its edge. */}

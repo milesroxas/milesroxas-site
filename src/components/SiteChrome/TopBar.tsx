@@ -11,11 +11,11 @@ import { useBandGround } from './use-band-ground'
 
 /**
  * The top of the chrome: the wordmark home, and Miles's local time. No bar
- * and no fill; the words float over the page.
+ * and no fill; the words float over the page. The wordmark is centred.
  *
- * On a page that names itself (`ChromeTitle`), the centre shows where the
+ * On a page that names itself (`ChromeTitle`), the left shows where the
  * reader is once the page's heading has scrolled away: the tab, then the
- * title. Wide screens only; a phone has no room between the two ends.
+ * title. Wide screens only; a phone has no room beside the wordmark.
  *
  * The theme toggle sits with the clock rather than in the dock: both are the
  * bar's quiet register, and the dock stays navigation only.
@@ -33,27 +33,29 @@ export function TopBar({ section }: { section: string | null }) {
       data-theme={ground}
       ref={ref}
     >
+      <div className="min-w-0 flex-1">
+        {title && section && (
+          <p
+            aria-hidden={!title.shown}
+            className="chrome-title hidden min-w-0 max-w-[calc(50vw-8.5rem)] items-center gap-1.5 overflow-hidden font-medium text-sm/5 md:flex"
+            data-shown={title.shown}
+          >
+            <span className="shrink-0 text-(--chrome-ink-muted)">{section}</span>
+            <IconChevronRight aria-hidden className="size-3.5 shrink-0 text-(--chrome-ink-quiet)" />
+            <span className="truncate font-semibold">{title.text}</span>
+          </p>
+        )}
+      </div>
+
       <Link
         aria-label="Miles Roxas, home"
-        className="chrome-focus pointer-events-auto -m-2 rounded-md p-2"
+        className="chrome-focus pointer-events-auto absolute top-1/2 left-1/2 z-10 -translate-1/2 rounded-md p-2"
         href="/"
       >
         <Logo className="h-auto w-29 md:w-40" color="currentColor" />
       </Link>
 
-      {title && section && (
-        <p
-          aria-hidden={!title.shown}
-          className="chrome-title absolute inset-x-0 mx-auto hidden w-fit items-center gap-1.5 font-medium text-sm/5 md:flex"
-          data-shown={title.shown}
-        >
-          <span className="text-(--chrome-ink-muted)">{section}</span>
-          <IconChevronRight aria-hidden className="size-3.5 text-(--chrome-ink-quiet)" />
-          <span className="max-w-[40vw] truncate font-semibold">{title.text}</span>
-        </p>
-      )}
-
-      <div className="flex items-center gap-2 md:gap-3">
+      <div className="flex shrink-0 items-center gap-2 md:gap-3">
         <ThemeToggle />
         <Clock />
       </div>

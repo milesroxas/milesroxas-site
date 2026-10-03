@@ -92,14 +92,19 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
   )
 
   return (
-    <div
-      data-theme="light"
-      className="container mx-auto flex min-h-[50dvh] max-w-3/4 items-center align-middle"
-      ref={container}
-    >
-      <div className="w-full text-center font-light text-4xl leading-loose">
-        {richText && <RichText className="mb-0" data={richText} />}
+    // Type on the page, not a painted band: a `data-theme` pin would make the
+    // dock swap material while it floats over this scroll. The veil fades the
+    // words out through the dock's band so they don't show through the glass.
+    <div className="relative" ref={container}>
+      <div className="container mx-auto flex min-h-[50dvh] max-w-3/4 items-center align-middle">
+        <div className="w-full text-center font-light text-4xl leading-loose">
+          {richText && <RichText className="mb-0" data={richText} />}
+        </div>
       </div>
+      <div
+        aria-hidden
+        className="pointer-events-none sticky bottom-0 z-10 -mt-36 h-36 bg-gradient-to-t from-background from-65% to-transparent"
+      />
     </div>
   )
 }
