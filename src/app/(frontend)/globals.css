@@ -1610,8 +1610,8 @@
   }
 }
 
-/* Top bar: words over the page, no bar. The page's own title rises in at the
-   centre once its heading has scrolled under the bar. */
+/* Top bar: words over the page, no bar. The page's own title rises in on
+   the left once its heading has scrolled under the bar. */
 .chrome-top {
   transition:
     color 240ms ease,
