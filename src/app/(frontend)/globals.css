@@ -938,14 +938,20 @@
    `--enter-at`; the choreography (rule, eyebrow, title words, facts, media,
    capabilities) is stated beside each part in `parts.tsx`. Reduced motion
    keeps a short fade and drops every movement. `inline`, so `--enter-at`
-   resolves on each part rather than once on :root. */
+   resolves on each part rather than once on :root. Arriving from a work
+   card, every part also waits `--morph-hold`, the picture's travel. */
 @theme inline {
-  --animate-hero-in: hero-in 700ms var(--ease-out-quint) var(--enter-at, 0ms) both;
-  --animate-hero-rise: hero-rise 900ms var(--ease-out-quint) var(--enter-at, 0ms) both;
-  --animate-hero-draw: hero-draw 600ms var(--ease-out-quint) var(--enter-at, 0ms) both;
-  --animate-hero-wipe: hero-wipe 1100ms var(--ease-out-quint) var(--enter-at, 0ms) both;
-  --animate-hero-settle: hero-settle 1400ms var(--ease-out-quint) var(--enter-at, 0ms) both;
-  --animate-hero-fade: hero-fade 300ms ease var(--enter-at, 0ms) both;
+  --animate-hero-in: hero-in 700ms var(--ease-out-quint)
+    calc(var(--enter-at, 0ms) + var(--morph-hold, 0ms)) both;
+  --animate-hero-rise: hero-rise 900ms var(--ease-out-quint)
+    calc(var(--enter-at, 0ms) + var(--morph-hold, 0ms)) both;
+  --animate-hero-draw: hero-draw 600ms var(--ease-out-quint)
+    calc(var(--enter-at, 0ms) + var(--morph-hold, 0ms)) both;
+  --animate-hero-wipe: hero-wipe 1100ms var(--ease-out-quint)
+    calc(var(--enter-at, 0ms) + var(--morph-hold, 0ms)) both;
+  --animate-hero-settle: hero-settle 1400ms var(--ease-out-quint)
+    calc(var(--enter-at, 0ms) + var(--morph-hold, 0ms)) both;
+  --animate-hero-fade: hero-fade 300ms ease calc(var(--enter-at, 0ms) + var(--morph-hold, 0ms)) both;
 
   @keyframes hero-in {
     from {
@@ -981,12 +987,18 @@
   }
 }
 
-/* A work card opening into its case study (WorkCard → WorkHero): the card's
-   picture travels into the hero frame while the rest of the page swaps
-   under it. Both snapshots fill the travelling box, so the card's 16:9 crop
-   reframes to the hero's 16:10 instead of stretching. */
+/* A work card opening into its case study (WorkCard → WorkHero), in three
+   beats: the page fades out around the picture, the picture travels one axis
+   at a time into the hero frame, and the hero's copy loads in once it lands.
+   The travel is timed in `src/heros/WorkHero/morph.ts`, which also sets the
+   hero's `--morph-hold`; the value here covers the frames before it runs.
+   Both snapshots fill the travelling box, so the card's 16:9 crop reframes to
+   the hero's 16:10 instead of stretching. The delay keeps the picture in
+   place until `morph.ts` retimes it, which can be a few frames after the
+   transition starts. */
 ::view-transition-group(.work-morph) {
-  animation-duration: 700ms;
+  animation-delay: 200ms;
+  animation-duration: 840ms;
   animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
   overflow: clip;
 }
@@ -997,23 +1009,35 @@
   object-fit: cover;
 }
 
-/* The page the card leaves fades out fast; the case study shows at once, so
-   only its own load-in plays (the new root is a live view of the page). */
+::view-transition-image-pair(.work-morph) {
+  animation: work-morph-blur 420ms;
+}
+
+@keyframes work-morph-blur {
+  40% {
+    filter: blur(2px);
+  }
+}
+
+/* The case study shows at once under the fading page: its copy is held by
+   `--morph-hold`, so only the hero's own frame and background show through. */
 html:active-view-transition-type(work-open)::view-transition-old(root) {
-  animation: 150ms var(--ease-out-quint) both hero-fade reverse;
+  animation: 200ms var(--ease-out-quint) both work-page-out;
 }
 
 html:active-view-transition-type(work-open)::view-transition-new(root) {
   animation: none;
 }
 
-::view-transition-image-pair(.work-morph) {
-  animation: work-morph-blur 700ms cubic-bezier(0.77, 0, 0.175, 1);
+@keyframes work-page-out {
+  to {
+    opacity: 0;
+  }
 }
 
-@keyframes work-morph-blur {
-  40% {
-    filter: blur(2px);
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot="work-hero"]:has([data-arrival="morph"]) {
+    --morph-hold: 1040ms;
   }
 }
 
@@ -1970,6 +1994,23 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
 
 #site-chrome[data-hidden] .chrome-top {
   opacity: 0;
+}
+
+/* A work card opening (`.work-morph`): the chrome stays put while the page
+   under it fades, and the picture travels beneath it. */
+/* biome-ignore lint/style/noDescendingSpecificity: sets only the transition name */
+html:active-view-transition-type(work-open) .chrome-top {
+  view-transition-name: chrome-top;
+}
+
+/* biome-ignore lint/style/noDescendingSpecificity: sets only the transition name */
+html:active-view-transition-type(work-open) .dock {
+  view-transition-name: chrome-dock;
+}
+
+::view-transition-group(chrome-top),
+::view-transition-group(chrome-dock) {
+  z-index: 1;
 }
 
 @media (min-width: 48rem) {

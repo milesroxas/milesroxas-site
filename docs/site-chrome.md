@@ -104,10 +104,16 @@ button uses the same hook.
 
 A work card opens its case study with a native view transition: the card's
 picture and the `WorkHero` frame share a `<ViewTransition>` name
-(`src/heros/WorkHero/morph.ts`), so the picture morphs into the hero while the
-old page fades out and the hero plays its CSS load-in (`.work-morph` and the
-`hero-*` animations in `globals.css`). Only the clicked card takes the name, so
-related-works cards on the next page never pair. The chrome stays put.
+(`src/heros/WorkHero/morph.ts`). It plays in three beats. The page around the
+picture fades out while the picture holds still. The picture then travels one
+axis at a time, across to the hero's center and then vertically into the frame
+as it resizes; a leg with no distance drops out. The hero's copy starts its
+load-in as the picture lands: every `hero-*` animation waits `--morph-hold`,
+which the card's `onShare` callback sets to the travel time. Only the clicked
+card takes the name, so related-works cards on the next page never pair. The
+top bar and dock take their own transition names for the duration, so they
+stay put above the travelling picture (`.work-morph` and `work-open` rules in
+`globals.css`).
 
 The post card → detail page FLIP (`src/hooks/useCardTransition.ts`) hides the
 chrome (`useChromeStore.setVisible(false)`) as its clone fills the screen.

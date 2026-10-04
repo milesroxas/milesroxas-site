@@ -55,7 +55,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
         onClick={morph.onClick}
         transitionTypes={['work-open']}
       >
-        <ViewTransition default="none" name={morph.name} share="work-morph">
+        <ViewTransition default="none" name={morph.name} onShare={morph.onShare} share="work-morph">
           <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
         </ViewTransition>
 
