@@ -4,7 +4,7 @@ import { contentsButtonField } from '@/fields/pageFields'
 import { pageIntroField } from '@/fields/pageHero'
 import { workLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
-import { heroField } from '@/heros/config'
+import { workHeroField } from '@/heros/WorkHero/config'
 import { authenticated } from '../../access/authenticated'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
@@ -61,7 +61,40 @@ export const Works: CollectionConfig<'works'> = {
       type: 'tabs',
       tabs: [
         {
-          fields: [heroField(), pageIntroField()],
+          fields: [
+            workHeroField(),
+            {
+              name: 'client',
+              type: 'text',
+              admin: {
+                description: 'Shown above the title as "<Client> Case Study".',
+              },
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'industry',
+                  label: 'Industry',
+                  type: 'text',
+                },
+                {
+                  name: 'role',
+                  label: 'Role',
+                  type: 'text',
+                },
+              ],
+            },
+            {
+              name: 'capabilities',
+              type: 'text',
+              hasMany: true,
+              admin: {
+                description: 'One capability per entry, in the order the hero lists them.',
+              },
+            },
+            pageIntroField(),
+          ],
           label: 'Opening',
         },
         {
@@ -80,26 +113,6 @@ export const Works: CollectionConfig<'works'> = {
             contentsButtonField(),
           ],
           label: 'Composition',
-        },
-        {
-          fields: [
-            {
-              name: 'industry',
-              label: 'Industry',
-              type: 'text',
-            },
-            {
-              name: 'role',
-              label: 'Role',
-              type: 'text',
-            },
-            {
-              name: 'deliverables',
-              label: 'Deliverables',
-              type: 'text',
-            },
-          ],
-          label: 'Work Details',
         },
         {
           fields: [

@@ -106,7 +106,6 @@ export const workCardData: CardWorkData = {
   slug: 'brand-refresh',
   title: 'Brand Refresh',
   hero: {
-    type: 'lowImpact',
     media: imageMedia,
     richText: paragraphRichText,
   },

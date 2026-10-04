@@ -14,11 +14,12 @@ export const normalizeKey = (key: string): string => key.toLowerCase().replace(/
 export const CONTENT_TEXT_KEYS = new Set([
   'answer',
   'body',
+  // A work's details (Works › Opening), plain text fields here where
+  // sas-site relates them to taxonomy terms. Capabilities is a list of them.
+  'capabilities',
   'caption',
+  'client',
   'decision',
-  // A work's details (Works › Work Details), plain text fields here where
-  // sas-site relates them to taxonomy terms.
-  'deliverables',
   'description',
   'excerpt',
   'eyebrow',

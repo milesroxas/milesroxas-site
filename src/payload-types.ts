@@ -4549,9 +4549,14 @@ export interface Work {
   id: number;
   _order?: string | null;
   title: string;
-  hero: {
-    type: 'none' | 'home' | 'highImpact' | 'mediumImpact' | 'lowImpact';
-    showContent?: boolean | null;
+  hero?: {
+    /**
+     * The picture centered in the opening. A work card opens into it, so use the card image.
+     */
+    media?: (number | null) | Media;
+    /**
+     * One or two sentences on the work. Cards and search show it; the hero does not.
+     */
     richText?: {
       root: {
         type: string;
@@ -4567,37 +4572,17 @@ export interface Work {
       };
       [k: string]: unknown;
     } | null;
-    links?:
-      | {
-          link: {
-            type?: ('reference' | 'custom') | null;
-            newTab?: boolean | null;
-            reference?:
-              | ({
-                  relationTo: 'pages';
-                  value: number | Page;
-                } | null)
-              | ({
-                  relationTo: 'posts';
-                  value: number | Post;
-                } | null);
-            url?: string | null;
-            label: string;
-            /**
-             * Choose how the link should be rendered.
-             */
-            appearance?: ('default' | 'outline') | null;
-          };
-          id?: string | null;
-        }[]
-      | null;
-    media?: (number | null) | Media;
-    /**
-     * Leave empty for the media alone. An effect grounds the whole opening band behind the copy; the media upload, when one is set, still shows in its own frame.
-     */
-    visualType?: ('media' | 'streakField' | 'lightLeak') | null;
-    shader?: PlacedVisualConfig;
   };
+  /**
+   * Shown above the title as "<Client> Case Study".
+   */
+  client?: string | null;
+  industry?: string | null;
+  role?: string | null;
+  /**
+   * One capability per entry, in the order the hero lists them.
+   */
+  capabilities?: string[] | null;
   intro?: WorkIntro;
   layout: (
     | WorkSectionBlock
@@ -4633,9 +4618,6 @@ export interface Work {
    * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
    */
   showContents?: boolean | null;
-  industry?: string | null;
-  role?: string | null;
-  deliverables?: string | null;
   status?: ('coming-soon' | 'live') | null;
   /**
    * Requires query param to access this work
@@ -6746,28 +6728,13 @@ export interface WorksSelect<T extends boolean = true> {
   hero?:
     | T
     | {
-        type?: T;
-        showContent?: T;
-        richText?: T;
-        links?:
-          | T
-          | {
-              link?:
-                | T
-                | {
-                    type?: T;
-                    newTab?: T;
-                    reference?: T;
-                    url?: T;
-                    label?: T;
-                    appearance?: T;
-                  };
-              id?: T;
-            };
         media?: T;
-        visualType?: T;
-        shader?: T | PlacedVisualConfigSelect<T>;
+        richText?: T;
       };
+  client?: T;
+  industry?: T;
+  role?: T;
+  capabilities?: T;
   intro?: T | WorkIntroSelect<T>;
   layout?:
     | T
@@ -6802,9 +6769,6 @@ export interface WorksSelect<T extends boolean = true> {
         content?: T | ContentBlockSelect<T>;
       };
   showContents?: T;
-  industry?: T;
-  role?: T;
-  deliverables?: T;
   status?: T;
   isProtected?: T;
   fallbackWork?: T;

@@ -2067,14 +2067,6 @@ export const enum__posts_v_version_status = pgEnum(
   "enum__posts_v_version_status",
   ["draft", "published"],
 );
-export const enum_works_hero_links_link_type = pgEnum(
-  "enum_works_hero_links_link_type",
-  ["reference", "custom"],
-);
-export const enum_works_hero_links_link_appearance = pgEnum(
-  "enum_works_hero_links_link_appearance",
-  ["default", "outline"],
-);
 export const enum_works_transition_layout = pgEnum(
   "enum_works_transition_layout",
   ["offset", "left", "centered", "split", "statement", "prose"],
@@ -2659,21 +2651,6 @@ export const enum_works_blocks_media_block_space_mb = pgEnum(
   "enum_works_blocks_media_block_space_mb",
   ["none", "sm", "md", "lg", "xl"],
 );
-export const enum_works_hero_type = pgEnum("enum_works_hero_type", [
-  "none",
-  "home",
-  "highImpact",
-  "mediumImpact",
-  "lowImpact",
-]);
-export const enum_works_hero_visual_type = pgEnum(
-  "enum_works_hero_visual_type",
-  ["media", "streakField", "lightLeak"],
-);
-export const enum_works_hero_shader_origin = pgEnum(
-  "enum_works_hero_shader_origin",
-  ["top-right", "top-left", "bottom-right", "bottom-left"],
-);
 export const enum_works_project_status = pgEnum("enum_works_project_status", [
   "coming-soon",
   "live",
@@ -2682,14 +2659,6 @@ export const enum_works_status = pgEnum("enum_works_status", [
   "draft",
   "published",
 ]);
-export const enum__works_v_version_hero_links_link_type = pgEnum(
-  "enum__works_v_version_hero_links_link_type",
-  ["reference", "custom"],
-);
-export const enum__works_v_version_hero_links_link_appearance = pgEnum(
-  "enum__works_v_version_hero_links_link_appearance",
-  ["default", "outline"],
-);
 export const enum___works_v_transition_v_layout = pgEnum(
   "enum___works_v_transition_v_layout",
   ["offset", "left", "centered", "split", "statement", "prose"],
@@ -3251,18 +3220,6 @@ export const enum__works_v_blocks_media_block_space_mt = pgEnum(
 export const enum__works_v_blocks_media_block_space_mb = pgEnum(
   "enum__works_v_blocks_media_block_space_mb",
   ["none", "sm", "md", "lg", "xl"],
-);
-export const enum__works_v_version_hero_type = pgEnum(
-  "enum__works_v_version_hero_type",
-  ["none", "home", "highImpact", "mediumImpact", "lowImpact"],
-);
-export const enum__works_v_version_hero_visual_type = pgEnum(
-  "enum__works_v_version_hero_visual_type",
-  ["media", "streakField", "lightLeak"],
-);
-export const enum__works_v_version_hero_shader_origin = pgEnum(
-  "enum__works_v_version_hero_shader_origin",
-  ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
 export const enum__works_v_version_status = pgEnum(
   "enum__works_v_version_status",
@@ -9555,33 +9512,6 @@ export const _posts_v_rels = pgTable(
   ],
 );
 
-export const works_hero_links = pgTable(
-  "works_hero_links",
-  {
-    _order: integer("_order").notNull(),
-    _parentID: integer("_parent_id").notNull(),
-    id: varchar("id").primaryKey(),
-    link_type:
-      enum_works_hero_links_link_type("link_type").default("reference"),
-    link_newTab: boolean("link_new_tab"),
-    link_url: varchar("link_url"),
-    link_label: varchar("link_label"),
-    link_appearance:
-      enum_works_hero_links_link_appearance("link_appearance").default(
-        "default",
-      ),
-  },
-  (columns) => [
-    index("works_hero_links_order_idx").on(columns._order),
-    index("works_hero_links_parent_id_idx").on(columns._parentID),
-    foreignKey({
-      columns: [columns["_parentID"]],
-      foreignColumns: [works.id],
-      name: "works_hero_links_parent_id_fk",
-    }).onDelete("cascade"),
-  ],
-);
-
 export const works_transition = pgTable(
   "works_transition",
   {
@@ -11071,52 +11001,17 @@ export const works = pgTable(
     id: serial("id").primaryKey(),
     _order: varchar("_order"),
     title: varchar("title"),
-    hero_type: enum_works_hero_type("hero_type").default("lowImpact"),
-    hero_showContent: boolean("hero_show_content").default(true),
-    hero_richText: jsonb("hero_rich_text"),
     hero_media: integer("hero_media_id").references(() => media.id, {
       onDelete: "set null",
     }),
-    hero_visualType: enum_works_hero_visual_type("hero_visual_type"),
-    hero_shader_studio: integer("hero_shader_studio_id").references(
-      () => streak_looks.id,
-      {
-        onDelete: "set null",
-      },
-    ),
-    hero_shader_preset: varchar("hero_shader_preset"),
-    hero_shader_seed: numeric("hero_shader_seed", { mode: "number" }),
-    hero_shader_speed: numeric("hero_shader_speed", { mode: "number" }),
-    hero_shader_intensity: numeric("hero_shader_intensity", { mode: "number" }),
-    hero_shader_bleed: boolean("hero_shader_bleed").default(false),
-    hero_shader_origin:
-      enum_works_hero_shader_origin("hero_shader_origin").default("top-right"),
-    hero_shader_showMedia: boolean("hero_shader_show_media").default(false),
-    hero_shader_surface: enum_visual_surface("hero_shader_surface").default(
-      "auto",
-    ),
-    hero_shader_pointerInteraction: boolean(
-      "hero_shader_pointer_interaction",
-    ).default(false),
-    hero_shader_hoverTargets: enum_leak_hover_targets(
-      "hero_shader_hover_targets",
-    ),
-    hero_shader_sectionHover: numeric("hero_shader_section_hover", {
-      mode: "number",
-    }),
-    hero_shader_posterMedia: integer("hero_shader_poster_media_id").references(
-      () => media.id,
-      {
-        onDelete: "set null",
-      },
-    ),
+    hero_richText: jsonb("hero_rich_text"),
+    client: varchar("client"),
+    industry: varchar("industry"),
+    role: varchar("role"),
     intro_eyebrow: varchar("intro_eyebrow"),
     intro_title: varchar("intro_title"),
     intro_body: jsonb("intro_body"),
     showContents: boolean("show_contents").default(false),
-    industry: varchar("industry"),
-    role: varchar("role"),
-    deliverables: varchar("deliverables"),
     status: enum_works_project_status("status"),
     isProtected: boolean("is_protected").default(false),
     fallbackWork: integer("fallback_work_id").references(
@@ -11157,18 +11052,31 @@ export const works = pgTable(
   (columns) => [
     index("works__order_idx").on(columns._order),
     index("works_hero_hero_media_idx").on(columns.hero_media),
-    index("works_hero_shader_hero_shader_studio_idx").on(
-      columns.hero_shader_studio,
-    ),
-    index("works_hero_shader_hero_shader_poster_media_idx").on(
-      columns.hero_shader_posterMedia,
-    ),
     index("works_fallback_work_idx").on(columns.fallbackWork),
     index("works_meta_meta_image_idx").on(columns.meta_image),
     index("works_slug_idx").on(columns.slug),
     index("works_updated_at_idx").on(columns.updatedAt),
     index("works_created_at_idx").on(columns.createdAt),
     index("works__status_idx").on(columns._status),
+  ],
+);
+
+export const works_texts = pgTable(
+  "works_texts",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order").notNull(),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    text: varchar("text"),
+  },
+  (columns) => [
+    index("works_texts_order_parent").on(columns.order, columns.parent),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [works.id],
+      name: "works_texts_parent_fk",
+    }).onDelete("cascade"),
   ],
 );
 
@@ -11216,36 +11124,6 @@ export const works_rels = pgTable(
       columns: [columns["categoriesID"]],
       foreignColumns: [categories.id],
       name: "works_rels_categories_fk",
-    }).onDelete("cascade"),
-  ],
-);
-
-export const _works_v_version_hero_links = pgTable(
-  "_works_v_version_hero_links",
-  {
-    _order: integer("_order").notNull(),
-    _parentID: integer("_parent_id").notNull(),
-    id: serial("id").primaryKey(),
-    link_type:
-      enum__works_v_version_hero_links_link_type("link_type").default(
-        "reference",
-      ),
-    link_newTab: boolean("link_new_tab"),
-    link_url: varchar("link_url"),
-    link_label: varchar("link_label"),
-    link_appearance:
-      enum__works_v_version_hero_links_link_appearance(
-        "link_appearance",
-      ).default("default"),
-    _uuid: varchar("_uuid"),
-  },
-  (columns) => [
-    index("_works_v_version_hero_links_order_idx").on(columns._order),
-    index("_works_v_version_hero_links_parent_id_idx").on(columns._parentID),
-    foreignKey({
-      columns: [columns["_parentID"]],
-      foreignColumns: [_works_v.id],
-      name: "_works_v_version_hero_links_parent_id_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -12843,70 +12721,20 @@ export const _works_v = pgTable(
     }),
     version__order: varchar("version__order"),
     version_title: varchar("version_title"),
-    version_hero_type:
-      enum__works_v_version_hero_type("version_hero_type").default("lowImpact"),
-    version_hero_showContent: boolean("version_hero_show_content").default(
-      true,
-    ),
-    version_hero_richText: jsonb("version_hero_rich_text"),
     version_hero_media: integer("version_hero_media_id").references(
       () => media.id,
       {
         onDelete: "set null",
       },
     ),
-    version_hero_visualType: enum__works_v_version_hero_visual_type(
-      "version_hero_visual_type",
-    ),
-    version_hero_shader_studio: integer(
-      "version_hero_shader_studio_id",
-    ).references(() => streak_looks.id, {
-      onDelete: "set null",
-    }),
-    version_hero_shader_preset: varchar("version_hero_shader_preset"),
-    version_hero_shader_seed: numeric("version_hero_shader_seed", {
-      mode: "number",
-    }),
-    version_hero_shader_speed: numeric("version_hero_shader_speed", {
-      mode: "number",
-    }),
-    version_hero_shader_intensity: numeric("version_hero_shader_intensity", {
-      mode: "number",
-    }),
-    version_hero_shader_bleed: boolean("version_hero_shader_bleed").default(
-      false,
-    ),
-    version_hero_shader_origin: enum__works_v_version_hero_shader_origin(
-      "version_hero_shader_origin",
-    ).default("top-right"),
-    version_hero_shader_showMedia: boolean(
-      "version_hero_shader_show_media",
-    ).default(false),
-    version_hero_shader_surface: enum_visual_surface(
-      "version_hero_shader_surface",
-    ).default("auto"),
-    version_hero_shader_pointerInteraction: boolean(
-      "version_hero_shader_pointer_interaction",
-    ).default(false),
-    version_hero_shader_hoverTargets: enum_leak_hover_targets(
-      "version_hero_shader_hover_targets",
-    ),
-    version_hero_shader_sectionHover: numeric(
-      "version_hero_shader_section_hover",
-      { mode: "number" },
-    ),
-    version_hero_shader_posterMedia: integer(
-      "version_hero_shader_poster_media_id",
-    ).references(() => media.id, {
-      onDelete: "set null",
-    }),
+    version_hero_richText: jsonb("version_hero_rich_text"),
+    version_client: varchar("version_client"),
+    version_industry: varchar("version_industry"),
+    version_role: varchar("version_role"),
     version_intro_eyebrow: varchar("version_intro_eyebrow"),
     version_intro_title: varchar("version_intro_title"),
     version_intro_body: jsonb("version_intro_body"),
     version_showContents: boolean("version_show_contents").default(false),
-    version_industry: varchar("version_industry"),
-    version_role: varchar("version_role"),
-    version_deliverables: varchar("version_deliverables"),
     version_status: enum_works_project_status("version_status"),
     version_isProtected: boolean("version_is_protected").default(false),
     version_fallbackWork: integer("version_fallback_work_id").references(
@@ -12966,12 +12794,6 @@ export const _works_v = pgTable(
     index("_works_v_version_hero_version_hero_media_idx").on(
       columns.version_hero_media,
     ),
-    index("_works_v_version_hero_shader_version_hero_shader_studio_idx").on(
-      columns.version_hero_shader_studio,
-    ),
-    index("_works_v_version_hero_shader_version_hero_shader_poster__idx").on(
-      columns.version_hero_shader_posterMedia,
-    ),
     index("_works_v_version_version_fallback_work_idx").on(
       columns.version_fallbackWork,
     ),
@@ -12990,6 +12812,25 @@ export const _works_v = pgTable(
     index("_works_v_updated_at_idx").on(columns.updatedAt),
     index("_works_v_latest_idx").on(columns.latest),
     index("_works_v_autosave_idx").on(columns.autosave),
+  ],
+);
+
+export const _works_v_texts = pgTable(
+  "_works_v_texts",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order").notNull(),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    text: varchar("text"),
+  },
+  (columns) => [
+    index("_works_v_texts_order_parent").on(columns.order, columns.parent),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [_works_v.id],
+      name: "_works_v_texts_parent_fk",
+    }).onDelete("cascade"),
   ],
 );
 
@@ -17586,16 +17427,6 @@ export const relations__posts_v = relations(_posts_v, ({ one, many }) => ({
     relationName: "_rels",
   }),
 }));
-export const relations_works_hero_links = relations(
-  works_hero_links,
-  ({ one }) => ({
-    _parentID: one(works, {
-      fields: [works_hero_links._parentID],
-      references: [works.id],
-      relationName: "hero_links",
-    }),
-  }),
-);
 export const relations_works_transition = relations(
   works_transition,
   ({ one }) => ({
@@ -18187,6 +18018,13 @@ export const relations_works_blocks_media_block = relations(
     }),
   }),
 );
+export const relations_works_texts = relations(works_texts, ({ one }) => ({
+  parent: one(works, {
+    fields: [works_texts.parent],
+    references: [works.id],
+    relationName: "_texts",
+  }),
+}));
 export const relations_works_rels = relations(works_rels, ({ one }) => ({
   parent: one(works, {
     fields: [works_rels.parent],
@@ -18215,23 +18053,10 @@ export const relations_works_rels = relations(works_rels, ({ one }) => ({
   }),
 }));
 export const relations_works = relations(works, ({ one, many }) => ({
-  hero_links: many(works_hero_links, {
-    relationName: "hero_links",
-  }),
   hero_media: one(media, {
     fields: [works.hero_media],
     references: [media.id],
     relationName: "hero_media",
-  }),
-  hero_shader_studio: one(streak_looks, {
-    fields: [works.hero_shader_studio],
-    references: [streak_looks.id],
-    relationName: "hero_shader_studio",
-  }),
-  hero_shader_posterMedia: one(media, {
-    fields: [works.hero_shader_posterMedia],
-    references: [media.id],
-    relationName: "hero_shader_posterMedia",
   }),
   _blocks_richTransition: many(works_transition, {
     relationName: "_blocks_richTransition",
@@ -18327,20 +18152,13 @@ export const relations_works = relations(works, ({ one, many }) => ({
     references: [media.id],
     relationName: "meta_image",
   }),
+  _texts: many(works_texts, {
+    relationName: "_texts",
+  }),
   _rels: many(works_rels, {
     relationName: "_rels",
   }),
 }));
-export const relations__works_v_version_hero_links = relations(
-  _works_v_version_hero_links,
-  ({ one }) => ({
-    _parentID: one(_works_v, {
-      fields: [_works_v_version_hero_links._parentID],
-      references: [_works_v.id],
-      relationName: "version_hero_links",
-    }),
-  }),
-);
 export const relations___works_v_transition_v = relations(
   __works_v_transition_v,
   ({ one }) => ({
@@ -18951,6 +18769,16 @@ export const relations__works_v_blocks_media_block = relations(
     }),
   }),
 );
+export const relations__works_v_texts = relations(
+  _works_v_texts,
+  ({ one }) => ({
+    parent: one(_works_v, {
+      fields: [_works_v_texts.parent],
+      references: [_works_v.id],
+      relationName: "_texts",
+    }),
+  }),
+);
 export const relations__works_v_rels = relations(_works_v_rels, ({ one }) => ({
   parent: one(_works_v, {
     fields: [_works_v_rels.parent],
@@ -18984,23 +18812,10 @@ export const relations__works_v = relations(_works_v, ({ one, many }) => ({
     references: [works.id],
     relationName: "parent",
   }),
-  version_hero_links: many(_works_v_version_hero_links, {
-    relationName: "version_hero_links",
-  }),
   version_hero_media: one(media, {
     fields: [_works_v.version_hero_media],
     references: [media.id],
     relationName: "version_hero_media",
-  }),
-  version_hero_shader_studio: one(streak_looks, {
-    fields: [_works_v.version_hero_shader_studio],
-    references: [streak_looks.id],
-    relationName: "version_hero_shader_studio",
-  }),
-  version_hero_shader_posterMedia: one(media, {
-    fields: [_works_v.version_hero_shader_posterMedia],
-    references: [media.id],
-    relationName: "version_hero_shader_posterMedia",
   }),
   _blocks_richTransition: many(__works_v_transition_v, {
     relationName: "_blocks_richTransition",
@@ -19095,6 +18910,9 @@ export const relations__works_v = relations(_works_v, ({ one, many }) => ({
     fields: [_works_v.version_meta_image],
     references: [media.id],
     relationName: "version_meta_image",
+  }),
+  _texts: many(_works_v_texts, {
+    relationName: "_texts",
   }),
   _rels: many(_works_v_rels, {
     relationName: "_rels",
@@ -20276,8 +20094,6 @@ type DatabaseSchema = {
   enum__posts_v_version_hero_visual_type: typeof enum__posts_v_version_hero_visual_type;
   enum__posts_v_version_hero_shader_origin: typeof enum__posts_v_version_hero_shader_origin;
   enum__posts_v_version_status: typeof enum__posts_v_version_status;
-  enum_works_hero_links_link_type: typeof enum_works_hero_links_link_type;
-  enum_works_hero_links_link_appearance: typeof enum_works_hero_links_link_appearance;
   enum_works_transition_layout: typeof enum_works_transition_layout;
   enum_works_transition_text_size: typeof enum_works_transition_text_size;
   enum_works_transition_heading_level: typeof enum_works_transition_heading_level;
@@ -20416,13 +20232,8 @@ type DatabaseSchema = {
   enum_works_blocks_media_block_space_pb: typeof enum_works_blocks_media_block_space_pb;
   enum_works_blocks_media_block_space_mt: typeof enum_works_blocks_media_block_space_mt;
   enum_works_blocks_media_block_space_mb: typeof enum_works_blocks_media_block_space_mb;
-  enum_works_hero_type: typeof enum_works_hero_type;
-  enum_works_hero_visual_type: typeof enum_works_hero_visual_type;
-  enum_works_hero_shader_origin: typeof enum_works_hero_shader_origin;
   enum_works_project_status: typeof enum_works_project_status;
   enum_works_status: typeof enum_works_status;
-  enum__works_v_version_hero_links_link_type: typeof enum__works_v_version_hero_links_link_type;
-  enum__works_v_version_hero_links_link_appearance: typeof enum__works_v_version_hero_links_link_appearance;
   enum___works_v_transition_v_layout: typeof enum___works_v_transition_v_layout;
   enum___works_v_transition_v_text_size: typeof enum___works_v_transition_v_text_size;
   enum___works_v_transition_v_heading_level: typeof enum___works_v_transition_v_heading_level;
@@ -20561,9 +20372,6 @@ type DatabaseSchema = {
   enum__works_v_blocks_media_block_space_pb: typeof enum__works_v_blocks_media_block_space_pb;
   enum__works_v_blocks_media_block_space_mt: typeof enum__works_v_blocks_media_block_space_mt;
   enum__works_v_blocks_media_block_space_mb: typeof enum__works_v_blocks_media_block_space_mb;
-  enum__works_v_version_hero_type: typeof enum__works_v_version_hero_type;
-  enum__works_v_version_hero_visual_type: typeof enum__works_v_version_hero_visual_type;
-  enum__works_v_version_hero_shader_origin: typeof enum__works_v_version_hero_shader_origin;
   enum__works_v_version_status: typeof enum__works_v_version_status;
   enum_inquiries_type: typeof enum_inquiries_type;
   enum_inquiries_status: typeof enum_inquiries_status;
@@ -20745,7 +20553,6 @@ type DatabaseSchema = {
   _posts_v_version_populated_authors: typeof _posts_v_version_populated_authors;
   _posts_v: typeof _posts_v;
   _posts_v_rels: typeof _posts_v_rels;
-  works_hero_links: typeof works_hero_links;
   works_transition: typeof works_transition;
   works_blocks_feature_heading_offset: typeof works_blocks_feature_heading_offset;
   works_full_media: typeof works_full_media;
@@ -20789,8 +20596,8 @@ type DatabaseSchema = {
   works_blocks_form_block: typeof works_blocks_form_block;
   works_blocks_media_block: typeof works_blocks_media_block;
   works: typeof works;
+  works_texts: typeof works_texts;
   works_rels: typeof works_rels;
-  _works_v_version_hero_links: typeof _works_v_version_hero_links;
   __works_v_transition_v: typeof __works_v_transition_v;
   _works_v_blocks_feature_heading_offset: typeof _works_v_blocks_feature_heading_offset;
   __works_v_full_media_v: typeof __works_v_full_media_v;
@@ -20834,6 +20641,7 @@ type DatabaseSchema = {
   _works_v_blocks_form_block: typeof _works_v_blocks_form_block;
   _works_v_blocks_media_block: typeof _works_v_blocks_media_block;
   _works_v: typeof _works_v;
+  _works_v_texts: typeof _works_v_texts;
   _works_v_rels: typeof _works_v_rels;
   media: typeof media;
   categories_breadcrumbs: typeof categories_breadcrumbs;
@@ -21045,7 +20853,6 @@ type DatabaseSchema = {
   relations__posts_v_version_populated_authors: typeof relations__posts_v_version_populated_authors;
   relations__posts_v_rels: typeof relations__posts_v_rels;
   relations__posts_v: typeof relations__posts_v;
-  relations_works_hero_links: typeof relations_works_hero_links;
   relations_works_transition: typeof relations_works_transition;
   relations_works_blocks_feature_heading_offset: typeof relations_works_blocks_feature_heading_offset;
   relations_works_full_media: typeof relations_works_full_media;
@@ -21088,9 +20895,9 @@ type DatabaseSchema = {
   relations_works_blocks_cta: typeof relations_works_blocks_cta;
   relations_works_blocks_form_block: typeof relations_works_blocks_form_block;
   relations_works_blocks_media_block: typeof relations_works_blocks_media_block;
+  relations_works_texts: typeof relations_works_texts;
   relations_works_rels: typeof relations_works_rels;
   relations_works: typeof relations_works;
-  relations__works_v_version_hero_links: typeof relations__works_v_version_hero_links;
   relations___works_v_transition_v: typeof relations___works_v_transition_v;
   relations__works_v_blocks_feature_heading_offset: typeof relations__works_v_blocks_feature_heading_offset;
   relations___works_v_full_media_v: typeof relations___works_v_full_media_v;
@@ -21133,6 +20940,7 @@ type DatabaseSchema = {
   relations__works_v_blocks_cta: typeof relations__works_v_blocks_cta;
   relations__works_v_blocks_form_block: typeof relations__works_v_blocks_form_block;
   relations__works_v_blocks_media_block: typeof relations__works_v_blocks_media_block;
+  relations__works_v_texts: typeof relations__works_v_texts;
   relations__works_v_rels: typeof relations__works_v_rels;
   relations__works_v: typeof relations__works_v;
   relations_media: typeof relations_media;

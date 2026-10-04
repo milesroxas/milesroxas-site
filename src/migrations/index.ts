@@ -22,6 +22,7 @@ import * as migration_20260930_170149_carousel_tabs from './20260930_170149_caro
 import * as migration_20260930_181644_carousel_tabs_header from './20260930_181644_carousel_tabs_header';
 import * as migration_20261001_232240_band_theme_roles from './20261001_232240_band_theme_roles';
 import * as migration_20261002_000427_block_type_scale from './20261002_000427_block_type_scale';
+import * as migration_20261004_142345_work_hero from './20261004_142345_work_hero';
 
 export const migrations = [
   {
@@ -142,6 +143,11 @@ export const migrations = [
   {
     up: migration_20261002_000427_block_type_scale.up,
     down: migration_20261002_000427_block_type_scale.down,
-    name: '20261002_000427_block_type_scale'
+    name: '20261002_000427_block_type_scale',
+  },
+  {
+    up: migration_20261004_142345_work_hero.up,
+    down: migration_20261004_142345_work_hero.down,
+    name: '20261004_142345_work_hero'
   },
 ];

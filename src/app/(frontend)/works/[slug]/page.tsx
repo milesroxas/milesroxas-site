@@ -9,7 +9,7 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { ContentsButton } from '@/features/contents'
-import { RenderHero } from '@/heros/RenderHero'
+import { WorkHero } from '@/heros/WorkHero'
 import { WorkIntro } from '@/sections/WorkIntro'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
@@ -29,9 +29,6 @@ export async function generateStaticParams() {
     pagination: false,
     select: {
       slug: true,
-      industry: true,
-      role: true,
-      deliverables: true,
       title: true,
     },
   })
@@ -68,7 +65,6 @@ export default async function Work({ params: paramsPromise }: Args) {
 
   if (!visibleWork) notFound()
 
-  const hero = visibleWork.hero
   const layout = visibleWork.layout || []
 
   return (
@@ -77,7 +73,7 @@ export default async function Work({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
 
       <article className="relative z-10">
-        {hero && <RenderHero {...hero} />}
+        <WorkHero {...visibleWork} />
         <PageClient work={visibleWork} />
         {visibleWork.intro?.title && (
           <WorkIntro

@@ -713,6 +713,10 @@
   --text-display--line-height: 1.05;
   --text-display--letter-spacing: -0.025em;
   --text-display--font-weight: var(--font-weight-normal);
+  --text-title: clamp(2.25rem, 1.722rem + 2.254vw, 3.75rem); /* case study title, 36px → 60px */
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.025em;
+  --text-title--font-weight: var(--font-weight-normal);
   --text-heading-1: clamp(2.125rem, 1.905rem + 0.94vw, 2.75rem); /* page/hero h1 */
   --text-heading-1--line-height: 1.1;
   --text-heading-1--letter-spacing: -0.025em;
@@ -930,6 +934,98 @@
     transform: none;
     animation-name: none;
     animation-duration: 0s;
+  }
+}
+
+/* Case study opening (src/heros/WorkHero): one load-in, played in CSS so it
+   runs off the main thread while the page hydrates. Each part waits its own
+   `--enter-at`; the choreography (rule, eyebrow, title words, facts, media,
+   capabilities) is stated beside each part in `parts.tsx`. Reduced motion
+   keeps a short fade and drops every movement. `inline`, so `--enter-at`
+   resolves on each part rather than once on :root. */
+@theme inline {
+  --animate-hero-in: hero-in 700ms var(--ease-out-quint) var(--enter-at, 0ms) both;
+  --animate-hero-rise: hero-rise 900ms var(--ease-out-quint) var(--enter-at, 0ms) both;
+  --animate-hero-draw: hero-draw 600ms var(--ease-out-quint) var(--enter-at, 0ms) both;
+  --animate-hero-wipe: hero-wipe 1100ms var(--ease-out-quint) var(--enter-at, 0ms) both;
+  --animate-hero-settle: hero-settle 1400ms var(--ease-out-quint) var(--enter-at, 0ms) both;
+  --animate-hero-fade: hero-fade 300ms ease var(--enter-at, 0ms) both;
+
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      filter: blur(4px);
+      translate: 0 0.5rem;
+    }
+  }
+  @keyframes hero-rise {
+    from {
+      translate: 0 105%;
+    }
+  }
+  @keyframes hero-draw {
+    from {
+      scale: 0 1;
+    }
+  }
+  @keyframes hero-wipe {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+  @keyframes hero-settle {
+    from {
+      scale: 1.08;
+    }
+  }
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* A work card opening into its case study (WorkCard → WorkHero): the card's
+   picture travels into the hero frame while the rest of the page swaps
+   under it. Both snapshots fill the travelling box, so the card's 16:9 crop
+   reframes to the hero's 16:10 instead of stretching. */
+::view-transition-group(.work-morph) {
+  animation-duration: 700ms;
+  animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+  overflow: clip;
+}
+
+::view-transition-old(.work-morph),
+::view-transition-new(.work-morph) {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The page the card leaves fades out fast; the case study shows at once, so
+   only its own load-in plays (the new root is a live view of the page). */
+html:active-view-transition-type(work-open)::view-transition-old(root) {
+  animation: 150ms var(--ease-out-quint) both hero-fade reverse;
+}
+
+html:active-view-transition-type(work-open)::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-image-pair(.work-morph) {
+  animation: work-morph-blur 700ms cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@keyframes work-morph-blur {
+  40% {
+    filter: blur(2px);
+  }
+}
+
+/* Reduced motion: the picture crossfades in place instead of travelling. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(.work-morph),
+  ::view-transition-image-pair(.work-morph) {
+    animation: none;
   }
 }
 

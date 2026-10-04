@@ -97,7 +97,14 @@ button uses the same hook.
 
 ## Page transitions
 
-The card → detail page FLIP (`src/hooks/useCardTransition.ts`) hides the
+A work card opens its case study with a native view transition: the card's
+picture and the `WorkHero` frame share a `<ViewTransition>` name
+(`src/heros/WorkHero/morph.ts`), so the picture morphs into the hero while the
+old page fades out and the hero plays its CSS load-in (`.work-morph` and the
+`hero-*` animations in `globals.css`). Only the clicked card takes the name, so
+related-works cards on the next page never pair. The chrome stays put.
+
+The post card → detail page FLIP (`src/hooks/useCardTransition.ts`) hides the
 chrome (`useChromeStore.setVisible(false)`) as its clone fills the screen.
 The destination brings it back: `HighImpact` at 70% of the clone's landing,
 the work and post page clients through `restoreChrome()`. A

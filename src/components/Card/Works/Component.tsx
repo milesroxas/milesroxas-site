@@ -4,11 +4,13 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import Link from 'next/link'
 import type React from 'react'
+import { useRef, ViewTransition } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { useWorkCardMorph } from '@/heros/WorkHero/morph'
 import type { Work } from '@/payload-types'
 import { CursorButton } from '@/providers/Cursor/components/CursorInteractions'
 import { cn } from '@/utilities/ui'
-import { type CardAspect, CardImage, useCardLink } from '../shared'
+import { type CardAspect, CardImage } from '../shared'
 
 export type CardWorkData = Pick<Work, 'slug' | 'meta' | 'title' | 'hero'>
 
@@ -39,13 +41,23 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   const { slug, title, hero } = doc || {}
   const description = hero?.richText
   const href = `/${relationTo}/${slug}`
-  const { containerRef, imageRef, handleTransition } = useCardLink(href, imageRefProp)
+  const localImageRef = useRef<HTMLDivElement>(null)
+  const imageRef = imageRefProp ?? localImageRef
+  const morph = useWorkCardMorph(slug)
 
   return (
-    <article ref={containerRef} className={cn('h-full', className)}>
+    <article className={cn('h-full', className)}>
       <CursorButton>
-        <Link href={href} onClick={handleTransition} className="not-prose">
-          <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
+        {/* The picture morphs into the case study's hero (src/heros/WorkHero). */}
+        <Link
+          className="not-prose"
+          href={href}
+          onClick={morph.onClick}
+          transitionTypes={['work-open']}
+        >
+          <ViewTransition default="none" name={morph.name} share="work-morph">
+            <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
+          </ViewTransition>
 
           {(titleFromProps || title) && (
             <div className="flex items-start justify-between gap-2">
