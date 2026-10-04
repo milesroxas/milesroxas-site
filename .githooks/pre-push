@@ -12,9 +12,15 @@
 # 3) Runs scripts/check-migration-drift.ts whenever schema source or migrations
 #    changed: `migrate:create` diffs the config against the newest snapshot file,
 #    so a field added after the migration was generated, or a migration generated
-#    in a parallel workspace before main gained another one, leaves the newest
+#    in a parallel workspace before dev gained another one, leaves the newest
 #    snapshot out of step with the config — and the next migrate:create re-emits
 #    statements CI already applied. See docs/conductor.md.
+# 4) When the push adds a migration, fails unless the branch holds every
+#    migration on origin/dev (the integration branch) and its own migrations
+#    sort after dev's newest.
+#    The drift check alone passes a branch that never took dev's newer
+#    migrations; .github/workflows/migrations.yml repeats the check on the
+#    PR merge commit.
 #
 # Matching is an allowlist of files that define Drizzle/Payload schema (fields,
 # collections, globals, block configs, plugin field overrides) — not whole
@@ -61,10 +67,15 @@ SCHEMA_RES=(
 # A migration was added if a numbered migration file (not index.ts) is added.
 MIGRATION_RE='^src/migrations/[0-9].*\.(ts|json)$'
 MIGRATION_TS_RE='^src/migrations/[0-9].*\.ts$'
+SNAPSHOT_RE='^src/migrations/[0-9].*\.json$'
+# Branches merge into dev; main only receives dev. See docs/conductor.md.
+INTEGRATION_BRANCH=dev
+INTEGRATION_REF="origin/$INTEGRATION_BRANCH"
 
 zero='0000000000000000000000000000000000000000'
 fail=0
 need_drift_check=0
+fetched_integration=0
 
 is_schema_path() {
   local f="$1"
@@ -75,6 +86,51 @@ is_schema_path() {
     fi
   done
   return 1
+}
+
+snapshots_at() {
+  git ls-tree --name-only "$1" src/migrations/ 2>/dev/null | grep -E "$SNAPSHOT_RE" | sort || true
+}
+
+# A branch migration must be generated on top of dev's newest. The drift check
+# only sees this branch's tree, so a migration from a branch that never took
+# dev's newer migrations passes it and breaks the snapshot chain on merge.
+# See docs/conductor.md → "Schema changes across workspaces".
+check_integration_order() {
+  local local_sha="$1"
+  if [[ "$fetched_integration" == 0 ]]; then
+    git fetch --quiet origin "$INTEGRATION_BRANCH" 2>/dev/null || true
+    fetched_integration=1
+  fi
+  git rev-parse --verify --quiet "$INTEGRATION_REF" >/dev/null || return 0
+
+  local base_snaps branch_snaps base_newest missing early="" f
+  base_snaps="$(snapshots_at "$INTEGRATION_REF")"
+  [[ -z "$base_snaps" ]] && return 0
+  branch_snaps="$(snapshots_at "$local_sha")"
+  base_newest="$(tail -n1 <<<"$base_snaps")"
+  missing="$(comm -23 <(printf '%s\n' "$base_snaps") <(printf '%s\n' "$branch_snaps") | sed '/^$/d')"
+  while IFS= read -r f; do
+    [[ -n "$f" && "$f" < "$base_newest" ]] && early+="  $f"$'\n'
+  done < <(comm -13 <(printf '%s\n' "$base_snaps") <(printf '%s\n' "$branch_snaps"))
+
+  if [[ -n "$missing" || -n "$early" ]]; then
+    echo "✖ pre-push migration guard: this branch's migration is not generated on top of $INTEGRATION_REF." >&2
+    if [[ -n "$missing" ]]; then
+      echo "" >&2
+      echo "  $INTEGRATION_REF has migrations this branch lacks:" >&2
+      sed 's/^/  /' <<<"$missing" >&2
+    fi
+    if [[ -n "$early" ]]; then
+      echo "" >&2
+      echo "  Branch migrations that sort before $INTEGRATION_REF's newest ($(basename "$base_newest")):" >&2
+      printf '%s' "$early" >&2
+    fi
+    echo "" >&2
+    echo "  git rebase $INTEGRATION_REF, delete this branch's migration (.ts + .json)," >&2
+    echo "  then regenerate it: pnpm migrate:create <name>" >&2
+    fail=1
+  fi
 }
 
 check_range() {
@@ -104,6 +160,10 @@ check_range() {
 
   if [[ -n "$schema_hits" || "$has_migration" == 1 ]]; then
     need_drift_check=1
+  fi
+
+  if [[ "$has_migration" == 1 ]]; then
+    check_integration_order "$local_sha"
   fi
 
   if [[ -n "$schema_hits" && "$has_migration" == 0 ]]; then
@@ -161,9 +221,9 @@ while read -r _local_ref local_sha _remote_ref remote_sha; do
 
   local_base=""
   if [[ "$remote_sha" == "$zero" ]]; then
-    # New branch on remote: diff against origin/main if available.
-    if git rev-parse --verify --quiet origin/main >/dev/null; then
-      local_base="$(git merge-base origin/main "$local_sha" 2>/dev/null || true)"
+    # New branch on remote: diff against the integration branch if available.
+    if git rev-parse --verify --quiet "$INTEGRATION_REF" >/dev/null; then
+      local_base="$(git merge-base "$INTEGRATION_REF" "$local_sha" 2>/dev/null || true)"
     fi
     [[ -z "$local_base" ]] && continue  # nothing to compare against
   else

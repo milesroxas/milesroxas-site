@@ -1,0 +1,43 @@
+# Migration snapshot chain check. See docs/conductor.md → "Schema changes across workspaces".
+#
+# A pull_request run checks out the merge commit GitHub builds (refs/pull/N/merge),
+# so the drift check sees dev's newest migration next to the branch's. A
+# migration generated in a parallel workspace before dev gained another one
+# passes every check on its own branch and only fails here.
+name: Migrations
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migrations-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NODE_OPTIONS: --no-deprecation
+      # No DB connection: the drift check only builds the config.
+      PAYLOAD_SECRET: ci-drift-check
+      # Schema-affecting: the Vercel Blob adapter, on when a token is set, adds a media column.
+      BLOB_READ_WRITE_TOKEN: vercel_blob_rw_ci_drift_check
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Enum safety
+        run: pnpm check:migrations
+      - name: Newest snapshot matches the config
+        run: pnpm exec tsx scripts/check-migration-drift.ts

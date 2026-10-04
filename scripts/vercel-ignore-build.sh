@@ -51,6 +51,7 @@ INERT_RES=(
   '^\.conductor/'
   '^\.vscode/'
   # Repo plumbing that Vercel does not run.
+  '^\.github/'
   '^\.githooks/'
   '^\.gitignore$'
   '^\.editorconfig$'

@@ -8,9 +8,9 @@
 
 set -euo pipefail
 
-# Repository root — Conductor's own clone (~/conductor/repos/<repo>), NOT your
-# main checkout. Only its untracked files matter here: .env (copied into each
-# workspace) and, optionally, .env.production.pulled.
+# Repository root — for this repo, the main checkout (~/SITES/milesroxas-site;
+# see docs/conductor.md). Only its untracked files matter here: .env (copied
+# into each workspace) and, optionally, .env.production.pulled.
 ROOT="${CONDUCTOR_ROOT_PATH:-}"
 WS_PATH="${CONDUCTOR_WORKSPACE_PATH:-$PWD}"
 WS_NAME="${CONDUCTOR_WORKSPACE_NAME:-$(basename "$WS_PATH")}"

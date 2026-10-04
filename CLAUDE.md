@@ -50,7 +50,7 @@ Storybook conventions:
 - `pnpm check:migrations:drift` - Newest migration snapshot against the current config
 - `pnpm migrate:status` - Production ledger only (reads `.env.production.pulled`)
 
-**Push in dev, migrations in CI.** Same workflow as sas-site. Human docs: `MIGRATIONS.md`. Conductor: `docs/conductor.md`.
+**Push in dev, migrations in CI.** Same workflow as sas-site. Branches and Conductor workspaces start from `dev` and open PRs into `dev`; `main` is production and only receives `dev` (`WORKFLOW.md`). Human docs: `MIGRATIONS.md`. Conductor: `docs/conductor.md`.
 
 ## Codebase Conventions
 
@@ -75,6 +75,7 @@ Storybook conventions:
   3. Regenerate types/import maps (`pnpm generate:types`, `pnpm generate:importmap`) without asking.
   4. Ask before `pnpm migrate:create`. On approval, review the SQL and commit the `.ts` + `.json` together. The Vercel build (`pnpm ci`) applies it.
   5. Run `pnpm check:migrations` and `pnpm check:migrations:drift`. The migration must cover every schema change in the branch; if a field was added after it was generated, regenerate it (ask first).
+  6. Before a PR that carries a migration: `git fetch origin && git rebase origin/dev`. If `dev` gained a migration, delete the branch's (`.ts` + `.json`) and regenerate it (ask first). The pre-push hook and `.github/workflows/migrations.yml` enforce this (`docs/conductor.md`).
 - Hard prohibitions:
   - Do not run `pnpm migrate:create` unless the user asks in this conversation. Say a migration is needed and wait.
   - Never run `payload migrate` locally or against Neon by hand. Mixing push and migrations corrupts the ledger.
