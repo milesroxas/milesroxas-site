@@ -37,7 +37,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
   return (
     <article ref={containerRef} className={cn('h-full', className)}>
-      <Link {...cursorTarget('post')} href={href} onClick={handleTransition} className="not-prose">
+      <Link {...cursorTarget('view')} href={href} onClick={handleTransition} className="not-prose">
         <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
 
         {(titleFromProps || title) && (

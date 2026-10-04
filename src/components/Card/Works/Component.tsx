@@ -49,7 +49,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
     <article className={cn('h-full', className)}>
       {/* The picture morphs into the case study's hero (src/heros/WorkHero). */}
       <Link
-        {...cursorTarget('work')}
+        {...cursorTarget('view')}
         className="not-prose"
         href={href}
         onClick={morph.onClick}

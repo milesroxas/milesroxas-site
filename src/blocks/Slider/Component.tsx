@@ -105,7 +105,7 @@ const SingleStyleSlider: React.FC<{
 }> = ({ slides, setApi, fullWidth }) => (
   <div className={cn({ 'mx-auto max-w-4xl': !fullWidth, 'w-full': fullWidth })}>
     <Carousel
-      {...cursorTarget('slider')}
+      {...cursorTarget('drag')}
       className="w-full overflow-hidden rounded-md"
       style={{ transition: 'none' }}
       setApi={setApi}
@@ -138,7 +138,7 @@ const DefaultStyleSlider: React.FC<{
 }> = ({ slides, setApi, currentIndex, fullWidth }) => (
   <div className="w-full overflow-hidden">
     <Carousel
-      {...cursorTarget('slider')}
+      {...cursorTarget('drag')}
       className="w-full"
       style={{ transition: 'none' }}
       setApi={setApi}

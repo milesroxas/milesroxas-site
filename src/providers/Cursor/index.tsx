@@ -6,7 +6,7 @@ import styles from './cursor.module.css'
 import { CURSOR_LABELS, type CursorVariant, isCursorVariant } from './variants'
 
 const VARIANTS = Object.keys(CURSOR_LABELS) as CursorVariant[]
-// Long enough to cross the gutter between two cards without the pill closing.
+// Long enough to cross the gutter between two cards without the ring closing.
 const LEAVE_GRACE_MS = 150
 
 function variantAt(target: EventTarget | null): CursorVariant | null {
@@ -26,7 +26,7 @@ function useFinePointer() {
   return finePointer
 }
 
-/** A dot on the pointer and a trailing ring that opens into a labelled pill over any `cursorTarget`. */
+/** A dot on the pointer and a trailing ring that swaps the dot for a label over any `cursorTarget`. */
 export function Cursor() {
   const finePointer = useFinePointer()
   const rootRef = useRef<HTMLDivElement>(null)
@@ -39,7 +39,7 @@ export function Cursor() {
     const dot = dotRef.current
     if (!finePointer || !root || !ring || !dot) return
 
-    const labels = Array.from(ring.children as HTMLCollectionOf<HTMLElement>)
+    const labels = Array.from(ring.querySelectorAll<HTMLElement>('[data-variant]'))
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const follow: gsap.TweenVars = { duration: reduceMotion ? 0 : 0.2, ease: 'power3.out' }
     const ringX = gsap.quickTo(ring, 'x', follow)
@@ -55,11 +55,10 @@ export function Cursor() {
       const active = labels.find((label) => label.dataset.variant === variant)
       for (const label of labels) label.toggleAttribute('data-active', label === active)
       root.toggleAttribute('data-labelled', Boolean(active))
-      ring.style.width = active ? `${active.offsetWidth}px` : ''
     }
 
     // Opening is immediate; closing waits out the grace period, so hopping
-    // card to card keeps the pill open and only a new label morphs.
+    // card to card keeps the ring open and only a new label crossfades.
     const show = (variant: CursorVariant | null) => {
       if (variant) {
         window.clearTimeout(leaveTimer)
@@ -109,7 +108,8 @@ export function Cursor() {
 
   return (
     <div ref={rootRef} aria-hidden className={styles.cursor}>
-      <div ref={ringRef} className={styles.ring}>
+      <div ref={ringRef} className={styles.follower}>
+        <div className={styles.ring} />
         {VARIANTS.map((variant) => (
           <span key={variant} className={styles.label} data-variant={variant}>
             {CURSOR_LABELS[variant]}

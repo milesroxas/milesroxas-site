@@ -1,14 +1,6 @@
-/* JS writes `transform` (position); `translate` centres each layer on the pointer. */
-.cursor {
-  opacity: 0;
-  transition: opacity 150ms ease;
-}
-
-.cursor[data-visible] {
-  opacity: 1;
-}
-
-.ring,
+/* JS writes `transform` (position) on the follower and the dot. White under
+   `mix-blend-mode: difference` reads as inverse ink on any background. */
+.follower,
 .dot {
   position: fixed;
   top: 0;
@@ -16,35 +8,42 @@
   z-index: 9999;
   pointer-events: none;
   will-change: transform;
-  translate: -50% -50%;
-  border-radius: 999px;
-  /* A hairline halo keeps the cursor legible on a band the same tone as the ink. */
-  filter: drop-shadow(0 0 1px color-mix(in oklab, var(--background) 70%, transparent));
+  mix-blend-mode: difference;
+  transition: opacity 150ms ease;
 }
 
-/* The only layer that resizes; `contain` keeps its layout to itself. */
+.cursor:not([data-visible]) > * {
+  opacity: 0;
+}
+
+/* A zero-size point the ring and labels centre on, trailing the pointer. */
+.ring,
+.label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: -50% -50%;
+}
+
 .ring {
-  contain: strict;
   width: 40px;
   height: 40px;
-  border: 1px solid var(--foreground);
-  background-color: transparent;
-  color: var(--background);
-  transition:
-    width 250ms var(--ease-out-quint),
-    height 250ms var(--ease-out-quint),
-    background-color 200ms ease;
+  border: 1px solid white;
+  border-radius: 50%;
+  opacity: 0.8;
+  transition: scale 250ms var(--ease-out-quint);
 }
 
 .cursor[data-labelled] .ring {
-  height: 32px;
-  background-color: var(--foreground);
+  scale: 1.5;
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
-  background-color: var(--foreground);
+  width: 12px;
+  height: 12px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background-color: white;
   transition:
     opacity 150ms ease,
     scale 200ms var(--ease-out-quint);
@@ -55,33 +54,33 @@
   scale: 0.5;
 }
 
+/* Trailing letter-spacing is balanced by the same indent, so the word sits centred. */
 .label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  padding-inline: 14px;
-  font-family: var(--font-mono);
-  font-size: 11px;
+  padding-left: 2px;
+  color: white;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 2px;
   text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
   filter: blur(4px);
   transition:
-    opacity 200ms ease,
-    filter 200ms ease;
+    opacity 150ms ease,
+    filter 150ms ease;
 }
 
+/* Enters once the dot has started to clear; leaves at once. */
 .label[data-active] {
   opacity: 1;
   filter: blur(0);
+  transition-duration: 200ms;
+  transition-delay: 60ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ring {
-    transition: background-color 200ms ease;
+    transition: none;
   }
 
   .label {

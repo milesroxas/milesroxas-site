@@ -1,8 +1,7 @@
 /** Every cursor label. A variant exists only by being listed here. */
 export const CURSOR_LABELS = {
-  work: 'View Work',
-  post: 'View Article',
-  slider: 'Drag',
+  view: 'View',
+  drag: 'Drag',
 } as const
 
 export type CursorVariant = keyof typeof CURSOR_LABELS
