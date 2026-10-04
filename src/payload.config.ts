@@ -11,6 +11,7 @@ import { askEmbeddingsTable } from '@/features/ask/schema'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { AskQuestions } from './collections/AskQuestions'
 import { Categories } from './collections/Categories'
+import { Clients } from './collections/Clients'
 import { Inquiries } from './collections/Inquiries'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -109,7 +110,7 @@ export default buildConfig({
       }),
     ],
   }),
-  collections: [Pages, Posts, Works, Media, Categories, Inquiries, AskQuestions, Users],
+  collections: [Pages, Posts, Works, Media, Categories, Clients, Inquiries, AskQuestions, Users],
   cors: [getServerSideURL()].filter(Boolean),
   // `agent/media`: an MCP key's image upload (docs/mcp.md).
   endpoints: [...askEndpoints, agentMediaEndpoint],

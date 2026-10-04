@@ -65,6 +65,7 @@ const SURFACE_NOTES: Record<string, string> = {
 /** Site plumbing behind the published pages. */
 const OPERATIONS: Record<string, string> = {
   categories: 'Post categories (nested). Posts link to them by id',
+  clients: 'Clients a work was made for. A work links to one by id in `client`',
   forms:
     'Form definitions (fields, confirmation behaviour, emails) that pages embed. Submitted data lives in `form-submissions`',
   redirects: 'URL redirects: a source path pointing at a document or an external URL',

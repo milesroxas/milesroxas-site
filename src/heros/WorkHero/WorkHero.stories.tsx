@@ -13,7 +13,12 @@ const meta = {
   args: {
     slug: 'brand-expansion-through-narrative',
     title: 'Making high-integrity software easier to understand',
-    client: 'Adacore',
+    client: {
+      id: 1,
+      title: 'Adacore',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    },
     industry: 'Enterprise Technology',
     role: 'Lead Design / Development',
     capabilities: ['Brand Expansion', 'Brand Communications', 'Website'],

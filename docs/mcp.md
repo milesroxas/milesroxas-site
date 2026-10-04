@@ -78,7 +78,7 @@ The source of truth is `mcp.ts`; this table mirrors it.
 | Group | Collections / globals | Capabilities offered |
 | --- | --- | --- |
 | Public surfaces | Every `CONTENT_SURFACES` collection: `pages`, `works`, `posts` | Full authoring |
-| Operations | `categories`, `forms`, `redirects` | Full authoring |
+| Operations | `categories`, `clients`, `forms`, `redirects` | Full authoring |
 | Assets | `streak-looks` | Full authoring, **drafts only**: a look is published from the Studio |
 | Assets | `media` | **Read-only**. New images go through `pnpm cms:upload` |
 | Visitor records | `inquiries`, `form-submissions`, `ask-questions` | **Read-only** |

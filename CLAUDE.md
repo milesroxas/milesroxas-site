@@ -85,7 +85,7 @@ Storybook conventions:
 
 - Public routes live in `src/app/(frontend)`.
 - Payload admin/API routes live in `src/app/(payload)`.
-- Collections are in `src/collections` (`pages`, `posts`, `works`, `media`, `categories`, `users`).
+- Collections are in `src/collections` (`pages`, `posts`, `works`, `media`, `categories`, `clients`, `users`).
 - Layout blocks are in `src/blocks`.
 - Hero configs/components are in `src/heros`.
 - Figures (Chart, Diagram) are spec-driven: schemas and renderers in `src/features/figures`, blocks in `src/blocks/figures`, save-time validation and diagram geometry in `src/plugins/figures`. Human docs: `docs/figures.md`. Never hand-write `geometry`; the spec is the only authored value.

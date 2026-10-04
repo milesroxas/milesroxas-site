@@ -59,6 +59,24 @@ describe('extractDocMarkdown', () => {
     expect(find).not.toHaveBeenCalled()
   })
 
+  it("names a work's client, read as the public", async () => {
+    const { payload, find } = stubPayload({ clients: [{ id: 7, title: 'Adacore' }] })
+    const markdown = await extractDocMarkdown(payload, walkSurface, {
+      title: 'Making software easier to understand',
+      client: 7,
+      industry: 'Enterprise Technology',
+    } as never)
+
+    expect(markdown).toBe(
+      ['# Making software easier to understand', 'Client: Adacore', 'Enterprise Technology'].join(
+        '\n\n',
+      ),
+    )
+    expect(find).toHaveBeenCalledWith(
+      expect.objectContaining({ collection: 'clients', overrideAccess: false }),
+    )
+  })
+
   it('reads a figure through its words and a code block as a fenced listing, inside a Section', async () => {
     const { payload } = stubPayload({})
     const markdown = await extractDocMarkdown(payload, walkSurface, {

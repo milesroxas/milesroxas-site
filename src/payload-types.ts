@@ -73,6 +73,7 @@ export interface Config {
     works: Work;
     media: Media;
     categories: Category;
+    clients: Client;
     inquiries: Inquiry;
     'ask-questions': AskQuestion;
     users: User;
@@ -100,6 +101,7 @@ export interface Config {
     works: WorksSelect<false> | WorksSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    clients: ClientsSelect<false> | ClientsSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
     'ask-questions': AskQuestionsSelect<false> | AskQuestionsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -4574,9 +4576,9 @@ export interface Work {
     } | null;
   };
   /**
-   * Shown above the title as "<Client> Case Study".
+   * Shown above the title as "<Client> Case Study". Pick a client, or add a new one here.
    */
-  client?: string | null;
+  client?: (number | null) | Client;
   industry?: string | null;
   role?: string | null;
   /**
@@ -4647,6 +4649,18 @@ export interface Work {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients".
+ */
+export interface Client {
+  id: number;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -5508,6 +5522,12 @@ export interface PayloadMcpApiKey {
     update?: boolean | null;
     delete?: boolean | null;
   };
+  clients?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
   forms?: {
     find?: boolean | null;
     create?: boolean | null;
@@ -5728,6 +5748,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'clients';
+        value: number | Client;
       } | null)
     | ({
         relationTo: 'inquiries';
@@ -7000,6 +7024,17 @@ export interface CategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients_select".
+ */
+export interface ClientsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "inquiries_select".
  */
 export interface InquiriesSelect<T extends boolean = true> {
@@ -7335,6 +7370,14 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         delete?: T;
       };
   categories?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  clients?:
     | T
     | {
         find?: T;

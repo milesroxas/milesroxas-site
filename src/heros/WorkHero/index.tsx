@@ -1,4 +1,5 @@
-import type { Work } from '@/payload-types'
+import type { Client, Work } from '@/payload-types'
+import { populatedDoc } from '@/utilities/relationshipId'
 import {
   WorkHeroCapabilities,
   WorkHeroEyebrow,
@@ -23,6 +24,7 @@ type Props = Pick<Work, 'capabilities' | 'client' | 'hero' | 'industry' | 'role'
  */
 export function WorkHero({ capabilities, client, hero, industry, role, slug, title }: Props) {
   const media = hero?.media && typeof hero.media === 'object' ? hero.media : null
+  const clientName = populatedDoc<Client>(client)?.title
   const facts = [
     { label: 'Industry', value: industry },
     { label: 'Role', value: role },
@@ -32,7 +34,9 @@ export function WorkHero({ capabilities, client, hero, industry, role, slug, tit
     <WorkHeroRoot>
       <WorkHeroHead>
         <WorkHeroLockup>
-          <WorkHeroEyebrow>{client ? `${client} Case Study` : 'Case Study'}</WorkHeroEyebrow>
+          <WorkHeroEyebrow>
+            {clientName ? `${clientName} Case Study` : 'Case Study'}
+          </WorkHeroEyebrow>
           <WorkHeroTitle>{title}</WorkHeroTitle>
         </WorkHeroLockup>
         {facts.length > 0 && (

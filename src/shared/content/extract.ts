@@ -21,10 +21,9 @@ import type { ContentSurface, GlobalSurface } from './surfaces'
  * - **Canonical records.** If the surface names a Content Hub record
  *   (work-pages → case-studies), it is hydrated and walked too — its narrative
  *   is what the page renders.
- * - **Relationships.** Allowlisted relationship keys (testimonials, project,
- *   taxonomy) resolve to the public substance of the related record: the
- *   quote and speaker, the client name and project summary, the term names.
- *   Everything else stays a bare id and is dropped.
+ * - **Relationships.** Allowlisted relationship keys (`RELATION_KEYS`: a
+ *   work's client) resolve to the public substance of the related record, the
+ *   client's name. Everything else stays a bare id and is dropped.
  * - **Structured arrays.** Case-study metrics and contact details render as
  *   compact lines instead of scattered field values.
  *
@@ -39,15 +38,14 @@ import type { ContentSurface, GlobalSurface } from './surfaces'
  */
 
 /**
- * sas-site resolves Content Hub relationships (testimonials, projects,
- * taxonomy) into the corpus. This site has none of those collections
- * (docs/composer-roadmap.md, Phase 5), so no relationship key is followed:
- * related documents (works in a Columns block, related posts) are indexed on
- * their own. The reference machinery stays so a later hub can fill it in.
+ * The relationship keys followed into the corpus: a work's client, by name.
+ * sas-site follows more (testimonials, projects, taxonomy); this site has none
+ * of those collections (docs/composer-roadmap.md, Phase 5). Every other related
+ * document (works in a Columns block, related posts) is indexed on its own.
  */
-type RelationCollection = never
+type RelationCollection = 'clients'
 
-const RELATION_KEYS: Record<string, RelationCollection> = {}
+const RELATION_KEYS: Record<string, RelationCollection> = { client: 'clients' }
 
 const MAX_DOC_CHARS = 30_000
 
@@ -172,12 +170,22 @@ function walkValue(value: unknown, key: string, out: Part[]): void {
   else if (typeof value === 'object') walkObject(value, out)
 }
 
-/** No relation is followed here (see `RELATION_KEYS`), so nothing resolves. */
+/** Each reference's public substance, keyed `collection:id` (see `RELATION_KEYS`). */
 async function resolveRelations(
-  _payload: Payload,
-  _refs: RelationRef[],
+  payload: Payload,
+  refs: RelationRef[],
 ): Promise<Map<string, string>> {
-  return new Map()
+  const ids = [...new Set(refs.map((ref) => ref.id))]
+  const { docs } = await payload.find({
+    collection: 'clients',
+    where: { id: { in: ids } },
+    depth: 0,
+    limit: ids.length,
+    pagination: false,
+    overrideAccess: false,
+    select: { title: true },
+  })
+  return new Map(docs.map((doc) => [`clients:${doc.id}`, doc.title] as const))
 }
 
 /** A reference's rendered substance the first time it appears, undefined after. */
@@ -222,7 +230,7 @@ async function renderParts(payload: Payload, parts: Part[]): Promise<string[]> {
   const rendered =
     refs.length > 0 ? await resolveRelations(payload, refs) : new Map<string, string>()
 
-  const TERM_LABEL: Partial<Record<RelationCollection, string>> = {}
+  const TERM_LABEL: Partial<Record<RelationCollection, string>> = { clients: 'Client' }
 
   const out: string[] = []
   const seen = new Set<string>()

@@ -65,9 +65,12 @@ export const Works: CollectionConfig<'works'> = {
             workHeroField(),
             {
               name: 'client',
-              type: 'text',
+              type: 'relationship',
+              relationTo: 'clients',
               admin: {
-                description: 'Shown above the title as "<Client> Case Study".',
+                description:
+                  'Shown above the title as "<Client> Case Study". Pick a client, or add a new one here.',
+                sortOptions: 'title',
               },
             },
             {
