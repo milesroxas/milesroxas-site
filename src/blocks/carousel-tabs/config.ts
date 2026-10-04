@@ -1,6 +1,8 @@
 import type { Block } from 'payload'
 import {
   carouselSlidesField,
+  deckStyleField,
+  isCoverflow,
   showArrowsField,
   slideSizeField,
 } from '@/blocks/shared/carousel-fields'
@@ -36,9 +38,9 @@ import { contentLexical } from '@/fields/contentLexical'
  * Standard is a band of its own with the run's rhythm around it, which left
  * the strip stranded a screen away from the words that introduce it.
  *
- * `slideSize` and `showArrows` are set once for the block, not per tab: the
- * tabs are alternatives to each other, and a deck that changed size when the
- * reader switched would read as a different component.
+ * `deckStyle` and `slideSize` are set once for the block, not
+ * per tab: the tabs are alternatives to each other, and a deck that changed
+ * shape when the reader switched would read as a different component.
  *
  * Not in sas-site: this site's own block.
  */
@@ -71,13 +73,21 @@ export const CarouselTabs: Block = {
     },
     designFields([
       textSizeField(),
+      deckStyleField(),
       slideSizeField(
         'Slides visible at once inside a tab panel, from tablet up. Phones always show one slide plus a sliver of its neighbours.',
+        isCoverflow,
       ),
-      showArrowsField(
-        'Previous/next buttons beside the slides, in every tab. The panel is the page column, so they sit in its outer gutter.',
-      ),
-      tabSizeField(),
+      // The control panel under the tabs always carries previous/next. Kept
+      // hidden rather than dropped so the column stays without a migration.
+      { ...showArrowsField(''), admin: { hidden: true } },
+      {
+        ...tabSizeField(),
+        admin: {
+          description:
+            'Default sets the tab index at a comfortable reading size. Small tightens its rows, for five or more tabs.',
+        },
+      },
       themeField(),
     ]),
   ],

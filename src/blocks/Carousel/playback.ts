@@ -12,6 +12,7 @@ type PosterState = 'covered' | 'revealing' | 'revealed' | 'covering'
 export type SlideRefs = {
   node: HTMLElement
   caption: HTMLElement | null
+  veil: HTMLElement | null
   video: HTMLVideoElement | null
   poster: HTMLElement | null
   posterState: PosterState
@@ -24,6 +25,7 @@ export const collectSlideRefs = (slideNode: HTMLElement): SlideRefs | null => {
   return {
     node,
     caption: slideNode.querySelector<HTMLElement>('[data-carousel-caption]'),
+    veil: slideNode.querySelector<HTMLElement>('[data-carousel-veil]'),
     video: slideNode.querySelector('video'),
     poster: slideNode.querySelector<HTMLElement>('[data-carousel-poster]'),
     posterState: 'covered',

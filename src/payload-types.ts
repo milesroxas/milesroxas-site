@@ -4265,15 +4265,16 @@ export interface CarouselTabsBlock {
    */
   textSize?: ('small' | 'large') | null;
   /**
+   * Coverflow centres the slide with its neighbours either side. Stack piles the next slides behind the current one, like boards in a presentation.
+   */
+  deckStyle?: ('coverflow' | 'stack') | null;
+  /**
    * Slides visible at once inside a tab panel, from tablet up. Phones always show one slide plus a sliver of its neighbours.
    */
   slideSize?: ('full' | 'half' | 'third') | null;
-  /**
-   * Previous/next buttons beside the slides, in every tab. The panel is the page column, so they sit in its outer gutter.
-   */
   showArrows?: boolean | null;
   /**
-   * Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.
+   * Default sets the tab index at a comfortable reading size. Small tightens its rows, for five or more tabs.
    */
   tabSize?: ('default' | 'small') | null;
   /**
@@ -6303,6 +6304,7 @@ export interface CarouselTabsBlockSelect<T extends boolean = true> {
         id?: T;
       };
   textSize?: T;
+  deckStyle?: T;
   slideSize?: T;
   showArrows?: T;
   tabSize?: T;

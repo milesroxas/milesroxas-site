@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { type CSSProperties, useId, useRef, useState } from 'react'
+import { type CSSProperties, useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Section } from '@/blocks/shared/section'
 import { Media } from '@/components/Media'
 import {
@@ -13,15 +13,27 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'
 import type { CarouselBlock as CarouselBlockProps } from '@/payload-types'
+import { cursorTarget } from '@/providers/Cursor/variants'
 import { cn } from '@/utilities/ui'
 import { CarouselFilters } from './filters'
 import { useCarouselEffects } from './use-carousel-effects'
-import { captionOpacity, restSignedDistance, slideVisualState } from './visual-state'
+import {
+  captionOpacity,
+  type DeckPose,
+  type DeckStyle,
+  deckPose,
+  restSignedDistance,
+  stackCardFraction,
+} from './visual-state'
 
 type Props = CarouselBlockProps & {
   /** Skip the band when the caller's shell owns it (the Section block). */
   bare?: boolean
   className?: string
+  /** How the slides are posed (see ./visual-state). The Carousel block itself is always `coverflow`. */
+  deckStyle?: DeckStyle | null
+  /** Hands the embla api to a caller that draws its own controls (Carousel tabs' readout). */
+  onApi?: (api: CarouselApi) => void
   enableGutter?: boolean
   disableInnerContainer?: boolean
 }
@@ -135,16 +147,75 @@ const tallestAspectRatio = (slides: Slide[]): number | undefined => {
   return tallest
 }
 
-/** Slide and track classes for one deck, from its size, its width and its media. */
+/**
+ * The stack pins every slide into one slot (see `stackVisualState`), so the
+ * slide is the whole column at every breakpoint: a phone needs no sliver,
+ * the pile is the affordance. No gutter either: the pin counts slide widths,
+ * and a gutter would put every board a few pixels off the one above it.
+ */
+const STACK_LAYOUT = {
+  // Nothing in the stack's frame takes the pointer but the visible cards (see
+  // `interactive` in ./visual-state): the track is unclipped and embla slides
+  // it left, over the copy column, and every slide spans the whole slot, so
+  // the top one's empty strip would sit over the pile. Drags still reach
+  // embla: they bubble up from the card.
+  gutter: { slide: 'px-0', track: 'pointer-events-none mx-0' },
+  size: 'pointer-events-none basis-full',
+}
+
+/**
+ * The stack's card: narrower than its slide by the fan, anchored at its left
+ * edge so only the right edges step out. The width is the fraction the pose
+ * divides by, so the two cannot drift.
+ */
+const stackCardStyle = (count: number): CSSProperties => ({
+  width: `${stackCardFraction(count) * 100}%`,
+})
+
+/**
+ * A board resting on the band: a hairline in the band's own ink so it holds
+ * its edge on any theme, a tight contact shadow, and a wide soft one that
+ * lifts it off the surface. Layered rather than one heavy blur, which reads
+ * as a smudge under a light board.
+ *
+ * Hover fans the pile out by its published `--stack-depth` (the top board
+ * has none, so it stays put) to say the boards come apart; press settles the
+ * board a hair, the same 1.5% a grabbed card gives. Both ride the `translate`
+ * and `scale` properties, so they compose with the per-frame `transform` on
+ * the card rather than fighting it.
+ */
+const STACK_MEDIA_CLASS = cn(
+  'rounded-lg ring-1 ring-foreground/[0.06]',
+  'shadow-[0_1px_2px_rgb(0_0_0/0.06),0_8px_16px_-6px_rgb(0_0_0/0.08),0_28px_56px_-20px_rgb(0_0_0/0.22)]',
+  'transition-[translate,scale] duration-300 ease-(--ease-out-quint) motion-reduce:transition-none',
+  'group-hover/deck:translate-x-[calc(var(--stack-depth,0)*0.75rem)]',
+  'active:scale-[0.985] active:duration-150',
+)
+
+/** The veil is the band's surface, so a receding board fades into whatever band holds it. */
+const STACK_VEIL: Record<NonNullable<CarouselBlockProps['theme']>, string> = {
+  default: 'bg-background',
+  inverted: 'bg-background',
+  neutral: 'bg-neutral',
+  brand: 'bg-brand',
+}
+
+/** Slide and track classes for one deck, from its style, size, width and media. */
 const deckLayout = (
   slides: Slide[],
   slideSize: CarouselBlockProps['slideSize'],
   isFullWidth: boolean,
+  isStack: boolean,
 ) => {
   const size = slideSize ?? 'full'
   const slideAspect = tallestAspectRatio(slides)
   const sizeClass = cn(
-    (isFullWidth && fullWidthSizeClasses[size]) || slideSizeClasses[size],
+    isStack
+      ? STACK_LAYOUT.size
+      : cn(
+          MOBILE_PEEK_BASIS,
+          (isFullWidth && fullWidthSizeClasses[size]) || slideSizeClasses[size],
+        ),
     slideAspect !== undefined && SLIDE_HEIGHT_CAP,
   )
   // A corner radius reads as a card edge, which needs room around it. A slide
@@ -158,38 +229,70 @@ const deckLayout = (
   // matches.
   const cornerClass = cn(
     'rounded-lg',
-    isFullWidth && size === 'full' && '@min-[calc(100vw-1.5rem)]:rounded-none',
+    isFullWidth && size === 'full' && !isStack && '@min-[calc(100vw-1.5rem)]:rounded-none',
   )
 
   // Media may bleed; captions stay on the page column. Only a full-width slide leaves it (from `md`).
-  const captionClassName = isFullWidth && size === 'full' ? 'md:container' : undefined
+  const captionClassName = isFullWidth && size === 'full' && !isStack ? 'md:container' : undefined
 
   const trackStyle =
     slideAspect !== undefined
       ? ({ '--carousel-slide-aspect': slideAspect.toFixed(4) } as CSSProperties)
       : undefined
 
-  return { captionClassName, cornerClass, gutter: slideGutterClasses[size], sizeClass, trackStyle }
+  const gutter = isStack ? STACK_LAYOUT.gutter : slideGutterClasses[size]
+  return { captionClassName, cornerClass, gutter, sizeClass, trackStyle }
 }
 
 const CarouselSlide: React.FC<{
   captionClassName?: string
   cornerClass: string
   gutterClass: string
+  isStack: boolean
+  count: number
+  pose: DeckPose
   restSigned: number
   sizeClass: string
   slide: Slide
-}> = ({ captionClassName, cornerClass, gutterClass, restSigned, sizeClass, slide }) => {
+  veilClass?: string
+}> = ({
+  captionClassName,
+  cornerClass,
+  count,
+  gutterClass,
+  isStack,
+  pose,
+  restSigned,
+  sizeClass,
+  slide,
+  veilClass,
+}) => {
   const media = slide.media as PopulatedMedia
   // sas-site's Media carries a generated `poster` upload; here a video's still
   // is its Cloudflare Stream thumbnail, the one VideoMedia already paints.
   const posterSrc = media.mimeType?.includes('video') ? media.cloudflareStreamThumbnailUrl : null
+  const rest = pose(restSigned, count)
   return (
-    <CarouselItem className={cn('@container', gutterClass, MOBILE_PEEK_BASIS, sizeClass)}>
+    <CarouselItem
+      className={cn('@container', gutterClass, sizeClass)}
+      style={rest.zIndex === undefined ? undefined : { zIndex: rest.zIndex }}
+    >
       {/* First child is the tween target. Server-rendered rest-state styles
           match the tween's frame 0, so hydration never flickers. */}
-      <div className="will-change-slide" style={slideVisualState(restSigned)}>
-        <div className="relative">
+      <div
+        className={cn('will-change-slide', isStack && 'origin-left')}
+        style={{
+          ...(isStack && stackCardStyle(count)),
+          ...(rest.depth !== undefined && { '--stack-depth': rest.depth }),
+          ...(rest.interactive !== undefined && {
+            pointerEvents: rest.interactive ? 'auto' : 'none',
+          }),
+          filter: rest.filter,
+          opacity: rest.opacity,
+          transform: rest.transform,
+        }}
+      >
+        <div className={cn('relative', isStack && STACK_MEDIA_CLASS)}>
           {/* Playback is gated by useCarouselEffects: only the active slide plays. */}
           <Media
             autoPlay={false}
@@ -208,6 +311,14 @@ const CarouselSlide: React.FC<{
               {/* biome-ignore lint/performance/noImgElement: a Stream thumbnail URL, already sized by Cloudflare */}
               <img alt="" className={cn(cornerClass, 'size-full object-cover')} src={posterSrc} />
             </div>
+          )}
+          {veilClass && (
+            <div
+              aria-hidden="true"
+              className={cn('pointer-events-none absolute inset-0 rounded-lg', veilClass)}
+              data-carousel-veil
+              style={{ opacity: rest.veil ?? 0 }}
+            />
           )}
         </div>
         {slide.caption && (
@@ -278,8 +389,15 @@ const CAROUSEL_OPTS: React.ComponentProps<typeof Carousel>['opts'] = {
   align: 'center',
 }
 
+/**
+ * The stack starts its slot on the column's left edge: the pile fans right,
+ * so a height-capped slide narrower than the column keeps the top board on
+ * the grid line and spends the leftover width on the fan side.
+ */
+const STACK_OPTS: React.ComponentProps<typeof Carousel>['opts'] = { loop: true, align: 'start' }
+
 /** The embla api, plus the SVG filter ids and nodes the per-frame effects write through. */
-const useDeckEffects = () => {
+const useDeckEffects = (deckStyle: DeckStyle) => {
   const [api, setApi] = useState<CarouselApi>()
   const filterIdBase = useId()
   const caId = `${filterIdBase}-ca`
@@ -289,7 +407,15 @@ const useDeckEffects = () => {
     blue: null,
   })
   const dissolveMap = useRef<SVGFEDisplacementMapElement | null>(null)
-  useCarouselEffects({ api, caId, caOffsets, dissolveId, dissolveMap })
+  useCarouselEffects({
+    api,
+    caId,
+    caOffsets,
+    dissolveId,
+    dissolveMap,
+    stacked: deckStyle === 'stack',
+    pose: deckPose[deckStyle],
+  })
   return { caId, caOffsets, dissolveId, dissolveMap, setApi }
 }
 
@@ -297,7 +423,9 @@ export const CarouselBlock: React.FC<Props> = (props) => {
   const {
     bare,
     className,
+    deckStyle,
     enableGutter = true,
+    onApi,
     showArrows,
     slides,
     slideSize,
@@ -305,7 +433,18 @@ export const CarouselBlock: React.FC<Props> = (props) => {
     width,
   } = props
 
-  const { caId, caOffsets, dissolveId, dissolveMap, setApi } = useDeckEffects()
+  const style: DeckStyle = deckStyle === 'stack' ? 'stack' : 'coverflow'
+  const isStack = style === 'stack'
+  const { caId, caOffsets, dissolveId, dissolveMap, setApi } = useDeckEffects(style)
+  const handleApi = useCallback(
+    (api: CarouselApi) => {
+      setApi(api)
+      onApi?.(api)
+    },
+    [onApi, setApi],
+  )
+  // A tab switch unmounts this deck; the caller must not keep driving its destroyed api.
+  useEffect(() => () => onApi?.(undefined), [onApi])
 
   const renderableSlides = renderableSlidesOf(slides)
 
@@ -316,11 +455,16 @@ export const CarouselBlock: React.FC<Props> = (props) => {
     renderableSlides,
     slideSize,
     isFullWidth,
+    isStack,
   )
 
   return (
     <Section bare={bare} spacing="loose" theme={theme}>
-      <div className={cn({ container: enableGutter && !isFullWidth }, className)}>
+      {/* The custom cursor's Drag ring: the pointer says what the deck does. */}
+      <div
+        className={cn({ container: enableGutter && !isFullWidth }, className)}
+        {...cursorTarget('drag')}
+      >
         <CarouselFilters
           caId={caId}
           caOffsets={caOffsets}
@@ -329,21 +473,33 @@ export const CarouselBlock: React.FC<Props> = (props) => {
         />
         {/* Only the md+ contained layout reserves outer gutter room for the arrows. */}
         <Carousel
-          className={cn(showArrows && !isFullWidth && 'md:mx-12')}
-          opts={CAROUSEL_OPTS}
-          setApi={setApi}
+          className={cn(showArrows && !isFullWidth && 'md:mx-12', isStack && 'group/deck')}
+          opts={isStack ? STACK_OPTS : CAROUSEL_OPTS}
+          setApi={handleApi}
         >
           {/* items-center: slides keep their media's natural aspect ratio, so shorter slides align to the vertical middle of the tallest. */}
-          <CarouselContent className={cn(gutter.track, 'items-center')} style={trackStyle}>
+          {/* A stack pins every board into the slot, so nothing needs clipping, and
+              clipping would cut the leaving board and the shadows off flat. */}
+          <CarouselContent
+            className={cn(gutter.track, 'items-center')}
+            style={trackStyle}
+            viewportClassName={isStack ? 'overflow-visible' : undefined}
+          >
             {renderableSlides.map((slide, index) => (
               <CarouselSlide
                 captionClassName={captionClassName}
                 cornerClass={cornerClass}
+                count={renderableSlides.length}
                 gutterClass={gutter.slide}
+                isStack={isStack}
                 key={slide.id}
-                restSigned={restSignedDistance(index, renderableSlides.length)}
+                pose={deckPose[style]}
+                // Before embla mounts nothing is looped, so a stack slide sits
+                // where it was laid out: `index` slides along.
+                restSigned={isStack ? index : restSignedDistance(index, renderableSlides.length)}
                 sizeClass={sizeClass}
                 slide={slide}
+                veilClass={isStack ? STACK_VEIL[theme ?? 'default'] : undefined}
               />
             ))}
           </CarouselContent>

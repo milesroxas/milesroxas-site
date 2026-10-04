@@ -159,7 +159,11 @@ function Carousel({
   )
 }
 
-function CarouselContent({ className, ...props }: React.ComponentProps<'div'>) {
+function CarouselContent({
+  className,
+  viewportClassName,
+  ...props
+}: React.ComponentProps<'div'> & { viewportClassName?: string }) {
   const { carouselRef, orientation, opts } = useCarousel()
   // Embla only preventDefaults `dragstart` (the native link/image ghost) — it
   // leaves `mousedown` alone, so a mouse drag across a slide runs the browser's
@@ -172,7 +176,7 @@ function CarouselContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       ref={carouselRef}
-      className={cn('overflow-hidden', isDraggable && 'select-none')}
+      className={cn('overflow-hidden', isDraggable && 'select-none', viewportClassName)}
       data-slot="carousel-content"
     >
       <div

@@ -1,4 +1,5 @@
-import type { ArrayField, CheckboxField, SelectField } from 'payload'
+import type { ArrayField, CheckboxField, Condition, SelectField } from 'payload'
+import type { DeckStyle } from '@/blocks/Carousel/visual-state'
 
 /**
  * The deck's fields, stated once for every block that holds a carousel:
@@ -38,7 +39,7 @@ export const carouselSlidesField = (): ArrayField => ({
 })
 
 /** How many slides the deck shows at once from `md` up. */
-export const slideSizeField = (description: string): SelectField => ({
+export const slideSizeField = (description: string, condition?: Condition): SelectField => ({
   name: 'slideSize',
   type: 'select',
   defaultValue: 'full',
@@ -47,8 +48,30 @@ export const slideSizeField = (description: string): SelectField => ({
     { label: 'Half', value: 'half' },
     { label: 'One third', value: 'third' },
   ],
-  admin: { description },
+  admin: { condition, description },
 })
+
+/**
+ * How the deck poses its slides (see `blocks/Carousel/visual-state.ts`):
+ * a centred coverflow row, or a pile of boards with the next ones fanned
+ * behind the top one. A stack always shows one board, so a block that offers
+ * it hides its slide size behind `isCoverflow`.
+ */
+export const deckStyleField = (): SelectField => ({
+  name: 'deckStyle',
+  type: 'select',
+  defaultValue: 'coverflow',
+  options: [
+    { label: 'Coverflow', value: 'coverflow' },
+    { label: 'Stack', value: 'stack' },
+  ] satisfies Array<{ label: string; value: DeckStyle }>,
+  admin: {
+    description:
+      'Coverflow centres the slide with its neighbours either side. Stack piles the next slides behind the current one, like boards in a presentation.',
+  },
+})
+
+export const isCoverflow: Condition = (_, siblingData) => siblingData?.deckStyle !== 'stack'
 
 /** Previous/next buttons. Off by default: the deck is draggable everywhere. */
 export const showArrowsField = (description: string): CheckboxField => ({

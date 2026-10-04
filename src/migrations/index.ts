@@ -24,6 +24,7 @@ import * as migration_20261001_232240_band_theme_roles from './20261001_232240_b
 import * as migration_20261002_000427_block_type_scale from './20261002_000427_block_type_scale';
 import * as migration_20261004_142345_work_hero from './20261004_142345_work_hero';
 import * as migration_20261004_144246_clients_taxonomy from './20261004_144246_clients_taxonomy';
+import * as migration_20261004_184000_carousel_tabs_deck_style from './20261004_184000_carousel_tabs_deck_style';
 
 export const migrations = [
   {
@@ -154,6 +155,11 @@ export const migrations = [
   {
     up: migration_20261004_144246_clients_taxonomy.up,
     down: migration_20261004_144246_clients_taxonomy.down,
-    name: '20261004_144246_clients_taxonomy'
+    name: '20261004_144246_clients_taxonomy',
+  },
+  {
+    up: migration_20261004_184000_carousel_tabs_deck_style.up,
+    down: migration_20261004_184000_carousel_tabs_deck_style.down,
+    name: '20261004_184000_carousel_tabs_deck_style'
   },
 ];

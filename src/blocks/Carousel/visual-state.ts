@@ -92,6 +92,17 @@ export type SlideVisualState = {
   transform: string
   opacity: number
   filter: string
+  /** Paint order, written to the slide's item. Only a pose whose slides overlap sets one. */
+  zIndex?: number
+  /** Stack only: the surface veil over the card (0 to 1) and its depth in the pile. */
+  veil?: number
+  depth?: number
+  /**
+   * Stack only: whether the card takes the pointer. A stack is unclipped, so
+   * a faded board off to the left of the slot sits over the copy column and
+   * would swallow its clicks.
+   */
+  interactive?: boolean
 }
 
 export const slideVisualState = (signedSnapDistance: number): SlideVisualState => {
@@ -113,6 +124,130 @@ export const slideVisualState = (signedSnapDistance: number): SlideVisualState =
     opacity: INACTIVE_OPACITY + (1 - INACTIVE_OPACITY) * t,
     filter: `grayscale(${(1 - t).toFixed(3)}) blur(${blur.toFixed(2)}px)`,
   }
+}
+
+/**
+ * The stack pose: the deck as a pile of presentation boards. Every slide is
+ * pinned back into the active slot, so instead of a row the reader sees one
+ * board on top and the next ones squared up behind it, each a step smaller
+ * and fanned a step further right. The pile's stepped right edge is what says
+ * there is more to pull; no control has to.
+ *
+ * The card is narrower than its slide (`stackCardFraction`) by exactly the
+ * fan, so the back board's right edge lands on the column's end edge and the
+ * pile fills the slot. Slides lay out edge to edge (no gutter), so a slide
+ * `s` snaps out sits `s` slide widths right of the slot, which is
+ * `s / fraction` card widths; the pin cancels exactly that.
+ *
+ * The top board leaves with the pointer, 1:1 with the track and unclipped
+ * (the viewport does not clip a stack), lifting and defocusing as it goes:
+ * the fade is front-loaded so it is mostly gone before it crosses the
+ * gutter, and the blur turns the overlap with the board coming forward into
+ * motion rather than a double exposure. Dragging back runs the same curve in
+ * reverse.
+ *
+ * Boards behind the top one recede by aerial perspective, a veil of the
+ * band's own surface (`veil`), not by darkening: shaded boards on a light
+ * band read as black slabs, and the veil follows the band's theme for free.
+ * `depth` is published for the hover fan (see `blocks/Carousel/Component`).
+ *
+ * Origin is the card's left edge (`origin-left` on the target), so a board's
+ * left edge stays on the grid line at every depth and only the right edges
+ * fan.
+ */
+/** Per board of depth: scale lost and right-edge reveal, as a fraction of the card. */
+const STACK_STEP_SCALE = 0.06
+const STACK_STEP_PEEK = 0.055
+/** Surface veil per board of depth: the pile recedes into the band. */
+const STACK_STEP_VEIL = 0.22
+/**
+ * Boards showing behind the top one. A board deeper than that waits squared
+ * up under the last one, opaque, so it is revealed by the board above it
+ * moving forward rather than faded in: a translucent board at the back of a
+ * pile reads as a ghost. Fewer slides show fewer, so the board that just left
+ * always folds back in under the pile (see `foldStackDistance`) rather than
+ * appearing on it; two slides still show one, as a pile of none is no pile.
+ */
+const STACK_VISIBLE = 2
+const stackDepthCap = (count: number) => Math.max(1, Math.min(STACK_VISIBLE, count - 2))
+/**
+ * The card's share of its slide. A board at depth `d` ends `1 + peek * d`
+ * cards from the slot's start (its scale loss is shifted back out), so the
+ * deepest showing board ends on the slot's end edge.
+ */
+export const stackCardFraction = (count = Number.POSITIVE_INFINITY) =>
+  1 / (1 + STACK_STEP_PEEK * stackDepthCap(count))
+/** The leaving board: its lift and defocus at the end of its fade, and that fade's length in snaps. */
+const STACK_EXIT_SCALE = 0.04
+const STACK_EXIT_BLUR_PX = 8
+const STACK_EXIT_SNAPS = 0.65
+
+/**
+ * A stack slide's distance folded into (-1, count - 1]: one board leaving,
+ * every other one somewhere in the pile. Embla only carries the slides it
+ * needs to fill the viewport across the loop seam, and a one-slide viewport
+ * needs almost none, so the raw distance of a far slide can sit on the wrong
+ * side and leave a gap in the pile. Folded, the board that just left
+ * re-enters at the back of the pile, under the boards that show
+ * (`stackDepthCap`), so the wrap never shows.
+ */
+export const foldStackDistance = (signedSnapDistance: number, count: number): number =>
+  count - 1 - ((((count - 1 - signedSnapDistance) % count) + count) % count)
+
+export const stackVisualState = (
+  signedSnapDistance: number,
+  count = Number.POSITIVE_INFINITY,
+): SlideVisualState => {
+  // The pin is physical: it cancels where the slide actually is on the track.
+  // Everything else is the slide's place in the pile.
+  const fraction = stackCardFraction(count)
+  const pin = signedSnapDistance / fraction
+  const place = Number.isFinite(count)
+    ? foldStackDistance(signedSnapDistance, count)
+    : signedSnapDistance
+  if (place < 0) {
+    const away = Math.min(-place, 1)
+    const t = clamp(away / STACK_EXIT_SNAPS, 0, 1)
+    // Travels 1:1 with the track from wherever the fold says it is leaving.
+    const shift = (-pin + place / fraction) * 100
+    return {
+      transform: `translateX(${shift.toFixed(2)}%) scale(${(1 - STACK_EXIT_SCALE * t).toFixed(4)})`,
+      opacity: (1 - t) ** 2,
+      filter: `blur(${(STACK_EXIT_BLUR_PX * t).toFixed(2)}px)`,
+      // On top while it leaves; once gone, under everything so it never takes a click.
+      zIndex: away < 1 ? 200 : 0,
+      veil: 0,
+      depth: 0,
+      interactive: t < 0.5,
+    }
+  }
+  const cap = stackDepthCap(count)
+  const depth = Math.min(place, cap)
+  const scale = 1 - STACK_STEP_SCALE * depth
+  // Pinned into the slot, then pushed right so the scaled board's right edge
+  // clears the one above it by a peek per step.
+  const shift = (-pin + (1 - scale) + STACK_STEP_PEEK * depth) * 100
+  return {
+    transform: `translateX(${shift.toFixed(2)}%) scale(${scale.toFixed(4)})`,
+    // Past one board under the cap it is covered anyway; dropping it keeps
+    // the hidden boards' shadows from stacking up.
+    opacity: place > cap + 1 ? 0 : 1,
+    filter: 'none',
+    zIndex: 100 - Math.round(place * 10),
+    veil: STACK_STEP_VEIL * depth,
+    depth,
+    interactive: place <= cap,
+  }
+}
+
+export type DeckStyle = 'coverflow' | 'stack'
+
+/** A deck's pose: a slide's look from its signed snap distance and the deck's slide count. */
+export type DeckPose = (signedSnapDistance: number, count: number) => SlideVisualState
+
+export const deckPose: Record<DeckStyle, DeckPose> = {
+  coverflow: (signedSnapDistance) => slideVisualState(signedSnapDistance),
+  stack: stackVisualState,
 }
 
 /**

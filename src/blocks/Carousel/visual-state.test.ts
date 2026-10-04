@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { packedShift, projectedHalfWidth, slideVisualState } from './visual-state'
+import {
+  foldStackDistance,
+  packedShift,
+  projectedHalfWidth,
+  slideVisualState,
+  stackCardFraction,
+  stackVisualState,
+} from './visual-state'
 
 /** Width the pose shaves off one edge of a slide at `distance`, as a fraction of its width. */
 const edgeLoss = (distance: number) => 0.5 - projectedHalfWidth(distance)
@@ -48,5 +55,86 @@ describe('packedShift', () => {
     for (const boundary of [1, 2]) {
       expect(packedShift(boundary - 1e-9)).toBeCloseTo(packedShift(boundary + 1e-9), 6)
     }
+  })
+})
+
+describe('stack pose', () => {
+  it('pins every pile board into the slot, left edges on the grid line', () => {
+    expect(stackVisualState(0).transform).toBe('translateX(0.00%) scale(1.0000)')
+    // One snap out sits one slide (1 / card fraction cards) right; the pin
+    // cancels it, then the scale loss and one peek push its right edge out.
+    const shift = (-1 / stackCardFraction() + 0.06 + 0.055) * 100
+    expect(stackVisualState(1).transform).toBe(`translateX(${shift.toFixed(2)}%) scale(0.9400)`)
+  })
+
+  it('ends the back board on the slot edge, so the pile fills its column', () => {
+    // Right edge in slide widths: the shifted-back scale loss plus the scaled card.
+    const rightEdge = (signed: number, count: number) => {
+      const { transform } = stackVisualState(signed, count)
+      const [, shift, scale] = /translateX\((-?[\d.]+)%\) scale\(([\d.]+)\)/.exec(transform) ?? []
+      return (
+        (Number(shift) / 100 + signed / stackCardFraction(count) + Number(scale)) *
+        stackCardFraction(count)
+      )
+    }
+    expect(rightEdge(2, 5)).toBeCloseTo(1, 3)
+    expect(rightEdge(1, 3)).toBeCloseTo(1, 3)
+    expect(rightEdge(1, 2)).toBeCloseTo(1, 3)
+  })
+
+  it('paints the pile front to back and the leaving board over all of it', () => {
+    const z = (signed: number) => stackVisualState(signed).zIndex ?? 0
+    expect(z(-0.5)).toBeGreaterThan(z(0))
+    expect(z(0)).toBeGreaterThan(z(1))
+    expect(z(1)).toBeGreaterThan(z(2))
+    expect(z(-1)).toBeLessThan(z(2))
+  })
+
+  it('fades the leaving board out early, defocusing as it goes', () => {
+    expect(stackVisualState(-0.1).opacity).toBeGreaterThan(0.6)
+    expect(stackVisualState(-0.5).opacity).toBeLessThan(0.1)
+    expect(stackVisualState(-0.65).opacity).toBe(0)
+    expect(stackVisualState(-0.65).filter).toBe('blur(8.00px)')
+  })
+
+  it('recedes the pile into the band rather than darkening it', () => {
+    expect(stackVisualState(0)).toMatchObject({ filter: 'none', veil: 0 })
+    expect(stackVisualState(2, 5).veil).toBeCloseTo(0.44)
+  })
+
+  it('keeps boards past the cap squared up under the last one, opaque', () => {
+    // Where the board lands relative to the slot, the pin added back out.
+    const landing = (signed: number, count: number) => {
+      const { transform } = stackVisualState(signed, count)
+      const shift = Number(/translateX\((-?[\d.]+)%\)/.exec(transform)?.[1])
+      return `${(shift + (signed / stackCardFraction(count)) * 100).toFixed(1)} ${transform.split(' ')[1]}`
+    }
+    expect(landing(2.5, 5)).toBe(landing(2, 5))
+    expect(stackVisualState(2.5, 5).opacity).toBe(1)
+    expect(stackVisualState(3.5, 5).opacity).toBe(0)
+    // Three slides show one board behind, so the one that wraps lands hidden.
+    expect(landing(2, 3)).toBe(landing(1, 3))
+  })
+})
+
+describe('stack pose across the loop seam', () => {
+  it('pins a board from where it really is, but poses it by its place in the pile', () => {
+    // Two slides left of the slot in a deck of four is the back of the pile:
+    // pinned two slides right, then posed at depth two.
+    const shift = (2 / stackCardFraction(4) + 0.12 + 0.11) * 100
+    expect(stackVisualState(-2, 4)).toMatchObject({
+      transform: `translateX(${shift.toFixed(2)}%) scale(0.8800)`,
+      zIndex: 80,
+    })
+  })
+})
+
+describe('foldStackDistance', () => {
+  it('keeps one board leaving and every other one in the pile', () => {
+    expect(foldStackDistance(-0.5, 4)).toBeCloseTo(-0.5)
+    expect(foldStackDistance(-1, 4)).toBe(3)
+    expect(foldStackDistance(-2, 4)).toBe(2)
+    expect(foldStackDistance(3, 4)).toBe(3)
+    expect(foldStackDistance(1, 2)).toBe(1)
   })
 })

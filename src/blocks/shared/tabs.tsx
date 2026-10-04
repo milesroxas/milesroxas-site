@@ -2,6 +2,7 @@
 
 import { Tabs as TabsPrimitive } from 'radix-ui'
 import type React from 'react'
+import { createContext, useContext, useState } from 'react'
 import { cn } from '@/utilities/ui'
 
 export type TabSize = 'default' | 'small'
@@ -26,32 +27,125 @@ export type TabbedRow = { id?: string | null; title?: string | null }
  * would be cropped.
  */
 const TAB_STRIP = {
-  default: 'flex flex-wrap items-center gap-8 md:gap-24',
+  default: 'flex flex-wrap items-center gap-y-3 md:gap-y-4',
   small:
     'no-scrollbar scroll-fade-x scroll-fade-8 -my-1 flex items-center gap-6 overflow-x-auto overscroll-x-contain py-1 md:gap-12',
 } as const
 
 /**
- * Where the strip sits in its column. `center` is the full-width shell's
- * (Tabs); `start` is a strip that shares a grid row with a copy column
- * (Carousel tabs), where a centred strip would not line up with anything.
- *
- * The centred small rail bleeds to the page gutter so a half-cut tab is the
- * pan affordance; a strip inside a grid cell is already inset, so it pans
- * within its cell instead.
+ * The strip is centred under the full-width shell. A wrapped default strip
+ * keeps its rows tight. The small rail bleeds to the page gutter so a
+ * half-cut tab is the pan affordance.
  */
 const TAB_ALIGN = {
-  center: {
-    default: 'justify-center',
-    small: 'justify-center-safe -mx-gutter pe-gutter ps-gutter',
-  },
-  start: { default: 'justify-start', small: 'justify-start' },
+  default: 'justify-center gap-x-8 md:gap-x-24',
+  small: 'justify-center-safe -mx-gutter pe-gutter ps-gutter',
 } as const
 
 const TAB_TRIGGER = {
   default: 'text-heading-3',
   small: 'shrink-0 text-lead whitespace-nowrap',
 } as const
+
+/** A row's Radix value, for a block that draws its own triggers (Carousel tabs' index). */
+export const valueFor = (rows: TabbedRow[], index: number) => rows[index]?.id ?? String(index)
+
+/** The active tab's value, for blocks that render per-tab things outside the panels. */
+const TabbedValue = createContext<string | null>(null)
+
+/** The active row, for a block that renders something per tab outside its panel. */
+export const useActiveRow = <Row extends TabbedRow>(rows: Row[]): Row | undefined => {
+  const value = useContext(TabbedValue)
+  return rows.find((_, index) => valueFor(rows, index) === value)
+}
+
+/**
+ * The Radix root on its own, for a block whose strip and panels sit in
+ * different cells (Carousel tabs: strip under the copy, deck beside it). The
+ * root must wrap both, so the block places its triggers and `TabPanels` itself.
+ */
+export const TabbedRoot = ({
+  children,
+  className,
+  orientation,
+  rows,
+}: {
+  children: React.ReactNode
+  className?: string
+  /** `vertical` when the triggers stack, so arrow keys follow them up and down. */
+  orientation?: 'horizontal' | 'vertical'
+  rows: TabbedRow[]
+}) => {
+  const [value, setValue] = useState(() => valueFor(rows, 0))
+  return (
+    <TabsPrimitive.Root
+      className={className}
+      data-reveal
+      onValueChange={setValue}
+      orientation={orientation}
+      value={value}
+    >
+      <TabbedValue.Provider value={value}>{children}</TabbedValue.Provider>
+    </TabsPrimitive.Root>
+  )
+}
+
+export const TabStrip = ({
+  ariaLabel,
+  rows,
+  tabSize,
+}: {
+  ariaLabel: string
+  rows: TabbedRow[]
+  tabSize?: TabSize | null
+}) => {
+  const size = tabSize === 'small' ? 'small' : 'default'
+  return (
+    <TabsPrimitive.List aria-label={ariaLabel} className={cn(TAB_STRIP[size], TAB_ALIGN[size])}>
+      {rows.map((row, index) => (
+        <TabsPrimitive.Trigger
+          key={row.id ?? index}
+          value={valueFor(rows, index)}
+          className={cn(
+            'text-muted-foreground transition-colors hover:text-foreground data-[state=active]:text-primary',
+            TAB_TRIGGER[size],
+          )}
+        >
+          {row.title}
+        </TabsPrimitive.Trigger>
+      ))}
+    </TabsPrimitive.List>
+  )
+}
+
+/**
+ * The panels sit in one wrapper so a stacking gap is taken once.
+ * `panelClassName` lands on each panel, which Radix mounts fresh on
+ * activation, so a `starting:` style there is the panel's entrance.
+ */
+export const TabPanels = <Row extends TabbedRow>({
+  className,
+  panelClassName,
+  renderPanel,
+  rows,
+}: {
+  className?: string
+  panelClassName?: string
+  renderPanel: (row: Row) => React.ReactNode
+  rows: Row[]
+}) => (
+  <div className={className}>
+    {rows.map((row, index) => (
+      <TabsPrimitive.Content
+        className={panelClassName}
+        key={row.id ?? index}
+        value={valueFor(rows, index)}
+      >
+        {renderPanel(row)}
+      </TabsPrimitive.Content>
+    ))}
+  </div>
+)
 
 /**
  * The tabbed shell every tabbed block renders: a centered strip of triggers
@@ -62,59 +156,28 @@ const TAB_TRIGGER = {
  * identically; a block supplies only what a panel looks like. The strip and
  * the panels stack on a scale step (grid doc, G6) carried by a flex column
  * `gap` rather than `space-y-*`: `space-y` is a margin on the strip, which
- * the small rail's layout-neutral `-my-1` would override. The panels sit in
- * one wrapper so the step is taken once.
+ * the small rail's layout-neutral `-my-1` would override.
  *
  * `data-reveal` marks the whole shell as one beat for a GSAP reveal: a strip
  * whose panels swap on click cannot stagger its contents.
  */
 export const TabbedPanels = <Row extends TabbedRow>({
-  align = 'center',
   ariaLabel,
   renderPanel,
   rows,
   tabSize,
 }: {
-  align?: keyof typeof TAB_ALIGN
   ariaLabel: string
   renderPanel: (row: Row) => React.ReactNode
   rows: Row[]
   tabSize?: TabSize | null
 }) => {
   if (rows.length === 0) return null
-  const size = tabSize === 'small' ? 'small' : 'default'
-  const valueFor = (index: number) => rows[index]?.id ?? String(index)
 
   return (
-    <TabsPrimitive.Root
-      className="flex flex-col gap-12 md:gap-16"
-      data-reveal
-      defaultValue={valueFor(0)}
-    >
-      <TabsPrimitive.List
-        aria-label={ariaLabel}
-        className={cn(TAB_STRIP[size], TAB_ALIGN[align][size])}
-      >
-        {rows.map((row, index) => (
-          <TabsPrimitive.Trigger
-            key={row.id ?? index}
-            value={valueFor(index)}
-            className={cn(
-              'text-muted-foreground transition-colors hover:text-foreground data-[state=active]:text-primary',
-              TAB_TRIGGER[size],
-            )}
-          >
-            {row.title}
-          </TabsPrimitive.Trigger>
-        ))}
-      </TabsPrimitive.List>
-      <div>
-        {rows.map((row, index) => (
-          <TabsPrimitive.Content key={row.id ?? index} value={valueFor(index)}>
-            {renderPanel(row)}
-          </TabsPrimitive.Content>
-        ))}
-      </div>
-    </TabsPrimitive.Root>
+    <TabbedRoot className="flex flex-col gap-12 md:gap-16" rows={rows}>
+      <TabStrip ariaLabel={ariaLabel} rows={rows} tabSize={tabSize} />
+      <TabPanels renderPanel={renderPanel} rows={rows} />
+    </TabbedRoot>
   )
 }
