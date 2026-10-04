@@ -116,7 +116,10 @@ export function Cursor() {
           </span>
         ))}
       </div>
-      <div ref={dotRef} className={styles.dot} />
+      {/* Position lives on a wrapper: the dot's own `scale` would otherwise scale it too. */}
+      <div ref={dotRef} className={styles.follower}>
+        <div className={styles.dot} />
+      </div>
     </div>
   )
 }

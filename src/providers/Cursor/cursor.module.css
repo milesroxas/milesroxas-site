@@ -1,7 +1,7 @@
-/* JS writes `transform` (position) on the follower and the dot. White under
-   `mix-blend-mode: difference` reads as inverse ink on any background. */
-.follower,
-.dot {
+/* JS writes `transform` (position) on each follower: one trails the pointer,
+   one sits on it. White under `mix-blend-mode: difference` reads as inverse
+   ink on any background. */
+.follower {
   position: fixed;
   top: 0;
   left: 0;
@@ -16,8 +16,9 @@
   opacity: 0;
 }
 
-/* A zero-size point the ring and labels centre on, trailing the pointer. */
+/* Centred on the follower's zero-size point; `scale` stays local to the layer. */
 .ring,
+.dot,
 .label {
   position: absolute;
   top: 0;
@@ -41,7 +42,6 @@
 .dot {
   width: 12px;
   height: 12px;
-  translate: -50% -50%;
   border-radius: 50%;
   background-color: white;
   transition:
