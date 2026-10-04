@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { onChromeScroll } from './chrome-scroll'
 import { AskGlyph, glyphForPath } from './glyphs'
 import { PageTabs } from './PageTabs'
-import type { ChromeTab } from './tabs'
+import type { ChromeTab, TabCurrent } from './tabs'
 import { useBandGround } from './use-band-ground'
 
 /** Phone tab bar: collapse after this much downward travel, restore after this much upward. */
@@ -62,6 +62,7 @@ type DockAsk = {
 type DockProps = {
   tabs: ChromeTab[]
   active: number
+  current: TabCurrent
   onSelect: (index: number) => void
   /** Null when Site Info › Ask › Hide Ask is on. */
   ask: DockAsk | null
@@ -138,12 +139,12 @@ function DockAskButton({ ask }: { ask: DockAsk }) {
  * material over a dark one, its light glass over a light one. While Ask is open the tabs step back (fade, 0.96, blur) and the
  * Ask field takes the button's place.
  */
-export function Dock({ tabs, active, onSelect, ask }: DockProps) {
+export function Dock({ tabs, active, current, onSelect, ask }: DockProps) {
   const ref = useRef<HTMLDivElement>(null)
   const ground = useBandGround(ref)
   const phone = useIsMobile()
   const [minimized, restore] = useMinimizedTabs(phone && active >= 0)
-  const current = tabs[active]
+  const currentTab = tabs[active]
 
   return (
     <div
@@ -154,8 +155,14 @@ export function Dock({ tabs, active, onSelect, ask }: DockProps) {
       ref={ref}
     >
       <div className="dock-tabs-slot">
-        <PageTabs active={active} minimized={minimized} onSelect={onSelect} tabs={tabs} />
-        {current && <DockMini minimized={minimized} onRestore={restore} tab={current} />}
+        <PageTabs
+          active={active}
+          current={current}
+          minimized={minimized}
+          onSelect={onSelect}
+          tabs={tabs}
+        />
+        {currentTab && <DockMini minimized={minimized} onRestore={restore} tab={currentTab} />}
       </div>
 
       {ask && <DockAskButton ask={ask} />}

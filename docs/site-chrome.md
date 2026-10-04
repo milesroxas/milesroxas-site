@@ -12,7 +12,10 @@ The chrome on every public route: the top bar, the dock and the Ask panel. The a
 - **Dock** (`Dock.tsx`, `PageTabs.tsx`): the pages as tabs, always visible,
   with the current one filled, and Ask beside them as its own button. The
   tabs are links in a nav labelled "Site", with `aria-current="page"` on the
-  current one. Text tabs in a glass bar from `md`; an icon tab bar on a phone,
+  current one. On a page under a tab (a case study under Work) that tab is
+  outlined instead of filled, with `aria-current="true"`: the visitor is inside
+  its section, and the tab keeps its hover and press as the way back to the
+  index. A press fills it at once. Text tabs in a glass bar from `md`; an icon tab bar on a phone,
   which folds into its current tab while scrolling down.
 - **Ask** (`src/features/ask/AskPanel.tsx`): a modal dialog anchored to the
   dock on desktop, a bottom sheet on a phone. ⌘K / Ctrl+K toggles it.
@@ -82,7 +85,9 @@ button uses the same hook.
 ## Motion
 
 - The current tab's fill is one layer clipped to the current tab; a new page
-  slides the clip on `--ease-spring` (damping 1, response 0.35s).
+  slides the clip on `--ease-spring` (damping 1, response 0.35s). Going a
+  level down, the fill cross-fades into a 1px outline on the same clip
+  (240ms); going back up, it fills again.
 - Ask widens out of its button into the field (Web Animations API, clip-path),
   the tabs step back (fade, 0.96, 8px blur), the panel rises out of the
   field's top edge. The field carries a copy of the button's label (its
@@ -93,7 +98,7 @@ button uses the same hook.
 - The scrim dims: foreground at 20% in light, black at 50% in dark.
 - Reduced motion turns every move into a cross-fade. Reduced transparency makes
   the glass solid with a hairline; increased contrast adds an ink border and
-  inverts the current tab.
+  inverts the current tab and draws the section outline in ink.
 
 ## Page transitions
 

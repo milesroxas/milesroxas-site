@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { type MouseEvent, useLayoutEffect, useRef } from 'react'
 import { cn } from '@/utilities/ui'
 import { glyphForPath } from './glyphs'
-import type { ChromeTab } from './tabs'
+import type { ChromeTab, TabCurrent } from './tabs'
 
 /** A click the browser handles itself (new tab, new window, download): the page does not change here. */
 const opensElsewhere = (event: MouseEvent, tab: ChromeTab) =>
@@ -36,6 +36,8 @@ type PageTabsProps = {
   tabs: ChromeTab[]
   /** Index of the current page's tab, or -1 when no tab owns the page. */
   active: number
+  /** The active tab's own page, or a page under it. */
+  current: TabCurrent
   /** A tab was pressed and this page is about to change to it. */
   onSelect: (index: number) => void
   /** Collapsed into the current tab (phones, scrolling down): out of the tab order. */
@@ -45,9 +47,14 @@ type PageTabsProps = {
 
 /**
  * The site's pages as a tab group, always visible, the current one filled.
+ * On a page under a tab (a case study under Work) the tab is outlined, not
+ * filled: the visitor is inside its section, and it still links back to the
+ * index, with the hover and press every other link has. The fill hollows into
+ * the outline as the page goes a level down, and fills back on the way up.
  * Text tabs in a glass bar from `md`; icon-over-label tabs across a bar on a
  * phone. They are links in a labelled nav, not ARIA tabs: each one opens a
- * page, and the current one says so with `aria-current`.
+ * page, and the current one says so with `aria-current`: `page` on its own
+ * page, `true` on a page under it.
  *
  * The fill is one layer under the labels, clipped to the current tab. A new
  * page moves the clip, so the fill slides across on the site's spring
@@ -56,7 +63,7 @@ type PageTabsProps = {
  * ignore the press scale and the dock's own transforms, and only when the
  * current tab or the bar's width changes.
  */
-export function PageTabs({ tabs, active, onSelect, minimized, className }: PageTabsProps) {
+export function PageTabs({ tabs, active, current, onSelect, minimized, className }: PageTabsProps) {
   const indicatorRef = useRef<HTMLSpanElement>(null)
   const tabRefs = useRef<Array<HTMLAnchorElement | null>>([])
 
@@ -77,14 +84,14 @@ export function PageTabs({ tabs, active, onSelect, minimized, className }: PageT
       data-minimized={minimized || undefined}
       inert={minimized || undefined}
     >
-      <span aria-hidden className="dock-indicator" ref={indicatorRef} />
+      <span aria-hidden className="dock-indicator" data-current={current} ref={indicatorRef} />
       <ul className="flex h-full md:gap-0.5">
         {tabs.map((tab, index) => {
           const Glyph = glyphForPath(tab.href)
           return (
             <li className="flex max-md:flex-1" key={tab.href}>
               <Link
-                aria-current={index === active ? 'page' : undefined}
+                aria-current={index === active ? (current === 'page' ? 'page' : 'true') : undefined}
                 className="dock-tab chrome-focus pressable"
                 href={tab.href}
                 onClick={(event) => {

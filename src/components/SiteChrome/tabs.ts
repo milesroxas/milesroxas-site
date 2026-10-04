@@ -1,6 +1,12 @@
 import { resolveCmsLinkHref } from '@/components/Link/resolve-href'
 import type { Header } from '@/payload-types'
 
+/**
+ * How the active tab relates to the page: `page` is the tab's own
+ * destination, `section` a page under it (a case study under Work).
+ */
+export type TabCurrent = 'page' | 'section'
+
 /** One page the dock names. Resolved on the server from the Header global. */
 export type ChromeTab = {
   href: string
@@ -46,3 +52,7 @@ export function activeTabIndex(tabs: ChromeTab[], pathname: string): number {
   })
   return active
 }
+
+/** Whether `pathname` is the tab's own destination or a page under it. */
+export const tabCurrent = (tab: ChromeTab, pathname: string): TabCurrent =>
+  tab.href === pathname ? 'page' : 'section'

@@ -1604,6 +1604,8 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
   --chrome-frost-thick: 32px;
   --chrome-fill-solid: #fff;
   --chrome-selected: rgb(12 12 14 / 0.07);
+  /* The section tab's outline: the selected tone drawn as a 1px line. */
+  --chrome-ring: rgb(12 12 14 / 0.16);
   --chrome-hover: rgb(12 12 14 / 0.04);
   --chrome-press: rgb(12 12 14 / 0.09);
   --chrome-hairline: rgb(12 12 14 / 0.08);
@@ -1629,6 +1631,7 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
     --chrome-glass-thick: rgb(26 26 30 / 0.88);
     --chrome-fill-solid: #1c1c1f;
     --chrome-selected: rgb(255 255 255 / 0.09);
+    --chrome-ring: rgb(255 255 255 / 0.18);
     --chrome-hover: rgb(255 255 255 / 0.05);
     --chrome-press: rgb(255 255 255 / 0.12);
     --chrome-hairline: rgb(255 255 255 / 0.08);
@@ -1768,7 +1771,9 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
 
 /* The current tab's fill: one layer under the labels, clipped to the current
    tab, so a new page slides it across on the site's spring (damping 1,
-   response 0.35s). It lands without moving the first time it is placed. */
+   response 0.35s). It lands without moving the first time it is placed.
+   On a page under the tab the fill clears and an outline takes its place,
+   riding the same clip on the same spring. */
 .dock-indicator {
   position: absolute;
   inset: var(--dock-inset);
@@ -1786,6 +1791,32 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
   transition:
     clip-path 500ms var(--ease-spring),
     background-color 240ms ease;
+}
+
+.dock-indicator::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: var(--tab-left, 0);
+  right: var(--tab-right, 100%);
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--chrome-ring);
+  opacity: 0;
+}
+
+.dock-indicator[data-ready]::before {
+  transition:
+    left 500ms var(--ease-spring),
+    right 500ms var(--ease-spring),
+    opacity 240ms ease;
+}
+
+.dock-indicator[data-current="section"] {
+  background-color: transparent;
+}
+
+.dock-indicator[data-current="section"]::before {
+  opacity: 1;
 }
 
 .dock-tab {
@@ -1830,7 +1861,7 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
   font-weight: 600;
 }
 
-.dock-tab[aria-current="page"] .dock-label {
+.dock-tab[aria-current] .dock-label {
   font-weight: 600;
 }
 
@@ -2155,6 +2186,14 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
     background-color: var(--chrome-ink);
   }
 
+  .dock-indicator[data-current="section"] {
+    background-color: transparent;
+  }
+
+  .dock-indicator::before {
+    box-shadow: inset 0 0 0 1.5px var(--chrome-ink);
+  }
+
   .dock-tab[aria-current="page"] {
     color: var(--chrome-fill-solid);
   }
@@ -2165,6 +2204,10 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
 @media (prefers-reduced-motion: reduce) {
   .dock-indicator[data-ready] {
     transition: background-color 240ms ease;
+  }
+
+  .dock-indicator[data-ready]::before {
+    transition: opacity 240ms ease;
   }
 
   .dock-tabs[data-minimized],

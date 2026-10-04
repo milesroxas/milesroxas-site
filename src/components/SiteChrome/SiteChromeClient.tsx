@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { useChromeStore } from '@/stores/chromeStore'
 import { Dock } from './Dock'
 import { TopBar } from './TopBar'
-import { activeTabIndex, type ChromeTab } from './tabs'
+import { activeTabIndex, type ChromeTab, tabCurrent } from './tabs'
 
 /** A page that never hands the chrome back (an interrupted transition) gets it back after this. */
 const RESTORE_FALLBACK_MS = 2000
@@ -93,7 +93,10 @@ export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
   const setVisible = useChromeStore((state) => state.setVisible)
 
   const [pressed, setPressed] = useState<{ on: string; index: number } | null>(null)
-  const active = pressed && pressed.on === pathname ? pressed.index : activeTabIndex(tabs, pathname)
+  const press = pressed && pressed.on === pathname ? pressed.index : null
+  const active = press ?? activeTabIndex(tabs, pathname)
+  // A press heads for the tab's own page, so it fills at once.
+  const current = press !== null || active < 0 ? 'page' : tabCurrent(tabs[active], pathname)
 
   const triggerRef = useRef<HTMLButtonElement>(null)
   const { askOpen, askPresent, setAskPresent, viaKeyboard, toggleAsk, changeAskFromPanel } =
@@ -106,6 +109,7 @@ export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
       <TopBar section={active >= 0 ? tabs[active].label : null} />
       <Dock
         active={active}
+        current={current}
         ask={
           ask && {
             triggerRef,
