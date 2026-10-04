@@ -25,6 +25,11 @@ Never create `.env.local` in a workspace. Next.js loads it **over** `.env`, and 
 
 `run_mode = "concurrent"`: because port and DB are per-workspace, any number of workspaces can run at once.
 
+### Isolation from sas-site and other repos
+
+- Docker: compose project `milesroxas`, container `milesroxas-postgres-1`, volume `milesroxas_postgres_data`, host port 54330. sas-site has its own project, container, volume and port (54320). `ensure_postgres` refuses to run when 54330 is published by any other compose project or held by another process.
+- Ports: Conductor reserves `CONDUCTOR_PORT..+9` per workspace but does not check the port is free, so a dev server orphaned from an earlier session (in any repo) can still hold it. `run-dev.sh` and `run-storybook.sh` refuse to start on a taken port and print the owning pid and checkout. Stop the stale server (`kill <pid>`) and Run again; the Open button always points at `$CONDUCTOR_PORT`, so falling back to another port would open the wrong site.
+
 ## Scripts
 
 | Script | When | What |
