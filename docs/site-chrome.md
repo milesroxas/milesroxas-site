@@ -106,8 +106,10 @@ A work card opens its case study with a native view transition: the card's
 picture and the `WorkHero` frame share a `<ViewTransition>` name
 (`src/heros/WorkHero/morph.ts`). It plays in three beats. The page around the
 picture fades out while the picture holds still. The picture then travels one
-axis at a time, across to the hero's center and then vertically into the frame
-as it resizes; a leg with no distance drops out. The hero's copy starts its
+axis at a time, across to the hero's center and then vertically into place,
+and only then resizes to the frame; a step with no distance drops out. Each
+step eases in and out and starts inside the last 1% of the one before, so the
+picture turns its corners without a dead stop. The hero's copy starts its
 load-in as the picture lands: every `hero-*` animation waits `--morph-hold`,
 which the card's `onShare` callback sets to the travel time. Only the clicked
 card takes the name, so related-works cards on the next page never pair. The

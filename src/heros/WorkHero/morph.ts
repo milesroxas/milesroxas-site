@@ -48,19 +48,32 @@ export function useWorkCardMorph(slug: string | null | undefined) {
 
 /** The page around the picture fades out first (`work-page-out` in globals.css). */
 const EXIT = 200
-/** Each leg of the picture's travel: across to center, then down or up into place. */
-const LEG = 420
-const EASE_IN_OUT = 'cubic-bezier(0.77, 0, 0.175, 1)'
+/** Each travel step: across to the hero's center, then vertically into place. */
+const MOVE = 400
+/** The last step: the picture resizes to the hero frame, standing still. */
+const RESIZE = 320
+/**
+ * Each step starts this early, inside the last 1% of the step before, so the
+ * picture turns its corner without a dead stop and never visibly travels two
+ * ways (or moves while resizing) at once.
+ */
+const HANDOFF = 60
+const FRAME = 1000 / 60
+
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (2 - 2 * t) ** 3 / 2)
+const px = (value: unknown) => Number.parseFloat(String(value))
 
 type Pseudo = { getAnimations(): Animation[] }
 type MorphInstance = ViewTransitionInstance & Record<'group' | 'imagePair' | 'old' | 'new', Pseudo>
+type Step = { key: 'x' | 'y' | 'size'; duration: number; distance: number }
 
 /**
- * Retimes the browser's straight-line morph into three beats: the picture
- * holds while the page fades, travels along one axis at a time (across to the
- * hero's center, then vertically into the frame while it resizes), and lands
- * as the hero's copy starts its load-in. A leg with nothing to cover drops out.
- * Reduced motion leaves no group animation, so nothing is retimed.
+ * Retimes the browser's straight-line morph into steps: the picture holds
+ * while the page fades, travels across to the hero's center, then vertically
+ * into place, then resizes to the frame, and lands as the hero's copy starts
+ * its load-in. A step with nothing to cover drops out. The path is sampled
+ * per frame so each step keeps its own easing. Reduced motion leaves no group
+ * animation, so nothing is retimed.
  */
 function choreographWorkMorph(instance: ViewTransitionInstance) {
   const { group, imagePair, old, new: next } = instance as MorphInstance
@@ -73,30 +86,54 @@ function choreographWorkMorph(instance: ViewTransitionInstance) {
   const to = frames[frames.length - 1]
   if (!from?.transform || !to?.transform) return
 
-  const start = new DOMMatrix(String(from.transform))
+  const start = new DOMMatrixReadOnly(String(from.transform))
   const end = new DOMMatrixReadOnly(String(to.transform))
-  const center = (m: DOMMatrixReadOnly, width: unknown) =>
-    m.m41 + Number.parseFloat(String(width)) / 2
-  const dx = center(end, to.width) - center(start, from.width)
-  const across = Math.abs(dx) >= 1 ? LEG : 0
-  const total = EXIT + across + LEG
-  const at = (ms: number) => ms / total
+  const [w0, h0, w1, h1] = [px(from.width), px(from.height), px(to.width), px(to.height)]
+  const x0 = start.m41 + w0 / 2
+  const y0 = start.m42 + h0 / 2
+  const x1 = end.m41 + w1 / 2
+  const y1 = end.m42 + h1 / 2
 
-  start.m41 += dx
-  effect.setKeyframes([
-    { ...from, offset: 0, easing: 'linear' },
-    { ...from, offset: at(EXIT), easing: EASE_IN_OUT },
-    ...(across
-      ? [{ ...from, transform: start.toString(), offset: at(EXIT + across), easing: EASE_IN_OUT }]
-      : []),
-    { ...to, offset: 1 },
-  ])
+  const steps: Step[] = [
+    { key: 'x', duration: MOVE, distance: Math.abs(x1 - x0) },
+    { key: 'y', duration: MOVE, distance: Math.abs(y1 - y0) },
+    { key: 'size', duration: RESIZE, distance: Math.max(Math.abs(w1 - w0), Math.abs(h1 - h0)) },
+  ]
+  let total = EXIT
+  const timed = steps
+    .filter((step) => step.distance >= 1)
+    .map((step, i) => {
+      const begin = i === 0 ? total : total - HANDOFF
+      total = begin + step.duration
+      return { ...step, begin }
+    })
+  const progress = (key: Step['key'], ms: number) => {
+    const step = timed.find((s) => s.key === key)
+    if (!step) return 1
+    return easeInOut(Math.min(Math.max((ms - step.begin) / step.duration, 0), 1))
+  }
+
+  const count = Math.ceil(total / FRAME)
+  const path = Array.from({ length: count }, (_, i) => {
+    const ms = (total * i) / count
+    const size = progress('size', ms)
+    const width = w0 + (w1 - w0) * size
+    const height = h0 + (h1 - h0) * size
+    const matrix = DOMMatrix.fromMatrix(start)
+    matrix.m41 = x0 + (x1 - x0) * progress('x', ms) - width / 2
+    matrix.m42 = y0 + (y1 - y0) * progress('y', ms) - height / 2
+    const frame = { transform: matrix.toString(), width: `${width}px`, height: `${height}px` }
+    return { ...from, ...frame, offset: i / count, easing: 'linear' }
+  })
+  effect.setKeyframes([...path, { ...to, offset: 1 }])
   effect.updateTiming({ delay: 0, duration: total, easing: 'linear', fill: 'both' })
 
   // The card's crop gives way to the hero's while the frame resizes.
+  const swap = timed.find((s) => s.key === 'size') ??
+    timed[timed.length - 1] ?? { begin: EXIT, duration: MOVE }
   for (const pseudo of [imagePair, old, next]) {
     for (const animation of pseudo.getAnimations()) {
-      animation.effect?.updateTiming({ delay: EXIT + across, duration: LEG, fill: 'both' })
+      animation.effect?.updateTiming({ delay: swap.begin, duration: swap.duration, fill: 'both' })
     }
   }
 

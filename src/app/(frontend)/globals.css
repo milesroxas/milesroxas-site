@@ -989,7 +989,8 @@
 
 /* A work card opening into its case study (WorkCard → WorkHero), in three
    beats: the page fades out around the picture, the picture travels one axis
-   at a time into the hero frame, and the hero's copy loads in once it lands.
+   at a time into place and then resizes to the hero frame, and the hero's
+   copy loads in once it lands.
    The travel is timed in `src/heros/WorkHero/morph.ts`, which also sets the
    hero's `--morph-hold`; the value here covers the frames before it runs.
    Both snapshots fill the travelling box, so the card's 16:9 crop reframes to
@@ -1037,7 +1038,7 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
 
 @media (prefers-reduced-motion: no-preference) {
   [data-slot="work-hero"]:has([data-arrival="morph"]) {
-    --morph-hold: 1040ms;
+    --morph-hold: 1200ms;
   }
 }
 
