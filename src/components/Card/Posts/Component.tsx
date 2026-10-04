@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type React from 'react'
 import { Badge } from '@/components/ui/badge'
 import type { Post } from '@/payload-types'
+import { cursorTarget } from '@/providers/Cursor/variants'
 import { cn } from '@/utilities/ui'
 import { type CardAspect, CardImage, useCardLink } from '../shared'
 
@@ -36,7 +37,7 @@ export const PostCard: React.FC<PostCardProps> = ({
 
   return (
     <article ref={containerRef} className={cn('h-full', className)}>
-      <Link href={href} onClick={handleTransition} className="not-prose">
+      <Link {...cursorTarget('post')} href={href} onClick={handleTransition} className="not-prose">
         <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
 
         {(titleFromProps || title) && (

@@ -8,7 +8,7 @@ import { useRef, ViewTransition } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { useWorkCardMorph } from '@/heros/WorkHero/morph'
 import type { Work } from '@/payload-types'
-import { CursorButton } from '@/providers/Cursor/components/CursorInteractions'
+import { cursorTarget } from '@/providers/Cursor/variants'
 import { cn } from '@/utilities/ui'
 import { type CardAspect, CardImage } from '../shared'
 
@@ -47,31 +47,30 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
   return (
     <article className={cn('h-full', className)}>
-      <CursorButton>
-        {/* The picture morphs into the case study's hero (src/heros/WorkHero). */}
-        <Link
-          className="not-prose"
-          href={href}
-          onClick={morph.onClick}
-          transitionTypes={['work-open']}
-        >
-          <ViewTransition default="none" name={morph.name} share="work-morph">
-            <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
-          </ViewTransition>
+      {/* The picture morphs into the case study's hero (src/heros/WorkHero). */}
+      <Link
+        {...cursorTarget('work')}
+        className="not-prose"
+        href={href}
+        onClick={morph.onClick}
+        transitionTypes={['work-open']}
+      >
+        <ViewTransition default="none" name={morph.name} share="work-morph">
+          <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
+        </ViewTransition>
 
-          {(titleFromProps || title) && (
-            <div className="flex items-start justify-between gap-2">
-              <h3 className={titleClassName}>{titleFromProps || title}</h3>
-              <Badge variant="work">Work</Badge>
-            </div>
-          )}
-        </Link>
-        {description && showDescription && (
-          <div className="mt-2">
-            <RichText data={description} />
+        {(titleFromProps || title) && (
+          <div className="flex items-start justify-between gap-2">
+            <h3 className={titleClassName}>{titleFromProps || title}</h3>
+            <Badge variant="work">Work</Badge>
           </div>
         )}
-      </CursorButton>
+      </Link>
+      {description && showDescription && (
+        <div className="mt-2">
+          <RichText data={description} />
+        </div>
+      )}
     </article>
   )
 }

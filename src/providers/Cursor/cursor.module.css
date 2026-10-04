@@ -1,60 +1,61 @@
-.cursorOuter {
+/* The root follows the pointer; the shape morphs. Only transform, opacity,
+   clip-path and filter change, so nothing here triggers layout. */
+.cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  pointer-events: none;
   z-index: 9999;
+  pointer-events: none;
   will-change: transform;
-  border: 1px solid white;
-  mix-blend-mode: difference;
-  opacity: 0.8;
-}
-.cursorOuterBlurred {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  mix-blend-mode: normal;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  /* A hairline halo keeps the dot legible on a band the same tone as the ink. */
+  filter: drop-shadow(0 0 1px color-mix(in oklab, var(--background) 70%, transparent));
 }
 
-.cursorInner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  background-color: white;
-  will-change: transform;
+.cursor[data-visible] {
   opacity: 1;
-  mix-blend-mode: difference;
 }
 
-.cursorText {
-  position: fixed;
-  top: 0;
-  left: 0;
-  color: white;
-  font-size: 12px;
+/* Sized by the widest label; clip-path shows a dot or a pill around one label. */
+.shape {
+  display: grid;
+  height: 32px;
+  translate: -50% -50%;
+  background: var(--foreground);
+  color: var(--background);
+  clip-path: inset(calc(50% - 5px) round 999px);
+  transition: clip-path 250ms var(--ease-out-quint);
+}
+
+.label {
+  grid-area: 1 / 1;
+  place-self: center;
+  padding-inline: 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 500;
-  pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: difference;
-  text-align: center;
-  white-space: nowrap;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  will-change: transform;
-  width: 40px; /* Match the width of the outer cursor */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 2px;
+  white-space: nowrap;
+  opacity: 0;
+  filter: blur(4px);
+  transition:
+    opacity 200ms ease,
+    filter 200ms ease;
 }
 
-.cursorTextDark {
-  mix-blend-mode: normal;
-  color: black;
+.label[data-active] {
+  opacity: 1;
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shape {
+    transition: none;
+  }
+
+  .label {
+    filter: none;
+  }
 }

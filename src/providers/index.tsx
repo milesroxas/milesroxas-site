@@ -3,7 +3,7 @@
 import type React from 'react'
 import { AskSessionProvider } from '@/features/ask/AskSession'
 import { useResetAnimationOnRouteChange } from '@/stores/animationStore'
-import { CursorProvider } from './Cursor/CursorProvider'
+import { Cursor } from './Cursor'
 import { LenisProvider } from './Lenis'
 import { ThemeProvider } from './Theme'
 
@@ -18,10 +18,9 @@ export const Providers: React.FC<{
     // owns every change to it afterwards.
     <ThemeProvider>
       <LenisProvider>
-        <CursorProvider>
-          {/* One Ask conversation and one journey for the whole visit (/ask). */}
-          <AskSessionProvider>{children}</AskSessionProvider>
-        </CursorProvider>
+        {/* One Ask conversation and one journey for the whole visit (/ask). */}
+        <AskSessionProvider>{children}</AskSessionProvider>
+        <Cursor />
       </LenisProvider>
     </ThemeProvider>
   )

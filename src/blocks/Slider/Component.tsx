@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/legacy-carousel'
 import { useSpacing } from '@/hooks/useSpacing'
 import type { SliderBlock as SliderBlockType } from '@/payload-types'
-import { CursorSlider } from '@/providers/Cursor/components/CursorInteractions'
+import { cursorTarget } from '@/providers/Cursor/variants'
 import { slideKeys } from '@/utilities/reactKeyDomains'
 import { cn } from '@/utilities/ui'
 
@@ -104,30 +104,29 @@ const SingleStyleSlider: React.FC<{
   fullWidth: boolean
 }> = ({ slides, setApi, fullWidth }) => (
   <div className={cn({ 'mx-auto max-w-4xl': !fullWidth, 'w-full': fullWidth })}>
-    <CursorSlider>
-      <Carousel
-        className="w-full overflow-hidden rounded-md"
-        style={{ transition: 'none' }}
-        setApi={setApi}
-        opts={{
-          loop: false,
-          align: 'center',
-          containScroll: false,
-          skipSnaps: false,
-          duration: 25,
-        }}
-      >
-        <CarouselContent className="gap-4">
-          {slides.map(({ slide }, index) => (
-            <CarouselItem key={slideKeys.fromSlide(slide, index)} className="w-full basis-full">
-              <div className="mx-auto aspect-video w-full">
-                <SlideContent slide={slide} index={index} fullWidth={fullWidth} isSingleStyle />
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
-    </CursorSlider>
+    <Carousel
+      {...cursorTarget('slider')}
+      className="w-full overflow-hidden rounded-md"
+      style={{ transition: 'none' }}
+      setApi={setApi}
+      opts={{
+        loop: false,
+        align: 'center',
+        containScroll: false,
+        skipSnaps: false,
+        duration: 25,
+      }}
+    >
+      <CarouselContent className="gap-4">
+        {slides.map(({ slide }, index) => (
+          <CarouselItem key={slideKeys.fromSlide(slide, index)} className="w-full basis-full">
+            <div className="mx-auto aspect-video w-full">
+              <SlideContent slide={slide} index={index} fullWidth={fullWidth} isSingleStyle />
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
   </div>
 )
 
@@ -138,41 +137,40 @@ const DefaultStyleSlider: React.FC<{
   fullWidth: boolean
 }> = ({ slides, setApi, currentIndex, fullWidth }) => (
   <div className="w-full overflow-hidden">
-    <CursorSlider>
-      <Carousel
-        className="w-full"
-        style={{ transition: 'none' }}
-        setApi={setApi}
-        opts={{
-          loop: true,
-          align: 'center',
-          containScroll: false,
-          skipSnaps: false,
-          duration: 40,
-        }}
-      >
-        <CarouselContent className="gap-2">
-          {slides.map(({ slide }, index) => (
-            <CarouselItem
-              key={slideKeys.fromSlide(slide, index)}
+    <Carousel
+      {...cursorTarget('slider')}
+      className="w-full"
+      style={{ transition: 'none' }}
+      setApi={setApi}
+      opts={{
+        loop: true,
+        align: 'center',
+        containScroll: false,
+        skipSnaps: false,
+        duration: 40,
+      }}
+    >
+      <CarouselContent className="gap-2">
+        {slides.map(({ slide }, index) => (
+          <CarouselItem
+            key={slideKeys.fromSlide(slide, index)}
+            className={cn(
+              'basis-4/6 md:basis-3/4 lg:basis-2/3 2xl:basis-1/2',
+              currentIndex === index ? 'z-20' : 'opacity-30',
+            )}
+          >
+            <div
               className={cn(
-                'basis-4/6 md:basis-3/4 lg:basis-2/3 2xl:basis-1/2',
-                currentIndex === index ? 'z-20' : 'opacity-30',
+                'transition-all duration-300 ease-out',
+                currentIndex === index ? 'scale-110' : 'scale-90',
               )}
             >
-              <div
-                className={cn(
-                  'transition-all duration-300 ease-out',
-                  currentIndex === index ? 'scale-110' : 'scale-90',
-                )}
-              >
-                <SlideContent slide={slide} index={index} fullWidth={fullWidth} />
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
-    </CursorSlider>
+              <SlideContent slide={slide} index={index} fullWidth={fullWidth} />
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
   </div>
 )
 

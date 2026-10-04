@@ -250,14 +250,10 @@
     border-color: var(--color-gray-200, currentColor);
   }
 
-  * {
-    cursor: none;
-  }
-
-  /* Show default cursor on mobile */
-  @media (max-width: 768px) {
+  /* Same query that mounts the custom cursor (src/providers/Cursor). */
+  @media (hover: hover) and (pointer: fine) {
     * {
-      cursor: auto;
+      cursor: none;
     }
   }
 }
