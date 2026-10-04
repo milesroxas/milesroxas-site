@@ -4,7 +4,7 @@
 
 `dev` is the integration branch for preview deployments.  
 `main` is the production branch for live deployments.  
-Vercel builds only these two branches (`vercel.json` → `git.deploymentEnabled`). Feature branches and Conductor workspaces merge into `dev`.
+Vercel builds only these two branches (`vercel.json` → `git.deploymentEnabled`). Feature branches and Conductor workspaces land on `dev`: a direct push (`git push origin HEAD:dev` after rebasing onto `origin/dev`) by default, a PR into `dev` when one is wanted. See `docs/conductor.md` → Branch flow.
 
 ## Daily Development
 
@@ -43,7 +43,7 @@ The Vercel build (`pnpm run ci`) runs `payload migrate`: against the Neon previe
 1. Build and test changes on `dev`.
 2. For schema changes, create the migration and commit it with the change.
 3. Push `dev`. The preview build migrates the preview DB. Validate the preview deployment.
-4. Merge `dev` into `main` and push. The production build migrates production.
+4. Release: `git push origin dev:main` from the main checkout (fast-forward), or a PR from `dev` into `main`. The production build migrates production.
 5. `pnpm migrate:status` confirms the production ledger.
 
 ## Environment Files

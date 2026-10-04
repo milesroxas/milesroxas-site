@@ -11,11 +11,20 @@ Same setup as sas-site. [Conductor](https://www.conductor.build/docs) runs sever
 
 ## Branch flow
 
-`dev` is the integration branch; `main` is production.
+`dev` is the integration branch; `main` is production. A workspace branches from `origin/dev`. A push to `dev` builds the Vercel preview and migrates the Neon preview branch.
 
-1. A workspace branches from `origin/dev` and opens its PR into `dev`.
-2. A push to `dev` builds the Vercel preview and migrates the Neon preview branch.
-3. A PR from `dev` into `main` releases: the production build migrates production (see WORKFLOW.md).
+**Default: push straight to `dev`.** Miles works alone, so most work skips PRs:
+
+```bash
+git fetch origin && git rebase origin/dev
+git push origin HEAD:dev   # a workspace cannot check out dev; the main checkout holds it
+```
+
+The pre-push hook checks exactly what lands on `dev`, and git rejects the push if `dev` moved since the rebase: rebase and push again. Then archive the workspace.
+
+**PR flow, when Miles asks for one** (a change he wants to review on GitHub, or a long-running branch): push the workspace branch and open a PR into `dev` (Conductor → Create PR, target `dev`). The `dev` ruleset requires the `snapshot-chain` check. If the PR adds a migration and `dev` gained one since, rebase and regenerate before merging. Never assume the PR flow; use it only when asked.
+
+**Release:** from the main checkout, `git pull && git push origin dev:main` (fast-forward), or a PR from `dev` into `main` when Miles wants one. Either way production deploys and its DB migrates, so only Miles releases; agents give him the command.
 
 ## What a workspace gets
 
@@ -82,7 +91,7 @@ At the database level nothing is shared: each workspace's DB is drizzle-**push**
 
 The coupling is in the **migration files**. `payload migrate:create` does not look at any database — it diffs the current config against the newest `src/migrations/*.json` snapshot (newest by filename). That gives one rule:
 
-> **Your migration's snapshot must be generated on top of the newest migration on `dev` at the time you merge.**
+> **Your migration's snapshot must be generated on top of the newest migration on `dev` at the time it lands there (push or PR merge).**
 
 `main` only receives `dev`, so a correct chain on `dev` is a correct chain on `main`.
 
@@ -90,7 +99,7 @@ Why: workspace A and workspace B both branch from `dev` whose newest snapshot is
 
 Procedure for a branch that carries a migration:
 
-1. Before opening / merging the PR: `git fetch origin && git rebase origin/dev`.
+1. Before pushing to `dev` (or opening / merging a PR): `git fetch origin && git rebase origin/dev`.
 2. Did `origin/dev` gain migration files newer than the one your migration was generated against? Then delete your migration (`.ts` **and** `.json`), and regenerate it — `pnpm migrate:create <name>` (ask first, per `CLAUDE.md`) — so its snapshot includes dev's changes and its timestamp sorts last.
 3. `pnpm check:migrations` (enum safety) and `pnpm check:migrations:drift` (newest snapshot == config). The pre-push hook runs both whenever schema source or migrations changed.
 4. `src/migrations/index.ts` conflicts: keep both branches' imports/entries in filename order, or just let `migrate:create` rewrite it.
@@ -98,7 +107,7 @@ Procedure for a branch that carries a migration:
 Three gates enforce the rule, because the drift check alone only sees the branch's own tree: a migration generated before `dev` gained another one passes it on the branch and breaks the chain on merge.
 
 - **Pre-push** (`.githooks/pre-push`): when the push adds a migration, it fetches `origin/dev` and fails unless the branch holds every migration on `dev` and its own migrations sort after `dev`'s newest.
-- **PR check** (`.github/workflows/migrations.yml`, job `snapshot-chain`): runs the enum and drift checks on the merge commit GitHub builds for every PR into `dev` or `main`. The `dev` ruleset makes it required, so a PR with a broken chain cannot merge.
+- **PR check** (PR flow only; `.github/workflows/migrations.yml`, job `snapshot-chain`): runs the enum and drift checks on the merge commit GitHub builds for every PR into `dev` or `main`. The `dev` ruleset makes it required, so a PR with a broken chain cannot merge.
 - **Push check** (same workflow): runs again on every push to `dev` and `main`. A PR's check only runs when the PR changes, so if two open PRs both add migrations and one merges, the other's green check is out of date. The push check on `dev` catches the result before it reaches `main`.
 
 When the push check on `dev` goes red, the migrations are already applied on the Neon preview branch. Do not regenerate the merged migration: the preview (and later production) ledger has its name, and a regenerated copy would run its SQL again. Fix forward: the next `migrate:create` re-emits the other branch's statements, so delete those statements from its `up()`/`down()` (the databases already have them) and keep its `.json`, which restores the chain.

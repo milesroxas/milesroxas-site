@@ -30,6 +30,10 @@ command = "bash .conductor/run-storybook.sh"
 icon = "book"
 available_in = ["local"]
 
+# Every agent in this repo (Claude, Codex) gets this, not only readers of CLAUDE.md.
+[prompts]
+general = """Land work on `dev`, not `main`: rebase onto `origin/dev`, then `git push origin HEAD:dev`. Open a PR into `dev` only when Miles asks for one. Never push to `main`; releasing is Miles's call. Details: docs/conductor.md → Branch flow."""
+
 [[preview_urls]]
 name = "Site"
 url = "http://localhost:$CONDUCTOR_PORT"
