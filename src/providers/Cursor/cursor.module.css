@@ -1,36 +1,65 @@
-/* The root follows the pointer; the shape morphs. Only transform, opacity,
-   clip-path and filter change, so nothing here triggers layout. */
+/* JS writes `transform` (position); `translate` centres each layer on the pointer. */
 .cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-  pointer-events: none;
-  will-change: transform;
   opacity: 0;
   transition: opacity 150ms ease;
-  /* A hairline halo keeps the dot legible on a band the same tone as the ink. */
-  filter: drop-shadow(0 0 1px color-mix(in oklab, var(--background) 70%, transparent));
 }
 
 .cursor[data-visible] {
   opacity: 1;
 }
 
-/* Sized by the widest label; clip-path shows a dot or a pill around one label. */
-.shape {
-  display: grid;
-  height: 32px;
+.ring,
+.dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  will-change: transform;
   translate: -50% -50%;
-  background: var(--foreground);
+  border-radius: 999px;
+  /* A hairline halo keeps the cursor legible on a band the same tone as the ink. */
+  filter: drop-shadow(0 0 1px color-mix(in oklab, var(--background) 70%, transparent));
+}
+
+/* The only layer that resizes; `contain` keeps its layout to itself. */
+.ring {
+  contain: strict;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--foreground);
+  background-color: transparent;
   color: var(--background);
-  clip-path: inset(calc(50% - 5px) round 999px);
-  transition: clip-path 250ms var(--ease-out-quint);
+  transition:
+    width 250ms var(--ease-out-quint),
+    height 250ms var(--ease-out-quint),
+    background-color 200ms ease;
+}
+
+.cursor[data-labelled] .ring {
+  height: 32px;
+  background-color: var(--foreground);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--foreground);
+  transition:
+    opacity 150ms ease,
+    scale 200ms var(--ease-out-quint);
+}
+
+.cursor[data-labelled] .dot {
+  opacity: 0;
+  scale: 0.5;
 }
 
 .label {
-  grid-area: 1 / 1;
-  place-self: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
   padding-inline: 14px;
   font-family: var(--font-mono);
   font-size: 11px;
@@ -51,8 +80,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shape {
-    transition: none;
+  .ring {
+    transition: background-color 200ms ease;
   }
 
   .label {

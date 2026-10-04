@@ -1,20 +1,18 @@
 'use client'
 
+import { gsap } from 'gsap'
 import { useEffect, useRef, useState } from 'react'
 import styles from './cursor.module.css'
 import { CURSOR_LABELS, type CursorVariant, isCursorVariant } from './variants'
 
 const VARIANTS = Object.keys(CURSOR_LABELS) as CursorVariant[]
+// Long enough to cross the gutter between two cards without the pill closing.
+const LEAVE_GRACE_MS = 150
 
 function variantAt(target: EventTarget | null): CursorVariant | null {
   if (!(target instanceof Element)) return null
   const value = target.closest<HTMLElement>('[data-cursor]')?.dataset.cursor
   return value && isCursorVariant(value) ? value : null
-}
-
-/** A pill around the label, centred in the shape; no label falls back to the CSS dot. */
-function clipTo(label: HTMLElement | undefined) {
-  return label ? `inset(0 calc(50% - ${label.offsetWidth / 2}px) round 999px)` : ''
 }
 
 /** Resolved after mount, so server and client render the same (nothing) first. */
@@ -28,35 +26,64 @@ function useFinePointer() {
   return finePointer
 }
 
-/** A dot that opens into a labelled pill over any `cursorTarget` element. */
+/** A dot on the pointer and a trailing ring that opens into a labelled pill over any `cursorTarget`. */
 export function Cursor() {
   const finePointer = useFinePointer()
   const rootRef = useRef<HTMLDivElement>(null)
-  const shapeRef = useRef<HTMLDivElement>(null)
+  const ringRef = useRef<HTMLDivElement>(null)
+  const dotRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const root = rootRef.current
-    const shape = shapeRef.current
-    if (!finePointer || !root || !shape) return
+    const ring = ringRef.current
+    const dot = dotRef.current
+    if (!finePointer || !root || !ring || !dot) return
 
-    const labels = Array.from(shape.children as HTMLCollectionOf<HTMLElement>)
+    const labels = Array.from(ring.children as HTMLCollectionOf<HTMLElement>)
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const follow: gsap.TweenVars = { duration: reduceMotion ? 0 : 0.2, ease: 'power3.out' }
+    const ringX = gsap.quickTo(ring, 'x', follow)
+    const ringY = gsap.quickTo(ring, 'y', follow)
     let current: CursorVariant | null = null
+    let leaveTimer: number | undefined
+    let placed = false
     let x = 0
     let y = 0
 
-    const show = (variant: CursorVariant | null) => {
-      if (variant === current) return
+    const apply = (variant: CursorVariant | null) => {
       current = variant
-      for (const label of labels) {
-        label.toggleAttribute('data-active', label.dataset.variant === variant)
+      const active = labels.find((label) => label.dataset.variant === variant)
+      for (const label of labels) label.toggleAttribute('data-active', label === active)
+      root.toggleAttribute('data-labelled', Boolean(active))
+      ring.style.width = active ? `${active.offsetWidth}px` : ''
+    }
+
+    // Opening is immediate; closing waits out the grace period, so hopping
+    // card to card keeps the pill open and only a new label morphs.
+    const show = (variant: CursorVariant | null) => {
+      if (variant) {
+        window.clearTimeout(leaveTimer)
+        leaveTimer = undefined
+        if (variant !== current) apply(variant)
+      } else if (current && leaveTimer === undefined) {
+        leaveTimer = window.setTimeout(() => {
+          leaveTimer = undefined
+          apply(null)
+        }, LEAVE_GRACE_MS)
       }
-      shape.style.clipPath = clipTo(labels.find((label) => label.dataset.variant === variant))
     }
 
     const onMove = (e: MouseEvent) => {
       x = e.clientX
       y = e.clientY
-      root.style.transform = `translate3d(${x}px, ${y}px, 0)`
+      // First sighting lands on the pointer instead of trailing in from the corner.
+      if (!placed) {
+        placed = true
+        gsap.set(ring, { x, y })
+      }
+      dot.style.transform = `translate3d(${x}px, ${y}px, 0)`
+      ringX(x)
+      ringY(y)
       root.dataset.visible = ''
       show(variantAt(e.target))
     }
@@ -73,6 +100,8 @@ export function Cursor() {
       document.removeEventListener('mousemove', onMove)
       window.removeEventListener('scroll', onScroll)
       html.removeEventListener('mouseleave', onLeave)
+      window.clearTimeout(leaveTimer)
+      gsap.killTweensOf(ring)
     }
   }, [finePointer])
 
@@ -80,13 +109,14 @@ export function Cursor() {
 
   return (
     <div ref={rootRef} aria-hidden className={styles.cursor}>
-      <div ref={shapeRef} className={styles.shape}>
+      <div ref={ringRef} className={styles.ring}>
         {VARIANTS.map((variant) => (
           <span key={variant} className={styles.label} data-variant={variant}>
             {CURSOR_LABELS[variant]}
           </span>
         ))}
       </div>
+      <div ref={dotRef} className={styles.dot} />
     </div>
   )
 }
