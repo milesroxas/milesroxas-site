@@ -28,7 +28,8 @@ jobs:
       # No DB connection: the drift check only builds the config.
       PAYLOAD_SECRET: ci-drift-check
       # Schema-affecting: the Vercel Blob adapter, on when a token is set, adds a media column.
-      BLOB_READ_WRITE_TOKEN: vercel_blob_rw_ci_drift_check
+      # Format vercel_blob_rw_<store>_<random>, alphanumeric parts only.
+      BLOB_READ_WRITE_TOKEN: vercel_blob_rw_ci_driftcheck
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
