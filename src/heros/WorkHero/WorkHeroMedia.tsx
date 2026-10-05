@@ -8,7 +8,7 @@ import { clearWorkMorph, isWorkMorph, workMorphName } from './morph'
 /**
  * The opening's picture. On a fresh load the frame wipes open downward while
  * the picture settles inside it; arriving from a work card, the card's picture
- * morphs into this frame instead, so neither plays.
+ * hands off to this frame instead, so neither plays.
  */
 export function WorkHeroMedia({ media, slug }: { media: MediaType; slug: string }) {
   const [arrival] = useState(() => (isWorkMorph(slug) ? 'morph' : 'load'))

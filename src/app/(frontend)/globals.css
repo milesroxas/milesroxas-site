@@ -939,7 +939,7 @@
    capabilities) is stated beside each part in `parts.tsx`. Reduced motion
    keeps a short fade and drops every movement. `inline`, so `--enter-at`
    resolves on each part rather than once on :root. Arriving from a work
-   card, every part also waits `--morph-hold`, the picture's travel. */
+   card, every part also waits `--morph-hold`, the picture's handoff. */
 @theme inline {
   --animate-hero-in: hero-in 700ms var(--ease-out-quint)
     calc(var(--enter-at, 0ms) + var(--morph-hold, 0ms)) both;
@@ -988,21 +988,18 @@
 }
 
 /* A work card opening into its case study (WorkCard → WorkHero), in three
-   beats. Before the navigation, every visible piece of the page leaves on its
-   own around the clicked picture (`src/heros/WorkHero/pageExit.ts`). The
-   picture then takes the hero frame's shape in place and travels into it,
-   across and then vertically, rounding the corner in one motion. The hero's
-   copy loads in as it lands, and the body after the hero follows.
-   The travel is timed in `src/heros/WorkHero/morph.ts`, which also sets
-   `--morph-hold` on the hero's parent; the value here covers the frames before
-   it runs. Both snapshots fill the travelling box, so the card's 16:9 crop
-   reframes to the hero's 16:10 instead of stretching. The delay keeps the
-   picture in place until `morph.ts` retimes it, which can be a few frames
-   after the transition starts. */
+   beats. Before the navigation, the page fades away around the clicked
+   picture, farthest pieces first (`src/heros/WorkHero/pageExit.ts`). The
+   picture goes last: it scales down and fades where it stands, then comes
+   straight back in at the hero frame, so the eye follows it without it ever
+   travelling. The hero's copy loads in as it appears, and the body follows.
+   The group holds the card's box (`step-end`) until the swap, when it takes
+   the hero's. `src/heros/WorkHero/morph.ts` times all three from the exit
+   and sets `--morph-hold` on the hero's parent; the values here cover the
+   frames before it runs. */
 ::view-transition-group(.work-morph) {
-  animation-delay: 200ms;
-  animation-duration: 800ms;
-  animation-timing-function: cubic-bezier(0.6, 0, 0.2, 1);
+  animation-duration: 440ms;
+  animation-timing-function: step-end;
   overflow: clip;
 }
 
@@ -1012,19 +1009,37 @@
   object-fit: cover;
 }
 
-::view-transition-image-pair(.work-morph) {
-  animation: work-morph-blur 280ms;
+/* Eased in and out, so the picture stays readable until the swap and the
+   hero's picture takes over without a blank beat. */
+::view-transition-old(.work-morph) {
+  animation: work-media-out 240ms cubic-bezier(0.65, 0, 0.35, 1) 200ms both;
 }
 
-@keyframes work-morph-blur {
-  40% {
-    filter: blur(2px);
+::view-transition-new(.work-morph) {
+  animation: work-media-in 320ms var(--ease-out-quint) 440ms both;
+}
+
+@keyframes work-media-out {
+  to {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+/* `visibility` keeps the picture hidden until the main thread moves the group
+   to the hero's box: the group's geometry animates there, the fade on the
+   compositor, which can start a frame early at the card's spot. */
+@keyframes work-media-in {
+  from {
+    visibility: hidden;
+    opacity: 0;
+    scale: 0.97;
   }
 }
 
 /* What the exit left of the old page (backgrounds, rules) fades under the
    picture. The case study shows at once beneath it: its hero copy and body
-   wait for the landing, so only the hero's own background shows through. */
+   wait for the picture, so only the hero's own background shows through. */
 html:active-view-transition-type(work-open)::view-transition-old(root) {
   animation: 160ms var(--ease-out-quint) both work-page-out;
 }
@@ -1041,7 +1056,7 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
 
 @media (prefers-reduced-motion: no-preference) {
   :has(> [data-slot="work-hero"] [data-arrival="morph"]) {
-    --morph-hold: 760ms;
+    --morph-hold: 440ms;
   }
 
   /* The body rises in after the hero's copy: no blur, it can be a tall layer. */
@@ -1057,11 +1072,21 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
   }
 }
 
-/* Reduced motion: the picture crossfades in place instead of travelling. */
+/* Reduced motion: the same handoff, faded only. */
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(.work-morph),
-  ::view-transition-image-pair(.work-morph) {
-    animation: none;
+  ::view-transition-old(.work-morph) {
+    animation-name: work-page-out;
+  }
+
+  ::view-transition-new(.work-morph) {
+    animation-name: work-media-fade-in;
+  }
+}
+
+@keyframes work-media-fade-in {
+  from {
+    visibility: hidden;
+    opacity: 0;
   }
 }
 
@@ -2013,7 +2038,7 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
 }
 
 /* A work card opening (`.work-morph`): the chrome stays put while the page
-   under it fades, and the picture travels beneath it. */
+   and the picture under it hand off. */
 /* biome-ignore lint/style/noDescendingSpecificity: sets only the transition name */
 html:active-view-transition-type(work-open) .chrome-top {
   view-transition-name: chrome-top;

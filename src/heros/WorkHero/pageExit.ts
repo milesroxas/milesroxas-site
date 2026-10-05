@@ -1,17 +1,15 @@
 /**
- * The first beat of a work card opening: the page parts around the clicked
- * picture while the case study loads. Every visible piece of content (a
- * heading, a line of copy, a picture, a badge) fades and blurs out on its own,
- * stepping away from the picture on one axis: content above rises, content
- * below sinks, content beside it slides outward. The pieces nearest the
- * picture leave first, so the page clears outward from the selection. The
+ * The first beat of a work card opening: the page fades away around the
+ * clicked picture while the case study loads. Every visible piece of content
+ * (a heading, a line of copy, a picture, a badge) fades and blurs out in
+ * place on its own. The farthest pieces leave first, so the page clears in
+ * toward the selection and the picture is the last thing standing. The
  * picture, the top bar and the dock stay.
  */
 
-const DURATION = 240
-/** The farthest piece leaves this long after the nearest. */
-const SPREAD = 120
-const DISTANCE = 10
+const DURATION = 220
+/** The nearest piece leaves this long after the farthest. */
+const SPREAD = 140
 /** Past this many pieces the blur costs more than it adds. */
 const BLUR_LIMIT = 60
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)'
@@ -60,30 +58,23 @@ export function exitPageAround(keep: Element) {
   const reach = Math.hypot(innerWidth, innerHeight) / 2
   const blur = pieces.length <= BLUR_LIMIT
 
-  const animations = pieces.flatMap((el) => {
+  const animations = pieces.map((el) => {
     const rect = el.getBoundingClientRect()
-    const cx = rect.left + rect.width / 2
-    const cy = rect.top + rect.height / 2
-    const shift =
-      rect.bottom <= anchor.top + 1
-        ? `0 -${DISTANCE}px`
-        : rect.top >= anchor.bottom - 1
-          ? `0 ${DISTANCE}px`
-          : `${cx < ax ? -DISTANCE : DISTANCE}px 0`
-    const timing = {
-      delay: Math.min(Math.hypot(cx - ax, cy - ay) / reach, 1) * SPREAD,
-      duration: DURATION,
-      easing: EASE_OUT,
-      fill: 'forwards',
-    } as const
-    return [
-      el.animate({ opacity: 0, ...(blur && { filter: 'blur(4px)' }) }, timing),
-      // Added to whatever the piece already has, so it leaves from where it sits.
-      el.animate({ translate: ['0 0', shift] }, { ...timing, composite: 'add' }),
-    ]
+    const distance = Math.hypot(rect.left + rect.width / 2 - ax, rect.top + rect.height / 2 - ay)
+    return el.animate(
+      { opacity: 0, ...(blur && { filter: 'blur(4px)' }) },
+      {
+        delay: (1 - Math.min(distance / reach, 1)) * SPREAD,
+        duration: DURATION,
+        easing: EASE_OUT,
+        fill: 'forwards',
+      },
+    )
   })
 
   return {
+    /** When the last piece is gone, on the `performance.now()` clock. */
+    ends: performance.now() + SPREAD + DURATION,
     restore: () => {
       for (const animation of animations) animation.cancel()
     },

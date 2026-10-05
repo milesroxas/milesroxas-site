@@ -107,29 +107,27 @@ A work card opens its case study in three beats. The card's picture and the
 (`src/heros/WorkHero/morph.ts`).
 
 1. Exit. The click starts the navigation and, while the case study loads,
-   every visible piece of the page leaves on its own
+   the page fades away around the picture
    (`src/heros/WorkHero/pageExit.ts`). Headings, copy, pictures and badges
-   fade and blur out, stepping 10px away from the picture on one axis:
-   content above rises, content below sinks, content beside it slides
-   outward. The nearest pieces leave first. The picture, top bar and dock
-   stay. If the page arrives before the exit ends, the old page's fade
-   finishes it.
-2. Travel. The picture first takes the hero frame's shape where it stands,
-   while the card's crop gives way to the hero's. It then travels to the
-   frame across and then vertically on one easing, rounding the corner on a
-   short arc, so it never cuts a diagonal and never stops midway. Travel
-   time grows with the distance (360-640ms). A step with no distance drops
-   out.
-3. Entrance. The hero's copy starts its load-in just before the picture comes
-   to rest: every `hero-*` animation waits `--morph-hold`, which the card's
+   fade and blur out in place, the farthest first, so the page clears in
+   toward the picture. The picture, top bar and dock stay. If the page
+   arrives before the exit ends, the old page's fade finishes it over the
+   time the exit had left.
+2. Handoff. The picture leaves last: it scales down to 96% and fades where
+   it stands. The hero's picture then comes straight in at the hero frame,
+   fading up from 97%. The picture never travels: the transition group holds
+   the card's box (`step-end`) until the swap, then takes the hero's. On a
+   slow page the picture waits alone until the case study arrives.
+3. Entrance. The hero's copy starts its load-in as the hero's picture
+   appears: every `hero-*` animation waits `--morph-hold`, which the card's
    `onShare` callback sets on the hero's parent. The body after the hero
    (`[data-slot="work-body"]`) rises in after it.
 
 Only the clicked card takes the name, so related-works cards on the next page
 never pair. The top bar and dock take their own transition names for the
-duration, so they stay put above the travelling picture (`.work-morph` and
-`work-open` rules in `globals.css`). Reduced motion skips the exit and the
-travel: the link navigates at once and the picture crossfades in place. A
+duration, so they stay put above the handoff (`.work-morph` and `work-open`
+rules in `globals.css`). Reduced motion skips the exit and the scale: the link
+navigates at once, the card's picture fades out and the hero's fades in. A
 modified click (new tab) leaves the page as it is.
 
 The post card → detail page FLIP (`src/hooks/useCardTransition.ts`) hides the
