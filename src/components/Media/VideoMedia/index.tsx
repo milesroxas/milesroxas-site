@@ -153,6 +153,7 @@ function usePlayWhenVisible(
 export const VideoMedia: React.FC<MediaProps> = (props) => {
   const {
     autoPlay = true,
+    crossOrigin,
     fill,
     onClick,
     onLoad,
@@ -176,6 +177,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
       // `fill` covers the caller's aspect frame, as ImageMedia's fill image does.
       className={cn(fill && 'absolute inset-0 size-full object-cover', videoClassName)}
       controls={false}
+      crossOrigin={crossOrigin}
       loop
       muted
       onClick={onClick}

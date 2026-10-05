@@ -3,13 +3,14 @@ import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
-import { cache } from 'react'
+import { cache, Suspense } from 'react'
 import { slugWhere } from '@/app/(frontend)/slug-where'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { ContentsButton } from '@/features/contents'
 import { WorkHero } from '@/heros/WorkHero'
+import { MoreWork } from '@/sections/MoreWork'
 import { WorkIntro } from '@/sections/WorkIntro'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
@@ -85,6 +86,9 @@ export default async function Work({ params: paramsPromise }: Args) {
             />
           )}
           <RenderBlocks blocks={layout} />
+          <Suspense fallback={null}>
+            <MoreWork work={visibleWork} />
+          </Suspense>
         </div>
         {visibleWork.showContents && <ContentsButton />}
       </article>

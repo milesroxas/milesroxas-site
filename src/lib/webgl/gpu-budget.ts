@@ -1,7 +1,7 @@
 /**
  * The document's GPU budget: one registry for every effect that owns a
  * canvas (Streak Field, hero and work lenses, the footer light leak, the
- * scroll gallery, the global backdrop). Each holds a lease while it wants a
+ * scroll gallery, the More work plate, the global backdrop). Each holds a lease while it wants a
  * live context; the registry admits the highest-priority leases up to
  * `GPU_LIVE_CEILING` in total and `GPU_KIND_CEILINGS` per kind, ranking by
  * priority and then arrival. An effect that is not admitted keeps its DOM
@@ -23,7 +23,7 @@
  * preparation"), not measured capacity.
  */
 
-export type GpuLeaseKind = 'streak' | 'lens' | 'leak' | 'gallery' | 'backdrop'
+export type GpuLeaseKind = 'streak' | 'lens' | 'leak' | 'gallery' | 'plate' | 'backdrop'
 
 /** Live contexts admitted across the whole document. */
 export const GPU_LIVE_CEILING = 3

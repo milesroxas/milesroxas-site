@@ -37,6 +37,7 @@ function resolveImageSrc(resource: MediaType): {
 export const ImageMedia: React.FC<MediaProps> = (props) => {
   const {
     alt: altFromProps,
+    crossOrigin,
     fill,
     pictureClassName,
     imgClassName,
@@ -74,6 +75,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
       <NextImage
         alt={alt || ''}
         className={cn(imgClassName)}
+        crossOrigin={crossOrigin}
         fill={fill}
         height={!fill ? height : undefined}
         placeholder="blur"

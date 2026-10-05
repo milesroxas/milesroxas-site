@@ -14,6 +14,12 @@
    `prose-blocks` rules below, untouched by this. */
 @plugin "@tailwindcss/typography";
 
+/* The More work index's plate layout: wide screens with a hovering pointer,
+   where rows preview on a sticky plate. Elsewhere each row carries its own
+   picture. `PLATE_LAYOUT_QUERY` (src/sections/MoreWork/Plate.tsx) is the
+   same query for script. */
+@custom-variant plate (@media (min-width: 64rem) and (hover: hover) and (pointer: fine));
+
 :root {
   /* Syntax ink for the code surface (components/ui/code-block.tsx), stated
      once: the panel is always dark (`data-band="dark"`), so the palette

@@ -46,12 +46,14 @@ function restorePage() {
  * clicked: a list can hold cards for works the next page also lists (related
  * works), and every named pair would morph, not just the one opened. A
  * modified click opens a new tab, so it leaves the card as it is. Reduced
- * motion skips the exit and lets the link navigate at once.
+ * motion skips the exit and lets the link navigate at once. `onOpen` hears
+ * the moment the card takes its name, for a picture that lives outside it.
  */
 export function useWorkCardMorph(
   slug: string | null | undefined,
   href: string,
   imageRef: React.RefObject<HTMLElement | null>,
+  onOpen?: () => void,
 ) {
   const router = useRouter()
   const [named, setNamed] = useState(false)
@@ -64,6 +66,7 @@ export function useWorkCardMorph(
     }
     markWorkMorph(slug)
     setNamed(true)
+    onOpen?.()
     const picture = imageRef.current
     if (!opening || !picture || matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
@@ -117,7 +120,7 @@ const longest = (pseudo: Pseudo) =>
  * globals.css), so the picture never travels. A slow page leaves the picture
  * waiting alone.
  */
-function choreographWorkMorph(instance: ViewTransitionInstance) {
+export function choreographWorkMorph(instance: ViewTransitionInstance) {
   const lag = Math.max((exitEnds ?? 0) - EXIT_OVERLAP - performance.now(), 0)
   // The old snapshot is taken: the page the exit cleared can come back.
   restorePage()

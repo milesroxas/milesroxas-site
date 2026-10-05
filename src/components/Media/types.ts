@@ -8,6 +8,8 @@ export interface Props {
   /** Video only. Defaults to true; pass false when playback is driven externally. */
   autoPlay?: boolean
   className?: string
+  /** CORS mode for the media request: `anonymous` lets WebGL sample the element. */
+  crossOrigin?: 'anonymous'
   fill?: boolean // for NextImage only
   htmlElement?: ElementType | null
   pictureClassName?: string
