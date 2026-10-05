@@ -43,11 +43,11 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   const href = `/${relationTo}/${slug}`
   const localImageRef = useRef<HTMLDivElement>(null)
   const imageRef = imageRefProp ?? localImageRef
-  const morph = useWorkCardMorph(slug)
+  const morph = useWorkCardMorph(slug, href, imageRef)
 
   return (
     <article className={cn('h-full', className)}>
-      {/* The picture morphs into the case study's hero (src/heros/WorkHero). */}
+      {/* The picture morphs into the case study's hero (src/heros/WorkHero/morph.ts). */}
       <Link
         {...cursorTarget('view')}
         className="not-prose"

@@ -988,19 +988,21 @@
 }
 
 /* A work card opening into its case study (WorkCard → WorkHero), in three
-   beats: the page fades out around the picture, the picture travels one axis
-   at a time into place and then resizes to the hero frame, and the hero's
-   copy loads in once it lands.
-   The travel is timed in `src/heros/WorkHero/morph.ts`, which also sets the
-   hero's `--morph-hold`; the value here covers the frames before it runs.
-   Both snapshots fill the travelling box, so the card's 16:9 crop reframes to
-   the hero's 16:10 instead of stretching. The delay keeps the picture in
-   place until `morph.ts` retimes it, which can be a few frames after the
-   transition starts. */
+   beats. Before the navigation, every visible piece of the page leaves on its
+   own around the clicked picture (`src/heros/WorkHero/pageExit.ts`). The
+   picture then takes the hero frame's shape in place and travels into it,
+   across and then vertically, rounding the corner in one motion. The hero's
+   copy loads in as it lands, and the body after the hero follows.
+   The travel is timed in `src/heros/WorkHero/morph.ts`, which also sets
+   `--morph-hold` on the hero's parent; the value here covers the frames before
+   it runs. Both snapshots fill the travelling box, so the card's 16:9 crop
+   reframes to the hero's 16:10 instead of stretching. The delay keeps the
+   picture in place until `morph.ts` retimes it, which can be a few frames
+   after the transition starts. */
 ::view-transition-group(.work-morph) {
   animation-delay: 200ms;
-  animation-duration: 840ms;
-  animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+  animation-duration: 800ms;
+  animation-timing-function: cubic-bezier(0.6, 0, 0.2, 1);
   overflow: clip;
 }
 
@@ -1011,7 +1013,7 @@
 }
 
 ::view-transition-image-pair(.work-morph) {
-  animation: work-morph-blur 420ms;
+  animation: work-morph-blur 280ms;
 }
 
 @keyframes work-morph-blur {
@@ -1020,10 +1022,11 @@
   }
 }
 
-/* The case study shows at once under the fading page: its copy is held by
-   `--morph-hold`, so only the hero's own frame and background show through. */
+/* What the exit left of the old page (backgrounds, rules) fades under the
+   picture. The case study shows at once beneath it: its hero copy and body
+   wait for the landing, so only the hero's own background shows through. */
 html:active-view-transition-type(work-open)::view-transition-old(root) {
-  animation: 200ms var(--ease-out-quint) both work-page-out;
+  animation: 160ms var(--ease-out-quint) both work-page-out;
 }
 
 html:active-view-transition-type(work-open)::view-transition-new(root) {
@@ -1037,8 +1040,20 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  [data-slot="work-hero"]:has([data-arrival="morph"]) {
-    --morph-hold: 1200ms;
+  :has(> [data-slot="work-hero"] [data-arrival="morph"]) {
+    --morph-hold: 760ms;
+  }
+
+  /* The body rises in after the hero's copy: no blur, it can be a tall layer. */
+  [data-slot="work-hero"]:has([data-arrival="morph"]) ~ [data-slot="work-body"] {
+    animation: work-body-in 800ms var(--ease-out-quint) calc(var(--morph-hold) + 520ms) both;
+  }
+}
+
+@keyframes work-body-in {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
   }
 }
 

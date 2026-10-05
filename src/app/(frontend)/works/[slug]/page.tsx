@@ -75,14 +75,17 @@ export default async function Work({ params: paramsPromise }: Args) {
       <article className="relative z-10">
         <WorkHero {...visibleWork} />
         <PageClient work={visibleWork} />
-        {visibleWork.intro?.title && (
-          <WorkIntro
-            body={visibleWork.intro.body}
-            eyebrow={visibleWork.intro.eyebrow}
-            title={visibleWork.intro.title}
-          />
-        )}
-        <RenderBlocks blocks={layout} />
+        {/* Arriving from a work card, the body loads in after the hero (globals.css). */}
+        <div data-slot="work-body">
+          {visibleWork.intro?.title && (
+            <WorkIntro
+              body={visibleWork.intro.body}
+              eyebrow={visibleWork.intro.eyebrow}
+              title={visibleWork.intro.title}
+            />
+          )}
+          <RenderBlocks blocks={layout} />
+        </div>
         {visibleWork.showContents && <ContentsButton />}
       </article>
     </>
