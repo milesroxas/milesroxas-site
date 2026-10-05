@@ -79,16 +79,37 @@ index 505b5a8d55f9eb214c6a4800cceedb53ab92c209..2e07a8b6fbbb424307b976d8606ef241
      },
      updateGlobal: {
 diff --git a/dist/utils/schemaConversion/convertCollectionSchemaToZod.js b/dist/utils/schemaConversion/convertCollectionSchemaToZod.js
-index 504c0a041cacdefe438ceae9e2c59c6d3da5300f..35b3cf7aa40a3f89cca37b07960d3decd5063a95 100644
+index 504c0a041cacdefe438ceae9e2c59c6d3da5300f..d9dfe4ebb774d04a46ab3865a43d8863d180d00c 100644
 --- a/dist/utils/schemaConversion/convertCollectionSchemaToZod.js
 +++ b/dist/utils/schemaConversion/convertCollectionSchemaToZod.js
-@@ -1,4 +1,5 @@
+@@ -1,9 +1,26 @@
  import { jsonSchemaToZod } from 'json-schema-to-zod';
 +import * as nodeModule from 'node:module';
  import * as ts from 'typescript';
  import { z } from 'zod';
  import { sanitizeJsonSchema } from './sanitizeJsonSchema.js';
-@@ -11,8 +12,14 @@ export const convertCollectionSchemaToZod = (schema)=>{
+ import { simplifyRelationshipFields } from './simplifyRelationshipFields.js';
+ import { transformPointFieldsForMCP } from './transformPointFields.js';
++// Node 24 still flags `stripTypeScriptTypes` experimental and logs an
++// ExperimentalWarning on first use, which Vercel records at error level.
++// Only that one warning is dropped, and only for this synchronous call.
++const stripTypesQuietly = (code)=>{
++    const emitWarning = process.emitWarning;
++    process.emitWarning = (warning, ...rest)=>{
++        const type = typeof rest[0] === 'string' ? rest[0] : rest[0]?.type;
++        if (type === 'ExperimentalWarning' && String(warning?.message ?? warning).includes('stripTypeScriptTypes')) return;
++        return emitWarning.call(process, warning, ...rest);
++    };
++    try {
++        return nodeModule.stripTypeScriptTypes(code);
++    } finally{
++        process.emitWarning = emitWarning;
++    }
++};
+ export const convertCollectionSchemaToZod = (schema)=>{
+     try {
+         // Clone to avoid mutating the original schema (used elsewhere for tool listing)
+@@ -11,8 +28,14 @@ export const convertCollectionSchemaToZod = (schema)=>{
          const sanitized = sanitizeJsonSchema(schemaClone);
          const pointTransformed = transformPointFieldsForMCP(sanitized);
          const zodSchemaAsString = jsonSchemaToZod(simplifyRelationshipFields(pointTransformed));
@@ -100,7 +121,7 @@ index 504c0a041cacdefe438ceae9e2c59c6d3da5300f..35b3cf7aa40a3f89cca37b07960d3dec
 +        // and `ts.ModuleKind` is undefined there. The compiler stays the
 +        // fallback for a Node without `stripTypeScriptTypes` (before 22.13).
 +        const transpileResult = typeof nodeModule.stripTypeScriptTypes === 'function' ? {
-+            outputText: nodeModule.stripTypeScriptTypes(zodSchemaAsString)
++            outputText: stripTypesQuietly(zodSchemaAsString)
 +        } : ts.transpileModule(zodSchemaAsString, {
              compilerOptions: {
                  module: ts.ModuleKind.CommonJS,

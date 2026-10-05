@@ -9,7 +9,7 @@ patchedDependencies:
     hash: 719f96ffe7312c1f56d9939d653968955ffec771611932314e96339e23ffa7d2
     path: patches/@payloadcms__drizzle.patch
   '@payloadcms/plugin-mcp':
-    hash: df11b3717d6f2230c8888e88652be21ba9f4a7f1926407ed68caf5fde4759821
+    hash: e854dd8c3c58e9c6ab749c8a1980ce67c05f590599059b721efe60d4124956bd
     path: patches/@payloadcms__plugin-mcp.patch
 
 importers:
@@ -48,7 +48,7 @@ importers:
         version: 3.90.2(@types/react@19.3.0)(monaco-editor@0.57.0)(next@16.3.6(@babel/core@7.29.7)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(typescript@7.0.2))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@7.0.2)
       '@payloadcms/plugin-mcp':
         specifier: 3.90.2
-        version: 3.90.2(patch_hash=df11b3717d6f2230c8888e88652be21ba9f4a7f1926407ed68caf5fde4759821)(next@16.3.6(@babel/core@7.29.7)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(typescript@7.0.2))
+        version: 3.90.2(patch_hash=e854dd8c3c58e9c6ab749c8a1980ce67c05f590599059b721efe60d4124956bd)(next@16.3.6(@babel/core@7.29.7)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(typescript@7.0.2))
       '@payloadcms/plugin-nested-docs':
         specifier: 3.90.2
         version: 3.90.2(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(typescript@7.0.2))
@@ -8081,7 +8081,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@payloadcms/plugin-mcp@3.90.2(patch_hash=df11b3717d6f2230c8888e88652be21ba9f4a7f1926407ed68caf5fde4759821)(next@16.3.6(@babel/core@7.29.7)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(typescript@7.0.2))':
+  '@payloadcms/plugin-mcp@3.90.2(patch_hash=e854dd8c3c58e9c6ab749c8a1980ce67c05f590599059b721efe60d4124956bd)(next@16.3.6(@babel/core@7.29.7)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(bufferutil@4.1.0)(graphql@16.14.2)(typescript@7.0.2))':
     dependencies:
       '@modelcontextprotocol/sdk': 1.30.0(zod@3.25.76)
       '@types/json-schema': 7.0.15

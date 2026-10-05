@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 const ACCESS_COOKIE = 'site_access'
 const ACCESS_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-url', request.url)
 
