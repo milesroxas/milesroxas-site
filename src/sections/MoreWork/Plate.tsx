@@ -50,7 +50,7 @@ type Props = {
 
 /**
  * The index's one picture. Every work's picture is stacked in the frame and
- * the active one shows, with a 160ms fade: that is the whole plate under
+ * the active one shows, with a slow crossfade: that is the whole plate under
  * reduced motion, without WebGL, or until the live layer is ready. Over it,
  * where the budget admits one, a canvas dissolves from picture to picture
  * (`./plate-runtime`), sampling these same image and video elements, and
@@ -84,7 +84,9 @@ export function MoreWorkPlate({ items, index, opening, ref }: Props) {
             <div
               key={item.id}
               className={cn(
-                'absolute inset-0 transition-opacity duration-160',
+                'absolute inset-0',
+                // Opening swaps at once: the morph carries this picture, not a crossfade.
+                !opening && 'transition-opacity duration-(--more-work-swap) ease-[ease]',
                 i === index ? 'opacity-100' : 'opacity-0',
               )}
               data-plate-layer={i}

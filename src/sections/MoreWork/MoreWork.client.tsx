@@ -2,10 +2,12 @@
 
 import { IconArrowRight } from '@tabler/icons-react'
 import Link from 'next/link'
-import { type RefObject, useId, useMemo, useRef, useState, ViewTransition } from 'react'
+import type React from 'react'
+import { type RefObject, useEffect, useId, useMemo, useRef, useState, ViewTransition } from 'react'
 import { Media } from '@/components/Media'
 import { choreographWorkMorph, useWorkCardMorph, workMorphName } from '@/heros/WorkHero/morph'
 import { cursorTarget } from '@/providers/Cursor/variants'
+import { MORE_WORK_MOTION, moreWorkMotionStyle } from './motion'
 import { isPlateLayout, MoreWorkPlate } from './Plate'
 import type { MoreWorkItem } from './query'
 
@@ -21,7 +23,8 @@ type RowProps = {
   /** This row is opening through its own picture: name it for the morph. */
   morphing: boolean
   plateRef: RefObject<HTMLDivElement | null>
-  onActivate: (index: number) => void
+  /** `now` skips the hover intent: focus and clicks are deliberate. */
+  onActivate: (index: number, now?: boolean) => void
   onOpen: (slug: string) => void
 }
 
@@ -45,21 +48,24 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
     [plateRef],
   )
   const morph = useWorkCardMorph(slug, href, pictureRef, () => onOpen(slug))
-  const activate = () => onActivate(index)
+  const handleClick = (event: React.MouseEvent) => {
+    onActivate(index, true)
+    morph.onClick(event)
+  }
   const services = capabilities.join(', ')
 
   return (
     <li
-      className="group border-border border-b transition-colors duration-160 plate:data-active:border-foreground"
+      className="group border-border border-b transition-colors duration-(--more-work-ink) ease-[ease] plate:data-active:border-foreground"
       data-active={active || undefined}
     >
       <Link
         {...cursorTarget('view')}
         className="flex flex-col gap-5 plate:gap-6 py-7 md:flex-row md:items-start md:gap-8"
         href={href}
-        onClick={morph.onClick}
-        onFocus={activate}
-        onPointerEnter={activate}
+        onClick={handleClick}
+        onFocus={() => onActivate(index, true)}
+        onPointerEnter={() => onActivate(index)}
         transitionTypes={['work-open']}
       >
         {media && (
@@ -85,7 +91,7 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
           </ViewTransition>
         )}
         <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-          <h3 className="text-pretty plate:text-muted-foreground text-heading-3 tracking-[-0.02em] transition-colors duration-160 ease-[ease] plate:group-data-active:text-foreground">
+          <h3 className="text-pretty plate:text-muted-foreground text-heading-3 tracking-[-0.02em] transition-colors duration-(--more-work-ink) ease-[ease] plate:group-data-active:text-foreground">
             {title}
           </h3>
           {(industry || services) && (
@@ -100,7 +106,7 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
         </div>
         <IconArrowRight
           aria-hidden
-          className="mt-2.5 plate:block hidden size-4 shrink-0 -translate-x-1 opacity-0 transition-[opacity,translate] duration-160 ease-[ease] plate:group-data-active:translate-x-0 plate:group-data-active:opacity-100"
+          className="mt-2.5 plate:block hidden size-4 shrink-0 -translate-x-1.5 opacity-0 transition-[opacity,translate] duration-(--more-work-ink) ease-(--ease-out-quint) plate:group-data-active:translate-x-0 plate:group-data-active:opacity-100"
           stroke={1.5}
         />
       </Link>
@@ -119,9 +125,16 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
   const plateRef = useRef<HTMLDivElement>(null)
   const headingId = useId()
   const shown = items[active] ?? items[0]
-  // Once a row opens, the plate holds its picture while the page clears around it.
-  const activate = (index: number) => {
-    if (!opening) setActive(index)
+  // The plate follows a row the pointer rests on, not every row it crosses.
+  const intent = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const settle = () => clearTimeout(intent.current)
+  useEffect(() => () => clearTimeout(intent.current), [])
+  const activate = (index: number, now = false) => {
+    settle()
+    // Once a row opens, the plate holds its picture while the page clears around it.
+    if (opening) return
+    if (now) setActive(index)
+    else intent.current = setTimeout(() => setActive(index), MORE_WORK_MOTION.hoverIntent)
   }
   // One picture carries the morph: two mounted under one name would break it.
   const open = (slug: string) => setOpening({ slug, onPlate: isPlateLayout() })
@@ -131,6 +144,7 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
       aria-labelledby={headingId}
       className="px-gutter pb-[calc(var(--dock-clearance)+--spacing(12))] md:pb-40"
       data-slot="more-work"
+      style={moreWorkMotionStyle}
     >
       <div className="flex flex-col gap-12 border-border border-t pt-20 md:gap-16 md:pt-40">
         <div className="flex items-end justify-between gap-6">
@@ -147,7 +161,7 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
             All work
             <IconArrowRight
               aria-hidden
-              className="size-4 transition-transform duration-160 ease-[ease] pointer-fine:group-hover/all:translate-x-0.5"
+              className="size-4 transition-transform duration-(--more-work-ink) ease-(--ease-out-quint) pointer-fine:group-hover/all:translate-x-0.5"
               stroke={1.5}
             />
           </Link>
@@ -177,7 +191,7 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
               </span>
             </div>
           </div>
-          <ul className="border-foreground border-t">
+          <ul className="border-foreground border-t" onPointerLeave={settle}>
             {items.map((item, index) => (
               <MoreWorkRow
                 active={index === active}

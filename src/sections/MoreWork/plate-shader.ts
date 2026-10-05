@@ -1,13 +1,18 @@
 /**
- * The plate's dissolve: one picture gives way to the next through an fbm
- * noise threshold. `uProgress` 0 shows `uFrom`, 1 shows `uTo`; the front
- * between them is `uSoftness` wide in noise units, so the two pictures never
- * crossfade as a whole. Just ahead of the front a thin line, `uEdgeWidth`
- * pixels, shows the incoming picture `uEdgeScale` larger, so the front reads
- * as the new picture breaking through rather than a mask.
+ * The plate's transition: the next picture sweeps in through an ordered
+ * (Bayer 8x8) dither. A soft band, `uBand` of the frame deep and warped by
+ * low noise so its edge is not a ruler line, travels down the plate when the
+ * pointer moves down the list and up when it moves up (`uDirection`). Inside
+ * the band each `uCell`-pixel cell flips to the new picture once the band's
+ * local progress passes its dither threshold, so the pictures never blend.
  *
- * Both pictures are fitted like `object-fit: cover`: `uFromCover` and
- * `uToCover` scale the UV about its center (`coverScale`).
+ * Chromatic aberration rides the band: red and blue pull apart radially,
+ * strongest mid-band and faintly across the frame while the sweep runs, and
+ * gone at rest. The leaving picture drifts slightly larger and the arriving
+ * one settles from `uSettle` scale, so the change has depth.
+ *
+ * Pictures are fitted like `object-fit: cover`: `uFromCover` and `uToCover`
+ * scale the UV about its center.
  */
 
 export const PLATE_VERTEX = /* glsl */ `
@@ -25,11 +30,14 @@ uniform sampler2D uTo;
 uniform vec2 uFromCover;
 uniform vec2 uToCover;
 uniform float uProgress;
+uniform float uDirection;
 uniform float uAspect;
-uniform float uSoftness;
-uniform float uEdgeWidth;
-uniform float uEdgeScale;
-uniform float uNoiseScale;
+uniform float uBand;
+uniform float uWarp;
+uniform float uCell;
+uniform float uAberration;
+uniform float uSettle;
+uniform float uDrift;
 
 varying vec2 vUv;
 
@@ -54,34 +62,45 @@ float noise(vec2 p) {
   );
 }
 
-// Four octaves, normalized back to 0..1.
-float fbm(vec2 p) {
-  float sum = 0.0;
-  float amplitude = 0.5;
-  for (int i = 0; i < 4; i++) {
-    sum += amplitude * noise(p);
-    p *= 2.0;
-    amplitude *= 0.5;
-  }
-  return sum / 0.9375;
+float bayer2(vec2 a) {
+  a = floor(a);
+  return fract(dot(a, vec2(0.5, a.y * 0.75)));
+}
+
+float bayer4(vec2 a) {
+  return bayer2(0.5 * a) * 0.25 + bayer2(a);
+}
+
+float bayer8(vec2 a) {
+  return bayer4(0.5 * a) * 0.25 + bayer2(a);
+}
+
+// Red and blue sampled apart along shift, green in place.
+vec3 split(sampler2D tex, vec2 uv, vec2 shift) {
+  return vec3(texture2D(tex, uv + shift).r, texture2D(tex, uv).g, texture2D(tex, uv - shift).b);
 }
 
 void main() {
-  vec3 from = texture2D(uFrom, cover(vUv, uFromCover)).rgb;
-  vec3 to = texture2D(uTo, cover(vUv, uToCover)).rgb;
+  // 0 where the sweep starts, 1 where it ends.
+  float along = uDirection > 0.0 ? 1.0 - vUv.y : vUv.y;
+  float warp = noise(vUv * vec2(uAspect, 1.0) * 2.0) - 0.5;
+  float field = clamp(along + warp * uWarp, 0.0, 1.0);
 
-  float n = fbm(vUv * vec2(uAspect, 1.0) * uNoiseScale);
   // Stretched past both ends so 0 and 1 show one picture whole.
-  float threshold = mix(-uSoftness, 1.0 + uSoftness, uProgress);
-  float reveal = smoothstep(n - uSoftness, n + uSoftness, threshold);
-  vec3 color = mix(from, to, reveal);
+  float front = uProgress * (1.0 + uBand);
+  float local = clamp((front - field) / uBand, 0.0, 1.0);
+  float threshold = bayer8(gl_FragCoord.xy / uCell);
+  float reveal = local > threshold ? 1.0 : 0.0;
 
-  // Distance in pixels from the leading edge of the front.
-  float ahead = (n - threshold - uSoftness) / max(fwidth(n), 1e-5);
-  float edge = 1.0 - smoothstep(0.0, uEdgeWidth, abs(ahead));
-  edge *= step(1e-3, uProgress) * step(uProgress, 1.0 - 1e-3);
-  vec3 enlarged = texture2D(uTo, cover(vUv, uToCover / uEdgeScale)).rgb;
+  float inBand = 4.0 * local * (1.0 - local);
+  float running = sin(3.14159265 * uProgress);
+  vec2 shift = (vUv - 0.5) * uAberration * (inBand + 0.2 * running);
 
-  gl_FragColor = vec4(mix(color, enlarged, edge), 1.0);
+  float leaving = 1.0 + uDrift * uProgress;
+  float arriving = mix(uSettle, 1.0, uProgress);
+  vec3 from = split(uFrom, cover(vUv, uFromCover / leaving), shift);
+  vec3 to = split(uTo, cover(vUv, uToCover / arriving), shift);
+
+  gl_FragColor = vec4(mix(from, to, reveal), 1.0);
 }
 `

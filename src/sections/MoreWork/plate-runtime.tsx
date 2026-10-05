@@ -4,11 +4,12 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react'
-import { type ShaderMaterial, Texture, Vector2, VideoTexture } from 'three'
+import { type ShaderMaterial, Texture, Vector2, VideoTexture, WebGLRenderTarget } from 'three'
 import { FailureBoundary, useCanvasFailure } from '@/features/immersive/ui/failure-boundary'
 import { signalFirstFrame } from '@/features/immersive/ui/overlay'
 import { CANVAS_RESIZE } from '@/lib/webgl/canvas-resize'
 import { ContextGuard } from '@/lib/webgl/components/context-guard'
+import { MORE_WORK_MOTION } from './motion'
 import { PLATE_FRAGMENT, PLATE_VERTEX } from './plate-shader'
 
 gsap.registerPlugin(CustomEase)
@@ -16,17 +17,28 @@ gsap.registerPlugin(CustomEase)
 /**
  * The plate's live layer: one small classic WebGL canvas drawing a single
  * clip-space quad, on demand. It samples the plate's own image and video
- * elements, so nothing downloads twice. It draws while a dissolve runs and
+ * elements, so nothing downloads twice. It draws while a transition runs and
  * on each new frame of a video it shows; a resting still plate draws nothing.
  */
 
-export const PLATE_DISSOLVE = {
-  duration: 0.42,
-  ease: CustomEase.create('plate-dissolve', '0.23,1,0.32,1'),
-  softness: 0.08,
-  edgeWidth: 2,
-  edgeScale: 1.06,
-  noiseScale: 3,
+const { duration, ease } = MORE_WORK_MOTION.plate
+
+/** The transition's look (`./plate-shader`); its timing is in `./motion`. */
+export const PLATE_LOOK = {
+  duration: duration / 1000,
+  ease: CustomEase.create('more-work-plate', ease.join(',')),
+  /** How deep the dithered band is, as a share of the frame. */
+  band: 0.45,
+  /** How far low noise bends the band's edge. */
+  warp: 0.2,
+  /** Dither cell, CSS pixels. */
+  cell: 2,
+  /** Red/blue split at the frame's edge mid-band, in UV. */
+  aberration: 0.018,
+  /** The arriving picture's starting scale. */
+  settle: 1.04,
+  /** How much larger the leaving picture drifts. */
+  drift: 0.02,
 } as const
 
 // Hoisted so JSX never allocates fresh objects per render.
@@ -97,13 +109,22 @@ type PlateSceneProps = {
   onFirstFrame: () => void
 }
 
+/**
+ * What the transition runs between. `from` is a row's picture, or, when a
+ * new row interrupts a transition, a snapshot of the frame as it stood, so
+ * the next sweep starts from exactly what was on screen.
+ */
+type Shown = { from: number | 'snapshot'; to: number }
+
 function PlateScene({ media, index, onFirstFrame }: PlateSceneProps) {
   const size = useThree((state) => state.size)
+  const gl = useThree((state) => state.gl)
+  const scene = useThree((state) => state.scene)
+  const camera = useThree((state) => state.camera)
   const invalidate = useThree((state) => state.invalidate)
   const materialRef = useRef<ShaderMaterial>(null)
   const framesDrawn = useRef(0)
-  // Which pictures the dissolve runs between; `to` is the one it settles on.
-  const shown = useRef({ from: index, to: index })
+  const shown = useRef<Shown>({ from: index, to: index })
   const stopVideos = useRef<() => void>(() => {})
 
   const textures = useMemo(
@@ -118,34 +139,69 @@ function PlateScene({ media, index, onFirstFrame }: PlateSceneProps) {
     }
   }, [textures])
 
+  // Two, alternated: a snapshot must never be drawn into the target it samples.
+  const snapshots = useMemo(
+    () => [0, 1].map(() => new WebGLRenderTarget(1, 1, { depthBuffer: false })),
+    [],
+  )
+  const nextSnapshot = useRef(0)
+  useEffect(
+    () => () => {
+      for (const target of snapshots) target.dispose()
+    },
+    [snapshots],
+  )
+
   // Initial values only: runtime updates go through materialRef.
   const uniforms = useMemo(
     () => ({
-      uFrom: { value: textures[shown.current.from] },
-      uTo: { value: textures[shown.current.to] },
+      uFrom: { value: textures[shown.current.to] as Texture },
+      uTo: { value: textures[shown.current.to] as Texture },
       uFromCover: { value: new Vector2(1, 1) },
       uToCover: { value: new Vector2(1, 1) },
       uProgress: { value: 1 },
+      uDirection: { value: 1 },
       uAspect: { value: 1 },
-      uSoftness: { value: PLATE_DISSOLVE.softness },
-      uEdgeWidth: { value: PLATE_DISSOLVE.edgeWidth },
-      uEdgeScale: { value: PLATE_DISSOLVE.edgeScale },
-      uNoiseScale: { value: PLATE_DISSOLVE.noiseScale },
+      uBand: { value: PLATE_LOOK.band },
+      uWarp: { value: PLATE_LOOK.warp },
+      uCell: { value: PLATE_LOOK.cell },
+      uAberration: { value: PLATE_LOOK.aberration },
+      uSettle: { value: PLATE_LOOK.settle },
+      uDrift: { value: PLATE_LOOK.drift },
     }),
     [textures],
   )
 
+  /** Draws the frame as it stands into a spare target and returns it. */
+  const snapshot = () => {
+    const target = snapshots[nextSnapshot.current]
+    nextSnapshot.current = 1 - nextSnapshot.current
+    const buffer = gl.getDrawingBufferSize(new Vector2())
+    target.setSize(buffer.x, buffer.y)
+    gl.setRenderTarget(target)
+    gl.render(scene, camera)
+    gl.setRenderTarget(null)
+    return target.texture
+  }
+
   /** Points the uniforms at `shown` and redraws for as long as a video in it plays. */
-  const show = () => {
+  const show = (fromTexture?: Texture) => {
     const u = materialRef.current?.uniforms
     if (!u) return
     const { from, to } = shown.current
-    u.uFrom.value = textures[from]
+    const aspect = u.uAspect.value
+    if (from === 'snapshot') {
+      if (fromTexture) u.uFrom.value = fromTexture
+      u.uFromCover.value.set(1, 1)
+    } else {
+      u.uFrom.value = textures[from]
+      coverScale(media[from], aspect, u.uFromCover.value)
+    }
     u.uTo.value = textures[to]
-    coverScale(media[from], u.uAspect.value, u.uFromCover.value)
-    coverScale(media[to], u.uAspect.value, u.uToCover.value)
+    coverScale(media[to], aspect, u.uToCover.value)
     stopVideos.current()
-    const stops = [...new Set([media[from], media[to]])]
+    const playing = [...new Set([from === 'snapshot' ? null : media[from], media[to]])]
+    const stops = playing
       .filter((el): el is HTMLVideoElement => el instanceof HTMLVideoElement)
       .map((video) => onVideoFrames(video, invalidate))
     stopVideos.current = () => {
@@ -160,35 +216,36 @@ function PlateScene({ media, index, onFirstFrame }: PlateSceneProps) {
     const u = materialRef.current?.uniforms
     if (!u) return
     u.uAspect.value = size.width / Math.max(size.height, 1)
+    u.uCell.value = PLATE_LOOK.cell * gl.getPixelRatio()
     show()
     // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; the size is the trigger
-  }, [size.width, size.height, show])
+  }, [size.width, size.height, gl, show])
 
-  // A new row mid-dissolve retargets instead of restarting: the picture that
-  // fills most of the plate becomes the base, so at most the smaller share
-  // of it changes at once, and the progress tween picks up where it is.
+  // A new row starts a full transition from whatever is on screen: the
+  // picture at rest, or a snapshot when it lands mid-sweep. The sweep runs
+  // down the plate when the pointer moved down the list, up when it moved up.
   useEffect(() => {
     const u = materialRef.current?.uniforms
     const state = shown.current
     if (!u || index === state.to) return
-    if (u.uProgress.value >= 0.5) {
-      state.from = state.to
-      u.uProgress.value = 0
-    }
-    state.to = index
-    show()
+    const midway = u.uProgress.value < 1
+    const fromTexture = midway ? snapshot() : undefined
+    u.uDirection.value = index > state.to ? 1 : -1
+    shown.current = { from: midway ? 'snapshot' : state.to, to: index }
+    u.uProgress.value = 0
+    show(fromTexture)
     const tween = gsap.to(u.uProgress, {
       value: 1,
-      duration: PLATE_DISSOLVE.duration,
-      ease: PLATE_DISSOLVE.ease,
+      duration: PLATE_LOOK.duration,
+      ease: PLATE_LOOK.ease,
       onUpdate: invalidate,
       overwrite: true,
     })
     return () => {
       tween.kill()
     }
-    // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; the row is the trigger
-  }, [index, invalidate, show])
+    // biome-ignore lint/correctness/useExhaustiveDependencies: `show` and `snapshot` read refs; the row is the trigger
+  }, [index, invalidate, snapshot, show])
 
   useFrame(() => signalFirstFrame(framesDrawn, onFirstFrame))
 
