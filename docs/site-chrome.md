@@ -110,16 +110,20 @@ A work card opens its case study in three beats. The card's picture and the
    the page fades away around the picture
    (`src/heros/WorkHero/pageExit.ts`). Headings, copy, pictures and badges
    fade and blur out in place, the farthest first, so the page clears in
-   toward the picture. The picture, top bar and dock stay. If the page
-   arrives before the exit ends, the old page's fade finishes it over the
-   time the exit had left.
-2. Handoff. The picture leaves last: it scales down to 96% and fades where
-   it stands. The hero's picture then comes straight in at the hero frame,
-   fading up from 97%. The picture never travels: the transition group holds
-   the card's box (`step-end`) until the swap, then takes the hero's. On a
-   slow page the picture waits alone until the case study arrives.
-3. Entrance. The hero's copy starts its load-in as the hero's picture
-   appears: every `hero-*` animation waits `--morph-hold`, which the card's
+   toward the picture (280ms each, 180ms spread). The picture, top bar and
+   dock stay. If the page arrives before the exit ends, the old page's fade
+   finishes it over the time the exit had left.
+2. Handoff. The picture leaves last, starting as the nearest pieces finish:
+   it scales down to 95%, softens and fades where it stands (360ms, one
+   ease-in-out). After an 80ms beat the hero's picture comes into focus at
+   the hero frame: it sharpens and fades in over 520ms while it scales up
+   from 94% over a longer 900ms, so it settles instead of popping. The
+   picture never travels: the transition group holds the card's box
+   (`step-end`) until the swap, then takes the hero's. On a slow page the
+   picture waits alone until the case study arrives. Durations live in
+   `globals.css`; `morph.ts` only moves the start times.
+3. Entrance. The hero's copy starts its load-in 120ms after the hero's
+   picture: every `hero-*` animation waits `--morph-hold`, which the card's
    `onShare` callback sets on the hero's parent. The body after the hero
    (`[data-slot="work-body"]`) rises in after it.
 

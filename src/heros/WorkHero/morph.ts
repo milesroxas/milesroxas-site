@@ -85,16 +85,19 @@ export function useWorkCardMorph(
   }
 }
 
-/** The card's picture scales down and fades out once the page around it is gone. */
-const MEDIA_OUT = 240
-/** The hero's picture scales up and fades in where it rests. */
-const MEDIA_IN = 320
+/** The card's picture starts to recede as the nearest pieces of the page finish leaving. */
+const EXIT_OVERLAP = 100
+/** The empty beat between the card's picture leaving and the hero's arriving. */
+const PAUSE = 80
+/** The hero copy follows the picture in by this much. */
+const COPY_LAG = 120
 /** The page around the picture never clears faster than this. */
 const PAGE_OUT_MIN = 120
 
 type Pseudo = { getAnimations(): Animation[] }
 type MorphInstance = ViewTransitionInstance & Record<'group' | 'old' | 'new', Pseudo>
 
+/** Durations stay in globals.css; only the start moves. */
 const retime = (pseudo: Pseudo, timing: OptionalEffectTiming) => {
   for (const animation of pseudo.getAnimations()) {
     animation.effect?.updateTiming({ fill: 'both', ...timing })
@@ -103,23 +106,28 @@ const retime = (pseudo: Pseudo, timing: OptionalEffectTiming) => {
   }
 }
 
+const longest = (pseudo: Pseudo) =>
+  Math.max(0, ...pseudo.getAnimations().map((a) => Number(a.effect?.getTiming().duration) || 0))
+
 /**
  * Times the picture's handoff from the exit's end. Whatever the exit had left
- * when the navigation landed fades first, then the card's picture scales down
- * and fades where it stands, then the hero's picture comes in at the frame.
- * The group holds the card's box until the swap (`step-end` in globals.css),
- * so the picture never travels. A slow page leaves the picture waiting alone.
+ * when the navigation landed fades first, then the card's picture recedes
+ * where it stands, and after a beat the hero's picture comes into focus at
+ * the frame. The group holds the card's box until the swap (`step-end` in
+ * globals.css), so the picture never travels. A slow page leaves the picture
+ * waiting alone.
  */
 function choreographWorkMorph(instance: ViewTransitionInstance) {
-  const lag = Math.max((exitEnds ?? 0) - performance.now(), 0)
+  const lag = Math.max((exitEnds ?? 0) - EXIT_OVERLAP - performance.now(), 0)
   // The old snapshot is taken: the page the exit cleared can come back.
   restorePage()
   const { group, old, new: next } = instance as MorphInstance
-  const swap = lag + MEDIA_OUT
+  const swap = lag + longest(old)
+  const arrive = swap + PAUSE
 
   retime(group, { delay: 0, duration: swap })
-  retime(old, { delay: lag, duration: MEDIA_OUT })
-  retime(next, { delay: swap, duration: MEDIA_IN })
+  retime(old, { delay: lag })
+  retime(next, { delay: arrive })
   for (const animation of document.documentElement.getAnimations({ subtree: true })) {
     const { effect } = animation
     if (
@@ -131,8 +139,8 @@ function choreographWorkMorph(instance: ViewTransitionInstance) {
     }
   }
 
-  // The hero copy and the body after it start as the picture appears (`--morph-hold`).
+  // The hero copy and the body after it follow the picture in (`--morph-hold`).
   document
     .querySelector<HTMLElement>('[data-slot="work-hero"]')
-    ?.parentElement?.style.setProperty('--morph-hold', `${swap}ms`)
+    ?.parentElement?.style.setProperty('--morph-hold', `${arrive + COPY_LAG}ms`)
 }

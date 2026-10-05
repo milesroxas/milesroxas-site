@@ -7,9 +7,9 @@
  * picture, the top bar and the dock stay.
  */
 
-const DURATION = 220
+const DURATION = 280
 /** The nearest piece leaves this long after the farthest. */
-const SPREAD = 140
+const SPREAD = 180
 /** Past this many pieces the blur costs more than it adds. */
 const BLUR_LIMIT = 60
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)'
