@@ -49,18 +49,20 @@ const DPR: [number, number] = [1, 2]
 const CANVAS_STYLE = { pointerEvents: 'none' } as const
 const PLANE_ARGS: [number, number] = [2, 2]
 
-type PlateMedia = HTMLImageElement | HTMLVideoElement
+type PlateElement = HTMLImageElement | HTMLVideoElement
+/** What a texture samples: a video as it plays, an image as a still. */
+type PlateMedia = HTMLCanvasElement | HTMLVideoElement
 
 /** The picture in each of the plate's layers, in row order; null if any is missing. */
-function plateMedia(frame: HTMLElement, count: number): PlateMedia[] | null {
-  const media = Array.from({ length: count }, (_, i) =>
-    frame.querySelector<PlateMedia>(`[data-plate-layer="${i}"] :is(img, video)`),
+function plateElements(frame: HTMLElement, count: number): PlateElement[] | null {
+  const elements = Array.from({ length: count }, (_, i) =>
+    frame.querySelector<PlateElement>(`[data-plate-layer="${i}"] :is(img, video)`),
   )
-  return media.every(Boolean) ? (media as PlateMedia[]) : null
+  return elements.every(Boolean) ? (elements as PlateElement[]) : null
 }
 
 /** Resolves once the element has pixels to sample; an image that fails rejects. */
-function whenDrawable(el: PlateMedia, signal: AbortSignal) {
+function whenDrawable(el: PlateElement, signal: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
     if (el instanceof HTMLVideoElement) {
       if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) return resolve()
@@ -73,10 +75,23 @@ function whenDrawable(el: PlateMedia, signal: AbortSignal) {
   })
 }
 
+/**
+ * An image's pixels at their real size. A responsive `<img>` divides its
+ * `naturalWidth` by the srcset density, so three would allocate the texture
+ * smaller than the bitmap WebGL uploads, and the upload fails to black.
+ */
+async function stillOf(img: HTMLImageElement) {
+  const bitmap = await createImageBitmap(img)
+  const canvas = document.createElement('canvas')
+  canvas.width = bitmap.width
+  canvas.height = bitmap.height
+  canvas.getContext('2d')?.drawImage(bitmap, 0, 0)
+  bitmap.close()
+  return canvas
+}
+
 const mediaAspect = (el: PlateMedia) =>
-  el instanceof HTMLVideoElement
-    ? el.videoWidth / el.videoHeight
-    : el.naturalWidth / el.naturalHeight
+  el instanceof HTMLVideoElement ? el.videoWidth / el.videoHeight : el.width / el.height
 
 /** The UV scale that fits a picture into the plate like `object-fit: cover`. */
 function coverScale(el: PlateMedia, plateAspect: number, out: Vector2) {
@@ -294,12 +309,17 @@ export default function PlateRuntime({
 
   useEffect(() => {
     const frame = frameRef.current
-    const found = frame && plateMedia(frame, count)
+    const found = frame && plateElements(frame, count)
     if (!found) return fail('media')
     const controller = new AbortController()
-    Promise.all(found.map((el) => whenDrawable(el, controller.signal))).then(
-      () => setMedia(found),
-      () => fail('media'),
+    const { signal } = controller
+    const sample = async (el: PlateElement) => {
+      await whenDrawable(el, signal)
+      return el instanceof HTMLVideoElement ? el : stillOf(el)
+    }
+    Promise.all(found.map(sample)).then(
+      (sources) => signal.aborted || setMedia(sources),
+      () => signal.aborted || fail('media'),
     )
     return () => controller.abort()
   }, [frameRef, count, fail])
