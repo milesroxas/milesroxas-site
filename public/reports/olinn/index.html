@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>O'Linn Website Progress</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..650;1,8..60,400&display=swap">
+<style>
+  /* Layout: a letter column with numbered exhibits set beside or below the paragraph they illustrate. */
+  :root {
+    --bg: #f1f3ec;
+    --surface: #fafbf6;
+    --fg: #1a2015;
+    --muted: #5a6450;
+    --line: #d3d9c8;
+    --accent: #4d6413;
+    --on-accent: #f6f8ef;
+    --accent-soft: #e2e9cf;
+    --bar-before: #a3a996;
+    --guide: #1a86b3;
+    --shadow: 0 1px 2px #1a201512, 0 8px 24px #1a20150f;
+
+    --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+    --step--1: 0.8125rem;
+    --step-0: 1.0625rem;
+    --step-1: 1.25rem;
+    --step-2: 1.625rem;
+    --step-3: clamp(2.125rem, 1.5rem + 2.6vw, 3.25rem);
+
+    --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+    --measure: 40rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e120d;
+      --surface: #151a13;
+      --fg: #e5e9dc;
+      --muted: #9ca391;
+      --line: #2c3428;
+      --accent: #aabd6c;
+      --on-accent: #12170d;
+      --accent-soft: #222b17;
+      --bar-before: #5d6454;
+      --guide: #5fcaf2;
+      --shadow: 0 1px 2px #0006, 0 8px 24px #0005;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e120d;
+    --surface: #151a13;
+    --fg: #e5e9dc;
+    --muted: #9ca391;
+    --line: #2c3428;
+    --accent: #aabd6c;
+    --on-accent: #12170d;
+    --accent-soft: #222b17;
+    --bar-before: #5d6454;
+    --guide: #5fcaf2;
+    --shadow: 0 1px 2px #0006, 0 8px 24px #0005;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 68rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    padding-block: clamp(2rem, 1rem + 4vw, 4.5rem) 4rem;
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+  a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+  a:hover { text-decoration-thickness: 2px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  p { margin: 0; text-wrap: pretty; }
+  h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; color: var(--fg); }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Letterhead */
+  .head { display: grid; gap: 1.25rem; max-width: 52rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+  h1 {
+    font-size: var(--step-3);
+    font-weight: 750;
+    font-stretch: 82%;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+  .lede { max-width: var(--measure); font-size: var(--step-1); line-height: 1.5; display: grid; gap: 0.9rem; }
+  .links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .link-card {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--fg);
+    min-width: 0;
+  }
+  .link-card strong { font-family: var(--font-display); font-weight: 650; font-stretch: 90%; font-size: var(--step-0); }
+  .link-card span { font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); overflow-wrap: anywhere; }
+  a.link-card:hover { border-color: var(--accent); }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1rem;
+    padding-block: 1rem;
+    border-block: 1px solid var(--line);
+    font-size: 0.9375rem;
+    color: var(--muted);
+  }
+  .legend p { flex: 1 1 18rem; min-width: 0; }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.45rem;
+    line-height: 1.2;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+  }
+  .tag.after { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+  /* Sections */
+  section { display: grid; gap: 1.5rem; }
+  .section-head { display: grid; gap: 0.4rem; padding-top: 1.25rem; border-top: 2px solid var(--fg); }
+  h2 { font-size: var(--step-2); font-weight: 700; font-stretch: 85%; line-height: 1.1; }
+  h3 {
+    font-size: var(--step-1);
+    font-weight: 650;
+    font-stretch: 90%;
+    line-height: 1.2;
+    padding-top: 0.5rem;
+  }
+  .prose { max-width: var(--measure); display: grid; gap: 1rem; }
+  .items { display: grid; gap: 1.75rem; }
+  .item { max-width: var(--measure); }
+  .item b { font-family: var(--font-display); font-weight: 650; font-stretch: 92%; font-size: 1.0625rem; letter-spacing: 0.005em; }
+  .did { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; max-width: var(--measure); }
+  .did li { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); gap: 0.6rem; }
+  .did li::before { content: ""; width: 0.55rem; height: 0.55rem; margin-top: 0.62em; background: var(--accent); }
+
+  /* Exhibits: text beside the screenshots on wide screens, above them on narrow ones. */
+  .exhibit { display: grid; gap: 1.25rem; align-items: start; }
+  @media (min-width: 900px) {
+    .exhibit.side { grid-template-columns: minmax(0, 19rem) minmax(0, 1fr); gap: 2.5rem; }
+    .exhibit.side .item { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); }
+  }
+  .figs { display: grid; gap: 2rem; min-width: 0; }
+
+  figure { margin: 0; display: grid; gap: 0.7rem; min-width: 0; }
+  .shots { display: grid; gap: 0.75rem; min-width: 0; align-items: start; }
+  .phone .shots { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 34rem; }
+  .wide .shots { grid-template-columns: minmax(0, 1fr); }
+  .shot {
+    all: unset;
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+    justify-items: start;
+    cursor: zoom-in;
+    min-width: 0;
+  }
+  .shot:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .shot img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    background: #0b1213;
+    box-shadow: var(--shadow);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+  .shot:hover img { transform: translateY(-2px); }
+  figcaption { font-size: 0.9375rem; line-height: 1.5; color: var(--muted); max-width: 40rem; }
+  .fig-no { font-family: var(--font-mono); font-size: var(--step--1); color: var(--fg); margin-right: 0.4rem; letter-spacing: 0.04em; }
+  .guide-swatch {
+    display: inline-block;
+    width: 1.4rem;
+    height: 0;
+    border-top: 3px dashed var(--guide);
+    vertical-align: middle;
+    margin-inline: 0.15rem;
+  }
+
+
+  .desk .shots { grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 700px) { .desk .shots { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .overview-row { display: grid; gap: 1.25rem; align-items: start; }
+  @media (min-width: 900px) {
+    .overview-row { grid-template-columns: minmax(0, 34rem) minmax(0, 19rem); gap: 2.5rem; }
+    .overview-note { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); }
+  }
+  .overview .shots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .overview-note { display: grid; gap: 0.5rem; max-width: var(--measure); }
+  .device {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-right: 0.5rem;
+  }
+  .viewer-body.tall { place-items: start center; }
+  .viewer-body.tall img { width: min(100%, 900px); max-height: none; }
+
+
+  .map-text { display: grid; gap: 1rem; }
+  .portrait .shots { max-width: 46rem; }
+  .why {
+    display: grid;
+    gap: 0.6rem;
+    max-width: 44rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .why ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.55rem; }
+  .why li { padding-left: 0.2rem; }
+
+  /* Page weight chart */
+  .weight {
+    display: grid;
+    gap: 0.9rem;
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    max-width: 44rem;
+  }
+  .weight h3 { padding: 0; font-size: var(--step-0); }
+  .bars { display: grid; gap: 0.7rem; }
+  .bar-row { display: grid; grid-template-columns: minmax(6.5rem, 9rem) minmax(0, 1fr); gap: 0.75rem; align-items: center; }
+  .bar-row .label { text-transform: none; letter-spacing: 0.01em; color: var(--fg); }
+  .track { position: relative; height: 1.6rem; }
+  .fill { position: absolute; inset-block: 0; left: 0; display: flex; align-items: center; }
+  .fill.before { width: 70%; background: var(--bar-before); }
+  .fill.range {
+    left: 70%;
+    width: 20%;
+    background: repeating-linear-gradient(135deg, var(--bar-before) 0 4px, transparent 4px 8px);
+    border: 1px solid var(--bar-before);
+  }
+  .fill.after { background: var(--accent); }
+  .value {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--fg);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .axis {
+    position: relative;
+    height: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .axis span {
+    position: absolute;
+    top: 0.2rem;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .axis span:first-child { transform: none; }
+  .weight .note { font-size: 0.875rem; color: var(--muted); }
+
+  .signoff { max-width: var(--measure); display: grid; gap: 1rem; padding-top: 1.25rem; border-top: 2px solid var(--fg); }
+  .signature { font-family: var(--font-display); font-size: var(--step-2); font-weight: 700; font-stretch: 85%; }
+  .colophon { font-size: 0.875rem; color: var(--muted); max-width: var(--measure); }
+
+  /* Viewer */
+  dialog#viewer {
+    width: min(100vw - 2rem, 72rem);
+    max-height: calc(100dvh - 2rem);
+    padding: 0;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--fg);
+    box-shadow: 0 24px 64px #0007;
+  }
+  dialog#viewer::backdrop { background: #0b0f0acc; }
+  .viewer-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .viewer-title { flex: 1 1 12rem; min-width: 0; font-family: var(--font-display); font-weight: 650; font-stretch: 90%; }
+  .switch { display: inline-flex; border: 1px solid var(--line); }
+  .switch button, .close {
+    font: 500 0.75rem/1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.6rem 0.8rem;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    min-height: 2.5rem;
+  }
+  .switch button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+  .close { border: 1px solid var(--line); color: var(--fg); }
+  .viewer-body { overflow: auto; max-height: calc(100dvh - 7rem); display: grid; place-items: center; background: #0b1213; }
+  .viewer-body img { display: block; width: auto; height: auto; max-width: 100%; max-height: calc(100dvh - 9.5rem); }
+  .viewer-hint { padding: 0.5rem 1rem; font-size: 0.8125rem; color: var(--muted); border-top: 1px solid var(--line); }
+
+  @media (max-width: 520px) {
+    .bar-row { grid-template-columns: minmax(0, 1fr); gap: 0.3rem; }
+    .bar-row > span:empty { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .shot img { transition: none; }
+    .shot:hover img { transform: none; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="head">
+    <div class="meta">
+      <span class="label">Progress update</span>
+      <span class="label">October 5, 2026</span>
+      <span class="label">To Jason · From Miles</span>
+    </div>
+    <h1>Progress on the new website</h1>
+    <div class="lede">
+      <p>Here's a quick update on the new website. Everything below is live on the <a href="https://o-linn-website-v4-git-dev-o-linn-team.vercel.app/" target="_blank" rel="noopener">preview ↗</a>.</p>
+    </div>
+    <div class="links">
+      <a class="link-card" id="preview-link" href="https://o-linn-website-v4-git-dev-o-linn-team.vercel.app/" target="_blank" rel="noopener">
+        <strong>Preview ↗</strong>
+        <span>o-linn-website-v4-git-dev-o-linn-team.vercel.app</span>
+      </a>
+      <a class="link-card" href="https://o-linn-website-v4.vercel.app/" target="_blank" rel="noopener">
+        <strong>Current version ↗</strong>
+        <span>o-linn-website-v4.vercel.app</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="legend">
+    <span class="tag">Before</span>
+    <span class="tag after">After</span>
+    <p><b>Before</b> is the current version you published. <b>After</b> is the preview. The examples cover desktop and phone. Tap any screenshot to enlarge it and flip between the two.</p>
+  </div>
+
+  <section aria-labelledby="start">
+    <div class="section-head">
+      <h2 id="start">Where it started</h2>
+    </div>
+    <div class="prose">
+      <p>The design and content you approved looked great, but underneath it was held together by layers of patches. The homepage loaded 7 to 9 MB of images on first view, spacing and text sizes varied from section to section, some text and buttons were too small on phones, the motion felt abrupt, and neither form could actually send anything.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="did">
+    <div class="section-head">
+      <h2 id="did">What I did</h2>
+    </div>
+    <ul class="did">
+      <li><p><b>Rebuilt the foundation.</b> The site now runs on a modern, standard setup. I moved everything over with no visible change first, then refined from there. It's faster, more reliable and much easier to update safely.</p></li>
+      <li><p><b>Much faster.</b> Images are now sized for each screen, so the first view dropped from 7–9 MB to about 0.5 MB on phones and 1 MB on desktop, roughly 90% lighter.</p></li>
+      <li><p><b>Refined design and motion.</b> Details in the <a href="#visual">next section</a>.</p></li>
+      <li><p><b>Forms ready to switch on.</b> The careers application and the security request form are both built and tested. They can't send yet: we need the email setup and a few answers from you (next message).</p></li>
+      <li><p><b>Security and launch prep.</b> I reviewed the site's security and fixed what I found. I also went through all 69 pages on the current WordPress site and set up redirects so old links keep working.</p></li>
+    </ul>
+
+    <div class="weight" role="figure" aria-labelledby="weight-title">
+      <h3 id="weight-title">Images loaded on the homepage's first view</h3>
+      <div class="bars">
+        <div class="bar-row">
+          <span class="label">Before</span>
+          <div class="track" aria-label="Before: 7 to 9 megabytes">
+            <div class="fill before"></div>
+            <div class="fill range"></div>
+            <span class="value" style="left: 0.5rem">7–9 MB</span>
+          </div>
+        </div>
+        <div class="bar-row">
+          <span class="label">After · desktop</span>
+          <div class="track" aria-label="After on desktop: about 1 megabyte">
+            <div class="fill after" style="width: 10%"></div>
+            <span class="value" style="left: calc(10% + 0.5rem)">≈ 1 MB</span>
+          </div>
+        </div>
+        <div class="bar-row">
+          <span class="label">After · phone</span>
+          <div class="track" aria-label="After on phones: about 0.5 megabytes">
+            <div class="fill after" style="width: 5%"></div>
+            <span class="value" style="left: calc(5% + 0.5rem)">≈ 0.5 MB</span>
+          </div>
+        </div>
+        <div class="bar-row" aria-hidden="true">
+          <span></span>
+          <div class="axis">
+            <span style="left: 0%">0</span>
+            <span style="left: 20%">2</span>
+            <span style="left: 40%">4</span>
+            <span style="left: 60%">6</span>
+            <span style="left: 80%">8</span>
+            <span style="left: 100%; transform: translateX(-100%)">10 MB</span>
+          </div>
+        </div>
+      </div>
+      <p class="note">The striped part of the first bar is the range between lighter and heavier first views.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="visual" id="visual-section">
+    <div class="section-head">
+      <h2 id="visual">What you'll notice visually</h2>
+    </div>
+
+    <div class="overview-row">
+      <figure class="overview" data-key="home-full" data-title="Fig. 1 · The whole homepage" data-tall>
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/home-full-before.webp" width="900" height="3319" alt="Before: the full homepage as currently published" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/home-full-after-h2.webp" width="900" height="3498" alt="After: the full homepage on the preview" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 1</span><span class="device">Desktop · 1440 px</span>The whole homepage, top to bottom. The content is the same; the spacing, headings, edges and details around it are not. Tap either side to scroll through it full size.</figcaption>
+          </figure>
+      <div class="overview-note">
+        <p class="label">At a glance</p>
+        <p>Most of the work shows on every screen size. The examples below cover desktop and phone, with a few of the clearest changes on each. They're a sample, not the full list.</p>
+      </div>
+    </div>
+
+    <h3>Across the whole site</h3>
+    <div class="items">
+      <div class="exhibit">
+        <p class="item"><b>Consistent layout.</b> Edges, spacing and heading sizes used to vary from section to section (seven slightly different heading sizes). Now everything follows one rhythm, so the site feels more polished and intentional.</p>
+        <div class="figs">
+          <figure class="desk" data-key="services-desk" data-title="Fig. 2 · Services section">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/services-desk-before.webp" width="1425" height="871" alt="Before: the services section with a smaller heading and the View all services link beside the title" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/services-desk-after.webp" width="1425" height="951" alt="After: the services section with the shared heading size and the link aligned to the heading block" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 2</span><span class="device">Desktop · 1440 px</span>One heading size and one spacing rhythm for every section. "View all services" now lines up with the bottom of the heading block, the same way in every section.</figcaption>
+          </figure>
+        </div>
+      </div>
+<p class="item"><b>One color palette.</b> Popups, the blog and the handbook still had older greens from previous updates made mixed in. Everything now uses the approved olive.</p>
+<div class="exhibit side">
+        <p class="item"><b>Readable text.</b> Some labels were as small as 7–10px. Nothing is smaller than 12px now, which is easier to read, especially on phones.</p>
+        <div class="figs">
+          <figure class="phone" data-key="labels" data-title="Fig. 3 · Small labels in a service popup">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/labels-before.webp" width="780" height="640" alt="Before: service popup on a phone with tiny image credit and location labels" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/labels-after.webp" width="780" height="640" alt="After: the same popup with the image credit and labels at a readable size" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 3</span><span class="device">Phone · 390 px</span>Compare the image credit and "Address-area aerial" under the photo.</figcaption>
+          </figure>
+        </div>
+      </div>
+<div class="exhibit">
+        <p class="item"><b>Cleaner icons.</b> Icons were a mix of text symbols and hand-drawn shapes. They're now one matching set, and arrows are consistent: → stays on the site, ↗ opens another site.</p>
+        <div class="figs">
+          <figure class="wide" data-key="arrows" data-title="Fig. 4 · Arrows on the technology section">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/arrows-before.webp" width="1630" height="290" alt="Before: Explore links with the ↗ arrow, though they open popups on the site" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/arrows-after.webp" width="1630" height="290" alt="After: the same Explore links with the → arrow" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 4</span><span class="device">Desktop · 1440 px</span>These open popups on the site, so they now use →.</figcaption>
+          </figure>
+        </div>
+      </div>
+<p class="item"><b>Easier tapping on phones.</b> Many buttons were too small to tap reliably. They now have a comfortable tap area without looking any bigger.</p>
+    </div>
+
+    <h3>Page by page</h3>
+    <div class="items">
+      <div class="exhibit">
+        <p class="item"><b>Header and mobile menu.</b> One header is now shared by every page. On phones the menu opens as a clean full-screen panel with clear rows and a call button.</p>
+        <div class="figs">
+          <figure class="desk" data-key="pages-desk" data-title="Fig. 5 · Header on a service page">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/pages-desk-before.webp" width="1440" height="900" alt="Before: a service page with its own header, different links and only a phone button" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/pages-desk-after-h2.webp" width="1440" height="900" alt="After: the service page with the same header as the homepage, including Request Security" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 5</span><span class="device">Desktop · 1440 px</span>A service page. It had its own header with different links and no Request button; it now uses the homepage header.</figcaption>
+          </figure>
+<figure class="phone" data-key="menu" data-title="Fig. 6 · Mobile menu, open">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/menu-before.webp" width="780" height="1688" alt="Before: the open phone menu shows links in a loose row over the page" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/menu-after-h2.webp" width="780" height="1688" alt="After: a full-screen menu with one link per row and a call button" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 6</span><span class="device">Phone · 390 px</span>The menu open on a phone.</figcaption>
+          </figure>
+        </div>
+      </div>
+<div class="exhibit">
+        <p class="item"><b>Top of the homepage.</b> The headline drifted out of line with the header, more so on wide screens. It now lines up with the logo, and the map lines up with the Request button, as in the approved layout. The truck "Lights" button was tiny and covered the bumper on phones; it's now readable and out of the way.</p>
+        <div class="figs">
+          <figure class="wide" data-key="hero-wide" data-title="Fig. 7 · Top of the homepage on a wide screen">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/hero-wide-before.webp" width="1600" height="812" alt="Before: on a wide screen the headline starts right of the logo and the map extends past the Request button" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/hero-wide-after-h2.webp" width="1600" height="812" alt="After: the headline starts in line with the logo and the map ends in line with the Request button" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 7</span><span class="device">Wide desktop · 2560 px</span>The dashed lines <span class="guide-swatch" aria-hidden="true"></span> mark the logo's left edge and the Request button's right edge. Before, the headline sat 30 px inside the line and the map ran 47 px past it. The map's search and filters are also tidier.</figcaption>
+          </figure>
+<figure class="phone" data-key="hero-phone" data-title="Fig. 8 · Top of the homepage on a phone">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/hero-phone-before.webp" width="780" height="960" alt="Before: a small Lights button covers the truck&#x27;s bumper" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/hero-phone-after-h2.webp" width="780" height="960" alt="After: a larger Lights button sits clear of the truck" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 8</span><span class="device">Phone · 390 px</span>Look for the Lights button near the truck's front bumper.</figcaption>
+          </figure>
+        </div>
+      </div>
+<div class="exhibit">
+        <div class="map-text">
+          <p class="item"><b>Map.</b> On phones the town names were cut off and markers piled on top of each other. Names are now readable and markers stay distinct at every zoom.</p>
+          <p class="item">The map also had the biggest rework of any part of the site, on desktop and on phones:</p>
+          <ul class="did">
+            <li><p><b>One search instead of three controls.</b> There was a search box, a separate "Jump to a destination" list and a "Full valley" button. Now one field does all three: click or tap it to see every destination, grouped into headquarters, Valley communities, and clients and event venues, or type to narrow the list. Matching letters are highlighted, and the reset button sits on the map with the zoom buttons.</p></li>
+            <li><p><b>Results that fit the screen.</b> Search results used to drop over the filters and the map, and on phones they were cut off at the bottom of the card. On desktop the list now opens under the field, the same width as the field. On phones it opens as a panel from the bottom of the screen, with its own search box, room for the full list, and a handle to pull it away.</p></li>
+            <li><p><b>Easier on phones.</b> The filters sit in one row you can swipe, and the map's buttons and filters have a full-size tap area.</p></li>
+            <li><p><b>Smoother and quicker.</b> Explore the Map now grows the card into the full map and shrinks it back on close, instead of cutting to a popup. The map also starts as soon as the page is ready instead of waiting for every image to load.</p></li>
+          </ul>
+          <div class="why">
+            <p class="label">Why this is better</p>
+            <ul>
+              <li><b>Familiar.</b> It works the way Google Maps and Apple Maps do: one search box that suggests places as you type, and on phones a panel that slides up from the bottom. Visitors have nothing new to learn.</li>
+              <li><b>Thumb-friendly.</b> A bottom panel keeps results within reach of the thumb and leaves the map in view behind it. The map's controls have tap areas of at least 44 px, Apple's recommended minimum.</li>
+              <li><b>Accessible.</b> The search follows the W3C's standard pattern for this kind of field, so it works fully from a keyboard (arrow keys, Enter, Escape) and screen readers read out each option.</li>
+              <li><b>Nothing hidden.</b> Results no longer cover the controls, and a marker never covers a town name.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="figs">
+          <figure class="desk portrait" data-key="map-controls" data-title="Fig. 9 · Map search, opened">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/map-controls-before.webp" width="1000" height="1111" alt="Before: the map card with a search box, filter buttons, a Jump to a destination list and a Full valley button" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/map-controls-after.webp" width="1000" height="1196" alt="After: one search field open over the map, listing headquarters and Valley communities under headings" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 9</span><span class="device">Desktop · 1440 px</span>The map card with its search open. Before: a search box, a separate "Jump to a destination" list and a "Full valley" button. After: one field that opens every destination, grouped.</figcaption>
+          </figure>
+<figure class="desk portrait" data-key="map-search" data-title="Fig. 10 · Searching the map for &quot;palm&quot;">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/map-search-before.webp" width="1000" height="1111" alt="Before: a plain list of results covering the filters and the map" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/map-search-after.webp" width="1000" height="1196" alt="After: results grouped under Headquarters, Valley communities and Clients and event venues, with the word Palm highlighted" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 10</span><span class="device">Desktop · 1440 px</span>Typing "palm". Before, the results covered the filters and the map, with no grouping. After, they are grouped, marked with icons, and the matching letters are highlighted.</figcaption>
+          </figure>
+<figure class="phone" data-key="map-sheet" data-title="Fig. 11 · Searching the map on a phone">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/map-sheet-before.webp" width="780" height="1250" alt="Before: search results squeezed inside the map card and cut off at its bottom edge" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/map-sheet-after.webp" width="780" height="1250" alt="After: a panel from the bottom of the screen with a search box, a pull handle and grouped results" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 11</span><span class="device">Phone · 390 px</span>Typing "palm" on a phone. Before, the results were cut off by the bottom of the map card. After, they open in a panel from the bottom of the screen with room for the full list.</figcaption>
+          </figure>
+<figure class="phone" data-key="map" data-title="Fig. 12 · Homepage map on a phone">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/map-before.webp" width="702" height="920" alt="Before: markers piled together and town names cut off on the small map" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/map-after.webp" width="692" height="1096" alt="After: the valley fills the map, markers are separate and town names are readable" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 12</span><span class="device">Phone · 390 px</span>The map card on the homepage. Markers no longer pile up and town names are no longer cut off.</figcaption>
+          </figure>
+<figure class="desk" data-key="map-desk" data-title="Fig. 13 · Explore the Map on desktop">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/map-desk-before.webp" width="1440" height="900" alt="Before: the full map with a search box, a separate destination list and a smaller map" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/map-desk-after-h2.webp" width="1440" height="900" alt="After: the full map with one search box and a larger map" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 13</span><span class="device">Desktop · 1440 px</span>The full map on desktop. The single search replaces the separate destination list, the map gets the extra room, and the reset button sits with the zoom buttons.</figcaption>
+          </figure>
+        </div>
+      </div>
+<div class="exhibit side">
+        <p class="item"><b>Service and blog cards.</b> On phones, service descriptions spilled past the card edges; that's fixed. On hover, the photo now zooms gently inside the card instead of the whole card jumping.</p>
+        <div class="figs">
+          <figure class="phone" data-key="services" data-title="Fig. 14 · Service cards on a phone">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/services-before.webp" width="780" height="1226" alt="Before: the second line of each card description runs to the card&#x27;s edge" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/services-after.webp" width="780" height="1262" alt="After: card descriptions sit inside the card padding" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 14</span><span class="device">Phone · 390 px</span>Watch the second line of each description.</figcaption>
+          </figure>
+        </div>
+      </div>
+<div class="exhibit">
+        <p class="item"><b>Company timeline.</b> The borders looked broken. It's now one clean line, and opening a year lights up that step.</p>
+        <div class="figs">
+          <figure class="desk" data-key="timeline-desk" data-title="Fig. 15 · Company timeline">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/timeline-desk-before.webp" width="1200" height="1083" alt="Before: the timeline as a boxed list with uneven borders" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/timeline-desk-after.webp" width="1200" height="1087" alt="After: the timeline as one vertical line with 1981 lit up" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 15</span><span class="device">Desktop · 1440 px</span>The Our Story popup with 1981 open.</figcaption>
+          </figure>
+        </div>
+      </div>
+<p class="item"><b>Client carousel.</b> The arrows sometimes skipped or got stuck. It now moves one client at a time, and the edges fade to show there are more clients.</p>
+<div class="exhibit side">
+        <p class="item"><b>Popups and forms.</b> On phones the close button covered content while scrolling, and parts of the request form overlapped. Both are cleaned up.</p>
+        <div class="figs">
+          <figure class="phone" data-key="request" data-title="Fig. 16 · Request form on a phone">
+            <div class="shots">
+              <button class="shot" type="button" data-side="before"><span class="tag">Before</span><img src="/olinn/img/request-before.webp" width="780" height="1688" alt="Before: the notice box runs wider than the form and the contact method field shows through the bottom bar" loading="lazy" decoding="async"></button>
+              <button class="shot" type="button" data-side="after"><span class="tag after">After</span><img src="/olinn/img/request-after-v3.webp" width="780" height="1688" alt="After: the notice sits inside the form column and nothing overlaps the bottom bar" loading="lazy" decoding="async"></button>
+            </div>
+            <figcaption><span class="fig-no">Fig. 16</span><span class="device">Phone · 390 px</span>Request Security, first step. Look at the notice box edges and the bottom bar. The step progress at the top is now one even track.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+    <h3>Animations and transitions</h3>
+    <div class="items">
+      <p class="item"><b>Popups</b> used to appear and vanish abruptly. They now open and close smoothly.</p>
+      <p class="item"><b>Scrolling.</b> Sections ease in as you scroll, at the gradual pace you asked for. The family section used to slide in from two directions; it now rises in as one piece.</p>
+      <p class="item"><b>New touches.</b> Testimonials cross-fade, the map grows smoothly into its full view, the mobile menu slides in, and opening an article from the blog transitions instead of cutting.</p>
+      <p class="item"><b>Feels responsive.</b> Buttons react when pressed, and hover effects no longer get stuck on after a tap on phones.</p>
+      <p class="item"><b>Considerate.</b> Animations pause when they're off screen, which saves battery. For visitors who turn off motion on their device, the "Resume" buttons used to do nothing; they now work.</p>
+    </div>
+  </section>
+
+  <footer class="signoff">
+    <p>The content, artwork, client locations and testimonials are unchanged, and the employee handbook is still unlisted and hidden from search.</p>
+    <p>When you have a moment, go through the <a href="https://o-linn-website-v4-git-dev-o-linn-team.vercel.app/" target="_blank" rel="noopener">preview ↗</a> and compare it with the <a href="https://o-linn-website-v4.vercel.app/" target="_blank" rel="noopener">current version ↗</a>. If there's anything you'd like changed visually, or anything you preferred the way it was, let me know and I'll adjust it or put it back.</p>
+    <p class="colophon">Screenshots taken October 5, 2026 from both versions of the site, with motion paused so each screen is complete. Motion changes are best seen on the preview itself.</p>
+  </footer>
+</main>
+
+<dialog id="viewer" aria-labelledby="viewer-title">
+  <div class="viewer-bar">
+    <span class="viewer-title" id="viewer-title"></span>
+    <div class="switch" role="group" aria-label="Version">
+      <button type="button" data-side="before" aria-pressed="true">Before</button>
+      <button type="button" data-side="after" aria-pressed="false">After</button>
+    </div>
+    <button class="close" type="button" id="viewer-close">Close</button>
+  </div>
+  <div class="viewer-body"><img id="viewer-img" alt=""></div>
+  <p class="viewer-hint">Use the ← and → keys, or the switch above, to flip between before and after.</p>
+</dialog>
+
+<script>
+  (() => {
+    const viewer = document.getElementById('viewer');
+    const img = document.getElementById('viewer-img');
+    const title = document.getElementById('viewer-title');
+    const body = viewer.querySelector('.viewer-body');
+    const switches = [...viewer.querySelectorAll('.switch button')];
+    let figure = null;
+
+    const show = (side) => {
+      const source = figure.querySelector(`.shot[data-side="${side}"] img`);
+      img.src = source.currentSrc || source.src;
+      img.alt = source.alt;
+      for (const button of switches) button.setAttribute('aria-pressed', String(button.dataset.side === side));
+    };
+
+    for (const shot of document.querySelectorAll('.shot')) {
+      shot.addEventListener('click', () => {
+        figure = shot.closest('figure');
+        title.textContent = figure.dataset.title;
+        body.classList.toggle('tall', figure.hasAttribute('data-tall'));
+        body.scrollTop = 0;
+        show(shot.dataset.side);
+        viewer.showModal();
+      });
+    }
+    for (const button of switches) button.addEventListener('click', () => show(button.dataset.side));
+    document.getElementById('viewer-close').addEventListener('click', () => viewer.close());
+    viewer.addEventListener('click', (event) => { if (event.target === viewer) viewer.close(); });
+    viewer.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') show('before');
+      if (event.key === 'ArrowRight') show('after');
+    });
+  })();
+</script>
+
+</body></html>
