@@ -11,16 +11,23 @@ import { MoreWorkPlate } from '@/sections/MoreWork/Plate'
 import type { MoreWorkItem } from '@/sections/MoreWork/query'
 import { createPlateScrub } from '@/sections/MoreWork/scrub'
 
-/** How a row falls off with distance from the centre line (0) to the window's edge (1). */
+/**
+ * How a row falls off with distance from the centre line (0) to the window's
+ * edge (1). Prominence falls along a bell, round at the top and steep on the
+ * flanks, so the centre row is clearly the largest without a hard peak.
+ */
 const DIAL = {
-  /** Ink falls in a straight line to this, so the next rows are only slightly dimmer. */
-  ink: 0.15,
-  /** Size falls fast and then levels off, so the active row stands a full step above the next. */
-  scale: 0.8,
+  /** Width of the bell, in reach. */
+  spread: 0.42,
+  /** Ink and size a row falls to away from the centre. */
+  ink: 0.2,
+  scale: 0.7,
   /** Degrees a row at the edge has turned away, like a drum. */
-  tilt: 16,
+  tilt: 18,
+  /** The drum's half-turn in radians: rows near the centre spread apart, rows at the edge gather. */
+  bulge: 1.05,
   /** Where along the reach a row starts fading out, gone by the window's edge. */
-  fadeFrom: 0.75,
+  fadeFrom: 0.8,
   /** How long the page rests before it settles on the nearest row. */
   settleAfter: 180,
   settle: 0.9,
@@ -47,17 +54,17 @@ type RowProps = {
 }
 
 function DialRow({ item, index, plateRef, onOpen, onFocusRow, ref }: RowProps) {
-  const { slug, title, industry, capabilities } = item
+  const { slug, title } = item
   const href = `/works/${slug}`
   const morph = useWorkCardMorph(slug, href, plateRef, () => onOpen(index))
-  const services = capabilities.join(', ')
 
   return (
-    <li className="work-dial-row" data-dial-row>
+    <li className="work-dial-row">
       <Link
         {...cursorTarget('view')}
         ref={ref}
         className="work-dial-link"
+        data-dial-row
         href={href}
         onClick={morph.onClick}
         onFocus={(event) => {
@@ -69,13 +76,7 @@ function DialRow({ item, index, plateRef, onOpen, onFocusRow, ref }: RowProps) {
           className="work-dial-enter motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
           style={enterAt(320 + Math.min(index, 6) * 60)}
         >
-          <h2 className="work-dial-cell work-dial-title">{title}</h2>
-          {(industry || services) && (
-            <p className="work-dial-cell work-dial-facts">
-              {industry && <span className="text-foreground">{industry}</span>}
-              {services && <span className="line-clamp-1 lg:line-clamp-none">{services}</span>}
-            </p>
-          )}
+          <h2 className="work-dial-title">{title}</h2>
         </div>
       </Link>
     </li>
@@ -134,14 +135,19 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
       const position = clamp(raw, 0, last)
       rows.forEach((el, i) => {
         const offset = (i - position) * row
-        const distance = offset / (offset < 0 ? reach.above : reach.below)
+        const reachSide = offset < 0 ? reach.above : reach.below
+        const distance = offset / reachSide
         const u = Math.abs(distance)
-        const f = Math.min(u, 1)
-        const ink = (1 - (1 - DIAL.ink) * f) * (1 - smoothstep(DIAL.fadeFrom, 1, u))
-        const size = 1 - (1 - DIAL.scale) * (1 - (1 - f) ** 3)
+        const side = Math.sign(distance)
+        const fall = 1 - Math.exp(-((u / DIAL.spread) ** 2))
+        // On the drum, a row's height on screen follows the sine of its turn.
+        const turned = Math.sin(Math.min(u, 1) * DIAL.bulge) / Math.sin(DIAL.bulge)
+        const shift = side * (turned - Math.min(u, 1)) * reachSide
+        const ink = (1 - (1 - DIAL.ink) * fall) * (1 - smoothstep(DIAL.fadeFrom, 1, u))
         el.style.setProperty('--dial-o', ink.toFixed(3))
-        el.style.setProperty('--dial-scale', size.toFixed(4))
-        el.style.setProperty('--dial-tilt', ((distance < 0 ? 1 : -1) * f * DIAL.tilt).toFixed(2))
+        el.style.setProperty('--dial-y', `${shift.toFixed(1)}px`)
+        el.style.setProperty('--dial-scale', (1 - (1 - DIAL.scale) * fall).toFixed(4))
+        el.style.setProperty('--dial-tilt', (-side * Math.min(u, 1) * DIAL.tilt).toFixed(2))
       })
       if (openingRef.current) return
       scrub.set(position)
@@ -261,7 +267,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
                   opening={opening !== null}
                   ref={plateRef}
                   scrub={scrub}
-                  size="(min-width: 64rem) 34vw, 100vw"
+                  size="(min-width: 64rem) 42vw, 100vw"
                 />
               </ViewTransition>
             </a>
