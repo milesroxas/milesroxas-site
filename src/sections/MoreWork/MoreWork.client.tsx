@@ -7,8 +7,6 @@ import { type RefObject, useEffect, useId, useMemo, useRef, useState, ViewTransi
 import { Media } from '@/components/Media'
 import { choreographWorkMorph, useWorkCardMorph, workMorphName } from '@/heros/WorkHero/morph'
 import { cursorTarget } from '@/providers/Cursor/variants'
-import { cn } from '@/utilities/ui'
-import { WORK_INDEX_GRID } from './grid'
 import { MORE_WORK_MOTION, moreWorkMotionStyle } from './motion'
 import { isPlateLayout, MoreWorkPlate } from './Plate'
 import type { MoreWorkItem } from './query'
@@ -28,28 +26,15 @@ type RowProps = {
   /** `now` skips the hover intent: focus and clicks are deliberate. */
   onActivate: (index: number, now?: boolean) => void
   onOpen: (slug: string) => void
-  titleAs: 'h2' | 'h3'
-  compact: boolean
 }
 
 /**
  * One work in the index. With the plate (`plate:`), hovering or focusing the
  * row shows its picture there and inks the row; elsewhere every row is in
- * full ink and carries its own picture, stacked above the title or, `compact`,
- * as a thumbnail beside it. Either picture opens into the case study's hero
- * the way a work card does (`useWorkCardMorph`).
+ * full ink and carries its own picture. Either picture opens into the case
+ * study's hero the way a work card does (`useWorkCardMorph`).
  */
-function MoreWorkRow({
-  item,
-  index,
-  active,
-  morphing,
-  plateRef,
-  onActivate,
-  onOpen,
-  titleAs: Title,
-  compact,
-}: RowProps) {
+function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOpen }: RowProps) {
   const { slug, title, industry, capabilities, media } = item
   const href = workHref(slug)
   const thumbRef = useRef<HTMLDivElement>(null)
@@ -76,10 +61,7 @@ function MoreWorkRow({
     >
       <Link
         {...cursorTarget('view')}
-        className={cn(
-          'flex plate:gap-6 md:items-start md:gap-8',
-          compact ? 'items-start gap-4 py-5 md:py-7' : 'flex-col gap-5 py-7 md:flex-row',
-        )}
+        className="flex flex-col gap-5 plate:gap-6 py-7 md:flex-row md:items-start md:gap-8"
         href={href}
         onClick={handleClick}
         onFocus={() => onActivate(index, true)}
@@ -95,40 +77,25 @@ function MoreWorkRow({
           >
             <div
               ref={thumbRef}
-              className={cn(
-                'relative plate:hidden aspect-[1.6] shrink-0 overflow-clip bg-muted',
-                compact ? 'w-28 sm:w-36 md:w-56' : 'w-full md:w-2/5',
-              )}
+              className="relative plate:hidden aspect-[1.6] w-full shrink-0 overflow-clip bg-muted md:w-2/5"
             >
               <Media
                 fill
                 htmlElement={null}
                 imgClassName="object-cover"
                 resource={media}
-                size={compact ? '(min-width: 48rem) 14rem, 9rem' : '(min-width: 48rem) 40vw, 100vw'}
+                size="(min-width: 48rem) 40vw, 100vw"
                 videoClassName="size-full object-cover"
               />
             </div>
           </ViewTransition>
         )}
-        <div
-          className={cn('flex min-w-0 flex-1 flex-col', compact ? 'gap-1.5 md:gap-2.5' : 'gap-2.5')}
-        >
-          <Title
-            className={cn(
-              'text-pretty plate:text-muted-foreground tracking-[-0.02em] transition-colors duration-(--more-work-ink) ease-[ease] plate:group-data-active:text-foreground',
-              compact ? 'text-xl/snug md:text-heading-3' : 'text-heading-3',
-            )}
-          >
+        <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+          <h3 className="text-pretty plate:text-muted-foreground text-heading-3 tracking-[-0.02em] transition-colors duration-(--more-work-ink) ease-[ease] plate:group-data-active:text-foreground">
             {title}
-          </Title>
+          </h3>
           {(industry || services) && (
-            <p
-              className={cn(
-                'flex plate:flex-row flex-col plate:flex-wrap plate:items-center gap-1 plate:gap-x-2.5 text-muted-foreground',
-                compact ? 'text-sm md:text-base' : 'text-base',
-              )}
-            >
+            <p className="flex plate:flex-row flex-col plate:flex-wrap plate:items-center gap-1 plate:gap-x-2.5 text-base text-muted-foreground">
               {industry && <span>{industry}</span>}
               {industry && services && (
                 <span aria-hidden className="plate:block hidden h-px w-6 bg-border" />
@@ -147,24 +114,16 @@ function MoreWorkRow({
   )
 }
 
-type WorkIndexProps = {
-  items: MoreWorkItem[]
-  /** `h2` where the rows are the page's units, `h3` under a section heading. */
-  titleAs?: 'h2' | 'h3'
-  /** Phones and tablets show a thumbnail beside each title instead of above it. */
-  compact?: boolean
-}
-
 /**
- * The works index (approved in Paper, "Related Work — 1 Index"): a contents
- * page of case studies with one living plate beside it. The plate column
- * sticks while the index scrolls; the caption names what it shows. More work
- * closes a case study with a few rows; /works is every row.
+ * "More work" (approved in Paper, "Related Work — 1 Index"): a contents page
+ * of other case studies with one living plate beside it. The plate column
+ * sticks while the index scrolls; the caption names what it shows.
  */
-export function WorkIndex({ items, titleAs = 'h3', compact = false }: WorkIndexProps) {
+export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
   const [active, setActive] = useState(0)
   const [opening, setOpening] = useState<Opening | null>(null)
   const plateRef = useRef<HTMLDivElement>(null)
+  const headingId = useId()
   const shown = items[active] ?? items[0]
   // The plate follows a row the pointer rests on, not every row it crosses.
   const intent = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -179,51 +138,6 @@ export function WorkIndex({ items, titleAs = 'h3', compact = false }: WorkIndexP
   }
   // One picture carries the morph: two mounted under one name would break it.
   const open = (slug: string) => setOpening({ slug, onPlate: isPlateLayout() })
-
-  return (
-    <div className={cn(WORK_INDEX_GRID, 'plate:items-start')}>
-      <div
-        aria-hidden
-        className="plate:sticky plate:top-[calc(var(--chrome-top)+--spacing(6))] plate:flex hidden flex-col gap-4"
-      >
-        <ViewTransition
-          default="none"
-          name={opening?.onPlate ? workMorphName(opening.slug) : undefined}
-          onShare={choreographWorkMorph}
-          share="work-morph"
-        >
-          <MoreWorkPlate index={active} items={items} opening={Boolean(opening)} ref={plateRef} />
-        </ViewTransition>
-        <div className="flex items-center justify-between gap-4 font-mono text-xs/none">
-          <span className="truncate font-medium">{shown?.client ?? shown?.title}</span>
-          <span className="shrink-0 text-muted-foreground tabular-nums">
-            {active + 1} of {items.length}
-          </span>
-        </div>
-      </div>
-      <ul className="border-foreground border-t" onPointerLeave={settle}>
-        {items.map((item, index) => (
-          <MoreWorkRow
-            active={index === active}
-            compact={compact}
-            index={index}
-            item={item}
-            key={item.id}
-            morphing={opening?.slug === item.slug && !opening.onPlate}
-            onActivate={activate}
-            onOpen={open}
-            plateRef={plateRef}
-            titleAs={titleAs}
-          />
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-/** The close of every case study: a few other works to open next, and the way to all of them. */
-export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
-  const headingId = useId()
 
   return (
     <section
@@ -252,7 +166,46 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
             />
           </Link>
         </div>
-        <WorkIndex items={items} />
+        <div className="grid plate:grid-cols-[minmax(0,55fr)_minmax(0,53fr)] plate:items-start plate:gap-12">
+          <div
+            aria-hidden
+            className="plate:sticky plate:top-[calc(var(--chrome-top)+--spacing(6))] plate:flex hidden flex-col gap-4"
+          >
+            <ViewTransition
+              default="none"
+              name={opening?.onPlate ? workMorphName(opening.slug) : undefined}
+              onShare={choreographWorkMorph}
+              share="work-morph"
+            >
+              <MoreWorkPlate
+                index={active}
+                items={items}
+                opening={Boolean(opening)}
+                ref={plateRef}
+              />
+            </ViewTransition>
+            <div className="flex items-center justify-between gap-4 font-mono text-xs/none">
+              <span className="truncate font-medium">{shown?.client ?? shown?.title}</span>
+              <span className="shrink-0 text-muted-foreground tabular-nums">
+                {active + 1} of {items.length}
+              </span>
+            </div>
+          </div>
+          <ul className="border-foreground border-t" onPointerLeave={settle}>
+            {items.map((item, index) => (
+              <MoreWorkRow
+                active={index === active}
+                index={index}
+                item={item}
+                key={item.id}
+                onActivate={activate}
+                morphing={opening?.slug === item.slug && !opening.onPlate}
+                onOpen={open}
+                plateRef={plateRef}
+              />
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   )

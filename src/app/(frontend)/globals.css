@@ -2671,3 +2671,232 @@ html:active-view-transition-type(work-open) .dock {
     transition: none;
   }
 }
+
+/* Works index dial (src/sections/WorkDial): one picture fixed in the centre
+   and the list turning past it. The geometry lives here so the plate, the
+   window the rows turn in and the list's run-in and run-out agree; the script
+   measures the window and a row rather than repeating these formulas. A row
+   on the centre line is in full ink and full size; the script writes each
+   row's ink (`--dial-o`), size (`--dial-scale`) and turn (`--dial-tilt`, in
+   degrees) from its distance to that line. Phones pin the plate under the top
+   bar and read each row just beneath it, the rows to come below. */
+.work-dial {
+  --dial-row: 7rem;
+  --dial-gap: 3rem;
+  --dial-plate-w: calc(100vw - 2 * var(--spacing-gutter));
+  --dial-plate-h: calc(var(--dial-plate-w) * 0.75);
+  --dial-plate-top: calc(var(--chrome-top) + 0.75rem);
+  --dial-window-top: calc(var(--dial-plate-top) + var(--dial-plate-h) + 2.75rem);
+  --dial-window-bottom: calc(100svh - var(--dock-clearance));
+  /* Phones read just under the plate; the rows to come wait below. */
+  --dial-focus: calc(var(--dial-window-top) + var(--dial-row) / 2);
+  --dial-cols: minmax(0, 1fr) var(--dial-plate-w) minmax(0, 1fr);
+  position: relative;
+  padding-inline: var(--spacing-gutter);
+}
+
+@media (min-width: 64rem) {
+  .work-dial {
+    --dial-row: 8.5rem;
+    --dial-plate-w: min(34vw, (100svh - var(--chrome-top) - var(--dock-clearance) - 6rem) * 0.8);
+    --dial-plate-h: calc(var(--dial-plate-w) * 1.25);
+    --dial-window-top: var(--chrome-top);
+    --dial-focus: calc((var(--dial-window-top) + var(--dial-window-bottom)) / 2);
+    --dial-plate-top: calc(var(--dial-focus) - var(--dial-plate-h) / 2);
+  }
+}
+
+.work-dial-header {
+  padding-top: calc(var(--chrome-top) + 1.5rem);
+}
+
+.work-dial-lead {
+  margin-top: 0.75rem;
+  max-width: 34ch;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+  text-wrap: pretty;
+}
+
+@media (min-width: 64rem) {
+  .work-dial-header {
+    position: absolute;
+    z-index: 20;
+    top: var(--dial-plate-top);
+    inset-inline: var(--spacing-gutter);
+    display: grid;
+    grid-template-columns: var(--dial-cols);
+    column-gap: var(--dial-gap);
+    align-items: start;
+    padding-top: 0;
+  }
+
+  .work-dial-lead {
+    grid-column: 3;
+    margin-top: 0.25rem;
+    max-width: 30ch;
+  }
+}
+
+.work-dial-stage {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  height: 100svh;
+  margin-inline: calc(-1 * var(--spacing-gutter));
+  pointer-events: none;
+}
+
+/* Phones: the rows pass under the plate, so its band is opaque, with a soft
+   edge where the rows run out rather than a rule. */
+.work-dial-stage::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: calc(var(--dial-window-top) + 0.25rem);
+  background: linear-gradient(to bottom, var(--background) calc(100% - 1.25rem), transparent);
+}
+
+@media (min-width: 64rem) {
+  .work-dial-stage::before {
+    content: none;
+  }
+}
+
+.work-dial-window {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--dial-window-top);
+  height: calc(var(--dial-window-bottom) - var(--dial-window-top));
+}
+
+.work-dial-focus {
+  position: absolute;
+  top: var(--dial-focus);
+}
+
+.work-dial-frame {
+  position: absolute;
+  top: var(--dial-plate-top);
+  left: 50%;
+  width: var(--dial-plate-w);
+  height: var(--dial-plate-h);
+  translate: -50% 0;
+  pointer-events: auto;
+}
+
+.work-dial-caption {
+  position: absolute;
+  top: 100%;
+  inset-inline: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.work-dial-list {
+  position: relative;
+  margin-top: -100svh;
+  padding-top: calc(var(--dial-focus) - var(--dial-row) / 2);
+  padding-bottom: calc(100svh - var(--dial-focus) - var(--dial-row) / 2);
+}
+
+.work-dial-row {
+  height: var(--dial-row);
+}
+
+.work-dial-link {
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
+.work-dial-enter {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+@media (min-width: 64rem) {
+  .work-dial-enter {
+    display: grid;
+    grid-template-columns: var(--dial-cols);
+    column-gap: var(--dial-gap);
+    align-items: center;
+  }
+
+  .work-dial-facts {
+    grid-column: 3;
+  }
+}
+
+/* Perspective first, so the tilt reads as a drum turning rather than a squash. */
+.work-dial-cell {
+  opacity: var(--dial-o, 1);
+  transform: perspective(50rem) rotateX(calc(var(--dial-tilt, 0) * 1deg))
+    scale(var(--dial-scale, 1));
+  transform-origin: left center;
+}
+
+.work-dial-title {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.work-dial-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+}
+
+@media (min-width: 64rem) {
+  .work-dial-title {
+    font-size: 1.5rem;
+  }
+
+  .work-dial-facts {
+    font-size: 0.9375rem;
+  }
+}
+
+/* A row the pointer rests on, or the keyboard reaches, comes up to full ink
+   wherever it stands; it drops back at once when left. */
+@media (hover: hover) and (pointer: fine) {
+  .work-dial-link:hover .work-dial-cell {
+    opacity: 1;
+    transition: opacity var(--more-work-ink) ease;
+  }
+}
+
+.work-dial-link:focus-visible {
+  outline: none;
+}
+
+.work-dial-link:focus-visible .work-dial-cell {
+  opacity: 1;
+}
+
+.work-dial-link:focus-visible .work-dial-title {
+  outline: 2px solid var(--foreground);
+  outline-offset: 0.375rem;
+  border-radius: 2px;
+}
+
+/* Reduced motion: the ink still follows the centre line; nothing turns. */
+@media (prefers-reduced-motion: reduce) {
+  .work-dial-cell {
+    transform: none;
+  }
+}

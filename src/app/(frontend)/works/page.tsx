@@ -6,15 +6,13 @@ import { getPayload } from 'payload'
 import { cache } from 'react'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import type { WorksIndex } from '@/payload-types'
-import { WORK_INDEX_GRID } from '@/sections/MoreWork/grid'
-import { WorkIndex } from '@/sections/MoreWork/MoreWork.client'
-import { moreWorkMotionStyle } from '@/sections/MoreWork/motion'
 import {
   type MoreWorkItem,
   toWorkIndexItem,
   WORK_INDEX_SELECT,
   type WorkIndexDoc,
 } from '@/sections/MoreWork/query'
+import { WorkDial } from '@/sections/WorkDial/WorkDial.client'
 import { WORKS_INDEX_DEFAULTS } from '@/shared/content/worksIndex'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
@@ -88,44 +86,21 @@ export default async function Page() {
     .filter((item): item is MoreWorkItem => item !== null)
   const title = index?.title || WORKS_INDEX_DEFAULTS.heading
 
+  if (items.length === 0) {
+    return (
+      <section className="px-gutter pt-[calc(var(--chrome-top)+--spacing(12))] pb-[calc(var(--dock-clearance)+--spacing(12))]">
+        {draft && <LivePreviewListener />}
+        <h1 className="text-heading-1">{title}</h1>
+        <p className="mt-4 text-base text-muted-foreground">No work is published yet.</p>
+      </section>
+    )
+  }
+
   return (
-    <section
-      aria-labelledby="works-index-title"
-      className="px-gutter pt-[calc(var(--chrome-top)+--spacing(12))] pb-[calc(var(--dock-clearance)+--spacing(12))] md:pt-[calc(var(--chrome-top)+--spacing(20))] md:pb-40"
-      style={moreWorkMotionStyle}
-    >
+    <>
       {draft && <LivePreviewListener />}
-      <div className="flex flex-col gap-12 md:gap-20">
-        <header
-          className={`flex flex-col gap-6 md:flex-row md:items-end md:justify-between ${WORK_INDEX_GRID} plate:items-end`}
-        >
-          <h1
-            className="flex items-start gap-3 text-display leading-[0.9] tracking-[-0.035em]"
-            id="works-index-title"
-          >
-            {title}
-            <span
-              aria-hidden
-              className="pt-1.5 font-medium font-mono text-sm/none tracking-normal tabular-nums md:pt-2.5"
-            >
-              {String(items.length).padStart(2, '0')}
-            </span>
-          </h1>
-          {index?.lead && (
-            <p className="max-w-[34ch] text-pretty text-lg/snug text-muted-foreground md:pb-1 md:text-xl/snug">
-              {index.lead}
-            </p>
-          )}
-        </header>
-        {items.length > 0 ? (
-          <WorkIndex compact items={items} titleAs="h2" />
-        ) : (
-          <p className="border-foreground border-t pt-7 text-base text-muted-foreground">
-            No work is published yet.
-          </p>
-        )}
-      </div>
-    </section>
+      <WorkDial items={items} lead={index?.lead} title={title} />
+    </>
   )
 }
 

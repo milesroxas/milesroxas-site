@@ -17,6 +17,7 @@ import { GPU_PRIORITY } from '@/lib/webgl/gpu-budget'
 import { useGpuLease } from '@/lib/webgl/use-gpu-lease'
 import { cn } from '@/utilities/ui'
 import type { MoreWorkItem } from './query'
+import type { PlateScrub } from './scrub'
 
 const PlateRuntime = lazy(() => import('./plate-runtime'))
 
@@ -46,6 +47,14 @@ type Props = {
   /** A row is opening: the DOM picture under the canvas is the one the morph carries. */
   opening: boolean
   ref: RefObject<HTMLDivElement | null>
+  /** Live at every size, not only beside the hover index (`plate:`). */
+  always?: boolean
+  /** The dissolve follows this position instead of tweening to `index`. */
+  scrub?: PlateScrub
+  /** The frame's aspect and any other class it needs; 1.6 by default. */
+  className?: string
+  /** The pictures' `sizes`. */
+  size?: string
 }
 
 /**
@@ -57,7 +66,16 @@ type Props = {
  * hides again the moment a row opens, so the view transition carries the
  * DOM picture.
  */
-export function MoreWorkPlate({ items, index, opening, ref }: Props) {
+export function MoreWorkPlate({
+  items,
+  index,
+  opening,
+  ref,
+  always = false,
+  scrub,
+  className,
+  size = '46vw',
+}: Props) {
   const { hasGPU } = useDeviceDetection()
   const plateLayout = usePlateLayout()
   const near = useNearViewport(ref, '50%', { once: true })
@@ -67,7 +85,7 @@ export function MoreWorkPlate({ items, index, opening, ref }: Props) {
   const handleReady = useCallback(() => setReady(true), [])
 
   const id = useId()
-  const wanted = hasGPU && plateLayout && near && !failed && items.every(canSample)
+  const wanted = hasGPU && (always || plateLayout) && near && !failed && items.every(canSample)
   const live = useGpuLease(id, wanted, 'plate', GPU_PRIORITY.block)
   // A canvas that yields its slot comes back blank: wait for its first frame again.
   if (!live && ready) setReady(false)
@@ -75,7 +93,7 @@ export function MoreWorkPlate({ items, index, opening, ref }: Props) {
   return (
     <div
       ref={ref}
-      className="relative aspect-[1.6] w-full overflow-clip bg-muted"
+      className={cn('relative aspect-[1.6] w-full overflow-clip bg-muted', className)}
       data-slot="more-work-plate"
     >
       {items.map(
@@ -97,7 +115,7 @@ export function MoreWorkPlate({ items, index, opening, ref }: Props) {
                 htmlElement={null}
                 imgClassName="object-cover"
                 resource={item.media}
-                size="46vw"
+                size={size}
                 videoClassName="size-full object-cover"
               />
             </div>
@@ -114,6 +132,7 @@ export function MoreWorkPlate({ items, index, opening, ref }: Props) {
                 index={index}
                 onFailure={handleFailure}
                 onReady={handleReady}
+                scrub={scrub}
               />
             </Suspense>
           </FailureBoundary>

@@ -11,6 +11,7 @@ import { CANVAS_RESIZE } from '@/lib/webgl/canvas-resize'
 import { ContextGuard } from '@/lib/webgl/components/context-guard'
 import { MORE_WORK_MOTION } from './motion'
 import { PLATE_FRAGMENT, PLATE_VERTEX } from './plate-shader'
+import type { PlateScrub } from './scrub'
 
 gsap.registerPlugin(CustomEase)
 
@@ -39,7 +40,14 @@ export const PLATE_LOOK = {
   settle: 1.04,
   /** How much larger the leaving picture drifts. */
   drift: 0.02,
+  /** Scrubbed, the share of the way between two rows where each picture still rests whole. */
+  hold: 0.2,
 } as const
+
+const smoothstep = (edge0: number, edge1: number, x: number) => {
+  const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1)
+  return t * t * (3 - 2 * t)
+}
 
 // Hoisted so JSX never allocates fresh objects per render.
 const GL_CONFIG = { alpha: false, antialias: false, powerPreference: 'high-performance' } as const
@@ -121,6 +129,7 @@ function onVideoFrames(video: HTMLVideoElement, callback: () => void) {
 type PlateSceneProps = {
   media: PlateMedia[]
   index: number
+  scrub?: PlateScrub
   onFirstFrame: () => void
 }
 
@@ -131,7 +140,7 @@ type PlateSceneProps = {
  */
 type Shown = { from: number | 'snapshot'; to: number }
 
-function PlateScene({ media, index, onFirstFrame }: PlateSceneProps) {
+function PlateScene({ media, index, scrub, onFirstFrame }: PlateSceneProps) {
   const size = useThree((state) => state.size)
   const gl = useThree((state) => state.gl)
   const scene = useThree((state) => state.scene)
@@ -242,7 +251,7 @@ function PlateScene({ media, index, onFirstFrame }: PlateSceneProps) {
   useEffect(() => {
     const u = materialRef.current?.uniforms
     const state = shown.current
-    if (!u || index === state.to) return
+    if (!u || scrub || index === state.to) return
     const midway = u.uProgress.value < 1
     const fromTexture = midway ? snapshot() : undefined
     u.uDirection.value = index > state.to ? 1 : -1
@@ -260,7 +269,29 @@ function PlateScene({ media, index, onFirstFrame }: PlateSceneProps) {
       tween.kill()
     }
     // biome-ignore lint/correctness/useExhaustiveDependencies: `show` and `snapshot` read refs; the row is the trigger
-  }, [index, invalidate, snapshot, show])
+  }, [index, scrub, invalidate, snapshot, show])
+
+  // Scrubbed, the sweep sits wherever the page does: always down the plate
+  // towards the next row, so scrolling back plays it in reverse.
+  useEffect(() => {
+    if (!scrub || media.length < 2) return
+    const follow = () => {
+      const u = materialRef.current?.uniforms
+      if (!u) return
+      const position = Math.min(Math.max(scrub.get(), 0), media.length - 1)
+      const from = Math.min(Math.floor(position), media.length - 2)
+      const state = shown.current
+      u.uProgress.value = smoothstep(PLATE_LOOK.hold, 1 - PLATE_LOOK.hold, position - from)
+      u.uDirection.value = 1
+      if (state.from !== from || state.to !== from + 1) {
+        shown.current = { from, to: from + 1 }
+        show()
+      } else invalidate()
+    }
+    follow()
+    return scrub.subscribe(follow)
+    // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; the source is the trigger
+  }, [scrub, media, invalidate, show])
 
   useFrame(() => signalFirstFrame(framesDrawn, onFirstFrame))
 
@@ -286,6 +317,8 @@ export type PlateRuntimeProps = {
   frameRef: RefObject<HTMLElement | null>
   count: number
   index: number
+  /** Follow this position instead of tweening between rows. */
+  scrub?: PlateScrub
   onReady: () => void
   onFailure: (reason: PlateFailureReason) => void
 }
@@ -300,6 +333,7 @@ export default function PlateRuntime({
   frameRef,
   count,
   index,
+  scrub,
   onReady,
   onFailure,
 }: PlateRuntimeProps) {
@@ -336,7 +370,9 @@ export default function PlateRuntime({
         resize={RESIZE_OPTIONS}
         style={CANVAS_STYLE}
       >
-        {media && <PlateScene index={index} media={media} onFirstFrame={handleFirstFrame} />}
+        {media && (
+          <PlateScene index={index} media={media} onFirstFrame={handleFirstFrame} scrub={scrub} />
+        )}
         <ContextGuard kind="plate" onLost={handleContextLost} />
       </Canvas>
     </FailureBoundary>

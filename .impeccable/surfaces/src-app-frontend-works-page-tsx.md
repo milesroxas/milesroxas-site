@@ -2,7 +2,7 @@
 version: 1
 slug: "src-app-frontend-works-page-tsx"
 primary_target: "src/app/(frontend)/works/page.tsx"
-related_targets: ["src/sections/MoreWork"]
+related_targets: ["src/sections/WorkDial"]
 ---
 
 # Works index
@@ -11,18 +11,18 @@ Scope: the works landing at /works. Visitor mode: Experience inside an Operate h
 
 Audience and job: a reviewer with little time who wants the whole body of work at a glance, then one click into a case study.
 
-Source of approval: the user chose, on 2026-10-06, the full edition of the approved "More work" index (Paper, "Related Work — 1 Index") over a pure type index or a columned catalogue, and compact thumbnail rows on phones over full-width pictures. Heading and lead are edited in the Works index global.
+Source of approval: on 2026-10-06 the user rejected the plate-beside-rows index for /works and pinned the dial: one fixed picture in the centre that morphs as the page scrolls, titles and facts scrolling vertically past it, inactive rows dimmer and smaller the nearer they are to the page edge, like a rotary. More work (case study endings) keeps the plate-beside-rows index. Heading and lead are edited in the Works index global.
 
 ## Direction contract
 
-THESIS: /works is a contents page, not a feed. One index language sitewide: a case study ends with four rows, /works is every row. Refuses the card grid with pictures, badges and excerpts.
+THESIS: /works is a dial, not a feed. One picture holds the centre; the list turns past it and the row on the centre line is the work you are looking at. Refuses card grids, side-by-side plate and list, and pictures repeated per row.
 
-OWN-WORLD: the More work grammar. Heading in the display step with a mono count beside it, lead muted at the right on the same baseline grid. A 1px ink rule opens the list; hairline rules between rows. Rows in muted ink, the resting row in full ink with its arrow, a sticky plate at the left that dissolves between pictures (WebGL, plain crossfade fallback). No badges, no excerpts, no section numbers.
+OWN-WORLD: the site's ink-on-paper system. Centre plate (4:5 desktop, 4:3 phone) with the existing WebGL dither dissolve, scrubbed by scroll position. Titles left, industry and services right, both flanking the plate on one baseline. Row ink and scale fall off with distance from the centre line; a slight drum tilt. Mono caption under the plate: client and position.
 
-STORY: the reviewer reads the title and count, scans titles and their industry and services, rests on a row to see its picture, and opens it into the case study hero.
+STORY: the reviewer reads "Work" and its count, scrolls, watches each picture dissolve into the next as its row reaches the centre, clicks a row or the picture, and it opens into the case study hero.
 
-FIRST VIEWPORT: heading and lead, then the rule and the first rows beside the plate. Phones: compact rows, a small thumbnail at the left, title and facts at the right.
+FIRST VIEWPORT: desktop, heading top left level with the plate's top edge, lead top right, plate centred between top bar and dock, first row on the centre line, the next rows dimming below. Phone: heading, plate pinned under the top bar, rows turning in the band beneath it.
 
-FORM: user-locked extension of an approved section; no concept roll.
+FORM: user-pinned dial; no concept roll (structured-question answer, 2026-10-06).
 
-FINISH: one batched inspection at desktop and phone, fix in one pass.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
