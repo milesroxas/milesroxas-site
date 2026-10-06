@@ -138,6 +138,11 @@ const globals: MCPPluginConfig['globals'] = {
       'Site-wide facts the Ask assistant answers from (name, tagline, description, contact), the inquiry promises, and the Ask switch',
     enabled: { find: true, update: true },
   },
+  'works-index': {
+    description:
+      'The works landing page at /works: its heading, lead and SEO. The list of works is automatic (published works in collection order)',
+    enabled: { find: true, update: true },
+  },
 }
 
 const CONTROLS_COMPONENT = '@/components/McpCapabilityControls'

@@ -11,7 +11,8 @@ export async function GET(req: NextRequest): Promise<Response> {
   const { searchParams } = new URL(req.url)
 
   const path = searchParams.get('path')
-  const collection = searchParams.get('collection') as CollectionSlug
+  const collection = searchParams.get('collection') as CollectionSlug | null
+  const global = searchParams.get('global')
   const slug = searchParams.get('slug')
   const previewSecret = searchParams.get('previewSecret')
 
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     return new Response('You are not allowed to preview this page', { status: 403 })
   }
 
-  if (!path || !collection || !slug) {
+  if (!path || (!global && (!collection || !slug))) {
     return new Response('Insufficient search params', { status: 404 })
   }
 

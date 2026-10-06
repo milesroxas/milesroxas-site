@@ -126,12 +126,14 @@ export interface Config {
     header: Header;
     'site-info': SiteInfo;
     'contact-page': ContactPage;
+    'works-index': WorksIndex;
     'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     'site-info': SiteInfoSelect<false> | SiteInfoSelect<true>;
     'contact-page': ContactPageSelect<false> | ContactPageSelect<true>;
+    'works-index': WorksIndexSelect<false> | WorksIndexSelect<true>;
     'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
@@ -5571,6 +5573,10 @@ export interface PayloadMcpApiKey {
     find?: boolean | null;
     update?: boolean | null;
   };
+  worksIndex?: {
+    find?: boolean | null;
+    update?: boolean | null;
+  };
   'payload-mcp-tool'?: {
     /**
      * Where the published site talks about a topic, across Pages, Works, Posts and Site Info, judged on the server (a vector search over the site, then one Jev check per passage), so no page reaches you. Answers with passages best first: collection, document id, title, url, section heading, a snippet, and `focus`: how much of the passage is about the topic (`subject`, `part` or `passing`). Published copy only, protected works never included: before editing, locateBlock the document by id with the user's words. Send the topic as the user put it.
@@ -7449,6 +7455,12 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         find?: T;
         update?: T;
       };
+  worksIndex?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
   'payload-mcp-tool'?:
     | T
     | {
@@ -7704,6 +7716,38 @@ export interface ContactPage {
   createdAt?: string | null;
 }
 /**
+ * The works landing page at /works. Heading, lead and SEO: the list is automatic.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "works-index".
+ */
+export interface WorksIndex {
+  id: number;
+  /**
+   * The heading above the list.
+   */
+  title: string;
+  /**
+   * Optional. One or two sentences under the heading.
+   */
+  lead?: string | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+    /**
+     * Prevent search engines from indexing this page
+     */
+    noIndex?: boolean | null;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs-stats".
  */
@@ -7817,6 +7861,26 @@ export interface ContactPageSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "works-index_select".
+ */
+export interface WorksIndexSelect<T extends boolean = true> {
+  title?: T;
+  lead?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+        noIndex?: T;
+      };
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs-stats_select".
  */
 export interface PayloadJobsStatsSelect<T extends boolean = true> {
@@ -7866,7 +7930,7 @@ export interface TaskSchedulePublish {
           relationTo: 'works';
           value: number | Work;
         } | null);
-    global?: string | null;
+    global?: 'works-index' | null;
     user?:
       | ({
           relationTo: 'users';

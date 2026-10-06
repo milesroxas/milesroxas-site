@@ -82,7 +82,7 @@ The source of truth is `mcp.ts`; this table mirrors it.
 | Assets | `streak-looks` | Full authoring, **drafts only**: a look is published from the Studio |
 | Assets | `media` | **Read-only**. New images go through `pnpm cms:upload` |
 | Visitor records | `inquiries`, `form-submissions`, `ask-questions` | **Read-only** |
-| Globals | `site-info`, `header`, `contact-page` | Find and update |
+| Globals | `site-info`, `header`, `contact-page`, `works-index` | Find and update |
 
 A new surface added to `CONTENT_SURFACES` is exposed automatically. Any other new collection or
 global is **not** exposed until it is listed in `mcp.ts`, and the capability columns it adds need a

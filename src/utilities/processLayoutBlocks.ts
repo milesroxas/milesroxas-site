@@ -1,4 +1,4 @@
-import type { ContentBlock, Page, Post, Work } from '@/payload-types'
+import type { ContentBlock, Page, Post, SliderBlock, Work } from '@/payload-types'
 import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
 
 type LayoutBlock =
@@ -6,9 +6,27 @@ type LayoutBlock =
   | Work['layout'][number]
   | NonNullable<Post['layout']>[number]
 
+/** Unlinks a slide whose work the visitor cannot open (unpublished, or protected without a fallback). */
+async function processSlides(
+  slides: SliderBlock['slides'],
+  hasAccess: boolean,
+): Promise<SliderBlock['slides']> {
+  if (!slides?.length) return slides
+
+  return Promise.all(
+    slides.map(async (item) => {
+      const link = item.slide.link
+      if (link?.relationTo !== 'works' || typeof link.value !== 'object') return item
+
+      const visibleWork = await resolveVisibleWork(link.value, hasAccess)
+      return visibleWork ? item : { ...item, slide: { ...item.slide, link: null } }
+    }),
+  )
+}
+
 /**
- * Process content block columns, replacing protected works with fallbacks
- * (or removing them when no usable fallback exists)
+ * Process content block columns: unpublished works are removed, protected
+ * works are replaced with fallbacks (or removed when no usable fallback exists)
  */
 async function processContentBlock(block: ContentBlock, hasAccess: boolean): Promise<ContentBlock> {
   if (!block.columns?.length) {
@@ -17,6 +35,16 @@ async function processContentBlock(block: ContentBlock, hasAccess: boolean): Pro
 
   const processedColumns = await Promise.all(
     block.columns.map(async (column) => {
+      if (column.content === 'slider' && column.slider?.slides) {
+        return {
+          ...column,
+          slider: {
+            ...column.slider,
+            slides: await processSlides(column.slider.slides, hasAccess),
+          },
+        }
+      }
+
       if (column.content !== 'work' || !column.work?.works) {
         return column
       }
@@ -47,11 +75,11 @@ async function processContentBlock(block: ContentBlock, hasAccess: boolean): Pro
 
 /**
  * Process all layout blocks, replacing protected works with their fallbacks
- * when the user doesn't have access.
+ * when the user doesn't have access, and hiding works that are not published.
  *
- * This ensures protected works are hidden everywhere they might appear:
+ * This ensures those works are hidden everywhere they might appear:
  * - Content block work entries
- * - Any other blocks that might contain work references
+ * - Slide links, in a Slider block or a Content column
  */
 export async function processLayoutBlocks(
   blocks: LayoutBlock[],
@@ -66,6 +94,9 @@ export async function processLayoutBlocks(
       switch (block.blockType) {
         case 'content':
           return processContentBlock(block as ContentBlock, hasAccess)
+
+        case 'slider':
+          return { ...block, slides: await processSlides(block.slides, hasAccess) }
 
         // A Section nests Columns blocks too: their work entries hide the same way.
         case 'section':

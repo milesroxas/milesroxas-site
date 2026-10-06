@@ -17,7 +17,8 @@ export type MoreWorkItem = {
   media: Media | null
 }
 
-const SELECT = {
+/** What a row and the plate render; a query for index rows selects this. */
+export const WORK_INDEX_SELECT = {
   title: true,
   slug: true,
   hero: { media: true },
@@ -26,12 +27,13 @@ const SELECT = {
   capabilities: true,
 } as const
 
-type SelectedWork = Pick<
+export type WorkIndexDoc = Pick<
   Work,
   'id' | 'title' | 'slug' | 'hero' | 'client' | 'industry' | 'capabilities'
 >
 
-const toItem = (doc: SelectedWork): MoreWorkItem | null =>
+/** A work as an index row; null without a slug, which has no route to open. */
+export const toWorkIndexItem = (doc: WorkIndexDoc): MoreWorkItem | null =>
   doc.slug
     ? {
         id: doc.id,
@@ -54,7 +56,7 @@ export async function getMoreWork(
   work: Pick<Work, 'id' | 'relatedWorks' | 'categories'>,
 ): Promise<MoreWorkItem[]> {
   const payload = await getPayload({ config: configPromise })
-  const picked: SelectedWork[] = []
+  const picked: WorkIndexDoc[] = []
   const taken = () => [work.id, ...picked.map((doc) => doc.id)]
 
   const find = async (where?: Where, sort?: string) => {
@@ -67,11 +69,11 @@ export async function getMoreWork(
       limit,
       overrideAccess: false,
       pagination: false,
-      select: SELECT,
+      select: WORK_INDEX_SELECT,
       sort,
       where: { and: [...(where ? [where] : []), { id: { not_in: taken() } }] },
     })
-    return docs as SelectedWork[]
+    return docs as WorkIndexDoc[]
   }
 
   const relatedIds = relationshipIds(work.relatedWorks ?? []).slice(0, MORE_WORK_LIMIT)
@@ -86,5 +88,5 @@ export async function getMoreWork(
 
   picked.push(...(await find(undefined, '-publishedAt')))
 
-  return picked.map(toItem).filter((item): item is MoreWorkItem => item !== null)
+  return picked.map(toWorkIndexItem).filter((item): item is MoreWorkItem => item !== null)
 }

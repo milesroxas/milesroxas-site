@@ -1,10 +1,12 @@
 import configPromise from '@payload-config'
+import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import type { Work } from '@/payload-types'
 
 /**
  * Resolve which work a visitor is allowed to see.
  *
+ * - Unpublished work (a draft, or unpublished since): null, except in draft mode.
  * - Unprotected work, or visitor with access: the work itself.
  * - Protected work without access: its public fallback work.
  * - Protected work without access and no usable fallback: null (hide entirely).
@@ -17,6 +19,11 @@ export async function resolveVisibleWork(
   hasAccess: boolean,
   depth = 2,
 ): Promise<Work | null> {
+  // A block or relation populated by a trusted fetch carries the work whatever its status.
+  if (work._status !== 'published' && !(await draftMode()).isEnabled) {
+    return null
+  }
+
   if (!work.isProtected || hasAccess) {
     return work
   }

@@ -23,3 +23,14 @@ export const generatePreviewPath = ({ collection, slug }: Props) => {
 
   return url
 }
+
+/** Preview URL for a singleton global published at a fixed path (e.g. `/works`). */
+export const generateGlobalPreviewPath = ({ global, path }: { global: string; path: string }) => {
+  const encodedParams = new URLSearchParams({
+    path,
+    global,
+    previewSecret: process.env.PREVIEW_SECRET || '',
+  })
+
+  return `/next/preview?${encodedParams.toString()}`
+}

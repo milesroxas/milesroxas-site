@@ -22,6 +22,7 @@ import { agentMediaEndpoint } from './endpoints/agentMedia'
 import { askEndpoints } from './endpoints/ask'
 import { ContactPage } from './globals/ContactPage'
 import { SiteInfo } from './globals/SiteInfo'
+import { WorksIndex } from './globals/WorksIndex'
 import { Header } from './Header/config'
 import { askQuestionRetentionTask } from './jobs/askQuestionRetention'
 import { plugins } from './plugins'
@@ -114,7 +115,7 @@ export default buildConfig({
   cors: [getServerSideURL()].filter(Boolean),
   // `agent/media`: an MCP key's image upload (docs/mcp.md).
   endpoints: [...askEndpoints, agentMediaEndpoint],
-  globals: [Header, SiteInfo, ContactPage],
+  globals: [Header, SiteInfo, ContactPage, WorksIndex],
   plugins: [
     ...plugins,
     vercelBlobStorage({

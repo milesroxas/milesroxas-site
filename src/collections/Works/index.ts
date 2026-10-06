@@ -34,6 +34,8 @@ export const Works: CollectionConfig<'works'> = {
     },
     isProtected: true,
     fallbackWork: true,
+    // resolveVisibleWork hides a referenced work that is not published.
+    _status: true,
   },
   admin: {
     defaultColumns: ['title', 'slug', '_order', 'updatedAt'],
