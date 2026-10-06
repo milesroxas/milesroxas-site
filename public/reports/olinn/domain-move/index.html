@@ -1,0 +1,1244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>O'Linn Domain Move</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Runbook: a sticky phase rail beside one reading column; each illustration sits inside the step it explains. */
+:root {
+  --bg: #f2f3ec;
+  --surface: #fbfbf7;
+  --surface-2: #e9ece0;
+  --ink: #151a0e;
+  --muted: #565f4b;
+  --line: #d2d7c4;
+  --accent: #465d1a;
+  --accent-fill: #657f1c;
+  --accent-soft: #e2e8cc;
+  --on-accent: #ffffff;
+  --mark: #d9661a;
+  --on-mark: #ffffff;
+  --warn: #7a4f00;
+  --warn-soft: #f6ead0;
+  --danger: #9d2a1d;
+  --danger-soft: #f7e0db;
+  --term-bg: #0f1510;
+  --term-ink: #dfe6d6;
+  --term-dim: #8e9a87;
+  --term-ok: #b5c77a;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1112;
+    --surface: #111918;
+    --surface-2: #1a2420;
+    --ink: #f1f1e9;
+    --muted: #b6bbb0;
+    --line: #2f3a2c;
+    --accent: #b3c47a;
+    --accent-fill: #829b32;
+    --accent-soft: #1f2a15;
+    --on-accent: #0b1112;
+    --mark: #f2843a;
+    --on-mark: #140b04;
+    --warn: #e8b764;
+    --warn-soft: #2a2211;
+    --danger: #f19385;
+    --danger-soft: #2d1714;
+    --term-bg: #060a0a;
+    --term-ink: #dfe6d6;
+    --term-dim: #8e9a87;
+    --term-ok: #b5c77a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1112;
+  --surface: #111918;
+  --surface-2: #1a2420;
+  --ink: #f1f1e9;
+  --muted: #b6bbb0;
+  --line: #2f3a2c;
+  --accent: #b3c47a;
+  --accent-fill: #829b32;
+  --accent-soft: #1f2a15;
+  --on-accent: #0b1112;
+  --mark: #f2843a;
+  --on-mark: #140b04;
+  --warn: #e8b764;
+  --warn-soft: #2a2211;
+  --danger: #f19385;
+  --danger-soft: #2d1714;
+  --term-bg: #060a0a;
+  --term-ink: #dfe6d6;
+  --term-dim: #8e9a87;
+  --term-ok: #b5c77a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  padding-inline: 16px;
+  padding-block: 0 4rem;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, input:focus-visible + .box { outline: 2px solid var(--mark); outline-offset: 2px; }
+code, .mono { font-family: var(--font-mono); font-size: 0.86em; }
+p { margin: 0; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.05; }
+
+.page { max-width: 1180px; margin-inline: auto; }
+
+/* Header */
+.masthead { padding-block: 2.5rem 1.5rem; display: grid; gap: 1rem; border-bottom: 1px solid var(--line); }
+.eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.masthead h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; }
+.lede { max-width: 64ch; font-size: 1.15rem; color: var(--ink); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; margin-top: 0.5rem; }
+.fact { border: 1px solid var(--line); border-radius: var(--radius); padding: 0.85rem 1rem; background: var(--surface); display: grid; gap: 0.15rem; }
+.fact b { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.fact span { color: var(--muted); font-size: 0.95rem; }
+.fact.is-hard { border-color: var(--danger); }
+.fact.is-hard b { color: var(--danger); }
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 3rem; padding-top: 2rem; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1rem); align-self: start; display: grid; gap: 1rem; }
+.main { min-width: 0; display: grid; gap: 3.5rem; }
+
+.progress { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 1rem; display: grid; gap: 0.6rem; }
+.progress-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.progress-top b { font-family: var(--font-display); font-size: 1.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.progress-top span { color: var(--muted); font-size: 0.9rem; }
+.bar { height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent-fill); transition: width 0.3s ease; }
+.sync { font-size: 0.85rem; color: var(--muted); }
+
+.toc { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+.toc a { display: grid; grid-template-columns: 2rem 1fr auto; align-items: baseline; gap: 0.25rem; padding: 0.35rem 0.5rem; border-radius: 6px; text-decoration: none; color: var(--ink); font-size: 0.97rem; }
+.toc a:hover { background: var(--surface-2); }
+.toc .num { font-family: var(--font-display); font-weight: 700; color: var(--muted); }
+.toc .cnt { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.toc a.is-complete .num, .toc a.is-complete .cnt { color: var(--accent); }
+
+/* Sections */
+section { scroll-margin-top: 1.5rem; display: grid; gap: 1.25rem; }
+.sec-head { display: grid; gap: 0.5rem; }
+.sec-head h2 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; }
+.sec-head h2 .ph { color: var(--accent); margin-right: 0.35em; }
+.sec-head p { max-width: 66ch; color: var(--muted); }
+.roles { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.role { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.02em; padding: 0.2rem 0.55rem; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); white-space: nowrap; }
+.role.owner { border-color: var(--warn); color: var(--warn); background: var(--warn-soft); }
+
+/* Steps */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+.step { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 1rem 1.1rem 1.1rem; display: grid; gap: 0.75rem; min-width: 0; }
+.step.is-done { border-color: color-mix(in oklab, var(--accent-fill) 55%, var(--line)); }
+.step-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0.4rem 1rem; }
+.tick { position: relative; display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: 0.7rem; align-items: start; cursor: pointer; flex: 1 1 22rem; min-width: 0; }
+.tick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.box { width: 1.4rem; height: 1.4rem; border: 2px solid var(--muted); border-radius: 5px; margin-top: 0.1rem; display: grid; place-items: center; background: var(--surface); transition: background 0.15s, border-color 0.15s; }
+.box svg { width: 0.95rem; height: 0.95rem; opacity: 0; color: var(--on-accent); }
+.tick input:checked + .box { background: var(--accent-fill); border-color: var(--accent-fill); }
+.tick input:checked + .box svg { opacity: 1; }
+.tick input:disabled + .box { opacity: 0.55; }
+.tick input:disabled ~ .step-title { cursor: default; }
+.step-title { font-weight: 600; font-size: 1.08rem; line-height: 1.35; }
+.step.is-done .step-title { color: var(--muted); }
+.step-meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); padding-top: 0.3rem; }
+.step-body { display: grid; gap: 0.75rem; padding-left: 2.2rem; min-width: 0; }
+.step-body p { max-width: 68ch; }
+.step-body ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.3rem; max-width: 68ch; }
+
+.path { display: flex; flex-wrap: wrap; gap: 0.25rem 0; font-family: var(--font-mono); font-size: 0.8rem; }
+.path span { padding: 0.15rem 0.5rem; background: var(--surface-2); border-radius: 4px; }
+.path span + span::before { content: ""; display: inline-block; width: 0.4rem; height: 0.4rem; border-top: 1.5px solid var(--muted); border-right: 1.5px solid var(--muted); transform: rotate(45deg); margin: 0 0.55rem 0.1rem 0.15rem; }
+.path span + span { background: none; padding-left: 0; }
+.path span:last-child { background: var(--accent-soft); color: var(--accent); padding-left: 0.5rem; font-weight: 500; }
+.path span:last-child::before { margin-left: -0.15rem; }
+
+.note { border-left: 3px solid var(--line); padding: 0.55rem 0.9rem; background: var(--surface-2); border-radius: 0 6px 6px 0; font-size: 0.97rem; max-width: 70ch; }
+.note.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.note.danger { border-left-color: var(--danger); background: var(--danger-soft); }
+.note b { font-weight: 600; }
+.gate { border: 1px dashed var(--warn); border-radius: var(--radius); padding: 0.9rem 1rem; background: var(--warn-soft); display: grid; gap: 0.4rem; }
+.gate ul { margin: 0; padding-left: 1.2rem; }
+
+/* Illustrations */
+.shot { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); overflow: hidden; min-width: 0; }
+.shot-bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; padding: 0.45rem 0.8rem; background: var(--surface-2); border-bottom: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+.shot-bar b { color: var(--ink); font-weight: 500; }
+.shot-body { padding: 0.9rem; display: grid; gap: 0.7rem; font-size: 0.92rem; min-width: 0; }
+.shot figcaption { border-top: 1px solid var(--line); padding: 0.7rem 0.9rem; background: var(--surface); }
+.marks { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; font-size: 0.93rem; }
+.marks li { display: grid; grid-template-columns: 1.4rem minmax(0, 1fr); gap: 0.5rem; align-items: start; }
+.mk { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; border-radius: 50%; background: var(--mark); color: var(--on-mark); font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; flex: none; line-height: 1; }
+.hit { outline: 2px solid var(--mark); outline-offset: 2px; border-radius: 6px; }
+
+.ui-panel { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 0.7rem 0.8rem; display: grid; gap: 0.5rem; min-width: 0; }
+.ui-h { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.ui-sub { font-size: 0.8rem; color: var(--muted); }
+.ui-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; padding: 0.45rem 0.55rem; border-radius: 6px; background: var(--bg); }
+.ui-row .grow { flex: 1 1 10rem; min-width: 0; }
+.ui-btn { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--line); border-radius: 6px; padding: 0.25rem 0.7rem; background: var(--surface); font-size: 0.82rem; font-weight: 500; white-space: nowrap; }
+.ui-btn.primary { background: var(--accent-fill); border-color: var(--accent-fill); color: var(--on-accent); }
+.ui-pill { font-family: var(--font-mono); font-size: 0.7rem; padding: 0.1rem 0.45rem; border-radius: 99px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.ui-pill.ok { background: var(--accent-soft); color: var(--accent); }
+.ui-pill.bad { background: var(--danger-soft); color: var(--danger); }
+.ui-input { font-family: var(--font-mono); font-size: 0.78rem; border: 1px solid var(--line); border-radius: 6px; padding: 0.3rem 0.55rem; background: var(--bg); overflow-wrap: anywhere; min-width: 0; }
+.ui-field { display: grid; gap: 0.25rem; min-width: 0; }
+.ui-field label { font-size: 0.78rem; color: var(--muted); }
+.ui-radio { display: flex; align-items: center; gap: 0.45rem; font-size: 0.86rem; }
+.ui-radio i { width: 0.95rem; height: 0.95rem; border-radius: 50%; border: 2px solid var(--muted); display: inline-block; flex: none; }
+.ui-radio.on i { border-color: var(--accent-fill); background: radial-gradient(circle, var(--accent-fill) 0 40%, transparent 45%); }
+.ui-check { display: flex; align-items: center; gap: 0.45rem; font-size: 0.86rem; }
+.ui-check i { width: 0.95rem; height: 0.95rem; border-radius: 3px; background: var(--accent-fill); flex: none; display: inline-block; }
+.ui-menu { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: 0 6px 18px color-mix(in oklab, var(--ink) 14%, transparent); padding: 0.3rem; display: grid; gap: 0.1rem; width: min(15rem, 100%); margin-left: auto; }
+.ui-menu div { padding: 0.35rem 0.6rem; border-radius: 5px; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; justify-content: space-between; }
+.ui-menu .dim { color: var(--muted); }
+.kebab { display: inline-flex; flex-direction: column; gap: 2px; padding: 0.3rem 0.45rem; border-radius: 5px; border: 1px solid var(--line); background: var(--surface); }
+.kebab i { width: 3px; height: 3px; border-radius: 50%; background: var(--ink); display: block; }
+.toggle { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; white-space: nowrap; }
+.toggle i { width: 1.9rem; height: 1.05rem; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); position: relative; display: inline-block; }
+.toggle i::after { content: ""; position: absolute; top: 1px; left: 1px; width: 0.8rem; height: 0.8rem; border-radius: 50%; background: var(--muted); }
+.cloud { width: 1.25rem; height: 0.85rem; color: var(--muted); }
+
+.ui-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 560px; }
+.ui-table th { text-align: left; font-weight: 500; color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--line); }
+.ui-table td { padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.ui-table td.m { font-family: var(--font-mono); font-size: 0.76rem; }
+.ui-table tr:last-child td { border-bottom: 0; }
+.scroll-x { overflow-x: auto; max-width: 100%; }
+
+.arrow-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+.arrow-row .ui-input { flex: 1 1 12rem; }
+.arrow-row svg { width: 1.2rem; height: 1.2rem; color: var(--muted); flex: none; }
+.strike { text-decoration: line-through; color: var(--muted); }
+
+/* Terminal */
+.term { border-radius: var(--radius); background: var(--term-bg); color: var(--term-ink); font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.6; overflow-x: auto; max-width: 100%; }
+.term-bar { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem; border-bottom: 1px solid color-mix(in oklab, var(--term-ink) 14%, transparent); color: var(--term-dim); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.term pre { margin: 0; padding: 0.7rem 0.9rem; white-space: pre; }
+.term .cmd { color: var(--term-ink); }
+.term .cmd::before { content: "$ "; color: var(--term-dim); }
+.term .dim { color: var(--term-dim); }
+.term .ok { color: var(--term-ok); }
+.term-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.6rem; min-width: 0; }
+.copy-btn { font-family: var(--font-mono); font-size: 0.68rem; border: 1px solid currentColor; border-radius: 4px; background: transparent; color: inherit; padding: 0.1rem 0.45rem; cursor: pointer; letter-spacing: 0.03em; text-transform: none; }
+
+/* Overview diagram */
+.flow { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.35fr); gap: 1rem; align-items: stretch; }
+.flow-col { display: grid; gap: 0.6rem; align-content: start; min-width: 0; }
+.flow-col > h3 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+.provider { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 0.8rem 0.9rem; display: grid; gap: 0.45rem; }
+.provider h4 { margin: 0; font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
+.provider ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; font-size: 0.93rem; }
+.provider li { display: grid; grid-template-columns: 0.5rem minmax(0, 1fr); gap: 0.55rem; align-items: baseline; }
+.provider li::before { content: ""; width: 0.45rem; height: 0.45rem; border-radius: 2px; background: var(--accent-fill); transform: translateY(-1px); }
+.provider li small { color: var(--muted); font-size: 0.85rem; }
+.provider.gone { border-style: dashed; background: transparent; }
+.provider.gone h4 { color: var(--muted); }
+.provider.lead { border-color: var(--accent-fill); }
+.flow-arrow { display: grid; place-items: center; color: var(--muted); }
+.flow-arrow svg { width: 2rem; height: 2rem; }
+
+/* Timeline */
+.timeline svg { display: block; width: 100%; min-width: 600px; height: auto; }
+.tl-axis { stroke: var(--line); stroke-width: 2; }
+.tl-tick { stroke: var(--line); stroke-width: 1; }
+.tl-label { fill: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+.tl-band { fill: var(--accent-soft); stroke: var(--accent-fill); stroke-width: 1; }
+.tl-band-2 { fill: var(--accent-fill); }
+.tl-band-text { fill: var(--accent); font-family: var(--font-body); font-size: 12.5px; font-weight: 600; }
+.tl-band-text-2 { fill: var(--on-accent); font-family: var(--font-body); font-size: 12.5px; font-weight: 600; }
+.tl-mark { stroke: var(--warn); stroke-width: 2; stroke-dasharray: 4 3; }
+.tl-mark-hard { stroke: var(--danger); stroke-width: 2.5; }
+.tl-mark-text { fill: var(--warn); font-family: var(--font-body); font-size: 12.5px; font-weight: 600; }
+.tl-mark-text-hard { fill: var(--danger); font-family: var(--font-body); font-size: 12.5px; font-weight: 600; }
+.tl-today { fill: var(--ink); font-family: var(--font-body); font-size: 12.5px; font-weight: 600; }
+.tl-dot { fill: var(--ink); }
+
+/* Tables */
+.table-wrap { overflow-x: auto; max-width: 100%; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table.data { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+table.data th { text-align: left; font-family: var(--font-mono); font-weight: 500; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--line); background: var(--surface-2); white-space: nowrap; }
+table.data td { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.data tr:last-child td { border-bottom: 0; }
+table.data td.m { font-family: var(--font-mono); font-size: 0.78rem; }
+table.data td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.data tr.pick td { background: var(--accent-soft); }
+table.data .val { display: flex; align-items: flex-start; gap: 0.5rem; justify-content: space-between; }
+table.data .val code { overflow-wrap: anywhere; font-size: 0.76rem; }
+table.data .copy-btn { color: var(--accent); flex: none; }
+.fate { font-size: 0.85rem; }
+.fate.keep { color: var(--accent); font-weight: 600; }
+.fate.change { color: var(--warn); font-weight: 600; }
+.fate.drop { color: var(--muted); }
+.records { min-width: 760px; }
+
+.two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 1rem 1.1rem; display: grid; gap: 0.5rem; align-content: start; }
+.card h3 { font-size: 1.35rem; font-weight: 600; }
+.card ol, .card ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.45rem; }
+.sources { font-size: 0.9rem; columns: 2 18rem; column-gap: 2rem; padding-left: 1.2rem; margin: 0; }
+.sources li { break-inside: avoid; margin-bottom: 0.35rem; }
+.foot { color: var(--muted); font-size: 0.88rem; border-top: 1px solid var(--line); padding-top: 1rem; max-width: 70ch; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+  .rail { position: static; }
+  .toc { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .flow { grid-template-columns: minmax(0, 1fr); }
+  .flow-arrow svg { transform: rotate(90deg); }
+}
+@media (max-width: 520px) {
+  body { font-size: 1rem; }
+  .step { padding: 0.9rem 0.85rem 1rem; }
+  .step-body { padding-left: 0; }
+  .shot-body { padding: 0.7rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="eyebrow">olinnsecurityinc.com · Runbook · Checked October 6, 2026</div>
+    <h1>Moving off SiteGround</h1>
+    <p class="lede">The domain, its DNS and the old WordPress site all live at SiteGround today, and company email runs on Google Workspace through those DNS records. This plan moves the domain and DNS to Cloudflare without interrupting email, puts the new website on Vercel, and then closes the SiteGround account.</p>
+    <div class="facts">
+      <div class="fact is-hard"><b>Nov 23, 2026</b><span>Domain expires. The transfer must finish before this date.</span></div>
+      <div class="fact"><b>Nov 1, 2026</b><span>.com price rises from $10.46 to about $11.15. Submit the transfer before then.</span></div>
+      <div class="fact"><b>No downtime</b><span>Email keeps working if the records are copied exactly before the nameserver change.</span></div>
+      <div class="fact"><b>About $216–$360 a year</b><span>Saved once SiteGround hosting is cancelled after the new site launches.</span></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="rail" aria-label="Progress and phases">
+      <div class="progress">
+        <div class="progress-top"><b id="done-count">0 / 0</b><span>steps done</span></div>
+        <div class="bar" aria-hidden="true"><i id="bar-fill"></i></div>
+        <p class="sync" id="sync-status">Ticks are saved in this browser only.</p>
+      </div>
+      <ol class="toc">
+        <li><a href="#overview"><span class="num">·</span><span>Overview</span><span class="cnt"></span></a></li>
+        <li><a href="#phase-0" data-phase-link="0"><span class="num">0</span><span>Checks</span><span class="cnt" data-phase-count="0"></span></a></li>
+        <li><a href="#phase-1" data-phase-link="1"><span class="num">1</span><span>Workspace billing</span><span class="cnt" data-phase-count="1"></span></a></li>
+        <li><a href="#phase-2" data-phase-link="2"><span class="num">2</span><span>DNS to Cloudflare</span><span class="cnt" data-phase-count="2"></span></a></li>
+        <li><a href="#phase-3" data-phase-link="3"><span class="num">3</span><span>Domain transfer</span><span class="cnt" data-phase-count="3"></span></a></li>
+        <li><a href="#phase-4" data-phase-link="4"><span class="num">4</span><span>Fix email signing</span><span class="cnt" data-phase-count="4"></span></a></li>
+        <li><a href="#phase-5" data-phase-link="5"><span class="num">5</span><span>Website launch</span><span class="cnt" data-phase-count="5"></span></a></li>
+        <li><a href="#phase-6" data-phase-link="6"><span class="num">6</span><span>Close SiteGround</span><span class="cnt" data-phase-count="6"></span></a></li>
+        <li><a href="#records"><span class="num">·</span><span>DNS records</span><span class="cnt"></span></a></li>
+        <li><a href="#costs"><span class="num">·</span><span>Costs and sources</span><span class="cnt"></span></a></li>
+      </ol>
+    </aside>
+
+    <main class="main">
+      <!-- Overview -->
+      <section id="overview">
+        <div class="sec-head">
+          <h2>What moves where</h2>
+          <p>Cloudflare becomes the registrar and DNS host, Vercel hosts the website, and Google keeps email. Nothing about the mailboxes changes.</p>
+        </div>
+        <div class="flow">
+          <div class="flow-col">
+            <h3>Now</h3>
+            <div class="provider">
+              <h4>SiteGround</h4>
+              <ul>
+                <li><span>Domain registration <small>(through eNom, locked, expires Nov 23, 2026)</small></span></li>
+                <li><span>DNS <small>(ns1 and ns2.siteground.net)</small></span></li>
+                <li><span>Old WordPress website <small>(35.215.81.195)</small></span></li>
+                <li><span>Possibly the Google Workspace bill <small>(checked in Phase 0)</small></span></li>
+              </ul>
+            </div>
+            <div class="provider">
+              <h4>Google Workspace</h4>
+              <ul><li><span>Company email <small>(MX records point here)</small></span></li></ul>
+            </div>
+          </div>
+          <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>
+          <div class="flow-col">
+            <h3>After the move</h3>
+            <div class="provider lead">
+              <h4>Cloudflare <span class="ui-pill ok">free account</span></h4>
+              <ul>
+                <li><span>Domain registration <small>(at cost, about $11 a year)</small></span></li>
+                <li><span>DNS, with DNSSEC switched on</span></li>
+                <li><span>Turnstile, the website forms' bot check</span></li>
+              </ul>
+            </div>
+            <div class="provider">
+              <h4>Vercel</h4>
+              <ul><li><span>The new website</span></li></ul>
+            </div>
+            <div class="provider">
+              <h4>Google Workspace</h4>
+              <ul><li><span>Company email, billed directly by Google</span></li></ul>
+            </div>
+            <div class="provider gone">
+              <h4>SiteGround <span class="ui-pill">cancelled</span></h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-x timeline" role="img" aria-label="Timeline from October 6 to November 24, 2026. Phases 0 to 2 from October 6 to 15. Submit the transfer between October 15 and 31. The .com price rises November 1. The domain expires November 23.">
+          <svg viewBox="0 0 720 132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <line class="tl-mark" x1="380.2" y1="24" x2="380.2" y2="96"/>
+            <line class="tl-mark-hard" x1="676.5" y1="24" x2="676.5" y2="96"/>
+            <text class="tl-today" x="24" y="18">Today, Oct 6</text>
+            <text class="tl-mark-text" x="380.2" y="18" text-anchor="middle">Nov 1 · .com price rises</text>
+            <text class="tl-mark-text-hard" x="690" y="18" text-anchor="end">Nov 23 · domain expires</text>
+            <rect class="tl-band" x="30" y="58" width="121.2" height="26" rx="4"/>
+            <text class="tl-band-text" x="90.6" y="75.5" text-anchor="middle">Phases 0–2</text>
+            <rect class="tl-band-2" x="151.2" y="58" width="215.5" height="26" rx="4"/>
+            <text class="tl-band-text-2" x="259" y="75.5" text-anchor="middle">Submit transfer (Phase 3)</text>
+            <line class="tl-axis" x1="30" y1="96" x2="690" y2="96"/>
+            <circle class="tl-dot" cx="30" cy="96" r="4"/>
+            <line class="tl-tick" x1="124.3" y1="92" x2="124.3" y2="100"/>
+            <line class="tl-tick" x1="218.6" y1="92" x2="218.6" y2="100"/>
+            <line class="tl-tick" x1="312.9" y1="92" x2="312.9" y2="100"/>
+            <line class="tl-tick" x1="407.1" y1="92" x2="407.1" y2="100"/>
+            <line class="tl-tick" x1="501.4" y1="92" x2="501.4" y2="100"/>
+            <line class="tl-tick" x1="595.7" y1="92" x2="595.7" y2="100"/>
+            <line class="tl-tick" x1="690" y1="92" x2="690" y2="100"/>
+            <text class="tl-label" x="30" y="118" text-anchor="middle">Oct 6</text>
+            <text class="tl-label" x="124.3" y="118" text-anchor="middle">Oct 13</text>
+            <text class="tl-label" x="218.6" y="118" text-anchor="middle">Oct 20</text>
+            <text class="tl-label" x="312.9" y="118" text-anchor="middle">Oct 27</text>
+            <text class="tl-label" x="407.1" y="118" text-anchor="middle">Nov 3</text>
+            <text class="tl-label" x="501.4" y="118" text-anchor="middle">Nov 10</text>
+            <text class="tl-label" x="595.7" y="118" text-anchor="middle">Nov 17</text>
+            <text class="tl-label" x="690" y="118" text-anchor="middle">Nov 24</text>
+          </svg>
+        </div>
+        <p class="note">A transfer takes up to 10 days once submitted. Phases 4 to 6 follow when ready; the website launch in Phase 5 waits for the owner's go-ahead and has no fixed date.</p>
+
+        <div class="two-col">
+          <div class="card">
+            <h3>Found while checking</h3>
+            <ul>
+              <li>Google's email-signing key (DKIM) is published on the bare domain instead of <code>google._domainkey</code>, so outgoing company mail most likely fails DKIM. Phase 4 fixes it.</li>
+              <li>The registrar's record for the domain changed on October 6 at 14:11 UTC. If the owner's name or email was changed recently, a transfer lock of up to 60 days can apply.</li>
+              <li>DNSSEC is off today, so the nameservers can change without an extra step.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Who does what</h3>
+            <ul>
+              <li><span class="role">Google admin</span> a super admin of the company's Google Workspace</li>
+              <li><span class="role">SiteGround login</span> whoever holds the SiteGround Client Area</li>
+              <li><span class="role">Cloudflare login</span> the company's new Cloudflare account</li>
+              <li><span class="role">Developer</span> the website developer</li>
+              <li><span class="role owner">Owner approval</span> needs the owner's go-ahead first</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Phase 0 -->
+      <section id="phase-0" data-phase="0">
+        <div class="sec-head">
+          <h2><span class="ph">0</span>Checks before anything changes</h2>
+          <p>Nothing here changes a setting. It finds out who bills email and records what exists, so nothing gets lost later.</p>
+          <div class="roles"><span class="role">Google admin</span><span class="role">SiteGround login</span><span class="role">Cloudflare login</span></div>
+        </div>
+        <ol class="steps">
+          <li class="step" data-step="p0-workspace">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p0-workspace" data-tick="p0-workspace"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Find out who bills Google Workspace</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>admin.google.com</span><span>Account</span><span>Reseller management</span></p>
+              <p>Sign in as a super admin. Look at which list holds the Workspace subscription.</p>
+              <figure class="shot">
+                <div class="shot-bar"><b>Google Admin console · Reseller management</b><span>Simplified illustration</span></div>
+                <div class="shot-body">
+                  <div class="ui-panel hit">
+                    <div class="ui-h"><span class="mk">1</span>Subscriptions from resellers</div>
+                    <div class="ui-row"><span class="grow">Google Workspace (your plan)</span><span class="ui-pill">SiteGround</span><span class="ui-btn">Transfer</span></div>
+                  </div>
+                  <div class="ui-panel">
+                    <div class="ui-h"><span class="mk">2</span>Subscriptions from Google</div>
+                    <div class="ui-row"><span class="ui-sub">Empty when a reseller bills you</span></div>
+                  </div>
+                </div>
+                <figcaption>
+                  <ol class="marks">
+                    <li><span class="mk">1</span><span>Listed here: SiteGround bills it. Do Phase 1 before cancelling anything at SiteGround.</span></li>
+                    <li><span class="mk">2</span><span>Listed here instead: Google already bills it. Skip Phase 1.</span></li>
+                  </ol>
+                </figcaption>
+              </figure>
+              <p class="note">A second check: a "Google Workspace" entry under Services in the SiteGround Client Area also means SiteGround bills it. SiteGround says its Workspace is cancelled automatically if not renewed, and it makes no promise about the mail data.</p>
+            </div>
+          </li>
+
+          <li class="step" data-step="p0-dns">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p0-dns" data-tick="p0-dns"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Record every DNS record at SiteGround</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Site Tools</span><span>Domain</span><span>DNS Zone Editor</span></p>
+              <p>Take screenshots of the full list. Compare it with the <a href="#records">records table</a> on this page, which lists what the public internet sees today. Note anything extra.</p>
+            </div>
+          </li>
+
+          <li class="step" data-step="p0-mailboxes">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p0-mailboxes" data-tick="p0-mailboxes"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Confirm nothing uses SiteGround email</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Site Tools</span><span>Email</span><span>Accounts, then Forwarders</span></p>
+              <p>Both lists should be empty. Company mail already goes to Google, so any mailbox here receives nothing and disappears with the hosting.</p>
+            </div>
+          </li>
+
+          <li class="step" data-step="p0-contact">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p0-contact" data-tick="p0-contact"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Check the domain owner's email address</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Client Area</span><span>Services</span><span>Domains</span><span>Settings</span></p>
+              <p>The transfer approval email goes to the registrant (owner) contact. Make sure it is a mailbox someone reads. Do not change the owner's name or email now: a change can lock the domain against transfer.</p>
+            </div>
+          </li>
+
+          <li class="step" data-step="p0-cloudflare">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p0-cloudflare" data-tick="p0-cloudflare"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Create the company's Cloudflare account</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <ul>
+                <li>Sign up with a company-owned login, such as a shared admin mailbox, not a personal address.</li>
+                <li>Turn on two-factor sign-in.</li>
+                <li>Add a payment card. Cloudflare warns that a failed payment can leave a transfer half started.</li>
+                <li>Invite the developer as a member.</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Phase 1 -->
+      <section id="phase-1" data-phase="1">
+        <div class="sec-head">
+          <h2><span class="ph">1</span>Move Workspace billing to Google</h2>
+          <p>Only if Phase 0 found SiteGround billing it; if Google already bills it, tick these three as done. Google says a transfer does not affect mail, files or availability. Expect two bills in the month of the transfer unless it lands on the first.</p>
+          <div class="roles"><span class="role">Google admin</span><span class="role">SiteGround login</span></div>
+        </div>
+        <ol class="steps">
+          <li class="step" data-step="p1-transfer">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p1-transfer" data-tick="p1-transfer"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Start the transfer to Google</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Account</span><span>Reseller management</span><span>Subscriptions from resellers</span><span>Transfer</span></p>
+              <figure class="shot">
+                <div class="shot-bar"><b>Google Admin console · Transfer subscription</b><span>Simplified illustration</span></div>
+                <div class="shot-body">
+                  <div class="ui-panel">
+                    <div class="ui-h">Google Workspace</div>
+                    <div class="ui-row hit"><span class="mk">1</span><span class="ui-radio on"><i></i>Transfer to Google</span></div>
+                    <div class="ui-row"><span class="ui-radio"><i></i>Keep with SiteGround</span></div>
+                  </div>
+                  <div class="ui-row"><span class="mk">2</span><span class="ui-check"><i></i>I agree to the terms</span></div>
+                  <div class="ui-row"><span class="mk">3</span><span class="ui-btn primary hit">Generate transfer authorization</span></div>
+                </div>
+                <figcaption>
+                  <ol class="marks">
+                    <li><span class="mk">1</span><span>Choose "Transfer to Google" for each product group, then Continue.</span></li>
+                    <li><span class="mk">2</span><span>Tick the agreement.</span></li>
+                    <li><span class="mk">3</span><span>Click "Generate transfer authorization", then Close.</span></li>
+                  </ol>
+                </figcaption>
+              </figure>
+            </div>
+          </li>
+          <li class="step" data-step="p1-billing">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p1-billing" data-tick="p1-billing"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Set up billing with Google</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>Add the company card when Google asks. If nothing moves after a day, open a SiteGround support ticket asking them to release the Google Workspace subscription to direct Google billing.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p1-confirm">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p1-confirm" data-tick="p1-confirm"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Confirm it now shows under "Subscriptions from Google"</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="note warn"><b>Do not cancel anything at SiteGround</b> until the subscription appears under "Subscriptions from Google".</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Phase 2 -->
+      <section id="phase-2" data-phase="2">
+        <div class="sec-head">
+          <h2><span class="ph">2</span>Point DNS at Cloudflare</h2>
+          <p>The domain stays registered at SiteGround for now. Only the nameservers change, so Cloudflare answers for the domain. Copy the records first and email keeps working throughout.</p>
+          <div class="roles"><span class="role">Cloudflare login</span><span class="role">SiteGround login</span></div>
+        </div>
+        <ol class="steps">
+          <li class="step" data-step="p2-add">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p2-add" data-tick="p2-add"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Add the domain to Cloudflare on the Free plan</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Cloudflare dashboard</span><span>Onboard a domain</span><span>olinnsecurityinc.com</span><span>Free</span></p>
+              <p>Let it scan for existing records. Cloudflare notes the scan can miss some, which the next step catches.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p2-records">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p2-records" data-tick="p2-records"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Make the records match, with every A and CNAME set to DNS only</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>Check each row against the <a href="#records">records table</a>. Add anything missing, delete anything the scan invented, and switch the proxy off on the website records.</p>
+              <figure class="shot">
+                <div class="shot-bar"><b>Cloudflare · DNS · Records</b><span>Simplified illustration</span></div>
+                <div class="shot-body">
+                  <div class="scroll-x">
+                    <table class="ui-table">
+                      <thead><tr><th>Type</th><th>Name</th><th>Content</th><th>Proxy status</th><th>TTL</th></tr></thead>
+                      <tbody>
+                        <tr><td>A</td><td class="m">@</td><td class="m">35.215.81.195</td><td><span class="toggle hit"><i></i><svg class="cloud" viewBox="0 0 24 16" fill="currentColor"><path d="M19 7.2A6 6 0 0 0 7.4 5.5 4.5 4.5 0 0 0 5 14.5h13.5a3.7 3.7 0 0 0 .5-7.3z"/></svg>DNS only</span> <span class="mk">1</span></td><td>Auto</td></tr>
+                        <tr><td>CNAME</td><td class="m">www</td><td class="m">olinnsecurityinc.com</td><td><span class="toggle hit"><i></i><svg class="cloud" viewBox="0 0 24 16" fill="currentColor"><path d="M19 7.2A6 6 0 0 0 7.4 5.5 4.5 4.5 0 0 0 5 14.5h13.5a3.7 3.7 0 0 0 .5-7.3z"/></svg>DNS only</span> <span class="mk">1</span></td><td>Auto</td></tr>
+                        <tr><td>MX</td><td class="m">@</td><td class="m">aspmx.l.google.com <span class="ui-pill">1</span></td><td class="ui-sub">DNS only</td><td>Auto</td></tr>
+                        <tr><td>MX</td><td class="m">@</td><td class="m">alt1.aspmx.l.google.com <span class="ui-pill">5</span></td><td class="ui-sub">DNS only</td><td>Auto</td></tr>
+                        <tr><td>TXT</td><td class="m">@</td><td class="m">"v=spf1 include:_spf.google.com ~all"</td><td class="ui-sub">DNS only</td><td>Auto</td></tr>
+                        <tr><td>TXT</td><td class="m">_dmarc</td><td class="m">"v=DMARC1; p=none; aspf=r; adkim=r;"</td><td class="ui-sub">DNS only</td><td>Auto</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <figcaption>
+                  <ol class="marks">
+                    <li><span class="mk">1</span><span>The website records must read "DNS only" with a grey cloud. An orange cloud means Cloudflare proxies the traffic, which Vercel advises against. Mail records are always DNS only.</span></li>
+                  </ol>
+                </figcaption>
+              </figure>
+            </div>
+          </li>
+          <li class="step" data-step="p2-email-routing">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p2-email-routing" data-tick="p2-email-routing"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Leave Cloudflare Email Routing switched off</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="note danger"><b>Email Routing breaks Google mail here.</b> It adds Cloudflare's own MX records for its forwarding service. This domain must keep only the five Google MX records. If Cloudflare offers to set up Email Routing, decline.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p2-nameservers">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p2-nameservers" data-tick="p2-nameservers"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Replace SiteGround's nameservers with Cloudflare's two</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Client Area</span><span>Services</span><span>Domains</span><span>Settings</span><span>Nameservers</span></p>
+              <p>Cloudflare shows two assigned nameservers when the domain is added. Copy those exact names; every account gets a different pair.</p>
+              <figure class="shot">
+                <div class="shot-bar"><b>SiteGround Client Area · Domain nameservers</b><span>Simplified illustration</span></div>
+                <div class="shot-body">
+                  <div class="ui-field">
+                    <label>Nameserver 1</label>
+                    <div class="arrow-row"><span class="ui-input strike">ns1.siteground.net</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg><span class="ui-input hit">first-name.ns.cloudflare.com</span><span class="mk">1</span></div>
+                  </div>
+                  <div class="ui-field">
+                    <label>Nameserver 2</label>
+                    <div class="arrow-row"><span class="ui-input strike">ns2.siteground.net</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg><span class="ui-input hit">second-name.ns.cloudflare.com</span><span class="mk">1</span></div>
+                  </div>
+                  <div><span class="ui-btn primary">Save</span></div>
+                </div>
+                <figcaption>
+                  <ol class="marks">
+                    <li><span class="mk">1</span><span>Placeholder names. Use the two that Cloudflare shows for this domain, exactly as written.</span></li>
+                  </ol>
+                </figcaption>
+              </figure>
+            </div>
+          </li>
+          <li class="step" data-step="p2-active">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p2-active" data-tick="p2-active"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Wait until Cloudflare shows the domain as Active</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>This usually takes minutes and can take up to 24 hours. Leave the SiteGround DNS zone untouched for 48 hours afterwards: some networks keep asking the old nameservers that long.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p2-verify">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p2-verify" data-tick="p2-verify"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Check DNS, then test email both ways and load the website</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>Run these in a terminal (Terminal on a Mac). The left box is today's real answer; the right box is what to expect after the change.</p>
+              <div class="term-pair">
+                <div class="term">
+                  <div class="term-bar"><span>Today</span><button class="copy-btn" type="button" data-copy="dig NS olinnsecurityinc.com +short">Copy</button></div>
+                  <pre><span class="cmd">dig NS olinnsecurityinc.com +short</span>
+<span class="dim">ns1.siteground.net.</span>
+<span class="dim">ns2.siteground.net.</span></pre>
+                </div>
+                <div class="term">
+                  <div class="term-bar"><span>After the change</span></div>
+                  <pre><span class="cmd">dig NS olinnsecurityinc.com +short</span>
+<span class="ok">first-name.ns.cloudflare.com.</span>
+<span class="ok">second-name.ns.cloudflare.com.</span></pre>
+                </div>
+              </div>
+              <div class="term">
+                <div class="term-bar"><span>Same answer before and after</span><button class="copy-btn" type="button" data-copy="dig MX olinnsecurityinc.com @1.1.1.1 +short">Copy</button></div>
+                <pre><span class="cmd">dig MX olinnsecurityinc.com @1.1.1.1 +short</span>
+<span class="ok">1 ASPMX.L.GOOGLE.com.</span>
+<span class="ok">5 ALT1.ASPMX.L.GOOGLE.com.</span>
+<span class="ok">5 ALT2.ASPMX.L.GOOGLE.com.</span>
+<span class="ok">10 ALT3.ASPMX.L.GOOGLE.com.</span>
+<span class="ok">10 ALT4.ASPMX.L.GOOGLE.com.</span></pre>
+              </div>
+              <ul>
+                <li>Send an email from a personal Gmail account to a company address, and reply to it.</li>
+                <li>Open olinnsecurityinc.com. It still shows the old WordPress site, as it should.</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Phase 3 -->
+      <section id="phase-3" data-phase="3">
+        <div class="sec-head">
+          <h2><span class="ph">3</span>Transfer the domain to Cloudflare</h2>
+          <p>Start once Cloudflare shows Active. Submit before November 1 for the current price; it must complete before November 23. The transfer adds one year, so the domain will expire November 23, 2027.</p>
+          <div class="roles"><span class="role">SiteGround login</span><span class="role">Cloudflare login</span></div>
+        </div>
+        <ol class="steps">
+          <li class="step" data-step="p3-unlock">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p3-unlock" data-tick="p3-unlock"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Turn the registrar lock off at SiteGround</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Client Area</span><span>Services</span><span>Domains</span><span>Settings</span><span>⋮ menu</span><span>Registrar Lock</span></p>
+              <figure class="shot">
+                <div class="shot-bar"><b>SiteGround Client Area · Domains</b><span>Simplified illustration</span></div>
+                <div class="shot-body">
+                  <div class="ui-row"><span class="grow mono">olinnsecurityinc.com</span><span class="ui-pill ok">Active</span><span class="ui-sub">Expires Nov 23, 2026</span><span class="kebab hit" aria-hidden="true"><i></i><i></i><i></i></span></div>
+                  <div class="ui-menu">
+                    <div class="hit"><span><span class="mk">1</span> Registrar Lock</span><span class="toggle"><i></i>Off</span></div>
+                    <div class="hit"><span><span class="mk">2</span> Get EPP Code</span></div>
+                    <div class="dim">Other options…</div>
+                  </div>
+                </div>
+                <figcaption>
+                  <ol class="marks">
+                    <li><span class="mk">1</span><span>Set Registrar Lock to Off. Allow up to 24 hours before the next step.</span></li>
+                    <li><span class="mk">2</span><span>Get EPP Code gives the transfer code used in the next step.</span></li>
+                  </ol>
+                </figcaption>
+              </figure>
+            </div>
+          </li>
+          <li class="step" data-step="p3-epp">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p3-epp" data-tick="p3-epp"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Get the EPP (transfer) code</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Domains</span><span>Settings</span><span>⋮ menu</span><span>Get EPP Code</span></p>
+              <p class="note danger"><b>Treat the code like a password.</b> Anyone holding it can move the domain. Paste it straight into Cloudflare; do not send it by email or chat. It is case-sensitive, so copy it without spaces.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p3-submit">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p3-submit" data-tick="p3-submit"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Submit the transfer in Cloudflare</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Cloudflare dashboard</span><span>Domain Registration</span><span>Transfer Domains</span></p>
+              <figure class="shot">
+                <div class="shot-bar"><b>Cloudflare · Transfer domains</b><span>Simplified illustration</span></div>
+                <div class="shot-body">
+                  <div class="ui-row"><span class="ui-check"><i></i></span><span class="grow mono">olinnsecurityinc.com</span><span class="ui-pill ok">Ready to transfer</span></div>
+                  <div class="ui-field">
+                    <label>Authorization code <span class="mk">1</span></label>
+                    <span class="ui-input hit">paste the EPP code here</span>
+                  </div>
+                  <div class="ui-panel">
+                    <div class="ui-row"><span class="grow">Transfer with 1-year renewal <span class="mk">2</span></span><b class="mono">$10.46</b></div>
+                    <div class="ui-row"><span class="grow">New expiry date</span><span class="mono">Nov 23, 2027</span></div>
+                  </div>
+                  <div class="ui-row"><span class="mk">3</span><span class="ui-btn primary hit">Confirm and pay</span></div>
+                </div>
+                <figcaption>
+                  <ol class="marks">
+                    <li><span class="mk">1</span><span>Paste the code from SiteGround.</span></li>
+                    <li><span class="mk">2</span><span>About $10.46 before November 1, about $11.15 after. The price is the registry's cost with no markup.</span></li>
+                    <li><span class="mk">3</span><span>Confirm the contact details Cloudflare asks for, then pay. Button labels can differ slightly.</span></li>
+                  </ol>
+                </figcaption>
+              </figure>
+            </div>
+          </li>
+          <li class="step" data-step="p3-approve">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p3-approve" data-tick="p3-approve"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Approve the transfer email, if one arrives</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>SiteGround or eNom may email the owner's address asking to approve. Approving speeds it up; otherwise it completes on its own, usually within 5 days and at most 10.</p>
+              <p class="note warn"><b>Keep SiteGround's auto-renew on</b> until the transfer completes. If the transfer fails, the domain must not lapse on November 23.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p3-verify">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p3-verify" data-tick="p3-verify"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Confirm Cloudflare is the registrar</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <div class="term-pair">
+                <div class="term">
+                  <div class="term-bar"><span>Today</span><button class="copy-btn" type="button" data-copy="whois olinnsecurityinc.com | grep -iE &quot;registrar:|expiry&quot;">Copy</button></div>
+                  <pre><span class="cmd">whois olinnsecurityinc.com | grep -iE "registrar:|expiry"</span>
+<span class="dim">Registry Expiry Date: 2026-11-23T04:53:34Z</span>
+<span class="dim">Registrar: eNom, LLC</span></pre>
+                </div>
+                <div class="term">
+                  <div class="term-bar"><span>After the transfer</span></div>
+                  <pre><span class="cmd">whois olinnsecurityinc.com | grep -iE "registrar:|expiry"</span>
+<span class="ok">Registry Expiry Date: 2027-11-23…</span>
+<span class="ok">Registrar: Cloudflare, Inc.</span></pre>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="step" data-step="p3-dnssec">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p3-dnssec" data-tick="p3-dnssec"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Switch on DNSSEC</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Cloudflare dashboard</span><span>DNS</span><span>Settings</span><span>Enable DNSSEC</span></p>
+              <p>With Cloudflare as both registrar and DNS host, this is one click. It protects visitors and mail servers from forged DNS answers.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Phase 4 -->
+      <section id="phase-4" data-phase="4">
+        <div class="sec-head">
+          <h2><span class="ph">4</span>Fix Google email signing (DKIM)</h2>
+          <p>Any time after Phase 2. The key is published under the wrong name today, so mail from company addresses likely arrives unsigned, which hurts delivery to other inboxes.</p>
+          <div class="roles"><span class="role">Google admin</span><span class="role">Cloudflare login</span></div>
+        </div>
+        <ol class="steps">
+          <li class="step" data-step="p4-generate">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p4-generate" data-tick="p4-generate"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Generate a new DKIM key in Google</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>admin.google.com</span><span>Apps</span><span>Google Workspace</span><span>Gmail</span><span>Authenticate email</span></p>
+              <figure class="shot">
+                <div class="shot-bar"><b>Google Admin console · Authenticate email</b><span>Simplified illustration</span></div>
+                <div class="shot-body">
+                  <div class="ui-row"><span class="grow">Selected domain: <span class="mono">olinnsecurityinc.com</span></span><span class="ui-pill bad">Not authenticating email</span></div>
+                  <div class="ui-row"><span class="mk">1</span><span class="ui-btn hit">Generate new record</span><span class="ui-sub">2048-bit key, prefix "google"</span></div>
+                  <div class="ui-field">
+                    <label>DNS Host name (TXT record name) <span class="mk">2</span></label>
+                    <span class="ui-input hit">google._domainkey</span>
+                  </div>
+                  <div class="ui-field">
+                    <label>TXT record value <span class="mk">2</span></label>
+                    <span class="ui-input hit">v=DKIM1; k=rsa; p=MIIBIjANBgkqh… (long value)</span>
+                  </div>
+                  <div class="ui-row"><span class="mk">3</span><span class="ui-btn primary">Start authentication</span></div>
+                </div>
+                <figcaption>
+                  <ol class="marks">
+                    <li><span class="mk">1</span><span>Generate a fresh 2048-bit record.</span></li>
+                    <li><span class="mk">2</span><span>Copy the host name and the value into Cloudflare (next step).</span></li>
+                    <li><span class="mk">3</span><span>Come back about an hour later to click Start authentication.</span></li>
+                  </ol>
+                </figcaption>
+              </figure>
+            </div>
+          </li>
+          <li class="step" data-step="p4-add">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p4-add" data-tick="p4-add"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Add the key as a TXT record in Cloudflare</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Cloudflare dashboard</span><span>DNS</span><span>Records</span><span>Add record</span></p>
+              <p>Type <code>TXT</code>, name <code>google._domainkey</code> (or the host name Google shows), content the full value from Google.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p4-start">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p4-start" data-tick="p4-start"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Click "Start authentication" in Google</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>Wait about an hour after adding the record. The status should change to "Authenticating email with DKIM".</p>
+              <div class="term">
+                <div class="term-bar"><span>Check the record is live</span><button class="copy-btn" type="button" data-copy="dig TXT google._domainkey.olinnsecurityinc.com +short">Copy</button></div>
+                <pre><span class="cmd">dig TXT google._domainkey.olinnsecurityinc.com +short</span>
+<span class="dim"># today: no answer</span>
+<span class="ok">"v=DKIM1; k=rsa; p=MIIBIjANBgkqh…"</span></pre>
+              </div>
+            </div>
+          </li>
+          <li class="step" data-step="p4-test">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p4-test" data-tick="p4-test"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Send a test and check that DKIM passes</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>Send a message from a company address to a personal Gmail account. Open it, then <b>⋮ › Show original</b>.</p>
+              <figure class="shot">
+                <div class="shot-bar"><b>Gmail · Show original</b><span>Simplified illustration</span></div>
+                <div class="shot-body">
+                  <div class="ui-panel">
+                    <div class="ui-row"><span class="grow">SPF</span><span class="ui-pill ok">PASS</span></div>
+                    <div class="ui-row hit"><span class="grow">DKIM <span class="mk">1</span></span><span class="ui-pill ok">'PASS' with domain olinnsecurityinc.com</span></div>
+                    <div class="ui-row"><span class="grow">DMARC</span><span class="ui-pill ok">PASS</span></div>
+                  </div>
+                </div>
+                <figcaption>
+                  <ol class="marks">
+                    <li><span class="mk">1</span><span>DKIM should read PASS with the company domain. If it names a different domain, authentication has not started yet.</span></li>
+                  </ol>
+                </figcaption>
+              </figure>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Phase 5 -->
+      <section id="phase-5" data-phase="5">
+        <div class="sec-head">
+          <h2><span class="ph">5</span>Launch the new website</h2>
+          <p>Each step here needs the owner's go-ahead. It follows the Cutover checklist in the project's launch notes (docs/LAUNCH.md), including the form tests and redirect decisions listed there.</p>
+          <div class="roles"><span class="role owner">Owner approval</span><span class="role">Developer</span><span class="role">Cloudflare login</span></div>
+        </div>
+        <ol class="steps">
+          <li class="step" data-step="p5-vercel">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p5-vercel" data-tick="p5-vercel"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Add the domain to the website project in Vercel</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Vercel</span><span>o-linn-website-v4</span><span>Settings</span><span>Domains</span></p>
+              <figure class="shot">
+                <div class="shot-bar"><b>Vercel · Project domains</b><span>Simplified illustration</span></div>
+                <div class="shot-body">
+                  <div class="ui-panel">
+                    <div class="ui-h"><span class="mono">olinnsecurityinc.com</span><span class="ui-pill bad">Invalid configuration</span></div>
+                    <div class="ui-row hit"><span class="mk">1</span><span class="mono">A</span><span class="mono">@</span><span class="grow ui-sub">value shown by Vercel</span></div>
+                  </div>
+                  <div class="ui-panel">
+                    <div class="ui-h"><span class="mono">www.olinnsecurityinc.com</span><span class="ui-pill">Redirects to olinnsecurityinc.com</span><span class="mk">2</span></div>
+                    <div class="ui-row"><span class="mono">CNAME</span><span class="mono">www</span><span class="grow ui-sub">value shown by Vercel</span></div>
+                  </div>
+                </div>
+                <figcaption>
+                  <ol class="marks">
+                    <li><span class="mk">1</span><span>Vercel lists the exact record values to set. Copy them from there, not from memory or old notes.</span></li>
+                    <li><span class="mk">2</span><span>Add www too, set to redirect to the bare domain. The forms and search indexing accept the bare domain only.</span></li>
+                  </ol>
+                </figcaption>
+              </figure>
+            </div>
+          </li>
+          <li class="step" data-step="p5-dns">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p5-dns" data-tick="p5-dns"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Point the website records at Vercel in Cloudflare</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>Edit <code>A @</code> (today <code>35.215.81.195</code>) and <code>CNAME www</code> to Vercel's values. Keep both DNS only. Do not touch the MX or TXT records.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p5-resend">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p5-resend" data-tick="p5-resend"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Add the form mail records from Resend</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>Copy exactly what the domain's Records tab in Resend shows: a DKIM TXT at <code>resend._domainkey</code> and the return-path records on <code>send</code>. None of them touches the Google MX or SPF records.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p5-turnstile">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p5-turnstile" data-tick="p5-turnstile"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Create the Turnstile widget for the forms</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Cloudflare dashboard</span><span>Turnstile</span><span>Add widget</span></p>
+              <p>Hostname <code>olinnsecurityinc.com</code>, mode Managed. Give the site key and secret key to the developer to store in Vercel's settings as <code>TURNSTILE_SITE_KEY</code> and <code>TURNSTILE_SECRET_KEY</code>; never paste them into email or chat.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p5-verify">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p5-verify" data-tick="p5-verify"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Run the launch check</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <div class="term">
+                <div class="term-bar"><span>Developer, from the project folder</span><button class="copy-btn" type="button" data-copy="node scripts/verify-launch.ts https://olinnsecurityinc.com --indexed --forms">Copy</button></div>
+                <pre><span class="cmd">node scripts/verify-launch.ts https://olinnsecurityinc.com --indexed --forms</span></pre>
+              </div>
+              <p>It checks indexing, security headers, every redirect, both form endpoints and the www redirect. Then send one real test through each form.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Phase 6 -->
+      <section id="phase-6" data-phase="6">
+        <div class="sec-head">
+          <h2><span class="ph">6</span>Close the SiteGround account</h2>
+          <p>Last, and only once every condition below holds.</p>
+          <div class="roles"><span class="role">SiteGround login</span><span class="role">Cloudflare login</span></div>
+        </div>
+        <div class="gate">
+          <b>Before cancelling, all four must be true:</b>
+          <ul>
+            <li>The new website is live on Vercel and the launch check passed.</li>
+            <li>The WordPress content and its media are backed up.</li>
+            <li>Google bills Workspace directly (Phase 1, or Phase 0 found it already did).</li>
+            <li>Cloudflare is the registrar (Phase 3 verified).</li>
+          </ul>
+        </div>
+        <ol class="steps">
+          <li class="step" data-step="p6-backup">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p6-backup" data-tick="p6-backup"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Back up the old WordPress site</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <ul>
+                <li>WordPress admin › Tools › Export › All content. Save the file.</li>
+                <li>Site Tools › Site › File Manager: download <code>wp-content/uploads</code>. It holds the 58 images (gallery, founder, team, onboarding) that are not on the new site.</li>
+              </ul>
+            </div>
+          </li>
+          <li class="step" data-step="p6-records">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p6-records" data-tick="p6-records"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Delete the SiteGround leftovers in Cloudflare DNS</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p>Remove <code>mail</code>, <code>ftp</code> and <code>autodiscover</code> (A records to 35.215.81.195) and the SRV record <code>_autodiscover._tcp</code>. They point at the server being cancelled.</p>
+            </div>
+          </li>
+          <li class="step" data-step="p6-cancel">
+            <div class="step-head">
+              <label class="tick"><input type="checkbox" id="c-p6-cancel" data-tick="p6-cancel"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step-title">Cancel SiteGround hosting</span></label>
+              <span class="step-meta" data-meta></span>
+            </div>
+            <div class="step-body">
+              <p class="path"><span>Client Area</span><span>Services</span><span>Hosting</span></p>
+              <p class="note danger"><b>Cancelling deletes the old site's files.</b> It cannot be undone, so confirm the backup opens first. Afterwards, check the Client Area for anything still set to renew (domain, Workspace) and turn it off.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Records -->
+      <section id="records">
+        <div class="sec-head">
+          <h2>DNS records to copy</h2>
+          <p>What the public internet sees for olinnsecurityinc.com today, read on October 6. Enter values without the surrounding quotes. Priority applies to MX records only.</p>
+        </div>
+        <div class="table-wrap">
+          <table class="data records">
+            <thead><tr><th>Type</th><th>Name</th><th>Content</th><th>Priority</th><th>In Cloudflare</th></tr></thead>
+            <tbody>
+              <tr><td>A</td><td class="m">@</td><td class="m"><div class="val"><code>35.215.81.195</code><button class="copy-btn" type="button" data-copy="35.215.81.195">Copy</button></div></td><td class="num">–</td><td><span class="fate change">Copy, DNS only.</span> <span class="fate">Replace with Vercel's value at launch.</span></td></tr>
+              <tr><td>CNAME</td><td class="m">www</td><td class="m"><div class="val"><code>olinnsecurityinc.com</code><button class="copy-btn" type="button" data-copy="olinnsecurityinc.com">Copy</button></div></td><td class="num">–</td><td><span class="fate change">Copy, DNS only.</span> <span class="fate">Replace with Vercel's value at launch.</span></td></tr>
+              <tr><td>MX</td><td class="m">@</td><td class="m"><div class="val"><code>ASPMX.L.GOOGLE.COM</code><button class="copy-btn" type="button" data-copy="ASPMX.L.GOOGLE.COM">Copy</button></div></td><td class="num">1</td><td><span class="fate keep">Copy and keep</span></td></tr>
+              <tr><td>MX</td><td class="m">@</td><td class="m"><div class="val"><code>ALT1.ASPMX.L.GOOGLE.COM</code><button class="copy-btn" type="button" data-copy="ALT1.ASPMX.L.GOOGLE.COM">Copy</button></div></td><td class="num">5</td><td><span class="fate keep">Copy and keep</span></td></tr>
+              <tr><td>MX</td><td class="m">@</td><td class="m"><div class="val"><code>ALT2.ASPMX.L.GOOGLE.COM</code><button class="copy-btn" type="button" data-copy="ALT2.ASPMX.L.GOOGLE.COM">Copy</button></div></td><td class="num">5</td><td><span class="fate keep">Copy and keep</span></td></tr>
+              <tr><td>MX</td><td class="m">@</td><td class="m"><div class="val"><code>ALT3.ASPMX.L.GOOGLE.COM</code><button class="copy-btn" type="button" data-copy="ALT3.ASPMX.L.GOOGLE.COM">Copy</button></div></td><td class="num">10</td><td><span class="fate keep">Copy and keep</span></td></tr>
+              <tr><td>MX</td><td class="m">@</td><td class="m"><div class="val"><code>ALT4.ASPMX.L.GOOGLE.COM</code><button class="copy-btn" type="button" data-copy="ALT4.ASPMX.L.GOOGLE.COM">Copy</button></div></td><td class="num">10</td><td><span class="fate keep">Copy and keep</span></td></tr>
+              <tr><td>TXT</td><td class="m">@</td><td class="m"><div class="val"><code>v=spf1 include:_spf.google.com ~all</code><button class="copy-btn" type="button" data-copy="v=spf1 include:_spf.google.com ~all">Copy</button></div></td><td class="num">–</td><td><span class="fate keep">Copy and keep</span></td></tr>
+              <tr><td>TXT</td><td class="m">@</td><td class="m"><div class="val"><code>google-site-verification=mfD9PGUdE4F1zv-qiloGEmcRe4CU86unt7vs0_txHfA</code><button class="copy-btn" type="button" data-copy="google-site-verification=mfD9PGUdE4F1zv-qiloGEmcRe4CU86unt7vs0_txHfA">Copy</button></div></td><td class="num">–</td><td><span class="fate keep">Copy and keep</span></td></tr>
+              <tr><td>TXT</td><td class="m">@</td><td class="m"><div class="val"><code>google-site-verification=0PkbsfG8Nmur2bDyLJtrlZSxvhGqyKc2aRMZegs9P9E</code><button class="copy-btn" type="button" data-copy="google-site-verification=0PkbsfG8Nmur2bDyLJtrlZSxvhGqyKc2aRMZegs9P9E">Copy</button></div></td><td class="num">–</td><td><span class="fate keep">Copy and keep</span></td></tr>
+              <tr><td>TXT</td><td class="m">_dmarc</td><td class="m"><div class="val"><code>v=DMARC1; p=none; aspf=r; adkim=r;</code><button class="copy-btn" type="button" data-copy="v=DMARC1; p=none; aspf=r; adkim=r;">Copy</button></div></td><td class="num">–</td><td><span class="fate keep">Copy and keep</span></td></tr>
+              <tr><td>TXT</td><td class="m">@</td><td class="m"><code>v=DKIM1; k=rsa; p=MIIBIjANBgkqh…</code></td><td class="num">–</td><td><span class="fate drop">Skip. A key on @ does nothing; Phase 4 publishes a fresh one at google._domainkey.</span></td></tr>
+              <tr><td>A</td><td class="m">mail</td><td class="m"><code>35.215.81.195</code></td><td class="num">–</td><td><span class="fate drop">Copy, DNS only. Delete in Phase 6.</span></td></tr>
+              <tr><td>A</td><td class="m">ftp</td><td class="m"><code>35.215.81.195</code></td><td class="num">–</td><td><span class="fate drop">Copy, DNS only. Delete in Phase 6.</span></td></tr>
+              <tr><td>A</td><td class="m">autodiscover</td><td class="m"><code>35.215.81.195</code></td><td class="num">–</td><td><span class="fate drop">Copy, DNS only. Delete in Phase 6.</span></td></tr>
+              <tr><td>SRV</td><td class="m">_autodiscover._tcp</td><td class="m"><code>0 0 443 cpanelemaildiscovery.cpanel.net</code></td><td class="num">–</td><td><span class="fate drop">Copy. Delete in Phase 6.</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Two google-site-verification records prove ownership to Google (Workspace and Search Console). Keep both; removing one can unverify the domain.</p>
+      </section>
+
+      <!-- Costs -->
+      <section id="costs">
+        <div class="sec-head">
+          <h2>Why Cloudflare, and what it costs</h2>
+          <p>Prices for one .com domain per year, checked October 6, 2026. Verisign raises the wholesale .com price from $10.26 to $10.97 on November 1.</p>
+        </div>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Option</th><th>Domain per year</th><th>DNS</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr class="pick"><td><b>Cloudflare</b> (chosen)</td><td class="num">$10.46, about $11.15 from Nov 1</td><td>Free</td><td>Registry cost with no markup. DNSSEC in one click. Turnstile in the same account.</td></tr>
+              <tr><td>Vercel</td><td class="num">$11.25</td><td>Free</td><td>No DNSSEC. Puts the domain and email records inside the website host.</td></tr>
+              <tr><td>Namecheap</td><td class="num">$11.18 first year, then $18.48</td><td>Free</td><td>Cheap to move in, dearer to keep.</td></tr>
+              <tr><td>SiteGround (today)</td><td class="num">about $19.99</td><td>With hosting</td><td>Hosting renews at $17.99 to $29.99 a month.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <h3>The reasoning</h3>
+            <ul>
+              <li>The registrar saves about $9 a year. The real saving is ending SiteGround hosting once the new site is live.</li>
+              <li>Keeping the domain apart from the website host means a future website move never touches email.</li>
+              <li>Turnstile works with any DNS provider, so it is not a reason by itself, but one Cloudflare account for all three keeps logins in one place.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Sources</h3>
+            <ol class="sources">
+              <li><a href="https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/" target="_blank" rel="noopener">Cloudflare: transfer a domain</a></li>
+              <li><a href="https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/" target="_blank" rel="noopener">Cloudflare: full DNS setup</a></li>
+              <li><a href="https://cfdomainpricing.com/" target="_blank" rel="noopener">Cloudflare .com price tracker</a></li>
+              <li><a href="https://domainnamewire.com/2026/04/23/breaking-verisign-raising-wholesale-com-prices/" target="_blank" rel="noopener">Verisign .com price increase</a></li>
+              <li><a href="https://www.siteground.com/kb/how_to_transfer_domain_name_to_another_registrar" target="_blank" rel="noopener">SiteGround: transfer a domain away</a></li>
+              <li><a href="https://www.siteground.com/kb/cancel-google-workspace" target="_blank" rel="noopener">SiteGround: cancelling Google Workspace</a></li>
+              <li><a href="https://knowledge.workspace.google.com/admin/billing/transfer-subscriptions-between-google-and-resellers" target="_blank" rel="noopener">Google: move from a reseller</a></li>
+              <li><a href="https://vercel.com/kb/guide/cloudflare-with-vercel" target="_blank" rel="noopener">Vercel: using Cloudflare with Vercel</a></li>
+              <li><a href="https://vercel.com/docs/domains/working-with-dns" target="_blank" rel="noopener">Vercel: working with DNS</a></li>
+              <li><a href="https://www.namecheap.com/domains/transfer/" target="_blank" rel="noopener">Namecheap: domain transfer</a></li>
+            </ol>
+          </div>
+        </div>
+        <p class="foot">Illustrations are simplified drawings of each dashboard, not screenshots; menu labels can differ slightly. Terminal boxes marked "Today" show real answers read on October 6, 2026.</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  var steps = Array.prototype.slice.call(document.querySelectorAll('[data-step]'));
+  var LS_KEY = 'olinn-domain-move-ticks';
+  var countEl = document.getElementById('done-count');
+  var barEl = document.getElementById('bar-fill');
+  var fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+
+  function readLocal() {
+    try { var v = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); return v && typeof v === 'object' ? v : {}; }
+    catch (e) { return {}; }
+  }
+  function writeLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  var state = readLocal();
+
+  function render() {
+    var done = 0;
+    steps.forEach(function (el) {
+      var id = el.dataset.step;
+      var s = state[id];
+      var isDone = !!(s && s.done === true);
+      if (isDone) done++;
+      el.querySelector('input[data-tick]').checked = isDone;
+      el.classList.toggle('is-done', isDone);
+      var text = '';
+      if (isDone && s.at) {
+        var d = new Date(s.at);
+        if (!isNaN(d.getTime())) text = 'Done ' + fmt.format(d);
+      }
+      el.querySelector('[data-meta]').textContent = text;
+    });
+    countEl.textContent = done + ' / ' + steps.length;
+    barEl.style.width = (steps.length ? (done / steps.length) * 100 : 0) + '%';
+    document.querySelectorAll('[data-phase]').forEach(function (sec) {
+      var key = sec.dataset.phase;
+      var list = sec.querySelectorAll('[data-step]');
+      var d = 0;
+      list.forEach(function (el) { var s = state[el.dataset.step]; if (s && s.done === true) d++; });
+      document.querySelectorAll('[data-phase-count="' + key + '"]').forEach(function (c) { c.textContent = d + '/' + list.length; });
+      document.querySelectorAll('[data-phase-link="' + key + '"]').forEach(function (a) { a.classList.toggle('is-complete', list.length > 0 && d === list.length); });
+    });
+  }
+
+  document.addEventListener('change', function (e) {
+    var cb = e.target.closest ? e.target.closest('input[data-tick]') : null;
+    if (!cb) return;
+    var id = cb.dataset.tick;
+    state[id] = cb.checked ? { done: true, at: new Date().toISOString() } : { done: false };
+    writeLocal();
+    render();
+  });
+
+  function selectText(node) {
+    try {
+      var range = document.createRange();
+      range.selectNodeContents(node);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } catch (e) {}
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-copy]') : null;
+    if (!b) return;
+    var text = b.getAttribute('data-copy');
+    var target = b.parentElement && (b.parentElement.querySelector('code') || (b.closest('.term') && b.closest('.term').querySelector('.cmd')));
+    function show(label) { b.textContent = label; setTimeout(function () { b.textContent = 'Copy'; }, 1600); }
+    function fallback() { if (target) selectText(target); show('Selected'); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { show('Copied'); }, fallback);
+    } else { fallback(); }
+  });
+
+  render();
+})();
+</script>
+
+</body></html>

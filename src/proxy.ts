@@ -4,24 +4,55 @@ const ACCESS_COOKIE = 'site_access'
 const ACCESS_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 
 /*
- * Client reports: static pages on their own host, one slug per client
- * (reports.milesroxas.com/<slug>), served from public/reports/<slug>/.
- * Next drops the trailing slash before the proxy runs, so a report links its
- * own files from /<slug>/... The reports are unlisted: every response is noindex.
+ * Client reports: static pages on their own host, one slug per client and one
+ * per report under it (reports.milesroxas.com/<client>/<report>), served from
+ * public/reports/<client>/<report>/. Next drops the trailing slash before the
+ * proxy runs, so a report links its own files from /<client>/<report>/...
+ * The reports are unlisted: every response is noindex.
  */
 const REPORTS_HOST_PREFIX = 'reports.'
-const REPORT_PAGE = /^\/[a-z0-9-]+$/
+const REPORT_PAGE = /^\/[a-z0-9-]+\/[a-z0-9-]+$/
+
+/*
+ * Addresses shared before reports gained a client slug. The O'Linn progress
+ * report went out as /olinn and is open in the client's browser, so the page
+ * and the images it loads lazily redirect to where they live now. A `from`
+ * ending in a slash matches everything under it; any other matches exactly.
+ */
+const MOVED_REPORTS: ReadonlyArray<{ from: string; to: string }> = [
+  { from: '/olinn', to: '/olinn/progress' },
+  { from: '/olinn/img/', to: '/olinn/progress/img/' },
+]
+
+function movedReportPath(pathname: string) {
+  for (const { from, to } of MOVED_REPORTS) {
+    if (from.endsWith('/') ? pathname.startsWith(from) : pathname === from) {
+      return to + pathname.slice(from.length)
+    }
+  }
+  return null
+}
+
+function noindex(response: NextResponse) {
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  return response
+}
 
 function reportResponse(request: NextRequest) {
   const { pathname } = request.nextUrl
   const target = request.nextUrl.clone()
+
+  const moved = movedReportPath(pathname)
+  if (moved) {
+    // Temporary, so /<client> stays free to list that client's reports later.
+    target.pathname = moved
+    return noindex(NextResponse.redirect(target, 307))
+  }
+
   target.pathname = REPORT_PAGE.test(pathname)
     ? `/reports${pathname}/index.html`
     : `/reports${pathname}`
-
-  const response = NextResponse.rewrite(target)
-  response.headers.set('X-Robots-Tag', 'noindex, nofollow')
-  return response
+  return noindex(NextResponse.rewrite(target))
 }
 
 export function proxy(request: NextRequest) {
