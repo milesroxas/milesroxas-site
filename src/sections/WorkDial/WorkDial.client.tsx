@@ -208,28 +208,30 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
   return (
     <div className="work-dial" style={moreWorkMotionStyle}>
       <header className="work-dial-header">
-        <h1 className="flex items-start gap-2.5 text-heading-1" id="works-index-title">
-          <span className="overflow-clip pb-[0.08em]">
-            <span className="inline-block motion-safe:animate-hero-rise motion-reduce:animate-hero-fade">
-              {title}
+        <div className="work-dial-heading">
+          <h1 className="flex items-start gap-2.5 text-heading-1" id="works-index-title">
+            <span className="overflow-clip pb-[0.08em]">
+              <span className="inline-block motion-safe:animate-hero-rise motion-reduce:animate-hero-fade">
+                {title}
+              </span>
             </span>
-          </span>
-          <span
-            aria-hidden
-            className="pt-1 font-medium font-mono text-xs/none tabular-nums tracking-normal motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
-            style={enterAt(160)}
-          >
-            {count}
-          </span>
-        </h1>
-        {lead && (
-          <p
-            className="work-dial-lead motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
-            style={enterAt(240)}
-          >
-            {lead}
-          </p>
-        )}
+            <span
+              aria-hidden
+              className="pt-1 font-medium font-mono text-xs/none tabular-nums tracking-normal motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
+              style={enterAt(160)}
+            >
+              {count}
+            </span>
+          </h1>
+          {lead && (
+            <p
+              className="work-dial-lead motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
+              style={enterAt(240)}
+            >
+              {lead}
+            </p>
+          )}
+        </div>
       </header>
 
       <div aria-hidden className="work-dial-stage">

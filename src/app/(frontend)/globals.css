@@ -2680,8 +2680,8 @@ html:active-view-transition-type(work-open) .dock {
    opening a work grows it in place. A row on the centre line is in full ink
    and full size; the script writes each row's ink (`--dial-o`), drum offset
    (`--dial-y`), size (`--dial-scale`) and turn (`--dial-tilt`, in degrees)
-   from its distance to that line. Heading, lead and titles share the left
-   gutter. Phones pin the plate under the top bar and read each row just
+   from its distance to that line. On desktop the heading holds the left
+   column and the titles turn on the right of the plate. Phones pin the plate under the top bar and read each row just
    beneath it, the rows to come below. */
 .work-dial {
   --dial-row: 6.5rem;
@@ -2721,21 +2721,28 @@ html:active-view-transition-type(work-open) .dock {
   text-wrap: pretty;
 }
 
-/* Desktop: the heading's cap line meets the plate's top edge, in the titles' column. */
+/* Desktop: the heading holds the middle of the left column, level with the
+   centre line, while the titles turn on the right of the plate. */
 @media (min-width: 64rem) {
   .work-dial-header {
     position: absolute;
     z-index: 20;
-    top: var(--dial-plate-top);
+    inset-block: 0;
     inset-inline: var(--spacing-gutter);
     display: grid;
     grid-template-columns: var(--dial-cols);
     column-gap: var(--dial-gap);
     padding-top: 0;
+    pointer-events: none;
   }
 
-  .work-dial-header > * {
+  .work-dial-heading {
+    position: sticky;
+    top: var(--dial-focus);
     grid-column: 1;
+    align-self: start;
+    translate: 0 -50%;
+    pointer-events: auto;
   }
 
   .work-dial-lead {
@@ -2836,6 +2843,22 @@ html:active-view-transition-type(work-open) .dock {
     display: grid;
     grid-template-columns: var(--dial-cols);
     column-gap: var(--dial-gap);
+  }
+
+  .work-dial-title {
+    grid-column: 3;
+  }
+
+  /* The link spans the page, centred on the plate; rows turn and shrink from
+     the titles' left edge, beside the plate. */
+  .work-dial-link {
+    transform-origin: calc(50% + var(--dial-plate-w) / 2 + var(--dial-gap)) center;
+    pointer-events: none;
+  }
+
+  /* Only the title answers the pointer, not the empty run across the page. */
+  .work-dial-title {
+    pointer-events: auto;
   }
 }
 
