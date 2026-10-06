@@ -37,7 +37,7 @@ After a pull, `pnpm dev` push re-applies any schema changes on your branch.
 pnpm guard:preview-db && payload migrate && pnpm build
 ```
 
-`pnpm ci` is the only writer of the Neon schema and the `payload_migrations` ledger. Git pushes build `main` (production) and `dev` (preview, Neon preview branch) only.
+`pnpm ci` is the only writer of the Neon schema and the `payload_migrations` ledger. Only pushes to `main` (production) deploy. `vercel.json` turns off git deployments for `dev` and every other branch to save build minutes. A preview of `dev` deploys only by hand (Vercel dashboard → Deployments → Create Deployment, ref `dev`) and builds against the Neon preview branch.
 
 `scripts/guard-preview-db.ts` aborts a non-production build whose `POSTGRES_URL` is the production Neon endpoint. It needs `PRODUCTION_DB_ENDPOINT` (the production endpoint id, `ep-...`) set as a Vercel env var for Preview.
 
@@ -50,7 +50,7 @@ pnpm guard:preview-db && payload migrate && pnpm build
 3. `pnpm generate:types` (and `pnpm generate:importmap` for admin components).
 4. `pnpm migrate:create <name>`. Review the SQL. Commit the `.ts` and `.json` together.
 5. `pnpm check:migrations` (enum safety) and `pnpm check:migrations:drift` (newest snapshot against the config).
-6. Push. The Vercel build applies the migration: preview on `dev`, production on `main`.
+6. Push. The Vercel build applies the migration to production on the next release to `main`. To rehearse it on the Neon preview branch first, deploy a preview of `dev` by hand before releasing.
 
 ```bash
 pnpm migrate:create <name>    # a file to review and commit; touches no database

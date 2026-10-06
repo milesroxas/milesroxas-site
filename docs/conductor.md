@@ -11,7 +11,7 @@ Same setup as sas-site. [Conductor](https://www.conductor.build/docs) runs sever
 
 ## Branch flow
 
-`dev` is the integration branch; `main` is production. A workspace branches from `origin/dev`. A push to `dev` builds the Vercel preview and migrates the Neon preview branch.
+`dev` is the integration branch; `main` is production. A workspace branches from `origin/dev`. A push to `dev` does not deploy: `vercel.json` turns off git deployments for every branch except `main`, to save build minutes. A preview of `dev` deploys only by hand (Vercel dashboard → Deployments → Create Deployment, ref `dev`); it builds the Vercel preview and migrates the Neon preview branch.
 
 **Default: push straight to `dev`.** Miles works alone, so most work skips PRs:
 
@@ -110,7 +110,7 @@ Three gates enforce the rule, because the drift check alone only sees the branch
 - **PR check** (PR flow only; `.github/workflows/migrations.yml`, job `snapshot-chain`): runs the enum and drift checks on the merge commit GitHub builds for every PR into `dev` or `main`. The `dev` ruleset makes it required, so a PR with a broken chain cannot merge.
 - **Push check** (same workflow): runs again on every push to `dev` and `main`. A PR's check only runs when the PR changes, so if two open PRs both add migrations and one merges, the other's green check is out of date. The push check on `dev` catches the result before it reaches `main`.
 
-When the push check on `dev` goes red, the migrations are already applied on the Neon preview branch. Do not regenerate the merged migration: the preview (and later production) ledger has its name, and a regenerated copy would run its SQL again. Fix forward: the next `migrate:create` re-emits the other branch's statements, so delete those statements from its `up()`/`down()` (the databases already have them) and keep its `.json`, which restores the chain.
+When the push check on `dev` goes red, do not regenerate the merged migration. A preview of `dev` may already have applied it to the Neon preview branch, so that ledger (and production's, after a release) has its name, and a regenerated copy would run its SQL again. Fix forward: the next `migrate:create` re-emits the other branch's statements, so delete those statements from its `up()`/`down()` (the databases already have them) and keep its `.json`, which restores the chain.
 
 `pnpm check:migrations:drift` is the same diff `migrate:create` would run, with no DB connection and no files written. It also catches the older failure mode — a field added after the migration was generated. If drizzle asks a create-vs-rename question during the check, the answer is irrelevant: a prompt already means the snapshot and the config disagree.
 
