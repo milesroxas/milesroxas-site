@@ -86,12 +86,7 @@ export default async function Post({ params: paramsPromise }: Args) {
   const editorial = post.hero.type === 'editorial'
 
   return (
-    <article
-      className={cn(
-        'bg-tertiary pb-12 text-tertiary-foreground md:pb-32',
-        !editorial && 'pt-24 md:pt-0',
-      )}
-    >
+    <article className={cn('bg-tertiary text-tertiary-foreground', !editorial && 'pt-24 md:pt-0')}>
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
