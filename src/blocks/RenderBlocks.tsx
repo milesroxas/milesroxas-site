@@ -20,9 +20,12 @@ import type {
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { processLayoutBlocks } from '@/utilities/processLayoutBlocks'
 import { blockKeys } from '@/utilities/reactKeyDomains'
-import { AnimatedBlocksContainer } from './AnimatedBlocksContainer'
 import { CallOutBlock } from './CallOut/Component'
-import { renderContentBlock, sectionChildComponents } from './shared/content-block-renderer'
+import {
+  renderContentBlock,
+  sectionChildComponents,
+  withBlockReveal,
+} from './shared/content-block-renderer'
 
 type LayoutBlock =
   | Page['layout'][number]
@@ -64,19 +67,15 @@ const legacyWrapperClassName = (block: FlatBlock) => {
 }
 
 /**
- * This site's own blocks, each in the `block-wrapper` it has always had: the
- * wrapper and the block carry their own theme and spacing. Unchanged by the
- * composer port, so every document renders as it did. `content` renders here
- * inside a Section too, where it keeps the same wrapper.
+ * This site's own blocks, each in the `block-wrapper` it has always had, which
+ * is also the entrance `reveal-variants.ts` assigns it. The block carries its
+ * own theme and spacing. `content` renders here inside a Section too, where it
+ * keeps the same wrapper.
  */
 const renderLegacyBlock = (block: FlatBlock, blockKey: React.Key) => {
   const body = legacyBlockBody(block)
   if (body === undefined) return undefined
-  return (
-    <div key={blockKey} className={legacyWrapperClassName(block)}>
-      {body}
-    </div>
-  )
+  return withBlockReveal(block.blockType, blockKey, body, legacyWrapperClassName(block))
 }
 
 /**
@@ -125,7 +124,7 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
   const edges = bandEdges(processedBlocks.map(blockSurface))
 
   return (
-    <AnimatedBlocksContainer>
+    <>
       {processedBlocks.map((block, index) => {
         const blockKey = blockKeys.fromBlock(block, index)
 
@@ -150,8 +149,7 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
           )
         }
 
-        // Legacy blocks carry their own spacing and are animated as direct
-        // children of the container, so they are never wrapped.
+        // Legacy blocks carry their own spacing in their own wrapper.
         const legacy = renderLegacyBlock(block, blockKey)
         if (legacy !== undefined) return legacy
         return withBandEdge(
@@ -160,6 +158,6 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
           blockKey,
         )
       })}
-    </AnimatedBlocksContainer>
+    </>
   )
 }

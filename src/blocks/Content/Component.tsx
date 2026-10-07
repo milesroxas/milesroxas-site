@@ -8,6 +8,15 @@ import { cn } from '@/utilities/ui'
 import { ColumnRenderer } from './ColumnRenderer'
 import { getColumnClasses } from './utils'
 
+type Column = NonNullable<ContentBlockProps['columns']>[number]
+
+/** The reveal track a column plays (`reveal-variants.ts`): media wipes, cards drop without blur. */
+const columnReveal = (content: Column['content']) => {
+  if (content === 'media' || content === 'slider' || content === 'youTube') return 'media'
+  if (content === 'work' || content === 'post') return 'panel'
+  return ''
+}
+
 export const ContentBlock: React.FC<ContentBlockProps> = ({
   columns,
   theme: themeOption,
@@ -32,7 +41,11 @@ export const ContentBlock: React.FC<ContentBlockProps> = ({
             const colClass = getColumnClasses(sizes)
 
             return (
-              <div className={colClass} key={id || `col-${idx}`}>
+              <div
+                className={colClass}
+                data-reveal={columnReveal(col.content)}
+                key={id || `col-${idx}`}
+              >
                 <ColumnRenderer
                   column={col}
                   theme={themeOption}

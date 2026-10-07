@@ -10,6 +10,9 @@ import type { ScrollRevealVariant } from '@/shared/ui/scroll-reveal'
  * wrap them in a second entrance.
  */
 export const blockRevealVariants = {
+  // Its own intro shell, gated later than the shared line (its veil).
+  callout: 'self',
+  content: 'intro',
   faq: 'intro',
   featureHeadingOffset: 'intro',
   featureTabs: 'intro',

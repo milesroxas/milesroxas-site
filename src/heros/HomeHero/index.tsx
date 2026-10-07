@@ -1,12 +1,7 @@
-'use client'
-
-import { gsap } from 'gsap'
 import type React from 'react'
-import { useEffect, useLayoutEffect, useRef } from 'react'
 import { Media } from '@/components/Media'
 import type { Page } from '@/payload-types'
 
-import { useAnimationStore } from '@/stores/animationStore'
 import { getCompositeKey } from '@/utilities/reactKeys'
 import { cn } from '@/utilities/ui'
 import styles from './homeHero.module.css'
@@ -51,127 +46,45 @@ const MarqueeItems = ({ items, keyPrefix }: { items: string[]; keyPrefix: string
   </>
 )
 
-export const HomeHero: React.FC<HeroProps> = ({ media }) => {
-  const setHeroAnimationComplete = useAnimationStore((s) => s.setHeroAnimationComplete)
+/**
+ * The opening's load-in, played in CSS from the server markup (the case study
+ * hero's `hero-*` utilities) so it starts on first paint and never waits on
+ * the bundle: the portrait wipes open and settles, then each marquee fades up.
+ */
+const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as React.CSSProperties
 
-  const containerRef = useRef<HTMLDivElement>(null)
-  const mediaMaskRef = useRef<HTMLDivElement>(null)
-  const topMarqueeRef = useRef<HTMLDivElement>(null)
-  const bottomMarqueeRef = useRef<HTMLDivElement>(null)
+const marqueeIn = 'motion-safe:animate-hero-in motion-reduce:animate-hero-fade'
 
-  const animationTriggeredRef = useRef(false)
-  const tlRef = useRef<gsap.core.Timeline | null>(null)
-
-  // compute reduced motion in an effect to avoid SSR surprises
-  const reducedMotionRef = useRef(false)
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    }
-  }, [])
-
-  // Build GSAP timeline once
-  useLayoutEffect(() => {
-    if (reducedMotionRef.current) {
-      setHeroAnimationComplete(true)
-      animationTriggeredRef.current = true
-      return
-    }
-
-    const ctx = gsap.context(() => {
-      gsap.set(mediaMaskRef.current, { clipPath: 'inset(0 0 100% 0)' })
-      gsap.set([topMarqueeRef.current, bottomMarqueeRef.current], {
-        autoAlpha: 0,
-      })
-
-      const tl = gsap.timeline({
-        paused: true,
-        onComplete: () => setHeroAnimationComplete(true),
-      })
-
-      tl.to(mediaMaskRef.current, {
-        clipPath: 'inset(0 0 0% 0)',
-        duration: 1.2,
-        ease: 'power2.inOut',
-      })
-        .to(topMarqueeRef.current, { autoAlpha: 1, duration: 0.8 }, '-=0.3')
-        .to(bottomMarqueeRef.current, { autoAlpha: 1, duration: 0.8 }, '-=0.5')
-
-      tlRef.current = tl
-    }, containerRef)
-
-    return () => {
-      tlRef.current?.kill()
-      tlRef.current = null
-      ctx.revert()
-    }
-  }, [setHeroAnimationComplete])
-
-  // Trigger animation on page load, exactly once
-  useEffect(() => {
-    if (reducedMotionRef.current || animationTriggeredRef.current) return
-
-    const play = () => {
-      if (animationTriggeredRef.current) return
-      animationTriggeredRef.current = true
-      // next frame to ensure DOM styles are applied
-      requestAnimationFrame(() => tlRef.current?.play(0))
-    }
-
-    if (document.readyState === 'complete') {
-      play()
-    } else {
-      const onLoad = () => {
-        window.removeEventListener('load', onLoad)
-        play()
-      }
-      window.addEventListener('load', onLoad)
-      return () => window.removeEventListener('load', onLoad)
-    }
-  }, [])
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative flex h-[90vh] w-full flex-col items-center overflow-hidden bg-background md:h-screen"
-    >
-      {/* Top marquee */}
-      <div ref={topMarqueeRef} className="absolute top-[40vh] z-0 w-full opacity-0">
-        <div
-          className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-foreground')}
-        >
-          <MarqueeItems items={SKILLS_TEXT} keyPrefix="skill" />
-        </div>
-      </div>
-
-      {/* Media with mask animation */}
-      <div className="relative z-10 flex h-[90vh] items-center justify-center md:h-screen">
-        <div
-          ref={mediaMaskRef}
-          className="w-[30vh] overflow-hidden rounded-sm"
-          style={{ clipPath: 'inset(0 0 100% 0)' }}
-        >
-          {/* Key change: render media without a wrapper and pass classes to the media node */}
-          <Media
-            htmlElement={null}
-            className="h-full w-full object-cover"
-            priority
-            resource={media}
-          />
-        </div>
-      </div>
-
-      {/* Bottom marquee */}
-      <div ref={bottomMarqueeRef} className="absolute top-[50vh] z-20 w-full opacity-0">
-        <div
-          className={cn(
-            styles.marquee,
-            'flex flex-row items-center gap-12 font-mono text-foreground',
-          )}
-        >
-          <MarqueeItems items={EXPERIENCE_TEXT} keyPrefix="experience" />
-        </div>
+export const HomeHero: React.FC<HeroProps> = ({ media }) => (
+  <div className="relative flex h-[90vh] w-full flex-col items-center overflow-hidden bg-background md:h-screen">
+    <div className={cn('absolute top-[40vh] z-0 w-full', marqueeIn)} style={enterAt(800)}>
+      <div className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-foreground')}>
+        <MarqueeItems items={SKILLS_TEXT} keyPrefix="skill" />
       </div>
     </div>
-  )
-}
+
+    <div className="relative z-10 flex h-[90vh] items-center justify-center md:h-screen">
+      <div className="w-[30vh] overflow-hidden rounded-sm motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade">
+        <Media
+          htmlElement={null}
+          className="h-full w-full object-cover"
+          imgClassName="motion-safe:animate-hero-settle"
+          priority
+          videoClassName="motion-safe:animate-hero-settle"
+          resource={media}
+        />
+      </div>
+    </div>
+
+    <div className={cn('absolute top-[50vh] z-20 w-full', marqueeIn)} style={enterAt(1000)}>
+      <div
+        className={cn(
+          styles.marquee,
+          'flex flex-row items-center gap-12 font-mono text-foreground',
+        )}
+      >
+        <MarqueeItems items={EXPERIENCE_TEXT} keyPrefix="experience" />
+      </div>
+    </div>
+  </div>
+)

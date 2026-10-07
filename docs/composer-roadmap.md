@@ -605,15 +605,15 @@ The contract (`sas:docs/animations.md`): one variant per block everywhere, two r
 | Carousel: velocity-driven RGB split (`quickTo`), poster dissolve | `src/blocks/Carousel/{use-carousel-effects, playback}.ts` | Phase 3 |
 | FAQ: accordion glyph quarter-turn on `--ease-out-quint`, 200 ms | `src/blocks/faq/Component.client.tsx` | Phase 3 |
 | Contents button: `clip-path` reveal from the button circle, `@starting-style` 300 ms, 200 ms exit | `src/features/contents` | Phase 4 |
-| Intro band entrance: per-line `SplitText` mask rise on the shared gate | `src/sections/WorkIntro/Statement.client.tsx` | Phase 4 |
+| Intro band entrance: the intro `ScrollReveal` | `src/sections/WorkIntro/index.tsx` | Phase 4 |
 | Ask motion | `src/features/ask/motion.ts` | Phase 5 |
 | Streak field / light leak poster crossfade, admission, context loss | `src/features/immersive/visual/*` | Phase 2 |
 | Route transitions, hero landing, page intro, takeover menu, marquee, index banner, audience tabs, featured work pin, scroll gallery | | not ported |
 
 Integration rules here:
-- `AnimatedBlocksContainer` skips `data-scroll-reveal` roots (Phase 1).
+- `AnimatedBlocksContainer` is gone: legacy blocks take their entrance from `reveal-variants.ts` like run blocks (`withBlockReveal`), and the home hero's load-in is CSS.
 - `SiteFrame` and the card FLIP transition are untouched; `HighImpact` still owns the clone landing.
-- `ScrollReveal` gates on IntersectionObserver, so the window scroller under `ReactLenis` needs no proxy. `MediaLoader`'s debounced `ScrollTrigger.refresh` keeps its job for the legacy blocks.
+- `ScrollReveal` gates on IntersectionObserver, so the window scroller under `ReactLenis` needs no proxy.
 - `usePrefersReducedMotion` returns the final state for every ported system.
 
 ---

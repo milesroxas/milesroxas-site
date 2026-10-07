@@ -68,6 +68,39 @@ const gsapReveal = (blockType: string): ScrollRevealVariant | 'self' | undefined
     : undefined
 
 /**
+ * `node` inside the entrance `reveal-variants.ts` assigns `blockType`: its
+ * own shell (`'self'`), the shared GSAP reveal, or the CSS block reveal.
+ * Spacing is the block's own band; the wrapper never adds margin.
+ */
+export const withBlockReveal = (
+  blockType: string,
+  key: React.Key,
+  node: React.ReactNode,
+  className?: string,
+) => {
+  const reveal = gsapReveal(blockType)
+  if (reveal === 'self') {
+    return (
+      <div className={className} key={key}>
+        {node}
+      </div>
+    )
+  }
+  if (reveal) {
+    return (
+      <ScrollReveal as="div" className={className} key={key} variant={reveal}>
+        {node}
+      </ScrollReveal>
+    )
+  }
+  return (
+    <RevealSection className={className} key={key}>
+      {node}
+    </RevealSection>
+  )
+}
+
+/**
  * One flat content block with its entrance. `bare` is set for blocks nested
  * inside a Section block: the block skips its own band (the Section painted
  * it) but keeps the same reveal wrapper it has at the top level, so a block
@@ -85,33 +118,10 @@ export const renderContentBlock = (
   const Block = components[blockType]
   if (!Block) return null
 
-  const reveal = gsapReveal(blockType)
-
-  // Blocks with their own GSAP shell — never add a second entrance.
-  if (reveal === 'self') {
-    return (
-      // @ts-expect-error there may be some mismatch between the expected types here
-      <Block key={key} {...block} disableInnerContainer />
-    )
-  }
-
-  // Blocks carrying `data-reveal` markers play the shared GSAP
-  // reveal here too, so the same CMS block moves identically on
-  // Pages/Home and work pages. Spacing is the block's own band —
-  // the wrapper never adds margin.
-  if (reveal) {
-    return (
-      <ScrollReveal as="div" key={key} variant={reveal}>
-        {/* @ts-expect-error there may be some mismatch between the expected types here */}
-        <Block {...block} bare={bare || undefined} disableInnerContainer />
-      </ScrollReveal>
-    )
-  }
-
-  return (
-    <RevealSection key={key}>
-      {/* @ts-expect-error there may be some mismatch between the expected types here */}
-      <Block {...block} bare={bare || undefined} disableInnerContainer />
-    </RevealSection>
+  return withBlockReveal(
+    blockType,
+    key,
+    // @ts-expect-error there may be some mismatch between the expected types here
+    <Block {...block} bare={bare || undefined} disableInnerContainer />,
   )
 }

@@ -62,7 +62,6 @@ export function RevealSection({
     <section
       ref={ref}
       className={cn('reveal-section', className)}
-      data-scroll-reveal=""
       {...(visible ? { 'data-visible': 'true' as const } : {})}
       style={
         {

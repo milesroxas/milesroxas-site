@@ -172,6 +172,9 @@ export const SCROLL_REVEAL_SWAP = {
  */
 export const SCROLL_REVEAL_EXIT_TIME_SCALE = 1.6
 
+/** How far above the viewport the gate's root extends (`observeRevealGate`). */
+const REVEAL_GATE_REACH_PX = 100_000
+
 /**
  * Play-once viewport gate shared by every reveal shell, bespoke ones
  * included: fires when `gate`'s top edge has risen `enterOffset` of the
@@ -185,6 +188,10 @@ export const SCROLL_REVEAL_EXIT_TIME_SCALE = 1.6
  * it. Measuring each track's own distance past the fold is the same trigger
  * at every block height: media-first layouts wipe when the image arrives,
  * and the copy still has an entrance once it reaches the same line.
+ *
+ * A gate already above the viewport has risen past the line too, so it fires
+ * at once: a reload or anchor jump that lands mid-page, past a tall block's
+ * first target, would otherwise leave the rest of that block hidden on screen.
  */
 export function observeRevealGate(gate: Element, enterOffset: number, onEnter: () => void) {
   // A -100% bottom margin collapses the root box to a zero-height line that
@@ -196,7 +203,9 @@ export function observeRevealGate(gate: Element, enterOffset: number, onEnter: (
       onEnter()
       observer.disconnect()
     },
-    { rootMargin: `0px 0px -${offset}% 0px`, threshold: 0 },
+    // The root reaches far above the viewport: a scroll that jumps a gate from
+    // below the fold to above the top still crosses into it and fires.
+    { rootMargin: `${REVEAL_GATE_REACH_PX}px 0px -${offset}% 0px`, threshold: 0 },
   )
   observer.observe(gate)
   return () => observer.disconnect()
@@ -539,7 +548,7 @@ export function ScrollReveal({
   )
 
   return (
-    <Tag className={className} data-scroll-reveal="" ref={rootRef}>
+    <Tag className={className} ref={rootRef}>
       {children}
     </Tag>
   )
