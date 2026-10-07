@@ -2873,9 +2873,11 @@ html:active-view-transition-type(work-open) .dock {
   width: 100%;
 }
 
-/* Desktop: the row's grid runs edge to edge of the browser, so each title is
-   centred between the plate and the right edge, mirroring the heading on the
-   left, and turns and shrinks about that centre. */
+/* Desktop: the row's grid runs edge to edge of the browser, so the titles'
+   box, one width for every row, is centred between the plate and the right
+   edge, mirroring the heading on the left. The text sits left in it, and rows
+   turn and shrink from the box's left edge, so every title starts on one
+   line. */
 @media (min-width: 64rem) {
   .work-dial-enter {
     display: grid;
@@ -2887,12 +2889,27 @@ html:active-view-transition-type(work-open) .dock {
   .work-dial-title {
     grid-column: 3;
     justify-self: center;
-    max-width: min(22ch, 100% - 2 * var(--spacing-gutter));
-    text-align: center;
+    width: min(26.5rem, 100% - 2 * var(--spacing-gutter));
+    max-width: none;
   }
 
   .work-dial-link {
-    transform-origin: calc(75% + var(--dial-plate-w) / 4 + var(--spacing-gutter) / 2) center;
+    /* The box's left edge: past the plate by half the margin less half the box. */
+    transform-origin: calc(
+        50% +
+        var(--dial-plate-w) /
+        2 +
+        max(
+          25% +
+          var(--spacing-gutter) /
+          2 -
+          var(--dial-plate-w) /
+          4 -
+          13.25rem,
+          var(--spacing-gutter)
+        )
+      )
+      center;
     pointer-events: none;
   }
 
