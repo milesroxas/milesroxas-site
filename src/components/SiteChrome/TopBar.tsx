@@ -57,8 +57,8 @@ export function TopBar({ section }: { section: string | null }) {
       </Link>
 
       <div className="flex shrink-0 items-center gap-2 md:gap-3">
-        <ThemeToggle />
         <Clock />
+        <ThemeToggle />
       </div>
     </header>
   )
