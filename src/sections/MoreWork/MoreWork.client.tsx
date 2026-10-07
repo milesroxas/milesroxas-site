@@ -7,6 +7,7 @@ import { type RefObject, useEffect, useId, useMemo, useRef, useState, ViewTransi
 import { Media } from '@/components/Media'
 import { choreographWorkMorph, useWorkCardMorph, workMorphName } from '@/heros/WorkHero/morph'
 import { cursorTarget } from '@/providers/Cursor/variants'
+import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { MORE_WORK_MOTION, moreWorkMotionStyle } from './motion'
 import { isPlateLayout, MoreWorkPlate } from './Plate'
 import type { MoreWorkItem } from './query'
@@ -59,57 +60,61 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
       className="group border-border border-b transition-colors duration-(--more-work-ink) ease-[ease] plate:data-active:border-foreground"
       data-active={active || undefined}
     >
-      <Link
-        {...cursorTarget('view')}
-        className="flex flex-col gap-5 plate:gap-6 py-7 md:flex-row md:items-start md:gap-8"
-        href={href}
-        onClick={handleClick}
-        onFocus={() => onActivate(index, true)}
-        onPointerEnter={() => onActivate(index)}
-        transitionTypes={['work-open']}
-      >
-        {media && (
-          <ViewTransition
-            default="none"
-            name={morphing ? workMorphName(slug) : undefined}
-            onShare={morph.onShare}
-            share="work-morph"
-          >
-            <div
-              ref={thumbRef}
-              className="relative plate:hidden aspect-[1.6] w-full shrink-0 overflow-clip bg-muted md:w-2/5"
+      {/* Each row is its own shell, so rows enter as they reach the line. */}
+      <ScrollReveal as="div" variant="underMedia">
+        <Link
+          {...cursorTarget('view')}
+          className="flex flex-col gap-5 plate:gap-6 py-7 md:flex-row md:items-start md:gap-8"
+          href={href}
+          onClick={handleClick}
+          onFocus={() => onActivate(index, true)}
+          onPointerEnter={() => onActivate(index)}
+          transitionTypes={['work-open']}
+        >
+          {media && (
+            <ViewTransition
+              default="none"
+              name={morphing ? workMorphName(slug) : undefined}
+              onShare={morph.onShare}
+              share="work-morph"
             >
-              <Media
-                fill
-                htmlElement={null}
-                imgClassName="object-cover"
-                resource={media}
-                size="(min-width: 48rem) 40vw, 100vw"
-                videoClassName="size-full object-cover"
-              />
-            </div>
-          </ViewTransition>
-        )}
-        <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-          <h3 className="text-pretty plate:text-muted-foreground text-heading-3 tracking-[-0.02em] transition-colors duration-(--more-work-ink) ease-[ease] plate:group-data-active:text-foreground">
-            {title}
-          </h3>
-          {(industry || services) && (
-            <p className="flex plate:flex-row flex-col plate:flex-wrap plate:items-center gap-1 plate:gap-x-2.5 text-base text-muted-foreground">
-              {industry && <span>{industry}</span>}
-              {industry && services && (
-                <span aria-hidden className="plate:block hidden h-px w-6 bg-border" />
-              )}
-              {services && <span>{services}</span>}
-            </p>
+              <div
+                ref={thumbRef}
+                className="relative plate:hidden aspect-[1.6] w-full shrink-0 overflow-clip bg-muted md:w-2/5"
+                data-reveal="media"
+              >
+                <Media
+                  fill
+                  htmlElement={null}
+                  imgClassName="object-cover"
+                  resource={media}
+                  size="(min-width: 48rem) 40vw, 100vw"
+                  videoClassName="size-full object-cover"
+                />
+              </div>
+            </ViewTransition>
           )}
-        </div>
-        <IconArrowRight
-          aria-hidden
-          className="mt-2.5 plate:block hidden size-4 shrink-0 -translate-x-1.5 opacity-0 transition-[opacity,translate] duration-(--more-work-ink) ease-(--ease-out-quint) plate:group-data-active:translate-x-0 plate:group-data-active:opacity-100"
-          stroke={1.5}
-        />
-      </Link>
+          <div className="flex min-w-0 flex-1 flex-col gap-2.5" data-reveal>
+            <h3 className="text-pretty plate:text-muted-foreground text-heading-3 tracking-[-0.02em] transition-colors duration-(--more-work-ink) ease-[ease] plate:group-data-active:text-foreground">
+              {title}
+            </h3>
+            {(industry || services) && (
+              <p className="flex plate:flex-row flex-col plate:flex-wrap plate:items-center gap-1 plate:gap-x-2.5 text-base text-muted-foreground">
+                {industry && <span>{industry}</span>}
+                {industry && services && (
+                  <span aria-hidden className="plate:block hidden h-px w-6 bg-border" />
+                )}
+                {services && <span>{services}</span>}
+              </p>
+            )}
+          </div>
+          <IconArrowRight
+            aria-hidden
+            className="mt-2.5 plate:block hidden size-4 shrink-0 -translate-x-1.5 opacity-0 transition-[opacity,translate] duration-(--more-work-ink) ease-(--ease-out-quint) plate:group-data-active:translate-x-0 plate:group-data-active:opacity-100"
+            stroke={1.5}
+          />
+        </Link>
+      </ScrollReveal>
     </li>
   )
 }
@@ -147,8 +152,13 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
       style={moreWorkMotionStyle}
     >
       <div className="flex flex-col gap-12 border-border border-t pt-20 md:gap-16 md:pt-40">
-        <div className="flex items-end justify-between gap-6">
-          <h2 className="flex items-start gap-3 text-title leading-none" id={headingId}>
+        <ScrollReveal as="div" className="flex items-end justify-between gap-6" variant="intro">
+          <h2
+            className="flex items-start gap-3 text-title leading-none"
+            data-reveal
+            data-reveal-group="more-work-intro"
+            id={headingId}
+          >
             More work
             <span aria-hidden className="pt-1 font-medium font-mono text-sm/none tabular-nums">
               {String(items.length).padStart(2, '0')}
@@ -156,6 +166,8 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
           </h2>
           <Link
             className="group/all flex shrink-0 items-center gap-2.5 pb-1 font-medium text-base"
+            data-reveal
+            data-reveal-group="more-work-intro"
             href="/works"
           >
             All work
@@ -165,31 +177,37 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
               stroke={1.5}
             />
           </Link>
-        </div>
+        </ScrollReveal>
         <div className="grid plate:grid-cols-[minmax(0,55fr)_minmax(0,53fr)] plate:items-start plate:gap-12">
           <div
             aria-hidden
-            className="plate:sticky plate:top-[calc(var(--chrome-top)+--spacing(6))] plate:flex hidden flex-col gap-4"
+            className="plate:sticky plate:top-[calc(var(--chrome-top)+--spacing(6))] plate:block hidden"
           >
-            <ViewTransition
-              default="none"
-              name={opening?.onPlate ? workMorphName(opening.slug) : undefined}
-              onShare={choreographWorkMorph}
-              share="work-morph"
-            >
-              <MoreWorkPlate
-                index={active}
-                items={items}
-                opening={Boolean(opening)}
-                ref={plateRef}
-              />
-            </ViewTransition>
-            <div className="flex items-center justify-between gap-4 font-mono text-xs/none">
-              <span className="truncate font-medium">{shown?.client ?? shown?.title}</span>
-              <span className="shrink-0 text-muted-foreground tabular-nums">
-                {active + 1} of {items.length}
-              </span>
-            </div>
+            {/* Plate and caption are one window: on a sticky column a caption gated
+                on its own position would wait until the column releases. */}
+            <ScrollReveal as="div" variant="underMedia">
+              <div className="flex flex-col gap-4" data-reveal="media">
+                <ViewTransition
+                  default="none"
+                  name={opening?.onPlate ? workMorphName(opening.slug) : undefined}
+                  onShare={choreographWorkMorph}
+                  share="work-morph"
+                >
+                  <MoreWorkPlate
+                    index={active}
+                    items={items}
+                    opening={Boolean(opening)}
+                    ref={plateRef}
+                  />
+                </ViewTransition>
+                <div className="flex items-center justify-between gap-4 font-mono text-xs/none">
+                  <span className="truncate font-medium">{shown?.client ?? shown?.title}</span>
+                  <span className="shrink-0 text-muted-foreground tabular-nums">
+                    {active + 1} of {items.length}
+                  </span>
+                </div>
+              </div>
+            </ScrollReveal>
           </div>
           <ul className="border-foreground border-t" onPointerLeave={settle}>
             {items.map((item, index) => (

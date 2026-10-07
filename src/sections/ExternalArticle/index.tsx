@@ -1,7 +1,7 @@
 import { IconArrowUpRight } from '@tabler/icons-react'
 import { Section } from '@/blocks/shared/section'
-import { Container } from '@/components/Container'
 import { cursorTarget } from '@/providers/Cursor/variants'
+import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import type { ExternalArticle as ExternalArticleData } from '@/utilities/externalArticle'
 
 /**
@@ -9,12 +9,14 @@ import type { ExternalArticle as ExternalArticleData } from '@/utilities/externa
  * worth reading, the band hands the reader to it. One link spans the band;
  * resting on it draws the rule between this site and the publisher's.
  * Referrer is kept so the publisher can see where readers come from.
+ * The band reveals as one target: a transform on the heading alone would
+ * shrink the link's band-wide hit area to it.
  */
 export function ExternalArticle({ url, publisher, address }: ExternalArticleData) {
   return (
     <Section spacing="loose" theme="neutral">
-      <Container>
-        <div className="group/out relative flex flex-col gap-10 md:gap-16">
+      <ScrollReveal as="div" className="container" variant="intro">
+        <div className="group/out relative flex flex-col gap-10 md:gap-16" data-reveal>
           <h2 className="text-balance text-display">
             <a
               {...cursorTarget('read')}
@@ -49,7 +51,7 @@ export function ExternalArticle({ url, publisher, address }: ExternalArticleData
             </p>
           </div>
         </div>
-      </Container>
+      </ScrollReveal>
     </Section>
   )
 }

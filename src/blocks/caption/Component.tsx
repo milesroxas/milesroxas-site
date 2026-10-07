@@ -90,13 +90,15 @@ export const CaptionBlock: React.FC<Props> = (props) => {
             // it drew a thin white line around every rich-text image. This is
             // the only media call site in the app that framed the asset — the
             // radius alone matches the rest.
-            <Media
-              imgClassName={mediaClassName}
-              resource={mediaDoc}
-              size={sizeHints[sizeKey]}
-              src={staticImage}
-              videoClassName={mediaClassName}
-            />
+            <div data-reveal="media">
+              <Media
+                imgClassName={mediaClassName}
+                resource={mediaDoc}
+                size={sizeHints[sizeKey]}
+                src={staticImage}
+                videoClassName={mediaClassName}
+              />
+            </div>
           )}
           {caption && (
             <div
@@ -107,6 +109,7 @@ export const CaptionBlock: React.FC<Props> = (props) => {
                 },
                 captionClassName,
               )}
+              data-reveal
             >
               <RichText data={caption} enableGutter={false} />
             </div>

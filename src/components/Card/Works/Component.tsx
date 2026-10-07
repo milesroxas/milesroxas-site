@@ -60,14 +60,18 @@ export const WorkCard: React.FC<WorkCardProps> = ({
         </ViewTransition>
 
         {(titleFromProps || title) && (
-          <div className="flex items-start justify-between gap-2">
+          <div
+            className="flex items-start justify-between gap-2"
+            data-reveal
+            data-reveal-group={slug}
+          >
             <h3 className={titleClassName}>{titleFromProps || title}</h3>
             <Badge variant="work">Work</Badge>
           </div>
         )}
       </Link>
       {description && showDescription && (
-        <div className="mt-2">
+        <div className="mt-2" data-reveal data-reveal-group={slug}>
           <RichText data={description} />
         </div>
       )}

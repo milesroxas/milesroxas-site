@@ -45,17 +45,25 @@ export const PostCard: React.FC<PostCardProps> = ({
         <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
 
         {(titleFromProps || title) && (
-          <div className="flex flex-col-reverse items-start justify-between gap-2 md:flex-row">
+          <div
+            className="flex flex-col-reverse items-start justify-between gap-2 md:flex-row"
+            data-reveal
+            data-reveal-group={slug}
+          >
             <h3 className="font-light text-lg">{titleFromProps || title}</h3>
             <Badge variant="post" className="mt-1">
               Post
             </Badge>
           </div>
         )}
-        {publisher && <p className="mt-1 text-muted-foreground text-sm">On {publisher}</p>}
+        {publisher && (
+          <p className="mt-1 text-muted-foreground text-sm" data-reveal data-reveal-group={slug}>
+            On {publisher}
+          </p>
+        )}
       </Link>
       {description && (
-        <div className="mt-2">
+        <div className="mt-2" data-reveal data-reveal-group={slug}>
           <p>{sanitizedDescription}</p>
         </div>
       )}

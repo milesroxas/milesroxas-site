@@ -10,10 +10,10 @@ import { getColumnClasses } from './utils'
 
 type Column = NonNullable<ContentBlockProps['columns']>[number]
 
-/** The reveal track a column plays (`reveal-variants.ts`): media wipes, cards drop without blur. */
+/** The reveal track a column plays (`reveal-variants.ts`); cards carry their own markers. */
 const columnReveal = (content: Column['content']) => {
   if (content === 'media' || content === 'slider' || content === 'youTube') return 'media'
-  if (content === 'work' || content === 'post') return 'panel'
+  if (content === 'work' || content === 'post') return undefined
   return ''
 }
 

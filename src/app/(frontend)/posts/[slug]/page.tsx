@@ -14,6 +14,7 @@ import { RenderHero } from '@/heros/RenderHero'
 import type { Post as PostDoc } from '@/payload-types'
 import { ExternalArticle } from '@/sections/ExternalArticle'
 import { WorkIntro } from '@/sections/WorkIntro'
+import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { externalArticle } from '@/utilities/externalArticle'
 import { generateMeta } from '@/utilities/generateMeta'
 import { cn } from '@/utilities/ui'
@@ -55,9 +56,15 @@ function PostBody({ post }: { post: PostDoc }) {
   return (
     <div className="flex flex-col items-start gap-4 pt-8 pb-32 md:pt-12 lg:pt-32">
       <div className="container">
-        <div className="max-w-3xl md:pl-32">
-          <RichText data={post.content} enableGutter={false} className="text-tertiary-foreground" />
-        </div>
+        <ScrollReveal as="div" className="max-w-3xl md:pl-32" variant="intro">
+          <div data-reveal>
+            <RichText
+              data={post.content}
+              enableGutter={false}
+              className="text-tertiary-foreground"
+            />
+          </div>
+        </ScrollReveal>
       </div>
     </div>
   )
@@ -66,10 +73,13 @@ function PostBody({ post }: { post: PostDoc }) {
 function MorePosts({ post }: { post: PostDoc }) {
   if (post.hideRelatedPosts || !post.relatedPosts || post.relatedPosts.length === 0) return null
   return (
-    <section className="bg-tertiary py-12">
-      <h2 className="container pb-4 text-lead text-tertiary-foreground leading-snug">More posts</h2>
+    // Cards are copy paired with media: each frame wipes as the copy drops in.
+    <ScrollReveal className="bg-tertiary py-12" variant="underMedia">
+      <h2 className="container pb-4 text-lead text-tertiary-foreground leading-snug" data-reveal>
+        More posts
+      </h2>
       <RelatedPosts docs={post.relatedPosts.filter((post) => typeof post === 'object')} />
-    </section>
+    </ScrollReveal>
   )
 }
 

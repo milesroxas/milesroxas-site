@@ -28,12 +28,16 @@ type CardImageProps = {
   index?: number
 }
 
-/** The hero media in its aspect frame; the transition clones the media out of `imageRef`. */
+/**
+ * The hero media in its aspect frame; the transition clones the media out of
+ * `imageRef`. The frame wipes open under a `ScrollReveal` ancestor.
+ */
 export function CardImage({ aspect, hero, imageRef, index }: CardImageProps) {
   return (
     <div
       ref={imageRef}
       className="relative mb-6 w-full"
+      data-reveal="media"
       style={{ aspectRatio: aspectRatios[aspect] }}
     >
       {hero && (
