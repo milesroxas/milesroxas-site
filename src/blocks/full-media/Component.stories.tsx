@@ -42,6 +42,15 @@ export const ContentRight: Story = {
   args: { contentPosition: 'right' },
 }
 
+/** No eyebrow or heading: the body moves to the outer edge of the page column. */
+export const ContentLeftUntitled: Story = {
+  args: { eyebrow: undefined, heading: undefined },
+}
+
+export const ContentRightUntitled: Story = {
+  args: { eyebrow: undefined, heading: undefined, contentPosition: 'right' },
+}
+
 export const Video: Story = {
   args: { media: videoFixture },
 }

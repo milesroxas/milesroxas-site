@@ -24,8 +24,9 @@ import { Section } from '../shared/section'
  * grid and spans all eight columns at the editor-chosen aspect ratio.
  *
  * Content row placement: heading cluster in columns 1-3 and body in columns
- * 4-6; columns 4-5 and 6-8 when `contentPosition` is `right`. Below `md` the
- * cells stack in one column.
+ * 4-6; columns 4-5 and 6-8 when `contentPosition` is `right`. With no eyebrow or
+ * heading the body sits on the outer edge: columns 1-3 left, 6-8 right. Below
+ * `md` the cells stack in one column.
  *
  * `bare` skips the `Section` wrapper for callers that supply their own shell
  * (the work-page renderer wraps blocks in a full-viewport reveal section).
@@ -51,22 +52,28 @@ const FullMediaContent = ({
   content: DefaultTypedEditorState | null | undefined
 }) => {
   const contentRight = block.contentPosition === 'right'
+  const hasTitle = Boolean(block.eyebrow || block.heading)
   const type = typeScale(block.textSize)
   return (
     <>
-      <div
-        className={cn(
-          'text-stack',
-          contentRight ? 'md:col-span-2 md:col-start-4' : 'md:col-span-3',
-        )}
-        data-reveal
-      >
-        {block.eyebrow && <p className={eyebrowClassName}>{block.eyebrow}</p>}
-        {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
-      </div>
+      {hasTitle && (
+        <div
+          className={cn(
+            'text-stack',
+            contentRight ? 'md:col-span-2 md:col-start-4' : 'md:col-span-3',
+          )}
+          data-reveal
+        >
+          {block.eyebrow && <p className={eyebrowClassName}>{block.eyebrow}</p>}
+          {block.heading && <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>}
+        </div>
+      )}
       {content && (
         <div
-          className={cn('md:col-span-3', contentRight ? 'md:col-start-6' : 'md:col-start-4')}
+          className={cn(
+            'md:col-span-3',
+            contentRight ? 'md:col-start-6' : hasTitle ? 'md:col-start-4' : 'md:col-start-1',
+          )}
           data-reveal
         >
           <RichText className={type.body} data={content} enableGutter={false} enableProse={false} />
