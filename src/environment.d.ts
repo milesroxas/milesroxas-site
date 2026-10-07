@@ -16,7 +16,6 @@ declare global {
       CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN: string
       CLOUDFLARE_STREAM_WEBHOOK_SECRET: string
       WORK_ACCESS_KEYS: string
-      BLOB_BASE_URL?: string
       /** Ask (src/features/ask): /api/ask answers 503 without it. */
       OPENAI_API_KEY?: string
       OPENAI_ADMIN_API_KEY?: string

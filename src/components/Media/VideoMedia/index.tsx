@@ -24,10 +24,8 @@ function readyStreamUrl(resource: MediaType): string | undefined {
   return hlsUrl && isReady ? hlsUrl : undefined
 }
 
-function fallbackSrcFor({ filename, url }: MediaType): string {
-  return url && typeof url === 'string'
-    ? getMediaUrl(url)
-    : getMediaUrl(`/api/media/file/${filename}`)
+function fallbackSrcFor({ url }: MediaType): string {
+  return getMediaUrl(url)
 }
 
 /** Poster improves FCP/LCP by showing an image immediately while video loads */

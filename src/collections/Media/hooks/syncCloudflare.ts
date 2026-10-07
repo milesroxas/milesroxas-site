@@ -10,66 +10,33 @@ type MediaDoc = Record<string, unknown>
 type CloudflareUtils = typeof import('../../../utilities/cloudflare')
 
 /**
- * Resolve the publicly-accessible URL for a media document.
- *
- * With Vercel Blob + clientUploads the `url` column in the DB is empty —
- * the storage adapter generates URLs at read-time via an `afterRead` hook
- * that hasn't run when our `afterChange` fires.
- *
- * We reconstruct the Blob URL from the filename. The store base URL comes
- * from BLOB_BASE_URL when set, otherwise it is derived from the token
- * (format: vercel_blob_rw_<storeId>_...).
+ * The file's public Blob URL. The storage adapter's `url` field hook writes it
+ * (`disablePayloadAccessControl` in `payload.config.ts`) from the object's own
+ * folder, `prefix/_objectKey/filename`, which a browser upload always has; it
+ * runs in the read phase, before `afterChange`, so the hook sees the final URL.
  */
-function resolveMediaUrl(doc: MediaDoc): string | null {
-  // Prefer an already-populated URL (e.g. non-client-upload flows)
-  const existing = doc.url as string | undefined
-  if (existing?.startsWith('http')) return existing
-
-  const filename = doc.filename as string | undefined
-  if (!filename) return null
-
-  const base = process.env.BLOB_BASE_URL || deriveBlobBaseUrl()
-  if (!base) return null
-
-  return `${base.replace(/\/$/, '')}/${encodeURIComponent(filename)}`
-}
-
-function deriveBlobBaseUrl(): string | null {
-  const token = process.env.BLOB_READ_WRITE_TOKEN
-  if (!token) return null
-  const storeId = token.split('_')[3]
-  if (!storeId) return null
-  return `https://${storeId}.public.blob.vercel-storage.com`
+function blobUrl(doc: MediaDoc): string | null {
+  const url = doc.url
+  return typeof url === 'string' && url.startsWith('http') ? url : null
 }
 
 /**
- * Replace /api/media/file/ URLs with direct Vercel Blob URLs.
- * Payload's static file handler serves from disk; with Vercel Blob, files live in the cloud
- * so /api/media/file/ requests 404. Use direct Blob URLs instead.
+ * Cloudflare Stream URLs for the video poster and player, computed at read time.
+ * Wrapped in try-catch: the helpers throw when CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN
+ * is missing (a Vercel preview, say). Never let this break the read.
  */
-export const resolveBlobUrl: CollectionAfterReadHook = async ({ doc }) => {
-  const existing = doc.url as string | undefined
-  if (existing?.startsWith('http')) return doc
-
-  const blobUrl = resolveMediaUrl(doc)
-  if (blobUrl) doc.url = blobUrl
-
-  // Populate Cloudflare Stream thumbnail URL for video poster (computed at read time).
-  // Wrapped in try-catch: getStreamThumbnailUrl throws if CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN
-  // is missing (e.g. on Vercel preview). Never let this break the read — doc must be returned.
+export const resolveStreamUrls: CollectionAfterReadHook = async ({ doc }) => {
   const uid = doc.cloudflareStreamUid as string | undefined
-  if (uid) {
-    try {
-      const { getStreamPlaybackUrl, getStreamThumbnailUrl } = await import(
-        '../../../utilities/cloudflare'
-      )
-      doc.cloudflareStreamPlaybackUrl = getStreamPlaybackUrl(uid)
-      doc.cloudflareStreamThumbnailUrl = getStreamThumbnailUrl(uid)
-    } catch {
-      // Env missing or cloudflare util failed; skip, doc still valid
-    }
+  if (!uid) return doc
+  try {
+    const { getStreamPlaybackUrl, getStreamThumbnailUrl } = await import(
+      '../../../utilities/cloudflare'
+    )
+    doc.cloudflareStreamPlaybackUrl = getStreamPlaybackUrl(uid)
+    doc.cloudflareStreamThumbnailUrl = getStreamThumbnailUrl(uid)
+  } catch {
+    // Env missing or cloudflare util failed; skip, doc still valid
   }
-
   return doc
 }
 
@@ -166,10 +133,18 @@ function syncKind(mimeType: string | undefined): 'image' | 'video' | null {
   return null
 }
 
-/** The file was replaced while Cloudflare still holds assets made from the old one. */
-const hasStaleAssets = (doc: MediaDoc, previousDoc: MediaDoc | undefined) =>
-  Boolean(previousDoc?.filename && doc.filename && previousDoc.filename !== doc.filename) &&
-  Boolean(doc.cloudflareImageId || doc.cloudflareStreamUid)
+/**
+ * The file was replaced while Cloudflare still holds assets made from the old
+ * one. A browser upload lands in a new `_objectKey` folder even when it keeps
+ * the filename, so the key is compared as well.
+ */
+const hasStaleAssets = (doc: MediaDoc, previousDoc: MediaDoc | undefined) => {
+  if (!previousDoc?.filename || !doc.filename) return false
+  const replaced =
+    previousDoc.filename !== doc.filename ||
+    (previousDoc._objectKey ?? null) !== (doc._objectKey ?? null)
+  return replaced && Boolean(doc.cloudflareImageId || doc.cloudflareStreamUid)
+}
 
 export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   doc,
@@ -184,8 +159,11 @@ export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   const kind = syncKind(doc.mimeType as string | undefined)
   if (!kind) return doc
 
-  const fileUrl = resolveMediaUrl(doc)
-  if (!fileUrl) return doc
+  const fileUrl = blobUrl(doc)
+  if (!fileUrl) {
+    req.payload.logger.warn({ msg: '[Cloudflare] No Blob URL to sync from', id: doc.id })
+    return doc
+  }
 
   // Lazily import to keep this server-only and avoid circular deps
   const cf = await import('../../../utilities/cloudflare')

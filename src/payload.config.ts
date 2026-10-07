@@ -124,7 +124,9 @@ export default buildConfig({
       clientUploads: true,
 
       collections: {
-        media: true,
+        // Media reads are public, so `url` and every size URL point straight at
+        // Blob (the object's own folder included) instead of the serverless proxy.
+        media: { disablePayloadAccessControl: true },
       },
 
       token: process.env.BLOB_READ_WRITE_TOKEN,
