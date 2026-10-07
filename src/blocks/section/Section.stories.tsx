@@ -45,15 +45,13 @@ const children = (
 )
 
 /**
- * The one exception to the stack: a Standard heading in the Prose layout
- * opens the passage under it, so the Section binds the two at two body lines
- * instead of a full stack step (`stack-binds-opener`, globals.css).
+ * A section heading titles the section under it, so it sits half a stack
+ * step above the next block rather than a full one (`STACK_OPENER`).
  */
 const opensWithProseHeading = (
   <>
     <RichTransition
       bare
-      stacked
       body={body}
       eyebrow="Approach"
       heading="One band, many blocks"

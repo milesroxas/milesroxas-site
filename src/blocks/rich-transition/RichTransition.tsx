@@ -29,11 +29,7 @@ export type RichTransitionFields = Pick<
 
 type Layout = NonNullable<RichTransitionFields['layout']>
 
-/**
- * `stacked` is a render flag, not a CMS field: it says the block sits in a
- * Section block's stack, which owns the gap below it (see `Prose`).
- */
-type LayoutProps = RichTransitionFields & { stacked?: boolean }
+type LayoutProps = RichTransitionFields
 
 const Body = ({ className, data }: { className?: string; data: DefaultTypedEditorState }) => (
   <div data-reveal>
@@ -131,30 +127,6 @@ const proseBodyClasses: Record<ProseHeadingLevel, string> = {
 }
 
 /**
- * A prose opener binds to the passage it opens, so the gap below it is two
- * body lines (40px, 56px from `md`) rather than a full step of rhythm.
- *
- * Who sets it depends on what the block is standing in, because only one of
- * the two shells can state the gap honestly:
- *
- * - In a Section (`stacked`), the Section's stack owns every gap between its
- *   children and the block cannot see which step the editor chose, so the
- *   exception lives with the stack: `stack-binds-opener` in globals.css,
- *   applied by `SectionBand`, keyed on the `data-prose-opener` marker below.
- *   The block adds nothing, or the two would stack up.
- * - In its own band, the gap below is the next band's top step. Nothing can
- *   restyle that block, so this one cancels the step it knows every text
- *   block carries (`normal`, SPACING_SCALE) and restates its own: padding
- *   first, then a negative margin of exactly the cancelled step. Not where
- *   the surface changes below it (`band-opener` in globals.css), where the
- *   next band's top step is not the gap the reader sees.
- *
- * Both classes sit on the block's own root rather than the `Section`, because
- * a Prose heading in a Section renders `bare` and has no band to carry them.
- */
-const proseBandBottomClassName = 'pb-10 -mb-16 md:pb-14 md:-mb-24'
-
-/**
  * Prose: the whole cluster (eyebrow, heading, deck) on the Story beats
  * reading column (columns 3-6), so a Standard heading can open a passage of
  * beats without the copy stepping sideways between blocks.
@@ -164,12 +136,12 @@ const proseBandBottomClassName = 'pb-10 -mb-16 md:pb-14 md:-mb-24'
  * two-cell version took the grid's fixed 32px row gap between heading and
  * deck, which outgrew an h4 and crowded an h2.
  */
-const Prose = ({ body, eyebrow, heading, headingLevel, stacked }: LayoutProps) => {
+const Prose = ({ body, eyebrow, heading, headingLevel }: LayoutProps) => {
   const level = headingLevel || 'h2'
   const Heading = level
   return (
-    <Container className={stacked ? undefined : proseBandBottomClassName}>
-      <BlockGrid data-prose-opener>
+    <Container>
+      <BlockGrid>
         <div className="text-stack md:col-span-4 md:col-start-3">
           <Eyebrow text={eyebrow} />
           <Heading
@@ -200,11 +172,11 @@ const layouts: Record<Layout, (props: LayoutProps) => ReactNode> = {
  * themed band, arranged by `layout`. Collection-agnostic: the generic Standard
  * block and the case-study variant share this shape.
  *
- * The band drops its bottom padding so the block runs straight into whatever
- * follows; only the top of the band carries rhythm. Where the next block sits
- * on another surface the heading opens nothing on its own, so it keeps its
- * bottom step there (`band-opener` in globals.css): otherwise its last line
- * would touch a painted edge.
+ * A section heading titles the section that follows it, so it sits half a
+ * step of rhythm above that section and a full step below the one before:
+ * in a Section the stack sets the gap (`STACK_OPENER`, keyed on
+ * `data-section-heading`); in its own band the band drops its bottom step
+ * and the next band's top step is the gap (`band-opener` in globals.css).
  *
  * `bare` skips the `Section` wrapper for callers that supply their own shell
  * (the work-page renderer wraps blocks in a reveal band). The `data-reveal`
@@ -219,11 +191,14 @@ const layouts: Record<Layout, (props: LayoutProps) => ReactNode> = {
  */
 export const RichTransition = ({
   bare = false,
-  stacked = false,
   ...block
-}: RichTransitionFields & { bare?: boolean; stacked?: boolean }) => {
+}: RichTransitionFields & { bare?: boolean }) => {
   const Layout = layouts[block.layout ?? 'centered']
-  const inner = <Layout {...block} stacked={stacked} />
+  const inner = (
+    <div data-section-heading>
+      <Layout {...block} />
+    </div>
+  )
   if (bare) return inner
   return (
     <Section className="band-opener" theme={block.theme}>

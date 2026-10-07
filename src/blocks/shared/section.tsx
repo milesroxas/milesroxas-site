@@ -33,6 +33,12 @@ import { cn } from '@/utilities/ui'
  * `none` is for a shell that owns its own size (featured work) or a Section
  * whose nested blocks should sit flush.
  *
+ * `opener` is the gap below a section heading inside a Section: half the
+ * stack step, so the heading sits twice as far from what came before as from
+ * what it titles and reads as the title of the whole section rather than a
+ * label glued to the next block. Equal gaps would leave it floating between
+ * two sections. `none` keeps it flush with the rest.
+ *
  * A painted band (`isPaintedBand`) has a visible edge, so where its surface
  * begins or ends it cannot borrow the neighbour's padding. There it adds one
  * `normal` step inside itself (`band-painted` in globals.css), so its content
@@ -42,10 +48,22 @@ import { cn } from '@/utilities/ui'
  * edges (`bandEdges`).
  */
 export const SPACING_SCALE = {
-  none: { band: 'py-0', stack: 'space-y-0' },
-  tight: { band: 'py-8 md:py-12', stack: 'space-y-16 md:space-y-24' },
-  normal: { band: 'py-16 md:py-24', stack: 'space-y-32 md:space-y-48' },
-  loose: { band: 'py-32 md:py-48', stack: 'space-y-64 md:space-y-96' },
+  none: { band: 'py-0', stack: 'space-y-0', opener: '' },
+  tight: {
+    band: 'py-8 md:py-12',
+    stack: 'space-y-16 md:space-y-24',
+    opener: 'stack-opener-8 md:stack-opener-12',
+  },
+  normal: {
+    band: 'py-16 md:py-24',
+    stack: 'space-y-32 md:space-y-48',
+    opener: 'stack-opener-16 md:stack-opener-24',
+  },
+  loose: {
+    band: 'py-32 md:py-48',
+    stack: 'space-y-64 md:space-y-96',
+    opener: 'stack-opener-32 md:stack-opener-48',
+  },
 } as const
 
 export type BandSpacing = keyof typeof SPACING_SCALE
@@ -62,6 +80,13 @@ export const STACK_SPACING = {
   tight: SPACING_SCALE.tight.stack,
   normal: SPACING_SCALE.normal.stack,
   loose: SPACING_SCALE.loose.stack,
+} as const
+
+export const STACK_OPENER = {
+  none: SPACING_SCALE.none.opener,
+  tight: SPACING_SCALE.tight.opener,
+  normal: SPACING_SCALE.normal.opener,
+  loose: SPACING_SCALE.loose.opener,
 } as const
 
 /**

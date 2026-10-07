@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { BandTheme } from '@/blocks/shared/band-theme'
-import { Section, STACK_SPACING } from '@/blocks/shared/section'
+import { Section, STACK_OPENER, STACK_SPACING } from '@/blocks/shared/section'
 import { cn } from '@/utilities/ui'
 import { resolveSectionSpacing, type SectionBlockSpacing } from './shared'
 
@@ -34,10 +34,8 @@ export const SectionBand = ({
     <Section
       className={cn(
         STACK_SPACING[stackStep],
-        // The one exception to the stack: a Prose section heading binds to the
-        // passage it opens (`stack-binds-opener` in globals.css). Not under
-        // `none`, where the editor asked for blocks that sit flush.
-        stackStep !== 'none' && 'stack-binds-opener',
+        // A section heading sits half a step above the section it titles.
+        STACK_OPENER[stackStep],
         className,
       )}
       spacing={resolveSectionSpacing(customize, spacing)}

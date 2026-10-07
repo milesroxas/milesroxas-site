@@ -9,6 +9,9 @@ import { cn } from '@/utilities/ui'
 /**
  * `bare` skips the themed band for callers that supply their own themed shell
  * (the work-page renderer wraps blocks in a full-viewport reveal section).
+ *
+ * A section heading like the Standard block: half a step above the section it
+ * titles (`data-section-heading`, `band-opener`; see `RichTransition`).
  */
 type FeatureHeadingOffsetBlockProps = Pick<
   FeatureHeadingOffsetBlockData,
@@ -25,8 +28,8 @@ export const FeatureHeadingOffsetBlock: React.FC<FeatureHeadingOffsetBlockProps>
 }) => {
   const type = typeScale(textSize)
   return (
-    <Section bare={bare} theme={theme}>
-      <div className="container">
+    <Section bare={bare} className="band-opener" theme={theme}>
+      <div className="container" data-section-heading>
         <BlockGrid>
           <div className="text-stack md:col-span-4">
             {eyebrow ? (

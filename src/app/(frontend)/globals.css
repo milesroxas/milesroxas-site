@@ -829,21 +829,16 @@
   }
 }
 
-/* A Prose section heading is an opener: it binds to the passage under it.
-   Inside a Section the stack owns every gap between children, so this one
-   exception is applied by the Section band. Keyed on `data-prose-opener`
-   (the Standard block's Prose layout), matched through any reveal wrapper.
-   Restated as `margin-block-end` on the opener's stack child, which is where
-   `space-y-*` puts the gap, so it wins on specificity alone. */
-@utility stack-binds-opener {
-  > :has([data-prose-opener]):not(:last-child) {
-    margin-block-end: --spacing(10);
-  }
-
-  @media (width >= 48rem) {
-    > :has([data-prose-opener]):not(:last-child) {
-      margin-block-end: --spacing(14);
-    }
+/* A section heading titles the section, not the block under it. Inside a
+   Section the gap below it is half the stack step (`STACK_OPENER`,
+   blocks/shared/section.tsx), against a full step above, so it reads as the
+   title of everything after it. Keyed on `data-section-heading`, matched
+   through any reveal wrapper. Restated as `margin-block-end` on the stack
+   child, which is where `space-y-*` puts the gap, so it wins on specificity
+   alone. */
+@utility stack-opener-* {
+  > :has([data-section-heading]):not(:last-child) {
+    margin-block-end: --spacing(--value(integer));
   }
 }
 
@@ -910,21 +905,17 @@
   height: var(--band-step);
 }
 
-/* A section heading (blocks/rich-transition) runs into the block it opens:
-   no bottom step. Where the next block sits on another surface it opens
-   nothing on its own, so it keeps the step and drops the Prose layout's
-   negative margin, which would pull the next band over its last line. */
+/* A section heading in its own band drops its bottom step, so the gap to
+   what it titles is the next band's top step: half the gap above it, the
+   same proportion `stack-opener-*` keeps inside a Section. Where the next
+   block sits on another surface it titles nothing on its own surface, so it
+   keeps the step. */
 .band-opener {
   padding-bottom: 0;
 }
 
 [data-band-edge~="bottom"] .band-opener {
   padding-bottom: var(--band-step);
-
-  > * {
-    padding-bottom: 0;
-    margin-bottom: 0;
-  }
 }
 
 /* Scroll-reveal sections (shared/ui/reveal-section/RevealSection.tsx) */
