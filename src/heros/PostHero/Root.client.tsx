@@ -20,7 +20,7 @@ export function PostHeroRoot({ className, style, ...props }: React.ComponentProp
     <header
       ref={ref}
       className={cn(
-        'flex flex-col gap-10 px-gutter pt-[calc(var(--chrome-top)+--spacing(10))] pb-16 text-foreground md:gap-14 md:pt-[calc(var(--chrome-top)+--spacing(20))] md:pb-24',
+        'grid gap-10 px-gutter pt-[calc(var(--chrome-top)+--spacing(10))] pb-16 text-foreground md:items-end md:gap-x-16 md:pt-[calc(var(--chrome-top)+--spacing(20))] md:pb-24 md:has-data-[slot=post-hero-media]:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]',
         className,
       )}
       data-arrival={arrival}

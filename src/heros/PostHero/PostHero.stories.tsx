@@ -31,7 +31,7 @@ const meta = {
           updatedAt: '2026-01-01T00:00:00.000Z',
         },
       ],
-      hero: { type: 'highImpact', media: imageMedia },
+      hero: { type: 'editorial', media: imageMedia },
     },
   },
 } satisfies Meta<typeof PostHero>
@@ -42,13 +42,13 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
-/** A squarer picture holds to one screen and takes its caption beside it. */
+/** A squarer picture keeps to the frame cap, its caption under it. */
 export const SquareWithCaption: Story = {
   args: {
     post: {
       ...meta.args.post,
       hero: {
-        type: 'highImpact',
+        type: 'editorial',
         media: { ...imageMedia, width: 1200, height: 1000, caption: paragraphRichText },
       },
     },
@@ -56,7 +56,7 @@ export const SquareWithCaption: Story = {
 }
 
 export const WithoutMedia: Story = {
-  args: { post: { ...meta.args.post, hero: { type: 'lowImpact', media: null } } },
+  args: { post: { ...meta.args.post, hero: { type: 'editorial', media: null } } },
 }
 
 export const External: Story = {
@@ -64,7 +64,7 @@ export const External: Story = {
     post: {
       ...meta.args.post,
       categories: [],
-      hero: { type: 'lowImpact' },
+      hero: { type: 'editorial' },
       source: 'external',
       external: {
         url: 'https://suitsandsandals.com/lab/shader-studio',

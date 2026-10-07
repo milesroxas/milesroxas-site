@@ -6,7 +6,7 @@ import { heroVisualSlotFields } from '@/fields/visual'
 
 /** The hero types that render media. */
 const mediaHeroTypes: Condition = (_, { type } = {}) =>
-  ['highImpact', 'mediumImpact', 'home'].includes(type)
+  ['highImpact', 'mediumImpact', 'home', 'editorial'].includes(type)
 
 /**
  * The hero types that can ground their band with an effect (`HeroGround`).
@@ -40,11 +40,12 @@ const heroMediaSlot = (): Field[] => {
 }
 
 /**
- * The page hero shared by Pages, Posts and Works. A factory, not a literal:
+ * The page hero shared by Pages and Posts. A factory, not a literal:
  * Payload mutates field configs while sanitizing them, and the visual slot
- * must not be shared between collections.
+ * must not be shared between collections. `editorial` adds the post opening
+ * (`src/heros/PostHero`), which only a post renders.
  */
-export const heroField = (): Field => ({
+export const heroField = ({ editorial = false }: { editorial?: boolean } = {}): Field => ({
   name: 'hero',
   type: 'group',
   fields: [
@@ -58,6 +59,7 @@ export const heroField = (): Field => ({
           label: 'None',
           value: 'none',
         },
+        ...(editorial ? [{ label: 'Editorial', value: 'editorial' }] : []),
         {
           label: 'Home',
           value: 'home',

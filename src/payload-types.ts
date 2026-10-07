@@ -313,7 +313,7 @@ export interface Post {
     publisher?: string | null;
   };
   hero: {
-    type: 'none' | 'home' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    type: 'none' | 'editorial' | 'home' | 'highImpact' | 'mediumImpact' | 'lowImpact';
     showContent?: boolean | null;
     richText?: {
       root: {

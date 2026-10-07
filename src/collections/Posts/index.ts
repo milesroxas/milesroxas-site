@@ -64,7 +64,7 @@ export const Posts: CollectionConfig<'posts'> = {
       type: 'tabs',
       tabs: [
         {
-          fields: [heroField(), pageIntroField()],
+          fields: [heroField({ editorial: true }), pageIntroField()],
           label: 'Opening',
         },
         {

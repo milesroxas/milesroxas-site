@@ -10,11 +10,13 @@ import { PayloadRedirects } from '@/components/PayloadRedirects'
 import RichText from '@/components/RichText/Legacy'
 import { ContentsButton } from '@/features/contents'
 import { PostHero } from '@/heros/PostHero'
+import { RenderHero } from '@/heros/RenderHero'
 import type { Post as PostDoc } from '@/payload-types'
 import { ExternalArticle } from '@/sections/ExternalArticle'
 import { WorkIntro } from '@/sections/WorkIntro'
 import { externalArticle } from '@/utilities/externalArticle'
 import { generateMeta } from '@/utilities/generateMeta'
+import { cn } from '@/utilities/ui'
 import PageClient from './page.client'
 
 export async function generateStaticParams() {
@@ -81,15 +83,25 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   // An external post keeps any body it had before it was switched; only the link out renders.
   const external = externalArticle(post)
+  const editorial = post.hero.type === 'editorial'
 
   return (
-    <article className="bg-tertiary pb-12 text-tertiary-foreground md:pb-32">
+    <article
+      className={cn(
+        'bg-tertiary pb-12 text-tertiary-foreground md:pb-32',
+        !editorial && 'pt-24 md:pt-0',
+      )}
+    >
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
       {draft && <LivePreviewListener />}
-      <PageClient />
-      <PostHero post={post} />
+      <PageClient header={!editorial} post={post} />
+      {post.hero.type === 'editorial' ? (
+        <PostHero post={post} />
+      ) : (
+        <RenderHero {...post.hero} type={post.hero.type} />
+      )}
       {post.intro?.body && <WorkIntro body={post.intro.body} title={post.intro.title} />}
 
       {external ? (
