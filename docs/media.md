@@ -33,7 +33,11 @@ How an upload becomes an image or video on the site, and what keeps it that way.
    attempts on rate limits, 5xx and network errors. The document is on the site from Blob meanwhile.
    `cloudflareMediaSweep` runs at 05:00 UTC (the daily cron in `vercel.json` executes it) and syncs
    every image or video still without its asset.
-5. **Replacing or deleting a file purges Cloudflare.** A replacement is detected by filename or by
+5. **A temp-file upload carries its bytes.** When Payload parks a file on disk (a browser upload
+   read back for the thumbnail, or a Local API `tempFilePath`), `req.file.data` is empty and the
+   Blob adapter would write zero bytes over the original. It did, for every webp uploaded from the
+   admin until 2026-10-07. `readTempFile` fills the buffer first.
+6. **Replacing or deleting a file purges Cloudflare.** A replacement is detected by filename or by
    a new object folder, so a same-name re-upload from the admin still purges the old asset.
 
 Flexible variants are off on the Cloudflare account, so `public` is the only variant in use and

@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import { GeistMono } from 'geist/font/mono'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Sans } from 'next/font/google'
 import { draftMode } from 'next/headers'
 
@@ -65,4 +65,11 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     creator: '@payloadcms',
   },
+}
+
+// `cover` lets the fixed chrome read the device's live safe-area insets
+// (globals.css), so the dock clears the home indicator and rounded corners
+// when a phone's browser bars collapse.
+export const viewport: Viewport = {
+  viewportFit: 'cover',
 }

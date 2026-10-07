@@ -1676,15 +1676,26 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
    surface, as approved in Paper ("Chrome — B revised").
    ========================================================================== */
 
+/* `viewport-fit=cover` lets the page run under a landscape notch; flow
+   content keeps out of it as it did before. Fixed chrome clears it itself. */
+body {
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
+}
+
 :root {
   /* The top bar's height: the line a page's heading scrolls under. */
   --chrome-top: 2.75rem;
+  /* The top bar's side padding. */
+  --chrome-pad: 1.25rem;
   /* The dock: its height, its lift off the viewport's bottom edge, the inset
      between its edge and the tabs inside it, and its corner. Phone first: a
      52px icon tab bar 12px up; a 40px bar 24px up from md. The corner is the
-     site's own (`--radius`, the cards' and media's 8px) at every size. */
+     site's own (`--radius`, the cards' and media's 8px) at every size. The
+     lift never drops inside the device's safe area: `viewport-fit=cover`
+     (layout.tsx) makes the inset live, so it grows as a phone's browser bars
+     collapse and falls back to 0 when they return. */
   --dock-height: 3.25rem;
-  --dock-bottom: 0.75rem;
+  --dock-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
   --dock-inset: 0.25rem;
   --dock-radius: var(--radius);
   /* Corners inside the dock are concentric with it: its radius less the inset. */
@@ -1713,8 +1724,9 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
 @media (min-width: 48rem) {
   :root {
     --chrome-top: 5rem;
+    --chrome-pad: 2rem;
     --dock-height: 2.5rem;
-    --dock-bottom: 1.5rem;
+    --dock-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
     --ask-field-height: var(--dock-height);
   }
 
@@ -1854,6 +1866,8 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
 /* Top bar: words over the page, no bar. The page's own title rises in on
    the left once its heading has scrolled under the bar. */
 .chrome-top {
+  padding-inline-start: max(var(--chrome-pad), env(safe-area-inset-left, 0px));
+  padding-inline-end: max(var(--chrome-pad), env(safe-area-inset-right, 0px));
   transition:
     color 240ms ease,
     opacity 240ms ease;
@@ -1876,7 +1890,8 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
    the tab capsule and the Ask capsule sit together, centred. */
 .dock {
   position: fixed;
-  inset-inline: 1rem;
+  left: max(1rem, env(safe-area-inset-left, 0px));
+  right: max(1rem, env(safe-area-inset-right, 0px));
   bottom: var(--dock-bottom);
   z-index: 40;
   display: flex;
