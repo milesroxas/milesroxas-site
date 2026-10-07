@@ -72,6 +72,7 @@ const response = await fetch(`${server}/api/agent/media`, {
 }).catch((error: Error) => fail(`cannot reach ${server}: ${error.message}`))
 
 const body = (await response.json().catch(() => null)) as {
+  cloudflareImageId?: string | null
   errors?: { message: string }[]
   id?: number
 } | null
@@ -82,5 +83,9 @@ if (!response.ok)
       `${response.status} ${response.statusText}`,
   )
 if (!body?.id) fail('the server accepted the upload but answered without a media id.')
+if (!body.cloudflareImageId)
+  console.error(
+    `cms:upload: media ${body.id} is on Blob but did not sync to Cloudflare Images; check the server log for "[Cloudflare] Upload failed".`,
+  )
 
 console.log(body.id)

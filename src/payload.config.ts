@@ -14,6 +14,7 @@ import { Categories } from './collections/Categories'
 import { Clients } from './collections/Clients'
 import { Inquiries } from './collections/Inquiries'
 import { Media } from './collections/Media'
+import { cloudflareMediaSync } from './collections/Media/hooks/syncCloudflare'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
@@ -128,6 +129,7 @@ export default buildConfig({
 
       token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
+    cloudflareMediaSync(),
   ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,

@@ -205,6 +205,11 @@ The script takes the site, the key and any `x-vercel-protection-bypass` header f
 in. `CMS_MCP_API_KEY` (else `MILESROXAS_CMS_MCP_KEY`), `CMS_UPLOAD_SERVER` and
 `VERCEL_AUTOMATION_BYPASS_SECRET` override it. A local site needs `--local`.
 
+The endpoint answers `{ id, cloudflareImageId }`. A null `cloudflareImageId` means the file is on
+Blob but the Cloudflare Images sync failed (the server log has `[Cloudflare] Upload failed`), and
+the script warns on stderr. The sync runs after the storage adapter has written the file, from
+`cloudflareMediaSync` in `src/collections/Media/hooks/syncCloudflare.ts`.
+
 ## Security: the REST rule
 
 MCP keys authenticate as `req.user` over REST and GraphQL too, not only at `/api/mcp`, and the

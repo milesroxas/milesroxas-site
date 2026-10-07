@@ -167,6 +167,10 @@ export const agentMediaEndpoint: Endpoint = {
       overrideAccess: false,
       req,
     })
-    return Response.json({ id: media.id }, { status: 201 })
+    // Null when the Cloudflare sync failed; the server log has the reason.
+    return Response.json(
+      { id: media.id, cloudflareImageId: media.cloudflareImageId ?? null },
+      { status: 201 },
+    )
   },
 }

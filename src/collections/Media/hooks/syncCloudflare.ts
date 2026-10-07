@@ -3,6 +3,7 @@ import type {
   CollectionAfterDeleteHook,
   CollectionAfterReadHook,
   PayloadRequest,
+  Plugin,
 } from 'payload'
 
 type MediaDoc = Record<string, unknown>
@@ -176,8 +177,9 @@ export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   req,
   context,
 }) => {
-  // Skip if this update was triggered by the hook itself
-  if (context?.skipCloudflareSync) return doc
+  // Skip our own field writes, and the storage plugin's nested metadata update:
+  // the outer save syncs once the file is on Blob.
+  if (context?.skipCloudflareSync || context?.skipCloudStorage) return doc
 
   const kind = syncKind(doc.mimeType as string | undefined)
   if (!kind) return doc
@@ -227,3 +229,24 @@ export const syncCloudflareDelete: CollectionAfterDeleteHook = async ({ doc, req
     }
   }
 }
+
+/**
+ * Registers the upload sync after the storage adapter's `afterChange`, which is
+ * what puts a server-side upload (`/api/agent/media`) on Blob. Run before it,
+ * Cloudflare is asked to fetch a URL that does not exist yet.
+ * List it after `vercelBlobStorage` in `payload.config.ts`.
+ */
+export const cloudflareMediaSync = (): Plugin => (config) => ({
+  ...config,
+  collections: (config.collections ?? []).map((collection) =>
+    collection.slug === 'media'
+      ? {
+          ...collection,
+          hooks: {
+            ...collection.hooks,
+            afterChange: [...(collection.hooks?.afterChange ?? []), syncCloudflareUpload],
+          },
+        }
+      : collection,
+  ),
+})
