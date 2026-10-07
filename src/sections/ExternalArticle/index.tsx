@@ -12,7 +12,7 @@ import type { ExternalArticle as ExternalArticleData } from '@/utilities/externa
  */
 export function ExternalArticle({ url, publisher, address }: ExternalArticleData) {
   return (
-    <Section spacing="loose" theme="inverted">
+    <Section spacing="loose" theme="neutral">
       <Container>
         <div className="group/out relative flex flex-col gap-10 md:gap-16">
           <h2 className="text-balance text-display">
@@ -40,7 +40,7 @@ export function ExternalArticle({ url, publisher, address }: ExternalArticleData
           </h2>
 
           <div className="flex flex-col gap-4">
-            <div aria-hidden className="relative h-px bg-border">
+            <div aria-hidden className="relative h-px bg-foreground/15">
               <span className="absolute inset-0 origin-left scale-x-0 bg-foreground transition-transform duration-1000 ease-(--ease-out-quint) group-hover/out:scale-x-100 group-has-focus-visible/out:scale-x-100 motion-reduce:transition-none" />
             </div>
             <p className="flex flex-col gap-1 text-muted-foreground text-sm md:flex-row md:items-baseline md:justify-between md:gap-6">
