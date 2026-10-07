@@ -42,9 +42,11 @@ const DIAL = {
   blurSpread: 1.2,
   /**
    * Phones show the rows as a plain list (globals.css), several at once, so
-   * ink and blur fall off over a few rows rather than one.
+   * ink and blur fall off over a few rows rather than one. They scroll
+   * natively and never settle: a settle started under iOS's own momentum
+   * fights it.
    */
-  phone: { inkSpread: 1.8, blurSpread: 2.4 },
+  phone: { inkSpread: 2.5, blurSpread: 3 },
   /** Where along the reach a row starts fading out, gone by the window's edge. */
   fadeFrom: 0.75,
   /** How long the page rests before it settles on the nearest row, and how long the settle takes. */
@@ -213,7 +215,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     }
 
     const settle = () => {
-      if (touching || reduced.matches || openingRef.current) return
+      if (touching || reduced.matches || phone.matches || openingRef.current) return
       const raw = (scrollY - geometry.current.listTop) / geometry.current.row
       if (raw <= 0 || raw >= last) return
       const nearest = Math.round(raw)

@@ -2763,7 +2763,7 @@ html:active-view-transition-type(work-open) .dock {
    beneath it, the rows to come below: a plain list, short rows so several
    show at once, with no drum, only the ink and blur. */
 .work-dial {
-  --dial-row: 5rem;
+  --dial-row: 6.5rem;
   --dial-plate-w: calc(100vw - 2 * var(--spacing-gutter));
   --dial-plate-h: calc(var(--dial-plate-w) / 1.6);
   --dial-plate-top: calc(var(--chrome-top) + 0.75rem);
@@ -2893,7 +2893,15 @@ html:active-view-transition-type(work-open) .dock {
   position: relative;
   margin-top: -100svh;
   padding-top: calc(var(--dial-focus) - var(--dial-row) / 2);
-  padding-bottom: calc(100svh - var(--dial-focus) - var(--dial-row) / 2);
+  /* Room for the last row to reach the centre line, and no more: phones stop
+     at the window's foot, above the dock. */
+  padding-bottom: calc(var(--dial-window-bottom) - var(--dial-focus) - var(--dial-row) / 2);
+}
+
+@media (min-width: 64rem) {
+  .work-dial-list {
+    padding-bottom: calc(100svh - var(--dial-focus) - var(--dial-row) / 2);
+  }
 }
 
 .work-dial-row {
