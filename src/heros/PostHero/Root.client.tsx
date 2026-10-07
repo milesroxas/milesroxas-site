@@ -9,6 +9,7 @@ import { cn } from '@/utilities/ui'
  * The hero root. Arriving from a post card, the card's picture is already in
  * flight (`useCardTransition`): it lands on the featured image, which skips
  * its own wipe, and the copy holds until the picture has nearly settled.
+ * It paints the visitor's theme, like the case study opening (`WorkHeroRoot`).
  */
 export function PostHeroRoot({ className, style, ...props }: React.ComponentProps<'header'>) {
   const ref = useTransitionClonePickup<HTMLElement>()
@@ -20,11 +21,10 @@ export function PostHeroRoot({ className, style, ...props }: React.ComponentProp
     <header
       ref={ref}
       className={cn(
-        'grid gap-10 px-gutter pt-[calc(var(--chrome-top)+--spacing(10))] pb-16 text-foreground md:items-end md:gap-x-16 md:pt-[calc(var(--chrome-top)+--spacing(20))] md:pb-24 md:has-data-[slot=post-hero-media]:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]',
+        'grid gap-10 bg-background px-gutter pt-[calc(var(--chrome-top)+--spacing(10))] pb-16 text-foreground md:items-end md:gap-x-16 md:pt-[calc(var(--chrome-top)+--spacing(20))] md:pb-24 md:has-data-[slot=post-hero-media]:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]',
         className,
       )}
       data-arrival={arrival}
-      data-band="dark"
       data-slot="post-hero"
       style={
         arrival === 'morph' ? ({ '--morph-hold': '700ms', ...style } as React.CSSProperties) : style

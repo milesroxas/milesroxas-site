@@ -10,13 +10,6 @@ const meta = {
     // CSS drives the load-in; snapshot the reduced-motion (final) state.
     chromatic: { prefersReducedMotion: 'reduce' },
   },
-  decorators: [
-    (Story) => (
-      <div className="bg-tertiary text-tertiary-foreground">
-        <Story />
-      </div>
-    ),
-  ],
   args: {
     post: {
       title: 'Building Credibility Through Design and Content',
