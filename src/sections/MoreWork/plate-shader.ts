@@ -138,7 +138,7 @@ vec2 cover(vec2 uv, vec2 scale) {
 
 void main() {
   // Wavefronts across the frame, gently bowed so they read as water, not stripes.
-  float phase = TAU * (vUv.y * uWaves - uProgress * 1.75) + sin(vUv.x * uAspect * 2.2) * 0.7;
+  float phase = TAU * (vUv.y * uWaves - uProgress * 1.25) + sin(vUv.x * uAspect * 2.2) * 0.7;
   float wave = sin(phase);
 
   // 0 at the bottom, where the arriving picture enters, 1 at the top.

@@ -53,7 +53,15 @@ export const PLATE_RIPPLE = {
   /** How far the slopes lighten and darken the picture. */
   shade: 0.09,
   /** How deep the soft front between the pictures is, as a share of the frame. */
-  band: 0.55,
+  band: 0.85,
+  /** Scrubbed, the share of the way between two rows where each picture still rests whole. */
+  hold: 0.05,
+  /**
+   * Scrubbed, the wave trails the page rather than tracking it frame for
+   * frame: the seconds it takes to close about two thirds of the distance.
+   * A quick flick still plays the whole change, slowly.
+   */
+  lag: 0.75,
 } as const
 
 /** `dither` sweeps through an ordered dither (More work); `ripple` runs a wave up the picture (the dial). */
@@ -166,6 +174,8 @@ function PlateScene({ media, index, scrub, look, onFirstFrame }: PlateSceneProps
   const framesDrawn = useRef(0)
   const shown = useRef<Shown>({ from: index, to: index })
   const stopVideos = useRef<() => void>(() => {})
+  /** Scrubbed, where the trailing transition stands. */
+  const trail = useRef<number | null>(null)
 
   const textures = useMemo(
     () =>
@@ -291,26 +301,64 @@ function PlateScene({ media, index, scrub, look, onFirstFrame }: PlateSceneProps
   }, [index, scrub, invalidate, snapshot, show])
 
   // Scrubbed, the sweep sits wherever the page does: always down the plate
-  // towards the next row, so scrolling back plays it in reverse.
+  // towards the next row, so scrolling back plays it in reverse. The ripple
+  // trails the page on a damped follow, so it eases in and out of a change.
   useEffect(() => {
     if (!scrub || media.length < 2) return
-    const follow = () => {
+    const last = media.length - 1
+    const hold = look === 'ripple' ? PLATE_RIPPLE.hold : PLATE_LOOK.hold
+    const lag = look === 'ripple' ? PLATE_RIPPLE.lag : 0
+    const target = () => Math.min(Math.max(scrub.get(), 0), last)
+    // Kept across re-runs: a re-render mid-change must not jump the trail to the page.
+    let position = trail.current ?? target()
+    let frame = 0
+    let then = 0
+
+    const draw = () => {
       const u = materialRef.current?.uniforms
       if (!u) return
-      const position = Math.min(Math.max(scrub.get(), 0), media.length - 1)
-      const from = Math.min(Math.floor(position), media.length - 2)
+      const from = Math.min(Math.max(Math.floor(position), 0), last - 1)
       const state = shown.current
-      u.uProgress.value = smoothstep(PLATE_LOOK.hold, 1 - PLATE_LOOK.hold, position - from)
+      u.uProgress.value = smoothstep(hold, 1 - hold, position - from)
       u.uDirection.value = 1
       if (state.from !== from || state.to !== from + 1) {
         shown.current = { from, to: from + 1 }
         show()
       } else invalidate()
     }
+
+    const step = (now: number) => {
+      // A frame's timestamp can precede the `performance.now()` that queued it.
+      const dt = Math.min(Math.max((now - then) / 1000, 0), 0.1)
+      then = now
+      const goal = target()
+      position += (goal - position) * (1 - Math.exp(-dt / lag))
+      if (Math.abs(goal - position) < 0.0005) position = goal
+      trail.current = position
+      draw()
+      frame = position === goal ? 0 : requestAnimationFrame(step)
+    }
+
+    const follow = () => {
+      if (lag <= 0) {
+        position = target()
+        trail.current = position
+        return draw()
+      }
+      if (frame) return
+      then = performance.now()
+      frame = requestAnimationFrame(step)
+    }
+
+    draw()
     follow()
-    return scrub.subscribe(follow)
+    const unsubscribe = scrub.subscribe(follow)
+    return () => {
+      unsubscribe()
+      cancelAnimationFrame(frame)
+    }
     // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; the source is the trigger
-  }, [scrub, media, invalidate, show])
+  }, [scrub, media, look, invalidate, show])
 
   useFrame(() => signalFirstFrame(framesDrawn, onFirstFrame))
 
