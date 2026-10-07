@@ -4,7 +4,7 @@ import { Section } from '@/blocks/shared/section'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import type { WorkIntro as WorkIntroData } from '@/payload-types'
-import { ScrollReveal } from '@/shared/ui/scroll-reveal'
+import { IntroStatement } from './Statement.client'
 
 type Props = {
   /** Names the band for assistive tech; not shown (Paper, "Work Intro"). */
@@ -24,25 +24,20 @@ type Props = {
  * as far from the hero as from the next normal band (8rem phone, 12rem md).
  */
 export const WorkIntro: React.FC<Props> = ({ title, body, summary }) => (
-  <ScrollReveal as="div" variant="intro">
-    <Section className="pt-8 md:pt-24">
-      <Container>
-        {title ? <h2 className="sr-only">{title}</h2> : null}
-        <BlockGrid>
-          <div
-            className="text-heading-2/snug tracking-normal md:col-span-6 lg:col-span-5 [&_p+p]:mt-6"
-            data-reveal
-          >
-            {body ? (
-              <RichText data={body} enableGutter={false} enableProse={false} />
-            ) : (
-              summary
-                ?.split(/\n\s*\n/)
-                .map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)
-            )}
-          </div>
-        </BlockGrid>
-      </Container>
-    </Section>
-  </ScrollReveal>
+  <Section className="pt-8 md:pt-24">
+    <Container>
+      {title ? <h2 className="sr-only">{title}</h2> : null}
+      <BlockGrid>
+        <IntroStatement className="text-heading-2/snug tracking-normal md:col-span-6 lg:col-span-5 [&_p+p]:mt-6">
+          {body ? (
+            <RichText data={body} enableGutter={false} enableProse={false} />
+          ) : (
+            summary
+              ?.split(/\n\s*\n/)
+              .map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)
+          )}
+        </IntroStatement>
+      </BlockGrid>
+    </Container>
+  </Section>
 )
