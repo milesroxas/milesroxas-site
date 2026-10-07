@@ -50,10 +50,10 @@ export function TopBar({ section }: { section: string | null }) {
 
       <Link
         aria-label="Miles Roxas, home"
-        className="chrome-focus md:-translate-1/2 pointer-events-auto z-10 -ml-2 rounded-md p-2 md:absolute md:top-1/2 md:left-1/2 md:ml-0"
+        className="chrome-focus md:-translate-1/2 pointer-events-auto z-10 -ml-2 flex h-11 items-center rounded-md px-2 md:absolute md:top-1/2 md:left-1/2 md:ml-0 md:block md:h-auto md:p-2"
         href="/"
       >
-        <Logo className="h-auto w-29 md:w-40" color="currentColor" />
+        <Logo className="h-auto w-32 md:w-40" color="currentColor" />
       </Link>
 
       <div className="flex shrink-0 items-center gap-2 md:gap-3">
