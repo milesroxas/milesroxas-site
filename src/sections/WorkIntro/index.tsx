@@ -21,10 +21,11 @@ type Props = {
  * and the title screen-reader only, both kept in the CMS for later.
  *
  * The top is trimmed against the hero's own 6rem foot so the statement sits
- * as far from the hero as from the next normal band (8rem phone, 12rem md).
+ * as far from the hero as from the next normal band. The band is one screen
+ * less those outer gaps, so centred, the statement is all that shows.
  */
 export const WorkIntro: React.FC<Props> = ({ title, body, summary }) => (
-  <Section className="pt-8 md:pt-24">
+  <Section className="flex min-h-[calc(100svh-10rem)] flex-col justify-center pt-8 md:min-h-[calc(100svh-12rem)] md:pt-24">
     <Container>
       {title ? <h2 className="sr-only">{title}</h2> : null}
       <BlockGrid>
