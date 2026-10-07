@@ -889,6 +889,44 @@
   --foreground: var(--neutral-foreground);
 }
 
+/* Band edges: `data-band-edge` marks where the surface changes between two
+   top-level bands (`bandEdges`, blocks/RenderBlocks.tsx). `--band-step` is
+   the `normal` band step (SPACING_SCALE, blocks/shared/section.tsx). */
+:root {
+  --band-step: --spacing(16);
+
+  @media (width >= 48rem) {
+    --band-step: --spacing(24);
+  }
+}
+
+/* A painted band's edge is visible, so it cannot borrow the neighbour's
+   padding: at an edge it adds one step inside itself. Its content then sits
+   as far from the edge as from a neighbour's content on the page surface. */
+[data-band-edge~="top"] .band-painted::before,
+[data-band-edge~="bottom"] .band-painted::after {
+  content: "";
+  display: block;
+  height: var(--band-step);
+}
+
+/* A section heading (blocks/rich-transition) runs into the block it opens:
+   no bottom step. Where the next block sits on another surface it opens
+   nothing on its own, so it keeps the step and drops the Prose layout's
+   negative margin, which would pull the next band over its last line. */
+.band-opener {
+  padding-bottom: 0;
+}
+
+[data-band-edge~="bottom"] .band-opener {
+  padding-bottom: var(--band-step);
+
+  > * {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+}
+
 /* Scroll-reveal sections (shared/ui/reveal-section/RevealSection.tsx) */
 .reveal-section {
   opacity: 0;

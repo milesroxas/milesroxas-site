@@ -47,3 +47,10 @@ export const themeClasses: Record<BandTheme, string> = {
  * way.
  */
 export const sectionThemeClass = (theme?: BandTheme | null) => themeClasses[theme || 'default']
+
+/**
+ * True for a band that paints its own surface. Its edge is visible, so it
+ * cannot borrow a neighbour's padding the way two page-surface bands do
+ * (`band-painted`, `blocks/shared/section.tsx`).
+ */
+export const isPaintedBand = (theme?: BandTheme | null) => Boolean(theme) && theme !== 'default'

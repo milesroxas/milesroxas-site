@@ -6,6 +6,8 @@ import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { SliderBlock } from '@/blocks/Slider/Component'
 import { SectionBand } from '@/blocks/section/SectionBand'
+import { bandEdges } from '@/blocks/shared/band-edges'
+import type { BandTheme } from '@/blocks/shared/band-theme'
 import { TabsBlock } from '@/blocks/Tabs/Component'
 import type {
   Page,
@@ -88,6 +90,28 @@ const renderFlatBlock = (block: FlatBlock, blockKey: React.Key, bare: boolean) =
   return renderContentBlock(block, blockKey, bare, sectionChildComponents)
 }
 
+/**
+ * The surface a top-level block paints: a Section's only when customized
+ * (`SectionBand`), a legacy or run block's from its own `theme`.
+ */
+const blockSurface = (block: LayoutBlock): BandTheme | null | undefined => {
+  if (block.blockType === 'section') return block.customize ? block.theme : null
+  return 'theme' in block ? block.theme : null
+}
+
+/**
+ * Marks a band where the surface changes (`bandEdges`) on a `display:
+ * contents` wrapper, so the band's own markup and layout stay untouched.
+ */
+const withBandEdge = (node: React.ReactNode, edge: string | undefined, blockKey: React.Key) =>
+  edge ? (
+    <div className="contents" data-band-edge={edge} key={blockKey}>
+      {node}
+    </div>
+  ) : (
+    node
+  )
+
 export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }> = async ({
   blocks,
 }) => {
@@ -98,6 +122,7 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
 
   // Process blocks to replace protected works with fallbacks
   const processedBlocks = await processLayoutBlocks(blocks, hasAccess)
+  const edges = bandEdges(processedBlocks.map(blockSurface))
 
   return (
     <AnimatedBlocksContainer>
@@ -108,7 +133,7 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
         // with their usual entrances. The band itself never animates: a
         // second entrance on the shell would double every child's motion.
         if (block.blockType === 'section') {
-          return (
+          return withBandEdge(
             <SectionBand
               customize={block.customize}
               key={blockKey}
@@ -119,11 +144,21 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
               {(block.blocks ?? []).map((child, childIndex) =>
                 renderFlatBlock(child, blockKeys.fromBlock(child, childIndex), true),
               )}
-            </SectionBand>
+            </SectionBand>,
+            edges[index],
+            blockKey,
           )
         }
 
-        return renderFlatBlock(block, blockKey, false)
+        // Legacy blocks carry their own spacing and are animated as direct
+        // children of the container, so they are never wrapped.
+        const legacy = renderLegacyBlock(block, blockKey)
+        if (legacy !== undefined) return legacy
+        return withBandEdge(
+          renderContentBlock(block, blockKey, false, sectionChildComponents),
+          edges[index],
+          blockKey,
+        )
       })}
     </AnimatedBlocksContainer>
   )

@@ -145,7 +145,9 @@ const proseBodyClasses: Record<ProseHeadingLevel, string> = {
  * - In its own band, the gap below is the next band's top step. Nothing can
  *   restyle that block, so this one cancels the step it knows every text
  *   block carries (`normal`, SPACING_SCALE) and restates its own: padding
- *   first, then a negative margin of exactly the cancelled step.
+ *   first, then a negative margin of exactly the cancelled step. Not where
+ *   the surface changes below it (`band-opener` in globals.css), where the
+ *   next band's top step is not the gap the reader sees.
  *
  * Both classes sit on the block's own root rather than the `Section`, because
  * a Prose heading in a Section renders `bare` and has no band to carry them.
@@ -199,7 +201,10 @@ const layouts: Record<Layout, (props: LayoutProps) => ReactNode> = {
  * block and the case-study variant share this shape.
  *
  * The band drops its bottom padding so the block runs straight into whatever
- * follows; only the top of the band carries rhythm.
+ * follows; only the top of the band carries rhythm. Where the next block sits
+ * on another surface the heading opens nothing on its own, so it keeps its
+ * bottom step there (`band-opener` in globals.css): otherwise its last line
+ * would touch a painted edge.
  *
  * `bare` skips the `Section` wrapper for callers that supply their own shell
  * (the work-page renderer wraps blocks in a reveal band). The `data-reveal`
@@ -221,7 +226,7 @@ export const RichTransition = ({
   const inner = <Layout {...block} stacked={stacked} />
   if (bare) return inner
   return (
-    <Section className="pb-0 md:pb-0" theme={block.theme}>
+    <Section className="band-opener" theme={block.theme}>
       {inner}
     </Section>
   )

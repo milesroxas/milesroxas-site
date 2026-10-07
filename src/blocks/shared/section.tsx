@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { type BandTheme, sectionThemeClass } from '@/blocks/shared/band-theme'
+import { type BandTheme, isPaintedBand, sectionThemeClass } from '@/blocks/shared/band-theme'
 import { VISUAL_HOST } from '@/features/immersive/visual'
 import { cn } from '@/utilities/ui'
 
@@ -32,6 +32,14 @@ import { cn } from '@/utilities/ui'
  *
  * `none` is for a shell that owns its own size (featured work) or a Section
  * whose nested blocks should sit flush.
+ *
+ * A painted band (`isPaintedBand`) has a visible edge, so where its surface
+ * begins or ends it cannot borrow the neighbour's padding. There it adds one
+ * `normal` step inside itself (`band-painted` in globals.css), so its content
+ * sits as far from the edge as from a neighbour's content. Between two bands
+ * of the same surface the seam is invisible and the steps add as usual, so a
+ * run of inverted Sections keeps the page rhythm. `RenderBlocks` marks the
+ * edges (`bandEdges`).
  */
 export const SPACING_SCALE = {
   none: { band: 'py-0', stack: 'space-y-0' },
@@ -80,7 +88,12 @@ export const Section = ({
   if (bare) return <>{children}</>
   return (
     <section
-      className={cn(BAND_SPACING[spacing], sectionThemeClass(theme), className)}
+      className={cn(
+        BAND_SPACING[spacing],
+        sectionThemeClass(theme),
+        isPaintedBand(theme) && spacing !== 'none' && 'band-painted',
+        className,
+      )}
       {...VISUAL_HOST}
     >
       {children}
