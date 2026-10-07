@@ -37,6 +37,8 @@ const DIAL = {
   blurFrom: 0.45,
   /** Where along the reach a row starts fading out, gone by the window's edge. */
   fadeFrom: 0.8,
+  /** CSS pixels the plate's frayed edge may spill past the frame. */
+  bleed: 64,
   /** How long the page rests before it settles on the nearest row. */
   settleAfter: 180,
   settle: 0.9,
@@ -269,7 +271,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
         <div ref={focusRef} className="work-dial-focus" />
         <div className="work-dial-frame">
           <div
-            className="size-full overflow-clip motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
+            className="size-full motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
             style={enterAt(120)}
           >
             {/* The rows are the keyboard's way in; the picture is a pointer shortcut to the one shown. */}
@@ -293,6 +295,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
               >
                 <MoreWorkPlate
                   always
+                  bleed={DIAL.bleed}
                   className="aspect-auto size-full"
                   index={opening ?? active}
                   items={items}

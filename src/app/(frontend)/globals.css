@@ -2757,6 +2757,8 @@ html:active-view-transition-type(work-open) .dock {
   top: 0;
   height: 100svh;
   margin-inline: calc(-1 * var(--spacing-gutter));
+  /* The plate's frayed edge may spill past a phone's gutter; never the page. */
+  overflow-x: clip;
   pointer-events: none;
 }
 
@@ -2806,7 +2808,7 @@ html:active-view-transition-type(work-open) .dock {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 0.75rem;
+  margin-top: 1.25rem;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1;
@@ -2865,9 +2867,11 @@ html:active-view-transition-type(work-open) .dock {
   }
 }
 
+/* Light, as the homepage sets its work titles. */
 .work-dial-title {
   max-width: 22ch;
   font-size: 1.5rem;
+  font-weight: var(--font-weight-light);
   line-height: 1.2;
   letter-spacing: -0.015em;
   text-wrap: balance;
