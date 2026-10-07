@@ -2766,7 +2766,9 @@ html:active-view-transition-type(work-open) .dock {
   --dial-row: 6.5rem;
   --dial-plate-w: calc(100vw - 2 * var(--spacing-gutter));
   --dial-plate-h: calc(var(--dial-plate-w) / 1.6);
-  --dial-plate-top: calc(var(--chrome-top) + 0.75rem);
+  /* Phones pin the heading under the top bar, in a band of this height. */
+  --dial-title-band: 2.5rem;
+  --dial-plate-top: calc(var(--chrome-top) + var(--dial-title-band));
   --dial-window-top: calc(var(--dial-plate-top) + var(--dial-plate-h) + 2.75rem);
   --dial-window-bottom: calc(100svh - var(--dock-clearance));
   /* Phones read just under the plate; the rows to come wait below. */
@@ -2786,8 +2788,48 @@ html:active-view-transition-type(work-open) .dock {
   }
 }
 
-.work-dial-header {
-  padding-top: calc(var(--chrome-top) + 1.5rem);
+/* Phones: the heading, set small, sticks under the top bar for the whole
+   list, the plate below it; the lead scrolls away under the plate's band.
+   `display: contents` lets the heading stick to the dial rather than to its
+   own short wrapper. */
+@media (width < 64rem) {
+  .work-dial {
+    /* From the pinned heading's foot to the viewport's. */
+    --dial-title-release: calc(100svh - var(--chrome-top) - var(--dial-title-band));
+    padding-top: var(--chrome-top);
+  }
+
+  .work-dial-header,
+  .work-dial-heading {
+    display: contents;
+  }
+
+  /* The heading lets go as the plate does: its bottom margin reaches the
+     viewport's foot, so it leaves the dial with the stage. The next box's
+     negative margin collapses with it back to the usual gap. */
+  .work-dial-heading h1 {
+    margin-bottom: var(--dial-title-release);
+    position: sticky;
+    z-index: 20;
+    top: var(--chrome-top);
+    height: var(--dial-title-band);
+    align-items: center;
+    margin-inline: calc(-1 * var(--spacing-gutter));
+    padding-inline: var(--spacing-gutter);
+    background: var(--background);
+    /* Covers the top bar's strip too, so the plate and the page after the
+       dial pass under the heading rather than above it. */
+    box-shadow: 0 calc(-1 * var(--chrome-top)) 0 var(--background);
+    font-size: 1.5rem;
+  }
+
+  .work-dial-heading .work-dial-lead {
+    margin-top: calc(0.75rem - var(--dial-title-release));
+  }
+
+  .work-dial:not(:has(.work-dial-lead)) .work-dial-stage {
+    margin-top: calc(-1 * var(--dial-title-release));
+  }
 }
 
 .work-dial-lead {
@@ -2893,15 +2935,7 @@ html:active-view-transition-type(work-open) .dock {
   position: relative;
   margin-top: -100svh;
   padding-top: calc(var(--dial-focus) - var(--dial-row) / 2);
-  /* Room for the last row to reach the centre line, and no more: phones stop
-     at the window's foot, above the dock. */
-  padding-bottom: calc(var(--dial-window-bottom) - var(--dial-focus) - var(--dial-row) / 2);
-}
-
-@media (min-width: 64rem) {
-  .work-dial-list {
-    padding-bottom: calc(100svh - var(--dial-focus) - var(--dial-row) / 2);
-  }
+  padding-bottom: calc(100svh - var(--dial-focus) - var(--dial-row) / 2);
 }
 
 .work-dial-row {
