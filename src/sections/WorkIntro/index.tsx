@@ -1,12 +1,14 @@
 import type React from 'react'
+import { BlockGrid } from '@/blocks/shared/grid'
+import { Section } from '@/blocks/shared/section'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import type { WorkIntro as WorkIntroData } from '@/payload-types'
-import { WorkIntroSection } from './Section.client'
+import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 
 type Props = {
-  eyebrow?: WorkIntroData['eyebrow']
-  title: WorkIntroData['title']
+  /** Names the band for assistive tech; not shown (Paper, "Work Intro"). */
+  title?: WorkIntroData['title']
   /** The authored introduction copy; wins over `summary`. */
   body?: WorkIntroData['body']
   /** Canonical summary from the Content Hub. Blank lines split paragraphs. */
@@ -14,25 +16,23 @@ type Props = {
 }
 
 /**
- * Full-screen introduction band placed right after the hero of a page that
- * presents a Content Hub record (Work and Lab Pages): statement title on the
- * left, eyebrow plus the canonical summary offset on the right. All type is
- * regular weight by design.
+ * The introduction band after the hero of a Work or Post (Paper, "Work
+ * Intro"): one statement on five composition columns. The eyebrow is hidden
+ * and the title screen-reader only, both kept in the CMS for later.
+ *
+ * The top is trimmed against the hero's own 6rem foot so the statement sits
+ * as far from the hero as from the next normal band (8rem phone, 12rem md).
  */
-export const WorkIntro: React.FC<Props> = ({ eyebrow, title, body, summary }) => (
-  <WorkIntroSection>
-    <Container width="default" className="grid gap-8 md:grid-cols-2 lg:grid-cols-12">
-      <h2 className="max-w-xl text-heading-2 text-balance lg:col-span-5" data-intro-title>
-        {title}
-      </h2>
-      <div className="flex flex-col gap-8 pt-20 md:pt-32 lg:col-span-5 lg:col-start-8 lg:pt-20">
-        {eyebrow ? (
-          <p className="text-base/none font-normal" data-intro-eyebrow>
-            {eyebrow}
-          </p>
-        ) : null}
-        {body || summary ? (
-          <div className="max-w-lg text-lead [&_p+p]:mt-6" data-intro-body>
+export const WorkIntro: React.FC<Props> = ({ title, body, summary }) => (
+  <ScrollReveal as="div" variant="intro">
+    <Section className="pt-8 md:pt-24">
+      <Container>
+        {title ? <h2 className="sr-only">{title}</h2> : null}
+        <BlockGrid>
+          <div
+            className="text-heading-2/snug tracking-normal md:col-span-6 lg:col-span-5 [&_p+p]:mt-6"
+            data-reveal
+          >
             {body ? (
               <RichText data={body} enableGutter={false} enableProse={false} />
             ) : (
@@ -41,8 +41,8 @@ export const WorkIntro: React.FC<Props> = ({ eyebrow, title, body, summary }) =>
                 .map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)
             )}
           </div>
-        ) : null}
-      </div>
-    </Container>
-  </WorkIntroSection>
+        </BlockGrid>
+      </Container>
+    </Section>
+  </ScrollReveal>
 )

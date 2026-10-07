@@ -85,9 +85,7 @@ export default async function Post({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
       <PageClient post={post} />
       {post.hero && <RenderHero {...post.hero} />}
-      {post.intro?.title && (
-        <WorkIntro body={post.intro.body} eyebrow={post.intro.eyebrow} title={post.intro.title} />
-      )}
+      {post.intro?.body && <WorkIntro body={post.intro.body} title={post.intro.title} />}
 
       <PostBody post={post} />
       {/* Composition (docs/composer-roadmap.md, Phase 3): Sections after the

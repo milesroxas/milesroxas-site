@@ -57,20 +57,6 @@ export const STACK_SPACING = {
 } as const
 
 /**
- * Full-viewport band for **page-level** sections that centre one piece of
- * content — the home statement, the work intro, the footer closing.
- *
- * Composition blocks do not use this: an editor stacking blocks in the
- * Composition tab gets the shared rhythm, never a forced screenful each.
- * A block only fills the viewport when its own design is a pinned scroll
- * shell (featured work, industry work), and that shell owns the height.
- */
-export const fullViewportSectionClassName = cn(
-  'flex min-h-svh flex-col justify-center overflow-clip',
-  BAND_SPACING.normal,
-)
-
-/**
  * The composition band: the single shell every block renders as its root.
  * Owns the vertical rhythm and the surface, nothing else.
  *

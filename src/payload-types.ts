@@ -717,22 +717,22 @@ export interface PlacedVisualConfig {
   posterMedia?: (number | null) | Media;
 }
 /**
- * Full-screen introduction band rendered right after the hero. Shown when it has a title.
+ * Introduction band rendered right after the hero. Shown when it has a body.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "WorkIntro".
  */
 export interface WorkIntro {
   /**
-   * Short label above the introduction copy, e.g. "Introduction".
+   * Short label for the introduction. Not shown on the site for now.
    */
   eyebrow?: string | null;
   /**
-   * Statement headline for the section.
+   * Names the section for screen readers. Not shown on the site.
    */
   title?: string | null;
   /**
-   * The introduction copy, offset beside the title.
+   * The introduction statement.
    */
   body?: {
     root: {

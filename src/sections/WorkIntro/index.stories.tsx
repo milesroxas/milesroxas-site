@@ -3,7 +3,7 @@ import { richTextFixture } from '@/shared/testing/richTextFixture'
 import { WorkIntro } from './index'
 
 const summary =
-  'We connected solutions to the relevant products, services, languages, and industries.\n\nVisitors gained a clearer path through the platform while retaining access to the technical depth they needed.'
+  'NextStreet is a platform that enables organizations and municipalities to support small business growth through advising, capital access, and structured programs.'
 
 const meta = {
   title: 'Sections/WorkIntro',
@@ -14,8 +14,7 @@ const meta = {
     chromatic: { prefersReducedMotion: 'reduce' },
   },
   args: {
-    eyebrow: 'Introduction',
-    title: 'Technical depth was never the problem',
+    title: 'Background',
     summary,
   },
 } satisfies Meta<typeof WorkIntro>
@@ -33,10 +32,8 @@ export const WithOverrideBody: Story = {
   },
 }
 
-export const WithoutEyebrow: Story = {
-  args: { eyebrow: null },
-}
-
-export const TitleOnly: Story = {
-  args: { summary: null },
+export const TwoParagraphs: Story = {
+  args: {
+    summary: `${summary}\n\nVisitors gained a clearer path through the platform while retaining access to the technical depth they needed.`,
+  },
 }
