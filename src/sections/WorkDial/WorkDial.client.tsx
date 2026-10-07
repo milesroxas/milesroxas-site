@@ -21,7 +21,13 @@ const DIAL = {
   spread: 0.5,
   /** Ink and size a row falls to away from the centre. */
   ink: 0.2,
-  scale: 0.7,
+  scale: 0.55,
+  /**
+   * Rows sit closer on screen than in the scroll: each row takes a long
+   * stretch of scroll, so a flick does not skip past it, but the dial still
+   * shows its neighbours.
+   */
+  pack: 0.72,
   /** Degrees a row at the edge has turned away, like a drum. */
   tilt: 18,
   /** The drum's half-turn in radians: rows near the centre spread apart, rows at the edge gather. */
@@ -124,13 +130,13 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     if (!list || !frame || !line) return
     const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-dial-row]'))
     const last = Math.max(rows.length - 1, 0)
-    const fine = matchMedia('(pointer: fine)')
     const reduced = matchMedia('(prefers-reduced-motion: reduce)')
     // From the centre line to the window's edge, above and below: equal on
     // desktop, short above on phones where rows leave under the plate.
     const reach = { above: 1, below: 1 }
     let current = 0
     let settleTimer: ReturnType<typeof setTimeout> | undefined
+    let touching = false
 
     const update = () => {
       const { listTop, row } = geometry.current
@@ -139,13 +145,14 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
       rows.forEach((el, i) => {
         const offset = (i - position) * row
         const reachSide = offset < 0 ? reach.above : reach.below
-        const distance = offset / reachSide
+        const distance = (offset * DIAL.pack) / reachSide
         const u = Math.abs(distance)
         const side = Math.sign(distance)
         const fall = 1 - Math.exp(-((u / DIAL.spread) ** 2))
         // On the drum, a row's height on screen follows the sine of its turn.
-        const turned = Math.sin(Math.min(u, 1) * DIAL.bulge) / Math.sin(DIAL.bulge)
-        const shift = side * (turned - Math.min(u, 1)) * reachSide
+        const turned =
+          Math.sin(Math.min(u, 1) * DIAL.bulge) / Math.sin(DIAL.bulge) + Math.max(u - 1, 0)
+        const shift = side * turned * reachSide - offset
         const ink = (1 - (1 - DIAL.ink) * fall) * (1 - smoothstep(DIAL.fadeFrom, 1, u))
         el.style.setProperty('--dial-o', ink.toFixed(3))
         el.style.setProperty(
@@ -166,15 +173,25 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     }
 
     const settle = () => {
-      if (!lenis || !fine.matches || reduced.matches || openingRef.current) return
+      if (touching || reduced.matches || openingRef.current) return
       const raw = (scrollY - geometry.current.listTop) / geometry.current.row
       if (raw <= 0 || raw >= last) return
       const nearest = Math.round(raw)
       if (Math.abs(raw - nearest) < 0.01) return
-      lenis.scrollTo(restingScroll(geometry.current, nearest), {
-        duration: DIAL.settle,
-        easing: easeOutQuart,
-      })
+      const top = restingScroll(geometry.current, nearest)
+      if (lenis) lenis.scrollTo(top, { duration: DIAL.settle, easing: easeOutQuart })
+      else scrollTo({ top, behavior: 'smooth' })
+    }
+
+    // A finger resting on the glass is still reading: settle once it lifts.
+    const onTouchStart = () => {
+      touching = true
+      clearTimeout(settleTimer)
+    }
+    const onTouchEnd = () => {
+      touching = false
+      clearTimeout(settleTimer)
+      settleTimer = setTimeout(settle, DIAL.settleAfter)
     }
 
     const onScroll = () => {
@@ -198,9 +215,15 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     resize.observe(list)
     resize.observe(frame)
     addEventListener('scroll', onScroll, { passive: true })
+    addEventListener('touchstart', onTouchStart, { passive: true })
+    addEventListener('touchend', onTouchEnd, { passive: true })
+    addEventListener('touchcancel', onTouchEnd, { passive: true })
     return () => {
       resize.disconnect()
       removeEventListener('scroll', onScroll)
+      removeEventListener('touchstart', onTouchStart)
+      removeEventListener('touchend', onTouchEnd)
+      removeEventListener('touchcancel', onTouchEnd)
       clearTimeout(settleTimer)
     }
   }, [lenis, scrub])

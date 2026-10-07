@@ -2685,7 +2685,7 @@ html:active-view-transition-type(work-open) .dock {
    plate. Phones pin the plate under the top bar and read each row just
    beneath it, the rows to come below. */
 .work-dial {
-  --dial-row: 8rem;
+  --dial-row: 11rem;
   --dial-gap: 3rem;
   --dial-plate-w: calc(100vw - 2 * var(--spacing-gutter));
   --dial-plate-h: calc(var(--dial-plate-w) / 1.6);
@@ -2701,7 +2701,7 @@ html:active-view-transition-type(work-open) .dock {
 
 @media (min-width: 64rem) {
   .work-dial {
-    --dial-row: 10rem;
+    --dial-row: 14rem;
     --dial-plate-w: min(41.25vw, (100svh - var(--chrome-top) - var(--dock-clearance) - 6rem) * 1.6);
     --dial-window-top: var(--chrome-top);
     --dial-focus: calc((var(--dial-window-top) + var(--dial-window-bottom)) / 2);
@@ -2867,7 +2867,7 @@ html:active-view-transition-type(work-open) .dock {
 
 .work-dial-title {
   max-width: 22ch;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   line-height: 1.2;
   letter-spacing: -0.015em;
   text-wrap: balance;
@@ -2875,7 +2875,7 @@ html:active-view-transition-type(work-open) .dock {
 
 @media (min-width: 64rem) {
   .work-dial-title {
-    font-size: 1.75rem;
+    font-size: 2rem;
     line-height: 1.15;
     letter-spacing: -0.02em;
   }
