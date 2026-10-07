@@ -5,10 +5,12 @@ import type React from 'react'
 import { Badge } from '@/components/ui/badge'
 import type { Post } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
+import { DEFAULT_PUBLISHER, isExternalPost } from '@/utilities/externalArticle'
 import { cn } from '@/utilities/ui'
 import { type CardAspect, CardImage, useCardLink } from '../shared'
 
-export type CardPostData = Pick<Post, 'slug' | 'meta' | 'title' | 'hero'>
+export type CardPostData = Pick<Post, 'slug' | 'meta' | 'title' | 'hero'> &
+  Partial<Pick<Post, 'source' | 'external'>>
 
 interface PostCardProps {
   className?: string
@@ -30,6 +32,8 @@ export const PostCard: React.FC<PostCardProps> = ({
   imageRef: imageRefProp,
 }) => {
   const { slug, meta, title, hero } = doc || {}
+  // The card reads the publisher only; the URL stays with the post page.
+  const publisher = isExternalPost(doc) ? doc?.external?.publisher || DEFAULT_PUBLISHER : null
   const description = meta?.description
   const sanitizedDescription = description?.replace(/\s+/g, ' ')
   const href = `/${relationTo}/${slug}`
@@ -48,6 +52,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             </Badge>
           </div>
         )}
+        {publisher && <p className="mt-1 text-muted-foreground text-sm">On {publisher}</p>}
       </Link>
       {description && (
         <div className="mt-2">

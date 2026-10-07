@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { postCardData } from '@/stories/fixtures'
+import { externalPostCardData, postCardData } from '@/stories/fixtures'
 import { PostCard } from './Component'
 
 const meta = {
@@ -40,6 +40,10 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
+
+export const External: Story = {
+  args: { doc: externalPostCardData },
+}
 
 export const Portrait: Story = {
   args: { aspect: 'portrait' },

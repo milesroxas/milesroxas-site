@@ -59,7 +59,8 @@ const SURFACE_NOTES: Record<string, string> = {
   pages: 'The home page is the one with slug `home`.',
   works:
     'Case studies of client and personal work. `isProtected` hides a work behind an access link: treat it as confidential and never quote it in public copy. `fallbackWork` is the public work shown in its place.',
-  posts: 'Long-form writing. The body is `content` (rich text); `layout` holds extra blocks.',
+  posts:
+    'Long-form writing. The body is `content` (rich text); `layout` holds extra blocks. `source: external` is an article published elsewhere: `external.url` (https) is the original, `intro.body` is the note that introduces it, and `content`/`layout` stay empty because the page links out instead.',
 }
 
 /** Site plumbing behind the published pages. */

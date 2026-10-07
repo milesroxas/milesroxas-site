@@ -11,7 +11,9 @@ import RichText from '@/components/RichText/Legacy'
 import { ContentsButton } from '@/features/contents'
 import { RenderHero } from '@/heros/RenderHero'
 import type { Post as PostDoc } from '@/payload-types'
+import { ExternalArticle } from '@/sections/ExternalArticle'
 import { WorkIntro } from '@/sections/WorkIntro'
+import { externalArticle } from '@/utilities/externalArticle'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
@@ -77,6 +79,9 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   if (!post) return <PayloadRedirects url={url} />
 
+  // An external post keeps any body it had before it was switched; only the link out renders.
+  const external = externalArticle(post)
+
   return (
     <article className="bg-tertiary pt-24 pb-12 text-tertiary-foreground md:pt-0 md:pb-32">
       {/* Allows redirects for valid pages too */}
@@ -87,12 +92,18 @@ export default async function Post({ params: paramsPromise }: Args) {
       {post.hero && <RenderHero {...post.hero} />}
       {post.intro?.body && <WorkIntro body={post.intro.body} title={post.intro.title} />}
 
-      <PostBody post={post} />
-      {/* Composition (docs/composer-roadmap.md, Phase 3): Sections after the
-          article body. Each band paints its own surface. */}
-      <RenderBlocks blocks={post.layout} />
+      {external ? (
+        <ExternalArticle {...external} />
+      ) : (
+        <>
+          <PostBody post={post} />
+          {/* Composition (docs/composer-roadmap.md, Phase 3): Sections after the
+              article body. Each band paints its own surface. */}
+          <RenderBlocks blocks={post.layout} />
+        </>
+      )}
       <MorePosts post={post} />
-      {post.showContents && <ContentsButton />}
+      {!external && post.showContents && <ContentsButton />}
     </article>
   )
 }

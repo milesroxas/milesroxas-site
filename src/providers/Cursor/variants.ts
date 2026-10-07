@@ -1,6 +1,7 @@
 /** Every cursor label. A variant exists only by being listed here. */
 export const CURSOR_LABELS = {
   view: 'View',
+  read: 'Read',
   drag: 'Drag',
 } as const
 

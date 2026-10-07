@@ -100,6 +100,23 @@ export const postCardData: CardPostData = {
       'How motion design decisions shape the feel of an interface, and where to draw the line between delight and distraction.',
     image: imageMedia,
   },
+  source: 'internal',
+}
+
+/** A post written elsewhere: the card names the publisher, the page links out. */
+export const externalPostCardData: CardPostData = {
+  slug: 'the-lab-journal',
+  title: 'The lab journal',
+  hero: {
+    type: 'highImpact',
+    media: imageMedia,
+  },
+  meta: {
+    description: 'A journal that keeps the decisions behind work made with AI agents.',
+    image: imageMedia,
+  },
+  source: 'external',
+  external: { publisher: 'Suits & Sandals' },
 }
 
 export const workCardData: CardWorkData = {

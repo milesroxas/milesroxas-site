@@ -2,6 +2,7 @@ import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
+import { postCardSelect } from '@/collections/Posts/cardSelect'
 
 import PostsClient from './page.client'
 
@@ -16,13 +17,7 @@ const getPosts = unstable_cache(
       depth: 1,
       limit: 12,
       overrideAccess: false,
-      select: {
-        title: true,
-        slug: true,
-        categories: true,
-        meta: true,
-        hero: true,
-      },
+      select: postCardSelect,
     })
 
     return posts

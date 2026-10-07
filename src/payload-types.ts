@@ -305,6 +305,13 @@ export interface Page {
 export interface Post {
   id: number;
   title: string;
+  external?: {
+    url?: string | null;
+    /**
+     * The site the link names.
+     */
+    publisher?: string | null;
+  };
   hero: {
     type: 'none' | 'home' | 'highImpact' | 'mediumImpact' | 'lowImpact';
     showContent?: boolean | null;
@@ -420,6 +427,10 @@ export interface Post {
      */
     noIndex?: boolean | null;
   };
+  /**
+   * Where the article is read. Elsewhere: the post introduces it with the Opening intro and links out.
+   */
+  source: 'internal' | 'external';
   publishedAt?: string | null;
   authors?: (number | User)[] | null;
   populatedAuthors?:
@@ -6626,6 +6637,12 @@ export interface MediaBlockSelect<T extends boolean = true> {
  */
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
+  external?:
+    | T
+    | {
+        url?: T;
+        publisher?: T;
+      };
   hero?:
     | T
     | {
@@ -6690,6 +6707,7 @@ export interface PostsSelect<T extends boolean = true> {
         description?: T;
         noIndex?: T;
       };
+  source?: T;
   publishedAt?: T;
   authors?: T;
   populatedAuthors?:

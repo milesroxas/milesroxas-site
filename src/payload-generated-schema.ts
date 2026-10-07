@@ -296,6 +296,10 @@ export const enum_pages_blocks_carousel_tabs_text_size = pgEnum(
   "enum_pages_blocks_carousel_tabs_text_size",
   ["small", "large"],
 );
+export const enum_pages_blocks_carousel_tabs_deck_style = pgEnum(
+  "enum_pages_blocks_carousel_tabs_deck_style",
+  ["coverflow", "stack"],
+);
 export const enum_pages_blocks_carousel_tabs_slide_size = pgEnum(
   "enum_pages_blocks_carousel_tabs_slide_size",
   ["full", "half", "third"],
@@ -849,6 +853,10 @@ export const enum__pages_v_blocks_carousel_theme = pgEnum(
 export const enum__pages_v_blocks_carousel_tabs_text_size = pgEnum(
   "enum__pages_v_blocks_carousel_tabs_text_size",
   ["small", "large"],
+);
+export const enum__pages_v_blocks_carousel_tabs_deck_style = pgEnum(
+  "enum__pages_v_blocks_carousel_tabs_deck_style",
+  ["coverflow", "stack"],
 );
 export const enum__pages_v_blocks_carousel_tabs_slide_size = pgEnum(
   "enum__pages_v_blocks_carousel_tabs_slide_size",
@@ -1421,6 +1429,10 @@ export const enum_posts_blocks_carousel_tabs_text_size = pgEnum(
   "enum_posts_blocks_carousel_tabs_text_size",
   ["small", "large"],
 );
+export const enum_posts_blocks_carousel_tabs_deck_style = pgEnum(
+  "enum_posts_blocks_carousel_tabs_deck_style",
+  ["coverflow", "stack"],
+);
 export const enum_posts_blocks_carousel_tabs_slide_size = pgEnum(
   "enum_posts_blocks_carousel_tabs_slide_size",
   ["full", "half", "third"],
@@ -1621,6 +1633,10 @@ export const enum_posts_hero_shader_origin = pgEnum(
   "enum_posts_hero_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum_posts_source = pgEnum("enum_posts_source", [
+  "internal",
+  "external",
+]);
 export const enum_posts_status = pgEnum("enum_posts_status", [
   "draft",
   "published",
@@ -1867,6 +1883,10 @@ export const enum__posts_v_blocks_carousel_tabs_text_size = pgEnum(
   "enum__posts_v_blocks_carousel_tabs_text_size",
   ["small", "large"],
 );
+export const enum__posts_v_blocks_carousel_tabs_deck_style = pgEnum(
+  "enum__posts_v_blocks_carousel_tabs_deck_style",
+  ["coverflow", "stack"],
+);
 export const enum__posts_v_blocks_carousel_tabs_slide_size = pgEnum(
   "enum__posts_v_blocks_carousel_tabs_slide_size",
   ["full", "half", "third"],
@@ -2062,6 +2082,10 @@ export const enum__posts_v_version_hero_visual_type = pgEnum(
 export const enum__posts_v_version_hero_shader_origin = pgEnum(
   "enum__posts_v_version_hero_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum__posts_v_version_source = pgEnum(
+  "enum__posts_v_version_source",
+  ["internal", "external"],
 );
 export const enum__posts_v_version_status = pgEnum(
   "enum__posts_v_version_status",
@@ -2321,6 +2345,10 @@ export const enum_works_blocks_carousel_theme = pgEnum(
 export const enum_works_blocks_carousel_tabs_text_size = pgEnum(
   "enum_works_blocks_carousel_tabs_text_size",
   ["small", "large"],
+);
+export const enum_works_blocks_carousel_tabs_deck_style = pgEnum(
+  "enum_works_blocks_carousel_tabs_deck_style",
+  ["coverflow", "stack"],
 );
 export const enum_works_blocks_carousel_tabs_slide_size = pgEnum(
   "enum_works_blocks_carousel_tabs_slide_size",
@@ -2893,6 +2921,10 @@ export const enum__works_v_blocks_carousel_tabs_text_size = pgEnum(
   "enum__works_v_blocks_carousel_tabs_text_size",
   ["small", "large"],
 );
+export const enum__works_v_blocks_carousel_tabs_deck_style = pgEnum(
+  "enum__works_v_blocks_carousel_tabs_deck_style",
+  ["coverflow", "stack"],
+);
 export const enum__works_v_blocks_carousel_tabs_slide_size = pgEnum(
   "enum__works_v_blocks_carousel_tabs_slide_size",
   ["full", "half", "third"],
@@ -3333,6 +3365,14 @@ export const enum_payload_folders_folder_type = pgEnum(
 export const enum_header_nav_items_link_type = pgEnum(
   "enum_header_nav_items_link_type",
   ["reference", "custom"],
+);
+export const enum_works_index_status = pgEnum("enum_works_index_status", [
+  "draft",
+  "published",
+]);
+export const enum__works_index_v_version_status = pgEnum(
+  "enum__works_index_v_version_status",
+  ["draft", "published"],
 );
 
 export const pages_hero_links = pgTable(
@@ -4130,6 +4170,10 @@ export const pages_blocks_carousel_tabs = pgTable(
     body: jsonb("body"),
     textSize:
       enum_pages_blocks_carousel_tabs_text_size("text_size").default("small"),
+    deckStyle:
+      enum_pages_blocks_carousel_tabs_deck_style("deck_style").default(
+        "coverflow",
+      ),
     slideSize:
       enum_pages_blocks_carousel_tabs_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
@@ -5764,6 +5808,10 @@ export const _pages_v_blocks_carousel_tabs = pgTable(
     textSize:
       enum__pages_v_blocks_carousel_tabs_text_size("text_size").default(
         "small",
+      ),
+    deckStyle:
+      enum__pages_v_blocks_carousel_tabs_deck_style("deck_style").default(
+        "coverflow",
       ),
     slideSize:
       enum__pages_v_blocks_carousel_tabs_slide_size("slide_size").default(
@@ -7438,6 +7486,10 @@ export const posts_blocks_carousel_tabs = pgTable(
     body: jsonb("body"),
     textSize:
       enum_posts_blocks_carousel_tabs_text_size("text_size").default("small"),
+    deckStyle:
+      enum_posts_blocks_carousel_tabs_deck_style("deck_style").default(
+        "coverflow",
+      ),
     slideSize:
       enum_posts_blocks_carousel_tabs_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
@@ -7865,6 +7917,9 @@ export const posts = pgTable(
   {
     id: serial("id").primaryKey(),
     title: varchar("title"),
+    external_url: varchar("external_url"),
+    external_publisher:
+      varchar("external_publisher").default("Suits & Sandals"),
     hero_type: enum_posts_hero_type("hero_type").default("lowImpact"),
     hero_showContent: boolean("hero_show_content").default(true),
     hero_richText: jsonb("hero_rich_text"),
@@ -7916,6 +7971,7 @@ export const posts = pgTable(
     }),
     meta_description: varchar("meta_description"),
     meta_noIndex: boolean("meta_no_index").default(false),
+    source: enum_posts_source("source").default("internal"),
     publishedAt: timestamp("published_at", {
       mode: "string",
       withTimezone: true,
@@ -8860,6 +8916,10 @@ export const _posts_v_blocks_carousel_tabs = pgTable(
       enum__posts_v_blocks_carousel_tabs_text_size("text_size").default(
         "small",
       ),
+    deckStyle:
+      enum__posts_v_blocks_carousel_tabs_deck_style("deck_style").default(
+        "coverflow",
+      ),
     slideSize:
       enum__posts_v_blocks_carousel_tabs_slide_size("slide_size").default(
         "full",
@@ -9318,6 +9378,10 @@ export const _posts_v = pgTable(
       onDelete: "set null",
     }),
     version_title: varchar("version_title"),
+    version_external_url: varchar("version_external_url"),
+    version_external_publisher: varchar("version_external_publisher").default(
+      "Suits & Sandals",
+    ),
     version_hero_type:
       enum__posts_v_version_hero_type("version_hero_type").default("lowImpact"),
     version_hero_showContent: boolean("version_hero_show_content").default(
@@ -9392,6 +9456,8 @@ export const _posts_v = pgTable(
     ),
     version_meta_description: varchar("version_meta_description"),
     version_meta_noIndex: boolean("version_meta_no_index").default(false),
+    version_source:
+      enum__posts_v_version_source("version_source").default("internal"),
     version_publishedAt: timestamp("version_published_at", {
       mode: "string",
       withTimezone: true,
@@ -10280,6 +10346,10 @@ export const works_blocks_carousel_tabs = pgTable(
     body: jsonb("body"),
     textSize:
       enum_works_blocks_carousel_tabs_text_size("text_size").default("small"),
+    deckStyle:
+      enum_works_blocks_carousel_tabs_deck_style("deck_style").default(
+        "coverflow",
+      ),
     slideSize:
       enum_works_blocks_carousel_tabs_slide_size("slide_size").default("full"),
     showArrows: boolean("show_arrows").default(false),
@@ -11005,7 +11075,9 @@ export const works = pgTable(
       onDelete: "set null",
     }),
     hero_richText: jsonb("hero_rich_text"),
-    client: varchar("client"),
+    client: integer("client_id").references(() => clients.id, {
+      onDelete: "set null",
+    }),
     industry: varchar("industry"),
     role: varchar("role"),
     intro_eyebrow: varchar("intro_eyebrow"),
@@ -11052,6 +11124,7 @@ export const works = pgTable(
   (columns) => [
     index("works__order_idx").on(columns._order),
     index("works_hero_hero_media_idx").on(columns.hero_media),
+    index("works_client_idx").on(columns.client),
     index("works_fallback_work_idx").on(columns.fallbackWork),
     index("works_meta_meta_image_idx").on(columns.meta_image),
     index("works_slug_idx").on(columns.slug),
@@ -11948,6 +12021,10 @@ export const _works_v_blocks_carousel_tabs = pgTable(
       enum__works_v_blocks_carousel_tabs_text_size("text_size").default(
         "small",
       ),
+    deckStyle:
+      enum__works_v_blocks_carousel_tabs_deck_style("deck_style").default(
+        "coverflow",
+      ),
     slideSize:
       enum__works_v_blocks_carousel_tabs_slide_size("slide_size").default(
         "full",
@@ -12728,7 +12805,9 @@ export const _works_v = pgTable(
       },
     ),
     version_hero_richText: jsonb("version_hero_rich_text"),
-    version_client: varchar("version_client"),
+    version_client: integer("version_client_id").references(() => clients.id, {
+      onDelete: "set null",
+    }),
     version_industry: varchar("version_industry"),
     version_role: varchar("version_role"),
     version_intro_eyebrow: varchar("version_intro_eyebrow"),
@@ -12794,6 +12873,7 @@ export const _works_v = pgTable(
     index("_works_v_version_hero_version_hero_media_idx").on(
       columns.version_hero_media,
     ),
+    index("_works_v_version_version_client_idx").on(columns.version_client),
     index("_works_v_version_version_fallback_work_idx").on(
       columns.version_fallbackWork,
     ),
@@ -13048,6 +13128,36 @@ export const categories = pgTable(
     index("categories_parent_idx").on(columns.parent),
     index("categories_updated_at_idx").on(columns.updatedAt),
     index("categories_created_at_idx").on(columns.createdAt),
+  ],
+);
+
+export const clients = pgTable(
+  "clients",
+  {
+    id: serial("id").primaryKey(),
+    title: varchar("title").notNull(),
+    slug: varchar("slug"),
+    slugLock: boolean("slug_lock").default(true),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => [
+    uniqueIndex("clients_title_idx").on(columns.title),
+    index("clients_slug_idx").on(columns.slug),
+    index("clients_updated_at_idx").on(columns.updatedAt),
+    index("clients_created_at_idx").on(columns.createdAt),
   ],
 );
 
@@ -14087,6 +14197,10 @@ export const payload_mcp_api_keys = pgTable(
     categories_create: boolean("categories_create").default(false),
     categories_update: boolean("categories_update").default(false),
     categories_delete: boolean("categories_delete").default(false),
+    clients_find: boolean("clients_find").default(false),
+    clients_create: boolean("clients_create").default(false),
+    clients_update: boolean("clients_update").default(false),
+    clients_delete: boolean("clients_delete").default(false),
     forms_find: boolean("forms_find").default(false),
     forms_create: boolean("forms_create").default(false),
     forms_update: boolean("forms_update").default(false),
@@ -14109,6 +14223,8 @@ export const payload_mcp_api_keys = pgTable(
     header_update: boolean("header_update").default(false),
     siteInfo_find: boolean("site_info_find").default(false),
     siteInfo_update: boolean("site_info_update").default(false),
+    worksIndex_find: boolean("works_index_find").default(false),
+    worksIndex_update: boolean("works_index_update").default(false),
     "payload-mcp-tool_findContent": boolean(
       "payload_mcp_tool_find_content",
     ).default(false),
@@ -14336,6 +14452,7 @@ export const payload_locked_documents_rels = pgTable(
     worksID: integer("works_id"),
     mediaID: integer("media_id"),
     categoriesID: integer("categories_id"),
+    clientsID: integer("clients_id"),
     inquiriesID: integer("inquiries_id"),
     "ask-questionsID": integer("ask_questions_id"),
     usersID: integer("users_id"),
@@ -14358,6 +14475,7 @@ export const payload_locked_documents_rels = pgTable(
     index("payload_locked_documents_rels_categories_id_idx").on(
       columns.categoriesID,
     ),
+    index("payload_locked_documents_rels_clients_id_idx").on(columns.clientsID),
     index("payload_locked_documents_rels_inquiries_id_idx").on(
       columns.inquiriesID,
     ),
@@ -14411,6 +14529,11 @@ export const payload_locked_documents_rels = pgTable(
       columns: [columns["categoriesID"]],
       foreignColumns: [categories.id],
       name: "payload_locked_documents_rels_categories_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["clientsID"]],
+      foreignColumns: [clients.id],
+      name: "payload_locked_documents_rels_clients_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["inquiriesID"]],
@@ -14729,6 +14852,94 @@ export const contact_page = pgTable("contact_page", {
     precision: 3,
   }),
 });
+
+export const works_index = pgTable(
+  "works_index",
+  {
+    id: serial("id").primaryKey(),
+    title: varchar("title").default("Work"),
+    lead: varchar("lead"),
+    meta_title: varchar("meta_title"),
+    meta_image: integer("meta_image_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    meta_description: varchar("meta_description"),
+    meta_noIndex: boolean("meta_no_index").default(false),
+    _status: enum_works_index_status("_status").default("draft"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+  },
+  (columns) => [
+    index("works_index_meta_meta_image_idx").on(columns.meta_image),
+    index("works_index__status_idx").on(columns._status),
+  ],
+);
+
+export const _works_index_v = pgTable(
+  "_works_index_v",
+  {
+    id: serial("id").primaryKey(),
+    version_title: varchar("version_title").default("Work"),
+    version_lead: varchar("version_lead"),
+    version_meta_title: varchar("version_meta_title"),
+    version_meta_image: integer("version_meta_image_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    version_meta_description: varchar("version_meta_description"),
+    version_meta_noIndex: boolean("version_meta_no_index").default(false),
+    version__status:
+      enum__works_index_v_version_status("version__status").default("draft"),
+    version_updatedAt: timestamp("version_updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    version_createdAt: timestamp("version_created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    latest: boolean("latest"),
+    autosave: boolean("autosave"),
+  },
+  (columns) => [
+    index("_works_index_v_version_meta_version_meta_image_idx").on(
+      columns.version_meta_image,
+    ),
+    index("_works_index_v_version_version__status_idx").on(
+      columns.version__status,
+    ),
+    index("_works_index_v_created_at_idx").on(columns.createdAt),
+    index("_works_index_v_updated_at_idx").on(columns.updatedAt),
+    index("_works_index_v_latest_idx").on(columns.latest),
+    index("_works_index_v_autosave_idx").on(columns.autosave),
+  ],
+);
 
 export const payload_jobs_stats = pgTable("payload_jobs_stats", {
   id: serial("id").primaryKey(),
@@ -18058,6 +18269,11 @@ export const relations_works = relations(works, ({ one, many }) => ({
     references: [media.id],
     relationName: "hero_media",
   }),
+  client: one(clients, {
+    fields: [works.client],
+    references: [clients.id],
+    relationName: "client",
+  }),
   _blocks_richTransition: many(works_transition, {
     relationName: "_blocks_richTransition",
   }),
@@ -18817,6 +19033,11 @@ export const relations__works_v = relations(_works_v, ({ one, many }) => ({
     references: [media.id],
     relationName: "version_hero_media",
   }),
+  version_client: one(clients, {
+    fields: [_works_v.version_client],
+    references: [clients.id],
+    relationName: "version_client",
+  }),
   _blocks_richTransition: many(__works_v_transition_v, {
     relationName: "_blocks_richTransition",
   }),
@@ -18950,6 +19171,7 @@ export const relations_categories = relations(categories, ({ one, many }) => ({
     relationName: "breadcrumbs",
   }),
 }));
+export const relations_clients = relations(clients, () => ({}));
 export const relations_inquiries_notes = relations(
   inquiries_notes,
   ({ one }) => ({
@@ -19444,6 +19666,11 @@ export const relations_payload_locked_documents_rels = relations(
       references: [categories.id],
       relationName: "categories",
     }),
+    clientsID: one(clients, {
+      fields: [payload_locked_documents_rels.clientsID],
+      references: [clients.id],
+      relationName: "clients",
+    }),
     inquiriesID: one(inquiries, {
       fields: [payload_locked_documents_rels.inquiriesID],
       references: [inquiries.id],
@@ -19600,6 +19827,23 @@ export const relations_site_info = relations(site_info, ({ many }) => ({
   }),
 }));
 export const relations_contact_page = relations(contact_page, () => ({}));
+export const relations_works_index = relations(works_index, ({ one }) => ({
+  meta_image: one(media, {
+    fields: [works_index.meta_image],
+    references: [media.id],
+    relationName: "meta_image",
+  }),
+}));
+export const relations__works_index_v = relations(
+  _works_index_v,
+  ({ one }) => ({
+    version_meta_image: one(media, {
+      fields: [_works_index_v.version_meta_image],
+      references: [media.id],
+      relationName: "version_meta_image",
+    }),
+  }),
+);
 export const relations_payload_jobs_stats = relations(
   payload_jobs_stats,
   () => ({}),
@@ -19668,6 +19912,7 @@ type DatabaseSchema = {
   enum_pages_blocks_carousel_slide_size: typeof enum_pages_blocks_carousel_slide_size;
   enum_pages_blocks_carousel_theme: typeof enum_pages_blocks_carousel_theme;
   enum_pages_blocks_carousel_tabs_text_size: typeof enum_pages_blocks_carousel_tabs_text_size;
+  enum_pages_blocks_carousel_tabs_deck_style: typeof enum_pages_blocks_carousel_tabs_deck_style;
   enum_pages_blocks_carousel_tabs_slide_size: typeof enum_pages_blocks_carousel_tabs_slide_size;
   enum_pages_blocks_carousel_tabs_tab_size: typeof enum_pages_blocks_carousel_tabs_tab_size;
   enum_pages_blocks_carousel_tabs_theme: typeof enum_pages_blocks_carousel_tabs_theme;
@@ -19803,6 +20048,7 @@ type DatabaseSchema = {
   enum__pages_v_blocks_carousel_slide_size: typeof enum__pages_v_blocks_carousel_slide_size;
   enum__pages_v_blocks_carousel_theme: typeof enum__pages_v_blocks_carousel_theme;
   enum__pages_v_blocks_carousel_tabs_text_size: typeof enum__pages_v_blocks_carousel_tabs_text_size;
+  enum__pages_v_blocks_carousel_tabs_deck_style: typeof enum__pages_v_blocks_carousel_tabs_deck_style;
   enum__pages_v_blocks_carousel_tabs_slide_size: typeof enum__pages_v_blocks_carousel_tabs_slide_size;
   enum__pages_v_blocks_carousel_tabs_tab_size: typeof enum__pages_v_blocks_carousel_tabs_tab_size;
   enum__pages_v_blocks_carousel_tabs_theme: typeof enum__pages_v_blocks_carousel_tabs_theme;
@@ -19938,6 +20184,7 @@ type DatabaseSchema = {
   enum_posts_blocks_carousel_slide_size: typeof enum_posts_blocks_carousel_slide_size;
   enum_posts_blocks_carousel_theme: typeof enum_posts_blocks_carousel_theme;
   enum_posts_blocks_carousel_tabs_text_size: typeof enum_posts_blocks_carousel_tabs_text_size;
+  enum_posts_blocks_carousel_tabs_deck_style: typeof enum_posts_blocks_carousel_tabs_deck_style;
   enum_posts_blocks_carousel_tabs_slide_size: typeof enum_posts_blocks_carousel_tabs_slide_size;
   enum_posts_blocks_carousel_tabs_tab_size: typeof enum_posts_blocks_carousel_tabs_tab_size;
   enum_posts_blocks_carousel_tabs_theme: typeof enum_posts_blocks_carousel_tabs_theme;
@@ -19985,6 +20232,7 @@ type DatabaseSchema = {
   enum_posts_hero_type: typeof enum_posts_hero_type;
   enum_posts_hero_visual_type: typeof enum_posts_hero_visual_type;
   enum_posts_hero_shader_origin: typeof enum_posts_hero_shader_origin;
+  enum_posts_source: typeof enum_posts_source;
   enum_posts_status: typeof enum_posts_status;
   enum__posts_v_version_hero_links_link_type: typeof enum__posts_v_version_hero_links_link_type;
   enum__posts_v_version_hero_links_link_appearance: typeof enum__posts_v_version_hero_links_link_appearance;
@@ -20046,6 +20294,7 @@ type DatabaseSchema = {
   enum__posts_v_blocks_carousel_slide_size: typeof enum__posts_v_blocks_carousel_slide_size;
   enum__posts_v_blocks_carousel_theme: typeof enum__posts_v_blocks_carousel_theme;
   enum__posts_v_blocks_carousel_tabs_text_size: typeof enum__posts_v_blocks_carousel_tabs_text_size;
+  enum__posts_v_blocks_carousel_tabs_deck_style: typeof enum__posts_v_blocks_carousel_tabs_deck_style;
   enum__posts_v_blocks_carousel_tabs_slide_size: typeof enum__posts_v_blocks_carousel_tabs_slide_size;
   enum__posts_v_blocks_carousel_tabs_tab_size: typeof enum__posts_v_blocks_carousel_tabs_tab_size;
   enum__posts_v_blocks_carousel_tabs_theme: typeof enum__posts_v_blocks_carousel_tabs_theme;
@@ -20093,6 +20342,7 @@ type DatabaseSchema = {
   enum__posts_v_version_hero_type: typeof enum__posts_v_version_hero_type;
   enum__posts_v_version_hero_visual_type: typeof enum__posts_v_version_hero_visual_type;
   enum__posts_v_version_hero_shader_origin: typeof enum__posts_v_version_hero_shader_origin;
+  enum__posts_v_version_source: typeof enum__posts_v_version_source;
   enum__posts_v_version_status: typeof enum__posts_v_version_status;
   enum_works_transition_layout: typeof enum_works_transition_layout;
   enum_works_transition_text_size: typeof enum_works_transition_text_size;
@@ -20152,6 +20402,7 @@ type DatabaseSchema = {
   enum_works_blocks_carousel_slide_size: typeof enum_works_blocks_carousel_slide_size;
   enum_works_blocks_carousel_theme: typeof enum_works_blocks_carousel_theme;
   enum_works_blocks_carousel_tabs_text_size: typeof enum_works_blocks_carousel_tabs_text_size;
+  enum_works_blocks_carousel_tabs_deck_style: typeof enum_works_blocks_carousel_tabs_deck_style;
   enum_works_blocks_carousel_tabs_slide_size: typeof enum_works_blocks_carousel_tabs_slide_size;
   enum_works_blocks_carousel_tabs_tab_size: typeof enum_works_blocks_carousel_tabs_tab_size;
   enum_works_blocks_carousel_tabs_theme: typeof enum_works_blocks_carousel_tabs_theme;
@@ -20292,6 +20543,7 @@ type DatabaseSchema = {
   enum__works_v_blocks_carousel_slide_size: typeof enum__works_v_blocks_carousel_slide_size;
   enum__works_v_blocks_carousel_theme: typeof enum__works_v_blocks_carousel_theme;
   enum__works_v_blocks_carousel_tabs_text_size: typeof enum__works_v_blocks_carousel_tabs_text_size;
+  enum__works_v_blocks_carousel_tabs_deck_style: typeof enum__works_v_blocks_carousel_tabs_deck_style;
   enum__works_v_blocks_carousel_tabs_slide_size: typeof enum__works_v_blocks_carousel_tabs_slide_size;
   enum__works_v_blocks_carousel_tabs_tab_size: typeof enum__works_v_blocks_carousel_tabs_tab_size;
   enum__works_v_blocks_carousel_tabs_theme: typeof enum__works_v_blocks_carousel_tabs_theme;
@@ -20395,6 +20647,8 @@ type DatabaseSchema = {
   enum_payload_jobs_task_slug: typeof enum_payload_jobs_task_slug;
   enum_payload_folders_folder_type: typeof enum_payload_folders_folder_type;
   enum_header_nav_items_link_type: typeof enum_header_nav_items_link_type;
+  enum_works_index_status: typeof enum_works_index_status;
+  enum__works_index_v_version_status: typeof enum__works_index_v_version_status;
   pages_hero_links: typeof pages_hero_links;
   pages_transition: typeof pages_transition;
   pages_blocks_feature_heading_offset: typeof pages_blocks_feature_heading_offset;
@@ -20646,6 +20900,7 @@ type DatabaseSchema = {
   media: typeof media;
   categories_breadcrumbs: typeof categories_breadcrumbs;
   categories: typeof categories;
+  clients: typeof clients;
   inquiries_notes: typeof inquiries_notes;
   inquiries: typeof inquiries;
   ask_questions_sources: typeof ask_questions_sources;
@@ -20694,6 +20949,8 @@ type DatabaseSchema = {
   site_info_social_profiles: typeof site_info_social_profiles;
   site_info: typeof site_info;
   contact_page: typeof contact_page;
+  works_index: typeof works_index;
+  _works_index_v: typeof _works_index_v;
   payload_jobs_stats: typeof payload_jobs_stats;
   relations_pages_hero_links: typeof relations_pages_hero_links;
   relations_pages_transition: typeof relations_pages_transition;
@@ -20946,6 +21203,7 @@ type DatabaseSchema = {
   relations_media: typeof relations_media;
   relations_categories_breadcrumbs: typeof relations_categories_breadcrumbs;
   relations_categories: typeof relations_categories;
+  relations_clients: typeof relations_clients;
   relations_inquiries_notes: typeof relations_inquiries_notes;
   relations_inquiries: typeof relations_inquiries;
   relations_ask_questions_sources: typeof relations_ask_questions_sources;
@@ -20994,6 +21252,8 @@ type DatabaseSchema = {
   relations_site_info_social_profiles: typeof relations_site_info_social_profiles;
   relations_site_info: typeof relations_site_info;
   relations_contact_page: typeof relations_contact_page;
+  relations_works_index: typeof relations_works_index;
+  relations__works_index_v: typeof relations__works_index_v;
   relations_payload_jobs_stats: typeof relations_payload_jobs_stats;
 };
 

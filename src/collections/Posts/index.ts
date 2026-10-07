@@ -20,8 +20,10 @@ import { postLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
 import { heroField } from '@/heros/config'
 import { generatePreviewPath } from '@/utilities/generatePreviewPath'
+import { postCardSelect } from './cardSelect'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
+import { externalField, showsBody, sourceField } from './source'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -34,18 +36,7 @@ export const Posts: CollectionConfig<'posts'> = {
   // This config controls what's populated by default when a post is referenced
   // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property
   // Type safe if the collection slug generic is passed to `CollectionConfig` - `CollectionConfig<'posts'>
-  defaultPopulate: {
-    title: true,
-    slug: true,
-    hero: {
-      media: true,
-    },
-    categories: true,
-    meta: {
-      image: true,
-      description: true,
-    },
-  },
+  defaultPopulate: postCardSelect,
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
@@ -68,6 +59,7 @@ export const Posts: CollectionConfig<'posts'> = {
       type: 'text',
       required: true,
     },
+    externalField(),
     {
       type: 'tabs',
       tabs: [
@@ -101,6 +93,7 @@ export const Posts: CollectionConfig<'posts'> = {
             },
           ],
           label: 'Content',
+          admin: { condition: showsBody },
         },
         {
           fields: [
@@ -118,6 +111,7 @@ export const Posts: CollectionConfig<'posts'> = {
             },
           ],
           label: 'Composition',
+          admin: { condition: showsBody },
         },
         {
           fields: [
@@ -162,6 +156,7 @@ export const Posts: CollectionConfig<'posts'> = {
         seoTab(),
       ],
     },
+    sourceField(),
     {
       name: 'publishedAt',
       type: 'date',
