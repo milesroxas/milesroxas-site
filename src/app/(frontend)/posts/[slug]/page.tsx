@@ -9,7 +9,7 @@ import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import RichText from '@/components/RichText/Legacy'
 import { ContentsButton } from '@/features/contents'
-import { RenderHero } from '@/heros/RenderHero'
+import { PostHero } from '@/heros/PostHero'
 import type { Post as PostDoc } from '@/payload-types'
 import { ExternalArticle } from '@/sections/ExternalArticle'
 import { WorkIntro } from '@/sections/WorkIntro'
@@ -83,13 +83,13 @@ export default async function Post({ params: paramsPromise }: Args) {
   const external = externalArticle(post)
 
   return (
-    <article className="bg-tertiary pt-24 pb-12 text-tertiary-foreground md:pt-0 md:pb-32">
+    <article className="bg-tertiary pb-12 text-tertiary-foreground md:pb-32">
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
       {draft && <LivePreviewListener />}
-      <PageClient post={post} />
-      {post.hero && <RenderHero {...post.hero} />}
+      <PageClient />
+      <PostHero post={post} />
       {post.intro?.body && <WorkIntro body={post.intro.body} title={post.intro.title} />}
 
       {external ? (
