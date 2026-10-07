@@ -27,7 +27,7 @@ export function TopBar({ section }: { section: string | null }) {
 
   return (
     <header
-      className="chrome-top pointer-events-none fixed inset-x-0 top-0 z-40 flex h-(--chrome-top) items-center justify-between px-5 text-(--chrome-ink) md:px-8"
+      className="chrome-top pointer-events-none fixed inset-x-0 top-0 z-40 flex h-(--chrome-top) items-center justify-between text-(--chrome-ink)"
       data-chrome=""
       data-chrome-top=""
       data-theme={ground}
