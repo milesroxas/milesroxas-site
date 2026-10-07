@@ -18,7 +18,7 @@ import { createPlateScrub } from '@/sections/MoreWork/scrub'
  */
 const DIAL = {
   /** Width of the bell, in reach. */
-  spread: 0.42,
+  spread: 0.5,
   /** Ink and size a row falls to away from the centre. */
   ink: 0.2,
   scale: 0.7,
@@ -26,6 +26,9 @@ const DIAL = {
   tilt: 18,
   /** The drum's half-turn in radians: rows near the centre spread apart, rows at the edge gather. */
   bulge: 1.05,
+  /** Pixels of blur a row gathers as it leaves, from `blurFrom` along the reach to the edge. */
+  blur: 8,
+  blurFrom: 0.45,
   /** Where along the reach a row starts fading out, gone by the window's edge. */
   fadeFrom: 0.8,
   /** How long the page rests before it settles on the nearest row. */
@@ -145,6 +148,10 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
         const shift = side * (turned - Math.min(u, 1)) * reachSide
         const ink = (1 - (1 - DIAL.ink) * fall) * (1 - smoothstep(DIAL.fadeFrom, 1, u))
         el.style.setProperty('--dial-o', ink.toFixed(3))
+        el.style.setProperty(
+          '--dial-blur',
+          `${(DIAL.blur * smoothstep(DIAL.blurFrom, 1, u)).toFixed(2)}px`,
+        )
         el.style.setProperty('--dial-y', `${shift.toFixed(1)}px`)
         el.style.setProperty('--dial-scale', (1 - (1 - DIAL.scale) * fall).toFixed(4))
         el.style.setProperty('--dial-tilt', (-side * Math.min(u, 1) * DIAL.tilt).toFixed(2))
