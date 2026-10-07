@@ -48,18 +48,18 @@ export const toWorkIndexItem = (doc: WorkIndexDoc): MoreWorkItem | null =>
 
 /**
  * The works to show under a case study: the ones it names as related, in
- * the order it names them, then the latest that share one of its categories,
- * then the latest of all. Reads as an anonymous visitor (`overrideAccess:
- * false`), so drafts and protected works never surface, whoever is looking.
+ * the order it names them, then the rest in the Works collection order.
+ * Reads as an anonymous visitor (`overrideAccess: false`), so drafts and
+ * protected works never surface, whoever is looking.
  */
 export async function getMoreWork(
-  work: Pick<Work, 'id' | 'relatedWorks' | 'categories'>,
+  work: Pick<Work, 'id' | 'relatedWorks'>,
 ): Promise<MoreWorkItem[]> {
   const payload = await getPayload({ config: configPromise })
   const picked: WorkIndexDoc[] = []
   const taken = () => [work.id, ...picked.map((doc) => doc.id)]
 
-  const find = async (where?: Where, sort?: string) => {
+  const find = async (where?: Where) => {
     const limit = MORE_WORK_LIMIT - picked.length
     if (limit <= 0) return []
     const { docs } = await payload.find({
@@ -70,7 +70,7 @@ export async function getMoreWork(
       overrideAccess: false,
       pagination: false,
       select: WORK_INDEX_SELECT,
-      sort,
+      sort: '_order',
       where: { and: [...(where ? [where] : []), { id: { not_in: taken() } }] },
     })
     return docs as WorkIndexDoc[]
@@ -82,11 +82,7 @@ export async function getMoreWork(
     picked.push(...docs.sort((a, b) => relatedIds.indexOf(a.id) - relatedIds.indexOf(b.id)))
   }
 
-  const categoryIds = relationshipIds(work.categories ?? [])
-  if (categoryIds.length)
-    picked.push(...(await find({ categories: { in: categoryIds } }, '-publishedAt')))
-
-  picked.push(...(await find(undefined, '-publishedAt')))
+  picked.push(...(await find()))
 
   return picked.map(toWorkIndexItem).filter((item): item is MoreWorkItem => item !== null)
 }

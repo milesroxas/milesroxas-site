@@ -3,11 +3,7 @@ import { MoreWorkIndex } from './MoreWork.client'
 import { getMoreWork } from './query'
 
 /** The close of every case study: other works to open next. Renders nothing when there are none. */
-export async function MoreWork({
-  work,
-}: {
-  work: Pick<Work, 'id' | 'relatedWorks' | 'categories'>
-}) {
+export async function MoreWork({ work }: { work: Pick<Work, 'id' | 'relatedWorks'> }) {
   const items = await getMoreWork(work)
   return items.length > 0 ? <MoreWorkIndex items={items} /> : null
 }
