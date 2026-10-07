@@ -217,7 +217,7 @@ export interface Page {
     links?:
       | {
           link: {
-            type?: ('reference' | 'custom') | null;
+            type?: ('reference' | 'index' | 'custom') | null;
             newTab?: boolean | null;
             reference?:
               | ({
@@ -228,6 +228,7 @@ export interface Page {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            indexPage?: ('works' | 'posts' | 'contact' | 'ask') | null;
             url?: string | null;
             label: string;
             /**
@@ -333,7 +334,7 @@ export interface Post {
     links?:
       | {
           link: {
-            type?: ('reference' | 'custom') | null;
+            type?: ('reference' | 'index' | 'custom') | null;
             newTab?: boolean | null;
             reference?:
               | ({
@@ -344,6 +345,7 @@ export interface Post {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            indexPage?: ('works' | 'posts' | 'contact' | 'ask') | null;
             url?: string | null;
             label: string;
             /**
@@ -4173,7 +4175,7 @@ export interface FaqBlock {
    */
   prompt?: string | null;
   link?: {
-    type?: ('reference' | 'custom') | null;
+    type?: ('reference' | 'index' | 'custom') | null;
     newTab?: boolean | null;
     reference?:
       | ({
@@ -4184,6 +4186,7 @@ export interface FaqBlock {
           relationTo: 'posts';
           value: number | Post;
         } | null);
+    indexPage?: ('works' | 'posts' | 'contact' | 'ask') | null;
     url?: string | null;
     label: string;
   };
@@ -4451,7 +4454,7 @@ export interface ContentBlock {
           textSize?: ('sm' | 'base' | 'lg' | 'xl' | '2xl') | null;
           enableLink?: boolean | null;
           link?: {
-            type?: ('reference' | 'custom') | null;
+            type?: ('reference' | 'index' | 'custom') | null;
             newTab?: boolean | null;
             reference?:
               | ({
@@ -4462,6 +4465,7 @@ export interface ContentBlock {
                   relationTo: 'posts';
                   value: number | Post;
                 } | null);
+            indexPage?: ('works' | 'posts' | 'contact' | 'ask') | null;
             url?: string | null;
             label: string;
             /**
@@ -4933,7 +4937,7 @@ export interface CallToActionBlock {
   links?:
     | {
         link: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'index' | 'custom') | null;
           newTab?: boolean | null;
           reference?:
             | ({
@@ -4944,6 +4948,7 @@ export interface CallToActionBlock {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          indexPage?: ('works' | 'posts' | 'contact' | 'ask') | null;
           url?: string | null;
           label: string;
           /**
@@ -5884,6 +5889,7 @@ export interface PagesSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    indexPage?: T;
                     url?: T;
                     label?: T;
                     appearance?: T;
@@ -6271,6 +6277,7 @@ export interface FaqBlockSelect<T extends boolean = true> {
         type?: T;
         newTab?: T;
         reference?: T;
+        indexPage?: T;
         url?: T;
         label?: T;
       };
@@ -6418,6 +6425,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    indexPage?: T;
                     url?: T;
                     label?: T;
                     appearance?: T;
@@ -6578,6 +6586,7 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              indexPage?: T;
               url?: T;
               label?: T;
               appearance?: T;
@@ -6658,6 +6667,7 @@ export interface PostsSelect<T extends boolean = true> {
                     type?: T;
                     newTab?: T;
                     reference?: T;
+                    indexPage?: T;
                     url?: T;
                     label?: T;
                     appearance?: T;
@@ -7589,7 +7599,7 @@ export interface Header {
   navItems?:
     | {
         link: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'index' | 'custom') | null;
           newTab?: boolean | null;
           reference?:
             | ({
@@ -7600,6 +7610,7 @@ export interface Header {
                 relationTo: 'posts';
                 value: number | Post;
               } | null);
+          indexPage?: ('works' | 'posts' | 'contact' | 'ask') | null;
           url?: string | null;
           label: string;
         };
@@ -7797,6 +7808,7 @@ export interface HeaderSelect<T extends boolean = true> {
               type?: T;
               newTab?: T;
               reference?: T;
+              indexPage?: T;
               url?: T;
               label?: T;
             };
@@ -7971,7 +7983,7 @@ export interface RichTextActionsBlock {
    */
   links: {
     link: {
-      type?: ('reference' | 'custom') | null;
+      type?: ('reference' | 'index' | 'custom') | null;
       newTab?: boolean | null;
       reference?:
         | ({
@@ -7982,6 +7994,7 @@ export interface RichTextActionsBlock {
             relationTo: 'posts';
             value: number | Post;
           } | null);
+      indexPage?: ('works' | 'posts' | 'contact' | 'ask') | null;
       url?: string | null;
       label: string;
       /**

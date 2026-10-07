@@ -1,18 +1,30 @@
+/** Routes with no document behind them; an `index` link names one by key. */
+export const INDEX_PAGES = {
+  works: { label: 'Works', href: '/works' },
+  posts: { label: 'Posts', href: '/posts' },
+  contact: { label: 'Contact', href: '/contact' },
+  ask: { label: 'Ask', href: '/ask' },
+} as const
+
+export type IndexPage = keyof typeof INDEX_PAGES
+
 /**
  * Single source for the site's CMS-link URL scheme: reference links resolve
  * pages at the root and every other collection under its slug, custom links
- * pass their URL through. Shared by CMSLink and the ported blocks that reduce
+ * pass their URL through, index links resolve from INDEX_PAGES. Shared by CMSLink and the ported blocks that reduce
  * a link field to an href (FAQ, Rich text Actions).
  */
 export function resolveCmsLinkHref(link: {
-  type?: 'custom' | 'reference' | null
+  type?: 'custom' | 'reference' | 'index' | null
+  indexPage?: IndexPage | null
   reference?: {
     relationTo: string
     value: { slug?: string | null } | string | number
   } | null
   url?: string | null
 }): string | null {
-  const { type, reference, url } = link
+  const { type, indexPage, reference, url } = link
+  if (type === 'index') return indexPage ? INDEX_PAGES[indexPage].href : null
   if (type === 'reference' && typeof reference?.value === 'object' && reference.value.slug) {
     return `${reference.relationTo !== 'pages' ? `/${reference.relationTo}` : ''}/${reference.value.slug}`
   }

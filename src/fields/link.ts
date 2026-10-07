@@ -1,5 +1,6 @@
 import type { Field, GroupField } from 'payload'
 
+import { INDEX_PAGES } from '@/components/Link/resolve-href'
 import deepMerge from '@/utilities/deepMerge'
 
 export type LinkAppearances = 'default' | 'outline'
@@ -46,6 +47,10 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
                 value: 'reference',
               },
               {
+                label: 'Index page',
+                value: 'index',
+              },
+              {
                 label: 'Custom URL',
                 value: 'custom',
               },
@@ -76,6 +81,19 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       },
       label: 'Document to link to',
       relationTo: ['pages', 'posts'],
+      required: true,
+    },
+    {
+      name: 'indexPage',
+      type: 'select',
+      admin: {
+        condition: (_, siblingData) => siblingData?.type === 'index',
+      },
+      label: 'Index page to link to',
+      options: Object.entries(INDEX_PAGES).map(([value, { label, href }]) => ({
+        label: `${label} (${href})`,
+        value,
+      })),
       required: true,
     },
     {

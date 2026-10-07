@@ -3,12 +3,13 @@ import type React from 'react'
 import { Button, type ButtonProps } from '@/components/ui/legacy-button'
 import type { Page, Post } from '@/payload-types'
 import { cn } from '@/utilities/ui'
-import { resolveCmsLinkHref } from './resolve-href'
+import { type IndexPage, resolveCmsLinkHref } from './resolve-href'
 
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
   children?: React.ReactNode
   className?: string
+  indexPage?: IndexPage | null
   label?: string | null
   newTab?: boolean | null
   reference?: {
@@ -16,7 +17,7 @@ type CMSLinkType = {
     value: Page | Post | string | number
   } | null
   size?: ButtonProps['size'] | null
-  type?: 'custom' | 'reference' | null
+  type?: 'custom' | 'reference' | 'index' | null
   url?: string | null
   onClick?: (href: string) => void
 }
@@ -27,6 +28,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     appearance = 'inline',
     children,
     className,
+    indexPage,
     label,
     newTab,
     reference,
@@ -35,7 +37,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     onClick,
   } = props
 
-  const href = resolveCmsLinkHref({ type, reference, url })
+  const href = resolveCmsLinkHref({ type, indexPage, reference, url })
 
   if (!href) return null
 
