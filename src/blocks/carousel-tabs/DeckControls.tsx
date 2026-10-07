@@ -40,10 +40,13 @@ const useDeckPosition = (api: CarouselApi, count: number) => {
   return position
 }
 
-/** Row height and type: `small` is the tighter index for five or more tabs. */
+/**
+ * Row height and type: `small` is the tighter index for five or more tabs,
+ * tightened only under a fine pointer so a touch row keeps a 44px target.
+ */
 const ROW = {
   default: 'h-12 text-lg',
-  small: 'h-10 text-base',
+  small: 'h-11 text-base pointer-fine:h-10',
 } as const
 
 /**

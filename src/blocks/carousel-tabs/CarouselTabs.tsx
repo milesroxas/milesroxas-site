@@ -30,7 +30,9 @@ type Tab = NonNullable<CarouselTabsBlockData['tabs']>[number]
  *
  * Stacked below `lg` (copy, controls, deck): three columns of a tablet page
  * cannot hold a heading beside a deck, and directly above the deck the
- * controls read as its toolbar.
+ * controls read as its toolbar. The grid mounts its eight columns at `md`, so
+ * every cell spans them explicitly there; left to auto-place, each would take
+ * a single column.
  *
  * The Radix root wraps the whole grid because the strip and the panels sit in
  * different cells. Each panel is the Carousel block's component rendered
@@ -76,7 +78,7 @@ export const CarouselTabs = ({
       <Container className="overflow-x-clip">
         <TabbedRoot orientation="vertical" rows={tabs}>
           <BlockGrid className="lg:grid-rows-[auto_1fr]">
-            <div className="text-stack lg:col-span-3 lg:row-start-1">
+            <div className="text-stack md:col-span-6 lg:col-span-3 lg:row-start-1">
               <CopyStack
                 content={content}
                 eyebrow={block.eyebrow}
@@ -84,11 +86,11 @@ export const CarouselTabs = ({
                 textSize={block.textSize}
               />
             </div>
-            <div className="lg:col-span-3 lg:row-start-2 lg:self-end">
+            <div className="md:col-span-8 lg:col-span-3 lg:row-start-2 lg:self-end">
               <DeckControls api={api} rows={tabs} tabSize={block.tabSize} />
             </div>
             <TabPanels<Tab>
-              className="lg:col-span-5 lg:col-start-4 lg:row-span-2 lg:row-start-1 lg:self-end"
+              className="md:col-span-8 lg:col-span-5 lg:col-start-4 lg:row-span-2 lg:row-start-1 lg:self-end"
               panelClassName={PANEL_ENTRANCE}
               renderPanel={(tab) => (
                 <CarouselBlock
