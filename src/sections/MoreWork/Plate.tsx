@@ -16,6 +16,7 @@ import { useNearViewport } from '@/hooks/use-near-viewport'
 import { GPU_PRIORITY } from '@/lib/webgl/gpu-budget'
 import { useGpuLease } from '@/lib/webgl/use-gpu-lease'
 import { cn } from '@/utilities/ui'
+import type { PlateLook } from './plate-runtime'
 import type { MoreWorkItem } from './query'
 import type { PlateScrub } from './scrub'
 
@@ -55,12 +56,8 @@ type Props = {
   className?: string
   /** The pictures' `sizes`. */
   size?: string
-  /**
-   * CSS pixels the live layer may run past each side of the frame, so its
-   * edge can fray with the transition. While the layer shows, the DOM
-   * pictures and the frame's fill step aside so nothing draws a hard edge.
-   */
-  bleed?: number
+  /** How the live layer moves between pictures. */
+  look?: PlateLook
 }
 
 /**
@@ -81,7 +78,7 @@ export function MoreWorkPlate({
   scrub,
   className,
   size = '46vw',
-  bleed = 0,
+  look,
 }: Props) {
   const { hasGPU } = useDeviceDetection()
   const plateLayout = usePlateLayout()
@@ -96,53 +93,40 @@ export function MoreWorkPlate({
   const live = useGpuLease(id, wanted, 'plate', GPU_PRIORITY.block)
   // A canvas that yields its slot comes back blank: wait for its first frame again.
   if (!live && ready) setReady(false)
-  const canvasShown = ready && !opening
-  const frayed = bleed > 0 && canvasShown
 
   return (
     <div
       ref={ref}
-      className={cn(
-        'relative aspect-[1.6] w-full',
-        bleed > 0 ? 'overflow-visible' : 'overflow-clip',
-        !frayed && 'bg-muted',
-        className,
-      )}
+      className={cn('relative aspect-[1.6] w-full overflow-clip bg-muted', className)}
       data-slot="more-work-plate"
     >
-      {/* Transparent, not hidden: a hidden video stops painting and comes back blank. */}
-      <div className={cn('absolute inset-0 overflow-clip', frayed && 'opacity-0')}>
-        {items.map(
-          (item, i) =>
-            item.media && (
-              <div
-                key={item.id}
-                className={cn(
-                  'absolute inset-0',
-                  // Opening swaps at once: the morph carries this picture, not a crossfade.
-                  !opening && 'transition-opacity duration-(--more-work-swap) ease-[ease]',
-                  i === index ? 'opacity-100' : 'opacity-0',
-                )}
-                data-plate-layer={i}
-              >
-                <Media
-                  crossOrigin="anonymous"
-                  fill
-                  htmlElement={null}
-                  imgClassName="object-cover"
-                  resource={item.media}
-                  size={size}
-                  videoClassName="size-full object-cover"
-                />
-              </div>
-            ),
-        )}
-      </div>
+      {items.map(
+        (item, i) =>
+          item.media && (
+            <div
+              key={item.id}
+              className={cn(
+                'absolute inset-0',
+                // Opening swaps at once: the morph carries this picture, not a crossfade.
+                !opening && 'transition-opacity duration-(--more-work-swap) ease-[ease]',
+                i === index ? 'opacity-100' : 'opacity-0',
+              )}
+              data-plate-layer={i}
+            >
+              <Media
+                crossOrigin="anonymous"
+                fill
+                htmlElement={null}
+                imgClassName="object-cover"
+                resource={item.media}
+                size={size}
+                videoClassName="size-full object-cover"
+              />
+            </div>
+          ),
+      )}
       {live && (
-        <div
-          className={cn('absolute', canvasShown ? 'opacity-100' : 'opacity-0')}
-          style={{ inset: -bleed }}
-        >
+        <div className={cn('absolute inset-0', ready && !opening ? 'opacity-100' : 'opacity-0')}>
           {/* Also catches the runtime chunk failing to load. */}
           <FailureBoundary onError={handleFailure}>
             <Suspense fallback={null}>
@@ -150,8 +134,8 @@ export function MoreWorkPlate({
                 count={items.length}
                 frameRef={ref}
                 index={index}
+                look={look}
                 onFailure={handleFailure}
-                bleed={bleed}
                 onReady={handleReady}
                 scrub={scrub}
               />

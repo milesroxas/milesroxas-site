@@ -4,20 +4,13 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  type ShaderMaterial,
-  Texture,
-  Vector2,
-  Vector3,
-  VideoTexture,
-  WebGLRenderTarget,
-} from 'three'
+import { type ShaderMaterial, Texture, Vector2, VideoTexture, WebGLRenderTarget } from 'three'
 import { FailureBoundary, useCanvasFailure } from '@/features/immersive/ui/failure-boundary'
 import { signalFirstFrame } from '@/features/immersive/ui/overlay'
 import { CANVAS_RESIZE } from '@/lib/webgl/canvas-resize'
 import { ContextGuard } from '@/lib/webgl/components/context-guard'
 import { MORE_WORK_MOTION } from './motion'
-import { PLATE_FRAGMENT, PLATE_VERTEX } from './plate-shader'
+import { PLATE_FRAGMENT, PLATE_RIPPLE_FRAGMENT, PLATE_VERTEX } from './plate-shader'
 import type { PlateScrub } from './scrub'
 
 gsap.registerPlugin(CustomEase)
@@ -51,38 +44,18 @@ export const PLATE_LOOK = {
   hold: 0.2,
 } as const
 
-/**
- * A plate with a bleed lets its frame join the transition, and prints part
- * of the sweep as halftone. Without one (More work) all three stay at 0.
- */
-export const PLATE_BLEED_LOOK = {
-  /** How deep the frame's edge frays at the sweep's peak, CSS pixels. */
-  edge: 32,
-  /**
-   * How long each cell prints as halftone around its flip (a quarter of this,
-   * in band progress); half of it is the share of the fray that prints.
-   */
-  tone: 0.6,
-  /** How far the arriving picture's highlights lead its shadows. */
-  key: 0.35,
+/** The ripple look (`PLATE_RIPPLE_FRAGMENT`): kept faint, a breath of wind rather than a wave. */
+export const PLATE_RIPPLE = {
+  /** The deepest bend, as a share of the frame's height. */
+  amplitude: 0.007,
+  /** Wavelengths across the frame. */
+  waves: 1.2,
+  /** How far the slopes lighten and darken the picture. */
+  shade: 0.045,
 } as const
 
-/** The page's ink and paper as linear-free RGB (the canvas is `flat`), read from the theme. */
-function themeColors(el: HTMLElement, ink: Vector3, paper: Vector3) {
-  const context = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
-  if (!context) return
-  const style = getComputedStyle(el)
-  const read = (value: string, out: Vector3) => {
-    context.clearRect(0, 0, 1, 1)
-    context.fillStyle = '#000'
-    context.fillStyle = value.trim() || '#000'
-    context.fillRect(0, 0, 1, 1)
-    const [r, g, b] = context.getImageData(0, 0, 1, 1).data
-    out.set(r / 255, g / 255, b / 255)
-  }
-  read(style.getPropertyValue('--foreground'), ink)
-  read(style.getPropertyValue('--background'), paper)
-}
+/** `dither` sweeps through an ordered dither (More work); `ripple` bends the picture like cloth (the dial). */
+export type PlateLook = 'dither' | 'ripple'
 
 const smoothstep = (edge0: number, edge1: number, x: number) => {
   const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1)
@@ -90,7 +63,7 @@ const smoothstep = (edge0: number, edge1: number, x: number) => {
 }
 
 // Hoisted so JSX never allocates fresh objects per render.
-const GL_CONFIG = { alpha: true, antialias: false, powerPreference: 'high-performance' } as const
+const GL_CONFIG = { alpha: false, antialias: false, powerPreference: 'high-performance' } as const
 const RESIZE_OPTIONS = { ...CANVAS_RESIZE, scroll: false, debounce: 100 } as const
 const DPR: [number, number] = [1, 2]
 /** R3F writes `pointer-events: auto` on its container; the plate is never a target. */
@@ -170,10 +143,7 @@ type PlateSceneProps = {
   media: PlateMedia[]
   index: number
   scrub?: PlateScrub
-  /** CSS pixels the canvas runs past each side of the frame. */
-  bleed: number
-  /** Where the theme's ink and paper are read. */
-  themeRef: RefObject<HTMLElement | null>
+  look: PlateLook
   onFirstFrame: () => void
 }
 
@@ -184,7 +154,7 @@ type PlateSceneProps = {
  */
 type Shown = { from: number | 'snapshot'; to: number }
 
-function PlateScene({ media, index, scrub, bleed, themeRef, onFirstFrame }: PlateSceneProps) {
+function PlateScene({ media, index, scrub, look, onFirstFrame }: PlateSceneProps) {
   const size = useThree((state) => state.size)
   const gl = useThree((state) => state.gl)
   const scene = useThree((state) => state.scene)
@@ -236,36 +206,12 @@ function PlateScene({ media, index, scrub, bleed, themeRef, onFirstFrame }: Plat
       uAberration: { value: PLATE_LOOK.aberration },
       uSettle: { value: PLATE_LOOK.settle },
       uDrift: { value: PLATE_LOOK.drift },
-      uFromRaw: { value: 0 },
-      uCanvas: { value: new Vector2(1, 1) },
-      uBleed: { value: bleed },
-      uEdge: { value: bleed > 0 ? PLATE_BLEED_LOOK.edge : 0 },
-      uTone: { value: bleed > 0 ? PLATE_BLEED_LOOK.tone : 0 },
-      uKey: { value: bleed > 0 ? PLATE_BLEED_LOOK.key : 0 },
-      uInk: { value: new Vector3(0, 0, 0) },
-      uPaper: { value: new Vector3(1, 1, 1) },
+      uAmplitude: { value: PLATE_RIPPLE.amplitude },
+      uWaves: { value: PLATE_RIPPLE.waves },
+      uShade: { value: PLATE_RIPPLE.shade },
     }),
-    [textures, bleed],
+    [textures],
   )
-
-  // The halftone prints in the page's ink: follow the theme as it changes.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: new uniforms need the colours again
-  useEffect(() => {
-    const el = themeRef.current
-    const u = materialRef.current?.uniforms
-    if (!el || !u || bleed <= 0) return
-    const read = () => {
-      themeColors(el, u.uInk.value, u.uPaper.value)
-      invalidate()
-    }
-    read()
-    const observer = new MutationObserver(read)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme', 'class'],
-    })
-    return () => observer.disconnect()
-  }, [themeRef, bleed, invalidate, uniforms])
 
   /** Draws the frame as it stands into a spare target and returns it. */
   const snapshot = () => {
@@ -285,9 +231,9 @@ function PlateScene({ media, index, scrub, bleed, themeRef, onFirstFrame }: Plat
     if (!u) return
     const { from, to } = shown.current
     const aspect = u.uAspect.value
-    u.uFromRaw.value = from === 'snapshot' ? 1 : 0
     if (from === 'snapshot') {
       if (fromTexture) u.uFrom.value = fromTexture
+      u.uFromCover.value.set(1, 1)
     } else {
       u.uFrom.value = textures[from]
       coverScale(media[from], aspect, u.uFromCover.value)
@@ -310,12 +256,11 @@ function PlateScene({ media, index, scrub, bleed, themeRef, onFirstFrame }: Plat
   useEffect(() => {
     const u = materialRef.current?.uniforms
     if (!u) return
-    u.uCanvas.value.set(size.width, size.height)
-    u.uAspect.value = (size.width - 2 * bleed) / Math.max(size.height - 2 * bleed, 1)
+    u.uAspect.value = size.width / Math.max(size.height, 1)
     u.uCell.value = PLATE_LOOK.cell * gl.getPixelRatio()
     show()
     // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; the size is the trigger
-  }, [size.width, size.height, gl, show, bleed])
+  }, [size.width, size.height, gl, show])
 
   // A new row starts a full transition from whatever is on screen: the
   // picture at rest, or a snapshot when it lands mid-sweep. The sweep runs
@@ -373,7 +318,7 @@ function PlateScene({ media, index, scrub, bleed, themeRef, onFirstFrame }: Plat
       <shaderMaterial
         ref={materialRef}
         vertexShader={PLATE_VERTEX}
-        fragmentShader={PLATE_FRAGMENT}
+        fragmentShader={look === 'ripple' ? PLATE_RIPPLE_FRAGMENT : PLATE_FRAGMENT}
         uniforms={uniforms}
         depthTest={false}
         depthWrite={false}
@@ -391,8 +336,7 @@ export type PlateRuntimeProps = {
   index: number
   /** Follow this position instead of tweening between rows. */
   scrub?: PlateScrub
-  /** CSS pixels the canvas runs past each side of the frame; 0 keeps it to the frame. */
-  bleed?: number
+  look?: PlateLook
   onReady: () => void
   onFailure: (reason: PlateFailureReason) => void
 }
@@ -408,7 +352,7 @@ export default function PlateRuntime({
   count,
   index,
   scrub,
-  bleed = 0,
+  look = 'dither',
   onReady,
   onFailure,
 }: PlateRuntimeProps) {
@@ -447,12 +391,11 @@ export default function PlateRuntime({
       >
         {media && (
           <PlateScene
-            bleed={bleed}
             index={index}
+            look={look}
             media={media}
             onFirstFrame={handleFirstFrame}
             scrub={scrub}
-            themeRef={frameRef}
           />
         )}
         <ContextGuard kind="plate" onLost={handleContextLost} />

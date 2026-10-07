@@ -2790,8 +2790,6 @@ html:active-view-transition-type(work-open) .dock {
   top: 0;
   height: 100svh;
   margin-inline: calc(-1 * var(--spacing-gutter));
-  /* The plate's frayed edge may spill past a phone's gutter; never the page. */
-  overflow-x: clip;
   pointer-events: none;
 }
 
@@ -2841,7 +2839,7 @@ html:active-view-transition-type(work-open) .dock {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 1.25rem;
+  margin-top: 0.75rem;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1;

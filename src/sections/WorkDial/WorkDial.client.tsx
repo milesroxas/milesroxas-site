@@ -12,15 +12,20 @@ import type { MoreWorkItem } from '@/sections/MoreWork/query'
 import { createPlateScrub } from '@/sections/MoreWork/scrub'
 
 /**
- * How a row falls off with distance from the centre line (0) to the window's
- * edge (1). Prominence falls along a bell, round at the top and steep on the
- * flanks, so the centre row is clearly the largest without a hard peak.
+ * How a row falls off with distance from the centre line. Prominence falls
+ * along bells, round at the top and steep on the flanks, so the centre row is
+ * clearly the largest without a hard peak. Ink and blur are measured in rows,
+ * so the first neighbour is already dim and soft at any window height; size
+ * and the drum are measured in reach, the centre line (0) to the window's
+ * edge (1).
  */
 const DIAL = {
-  /** Width of the bell, in reach. */
+  /** Width of the size bell, in reach. */
   spread: 0.5,
+  /** Width of the ink bell, in rows. */
+  inkSpread: 0.85,
   /** Ink and size a row falls to away from the centre. */
-  ink: 0.2,
+  ink: 0.18,
   scale: 0.55,
   /**
    * Rows sit closer on screen than in the scroll: each row takes a long
@@ -32,13 +37,11 @@ const DIAL = {
   tilt: 18,
   /** The drum's half-turn in radians: rows near the centre spread apart, rows at the edge gather. */
   bulge: 1.05,
-  /** Pixels of blur a row gathers as it leaves, from `blurFrom` along the reach to the edge. */
+  /** Pixels of blur a row gathers as it leaves, and the width of its bell, in rows. */
   blur: 8,
-  blurFrom: 0.45,
+  blurSpread: 1.2,
   /** Where along the reach a row starts fading out, gone by the window's edge. */
-  fadeFrom: 0.8,
-  /** CSS pixels the plate's frayed edge may spill past the frame. */
-  bleed: 64,
+  fadeFrom: 0.75,
   /** How long the page rests before it settles on the nearest row. */
   settleAfter: 180,
   settle: 0.9,
@@ -145,6 +148,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
       const raw = (scrollY - listTop) / row
       const position = clamp(raw, 0, last)
       rows.forEach((el, i) => {
+        const away = Math.abs(i - position)
         const offset = (i - position) * row
         const reachSide = offset < 0 ? reach.above : reach.below
         const distance = (offset * DIAL.pack) / reachSide
@@ -155,11 +159,12 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
         const turned =
           Math.sin(Math.min(u, 1) * DIAL.bulge) / Math.sin(DIAL.bulge) + Math.max(u - 1, 0)
         const shift = side * turned * reachSide - offset
-        const ink = (1 - (1 - DIAL.ink) * fall) * (1 - smoothstep(DIAL.fadeFrom, 1, u))
+        const lit = Math.exp(-((away / DIAL.inkSpread) ** 2))
+        const ink = (DIAL.ink + (1 - DIAL.ink) * lit) * (1 - smoothstep(DIAL.fadeFrom, 1, u))
         el.style.setProperty('--dial-o', ink.toFixed(3))
         el.style.setProperty(
           '--dial-blur',
-          `${(DIAL.blur * smoothstep(DIAL.blurFrom, 1, u)).toFixed(2)}px`,
+          `${(DIAL.blur * (1 - Math.exp(-((away / DIAL.blurSpread) ** 2)))).toFixed(2)}px`,
         )
         el.style.setProperty('--dial-y', `${shift.toFixed(1)}px`)
         el.style.setProperty('--dial-scale', (1 - (1 - DIAL.scale) * fall).toFixed(4))
@@ -271,7 +276,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
         <div ref={focusRef} className="work-dial-focus" />
         <div className="work-dial-frame">
           <div
-            className="size-full motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
+            className="size-full overflow-clip motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
             style={enterAt(120)}
           >
             {/* The rows are the keyboard's way in; the picture is a pointer shortcut to the one shown. */}
@@ -295,10 +300,10 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
               >
                 <MoreWorkPlate
                   always
-                  bleed={DIAL.bleed}
                   className="aspect-auto size-full"
                   index={opening ?? active}
                   items={items}
+                  look="ripple"
                   opening={opening !== null}
                   ref={plateRef}
                   scrub={scrub}
