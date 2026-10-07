@@ -3,16 +3,17 @@
 import { useGSAP } from '@gsap/react'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
 import { useRef } from 'react'
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import type { CallOutBlock as CallOutBlockProps } from '@/payload-types'
-import { getEnv } from '@/utilities/getEnv'
+import { observeRevealGate, SCROLL_REVEAL_INTRO } from '@/shared/ui/scroll-reveal'
 
-gsap.registerPlugin(SplitText, ScrollTrigger, useGSAP)
+gsap.registerPlugin(SplitText, useGSAP)
 
-const { isPreview } = getEnv()
+// Past the shared 0.25 gate: the bottom veil hides the copy's first stretch
+// above the fold, and the rise has to play where it can be seen.
+const ENTER_OFFSET = 0.4
 
 export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
   const textRef = useRef<HTMLDivElement>(null)
@@ -23,27 +24,31 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
       const text = textRef.current
       if (!text || prefersReducedMotion) return
 
-      // Each line rises out of its mask as the copy scrolls up through the
-      // veil, fully set once it clears it. autoSplit re-splits on resize and
-      // font load, keeping the scrub's progress.
+      // Each line rises out of its mask once the copy is well clear of the
+      // veil, played once. autoSplit re-splits on resize and font load,
+      // keeping the rise's progress.
+      let played = false
+      let rise: gsap.core.Tween | undefined
       SplitText.create(text.querySelectorAll('p, h1, h2, h3, h4'), {
         type: 'lines',
         mask: 'lines',
         aria: 'none',
         autoSplit: true,
-        onSplit: ({ lines }) =>
-          gsap.from(lines, {
-            yPercent: 110,
-            ease: 'power2.out',
-            stagger: 0.12,
-            scrollTrigger: {
-              trigger: text,
-              markers: isPreview,
-              scrub: 0.6,
-              start: 'clamp(top 85%)',
-              end: 'clamp(bottom 75%)',
-            },
-          }),
+        onSplit: ({ lines }) => {
+          rise = gsap.from(lines, {
+            yPercent: 105,
+            ease: 'power4.out',
+            duration: 1.1,
+            stagger: SCROLL_REVEAL_INTRO.stagger,
+            paused: !played,
+          })
+          return rise
+        },
+      })
+
+      return observeRevealGate(text, ENTER_OFFSET, () => {
+        played = true
+        rise?.play()
       })
     },
     { scope: textRef, dependencies: [prefersReducedMotion], revertOnUpdate: true },
@@ -57,7 +62,7 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => {
     <div className="relative">
       <div className="container flex min-h-[50dvh] items-center justify-center pt-16 pb-36">
         <div
-          className="w-full max-w-[30ch] text-balance text-center font-light text-heading-2/snug"
+          className="w-full max-w-[46ch] text-balance text-center font-light text-heading-2/snug"
           ref={textRef}
         >
           {richText && <RichText className="mb-0" data={richText} />}
