@@ -7,6 +7,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../../access/anyone'
 import { authenticated } from '../../access/authenticated'
+import { readTempFile } from './hooks/readTempFile'
 import { resolveStreamUrls, syncCloudflareDelete } from './hooks/syncCloudflare'
 
 export const Media: CollectionConfig = {
@@ -22,6 +23,8 @@ export const Media: CollectionConfig = {
     // (docs/media.md).
     afterDelete: [syncCloudflareDelete],
     afterRead: [resolveStreamUrls],
+    // Before the storage adapter's own hooks, which the plugin appends.
+    beforeChange: [readTempFile],
   },
   fields: [
     {
