@@ -11,7 +11,8 @@ import { useBandGround } from './use-band-ground'
 
 /**
  * The top of the chrome: the wordmark home, and Miles's local time. No bar
- * and no fill; the words float over the page. The wordmark is centred.
+ * and no fill; the words float over the page. The wordmark sits at the left
+ * on a phone and is centred from md.
  *
  * On a page that names itself (`ChromeTitle`), the left shows where the
  * reader is once the page's heading has scrolled away: the tab, then the
@@ -33,7 +34,7 @@ export function TopBar({ section }: { section: string | null }) {
       data-theme={ground}
       ref={ref}
     >
-      <div className="min-w-0 flex-1">
+      <div className="hidden min-w-0 flex-1 md:block">
         {title && section && (
           <p
             aria-hidden={!title.shown}
@@ -49,7 +50,7 @@ export function TopBar({ section }: { section: string | null }) {
 
       <Link
         aria-label="Miles Roxas, home"
-        className="chrome-focus pointer-events-auto absolute top-1/2 left-1/2 z-10 -translate-1/2 rounded-md p-2"
+        className="chrome-focus md:-translate-1/2 pointer-events-auto z-10 -ml-2 rounded-md p-2 md:absolute md:top-1/2 md:left-1/2 md:ml-0"
         href="/"
       >
         <Logo className="h-auto w-29 md:w-40" color="currentColor" />

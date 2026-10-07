@@ -17,6 +17,9 @@ import { useTheme } from '@/providers/Theme'
  * The icon is the destination, not the current state: a moon offers dark. The
  * swap is a 150ms crossfade with no travel, because the palette behind it
  * changes at the same moment and two moving things read as one glitch.
+ *
+ * On a phone the button is a 44px touch target (the full bar height) with a
+ * 20px glyph; negative margins keep the glyph on the bar's edge.
  */
 export function ThemeToggle() {
   const theme = useSiteTheme()
@@ -27,11 +30,11 @@ export function ThemeToggle() {
   return (
     <button
       aria-label={dark ? 'Switch to the light theme' : 'Switch to the dark theme'}
-      className="chrome-focus theme-toggle pointer-events-auto -m-2 rounded-md p-2 text-(--chrome-ink)"
+      className="chrome-focus theme-toggle pointer-events-auto -m-3 rounded-md p-3 text-(--chrome-ink) md:-m-2 md:p-2"
       onClick={() => setTheme(dark ? 'light' : 'dark')}
       type="button"
     >
-      <Glyph aria-hidden className="size-4" key={theme} />
+      <Glyph aria-hidden className="size-5 md:size-4" key={theme} />
     </button>
   )
 }
