@@ -40,6 +40,11 @@ const DIAL = {
   /** Pixels of blur a row gathers as it leaves, and the width of its bell, in rows. */
   blur: 8,
   blurSpread: 1.2,
+  /**
+   * Phones show the rows as a plain list (globals.css), several at once, so
+   * ink and blur fall off over a few rows rather than one.
+   */
+  phone: { inkSpread: 1.8, blurSpread: 2.4 },
   /** Where along the reach a row starts fading out, gone by the window's edge. */
   fadeFrom: 0.75,
   /** How long the page rests before it settles on the nearest row, and how long the settle takes. */
@@ -162,6 +167,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-dial-row]'))
     const last = Math.max(rows.length - 1, 0)
     const reduced = matchMedia('(prefers-reduced-motion: reduce)')
+    const phone = matchMedia('(width < 64rem)')
     // From the centre line to the window's edge, above and below: equal on
     // desktop, short above on phones where rows leave under the plate.
     const reach = { above: 1, below: 1 }
@@ -173,6 +179,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
       const { listTop, row } = geometry.current
       const raw = (scrollY - listTop) / row
       const position = clamp(raw, 0, last)
+      const { inkSpread, blurSpread } = phone.matches ? DIAL.phone : DIAL
       rows.forEach((el, i) => {
         const away = Math.abs(i - position)
         const offset = (i - position) * row
@@ -185,12 +192,12 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
         const turned =
           Math.sin(Math.min(u, 1) * DIAL.bulge) / Math.sin(DIAL.bulge) + Math.max(u - 1, 0)
         const shift = side * turned * reachSide - offset
-        const lit = Math.exp(-((away / DIAL.inkSpread) ** 2))
+        const lit = Math.exp(-((away / inkSpread) ** 2))
         const ink = (DIAL.ink + (1 - DIAL.ink) * lit) * (1 - smoothstep(DIAL.fadeFrom, 1, u))
         el.style.setProperty('--dial-o', ink.toFixed(3))
         el.style.setProperty(
           '--dial-blur',
-          `${(DIAL.blur * (1 - Math.exp(-((away / DIAL.blurSpread) ** 2)))).toFixed(2)}px`,
+          `${(DIAL.blur * (1 - Math.exp(-((away / blurSpread) ** 2)))).toFixed(2)}px`,
         )
         el.style.setProperty('--dial-y', `${shift.toFixed(1)}px`)
         el.style.setProperty('--dial-scale', (1 - (1 - DIAL.scale) * fall).toFixed(4))

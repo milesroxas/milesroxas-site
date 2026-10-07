@@ -2760,9 +2760,10 @@ html:active-view-transition-type(work-open) .dock {
    (`--dial-tilt`, in degrees) from its distance to that line. On desktop the
    heading holds the left margin and the titles turn on the right of the
    plate. Phones pin the plate under the top bar and read each row just
-   beneath it, the rows to come below. */
+   beneath it, the rows to come below: a plain list, short rows so several
+   show at once, with no drum, only the ink and blur. */
 .work-dial {
-  --dial-row: 11rem;
+  --dial-row: 5rem;
   --dial-plate-w: calc(100vw - 2 * var(--spacing-gutter));
   --dial-plate-h: calc(var(--dial-plate-w) / 1.6);
   --dial-plate-top: calc(var(--chrome-top) + 0.75rem);
@@ -3005,8 +3006,9 @@ html:active-view-transition-type(work-open) .dock {
   border-radius: 2px;
 }
 
-/* Reduced motion: the ink still follows the centre line; nothing moves or turns. */
-@media (prefers-reduced-motion: reduce) {
+/* Phones and reduced motion: the ink still follows the centre line; nothing
+   moves, turns or shrinks. */
+@media (width < 64rem), (prefers-reduced-motion: reduce) {
   .work-dial-link {
     transform: none;
   }
