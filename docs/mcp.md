@@ -207,8 +207,7 @@ in. `CMS_MCP_API_KEY` (else `MILESROXAS_CMS_MCP_KEY`), `CMS_UPLOAD_SERVER` and
 
 The endpoint answers `{ id, cloudflareImageId }`. A null `cloudflareImageId` means the file is on
 Blob but the Cloudflare Images sync failed (the server log has `[Cloudflare] Upload failed`), and
-the script warns on stderr. The sync runs after the storage adapter has written the file, from
-`cloudflareMediaSync` in `src/collections/Media/hooks/syncCloudflare.ts`.
+the script warns on stderr; the daily sweep retries it ([media.md](media.md)).
 
 ## Security: the REST rule
 

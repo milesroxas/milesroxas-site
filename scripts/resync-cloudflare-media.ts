@@ -1,13 +1,11 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { sweepUnsynced } from '../src/collections/Media/cloudflare'
 
 /**
- * Re-runs the Cloudflare sync for every image or video in Media that has no
- * Cloudflare asset yet. Saving a document unchanged runs the Media hooks, and
- * `syncCloudflareUpload` uploads to Cloudflare whenever the id is missing.
- *
- * Needed once after the Blob URL fix: a browser upload lives in its own Blob
- * folder, and the sync used to ask Cloudflare for a URL without the folder.
+ * Runs the Cloudflare sweep by hand: every image or video in Media without a
+ * Cloudflare asset is uploaded now instead of at the next 05:00 UTC job
+ * (`src/jobs/cloudflareMediaSweep.ts`, docs/media.md).
  *
  *   pnpm exec tsx --env-file=.env scripts/resync-cloudflare-media.ts --dry-run
  *   pnpm exec tsx --env-file=.env scripts/resync-cloudflare-media.ts
@@ -18,40 +16,7 @@ import { getPayload } from 'payload'
  */
 
 const dryRun = process.argv.includes('--dry-run')
-
 const payload = await getPayload({ config })
-
-const { docs } = await payload.find({
-  collection: 'media',
-  depth: 0,
-  limit: 0,
-  pagination: false,
-  where: {
-    and: [
-      { or: [{ mimeType: { like: 'image/' } }, { mimeType: { like: 'video/' } }] },
-      { cloudflareImageId: { exists: false } },
-      { cloudflareStreamUid: { exists: false } },
-    ],
-  },
-})
-
-console.info(`${docs.length} media document(s) without a Cloudflare asset`)
-
-let failed = 0
-for (const doc of docs) {
-  const label = `${doc.id} ${doc.filename ?? ''} (${doc.mimeType ?? 'unknown'})`
-  if (dryRun) {
-    console.info(`  would sync ${label}`)
-    continue
-  }
-  const updated = await payload.update({ collection: 'media', id: doc.id, data: {} })
-  const synced = updated.cloudflareImageId || updated.cloudflareStreamUid
-  if (synced) {
-    console.info(`  synced ${label}`)
-  } else {
-    failed += 1
-    console.error(`  FAILED ${label}: see "[Cloudflare] Upload failed" above`)
-  }
-}
-
+const { failed, synced } = await sweepUnsynced(payload, { dryRun })
+console.info(`synced ${synced}, failed ${failed}`)
 process.exit(failed > 0 ? 1 : 0)

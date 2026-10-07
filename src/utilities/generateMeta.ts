@@ -10,8 +10,9 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
 
   let url = `${serverUrl}/website-template-OG.webp`
 
+  // Cloudflare's `public` variant is the sized render; Blob holds the original.
   if (image && typeof image === 'object' && 'url' in image) {
-    url = getMediaUrl(image.sizes?.og?.url || image.url) || url
+    url = image.cloudflareImageUrl || getMediaUrl(image.url) || url
   }
 
   return url

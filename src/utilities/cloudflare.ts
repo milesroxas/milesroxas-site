@@ -1,9 +1,13 @@
 /**
  * Server-side Cloudflare Images + Stream API utilities.
- * Used in Payload hooks — never imported on the client.
+ * Used in Payload hooks and jobs — never imported on the client.
  */
 
 const CLOUDFLARE_API_BASE = 'https://api.cloudflare.com/client/v4/accounts'
+
+/** Attempts per API call. Network errors, 429 and 5xx retry; any other answer is final. */
+const ATTEMPTS = 3
+const BACKOFF_MS = 400
 
 function getAccountId(): string {
   const id = process.env.CLOUDFLARE_ACCOUNT_ID
@@ -37,6 +41,35 @@ function authHeaders(): Record<string, string> {
   }
 }
 
+/** A failure Cloudflare may answer differently next time: no answer at all, rate limit, or its own error. */
+export const isTransientStatus = (status: number): boolean => status === 429 || status >= 500
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/**
+ * `fetch` against the Cloudflare API with bounded retries. `init` is rebuilt
+ * per attempt so a `FormData` body is serialized fresh each time.
+ */
+export async function cloudflareFetch(
+  url: string,
+  init: () => RequestInit,
+  attempts = ATTEMPTS,
+): Promise<Response> {
+  let lastError: unknown
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const res = await fetch(url, init())
+      if (!isTransientStatus(res.status) || attempt === attempts) return res
+      lastError = new Error(`Cloudflare answered ${res.status}`)
+    } catch (err) {
+      lastError = err
+      if (attempt === attempts) throw err
+    }
+    await sleep(BACKOFF_MS * attempt)
+  }
+  throw lastError
+}
+
 // ---------------------------------------------------------------------------
 // Cloudflare Images
 // ---------------------------------------------------------------------------
@@ -53,17 +86,18 @@ export async function uploadImageToCloudflare(
   imageUrl: string,
   metadata?: Record<string, string>,
 ): Promise<CloudflareImageResult> {
-  const formData = new FormData()
-  formData.append('url', imageUrl)
-  if (metadata) {
-    formData.append('metadata', JSON.stringify(metadata))
+  const body = () => {
+    const formData = new FormData()
+    formData.append('url', imageUrl)
+    if (metadata) formData.append('metadata', JSON.stringify(metadata))
+    return formData
   }
 
-  const res = await fetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/images/v1`, {
+  const res = await cloudflareFetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/images/v1`, () => ({
     method: 'POST',
     headers: authHeaders(),
-    body: formData,
-  })
+    body: body(),
+  }))
 
   const json = await res.json()
   if (!json.success) {
@@ -80,10 +114,10 @@ export async function uploadImageToCloudflare(
  * Delete an image from Cloudflare Images. Throws on failure; callers log.
  */
 export async function deleteCloudflareImage(imageId: string): Promise<void> {
-  const res = await fetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/images/v1/${imageId}`, {
-    method: 'DELETE',
-    headers: authHeaders(),
-  })
+  const res = await cloudflareFetch(
+    `${CLOUDFLARE_API_BASE}/${getAccountId()}/images/v1/${imageId}`,
+    () => ({ method: 'DELETE', headers: authHeaders() }),
+  )
 
   const json = await res.json()
   if (!json.success) {
@@ -94,9 +128,8 @@ export async function deleteCloudflareImage(imageId: string): Promise<void> {
 }
 
 /**
- * Construct a Cloudflare Images delivery URL with flexible variants.
- * @param imageId - The Cloudflare image ID
- * @param variant - Variant string like "w=1920,q=85,f=auto" or a named variant
+ * Construct a Cloudflare Images delivery URL for a named variant. Flexible
+ * variants (`w=...,q=...`) are off on this account; `public` is the one in use.
  */
 export function getImageDeliveryUrl(imageId: string, variant = 'public'): string {
   return `https://imagedelivery.net/${getImagesAccountHash()}/${imageId}/${variant}`
@@ -123,14 +156,14 @@ export async function uploadVideoToStream(
     body.meta = metadata
   }
 
-  const res = await fetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/stream/copy`, {
+  const res = await cloudflareFetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/stream/copy`, () => ({
     method: 'POST',
     headers: {
       ...authHeaders(),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
-  })
+  }))
 
   const json = await res.json()
   if (!json.success) {
@@ -148,10 +181,13 @@ export async function uploadVideoToStream(
  * Delete a video from Cloudflare Stream. Throws on failure; callers log.
  */
 export async function deleteStreamVideo(uid: string): Promise<void> {
-  const res = await fetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/stream/${uid}`, {
-    method: 'DELETE',
-    headers: authHeaders(),
-  })
+  const res = await cloudflareFetch(
+    `${CLOUDFLARE_API_BASE}/${getAccountId()}/stream/${uid}`,
+    () => ({
+      method: 'DELETE',
+      headers: authHeaders(),
+    }),
+  )
 
   if (!res.ok) {
     throw new Error(`Cloudflare Stream delete failed for ${uid}: ${res.statusText}`)

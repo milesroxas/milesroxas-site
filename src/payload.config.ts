@@ -26,6 +26,7 @@ import { SiteInfo } from './globals/SiteInfo'
 import { WorksIndex } from './globals/WorksIndex'
 import { Header } from './Header/config'
 import { askQuestionRetentionTask } from './jobs/askQuestionRetention'
+import { cloudflareMediaSweepTask } from './jobs/cloudflareMediaSweep'
 import { plugins } from './plugins'
 import { getServerSideURL } from './utilities/getURL'
 
@@ -151,6 +152,6 @@ export default buildConfig({
         return req.headers.get('authorization') === `Bearer ${secret}`
       },
     },
-    tasks: [askQuestionRetentionTask],
+    tasks: [askQuestionRetentionTask, cloudflareMediaSweepTask],
   },
 })

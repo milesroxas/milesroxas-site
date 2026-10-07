@@ -28,11 +28,10 @@ function fallbackSrcFor({ url }: MediaType): string {
   return getMediaUrl(url)
 }
 
-/** Poster improves FCP/LCP by showing an image immediately while video loads */
+/** Poster improves FCP/LCP by showing an image immediately while video loads. */
 function posterUrlFor(resource: MediaType) {
   return (
     resource.cloudflareStreamThumbnailUrl ??
-    (resource.sizes?.thumbnail?.url ? getMediaUrl(resource.sizes.thumbnail.url) : undefined) ??
     (resource.thumbnailURL ? getMediaUrl(resource.thumbnailURL) : undefined)
   )
 }

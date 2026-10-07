@@ -144,6 +144,7 @@ export interface Config {
   jobs: {
     tasks: {
       askQuestionRetention: TaskAskQuestionRetention;
+      cloudflareMediaSweep: TaskCloudflareMediaSweep;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -490,54 +491,6 @@ export interface Media {
   focalY?: number | null;
   sizes?: {
     thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    square?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    small?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    medium?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    large?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    xlarge?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    og?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -5696,7 +5649,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'askQuestionRetention' | 'schedulePublish';
+        taskSlug: 'inline' | 'askQuestionRetention' | 'cloudflareMediaSweep' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -5729,7 +5682,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'askQuestionRetention' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'askQuestionRetention' | 'cloudflareMediaSweep' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -6976,66 +6929,6 @@ export interface MediaSelect<T extends boolean = true> {
               filesize?: T;
               filename?: T;
             };
-        square?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        small?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        medium?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        large?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        xlarge?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        og?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
       };
 }
 /**
@@ -7937,6 +7830,17 @@ export interface TaskAskQuestionRetention {
   input?: unknown;
   output: {
     deleted?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCloudflareMediaSweep".
+ */
+export interface TaskCloudflareMediaSweep {
+  input?: unknown;
+  output: {
+    synced?: number | null;
+    failed?: number | null;
   };
 }
 /**

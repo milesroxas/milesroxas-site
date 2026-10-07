@@ -18,7 +18,8 @@ export const Media: CollectionConfig = {
     update: authenticated,
   },
   hooks: {
-    // The upload sync is `cloudflareMediaSync`, registered after the storage adapter.
+    // The upload sync is `cloudflareMediaSync`, registered after the storage adapter
+    // (docs/media.md).
     afterDelete: [syncCloudflareDelete],
     afterRead: [resolveStreamUrls],
   },
@@ -59,7 +60,7 @@ export const Media: CollectionConfig = {
       admin: { hidden: true },
     },
     {
-      // Computed at read time in the resolveBlobUrl afterRead hook
+      // Computed at read time by `resolveStreamUrls`
       name: 'cloudflareStreamThumbnailUrl',
       type: 'text',
       virtual: true,
@@ -75,37 +76,13 @@ export const Media: CollectionConfig = {
   upload: {
     adminThumbnail: 'thumbnail',
     focalPoint: true,
+    // One server-side size, for the admin list and the Studio pickers. The
+    // site serves every image from Cloudflare Images (docs/media.md), so more
+    // sizes only cost upload time and Blob writes.
     imageSizes: [
       {
         name: 'thumbnail',
         width: 300,
-      },
-      {
-        name: 'square',
-        width: 500,
-        height: 500,
-      },
-      {
-        name: 'small',
-        width: 600,
-      },
-      {
-        name: 'medium',
-        width: 900,
-      },
-      {
-        name: 'large',
-        width: 1400,
-      },
-      {
-        name: 'xlarge',
-        width: 1920,
-      },
-      {
-        name: 'og',
-        width: 1200,
-        height: 630,
-        crop: 'center',
       },
     ],
     mimeTypes: ['image/*', 'video/*', 'application/pdf'],
