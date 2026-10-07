@@ -44,17 +44,19 @@ export const PLATE_LOOK = {
   hold: 0.2,
 } as const
 
-/** The ripple look (`PLATE_RIPPLE_FRAGMENT`): kept faint, a breath of wind rather than a wave. */
+/** The ripple look (`PLATE_RIPPLE_FRAGMENT`): a wave that travels up the plate with the page. */
 export const PLATE_RIPPLE = {
-  /** The deepest bend, as a share of the frame's height. */
-  amplitude: 0.007,
-  /** Wavelengths across the frame. */
-  waves: 1.2,
+  /** The deepest vertical stretch, as a share of the frame's height. */
+  amplitude: 0.035,
+  /** Wavelengths up the frame. */
+  waves: 1.6,
   /** How far the slopes lighten and darken the picture. */
-  shade: 0.045,
+  shade: 0.09,
+  /** How deep the soft front between the pictures is, as a share of the frame. */
+  band: 0.55,
 } as const
 
-/** `dither` sweeps through an ordered dither (More work); `ripple` bends the picture like cloth (the dial). */
+/** `dither` sweeps through an ordered dither (More work); `ripple` runs a wave up the picture (the dial). */
 export type PlateLook = 'dither' | 'ripple'
 
 const smoothstep = (edge0: number, edge1: number, x: number) => {
@@ -200,7 +202,7 @@ function PlateScene({ media, index, scrub, look, onFirstFrame }: PlateSceneProps
       uProgress: { value: 1 },
       uDirection: { value: 1 },
       uAspect: { value: 1 },
-      uBand: { value: PLATE_LOOK.band },
+      uBand: { value: look === 'ripple' ? PLATE_RIPPLE.band : PLATE_LOOK.band },
       uWarp: { value: PLATE_LOOK.warp },
       uCell: { value: PLATE_LOOK.cell },
       uAberration: { value: PLATE_LOOK.aberration },
@@ -210,7 +212,7 @@ function PlateScene({ media, index, scrub, look, onFirstFrame }: PlateSceneProps
       uWaves: { value: PLATE_RIPPLE.waves },
       uShade: { value: PLATE_RIPPLE.shade },
     }),
-    [textures],
+    [textures, look],
   )
 
   /** Draws the frame as it stands into a spare target and returns it. */

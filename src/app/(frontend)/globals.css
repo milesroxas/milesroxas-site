@@ -2719,7 +2719,6 @@ html:active-view-transition-type(work-open) .dock {
    beneath it, the rows to come below. */
 .work-dial {
   --dial-row: 11rem;
-  --dial-gap: 3rem;
   --dial-plate-w: calc(100vw - 2 * var(--spacing-gutter));
   --dial-plate-h: calc(var(--dial-plate-w) / 1.6);
   --dial-plate-top: calc(var(--chrome-top) + 0.75rem);
@@ -2874,21 +2873,26 @@ html:active-view-transition-type(work-open) .dock {
   width: 100%;
 }
 
+/* Desktop: the row's grid runs edge to edge of the browser, so each title is
+   centred between the plate and the right edge, mirroring the heading on the
+   left, and turns and shrinks about that centre. */
 @media (min-width: 64rem) {
   .work-dial-enter {
     display: grid;
+    width: calc(100% + 2 * var(--spacing-gutter));
+    margin-inline: calc(-1 * var(--spacing-gutter));
     grid-template-columns: var(--dial-cols);
-    column-gap: var(--dial-gap);
   }
 
   .work-dial-title {
     grid-column: 3;
+    justify-self: center;
+    max-width: min(22ch, 100% - 2 * var(--spacing-gutter));
+    text-align: center;
   }
 
-  /* The link spans the page, centred on the plate; rows turn and shrink from
-     the titles' left edge, beside the plate. */
   .work-dial-link {
-    transform-origin: calc(50% + var(--dial-plate-w) / 2 + var(--dial-gap)) center;
+    transform-origin: calc(75% + var(--dial-plate-w) / 4 + var(--spacing-gutter) / 2) center;
     pointer-events: none;
   }
 

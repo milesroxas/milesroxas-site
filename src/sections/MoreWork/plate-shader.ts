@@ -106,13 +106,15 @@ void main() {
 `
 
 /**
- * The dial's transition: a slow ripple, like cloth in a light wind, while one
- * picture crossfades into the next. Waves travel from the frame's left edge
- * (the hoist) to its right and grow towards the right, bending the picture by
- * `uAmplitude` of the frame at most and shading it by `uShade` along their
- * slopes. Both rise and fall with the transition, so a picture at rest is
- * still and exact. The phase follows `uProgress`, so a scrubbed ripple runs
- * backwards when the page does.
+ * The dial's transition: a liquid wave that runs up the plate with the page.
+ * The arriving picture rises in from the bottom behind a soft front, `uBand`
+ * of the frame deep and bent by the wave, so the change travels the way the
+ * list does. Wavefronts lie across the frame and travel upwards, stretching
+ * and squeezing the picture vertically by `uAmplitude` of the frame at most,
+ * with a lighter sway sideways, and shading their slopes by `uShade`. The
+ * wave is strongest on the front, rises and falls with the transition, so a
+ * picture at rest is still and exact, and its phase follows `uProgress`, so a
+ * scrubbed wave runs back when the page does.
  */
 export const PLATE_RIPPLE_FRAGMENT = /* glsl */ `
 uniform sampler2D uFrom;
@@ -121,6 +123,7 @@ uniform vec2 uFromCover;
 uniform vec2 uToCover;
 uniform float uProgress;
 uniform float uAspect;
+uniform float uBand;
 uniform float uAmplitude;
 uniform float uWaves;
 uniform float uShade;
@@ -134,16 +137,24 @@ vec2 cover(vec2 uv, vec2 scale) {
 }
 
 void main() {
+  // Wavefronts across the frame, gently bowed so they read as water, not stripes.
+  float phase = TAU * (vUv.y * uWaves - uProgress * 1.75) + sin(vUv.x * uAspect * 2.2) * 0.7;
+  float wave = sin(phase);
+
+  // 0 at the bottom, where the arriving picture enters, 1 at the top.
+  float field = vUv.y + wave * 0.06;
+  float front = uProgress * (1.0 + uBand);
+  float local = clamp((front - field) / uBand, 0.0, 1.0);
+
   float running = sin(3.14159265 * uProgress);
-  float reach = running * (0.3 + 0.7 * vUv.x);
-  float phase = TAU * (vUv.x * uWaves - uProgress * 1.5) + vUv.y * uAspect * 1.4;
-  vec2 bend = vec2(0.3 * cos(phase) / uAspect, sin(phase)) * uAmplitude * reach;
+  float reach = running * (0.45 + 0.55 * 4.0 * local * (1.0 - local));
+  vec2 bend = vec2(0.35 * cos(phase * 0.8 + vUv.x * 3.0) / uAspect, wave) * uAmplitude * reach;
   // Mirrored at the frame's edge, so a bend never samples past the picture.
   vec2 uv = 1.0 - abs(1.0 - abs(vUv + bend));
 
   vec3 from = texture2D(uFrom, cover(uv, uFromCover)).rgb;
   vec3 to = texture2D(uTo, cover(uv, uToCover)).rgb;
-  vec3 color = mix(from, to, smoothstep(0.15, 0.85, uProgress));
+  vec3 color = mix(from, to, smoothstep(0.0, 1.0, local));
 
   gl_FragColor = vec4(color * (1.0 + uShade * reach * cos(phase)), 1.0);
 }

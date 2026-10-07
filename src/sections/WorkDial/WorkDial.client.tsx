@@ -32,7 +32,7 @@ const DIAL = {
    * stretch of scroll, so a flick does not skip past it, but the dial still
    * shows its neighbours.
    */
-  pack: 0.72,
+  pack: 0.95,
   /** Degrees a row at the edge has turned away, like a drum. */
   tilt: 18,
   /** The drum's half-turn in radians: rows near the centre spread apart, rows at the edge gather. */
@@ -42,9 +42,16 @@ const DIAL = {
   blurSpread: 1.2,
   /** Where along the reach a row starts fading out, gone by the window's edge. */
   fadeFrom: 0.75,
-  /** How long the page rests before it settles on the nearest row. */
+  /** How long the page rests before it settles on the nearest row, and how long the settle takes. */
   settleAfter: 180,
-  settle: 0.9,
+  settle: 1.3,
+  /**
+   * The dial scrolls heavier than the rest of the site: a wheel notch moves
+   * it less, and the page glides longer after it, so each turn lands with
+   * weight. Lenis's own defaults are 1 and 0.1.
+   */
+  wheel: 0.55,
+  lerp: 0.055,
 } as const
 
 const easeOutQuart = (t: number) => 1 - (1 - t) ** 4
@@ -127,6 +134,25 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
 
   const shown = items[opening ?? active] ?? items[0]
   const count = String(items.length).padStart(2, '0')
+
+  // Lenis reads `wheelMultiplier` only when it is created; its `virtualScroll`
+  // hook may scale each delta instead.
+  useEffect(() => {
+    if (!lenis) return
+    const { virtualScroll, lerp } = lenis.options
+    lenis.options.lerp = DIAL.lerp
+    lenis.options.virtualScroll = (data) => {
+      if (data.event.type.includes('wheel')) {
+        data.deltaX *= DIAL.wheel
+        data.deltaY *= DIAL.wheel
+      }
+      return virtualScroll?.(data) ?? true
+    }
+    return () => {
+      lenis.options.virtualScroll = virtualScroll
+      lenis.options.lerp = lerp
+    }
+  }, [lenis])
 
   useEffect(() => {
     const list = listRef.current
