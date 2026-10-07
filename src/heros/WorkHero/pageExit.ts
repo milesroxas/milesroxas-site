@@ -47,8 +47,14 @@ function collect(root: Element, keep: Element, out: Element[]) {
   }
 }
 
+/** How long each piece takes to leave, and how far apart the farthest and nearest start. */
+export type ExitPace = { duration: number; spread: number }
+
 /** Plays the exit, with a function that puts the page back once the snapshot no longer needs it. */
-export function exitPageAround(keep: Element) {
+export function exitPageAround(
+  keep: Element,
+  { duration, spread }: ExitPace = { duration: DURATION, spread: SPREAD },
+) {
   const pieces: Element[] = []
   collect(document.body, keep, pieces)
 
@@ -64,8 +70,8 @@ export function exitPageAround(keep: Element) {
     return el.animate(
       { opacity: 0, ...(blur && { filter: 'blur(4px)' }) },
       {
-        delay: (1 - Math.min(distance / reach, 1)) * SPREAD,
-        duration: DURATION,
+        delay: (1 - Math.min(distance / reach, 1)) * spread,
+        duration,
         easing: EASE_OUT,
         fill: 'forwards',
       },
@@ -74,7 +80,7 @@ export function exitPageAround(keep: Element) {
 
   return {
     /** When the last piece is gone, on the `performance.now()` clock. */
-    ends: performance.now() + SPREAD + DURATION,
+    ends: performance.now() + spread + duration,
     restore: () => {
       for (const animation of animations) animation.cancel()
     },

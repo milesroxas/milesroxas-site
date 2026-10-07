@@ -110,7 +110,8 @@ export function MoreWorkPlate({
       )}
       data-slot="more-work-plate"
     >
-      <div className={cn('absolute inset-0 overflow-clip', frayed && 'invisible')}>
+      {/* Transparent, not hidden: a hidden video stops painting and comes back blank. */}
+      <div className={cn('absolute inset-0 overflow-clip', frayed && 'opacity-0')}>
         {items.map(
           (item, i) =>
             item.media && (

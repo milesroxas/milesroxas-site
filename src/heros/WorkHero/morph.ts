@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation'
 import type React from 'react'
 import { useState, type ViewTransitionInstance } from 'react'
-import { exitPageAround } from './pageExit'
+import { type ExitPace, exitPageAround } from './pageExit'
 
 /**
  * The work card → case study opening (`.work-morph` in globals.css), in three
@@ -9,6 +9,10 @@ import { exitPageAround } from './pageExit'
  * picture, which the card and the hero frame share by view-transition name,
  * scales down and fades out last, where it stands. It then comes straight
  * back in at the hero frame, and the case study's copy and body follow.
+ *
+ * A card that opens with `travel` (the works dial) keeps its picture instead:
+ * the page leaves around it more slowly, the picture then travels to the
+ * hero frame, and the case study's copy fades in as it lands.
  */
 export const workMorphName = (slug: string) => `work-media-${slug}`
 
@@ -31,6 +35,7 @@ export function clearWorkMorph() {
 
 let exiting = false
 let exitEnds: number | null = null
+let travelling = false
 let restore: (() => void) | null = null
 
 /** Puts back the page the exit cleared, once the old snapshot no longer needs it. */
@@ -40,6 +45,15 @@ function restorePage() {
   exiting = false
   exitEnds = null
 }
+
+/** The slower exit a travelling picture waits through. */
+const TRAVEL_EXIT: ExitPace = { duration: 480, spread: 320 }
+/** How long the picture takes to reach the hero frame (`work-travel` in globals.css). */
+const TRAVEL = 1000
+/** The picture sets off this long before the last of the page has gone. */
+const TRAVEL_OVERLAP = 160
+/** Share of the travel after which the hero copy starts in, as the picture slows to land. */
+const TRAVEL_LANDING = 0.7
 
 /**
  * A work card's side of the opening. The card takes its name only once
@@ -54,6 +68,7 @@ export function useWorkCardMorph(
   href: string,
   imageRef: React.RefObject<HTMLElement | null>,
   onOpen?: () => void,
+  { travel = false }: { travel?: boolean } = {},
 ) {
   const router = useRouter()
   const [named, setNamed] = useState(false)
@@ -74,19 +89,23 @@ export function useWorkCardMorph(
     // page's fade (globals.css) finishes what the exit started.
     event.preventDefault()
     exiting = true
-    const exit = exitPageAround(picture)
+    travelling = travel
+    const exit = exitPageAround(picture, travel ? TRAVEL_EXIT : undefined)
     restore = exit.restore
     exitEnds = exit.ends
-    router.push(href, { transitionTypes: ['work-open'] })
+    router.push(href, { transitionTypes: workOpenTypes(travel) })
     // The navigation never came, or came without the morph: give the page back.
     setTimeout(() => restore === exit.restore && restorePage(), 4000)
   }
   return {
     name: named && slug ? workMorphName(slug) : undefined,
+    transitionTypes: workOpenTypes(travel),
     onClick,
     onShare: choreographWorkMorph,
   }
 }
+
+const workOpenTypes = (travel: boolean) => (travel ? ['work-open', 'work-travel'] : ['work-open'])
 
 /** The card's picture starts to recede as the nearest pieces of the page finish leaving. */
 const EXIT_OVERLAP = 100
@@ -121,16 +140,26 @@ const longest = (pseudo: Pseudo) =>
  * waiting alone.
  */
 export function choreographWorkMorph(instance: ViewTransitionInstance) {
-  const lag = Math.max((exitEnds ?? 0) - EXIT_OVERLAP - performance.now(), 0)
+  const travel = travelling
+  const overlap = travel ? TRAVEL_OVERLAP : EXIT_OVERLAP
+  const lag = Math.max((exitEnds ?? 0) - overlap - performance.now(), 0)
   // The old snapshot is taken: the page the exit cleared can come back.
   restorePage()
+  travelling = false
   const { group, old, new: next } = instance as MorphInstance
   const swap = lag + longest(old)
-  const arrive = swap + PAUSE
+  const arrive = travel ? lag + TRAVEL * TRAVEL_LANDING : swap + PAUSE
 
-  retime(group, { delay: 0, duration: swap })
-  retime(old, { delay: lag })
-  retime(next, { delay: arrive })
+  if (travel) {
+    // The picture travels on the group; the hero's snapshot fades in over the plate's on the way.
+    retime(group, { delay: lag, duration: TRAVEL })
+    retime(old, { delay: lag, duration: TRAVEL })
+    retime(next, { delay: lag, duration: TRAVEL })
+  } else {
+    retime(group, { delay: 0, duration: swap })
+    retime(old, { delay: lag })
+    retime(next, { delay: arrive })
+  }
   for (const animation of document.documentElement.getAnimations({ subtree: true })) {
     const { effect } = animation
     if (
@@ -145,5 +174,5 @@ export function choreographWorkMorph(instance: ViewTransitionInstance) {
   // The hero copy and the body after it follow the picture in (`--morph-hold`).
   document
     .querySelector<HTMLElement>('[data-slot="work-hero"]')
-    ?.parentElement?.style.setProperty('--morph-hold', `${arrive + COPY_LAG}ms`)
+    ?.parentElement?.style.setProperty('--morph-hold', `${arrive + (travel ? 0 : COPY_LAG)}ms`)
 }

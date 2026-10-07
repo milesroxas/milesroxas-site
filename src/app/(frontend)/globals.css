@@ -1091,6 +1091,39 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
   }
 }
 
+/* Opened from the works dial (`work-travel`), the picture is held rather
+   than handed off: once the page has left around it, it travels from the
+   plate to the hero frame on one strong ease-in-out, the hero's snapshot
+   fading in over the plate's (which stays whole, so the picture never thins
+   to the page), and the hero copy fades in as it lands.
+   `morph.ts` sets the start; durations stay here. */
+@media (prefers-reduced-motion: no-preference) {
+  html:active-view-transition-type(work-travel)::view-transition-group(.work-morph) {
+    animation-duration: 1000ms;
+    animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  html:active-view-transition-type(work-travel)::view-transition-old(.work-morph) {
+    animation: work-travel-hold 1000ms linear both;
+  }
+
+  html:active-view-transition-type(work-travel)::view-transition-new(.work-morph) {
+    animation: work-travel-in 1000ms cubic-bezier(0.77, 0, 0.175, 1) both;
+  }
+}
+
+@keyframes work-travel-hold {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes work-travel-in {
+  from {
+    opacity: 0;
+  }
+}
+
 /* Reduced motion: the same handoff, faded only. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(.work-morph) {

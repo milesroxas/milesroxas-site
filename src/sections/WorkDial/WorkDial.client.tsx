@@ -67,7 +67,7 @@ type RowProps = {
 function DialRow({ item, index, plateRef, onOpen, onFocusRow, ref }: RowProps) {
   const { slug, title } = item
   const href = `/works/${slug}`
-  const morph = useWorkCardMorph(slug, href, plateRef, () => onOpen(index))
+  const morph = useWorkCardMorph(slug, href, plateRef, () => onOpen(index), { travel: true })
 
   return (
     <li className="work-dial-row">
@@ -81,7 +81,7 @@ function DialRow({ item, index, plateRef, onOpen, onFocusRow, ref }: RowProps) {
         onFocus={(event) => {
           if (event.currentTarget.matches(':focus-visible')) onFocusRow(index)
         }}
-        transitionTypes={['work-open']}
+        transitionTypes={morph.transitionTypes}
       >
         <div
           className="work-dial-enter motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
