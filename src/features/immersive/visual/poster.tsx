@@ -1,5 +1,5 @@
-import Image from 'next/image'
 import { type ComponentProps, type ReactNode, Suspense } from 'react'
+import { CloudflareImage as Image } from '@/components/Media/CloudflareImage'
 import { cn } from '@/utilities/ui'
 import type { BlendMode, Surface } from '../studio/effect'
 import { FailureBoundary } from '../ui/failure-boundary'

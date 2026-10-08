@@ -40,9 +40,11 @@ How an upload becomes an image or video on the site, and what keeps it that way.
 6. **Replacing or deleting a file purges Cloudflare.** A replacement is detected by filename or by
    a new object folder, so a same-name re-upload from the admin still purges the old asset.
 
-Flexible variants are off on the Cloudflare account, so `public` is the only variant in use and
-`next/image` does the per-breakpoint resizing. Turning them on would let a custom image loader move
-that work to Cloudflare.
+Flexible variants are on for the Cloudflare account (since 2026-10-07). `cloudflareImageUrl` stores
+the `public` variant; `cloudflareImageLoader` (`src/utilities/cloudflareImageLoader.ts`) rewrites it
+to `w=<width>,q=<quality>,f=auto` per `next/image` breakpoint, so Cloudflare resizes and encodes
+(AVIF or WebP by Accept header) and Vercel's optimizer only handles non-Cloudflare sources. A server
+component renders `CloudflareImage` to get the loader; a client component passes it directly.
 
 ## Scripts
 

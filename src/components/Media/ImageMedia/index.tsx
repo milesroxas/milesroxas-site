@@ -4,6 +4,7 @@ import type { StaticImageData } from 'next/image'
 import NextImage from 'next/image'
 import type React from 'react'
 import type { Media as MediaType } from '@/payload-types'
+import { cloudflareImageLoader, isCloudflareImageUrl } from '@/utilities/cloudflareImageLoader'
 import { getMediaUrl } from '@/utilities/getMediaURL'
 import { cn } from '@/utilities/ui'
 
@@ -66,6 +67,10 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
 
   const sizes = sizeFromProps || '100vw'
 
+  // Cloudflare resizes its own images per breakpoint; quality 100 was tuned
+  // for Vercel's optimizer and stays with it.
+  const cloudflare = typeof src === 'string' && isCloudflareImageUrl(src)
+
   // `fill` images position against their direct parent (next/image requires it be
   // positioned). The <picture> must therefore be the containing block, spanning the
   // caller's positioned wrapper — the box the image filled before, so legacy callers
@@ -81,7 +86,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         placeholder="blur"
         blurDataURL={placeholderBlur}
         priority={priority}
-        quality={100}
+        loader={cloudflare ? cloudflareImageLoader : undefined}
+        quality={cloudflare ? undefined : 100}
         loading={loading}
         sizes={sizes}
         src={src}
