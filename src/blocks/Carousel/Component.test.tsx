@@ -1,7 +1,8 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mediaFixture, videoFixture } from '@/stories/fixtures'
-import { CarouselBlock } from './Component'
+import { CarouselBlock, sharedDeckFrame } from './Component'
+import { stackCardFraction } from './visual-state'
 
 // The effects hook needs a live embla engine + GSAP; its geometry and playback
 // pieces have their own unit tests (geometry.test.ts).
@@ -216,5 +217,35 @@ describe('CarouselBlock', () => {
     expect(container.querySelectorAll('button')).toHaveLength(0)
     rerender(<CarouselBlock {...baseProps} showArrows />)
     expect(container.querySelectorAll('button')).toHaveLength(2)
+  })
+})
+
+describe('sharedDeckFrame', () => {
+  const sized = (id: string, width: number, height: number, caption: string | null = null) => ({
+    id,
+    media: { ...mediaFixture, height, width },
+    caption,
+  })
+
+  it('caps every deck by the tallest media across decks and reserves the tallest picture', () => {
+    const frame = sharedDeckFrame([
+      [sized('a', 1600, 900)],
+      [sized('b', 800, 1000, 'Caption'), sized('c', 1200, 800)],
+    ])
+    expect(frame).toEqual({ aspect: 0.8, caption: true, height: 1.25 })
+  })
+
+  it('reserves a stack card, which is narrower than its slide by the fan', () => {
+    const frame = sharedDeckFrame(
+      [[sized('a', 1000, 1000), sized('b', 1000, 1000), sized('c', 1000, 1000)]],
+      'stack',
+    )
+    expect(frame?.height).toBeCloseTo(stackCardFraction(3))
+  })
+
+  it('runs unframed when no slide carries dimensions', () => {
+    expect(
+      sharedDeckFrame([[{ id: 'a', media: { ...mediaFixture, height: null, width: null } }]]),
+    ).toBeUndefined()
   })
 })

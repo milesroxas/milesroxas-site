@@ -53,16 +53,19 @@ export const valueFor = (rows: TabbedRow[], index: number) => rows[index]?.id ??
 /** The active tab's value, for blocks that render per-tab things outside the panels. */
 const TabbedValue = createContext<string | null>(null)
 
+/** The active tab's value, for a block that draws its own panels (Carousel tabs' deck). */
+export const useActiveValue = () => useContext(TabbedValue)
+
 /** The active row, for a block that renders something per tab outside its panel. */
 export const useActiveRow = <Row extends TabbedRow>(rows: Row[]): Row | undefined => {
-  const value = useContext(TabbedValue)
+  const value = useActiveValue()
   return rows.find((_, index) => valueFor(rows, index) === value)
 }
 
 /**
  * The Radix root on its own, for a block whose strip and panels sit in
  * different cells (Carousel tabs: strip under the copy, deck beside it). The
- * root must wrap both, so the block places its triggers and `TabPanels` itself.
+ * root must wrap both, so the block places its triggers and panels itself.
  */
 export const TabbedRoot = ({
   children,
@@ -118,29 +121,17 @@ export const TabStrip = ({
   )
 }
 
-/**
- * The panels sit in one wrapper so a stacking gap is taken once.
- * `panelClassName` lands on each panel, which Radix mounts fresh on
- * activation, so a `starting:` style there is the panel's entrance.
- */
-export const TabPanels = <Row extends TabbedRow>({
-  className,
-  panelClassName,
+/** The panels sit in one wrapper so a stacking gap is taken once. */
+const TabPanels = <Row extends TabbedRow>({
   renderPanel,
   rows,
 }: {
-  className?: string
-  panelClassName?: string
   renderPanel: (row: Row) => React.ReactNode
   rows: Row[]
 }) => (
-  <div className={className}>
+  <div>
     {rows.map((row, index) => (
-      <TabsPrimitive.Content
-        className={panelClassName}
-        key={row.id ?? index}
-        value={valueFor(rows, index)}
-      >
+      <TabsPrimitive.Content key={row.id ?? index} value={valueFor(rows, index)}>
         {renderPanel(row)}
       </TabsPrimitive.Content>
     ))}

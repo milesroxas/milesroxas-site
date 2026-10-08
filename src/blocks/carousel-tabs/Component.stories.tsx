@@ -131,3 +131,25 @@ export const Stack: Story = {
 export const StackInverted: Story = {
   args: { ...Stack.args, theme: 'inverted' },
 }
+
+/**
+ * Decks of different shapes and lengths: the block keeps one height across
+ * every tab, and a one-slide deck keeps the readout's room.
+ */
+export const MixedDecks: Story = {
+  args: {
+    tabs: [
+      { id: 'tab-1', title: 'Wide', slides: slides(3, 'Wide') },
+      {
+        id: 'tab-2',
+        title: 'Taller',
+        slides: [boards[1], boards[0], boards[2]].map((media, i) => ({
+          id: `taller-${i + 1}`,
+          media,
+          caption: `Taller ${i + 1}`,
+        })),
+      },
+      { id: 'tab-3', title: 'Single', slides: [{ id: 'single-1', media: boards[0] }] },
+    ],
+  },
+}

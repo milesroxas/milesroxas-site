@@ -1,7 +1,15 @@
 'use client'
 
 import type React from 'react'
-import { type CSSProperties, useCallback, useEffect, useId, useRef, useState } from 'react'
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { Section } from '@/blocks/shared/section'
 import { Media } from '@/components/Media'
 import {
@@ -14,6 +22,7 @@ import {
 } from '@/components/ui/carousel'
 import type { CarouselBlock as CarouselBlockProps } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
+import { cloudflareImageLoader, isCloudflareImageUrl } from '@/utilities/cloudflareImageLoader'
 import { cn } from '@/utilities/ui'
 import { CarouselFilters } from './filters'
 import { useCarouselEffects } from './use-carousel-effects'
@@ -34,6 +43,8 @@ type Props = CarouselBlockProps & {
   deckStyle?: DeckStyle | null
   /** Hands the embla api to a caller that draws its own controls (Carousel tabs' readout). */
   onApi?: (api: CarouselApi) => void
+  /** A frame shared with sibling decks, so swapping between them keeps one size (`sharedDeckFrame`). */
+  frame?: DeckFrame
   enableGutter?: boolean
   disableInnerContainer?: boolean
 }
@@ -148,6 +159,46 @@ const tallestAspectRatio = (slides: Slide[]): number | undefined => {
 }
 
 /**
+ * One frame for several decks (Carousel tabs), so a swap never changes the
+ * block's height. `aspect` replaces each deck's own in the height cap, so
+ * every deck's slide is one width; `height` is the tallest picture any deck
+ * draws, in slide widths (a stack card is narrower than its slide by the
+ * fan); `caption` reserves a caption line when any slide carries one.
+ */
+export type DeckFrame = { aspect: number; caption: boolean; height: number }
+
+export const sharedDeckFrame = (
+  decks: CarouselBlockProps['slides'][],
+  deckStyle?: DeckStyle | null,
+): DeckFrame | undefined => {
+  let aspect: number | undefined
+  let caption = false
+  let height = 0
+  for (const deck of decks) {
+    const slides = renderableSlidesOf(deck)
+    caption ||= slides.some((slide) => slide.caption)
+    const tallest = tallestAspectRatio(slides)
+    if (tallest === undefined) continue
+    aspect = Math.min(aspect ?? tallest, tallest)
+    const card = deckStyle === 'stack' ? stackCardFraction(slides.length) : 1
+    height = Math.max(height, card / tallest)
+  }
+  return aspect === undefined ? undefined : { aspect, caption, height }
+}
+
+/** The caption's `mt-4` and one `text-sm` line. */
+const CAPTION_RESERVE = '2.25rem'
+
+/**
+ * Every slide in a framed deck stands on the frame's foot, so a shorter deck
+ * keeps its bottom edge on the controls beside it (see Carousel tabs). `cqw`
+ * is the slide's width: the item is a size container.
+ */
+const frameStyle = (frame: DeckFrame): CSSProperties => ({
+  minHeight: `calc(${frame.height.toFixed(4)} * 100cqw${frame.caption ? ` + ${CAPTION_RESERVE}` : ''})`,
+})
+
+/**
  * The stack pins every slide into one slot (see `stackVisualState`), so the
  * slide is the whole column at every breakpoint: a phone needs no sliver,
  * the pile is the affordance. No gutter either: the pin counts slide widths,
@@ -206,9 +257,10 @@ const deckLayout = (
   slideSize: CarouselBlockProps['slideSize'],
   isFullWidth: boolean,
   isStack: boolean,
+  frame?: DeckFrame,
 ) => {
   const size = slideSize ?? 'full'
-  const slideAspect = tallestAspectRatio(slides)
+  const slideAspect = frame?.aspect ?? tallestAspectRatio(slides)
   const sizeClass = cn(
     isStack
       ? STACK_LAYOUT.size
@@ -244,9 +296,66 @@ const deckLayout = (
   return { captionClassName, cornerClass, gutter, sizeClass, trackStyle }
 }
 
+/**
+ * A picture still loading shows a blurred 32px copy of itself on a muted
+ * plate, then comes into focus as the full picture fades over it. One the
+ * browser already holds (a deck shown before) is there at once. Cloudflare
+ * resizes the copy; any other source keeps the plate alone.
+ */
+const PLATE_CLEAR = 'transition-opacity delay-900 duration-300'
+
+const placeholderOf = (media: PopulatedMedia) => {
+  const src = media.cloudflareImageUrl
+  return src && isCloudflareImageUrl(src)
+    ? cloudflareImageLoader({ src, width: 32, quality: 40 })
+    : undefined
+}
+
+const PicturePlate: React.FC<{ cornerClass: string; loaded: boolean; src?: string }> = ({
+  cornerClass,
+  loaded,
+  src,
+}) => (
+  <div
+    aria-hidden="true"
+    className={cn(
+      'absolute inset-0 overflow-clip bg-foreground/[0.06]',
+      cornerClass,
+      PLATE_CLEAR,
+      loaded && 'opacity-0',
+    )}
+  >
+    {src && (
+      // biome-ignore lint/performance/noImgElement: a 32px Cloudflare copy, blurred up to the frame
+      <img alt="" className="size-full scale-110 object-cover blur-xl" decoding="async" src={src} />
+    )}
+  </div>
+)
+
+type PictureState = 'loading' | 'loaded' | 'held'
+
+/** `relative` lifts the picture over the plate, which is positioned. */
+const PICTURE_CLASS: Record<PictureState, string> = {
+  loading: 'relative block opacity-0',
+  loaded: 'relative block transition-opacity duration-900 ease-[ease]',
+  held: 'relative block',
+}
+
+const usePictureState = (isImage: boolean) => {
+  const frameRef = useRef<HTMLDivElement>(null)
+  const [state, setState] = useState<PictureState>(isImage ? 'loading' : 'held')
+  useLayoutEffect(() => {
+    const img = frameRef.current?.querySelector<HTMLImageElement>('picture img')
+    if (img?.complete && img.naturalWidth > 0) setState('held')
+  }, [])
+  const onLoad = useCallback(() => setState((now) => (now === 'loading' ? 'loaded' : now)), [])
+  return { frameRef, onLoad, state }
+}
+
 const CarouselSlide: React.FC<{
   captionClassName?: string
   cornerClass: string
+  frame?: DeckFrame
   gutterClass: string
   isStack: boolean
   count: number
@@ -259,6 +368,7 @@ const CarouselSlide: React.FC<{
   captionClassName,
   cornerClass,
   count,
+  frame,
   gutterClass,
   isStack,
   pose,
@@ -270,7 +380,9 @@ const CarouselSlide: React.FC<{
   const media = slide.media as PopulatedMedia
   // sas-site's Media carries a generated `poster` upload; here a video's still
   // is its Cloudflare Stream thumbnail, the one VideoMedia already paints.
-  const posterSrc = media.mimeType?.includes('video') ? media.cloudflareStreamThumbnailUrl : null
+  const isVideo = Boolean(media.mimeType?.includes('video'))
+  const posterSrc = isVideo ? media.cloudflareStreamThumbnailUrl : null
+  const picture = usePictureState(!isVideo)
   const rest = pose(restSigned, count)
   return (
     <CarouselItem
@@ -280,9 +392,14 @@ const CarouselSlide: React.FC<{
       {/* First child is the tween target. Server-rendered rest-state styles
           match the tween's frame 0, so hydration never flickers. */}
       <div
-        className={cn('will-change-slide', isStack && 'origin-left')}
+        className={cn(
+          'will-change-slide',
+          isStack && 'origin-left',
+          frame && 'flex flex-col justify-end',
+        )}
         style={{
           ...(isStack && stackCardStyle(count)),
+          ...(frame && frameStyle(frame)),
           ...(rest.depth !== undefined && { '--stack-depth': rest.depth }),
           ...(rest.interactive !== undefined && {
             pointerEvents: rest.interactive ? 'auto' : 'none',
@@ -292,11 +409,24 @@ const CarouselSlide: React.FC<{
           transform: rest.transform,
         }}
       >
-        <div className={cn('relative', isStack && STACK_MEDIA_CLASS)}>
+        <div
+          className={cn('relative', isStack && STACK_MEDIA_CLASS)}
+          data-carousel-frame
+          ref={picture.frameRef}
+        >
+          {picture.state !== 'held' && (
+            <PicturePlate
+              cornerClass={cornerClass}
+              loaded={picture.state === 'loaded'}
+              src={placeholderOf(media)}
+            />
+          )}
           {/* Playback is gated by useCarouselEffects: only the active slide plays. */}
           <Media
             autoPlay={false}
             imgClassName={cornerClass}
+            onLoad={picture.onLoad}
+            pictureClassName={PICTURE_CLASS[picture.state]}
             resource={slide.media}
             videoClassName={cornerClass}
           />
@@ -425,6 +555,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
     className,
     deckStyle,
     enableGutter = true,
+    frame,
     onApi,
     showArrows,
     slides,
@@ -456,6 +587,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
     slideSize,
     isFullWidth,
     isStack,
+    frame,
   )
 
   return (
@@ -490,6 +622,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
                 captionClassName={captionClassName}
                 cornerClass={cornerClass}
                 count={renderableSlides.length}
+                frame={frame}
                 gutterClass={gutter.slide}
                 isStack={isStack}
                 key={slide.id}

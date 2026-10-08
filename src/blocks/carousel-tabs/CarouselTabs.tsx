@@ -1,16 +1,17 @@
 'use client'
 
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
-import { useState } from 'react'
-import { CarouselBlock } from '@/blocks/Carousel/Component'
+import { useMemo, useState } from 'react'
+import { CarouselBlock, sharedDeckFrame } from '@/blocks/Carousel/Component'
 import { CopyStack } from '@/blocks/shared/cells'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { Section } from '@/blocks/shared/section'
-import { TabbedRoot, TabPanels } from '@/blocks/shared/tabs'
+import { TabbedRoot } from '@/blocks/shared/tabs'
 import { Container } from '@/components/Container'
 import type { CarouselApi } from '@/components/ui/carousel'
 import type { CarouselTabsBlock as CarouselTabsBlockData } from '@/payload-types'
 import { DeckControls } from './DeckControls'
+import { DeckPanels } from './DeckPanels'
 
 type Tab = NonNullable<CarouselTabsBlockData['tabs']>[number]
 
@@ -37,22 +38,17 @@ type Tab = NonNullable<CarouselTabsBlockData['tabs']>[number]
  * The Radix root wraps the whole grid because the strip and the panels sit in
  * different cells. Each panel is the Carousel block's component rendered
  * `bare` with its gutter and arrows off, because this shell owns the band,
- * the column and the transport. Radix mounts only the active panel, so one
- * deck is ever live, and its embla api is the one the readout drives.
+ * the column and the transport. One deck is live at rest (two only while a
+ * swap runs, see ./DeckPanels), and the active one's embla api is the one
+ * the readout drives. Every deck takes one frame (`sharedDeckFrame`), sized
+ * for the tallest any tab draws, so switching tabs never moves the page.
  *
  * `bare` skips the `Section` wrapper for callers that supply their own shell
  * (the Section block paints the band).
  *
  * A client component, as the tabs block is: `renderPanel` is a function, and
- * a function cannot cross the server/client boundary into `TabPanels`.
+ * a function cannot cross the server/client boundary into `DeckPanels`.
  */
-/**
- * A deck arriving on a tab change: a short rise out of a slight defocus, so
- * the swap reads as the same deck changing rather than a cut. Short because
- * a reader flips tabs back and forth; the outgoing deck simply goes.
- */
-const PANEL_ENTRANCE =
-  'transition-[opacity,translate,filter] duration-300 ease-(--ease-out-quint) starting:translate-y-2 starting:opacity-0 starting:blur-[2px] motion-reduce:transition-none'
 
 export const CarouselTabs = ({
   bare = false,
@@ -67,7 +63,16 @@ export const CarouselTabs = ({
   content?: DefaultTypedEditorState | null
 }) => {
   const [api, setApi] = useState<CarouselApi>()
+  const [pending, setPending] = useState(false)
   const tabs = (block.tabs ?? []).filter((tab) => tab.slides?.length)
+  const frame = useMemo(
+    () =>
+      sharedDeckFrame(
+        (block.tabs ?? []).map((tab) => tab.slides),
+        block.deckStyle,
+      ),
+    [block.tabs, block.deckStyle],
+  )
   if (tabs.length === 0) return null
 
   return (
@@ -87,19 +92,20 @@ export const CarouselTabs = ({
               />
             </div>
             <div className="md:col-span-8 lg:col-span-3 lg:row-start-2 lg:self-end">
-              <DeckControls api={api} rows={tabs} tabSize={block.tabSize} />
+              <DeckControls api={api} pending={pending} rows={tabs} tabSize={block.tabSize} />
             </div>
-            <TabPanels<Tab>
+            <DeckPanels<Tab>
               className="md:col-span-8 lg:col-span-5 lg:col-start-4 lg:row-span-2 lg:row-start-1 lg:self-end"
-              panelClassName={PANEL_ENTRANCE}
-              renderPanel={(tab) => (
+              onPendingChange={setPending}
+              renderPanel={(tab, active) => (
                 <CarouselBlock
                   bare
                   blockType="carousel"
                   deckStyle={block.deckStyle}
                   theme={block.theme}
                   enableGutter={false}
-                  onApi={setApi}
+                  frame={frame}
+                  onApi={active ? setApi : undefined}
                   showArrows={false}
                   slideSize={block.slideSize}
                   slides={tab.slides}

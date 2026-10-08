@@ -1030,6 +1030,27 @@
   }
 }
 
+/* Carousel tabs: an ink crossing the chosen row's hairline while its deck's
+   first picture loads (src/blocks/carousel-tabs/DeckControls.tsx). */
+@theme {
+  --animate-deck-pending: deck-pending 1100ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+
+  @keyframes deck-pending {
+    from {
+      opacity: 0;
+      translate: -100% 0;
+    }
+    30%,
+    70% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      translate: 400% 0;
+    }
+  }
+}
+
 /* A work card opening into its case study (WorkCard → WorkHero), in three
    beats. Before the navigation, the page fades away around the clicked
    picture, farthest pieces first (`src/heros/WorkHero/pageExit.ts`). The

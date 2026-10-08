@@ -3,7 +3,7 @@
 import { IconArrowRight, IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { Tabs as TabsPrimitive } from 'radix-ui'
 import { useEffect, useState } from 'react'
-import { type TabSize, useActiveRow, valueFor } from '@/blocks/shared/tabs'
+import { type TabSize, useActiveRow, useActiveValue, valueFor } from '@/blocks/shared/tabs'
 import type { CarouselApi } from '@/components/ui/carousel'
 import type { CarouselTabsBlock } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -57,64 +57,86 @@ const ROW = {
  * the new row's left edge as the old one retracts, so the progress visibly
  * moves to the deck it now measures.
  *
+ * While the new deck's first picture loads (`pending`, see ./DeckPanels) the
+ * thumb waits and a short ink travels the row's hairline instead; the thumb
+ * draws once the deck starts to arrive.
+ *
  * Inactive rows read as links to the other decks: muted ink, a hairline that
  * darkens on hover with an arrow sliding in at the row's end, and a short
  * dip on press. The active row is settled: full ink, no arrow.
  */
 const DeckIndex = ({
   index,
+  pending,
   rows,
   tabSize,
   total,
 }: {
   index: number
+  pending: boolean
   rows: Tab[]
   tabSize?: TabSize | null
   total: number
 }) => {
   const size = tabSize === 'small' ? 'small' : 'default'
+  const activeValue = useActiveValue()
   return (
     <TabsPrimitive.List
       aria-label="Carousel tabs"
       className="flex flex-col border-foreground/10 border-t"
     >
-      {rows.map((row, rowIndex) => (
-        <TabsPrimitive.Trigger
-          className={cn(
-            'group relative flex w-full items-center justify-between gap-4 text-left text-muted-foreground',
-            'transition-colors duration-150 ease-(--ease-out-quint) hover:text-foreground data-[state=active]:text-foreground',
-            'focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2',
-            ROW[size],
-          )}
-          key={row.id ?? rowIndex}
-          value={valueFor(rows, rowIndex)}
-        >
-          <span className="origin-left truncate transition-[scale] duration-150 ease-(--ease-out-quint) group-active:scale-[0.98] group-data-[state=active]:group-active:scale-100 motion-reduce:transition-none">
-            {row.title}
-          </span>
-          <IconArrowRight
-            aria-hidden="true"
-            className="size-4 shrink-0 -translate-x-1 opacity-0 transition-[opacity,translate] duration-200 ease-(--ease-out-quint) group-hover:translate-x-0 group-hover:opacity-100 group-data-[state=active]:hidden motion-reduce:transition-none"
-            stroke={1.75}
-          />
-          <span
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-px bg-foreground/10 transition-colors duration-150 group-hover:bg-foreground/25 group-data-[state=active]:bg-foreground/10"
-          />
-          <span
-            aria-hidden="true"
-            className="absolute inset-x-0 -bottom-px h-0.5 origin-left scale-x-0 transition-transform duration-500 ease-(--ease-out-quint) group-data-[state=active]:scale-x-100 motion-reduce:transition-none"
+      {rows.map((row, rowIndex) => {
+        const value = valueFor(rows, rowIndex)
+        const loading = pending && value === activeValue
+        return (
+          <TabsPrimitive.Trigger
+            className={cn(
+              'group relative flex w-full items-center justify-between gap-4 text-left text-muted-foreground',
+              'transition-colors duration-150 ease-(--ease-out-quint) hover:text-foreground data-[state=active]:text-foreground',
+              'focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2',
+              ROW[size],
+            )}
+            key={row.id ?? rowIndex}
+            value={value}
           >
-            <span
-              className="absolute inset-y-0 left-0 rounded-full bg-foreground transition-transform duration-500 ease-(--ease-out-quint) motion-reduce:transition-none"
-              style={{
-                width: `${100 / Math.max(total, 1)}%`,
-                transform: `translateX(${index * 100}%)`,
-              }}
+            <span className="origin-left truncate transition-[scale] duration-150 ease-(--ease-out-quint) group-active:scale-[0.98] group-data-[state=active]:group-active:scale-100 motion-reduce:transition-none">
+              {row.title}
+            </span>
+            <IconArrowRight
+              aria-hidden="true"
+              className="size-4 shrink-0 -translate-x-1 opacity-0 transition-[opacity,translate] duration-200 ease-(--ease-out-quint) group-hover:translate-x-0 group-hover:opacity-100 group-data-[state=active]:hidden motion-reduce:transition-none"
+              stroke={1.75}
             />
-          </span>
-        </TabsPrimitive.Trigger>
-      ))}
+            <span
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 h-px bg-foreground/10 transition-colors duration-150 group-hover:bg-foreground/25 group-data-[state=active]:bg-foreground/10"
+            />
+            {loading && (
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 -bottom-px h-0.5 overflow-clip motion-reduce:hidden"
+              >
+                <span className="absolute inset-y-0 left-0 w-1/4 animate-deck-pending rounded-full bg-foreground/60" />
+              </span>
+            )}
+            <span
+              aria-hidden="true"
+              className={cn(
+                'absolute inset-x-0 -bottom-px h-0.5 origin-left scale-x-0 transition-transform duration-500 ease-(--ease-out-quint) group-data-[state=active]:scale-x-100 motion-reduce:transition-none',
+                loading && 'group-data-[state=active]:scale-x-0',
+              )}
+            >
+              <span
+                className="absolute inset-y-0 left-0 rounded-full bg-foreground transition-transform duration-500 ease-(--ease-out-quint) motion-reduce:transition-none"
+                style={{
+                  width: `${100 / Math.max(total, 1)}%`,
+                  transform: `translateX(${index * 100}%)`,
+                }}
+              />
+            </span>
+          </TabsPrimitive.Trigger>
+        )
+      })}
     </TabsPrimitive.List>
   )
 }
@@ -133,10 +155,17 @@ const STEP_BUTTON = cn(
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-/** The slide index in the eyebrow's mono, and previous/next. */
+/**
+ * The slide index in the eyebrow's mono, and previous/next. A one-slide deck
+ * among longer ones keeps the readout's room, hidden, so the column holds still.
+ */
 const DeckReadout = ({ api, index, total }: { api: CarouselApi; index: number; total: number }) => {
+  const idle = total < 2
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div
+      aria-hidden={idle || undefined}
+      className={cn('flex items-center justify-between gap-4', idle && 'invisible')}
+    >
       <p aria-live="polite" className="font-medium font-mono text-xs/none tabular-nums">
         <span aria-hidden="true">
           {pad(index + 1)}
@@ -176,18 +205,21 @@ const DeckReadout = ({ api, index, total }: { api: CarouselApi; index: number; t
  */
 export const DeckControls = ({
   api,
+  pending,
   rows,
   tabSize,
 }: {
   api: CarouselApi
+  pending: boolean
   rows: Tab[]
   tabSize?: TabSize | null
 }) => {
   const { index, total } = useDeckPosition(api, renderableCount(useActiveRow(rows)))
+  const anyDeck = rows.some((row) => renderableCount(row) > 1)
   return (
     <div className="flex flex-col gap-6">
-      <DeckIndex index={index} rows={rows} tabSize={tabSize} total={total} />
-      {total > 1 && <DeckReadout api={api} index={index} total={total} />}
+      <DeckIndex index={index} pending={pending} rows={rows} tabSize={tabSize} total={total} />
+      {anyDeck && <DeckReadout api={api} index={index} total={total} />}
     </div>
   )
 }
