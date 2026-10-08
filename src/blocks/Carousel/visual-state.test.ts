@@ -91,10 +91,23 @@ describe('stack pose', () => {
   })
 
   it('fades the leaving board out early, defocusing as it goes', () => {
-    expect(stackVisualState(-0.1).opacity).toBeGreaterThan(0.6)
-    expect(stackVisualState(-0.5).opacity).toBeLessThan(0.1)
-    expect(stackVisualState(-0.65).opacity).toBe(0)
-    expect(stackVisualState(-0.65).filter).toBe('blur(8.00px)')
+    expect(stackVisualState(-0.1).opacity).toBeGreaterThan(0.5)
+    expect(stackVisualState(-0.3).opacity).toBeLessThan(0.1)
+    expect(stackVisualState(-0.4).opacity).toBe(0)
+    expect(stackVisualState(-0.4).filter).toBe('blur(8.00px)')
+  })
+
+  it('peels the leaving board off a short way rather than sweeping it with the track', () => {
+    // Where the board sits relative to the slot, in cards: the pin added back out.
+    const offset = (signed: number) => {
+      const shift = Number(
+        /translateX\((-?[\d.]+)%\)/.exec(stackVisualState(signed).transform)?.[1],
+      )
+      return shift / 100 + signed / stackCardFraction()
+    }
+    expect(offset(-0.1)).toBeLessThan(0)
+    expect(offset(-0.4)).toBeGreaterThan(-0.3)
+    expect(offset(-1)).toBeCloseTo(-0.4)
   })
 
   it('recedes the pile into the band rather than darkening it', () => {

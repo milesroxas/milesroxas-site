@@ -139,12 +139,13 @@ export const slideVisualState = (signedSnapDistance: number): SlideVisualState =
  * `s` snaps out sits `s` slide widths right of the slot, which is
  * `s / fraction` card widths; the pin cancels exactly that.
  *
- * The top board leaves with the pointer, 1:1 with the track and unclipped
- * (the viewport does not clip a stack), lifting and defocusing as it goes:
- * the fade is front-loaded so it is mostly gone before it crosses the
- * gutter, and the blur turns the overlap with the board coming forward into
- * motion rather than a double exposure. Dragging back runs the same curve in
- * reverse.
+ * The top board peels off toward the pointer but lags it, on an eased path
+ * that never travels more than `STACK_EXIT_TRAVEL` cards, lifting and
+ * defocusing as it goes. The track is unclipped (the viewport does not clip
+ * a stack), so the short path and a fade done by `STACK_EXIT_SNAPS` keep it
+ * from sweeping across the copy column beside the deck; the blur turns the
+ * overlap with the board coming forward into motion rather than a double
+ * exposure. Dragging back runs the same curve in reverse.
  *
  * Boards behind the top one recede by aerial perspective, a veil of the
  * band's own surface (`veil`), not by darkening: shaded boards on a light
@@ -180,7 +181,18 @@ export const stackCardFraction = (count = Number.POSITIVE_INFINITY) =>
 /** The leaving board: its lift and defocus at the end of its fade, and that fade's length in snaps. */
 const STACK_EXIT_SCALE = 0.04
 const STACK_EXIT_BLUR_PX = 8
-const STACK_EXIT_SNAPS = 0.65
+const STACK_EXIT_SNAPS = 0.4
+/** The farthest the leaving board travels from the slot, in cards. */
+const STACK_EXIT_TRAVEL = 0.4
+
+/**
+ * How far a board at `depth` sits tucked under the top card before the pile
+ * deals out (see `useStackEntrance` in ./Component), as a translate of its
+ * own width: its peek undone. The board is scaled, so its own width is the
+ * card's times its scale.
+ */
+export const stackTuck = (depth: number) =>
+  depth > 0 ? (-STACK_STEP_PEEK * depth) / (1 - STACK_STEP_SCALE * depth) : 0
 
 /**
  * A stack slide's distance folded into (-1, count - 1]: one board leaving,
@@ -208,8 +220,8 @@ export const stackVisualState = (
   if (place < 0) {
     const away = Math.min(-place, 1)
     const t = clamp(away / STACK_EXIT_SNAPS, 0, 1)
-    // Travels 1:1 with the track from wherever the fold says it is leaving.
-    const shift = (-pin + place / fraction) * 100
+    const travel = STACK_EXIT_TRAVEL * (1 - (1 - away) ** 2)
+    const shift = (-pin - travel) * 100
     return {
       transform: `translateX(${shift.toFixed(2)}%) scale(${(1 - STACK_EXIT_SCALE * t).toFixed(4)})`,
       opacity: (1 - t) ** 2,

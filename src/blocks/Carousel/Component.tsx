@@ -20,6 +20,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel'
+import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import type { CarouselBlock as CarouselBlockProps } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
 import { cloudflareImageLoader, isCloudflareImageUrl } from '@/utilities/cloudflareImageLoader'
@@ -33,6 +34,7 @@ import {
   deckPose,
   restSignedDistance,
   stackCardFraction,
+  stackTuck,
 } from './visual-state'
 
 type Props = CarouselBlockProps & {
@@ -243,6 +245,68 @@ const STACK_MEDIA_CLASS = cn(
   'active:scale-[0.985] active:duration-150',
 )
 
+/**
+ * The pile deals itself out once it is in view: every board behind the top
+ * card starts tucked under it (`stackTuck`) and slides out to its peek, the
+ * nearest first, on the slower pacing the site's media reveals keep. Only
+ * `translate`, on the frame inside the card, so nothing reflows and it
+ * composes with the per-frame pose. Once per mount, so a tab swap deals the
+ * new deck as its wipe uncovers it (the observer counts the panel's clip).
+ * Reduced motion starts dealt.
+ */
+const STACK_DEAL = { delay: 220, stagger: 180, duration: 1100 } as const
+const STACK_DEAL_DEPTH = 2
+const STACK_DEAL_MARGIN = '0px 0px -20% 0px'
+
+type Deal = 'tucked' | 'dealing' | 'dealt'
+
+const useStackDeal = (isStack: boolean) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const reduced = usePrefersReducedMotion()
+  const [deal, setDeal] = useState<Deal>(isStack ? 'tucked' : 'dealt')
+
+  useEffect(() => {
+    if (deal !== 'tucked') return
+    if (reduced) {
+      setDeal('dealt')
+      return
+    }
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return
+        observer.disconnect()
+        setDeal('dealing')
+      },
+      { rootMargin: STACK_DEAL_MARGIN },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [deal, reduced])
+
+  useEffect(() => {
+    if (deal !== 'dealing') return
+    const { delay, duration, stagger } = STACK_DEAL
+    const timer = setTimeout(
+      () => setDeal('dealt'),
+      delay + stagger * (STACK_DEAL_DEPTH - 1) + duration,
+    )
+    return () => clearTimeout(timer)
+  }, [deal])
+
+  return { deal, ref }
+}
+
+const dealStyle = (deal: Deal, depth = 0): CSSProperties | undefined => {
+  if (depth === 0 || deal === 'dealt') return undefined
+  if (deal === 'tucked') return { translate: `${(stackTuck(depth) * 100).toFixed(2)}% 0` }
+  const { delay, duration, stagger } = STACK_DEAL
+  return {
+    transition: `translate ${duration}ms var(--ease-out-quint) ${delay + (depth - 1) * stagger}ms`,
+  }
+}
+
 /** The veil is the band's surface, so a receding board fades into whatever band holds it. */
 const STACK_VEIL: Record<NonNullable<CarouselBlockProps['theme']>, string> = {
   default: 'bg-background',
@@ -355,6 +419,7 @@ const usePictureState = (isImage: boolean) => {
 const CarouselSlide: React.FC<{
   captionClassName?: string
   cornerClass: string
+  deal: Deal
   frame?: DeckFrame
   gutterClass: string
   isStack: boolean
@@ -368,6 +433,7 @@ const CarouselSlide: React.FC<{
   captionClassName,
   cornerClass,
   count,
+  deal,
   frame,
   gutterClass,
   isStack,
@@ -410,9 +476,12 @@ const CarouselSlide: React.FC<{
         }}
       >
         <div
-          className={cn('relative', isStack && STACK_MEDIA_CLASS)}
+          // A board is opaque: until its picture lands, the band's surface
+          // keeps the boards tucked under it from showing through.
+          className={cn('relative', isStack && STACK_MEDIA_CLASS, veilClass)}
           data-carousel-frame
           ref={picture.frameRef}
+          style={dealStyle(deal, rest.depth)}
         >
           {picture.state !== 'held' && (
             <PicturePlate
@@ -522,9 +591,15 @@ const CAROUSEL_OPTS: React.ComponentProps<typeof Carousel>['opts'] = {
 /**
  * The stack starts its slot on the column's left edge: the pile fans right,
  * so a height-capped slide narrower than the column keeps the top board on
- * the grid line and spends the leftover width on the fan side.
+ * the grid line and spends the leftover width on the fan side. Its snaps
+ * settle slower than embla's default (25): the pile moving up a board is the
+ * whole show, so it should land, not jump. The start is still immediate.
  */
-const STACK_OPTS: React.ComponentProps<typeof Carousel>['opts'] = { loop: true, align: 'start' }
+const STACK_OPTS: React.ComponentProps<typeof Carousel>['opts'] = {
+  loop: true,
+  align: 'start',
+  duration: 40,
+}
 
 /** The embla api, plus the SVG filter ids and nodes the per-frame effects write through. */
 const useDeckEffects = (deckStyle: DeckStyle) => {
@@ -567,6 +642,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
   const style: DeckStyle = deckStyle === 'stack' ? 'stack' : 'coverflow'
   const isStack = style === 'stack'
   const { caId, caOffsets, dissolveId, dissolveMap, setApi } = useDeckEffects(style)
+  const stackDeal = useStackDeal(isStack)
   const handleApi = useCallback(
     (api: CarouselApi) => {
       setApi(api)
@@ -595,6 +671,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
       {/* The custom cursor's Drag ring: the pointer says what the deck does. */}
       <div
         className={cn({ container: enableGutter && !isFullWidth }, className)}
+        ref={stackDeal.ref}
         {...cursorTarget('drag')}
       >
         <CarouselFilters
@@ -622,6 +699,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
                 captionClassName={captionClassName}
                 cornerClass={cornerClass}
                 count={renderableSlides.length}
+                deal={stackDeal.deal}
                 frame={frame}
                 gutterClass={gutter.slide}
                 isStack={isStack}
