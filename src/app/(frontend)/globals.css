@@ -2933,6 +2933,8 @@ html:active-view-transition-type(work-open) .dock {
   top: 0;
   height: 100svh;
   margin-inline: calc(-1 * var(--spacing-gutter));
+  /* The plate's canvas reaches past the frame; on phones that passes the gutter. */
+  overflow-x: clip;
   pointer-events: none;
 }
 

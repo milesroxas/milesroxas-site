@@ -36,6 +36,13 @@ const subscribeLayout = (onChange: () => void) => {
 
 export const isPlateLayout = () => matchMedia(PLATE_LAYOUT_QUERY).matches
 
+/**
+ * The ripple bends the plate's own edges, so its canvas reaches this share of
+ * the frame past each side, past the deepest bend (`PLATE_RIPPLE`).
+ */
+const RIPPLE_BLEED = 0.08
+const RIPPLE_BLEED_STYLE = { inset: `${-RIPPLE_BLEED * 100}%` } as const
+
 const usePlateLayout = () => useSyncExternalStore(subscribeLayout, isPlateLayout, () => false)
 
 /** WebGL samples the plate's own pictures; an SVG has no reliable pixel size to fit. */
@@ -67,7 +74,9 @@ type Props = {
  * where the budget admits one, a canvas dissolves from picture to picture
  * (`./plate-runtime`), sampling these same image and video elements, and
  * hides again the moment a row opens, so the view transition carries the
- * DOM picture.
+ * DOM picture. The ripple bends the frame itself: its canvas reaches past
+ * the frame, and the DOM pictures and ground hide while it draws, so the
+ * page shows wherever the plate's edge pulls in.
  */
 export function MoreWorkPlate({
   items,
@@ -93,11 +102,19 @@ export function MoreWorkPlate({
   const live = useGpuLease(id, wanted, 'plate', GPU_PRIORITY.block)
   // A canvas that yields its slot comes back blank: wait for its first frame again.
   if (!live && ready) setReady(false)
+  const bleed = look === 'ripple' ? RIPPLE_BLEED : 0
+  const drawn = live && ready && !opening
+  const shaped = bleed > 0 && drawn
 
   return (
     <div
       ref={ref}
-      className={cn('relative aspect-[1.6] w-full overflow-clip bg-muted', className)}
+      className={cn(
+        'relative aspect-[1.6] w-full',
+        bleed === 0 && 'overflow-clip',
+        !shaped && 'bg-muted',
+        className,
+      )}
       data-slot="more-work-plate"
     >
       {items.map(
@@ -109,7 +126,7 @@ export function MoreWorkPlate({
                 'absolute inset-0',
                 // Opening swaps at once: the morph carries this picture, not a crossfade.
                 !opening && 'transition-opacity duration-(--more-work-swap) ease-[ease]',
-                i === index ? 'opacity-100' : 'opacity-0',
+                i === index && !shaped ? 'opacity-100' : 'opacity-0',
               )}
               data-plate-layer={i}
             >
@@ -126,11 +143,18 @@ export function MoreWorkPlate({
           ),
       )}
       {live && (
-        <div className={cn('absolute inset-0', ready && !opening ? 'opacity-100' : 'opacity-0')}>
+        <div
+          className={cn(
+            'pointer-events-none absolute inset-0',
+            drawn ? 'opacity-100' : 'opacity-0',
+          )}
+          style={bleed > 0 ? RIPPLE_BLEED_STYLE : undefined}
+        >
           {/* Also catches the runtime chunk failing to load. */}
           <FailureBoundary onError={handleFailure}>
             <Suspense fallback={null}>
               <PlateRuntime
+                bleed={bleed}
                 count={items.length}
                 frameRef={ref}
                 index={index}

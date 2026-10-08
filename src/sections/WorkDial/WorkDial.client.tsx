@@ -310,8 +310,9 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
         <div ref={windowRef} className="work-dial-window" />
         <div ref={focusRef} className="work-dial-focus" />
         <div className="work-dial-frame">
+          {/* Unclipped: the ripple bends the plate past its frame. The wipe clips it on the way in. */}
           <div
-            className="size-full overflow-clip motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
+            className="size-full motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
             style={enterAt(120)}
           >
             {/* The rows are the keyboard's way in; the picture is a pointer shortcut to the one shown. */}

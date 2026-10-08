@@ -10,7 +10,12 @@ import { signalFirstFrame } from '@/features/immersive/ui/overlay'
 import { CANVAS_RESIZE } from '@/lib/webgl/canvas-resize'
 import { ContextGuard } from '@/lib/webgl/components/context-guard'
 import { MORE_WORK_MOTION } from './motion'
-import { PLATE_FRAGMENT, PLATE_RIPPLE_FRAGMENT, PLATE_VERTEX } from './plate-shader'
+import {
+  PLATE_FRAGMENT,
+  PLATE_RIPPLE_FRAGMENT,
+  PLATE_RIPPLE_VERTEX,
+  PLATE_VERTEX,
+} from './plate-shader'
 import type { PlateScrub } from './scrub'
 
 gsap.registerPlugin(CustomEase)
@@ -44,10 +49,14 @@ export const PLATE_LOOK = {
   hold: 0.2,
 } as const
 
-/** The ripple look (`PLATE_RIPPLE_FRAGMENT`): a wave that travels up the plate with the page. */
+/** The ripple look (`PLATE_RIPPLE_FRAGMENT`): a wave that travels up the plate and bends its frame. */
 export const PLATE_RIPPLE = {
   /** The deepest vertical stretch, as a share of the frame's height. */
-  amplitude: 0.035,
+  amplitude: 0.04,
+  /** How far the sides swell out where the front passes, as a share of the frame's width. */
+  swell: 0.035,
+  /** Mesh segments each way: enough that the bent edges read as curves. */
+  segments: 64,
   /** Wavelengths up the frame. */
   waves: 1.6,
   /** How far the slopes lighten and darken the picture. */
@@ -74,11 +83,19 @@ const smoothstep = (edge0: number, edge1: number, x: number) => {
 
 // Hoisted so JSX never allocates fresh objects per render.
 const GL_CONFIG = { alpha: false, antialias: false, powerPreference: 'high-performance' } as const
+/** A bent plate leaves the page showing around it, and its curved edges need smoothing. */
+const GL_CONFIG_SHAPED = { ...GL_CONFIG, alpha: true, antialias: true } as const
 const RESIZE_OPTIONS = { ...CANVAS_RESIZE, scroll: false, debounce: 100 } as const
 const DPR: [number, number] = [1, 2]
 /** R3F writes `pointer-events: auto` on its container; the plate is never a target. */
 const CANVAS_STYLE = { pointerEvents: 'none' } as const
 const PLANE_ARGS: [number, number] = [2, 2]
+const RIPPLE_PLANE_ARGS: [number, number, number, number] = [
+  2,
+  2,
+  PLATE_RIPPLE.segments,
+  PLATE_RIPPLE.segments,
+]
 
 type PlateElement = HTMLImageElement | HTMLVideoElement
 /** What a texture samples: a video as it plays, an image as a still. */
@@ -154,6 +171,7 @@ type PlateSceneProps = {
   index: number
   scrub?: PlateScrub
   look: PlateLook
+  bleed: number
   onFirstFrame: () => void
 }
 
@@ -164,7 +182,7 @@ type PlateSceneProps = {
  */
 type Shown = { from: number | 'snapshot'; to: number }
 
-function PlateScene({ media, index, scrub, look, onFirstFrame }: PlateSceneProps) {
+function PlateScene({ media, index, scrub, look, bleed, onFirstFrame }: PlateSceneProps) {
   const size = useThree((state) => state.size)
   const gl = useThree((state) => state.gl)
   const scene = useThree((state) => state.scene)
@@ -221,8 +239,10 @@ function PlateScene({ media, index, scrub, look, onFirstFrame }: PlateSceneProps
       uAmplitude: { value: PLATE_RIPPLE.amplitude },
       uWaves: { value: PLATE_RIPPLE.waves },
       uShade: { value: PLATE_RIPPLE.shade },
+      uSwell: { value: PLATE_RIPPLE.swell },
+      uInset: { value: 1 / (1 + 2 * bleed) },
     }),
-    [textures, look],
+    [textures, look, bleed],
   )
 
   /** Draws the frame as it stands into a spare target and returns it. */
@@ -364,10 +384,10 @@ function PlateScene({ media, index, scrub, look, onFirstFrame }: PlateSceneProps
 
   return (
     <mesh frustumCulled={false}>
-      <planeGeometry args={PLANE_ARGS} />
+      <planeGeometry args={look === 'ripple' ? RIPPLE_PLANE_ARGS : PLANE_ARGS} />
       <shaderMaterial
         ref={materialRef}
-        vertexShader={PLATE_VERTEX}
+        vertexShader={look === 'ripple' ? PLATE_RIPPLE_VERTEX : PLATE_VERTEX}
         fragmentShader={look === 'ripple' ? PLATE_RIPPLE_FRAGMENT : PLATE_FRAGMENT}
         uniforms={uniforms}
         depthTest={false}
@@ -387,6 +407,11 @@ export type PlateRuntimeProps = {
   /** Follow this position instead of tweening between rows. */
   scrub?: PlateScrub
   look?: PlateLook
+  /**
+   * How far the canvas reaches past the frame on each side, as a share of
+   * the frame, so a look that bends the plate has room to move its edges.
+   */
+  bleed?: number
   onReady: () => void
   onFailure: (reason: PlateFailureReason) => void
 }
@@ -403,6 +428,7 @@ export default function PlateRuntime({
   index,
   scrub,
   look = 'dither',
+  bleed = 0,
   onReady,
   onFailure,
 }: PlateRuntimeProps) {
@@ -433,7 +459,7 @@ export default function PlateRuntime({
         dpr={DPR}
         flat
         frameloop="demand"
-        gl={GL_CONFIG}
+        gl={bleed > 0 ? GL_CONFIG_SHAPED : GL_CONFIG}
         linear
         onCreated={handleCreated}
         resize={RESIZE_OPTIONS}
@@ -441,6 +467,7 @@ export default function PlateRuntime({
       >
         {media && (
           <PlateScene
+            bleed={bleed}
             index={index}
             look={look}
             media={media}
