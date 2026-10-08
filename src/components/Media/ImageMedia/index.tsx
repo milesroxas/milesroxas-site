@@ -63,6 +63,9 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     height = resolved.height
   }
 
+  // A doc without a file would render a broken img and preload an empty href.
+  if (!src) return null
+
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
 
   const sizes = sizeFromProps || '100vw'

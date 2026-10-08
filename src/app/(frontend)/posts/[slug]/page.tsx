@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import { cache } from 'react'
-import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
@@ -13,6 +12,7 @@ import { PostHero } from '@/heros/PostHero'
 import { RenderHero } from '@/heros/RenderHero'
 import type { Post as PostDoc } from '@/payload-types'
 import { ExternalArticle } from '@/sections/ExternalArticle'
+import { getMorePosts, MorePosts } from '@/sections/MorePosts'
 import { WorkIntro } from '@/sections/WorkIntro'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { externalArticle } from '@/utilities/externalArticle'
@@ -70,21 +70,6 @@ function PostBody({ post }: { post: PostDoc }) {
   )
 }
 
-const hasMorePosts = (post: PostDoc) => !post.hideRelatedPosts && Boolean(post.relatedPosts?.length)
-
-function MorePosts({ post }: { post: PostDoc }) {
-  if (!hasMorePosts(post) || !post.relatedPosts) return null
-  return (
-    // Cards are copy paired with media: each frame wipes as the copy drops in.
-    <ScrollReveal className="bg-tertiary py-12" variant="underMedia">
-      <h2 className="container pb-4 text-lead text-tertiary-foreground leading-snug" data-reveal>
-        More posts
-      </h2>
-      <RelatedPosts docs={post.relatedPosts.filter((post) => typeof post === 'object')} />
-    </ScrollReveal>
-  )
-}
-
 export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
@@ -96,34 +81,39 @@ export default async function Post({ params: paramsPromise }: Args) {
   // An external post keeps any body it had before it was switched; only the link out renders.
   const external = externalArticle(post)
   const editorial = post.hero.type === 'editorial'
+  const morePosts = await getMorePosts(post)
 
   return (
-    <article className={cn('bg-tertiary text-tertiary-foreground', !editorial && 'pt-24 md:pt-0')}>
-      {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
+    <>
+      <article
+        className={cn('bg-tertiary text-tertiary-foreground', !editorial && 'pt-24 md:pt-0')}
+      >
+        {/* Allows redirects for valid pages too */}
+        <PayloadRedirects disableNotFound url={url} />
 
-      {draft && <LivePreviewListener />}
-      <PageClient header={!editorial} post={post} />
-      {post.hero.type === 'editorial' ? (
-        <PostHero post={post} />
-      ) : (
-        <RenderHero {...post.hero} type={post.hero.type} />
-      )}
-      {post.intro?.body && <WorkIntro body={post.intro.body} title={post.intro.title} />}
+        {draft && <LivePreviewListener />}
+        <PageClient header={!editorial} post={post} />
+        {post.hero.type === 'editorial' ? (
+          <PostHero post={post} />
+        ) : (
+          <RenderHero {...post.hero} type={post.hero.type} />
+        )}
+        {post.intro?.body && <WorkIntro body={post.intro.body} title={post.intro.title} />}
 
-      {external ? (
-        <ExternalArticle {...external} last={!hasMorePosts(post)} />
-      ) : (
-        <>
-          <PostBody post={post} />
-          {/* Composition (docs/composer-roadmap.md, Phase 3): Sections after the
-              article body. Each band paints its own surface. */}
-          <RenderBlocks blocks={post.layout} />
-        </>
-      )}
-      <MorePosts post={post} />
-      {!external && post.showContents && <ContentsButton />}
-    </article>
+        {external ? (
+          <ExternalArticle {...external} last={morePosts.length === 0} />
+        ) : (
+          <>
+            <PostBody post={post} />
+            {/* Composition (docs/composer-roadmap.md, Phase 3): Sections after the
+                article body. Each band paints its own surface. */}
+            <RenderBlocks blocks={post.layout} />
+          </>
+        )}
+        {!external && post.showContents && <ContentsButton />}
+      </article>
+      <MorePosts items={morePosts} />
+    </>
   )
 }
 
