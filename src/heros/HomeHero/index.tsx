@@ -49,8 +49,11 @@ const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as React.CSSProper
 
 /**
  * The items twice over, so the marquee loops without a gap. Each rises out of
- * the strip's clip in turn from `at`, the wave running the strip's length.
- * `translate` on the item leaves the strip's own `transform` travel alone.
+ * the strip's clip in turn from `at`, the wave running from the strip's
+ * anchored edge along its length: left to right along the back strip, then
+ * right to left along the front one (`flex-row-reverse`), as one ribbon
+ * wrapping the portrait. `translate` on the item leaves the strip's own
+ * `transform` travel alone.
  */
 const MarqueeItems = ({
   items,
@@ -112,7 +115,7 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => (
       <div
         className={cn(
           styles.marquee,
-          'flex flex-row items-center gap-12 font-mono text-foreground',
+          'flex flex-row-reverse items-center gap-12 font-mono text-foreground',
         )}
       >
         <MarqueeItems at={BEAT.marqueeBottom} items={EXPERIENCE_TEXT} keyPrefix="experience" />

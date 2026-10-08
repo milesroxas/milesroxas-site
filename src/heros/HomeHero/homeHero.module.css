@@ -1,15 +1,18 @@
+/* The two strips of one ribbon wrapping the portrait: the front strip drifts
+   right, the back strip left, each over 40s. Each strip is anchored to the
+   edge its words rise from (`index.tsx`) and drifts away from it, so no gap
+   ever opens there: its words overflow the other way. */
 .marquee {
   white-space: nowrap;
   will-change: transform;
   animation: marquee-horizontal-alt 40s linear infinite;
-  /* manipulate the speed of the marquee by changing "40s" line above*/
 }
 @keyframes marquee-horizontal-alt {
   from {
-    transform: translateX(-10%);
+    transform: translateX(0);
   }
   to {
-    transform: translateX(10%);
+    transform: translateX(20%);
   }
 }
 
@@ -17,14 +20,13 @@
   white-space: nowrap;
   will-change: transform;
   animation: marquee-horizontal-alt-b 40s linear infinite;
-  /* manipulate the speed of the marquee by changing "40s" line above*/
 }
 
 @keyframes marquee-horizontal-alt-b {
   from {
-    transform: translateX(10%);
+    transform: translateX(0);
   }
   to {
-    transform: translateX(-10%);
+    transform: translateX(-20%);
   }
 }
