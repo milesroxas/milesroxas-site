@@ -84,6 +84,10 @@ button uses the same hook.
 
 ## Motion
 
+- On a full page load the chrome arrives after the page's opening: the top
+  bar blurs up (`hero-in`), the dock rises in 120ms later. Every page cues it
+  with `--chrome-enter-at` on `body` (600ms); the homepage waits 1100ms for
+  its portrait to wipe open. Client navigations never replay it.
 - The current tab's fill is one layer clipped to the current tab; a new page
   slides the clip on `--ease-spring` (damping 1, response 0.35s). Going a
   level down, the fill cross-fades into a 1px outline on the same clip

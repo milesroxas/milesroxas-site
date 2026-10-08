@@ -1005,9 +1005,15 @@
       scale: 0 1;
     }
   }
+  /* An explicit end: a frame's own clip-path is `none`, and `inset()` to
+     `none` cannot interpolate, so the browser would flip it at the midpoint
+     instead of wiping. */
   @keyframes hero-wipe {
     from {
       clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
     }
   }
   @keyframes hero-settle {
@@ -2131,6 +2137,39 @@ body {
 
 #site-chrome[data-hidden] .chrome-top {
   opacity: 0;
+}
+
+/* First paint: the chrome arrives once the page's opening has drawn the eye.
+   The top bar blurs up like the heroes' small copy (`hero-in`); the dock
+   rises the way it returns after a transition. `--chrome-enter-at` is the
+   page's cue: the homepage waits for its portrait to wipe open and its
+   marquees to settle. `backwards` holds the start through the wait and lets
+   go at the end, so `data-hidden` keeps its transitions afterwards. Reduced
+   motion: the chrome is simply there. */
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    --chrome-enter-at: 600ms;
+  }
+
+  body:has([data-slot="home-hero"]) {
+    --chrome-enter-at: 1100ms;
+  }
+
+  .chrome-top {
+    animation: hero-in 700ms var(--ease-out-quint) var(--chrome-enter-at, 0ms) backwards;
+  }
+
+  .dock {
+    animation: chrome-dock-in 700ms var(--ease-out-quint) calc(var(--chrome-enter-at, 0ms) + 120ms)
+      backwards;
+  }
+}
+
+@keyframes chrome-dock-in {
+  from {
+    opacity: 0;
+    translate: 0 1rem;
+  }
 }
 
 /* A work card opening (`.work-morph`): the chrome stays put while the page

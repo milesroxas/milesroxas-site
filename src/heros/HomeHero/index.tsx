@@ -49,14 +49,19 @@ const MarqueeItems = ({ items, keyPrefix }: { items: string[]; keyPrefix: string
 /**
  * The opening's load-in, played in CSS from the server markup (the case study
  * hero's `hero-*` utilities) so it starts on first paint and never waits on
- * the bundle: the portrait wipes open and settles, then each marquee fades up.
+ * the bundle: the portrait wipes open and settles, then each marquee fades up,
+ * and the chrome arrives last (`data-slot="home-hero"` sets its cue in
+ * globals.css).
  */
 const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as React.CSSProperties
 
 const marqueeIn = 'motion-safe:animate-hero-in motion-reduce:animate-hero-fade'
 
 export const HomeHero: React.FC<HeroProps> = ({ media }) => (
-  <div className="relative flex h-[90vh] w-full flex-col items-center overflow-hidden bg-background md:h-screen">
+  <div
+    className="relative flex h-[90vh] w-full flex-col items-center overflow-hidden bg-background md:h-screen"
+    data-slot="home-hero"
+  >
     <div className={cn('absolute top-[40vh] z-0 w-full', marqueeIn)} style={enterAt(800)}>
       <div className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-foreground')}>
         <MarqueeItems items={SKILLS_TEXT} keyPrefix="skill" />
