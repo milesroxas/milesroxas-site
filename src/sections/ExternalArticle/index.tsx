@@ -9,8 +9,8 @@ import type { ExternalArticle as ExternalArticleData } from '@/utilities/externa
  * worth reading, the band hands the reader to it. One link spans the band;
  * resting on it draws the rule between this site and the publisher's.
  * Referrer is kept so the publisher can see where readers come from.
- * The band reveals as one target: a transform on the heading alone would
- * shrink the link's band-wide hit area to it.
+ * The heading enters line by line; its lines hold a transform only while they
+ * enter, so the link's band-wide hit area is back once they land.
  */
 export function ExternalArticle({ url, publisher, address }: ExternalArticleData) {
   return (

@@ -9,10 +9,11 @@ import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 gsap.registerPlugin(SplitText, useGSAP)
 
 /**
- * Every tunable the reveal timeline reads. Targets run on two tracks — text
- * (`data-reveal`, plus `data-reveal="panel"` for opacity + y without blur and
- * `data-reveal="lines"`, whose copy enters one rendered line per beat) and media (`data-reveal="media"`) — each staggered in document order and
- * gated on its own target; `mediaOffset` delays one track after its gate.
+ * Every tunable the reveal reads. Beats run on two tracks: text (each line of
+ * a `data-reveal` target's copy and each unit in it, plus `data-reveal="panel"`
+ * for opacity + y without blur) and media (`data-reveal="media"`). Each beat is
+ * gated on its own position and cascades after the last beat on its track;
+ * `mediaOffset` delays one track after its gate.
  */
 export type ScrollRevealTuning = {
   /** Drop distance text targets settle down from (px). */
@@ -24,9 +25,10 @@ export type ScrollRevealTuning = {
   /** GSAP ease for text targets. */
   textEase?: string
   /**
-   * Document-order delay between consecutive beats on the same track (s).
-   * Targets sharing a `data-reveal-group` value are one beat, not two — see
-   * `revealStaggerSlots`.
+   * Delay between consecutive beats on the same track (s). A target sharing a
+   * `data-reveal-group` value with the target before it lands its first beat
+   * with that target's last. A burst entering at once compresses to fit
+   * `REVEAL_MAX_CASCADE`.
    */
   stagger?: number
   /** Media entrance duration (s). */
@@ -46,22 +48,16 @@ export type ScrollRevealTuning = {
    */
   mediaScaleFrom?: number
   /**
-   * Track delay after that track's own gate (s): negative = media leads
-   * (text waits `-mediaOffset` after the copy is in view), 0 = a track
-   * plays as soon as it has entered, positive = media waits after the
-   * media gate. Ignored when the shell has no media targets, so a reveal
-   * carrying an offset stays safe on text-only content.
-   *
-   * Leave it 0 for scroll-gated blocks: the gates already sequence a stack
-   * by geometry and fire together side by side. It earns its keep only in
-   * shells whose targets all enter at once — a pin, or a shared
-   * `gateSelector` — where nothing else can order the tracks.
+   * Track delay after a beat's gate (s): negative = media leads (text waits
+   * `-mediaOffset`), positive = media waits. Ignored when the shell has no
+   * media targets. Leave it 0 for scroll-gated blocks, where geometry already
+   * sequences the tracks; it earns its keep in a pin or a shared
+   * `gateSelector`, where every beat enters at once.
    */
   mediaOffset?: number
   /**
-   * How far a track's own target must rise past the fold before that
-   * track plays, as a fraction of the viewport height (0.15 = a sixth of
-   * the screen). Position, not visible fraction — see `observeRevealGate`.
+   * How far a beat must rise past the fold before it plays, as a fraction of
+   * the viewport height. Position, not visible fraction: see `observeRevealGate`.
    */
   enterOffset?: number
 }
@@ -79,11 +75,9 @@ export type ScrollRevealProps = ScrollRevealTuning & {
    */
   variant?: ScrollRevealVariant
   /**
-   * Selector for an in-flow element whose position gates every track
-   * together, for shells that cannot report their own scroll position — a
-   * sticky or fixed band is on screen from the first paint, so its own box
-   * would fire immediately. Resolved document-wide. Without this, each
-   * track gates on its own uppermost target.
+   * Selector for an in-flow element whose position gates every beat
+   * together, for sticky or fixed shells that are on screen from the first
+   * paint. Resolved document-wide.
    */
   gateSelector?: string
   /**
@@ -143,11 +137,8 @@ export const SCROLL_REVEAL_UNDER_MEDIA = {
 } as const satisfies ScrollRevealTuning
 
 /**
- * Shared viewport gate: one observer per track drives every reveal alike.
- * Each track holds until its own target has risen this fraction of the
- * viewport past the fold — media wipes when the image is on screen, copy
- * drops in when the copy is on screen. Each track plays once — scrolling
- * back past a revealed section never reverses or replays it.
+ * Shared viewport gate: each beat holds until it has risen this fraction of
+ * the viewport past the fold, and plays once.
  */
 export const SCROLL_REVEAL_TRIGGER_DEFAULTS = {
   enterOffset: 0.25,
@@ -176,105 +167,42 @@ export const SCROLL_REVEAL_EXIT_TIME_SCALE = 1.6
 /** How far above the viewport the gate's root extends (`observeRevealGate`). */
 const REVEAL_GATE_REACH_PX = 100_000
 
+/** Longest a burst of beats entering together takes to cascade (s). */
+const REVEAL_MAX_CASCADE = 0.8
+
 /**
- * Play-once viewport gate shared by every reveal shell, bespoke ones
- * included: fires when `gate`'s top edge has risen `enterOffset` of the
- * viewport height past the fold, then disconnects — no exit reverse, no
- * replay.
- *
- * Position, not visible fraction. A shell several screens tall can never
- * expose a useful ratio of itself, and one whose copy sits at its bottom edge
- * exposes its ratio from the wrong end — either way a ratio gate fires while
- * the copy is still below the fold and the settle is over before anyone sees
- * it. Measuring each track's own distance past the fold is the same trigger
- * at every block height: media-first layouts wipe when the image arrives,
- * and the copy still has an entrance once it reaches the same line.
- *
- * A gate already above the viewport has risen past the line too, so it fires
- * at once: a reload or anchor jump that lands mid-page, past a tall block's
- * first target, would otherwise leave the rest of that block hidden on screen.
+ * The gate's root margin: from far above the viewport down to `enterOffset`
+ * above the fold. A gate already above the viewport has risen past the line
+ * too, so a reload or anchor jump that lands mid-page still fires it.
+ */
+function revealGateMargin(enterOffset: number) {
+  // A -100% bottom margin collapses the root to a line nothing can intersect.
+  const offset = Math.round(Math.min(Math.max(enterOffset, 0), 0.9) * 100)
+  return `${REVEAL_GATE_REACH_PX}px 0px -${offset}% 0px`
+}
+
+/**
+ * Play-once viewport gate: fires when `gate`'s top edge has risen
+ * `enterOffset` of the viewport height past the fold, then disconnects.
+ * Position, not visible fraction: a block several screens tall never exposes
+ * a useful ratio of itself.
  */
 export function observeRevealGate(gate: Element, enterOffset: number, onEnter: () => void) {
-  // A -100% bottom margin collapses the root box to a zero-height line that
-  // nothing can intersect, which would strand the entrance paused forever.
-  const offset = Math.round(Math.min(Math.max(enterOffset, 0), 0.9) * 100)
   const observer = new IntersectionObserver(
     ([entry]) => {
       if (!entry?.isIntersecting) return
       onEnter()
       observer.disconnect()
     },
-    // The root reaches far above the viewport: a scroll that jumps a gate from
-    // below the fold to above the top still crosses into it and fires.
-    { rootMargin: `${REVEAL_GATE_REACH_PX}px 0px -${offset}% 0px`, threshold: 0 },
+    { rootMargin: revealGateMargin(enterOffset), threshold: 0 },
   )
   observer.observe(gate)
   return () => observer.disconnect()
 }
 
-/**
- * The reveal target whose top edge is highest in the viewport. Each track
- * gates on its own uppermost node so a media-first layout wipes as soon as
- * the image has entered, and the copy still waits until it has entered too.
- */
-export function uppermostRevealTarget(targets: readonly HTMLElement[]): HTMLElement | undefined {
-  if (targets.length === 0) return undefined
-  return targets.reduce((highest, target) =>
-    target.getBoundingClientRect().top < highest.getBoundingClientRect().top ? target : highest,
-  )
-}
-
-/**
- * The stagger slot each text target occupies. Consecutive targets carrying the
- * same `data-reveal-group` value share one slot, so a cluster the reader takes
- * in as a single thought — an eyebrow and the heading it labels — lands on one
- * beat instead of arriving as two.
- *
- * Without it the least important element in a cluster leads: an eyebrow drops
- * a stagger step ahead of its heading, and because the drop distance is a
- * fixed px it is also the largest motion relative to its own type size. The
- * label ends up the loudest thing in the block and visibly detaches from the
- * heading it belongs to.
- *
- * Grouping is positional — only neighbours in document order collapse. That is
- * the only shape a cluster has in the DOM, and it keeps a group name repeated
- * once per item down a list from folding the whole list onto one beat.
- *
- * Markers stay on the individual elements rather than a wrapper because
- * `text-stack` owns the cluster's spacing through direct-child selectors; a
- * grouping `<div>` would break its margin ladder.
- */
-export function revealStaggerSlots(targets: readonly HTMLElement[]): number[] {
-  let slot = -1
-  let previous: string | undefined
-  return targets.map((target) => {
-    const group = target.dataset.revealGroup
-    if (!group || group !== previous) slot += 1
-    previous = group
-    return slot
-  })
-}
-
-/**
- * What a track hands the compositor for the length of its entrance: exactly
- * the properties that track animates, and only while it animates them.
- *
- * Both tracks animate paint-bound properties — a text blur, a media clip mask
- * — and on an unpromoted element the browser re-rasterizes the target on the
- * main thread every frame. Under smooth scroll that reads as stutter and
- * jumps rather than as a slow animation: the scroll is time-based, so a long
- * frame doesn't slow it, it teleports it.
- *
- * Every hint spans the exact window in which the same property is already
- * applied by the tween, so the stacking context / containing block it creates
- * is one the entrance had anyway. `panel` targets stay off `filter` for the
- * same reason their tween does: a filter surface on the node kills its
- * `backdrop-filter`.
- */
-function revealWillChange(target: HTMLElement) {
-  if (target.dataset.reveal === 'media') return 'clip-path'
-  if (target.dataset.reveal === 'panel') return 'opacity, transform'
-  return 'filter, opacity, transform'
+/** Delay between beats in a burst of `count`: the stagger, compressed to fit `REVEAL_MAX_CASCADE`. */
+export function cascadeStagger(stagger: number, count: number) {
+  return count > 1 ? Math.min(stagger, REVEAL_MAX_CASCADE / (count - 1)) : stagger
 }
 
 /** The two block shapes; each variant is a complete, independently tuned reveal. */
@@ -300,18 +228,6 @@ const BASE = {
   ...SCROLL_REVEAL_TRIGGER_DEFAULTS,
 } as const satisfies Required<ScrollRevealTuning>
 
-/**
- * Track start times after that track's own gate: the signed `mediaOffset`
- * splits into two non-negative delays.
- */
-function scrollRevealTrackStarts(mediaOffset: number, hasMediaTargets: boolean) {
-  return {
-    // Text never waits on an empty media track.
-    textStart: hasMediaTargets ? Math.max(0, -mediaOffset) : 0,
-    mediaStart: Math.max(0, mediaOffset),
-  }
-}
-
 /** Base ← variant reveal ← explicit props; an undefined prop never overrides. */
 function resolveTuning(
   variant: ScrollRevealVariant | undefined,
@@ -327,213 +243,367 @@ function resolveTuning(
   return resolved
 }
 
+/** Whole units inside copy: they enter as one beat and are never split. */
+const REVEAL_UNIT =
+  'img, picture, video, canvas, iframe, svg, button, input, select, textarea, form, table, pre, figure, [role], [data-state]'
+
+/** Content a line split would break: controls, media, and anything not laid out inline. */
+const breaksProse = (el: Element) => {
+  if (el instanceof SVGElement) return false
+  if (el.matches(REVEAL_UNIT)) return true
+  const { display } = getComputedStyle(el)
+  return display !== 'inline' && display !== 'contents' && display !== 'none'
+}
+
+type RevealPiece = { el: HTMLElement; prose: boolean }
+
+/**
+ * A text target's content in document order: prose (inline-only copy, split
+ * into lines) and units (media, controls, inline boxes, rows laid out side by
+ * side). Nested `data-reveal` targets play their own beats.
+ */
+function revealPieces(el: HTMLElement, out: RevealPiece[] = []): RevealPiece[] {
+  if (!el.getClientRects().length || el.matches('.sr-only')) return out
+  const style = getComputedStyle(el)
+  const sideBySide = style.display.endsWith('flex') && style.flexDirection.startsWith('row')
+  const inlineBox = style.display.startsWith('inline-')
+  if (el.matches(REVEAL_UNIT) || sideBySide || inlineBox) {
+    out.push({ el, prose: false })
+    return out
+  }
+  const hasText = Boolean(el.textContent?.trim())
+  if (hasText && !Array.from(el.querySelectorAll('*')).some(breaksProse)) {
+    out.push({ el, prose: true })
+    return out
+  }
+  const looseText = Array.from(el.childNodes).some(
+    (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+  )
+  const children = Array.from(el.children).filter(
+    (child): child is HTMLElement =>
+      child instanceof HTMLElement && !child.hasAttribute('data-reveal'),
+  )
+  if (looseText || !children.length) {
+    out.push({ el, prose: false })
+    return out
+  }
+  for (const child of children) revealPieces(child, out)
+  return out
+}
+
+const precedes = (a: Element, b: Element) =>
+  a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+
+type BeatKind = 'text' | 'panel' | 'media'
+
+type Beat = {
+  els: HTMLElement[]
+  kind: BeatKind
+  /** Index of the target among its track's targets, in document order. */
+  target: number
+  group: string | undefined
+  /** First beat of a target grouped with the one before it: lands with that target's last beat. */
+  joins: boolean
+  state: 'waiting' | 'playing' | 'done'
+  onDone?: () => void
+}
+
+/**
+ * What a beat hands the compositor for the length of its entrance: exactly
+ * the properties it animates. `panel` stays off `filter`, which would kill
+ * the node's `backdrop-filter`.
+ */
+const WILL_CHANGE: Record<BeatKind, string> = {
+  text: 'filter, opacity, transform',
+  panel: 'opacity, transform',
+  media: 'clip-path',
+}
+
+/** Inline styles a beat owns, cleared at rest so the stylesheet wins again. */
+const BEAT_PROPS: Record<BeatKind, string> = {
+  text: 'opacity,visibility,transform,filter,willChange,transition',
+  panel: 'opacity,visibility,transform,willChange,transition',
+  media: 'clipPath,willChange,transition',
+}
+
+/** A beat drops at most this share of its own height, so small lines don't pass through each other. */
+const REVEAL_DROP_MAX_SHARE = 0.75
+
+function beatFrom(
+  kind: BeatKind,
+  { textY, textBlurPx }: ResolvedTuning,
+  height: number,
+): gsap.TweenVars {
+  // `transition: none`: a `pressable` target's CSS transition would smear every GSAP write.
+  if (kind === 'media') return { clipPath: 'inset(0% 0% 100% 0%)', transition: 'none' }
+  const y = -Math.min(textY, height * REVEAL_DROP_MAX_SHARE)
+  const drop = { autoAlpha: 0, y, transition: 'none' }
+  return kind === 'panel' ? drop : { ...drop, filter: `blur(${textBlurPx}px)` }
+}
+
+function beatTo(kind: BeatKind, tuning: ResolvedTuning): gsap.TweenVars {
+  if (kind === 'media') {
+    return {
+      clipPath: 'inset(0% 0% 0% 0%)',
+      duration: tuning.mediaDuration,
+      ease: tuning.mediaEase,
+    }
+  }
+  const settle = { autoAlpha: 1, y: 0, duration: tuning.textDuration, ease: tuning.textEase }
+  return kind === 'panel' ? settle : { ...settle, filter: 'blur(0px)' }
+}
+
 type ResolvedTuning = Required<ScrollRevealTuning>
 
-/**
- * Reveal targets may also be `pressable`, whose CSS transition covers
- * opacity — left on, it would re-transition every per-frame GSAP write and
- * smear the entrance. Suspend transitions for the tween, restore after, and
- * promote the track for the length of its entrance (`revealWillChange`) so
- * the blur and the wipe composite instead of repainting every frame.
- */
-const prepareTrack = (track: HTMLElement[]) => () => {
-  for (const target of track) {
-    gsap.set(target, { transition: 'none', willChange: revealWillChange(target) })
-  }
-}
+/** The zooming content inside each media window, when the reveal zooms. */
+const mediaContents = (beat: Beat, tuning: ResolvedTuning) =>
+  beat.kind === 'media' && tuning.mediaScaleFrom !== 1
+    ? beat.els.flatMap((el) => (el.firstElementChild ? [el.firstElementChild] : []))
+    : []
 
 /**
- * Arms each track's timeline with its compositor hints, and fires `onComplete`
- * once every armed track has landed.
- */
-function trackArming(targets: HTMLElement[], mediaTargets: HTMLElement[], onComplete: () => void) {
-  let remaining = 0
-  return (tl: gsap.core.Timeline, track: HTMLElement[]) => {
-    remaining += 1
-    tl.eventCallback('onStart', prepareTrack(track))
-    tl.eventCallback('onComplete', () => {
-      // Release the layer the moment this track lands: a will-change left
-      // on is a promoted layer held for the life of the page.
-      gsap.set(track, { clearProps: 'willChange' })
-      remaining -= 1
-      if (remaining !== 0) return
-      gsap.set(targets, { clearProps: 'transition' })
-      // The wipe's final inset(0) still clips at the border box, which
-      // would pin media that intentionally overflows its frame (WebGL
-      // edge bleed) inside it — drop the mask once the entrance is done.
-      // Guarded: gsap.set([]) logs a "target not found" warning on
-      // text-only shells.
-      if (mediaTargets.length) gsap.set(mediaTargets, { clearProps: 'clipPath' })
-      onComplete()
-    })
-  }
-}
-
-function addTextTweens(
-  tl: gsap.core.Timeline,
-  textTargets: HTMLElement[],
-  start: number,
-  { textY, textBlurPx, textDuration, textEase, stagger }: ResolvedTuning,
-) {
-  const slots = revealStaggerSlots(textTargets)
-  textTargets.forEach((target, index) => {
-    // Glass / functional panels can't take `filter` — it kills
-    // `backdrop-filter` on the same node. Same beat, opacity + y only.
-    const panel = target.dataset.reveal === 'panel'
-    tl.fromTo(
-      target,
-      {
-        autoAlpha: 0,
-        y: -textY,
-        ...(panel ? {} : { filter: `blur(${textBlurPx}px)` }),
-      },
-      {
-        autoAlpha: 1,
-        y: 0,
-        ...(panel ? {} : { filter: 'blur(0px)' }),
-        duration: textDuration,
-        ease: textEase,
-      },
-      start + (slots[index] ?? index) * stagger,
-    )
-  })
-}
-
-function addMediaTweens(
-  tl: gsap.core.Timeline,
-  mediaTargets: HTMLElement[],
-  start: number,
-  { stagger, mediaDuration, mediaEase, mediaScaleFrom }: ResolvedTuning,
-) {
-  mediaTargets.forEach((target, index) => {
-    const at = start + index * stagger
-    tl.fromTo(
-      target,
-      { clipPath: 'inset(0% 0% 100% 0%)' },
-      { clipPath: 'inset(0% 0% 0% 0%)', duration: mediaDuration, ease: mediaEase },
-      at,
-    )
-    // The container is the window: its clip mask holds the frame while the
-    // content inside settles down from a slight zoom on the same beat.
-    const content = target.firstElementChild
-    if (content && mediaScaleFrom !== 1) {
-      tl.fromTo(
-        content,
-        { scale: mediaScaleFrom },
-        { scale: 1, duration: mediaDuration, ease: mediaEase },
-        at,
-      )
-    }
-  })
-}
-
-const REVEAL_LINE_CLASS = 'reveal-line'
-
-/** `[data-reveal]` targets in document order, a `lines` target as its split lines. */
-function revealTargets(root: HTMLElement) {
-  return Array.from(root.querySelectorAll<HTMLElement>('[data-reveal]')).flatMap((target) =>
-    target.dataset.reveal === 'lines'
-      ? Array.from(target.querySelectorAll<HTMLElement>(`.${REVEAL_LINE_CLASS}`))
-      : [target],
-  )
-}
-
-/**
- * Splits every `data-reveal="lines"` target into rendered lines and calls
- * `onSplit` after each split. Rich text splits per block so a line never spans
- * two paragraphs. autoSplit re-splits on resize and font load.
- */
-function splitRevealLines(hosts: HTMLElement[], onSplit: () => void) {
-  const blocks = hosts.flatMap((host) => {
-    const children = Array.from(host.querySelectorAll<HTMLElement>('p, h1, h2, h3, h4, h5, h6, li'))
-    return children.length ? children : [host]
-  })
-  return SplitText.create(blocks, {
-    type: 'lines',
-    linesClass: REVEAL_LINE_CLASS,
-    aria: 'none',
-    autoSplit: true,
-    onSplit,
-  })
-}
-
-/**
- * Builds the entrance over `root`'s reveal targets and gates it on scroll;
- * returns the cleanup that disconnects the gates. `onEnter` fires when the
- * first track starts to play.
+ * Builds the entrance over `root`'s `data-reveal` targets and returns its
+ * cleanup. Text targets are hidden until they near the viewport, then split:
+ * each rendered line of their copy is a beat, as is each unit. Every beat
+ * waits on its own gate (or `gateSelector`'s) and cascades `stagger` after the
+ * last beat on its track. Lines are joined back once the target has landed.
+ * `safe` runs late work inside the GSAP context so cleanup reverts it.
  */
 function playReveal(
   root: HTMLElement,
-  targets: HTMLElement[],
   tuning: ResolvedTuning,
   gateSelector: string | undefined,
+  safe: <T extends (...args: never[]) => void>(fn: T) => T,
   onComplete: () => void,
-  onEnter: () => void = () => {},
 ) {
-  const textTargets = targets.filter((target) => target.dataset.reveal !== 'media')
-  const mediaTargets = targets.filter((target) => target.dataset.reveal === 'media')
-  const { textStart, mediaStart } = scrollRevealTrackStarts(
-    tuning.mediaOffset,
-    mediaTargets.length > 0,
-  )
-  const arm = trackArming(targets, mediaTargets, onComplete)
+  const targets = Array.from(root.querySelectorAll<HTMLElement>('[data-reveal]'))
+  const isMedia = (el: HTMLElement) => el.dataset.reveal === 'media'
+  const hasMedia = targets.some(isMedia)
+  const trackDelay = {
+    text: hasMedia ? Math.max(0, -tuning.mediaOffset) : 0,
+    media: Math.max(0, tuning.mediaOffset),
+  }
+  const track = (beat: Beat) => (beat.kind === 'media' ? 'media' : 'text')
+  const cursors = {
+    text: { at: -Infinity, target: -1, group: undefined as string | undefined },
+    media: { at: -Infinity, target: -1, group: undefined as string | undefined },
+  }
+  let alive = true
+  // A target counts once until it is split, then once per beat.
+  let outstanding = targets.length
+  const settle = () => {
+    outstanding -= 1
+    if (outstanding === 0) onComplete()
+  }
 
-  // A sticky/fixed shell cannot report its own scroll position — one
-  // in-flow marker gates every track together. Otherwise each track
-  // waits on its own target so a media-first layout wipes when the
-  // image arrives, and the copy still drops in once it has entered.
+  const rest = (beat: Beat) => {
+    if (beat.state === 'done') return
+    beat.state = 'done'
+    byLead.delete(beat.els[0] as HTMLElement)
+    gate?.unobserve(beat.els[0] as HTMLElement)
+    gsap.killTweensOf(beat.els)
+    gsap.set(beat.els, { clearProps: BEAT_PROPS[beat.kind] })
+    const contents = mediaContents(beat, tuning)
+    if (contents.length) gsap.set(contents, { clearProps: 'transform' })
+    beat.onDone?.()
+    settle()
+  }
+
+  const play = (beat: Beat, step: number) => {
+    // Already scrolled past: land it rather than queue visible beats behind it.
+    if (beat.els.every((el) => el.getBoundingClientRect().bottom <= 0)) {
+      rest(beat)
+      return
+    }
+    const cursor = cursors[track(beat)]
+    const now = gsap.ticker.time
+    const earliest = now + trackDelay[track(beat)]
+    const joins = beat.joins && cursor.target === beat.target - 1 && cursor.group === beat.group
+    const at = Math.max(earliest, joins ? cursor.at : cursor.at + step)
+    Object.assign(cursor, { at, target: beat.target, group: beat.group })
+    beat.state = 'playing'
+    const delay = at - now
+    gsap.to(beat.els, {
+      ...beatTo(beat.kind, tuning),
+      delay,
+      onStart: () => gsap.set(beat.els, { willChange: WILL_CHANGE[beat.kind] }),
+      onComplete: () => rest(beat),
+    })
+    const contents = mediaContents(beat, tuning)
+    if (contents.length) {
+      gsap.to(contents, {
+        scale: 1,
+        duration: tuning.mediaDuration,
+        ease: tuning.mediaEase,
+        delay,
+      })
+    }
+  }
+
+  const release = (beats: Beat[]) => {
+    const waiting = beats
+      .filter((beat) => beat.state === 'waiting')
+      .sort((a, b) => precedes(a.els[0] as HTMLElement, b.els[0] as HTMLElement))
+    for (const kind of ['text', 'media'] as const) {
+      const burst = waiting.filter((beat) => track(beat) === kind)
+      const step = cascadeStagger(tuning.stagger, burst.length)
+      for (const beat of burst) play(beat, step)
+    }
+  }
+
+  const byLead = new Map<Element, Beat>()
   const overrideGate = gateSelector ? document.querySelector(gateSelector) : null
-  if (overrideGate) {
-    const tl = gsap.timeline({ paused: true })
-    addTextTweens(tl, textTargets, textStart, tuning)
-    addMediaTweens(tl, mediaTargets, mediaStart, tuning)
-    arm(tl, targets)
-    return observeRevealGate(overrideGate, tuning.enterOffset, () => {
-      onEnter()
-      tl.play()
+  let gateOpen = false
+  const queued: Beat[] = []
+  const gate = overrideGate
+    ? null
+    : new IntersectionObserver(
+        safe((entries: IntersectionObserverEntry[]) => {
+          const entering = entries.flatMap((entry) => {
+            const beat = entry.isIntersecting ? byLead.get(entry.target) : undefined
+            if (!beat) return []
+            byLead.delete(entry.target)
+            gate?.unobserve(entry.target)
+            return [beat]
+          })
+          if (entering.length) release(entering)
+        }),
+        { rootMargin: revealGateMargin(tuning.enterOffset), threshold: 0 },
+      )
+  const stopOverride = overrideGate
+    ? observeRevealGate(
+        overrideGate,
+        tuning.enterOffset,
+        safe(() => {
+          gateOpen = true
+          release(queued.splice(0))
+        }),
+      )
+    : undefined
+
+  const watch = (beats: Beat[]) => {
+    const heights = beats.map((beat) => (beat.els[0] as HTMLElement).offsetHeight)
+    beats.forEach((beat, index) => {
+      gsap.set(beat.els, beatFrom(beat.kind, tuning, heights[index] ?? 0))
     })
+    for (const beat of beats) {
+      const contents = mediaContents(beat, tuning)
+      if (contents.length) gsap.set(contents, { scale: tuning.mediaScaleFrom })
+    }
+    if (overrideGate) {
+      if (gateOpen) release(beats)
+      else queued.push(...beats)
+      return
+    }
+    for (const beat of beats) {
+      const lead = beat.els[0] as HTMLElement
+      byLead.set(lead, beat)
+      gate?.observe(lead)
+    }
   }
 
-  /** One track on its own timeline, gated on its own uppermost target. */
-  const gateTrack = (track: HTMLElement[], addTweens: (tl: gsap.core.Timeline) => void) => {
-    const tl = gsap.timeline({ paused: true })
-    addTweens(tl)
-    arm(tl, track)
-    const gate = uppermostRevealTarget(track) ?? root
-    return observeRevealGate(gate, tuning.enterOffset, () => {
-      onEnter()
-      tl.play()
-    })
+  const beat = (els: HTMLElement[], kind: BeatKind, target: number, group?: string): Beat => ({
+    els,
+    kind,
+    target,
+    group,
+    joins: false,
+    state: 'waiting',
+  })
+
+  /** Splits a text target into line and unit beats and starts watching them. */
+  const prepare = (el: HTMLElement, target: number) => {
+    if (!alive) return
+    const group = el.dataset.revealGroup
+    gsap.set(el, { clearProps: 'opacity,visibility' })
+    const pieces = revealPieces(el)
+    const prose = pieces.filter((piece) => piece.prose).map((piece) => piece.el)
+    let beats: Beat[] = []
+    let split: SplitText | undefined
+    let remaining = 0
+    const join = () => queueMicrotask(() => split?.revert())
+    split = prose.length
+      ? SplitText.create(prose, {
+          type: 'lines',
+          aria: 'none',
+          autoSplit: true,
+          // A re-split mid-entrance (resize, late font) lands the target at rest.
+          onSplit: () => {
+            for (const pending of beats) rest(pending)
+          },
+        })
+      : undefined
+    const els = [
+      ...pieces.filter((piece) => !piece.prose).map((piece) => piece.el),
+      ...((split?.lines ?? []) as HTMLElement[]),
+    ].sort(precedes)
+    beats = els.map((line) => ({
+      ...beat([line], 'text', target, group),
+      onDone: () => {
+        remaining -= 1
+        if (remaining === 0) join()
+      },
+    }))
+    if (beats[0]) beats[0].joins = Boolean(group)
+    remaining = beats.length
+    outstanding += beats.length
+    settle()
+    if (!beats.length) join()
+    watch(beats)
   }
 
-  const stops: Array<() => void> = []
-  if (textTargets.length) {
-    stops.push(gateTrack(textTargets, (tl) => addTextTweens(tl, textTargets, textStart, tuning)))
+  const prepareGate = new IntersectionObserver(
+    safe((entries: IntersectionObserverEntry[]) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue
+        prepareGate.unobserve(entry.target)
+        const el = entry.target as HTMLElement
+        const target = textIndex.get(el) ?? 0
+        document.fonts.ready.then(safe(() => prepare(el, target)))
+      }
+    }),
+    // Split a screen ahead, so the copy is in lines before it reaches the gate.
+    { rootMargin: `${REVEAL_GATE_REACH_PX}px 0px 100% 0px`, threshold: 0 },
+  )
+
+  const indexes = { text: 0, media: 0 }
+  const textIndex = new Map<Element, number>()
+  for (const el of targets) {
+    if (isMedia(el)) {
+      watch([beat([el], 'media', indexes.media++)])
+      outstanding += 1
+      settle()
+    } else if (el.dataset.reveal === 'panel') {
+      const panel = beat([el], 'panel', indexes.text++, el.dataset.revealGroup)
+      panel.joins = Boolean(panel.group)
+      watch([panel])
+      outstanding += 1
+      settle()
+    } else {
+      textIndex.set(el, indexes.text++)
+      gsap.set(el, { autoAlpha: 0 })
+      prepareGate.observe(el)
+    }
   }
-  if (mediaTargets.length) {
-    stops.push(
-      gateTrack(mediaTargets, (tl) => addMediaTweens(tl, mediaTargets, mediaStart, tuning)),
-    )
-  }
+
   return () => {
-    for (const stop of stops) stop()
+    alive = false
+    gate?.disconnect()
+    prepareGate.disconnect()
+    stopOverride?.()
   }
 }
 
 /**
- * The site's scroll-entrance motion language, owned in one place: descendants
- * marked `data-reveal` drop into place with a blur settle when that copy
- * enters the viewport, `data-reveal="panel"` is the same track without blur
- * (opacity + y only — so glass surfaces keep `backdrop-filter`), and
- * `data-reveal="lines"` drops its copy in one rendered line per beat, and
- * `data-reveal="media"` targets mask-wipe open from the top when the media
- * itself has entered. Neighbouring text targets that share a
- * `data-reveal-group` value land on one beat — an eyebrow and its heading are
- * one thought, not two. Each track plays once — scrolling back past a revealed
- * shell never reverses or replays it. `mediaOffset` delays one track after
- * its own gate so a wipe can still lead the copy when both are on screen
- * together. Server-rendered children stay visible without JavaScript;
- * reduced motion renders the final state.
+ * The site's scroll-entrance motion language, owned in one place. Copy in a
+ * `data-reveal` target drops into place one rendered line at a time with a
+ * blur settle as each line reaches the gate; media, controls and inline boxes
+ * in it enter whole on the same cascade. `data-reveal="panel"` enters whole
+ * without blur (glass keeps its `backdrop-filter`), and `data-reveal="media"`
+ * wipes open from the top. A target sharing a `data-reveal-group` with the
+ * one before it lands on that target's last beat. Every beat plays once.
+ * Server-rendered children stay visible without JavaScript; reduced motion
+ * renders the final state.
  */
 export function ScrollReveal({
   as: Tag = 'section',
@@ -552,42 +622,14 @@ export function ScrollReveal({
   const resolved = resolveTuning(variant, tuning)
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
       const root = rootRef.current
-      if (!root) return
-      if (!root.querySelector('[data-reveal]')) return
-
-      if (prefersReducedMotion) {
-        gsap.set(revealTargets(root), { clearProps: 'all' })
+      if (!root?.querySelector('[data-reveal]')) return
+      if (prefersReducedMotion || !contextSafe) {
         onCompleteRef.current?.()
         return
       }
-
-      const play = (onEnter?: () => void) =>
-        playReveal(
-          root,
-          revealTargets(root),
-          resolved,
-          gateSelector,
-          () => onCompleteRef.current?.(),
-          onEnter,
-        )
-
-      const lineHosts = Array.from(root.querySelectorAll<HTMLElement>('[data-reveal="lines"]'))
-      if (!lineHosts.length) return play()
-
-      // A re-split before the entrance rebuilds it over the new lines. After
-      // it, the new lines are already at rest.
-      let entered = false
-      let stop: (() => void) | undefined
-      splitRevealLines(lineHosts, () => {
-        if (entered) return
-        stop?.()
-        stop = play(() => {
-          entered = true
-        })
-      })
-      return () => stop?.()
+      return playReveal(root, resolved, gateSelector, contextSafe, () => onCompleteRef.current?.())
     },
     {
       scope: rootRef,

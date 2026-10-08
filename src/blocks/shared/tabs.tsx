@@ -158,8 +158,8 @@ export const TabPanels = <Row extends TabbedRow>({
  * `gap` rather than `space-y-*`: `space-y` is a margin on the strip, which
  * the small rail's layout-neutral `-my-1` would override.
  *
- * `data-reveal` marks the whole shell as one beat for a GSAP reveal: a strip
- * whose panels swap on click cannot stagger its contents.
+ * Under a GSAP reveal (`data-reveal` on the root) the strip and the panel
+ * each enter whole: a panel that swaps on click cannot split into lines.
  */
 export const TabbedPanels = <Row extends TabbedRow>({
   ariaLabel,

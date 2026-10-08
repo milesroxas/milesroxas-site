@@ -15,7 +15,7 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => (
     <div className="container flex min-h-[50dvh] items-center justify-center pt-16 pb-36">
       <div
         className="w-full max-w-[46ch] text-balance text-center font-light text-heading-2/snug"
-        data-reveal="lines"
+        data-reveal
       >
         {richText && <RichText className="mb-0" data={richText} />}
       </div>
