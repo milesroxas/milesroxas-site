@@ -33,7 +33,8 @@ const SKILLS_TEXT = [
  * hero's `hero-*` utilities) so it starts on first paint and never waits on
  * the bundle, on one 320ms beat: the portrait wipes open and settles, the
  * back strip's words start rising while it is half open and the front strip's
- * follow a beat later, each 40ms apart (the case study title's word step),
+ * follow a beat later, each 30ms apart (`marquee-rise`, the title's rise
+ * shortened),
  * and the chrome locks into place last. The chrome's beat is stated again in
  * globals.css (`body:has([data-slot="home-hero"])`); change the two together.
  */
@@ -41,7 +42,7 @@ const BEAT = {
   portrait: 0,
   marqueeTop: 160,
   marqueeBottom: 480,
-  word: 40,
+  word: 30,
   chrome: 800,
 } as const
 
@@ -71,7 +72,7 @@ const MarqueeItems = ({
       return (
         <div
           key={getCompositeKey(keyPrefix, text, copyIndex, itemIndex)}
-          className="whitespace-nowrap motion-safe:animate-hero-rise"
+          className="whitespace-nowrap motion-safe:animate-marquee-rise"
           style={enterAt(at + idx * BEAT.word)}
         >
           {text}

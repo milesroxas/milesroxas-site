@@ -987,6 +987,8 @@
   --animate-hero-settle: hero-settle 1400ms var(--ease-out-quint)
     calc(var(--enter-at, 0ms) + var(--morph-hold, 0ms)) both;
   --animate-hero-fade: hero-fade 300ms ease calc(var(--enter-at, 0ms) + var(--morph-hold, 0ms)) both;
+  /* The homepage marquee's word: the title's rise, shorter, for small type in a long wave. */
+  --animate-marquee-rise: hero-rise 600ms var(--ease-out-quint) var(--enter-at, 0ms) both;
 
   @keyframes hero-in {
     from {
