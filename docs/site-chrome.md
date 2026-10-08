@@ -84,13 +84,12 @@ button uses the same hook.
 
 ## Motion
 
-- On a full page load the chrome arrives after the page's opening, both
-  halves at once: the top bar settles down 0.5rem and the dock settles up
-  0.5rem, fading on the settle curve while the travel rides the press release
-  curve, so each locks into place. Every page cues it with
-  `--chrome-enter-at` on `body` (600ms); the homepage cues it at 800ms, the
-  last of its 320ms beats (`HomeHero`'s `BEAT`). Client navigations never
-  replay it.
+- On a full page load the chrome arrives after the page's opening: the top
+  bar fades in on the settle curve, and one beat (320ms) later the dock fades
+  while it settles up 0.5rem on the press release curve, locking into place
+  last. Every page cues it with `--chrome-enter-at` on `body` (600ms); the
+  homepage cues it at 800ms, the last of its 320ms beats (`HomeHero`'s
+  `BEAT`). Client navigations never replay it.
 - The current tab's fill is one layer clipped to the current tab; a new page
   slides the clip on `--ease-spring` (damping 1, response 0.35s). Going a
   level down, the fill cross-fades into a 1px outline on the same clip

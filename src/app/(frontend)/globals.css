@@ -2141,18 +2141,18 @@ body {
   opacity: 0;
 }
 
-/* First paint: the chrome arrives once the page's opening has drawn the eye,
-   both halves on one cue. The top bar settles down 0.5rem and the dock
-   settles up 0.5rem, fading on the site's settle curve while the travel
-   rides the press release curve, so each locks into place with a hair of
-   overshoot. `--chrome-enter-at` is the page's cue: 600ms on a page with no
-   choreography of its own; the homepage's last beat (HomeHero's `BEAT`).
-   `backwards` holds the start through the wait and lets go at the end, so
-   `data-hidden` keeps its transitions afterwards. Reduced motion: the chrome
-   is simply there. */
+/* First paint: the chrome arrives once the page's opening has drawn the eye.
+   The top bar fades in on the site's settle curve; the dock comes one beat
+   later and last, fading while it settles up 0.5rem on the press release
+   curve, so it locks into place with a hair of overshoot. `--chrome-enter-at`
+   is the page's cue: 600ms on a page with no choreography of its own; the
+   homepage's last beat (HomeHero's `BEAT`). `backwards` holds the start
+   through the wait and lets go at the end, so `data-hidden` keeps its
+   transitions afterwards. Reduced motion: the chrome is simply there. */
 @media (prefers-reduced-motion: no-preference) {
   body {
     --chrome-enter-at: 600ms;
+    --chrome-beat: 320ms;
   }
 
   body:has([data-slot="home-hero"]) {
@@ -2160,27 +2160,20 @@ body {
   }
 
   .chrome-top {
-    animation:
-      chrome-fade 500ms var(--ease-out-quint) var(--chrome-enter-at, 0ms) backwards,
-      chrome-top-lock 600ms var(--press-release-ease) var(--chrome-enter-at, 0ms) backwards;
+    animation: chrome-fade 500ms var(--ease-out-quint) var(--chrome-enter-at, 0ms) backwards;
   }
 
   .dock {
+    --dock-at: calc(var(--chrome-enter-at, 0ms) + var(--chrome-beat, 0ms));
     animation:
-      chrome-fade 500ms var(--ease-out-quint) var(--chrome-enter-at, 0ms) backwards,
-      chrome-dock-lock 600ms var(--press-release-ease) var(--chrome-enter-at, 0ms) backwards;
+      chrome-fade 500ms var(--ease-out-quint) var(--dock-at) backwards,
+      chrome-dock-lock 600ms var(--press-release-ease) var(--dock-at) backwards;
   }
 }
 
 @keyframes chrome-fade {
   from {
     opacity: 0;
-  }
-}
-
-@keyframes chrome-top-lock {
-  from {
-    translate: 0 -0.5rem;
   }
 }
 

@@ -35,8 +35,9 @@ const SKILLS_TEXT = [
  * back strip's words start rising while it is half open and the front strip's
  * follow a beat later, each 30ms apart (`marquee-rise`, the title's rise
  * shortened),
- * and the chrome locks into place last. The chrome's beat is stated again in
- * globals.css (`body:has([data-slot="home-hero"])`); change the two together.
+ * then the top bar fades in and the dock locks into place last. The chrome's
+ * beat is stated again in globals.css (`body:has([data-slot="home-hero"])`);
+ * change the two together.
  */
 const BEAT = {
   portrait: 0,
