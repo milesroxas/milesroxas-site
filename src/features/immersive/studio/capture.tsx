@@ -3,7 +3,7 @@
 import { Canvas, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
-import { STUDIO_GROUND } from './effect'
+import { type BlendMode, STUDIO_GROUND } from './effect'
 import { type EffectId, effectOf } from './effects'
 import { type CaptureOptions, type Snapshot, STILL_QUALITY } from './recipe'
 import { EFFECT_SCENES } from './scenes'
@@ -61,7 +61,9 @@ function CaptureScene({
 }) {
   const rootRef = useRef<HTMLDivElement>(null)
   const Scene = EFFECT_SCENES[effect].Capture
-  const tuning = effectOf(effect).limit(snapshot[capture.surface], 'hero')
+  const contract = effectOf(effect)
+  const tuning = contract.limit(snapshot[capture.surface], 'hero')
+  const blend = contract.blend?.(tuning)
   return (
     <div ref={rootRef} style={{ width: capture.width, height: capture.height }}>
       <Canvas
@@ -83,6 +85,7 @@ function CaptureScene({
         <CaptureFrames
           frames={snapshot.frame}
           capture={capture}
+          blend={blend}
           onResult={onResult}
           onError={onError}
         />
@@ -91,13 +94,26 @@ function CaptureScene({
   )
 }
 
+/** CSS `plus-lighter` is canvas `lighter`; the other modes share their names. */
+const compositeOf = (blend: BlendMode | undefined): GlobalCompositeOperation =>
+  !blend || blend === 'normal'
+    ? 'source-over'
+    : blend === 'plus-lighter'
+      ? 'lighter'
+      : (blend as GlobalCompositeOperation)
+
 /**
  * The finished file, encoded here: a lossless PNG of a full frame is several
  * megabytes, more than a request to the server can carry. A filled capture is
- * laid over its surface's ground first. A browser that cannot encode the
- * format answers with PNG, which the server converts.
+ * laid over its surface's ground first, an opaque frame through its effect's
+ * blend so the ground shows as it does on the page. A browser that cannot
+ * encode the format answers with PNG, which the server converts.
  */
-function encodeStill(source: HTMLCanvasElement, capture: CaptureOptions): Promise<Blob> {
+function encodeStill(
+  source: HTMLCanvasElement,
+  capture: CaptureOptions,
+  blend: BlendMode | undefined,
+): Promise<Blob> {
   let canvas = source
   if (!capture.transparent) {
     canvas = document.createElement('canvas')
@@ -107,6 +123,7 @@ function encodeStill(source: HTMLCanvasElement, capture: CaptureOptions): Promis
     if (!context) throw new Error('The still could not be encoded.')
     context.fillStyle = STUDIO_GROUND[capture.surface]
     context.fillRect(0, 0, canvas.width, canvas.height)
+    context.globalCompositeOperation = compositeOf(blend)
     context.drawImage(source, 0, 0)
   }
   return new Promise((resolve, reject) =>
@@ -121,11 +138,13 @@ function encodeStill(source: HTMLCanvasElement, capture: CaptureOptions): Promis
 function CaptureFrames({
   frames,
   capture,
+  blend,
   onResult,
   onError,
 }: {
   frames: number
   capture: CaptureOptions
+  blend: BlendMode | undefined
   onResult: (image: Blob) => void
   onError: (message: string) => void
 }) {
@@ -153,7 +172,7 @@ function CaptureFrames({
           if (frame % 20 === 19) await new Promise<void>((resolve) => setTimeout(resolve))
         }
         gl.getContext().finish()
-        const image = await encodeStill(gl.domElement, capture)
+        const image = await encodeStill(gl.domElement, capture, blend)
         if (!cancelled) callbacks.current.onResult(image)
       } catch (error) {
         if (!cancelled) callbacks.current.onError(String(error))
@@ -165,6 +184,6 @@ function CaptureFrames({
       cancelled = true
       cancelAnimationFrame(raf)
     }
-  }, [advance, capture, frames, gl, scene])
+  }, [advance, blend, capture, frames, gl, scene])
   return null
 }

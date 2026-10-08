@@ -22,8 +22,12 @@ export type Tuning = Record<string, unknown>
 export type Surface = 'dark' | 'light'
 export const SURFACES = ['dark', 'light'] as const satisfies readonly Surface[]
 
-/** The grounds the Studio paints under an effect, and flattens an opaque export onto. */
-export const STUDIO_GROUND: Record<Surface, string> = { dark: '#090b10', light: '#f6f7fa' }
+/**
+ * The grounds the Studio paints under an effect, and flattens an opaque export
+ * onto: the site's `--background` in each palette (globals.css), as hex
+ * because the admin loads no site CSS and sharp reads no `hsl()` space syntax.
+ */
+export const STUDIO_GROUND: Record<Surface, string> = { dark: '#09090b', light: '#f5f5f4' }
 
 type Grouped = { group: string }
 export type RangeParameter = Grouped & { min: number; max: number; step?: number }
