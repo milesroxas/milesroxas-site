@@ -1734,6 +1734,8 @@ body {
   /* How far the dock reaches up from the bottom edge: what every page keeps
      clear under its last line (Footer) and what the Contents button stands on. */
   --dock-clearance: calc(var(--dock-bottom) + var(--dock-height));
+  /* The Footer's height. A page's closing band reaches under it (ExternalArticle). */
+  --foot-height: calc(var(--dock-clearance) + 1.5rem);
   /* The Ask field: on a phone a 44px touch row on the sheet; from md the
      dock's own height, since the field takes the Ask button's place. Its
      corner is the dock's. The send button sits inside its end, concentric

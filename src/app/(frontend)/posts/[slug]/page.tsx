@@ -70,8 +70,10 @@ function PostBody({ post }: { post: PostDoc }) {
   )
 }
 
+const hasMorePosts = (post: PostDoc) => !post.hideRelatedPosts && Boolean(post.relatedPosts?.length)
+
 function MorePosts({ post }: { post: PostDoc }) {
-  if (post.hideRelatedPosts || !post.relatedPosts || post.relatedPosts.length === 0) return null
+  if (!hasMorePosts(post) || !post.relatedPosts) return null
   return (
     // Cards are copy paired with media: each frame wipes as the copy drops in.
     <ScrollReveal className="bg-tertiary py-12" variant="underMedia">
@@ -110,7 +112,7 @@ export default async function Post({ params: paramsPromise }: Args) {
       {post.intro?.body && <WorkIntro body={post.intro.body} title={post.intro.title} />}
 
       {external ? (
-        <ExternalArticle {...external} />
+        <ExternalArticle {...external} last={!hasMorePosts(post)} />
       ) : (
         <>
           <PostBody post={post} />
