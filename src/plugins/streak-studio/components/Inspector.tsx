@@ -24,7 +24,7 @@ import type { Effect } from '@/features/immersive/studio/effect'
 import type { EffectId } from '@/features/immersive/studio/effects'
 import {
   type CaptureOptions,
-  POSTER_CAPTURE,
+  EXPORT_CAPTURE,
   type Recipe,
   resolveRecipeTuning,
   validateRecipe,
@@ -469,13 +469,14 @@ const GROUNDS = [
   ['light', 'Light'],
 ] as const
 
-/** Filed in Media, and handed over now: the editor asked for a file. */
-function download({ url, filename }: { url?: string | null; filename?: string | null }) {
-  if (!url) return
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename ?? ''
-  link.click()
+/**
+ * A tab opened on the click, while the browser still counts it as the
+ * editor's; the still loads in it once it is filed, and the Studio stays put.
+ */
+function openTab() {
+  const tab = window.open('', '_blank')
+  if (tab) tab.opener = null
+  return tab
 }
 
 type ExportPanelProps = { effect: Effect; effectId: EffectId; recipe: Recipe; validation: string }
@@ -488,17 +489,21 @@ type ExportPanelProps = { effect: Effect; effectId: EffectId; recipe: Recipe; va
 function ExportPanel({ effect, effectId, recipe, validation }: ExportPanelProps) {
   const { id } = useDocumentInfo()
   const { submit } = useForm()
-  const [capture, setCapture] = useState<CaptureOptions>(POSTER_CAPTURE)
+  const [capture, setCapture] = useState<CaptureOptions>(EXPORT_CAPTURE)
   const [busy, setBusy] = useState(false)
   const set: SetCapture = (patch) => setCapture((v) => ({ ...v, ...patch }))
 
   const render = async () => {
+    const tab = openTab()
     setBusy(true)
     try {
       if (!id) throw new Error('Save this look first.')
-      download(await exportStill(submit, { id, effect: effectId, recipe }, capture))
+      const { url } = await exportStill(submit, { id, effect: effectId, recipe }, capture)
+      if (tab && url) tab.location.href = url
+      else tab?.close()
       toast.success('Saved to Media, in the Streak Field Studio folder.')
     } catch (error) {
+      tab?.close()
       toast.error((error as Error).message)
     } finally {
       setBusy(false)

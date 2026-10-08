@@ -162,6 +162,17 @@ export const POSTER_CAPTURE: CaptureOptions = {
   format: 'webp',
   transparent: true,
 }
+/**
+ * The Studio's "Render and save to Media" default: a filled 3:2 still, the
+ * frame of a post card's picture (the More posts lead; rows and archive cards
+ * crop it to 4:3 and 16:9), sized for that frame at 2x.
+ */
+export const EXPORT_CAPTURE: CaptureOptions = {
+  ...POSTER_CAPTURE,
+  width: 1800,
+  height: 1200,
+  transparent: false,
+}
 /** Lossy encoder quality of a still, the same in the browser and on the server. */
 export const STILL_QUALITY = 90
 /**
