@@ -52,6 +52,36 @@ export const WithoutMedia: Story = {
   args: { post: { ...meta.args.post, hero: { type: 'editorial', media: null } } },
 }
 
+/** A Streak Field grounds the band behind the copy and the picture alike. */
+export const StreakField: Story = {
+  args: {
+    post: {
+      ...meta.args.post,
+      hero: {
+        type: 'editorial',
+        media: imageMedia,
+        visualType: 'streakField',
+        shader: { preset: 'depth-map-v1', seed: 42, pointerInteraction: true },
+      },
+    },
+  },
+}
+
+/** The effect alone: no picture, the field is the opening's only art. */
+export const StreakFieldWithoutMedia: Story = {
+  args: {
+    post: {
+      ...meta.args.post,
+      hero: {
+        type: 'editorial',
+        media: null,
+        visualType: 'streakField',
+        shader: { preset: 'topography-v1', seed: 12 },
+      },
+    },
+  },
+}
+
 export const External: Story = {
   args: {
     post: {

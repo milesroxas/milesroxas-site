@@ -13,7 +13,7 @@ const mediaHeroTypes: Condition = (_, { type } = {}) =>
  * The home hero draws its own scene, so it keeps a plain upload.
  */
 const effectHeroTypes: Condition = (_, { type } = {}) =>
-  ['highImpact', 'mediumImpact'].includes(type)
+  ['highImpact', 'mediumImpact', 'editorial'].includes(type)
 
 /**
  * `hero.media` as a visual slot (composer roadmap, D12): the upload keeps its

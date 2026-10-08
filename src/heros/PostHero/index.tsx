@@ -2,6 +2,8 @@ import type { ReactNode } from 'react'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText/Legacy'
 import { ChromeTitle } from '@/components/SiteChrome/ChromeTitle'
+import { resolveOpening } from '@/features/immersive/visual'
+import { HeroGround } from '@/heros/HeroGround'
 import { WorkHeroTitle } from '@/heros/WorkHero/parts'
 import type { Category, Media as MediaType, Post } from '@/payload-types'
 import { externalArticle } from '@/utilities/externalArticle'
@@ -59,15 +61,19 @@ function postFacts(post: Props['post']): Fact[] {
  * media on the other as a featured image at its own proportions, never
  * cropped into a background and never wider than its column. The byline and
  * the picture share a foot line. On a phone they stack, title first. Without
- * media the opening is only the title and byline.
+ * media the opening is only the title and byline. An effect chosen on the
+ * hero grounds the whole band behind both; a pinned face paints the band.
  */
 export function PostHero({ post }: Props) {
   const { hero, title } = post
-  const media = hero?.media && typeof hero.media === 'object' ? hero.media : null
+  const { ground, media, surface } = resolveOpening(hero, { seedKey: 'hero' })
   const facts = postFacts(post)
 
   return (
-    <PostHeroRoot>
+    <PostHeroRoot
+      className={ground ? 'relative isolate overflow-clip' : undefined}
+      data-theme={surface ?? undefined}
+    >
       <div className="flex flex-col gap-10 md:gap-14">
         {title && (
           <div>
@@ -102,6 +108,8 @@ export function PostHero({ post }: Props) {
       </div>
 
       {media && <FeaturedImage media={media} />}
+      {/* After the picture: the card's clone lands on the first img in the hero. */}
+      <HeroGround ground={ground} handoff={!media} />
     </PostHeroRoot>
   )
 }
