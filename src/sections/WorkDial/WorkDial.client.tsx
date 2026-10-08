@@ -50,13 +50,27 @@ const DIAL = {
   /** Where along the reach a row starts fading out, gone by the window's edge. */
   fadeFrom: 0.75,
   /** How long the page rests before it settles on the nearest row, and how long the settle takes. */
-  settleAfter: 180,
-  settle: 1.3,
+  settleAfter: 140,
+  settle: 1,
   /**
-   * The plate changes only for a row the reader stops on: one that has held
-   * the centre line this long, ms, while the page moves slower than
-   * `commitSpeed` rows a second. A fast scroll bows the plate instead of
-   * flicking through every picture it passes.
+   * The wheel locks on to a row the moment it lets go: once it has been
+   * quiet `lockAfter` ms, or a trackpad's momentum has tailed off below
+   * `tailSize` pixels a step, the page glides firmly (`lockLerp`) to the row
+   * it was heading for, and the plate changes with it. Leaning `lockReach` of
+   * the way into the next row is enough to land on it. The rest of the
+   * momentum, steps under `tailGap` ms apart that keep shrinking, no longer
+   * moves the page.
+   */
+  lockAfter: 70,
+  lockReach: 0.25,
+  lockLerp: 0.09,
+  tailSize: 6,
+  tailGap: 50,
+  /**
+   * Without the wheel (keys, scrollbar, touch), the plate changes only for a
+   * row that has held the centre line this long, ms, while the page moves
+   * slower than `commitSpeed` rows a second, so a fast scroll bows the plate
+   * instead of flicking through every picture it passes.
    */
   commitAfter: 160,
   commitSpeed: 2.5,
@@ -85,13 +99,15 @@ const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as CSSProperties
 type RowProps = {
   item: MoreWorkItem
   index: number
+  /** The row the plate shows; on desktop only it answers the pointer. */
+  active: boolean
   plateRef: React.RefObject<HTMLDivElement | null>
   onOpen: (index: number) => void
   onFocusRow: (index: number) => void
   ref: (node: HTMLAnchorElement | null) => void
 }
 
-function DialRow({ item, index, plateRef, onOpen, onFocusRow, ref }: RowProps) {
+function DialRow({ item, index, active, plateRef, onOpen, onFocusRow, ref }: RowProps) {
   const { slug, title } = item
   const href = `/works/${slug}`
   const morph = useWorkCardMorph(slug, href, plateRef, () => onOpen(index), { travel: true })
@@ -102,6 +118,7 @@ function DialRow({ item, index, plateRef, onOpen, onFocusRow, ref }: RowProps) {
         {...cursorTarget('view')}
         ref={ref}
         className="work-dial-link"
+        data-active={active || undefined}
         data-dial-row
         href={href}
         onClick={morph.onClick}
@@ -153,25 +170,6 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
   const shown = items[opening ?? active] ?? items[0]
   const count = String(items.length).padStart(2, '0')
 
-  // Lenis reads `wheelMultiplier` only when it is created; its `virtualScroll`
-  // hook may scale each delta instead.
-  useEffect(() => {
-    if (!lenis) return
-    const { virtualScroll, lerp } = lenis.options
-    lenis.options.lerp = DIAL.lerp
-    lenis.options.virtualScroll = (data) => {
-      if (data.event.type.includes('wheel')) {
-        data.deltaX *= DIAL.wheel
-        data.deltaY *= DIAL.wheel
-      }
-      return virtualScroll?.(data) ?? true
-    }
-    return () => {
-      lenis.options.virtualScroll = virtualScroll
-      lenis.options.lerp = lerp
-    }
-  }, [lenis])
-
   useEffect(() => {
     const list = listRef.current
     const frame = windowRef.current
@@ -188,11 +186,17 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     let settleTimer: ReturnType<typeof setTimeout> | undefined
     let commitTimer: ReturnType<typeof setTimeout> | undefined
     let restTimer: ReturnType<typeof setTimeout> | undefined
+    let lockTimer: ReturnType<typeof setTimeout> | undefined
     let touching = false
     /** Rows a second, signed, and where and when the page last moved. */
     let speed = 0
     let lastPosition = 0
     let movedAt = 0
+    /** The row the wheel locked on to, until the page reaches it or a new gesture starts. */
+    let locked: number | null = null
+    /** Locked, the wheel's momentum is spent: its tail is swallowed. */
+    let coasting = false
+    const wheel = { size: 0, way: 0, at: 0 }
 
     const commit = () => {
       if (openingRef.current) return
@@ -232,14 +236,78 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
         el.style.setProperty('--dial-scale', (1 - (1 - DIAL.scale) * fall).toFixed(4))
         el.style.setProperty('--dial-tilt', (-side * Math.min(u, 1) * DIAL.tilt).toFixed(2))
       })
-      if (openingRef.current) return position
-      const next = Math.round(position)
-      if (next !== current) {
-        current = next
-        clearTimeout(commitTimer)
-        commitTimer = setTimeout(commit, DIAL.commitAfter)
-      }
+      if (!openingRef.current) track(position)
       return position
+    }
+
+    /** Notes the row on the centre line; the plate follows it once the reader stops. */
+    const track = (position: number) => {
+      const next = Math.round(position)
+      if (locked !== null && Math.abs(position - locked) < 0.01) locked = null
+      if (next === current) return
+      current = next
+      clearTimeout(commitTimer)
+      if (locked === null) commitTimer = setTimeout(commit, DIAL.commitAfter)
+    }
+
+    const lockOn = () => {
+      if (!lenis || touching || reduced.matches || phone.matches || openingRef.current) return
+      const raw = (lenis.targetScroll - geometry.current.listTop) / geometry.current.row
+      if (raw <= 0 || raw >= last) return
+      const heading = Math.sign(lenis.targetScroll - lenis.animatedScroll)
+      const base = Math.floor(raw)
+      const into = raw - base
+      const row =
+        heading > 0
+          ? base + Number(into > DIAL.lockReach)
+          : heading < 0
+            ? base + Number(into > 1 - DIAL.lockReach)
+            : Math.round(raw)
+      locked = row
+      coasting = true
+      clearTimeout(commitTimer)
+      clearTimeout(settleTimer)
+      setActive(row)
+      lenis.scrollTo(restingScroll(geometry.current, row), {
+        programmatic: false,
+        lerp: DIAL.lockLerp,
+      })
+    }
+
+    // Lenis reads `wheelMultiplier` only when it is created; its `virtualScroll`
+    // hook may scale each delta instead.
+    /** False swallows the step: it is the tail of momentum the dial has already locked on from. */
+    const onWheel = (deltaY: number) => {
+      const now = performance.now()
+      const size = Math.abs(deltaY)
+      const way = Math.sign(deltaY)
+      const tail = way === wheel.way && now - wheel.at < DIAL.tailGap && size <= wheel.size + 1
+      Object.assign(wheel, { size, way, at: now })
+      clearTimeout(lockTimer)
+      if (coasting && tail) return false
+      coasting = false
+      locked = null
+      if (tail && size < DIAL.tailSize) lockOn()
+      if (coasting) return false
+      lockTimer = setTimeout(lockOn, DIAL.lockAfter)
+      return true
+    }
+
+    const options = lenis?.options
+    const { virtualScroll, lerp } = options ?? {}
+    if (options) {
+      options.lerp = DIAL.lerp
+      options.virtualScroll = (data) => {
+        if (data.event.type.includes('wheel')) {
+          data.deltaX *= DIAL.wheel
+          data.deltaY *= DIAL.wheel
+          if (!onWheel(data.deltaY)) {
+            data.event.preventDefault()
+            return false
+          }
+        }
+        return virtualScroll?.(data) ?? true
+      }
     }
 
     const settle = () => {
@@ -256,6 +324,8 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     // A finger resting on the glass is still reading: settle once it lifts.
     const onTouchStart = () => {
       touching = true
+      coasting = false
+      locked = null
       clearTimeout(settleTimer)
     }
     const onTouchEnd = () => {
@@ -314,6 +384,11 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
       clearTimeout(settleTimer)
       clearTimeout(commitTimer)
       clearTimeout(restTimer)
+      clearTimeout(lockTimer)
+      if (options) {
+        options.virtualScroll = virtualScroll
+        options.lerp = lerp ?? options.lerp
+      }
     }
   }, [lenis, flex])
 
@@ -410,6 +485,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
       <ol ref={listRef} aria-labelledby="works-index-title" className="work-dial-list">
         {items.map((item, index) => (
           <DialRow
+            active={index === (opening ?? active)}
             index={index}
             item={item}
             key={item.id}

@@ -3050,8 +3050,9 @@ html:active-view-transition-type(work-open) .dock {
     pointer-events: none;
   }
 
-  /* Only the title answers the pointer, not the empty run across the page. */
-  .work-dial-title {
+  /* Only the title answers the pointer, not the empty run across the page,
+     and only on the row the plate shows: the others are still turning past. */
+  .work-dial-link[data-active] .work-dial-title {
     pointer-events: auto;
   }
 }
