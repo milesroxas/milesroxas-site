@@ -25,7 +25,7 @@ Do not keep `.env.local` or `.env.production` in the repo root. Next.js loads th
 
 ### Get production content locally
 
-`pnpm dev:tui` → **Pull production content → local Docker DB**. It pulls `.env.production.pulled` with the Vercel CLI if missing, `pg_dump`s production with the container's own client, and restores it over the local `payload` DB. Local data is replaced and not backed up; use **Database → Back up local Docker DB** first if local has work worth keeping.
+`pnpm dev:tui` → **Pull production content → local Docker DB**. It pulls `.env.production.pulled` with the Vercel CLI if missing, `pg_dump`s production with the container's own client, and restores it over the local DB your `.env` names: `payload` in the main checkout, `payload_<city>` in a Conductor workspace (the TUI footer shows which). A workspace borrows the main checkout's Vercel link and pulled env file, so it needs neither of its own. Local data is replaced and not backed up; use **Database → Back up local Docker DB** first if local has work worth keeping.
 
 After a pull, `pnpm dev` push re-applies any schema changes on your branch.
 

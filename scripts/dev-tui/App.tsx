@@ -2,14 +2,15 @@ import path from 'node:path'
 import { Box, type Key, Text, useApp, useInput } from 'ink'
 import Spinner from 'ink-spinner'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { LOCAL_POSTGRES_DB, PROJECT_ROOT, VERCEL_PULL_ENV_FILE } from './constants'
+import { PROJECT_ROOT, VERCEL_PULL_ENV_FILE } from './constants'
 import { backupLocalDatabase, syncProductionToLocal } from './db-sync'
 import {
   assertPostgresUrl,
+  type LocalDb,
   maskPostgresUrlForDisplay,
-  productionEnvExists,
-  readAppPostgresUrl,
+  productionEnvPath,
   readProductionUrls,
+  resolveLocalDb,
 } from './env'
 import { checkVercelCli, ensureLocalPostgresReady } from './prereqs'
 import { runPnpmCapture, runPnpmScript, runVercelEnvPull } from './run'
@@ -53,12 +54,12 @@ const MENU: Record<Stack, MenuItem[]> = {
     {
       id: 'dev-default',
       label: 'Dev server — default env',
-      hint: 'POSTGRES_URL from your .env chain (see footer)',
+      hint: 'POSTGRES_URL from your .env chain',
     },
     {
       id: 'dev-local',
       label: 'Dev server — local Docker DB',
-      hint: `forces ${LOCAL_POSTGRES_DB}; starts the container if needed`,
+      hint: 'forces the local Docker DB (see footer); starts the container if needed',
     },
     {
       id: 'dev-prod',
@@ -68,7 +69,7 @@ const MENU: Record<Stack, MenuItem[]> = {
     {
       id: 'import-prod',
       label: 'Pull production content → local Docker DB',
-      hint: 'pg_dump production, parallel restore into Docker (local data is NOT backed up)',
+      hint: 'pg_dump production, parallel restore into the local Docker DB (NOT backed up first)',
     },
     { id: 'menu-db', label: 'Database…' },
     { id: 'menu-payload', label: 'Payload…' },
@@ -152,15 +153,15 @@ async function startLocalPostgres(ui: Ui): Promise<boolean> {
   return ready.ok
 }
 
-async function executeSync(ui: Ui, postgresUrl: string) {
+async function executeSync(ui: Ui, postgresUrl: string, db: LocalDb) {
   const errUrl = assertPostgresUrl(postgresUrl)
   if (errUrl) {
     ui.setPhase({ kind: 'done', ok: false, output: errUrl })
     return
   }
   if (!(await startLocalPostgres(ui))) return
-  ui.setPhase({ kind: 'running', label: 'Dumping production + restoring local…' })
-  const result = await syncProductionToLocal(postgresUrl)
+  ui.setPhase({ kind: 'running', label: `Dumping production + restoring ${db.name}…` })
+  const result = await syncProductionToLocal(postgresUrl, db)
   ui.setPhase({ kind: 'done', ok: result.ok, output: result.messages.join('\n') })
 }
 
@@ -172,7 +173,7 @@ async function executeSync(ui: Ui, postgresUrl: string) {
  * after credential rotation.
  */
 async function ensureProductionUrls(ui: Ui): Promise<ProductionUrls | null> {
-  if (!(await productionEnvExists())) {
+  if (!(await productionEnvPath())) {
     const v = await checkVercelCli()
     if (!v.ok) {
       ui.setPhase({ kind: 'done', ok: false, output: v.message })
@@ -196,7 +197,7 @@ async function ensureProductionUrls(ui: Ui): Promise<ProductionUrls | null> {
 
 async function devLocal(ui: Ui) {
   if (!(await startLocalPostgres(ui))) return
-  ui.launchScript('dev', { POSTGRES_URL: LOCAL_POSTGRES_DB })
+  ui.launchScript('dev', { POSTGRES_URL: (await resolveLocalDb()).url })
 }
 
 async function devProduction(ui: Ui) {
@@ -219,12 +220,13 @@ async function devProduction(ui: Ui) {
   })
 }
 
-function importProduction(ui: Ui) {
+async function importProduction(ui: Ui) {
+  const db = await resolveLocalDb()
   ui.setPhase({
     kind: 'confirm',
     danger: true,
     title:
-      'Replace the local Docker `payload` database with a dump from production? ' +
+      `Replace the local Docker database ${db.name} with a dump from production? ` +
       'The production URL is read (or pulled) automatically. ' +
       'Local data is overwritten and NOT backed up — use Database → Back up local Docker DB ' +
       'first if you need it. Env files are not changed.',
@@ -232,7 +234,7 @@ function importProduction(ui: Ui) {
       void (async () => {
         const r = await ensureProductionUrls(ui)
         if (!r) return
-        await executeSync(ui, r.dumpUrl)
+        await executeSync(ui, r.dumpUrl, db)
       })()
     },
   })
@@ -240,8 +242,9 @@ function importProduction(ui: Ui) {
 
 async function backupLocal(ui: Ui) {
   if (!(await startLocalPostgres(ui))) return
-  ui.setPhase({ kind: 'running', label: 'Dumping local Docker DB…' })
-  const result = await backupLocalDatabase()
+  const db = await resolveLocalDb()
+  ui.setPhase({ kind: 'running', label: `Dumping local Docker DB ${db.name}…` })
+  const result = await backupLocalDatabase(db)
   ui.setPhase({ kind: 'done', ok: result.ok, output: result.messages.join('\n') })
 }
 
@@ -317,7 +320,7 @@ const handlePhaseKey = (phase: Phase, key: Key, setPhase: (phase: Phase) => void
   else if (key.return) phase.onYes()
 }
 
-/** The database the default env chain points at, re-read on every return to the menu. */
+/** The local database this checkout works in, re-read on every return to the menu. */
 function useDbFooter(phaseKind: Phase['kind']): string[] {
   const [dbFooter, setDbFooter] = useState<string[]>([])
 
@@ -325,16 +328,12 @@ function useDbFooter(phaseKind: Phase['kind']): string[] {
     if (phaseKind !== 'menu') return
     let cancelled = false
     void (async () => {
-      const r = await readAppPostgresUrl()
+      const db = await resolveLocalDb()
       if (cancelled) return
-      if ('error' in r) {
-        setDbFooter([`Default-env DB: unknown — ${r.error}`])
-        return
-      }
-      const kind = r.url === LOCAL_POSTGRES_DB ? 'local Docker' : 'remote'
+      const from = db.source === 'default' ? 'the main dev DB' : `from ${db.source}`
       setDbFooter([
-        `Default-env DB (${kind}, from ${r.source}): ${maskPostgresUrlForDisplay(r.url)}`,
-        'The local/production dev entries override this per-run without editing files.',
+        `Local Docker DB (${from}): ${db.name} — backups and production pulls target it.`,
+        'The local/production dev entries override POSTGRES_URL per-run without editing files.',
       ])
     })()
     return () => {

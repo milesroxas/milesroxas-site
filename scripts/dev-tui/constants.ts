@@ -14,7 +14,10 @@ export const PROJECT_ROOT = path.resolve(__dirname, '../..')
  */
 export const POSTGRES_DOCKER_IMAGE = 'pgvector/pgvector:pg17-trixie'
 
-export const LOCAL_POSTGRES_DB = 'postgresql://postgres@127.0.0.1:54330/payload'
+/** The local Docker Postgres (docker-compose.yml). Keep in sync with `.conductor/lib.sh`. */
+export const LOCAL_POSTGRES_HOST = '127.0.0.1:54330'
+/** The main checkout's dev database; a Conductor workspace has its own `payload_<city>`. */
+export const LOCAL_POSTGRES_DB = `postgresql://postgres@${LOCAL_POSTGRES_HOST}/payload`
 
 /**
  * File written by “Pull Vercel production env”. Deliberately NOT a name Next.js

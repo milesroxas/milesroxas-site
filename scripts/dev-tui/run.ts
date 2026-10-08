@@ -1,5 +1,7 @@
+import path from 'node:path'
 import { execa } from 'execa'
 import { PROJECT_ROOT } from './constants'
+import { vercelLinkedRoot } from './env'
 
 export async function runPnpmCapture(
   args: string[],
@@ -35,9 +37,14 @@ export async function runPnpmScript(script: string, env?: Record<string, string>
   })
 }
 
+/**
+ * Pulls production env into this checkout's `targetFile`, running where the
+ * Vercel link lives: a workspace borrows the main checkout's.
+ */
 export async function runVercelEnvPull(targetFile: string): Promise<void> {
-  await execa('vercel', ['env', 'pull', targetFile, '--environment=production', '--yes'], {
-    cwd: PROJECT_ROOT,
+  const target = path.join(PROJECT_ROOT, targetFile)
+  await execa('vercel', ['env', 'pull', target, '--environment=production', '--yes'], {
+    cwd: await vercelLinkedRoot(),
     stdio: 'inherit',
   })
 }

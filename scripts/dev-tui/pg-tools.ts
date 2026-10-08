@@ -20,11 +20,11 @@ import {
  */
 
 /**
- * Dump local Docker `payload` DB using the **container’s** pg_dump (matches server
+ * Dump a local Docker DB using the **container’s** pg_dump (matches server
  * version). Single-file custom format — the local dump is ~0.7s, so the
  * directory format's extra moving parts would buy nothing.
  */
-export async function pgDumpLocalComposeToFile(outPath: string): Promise<void> {
+export async function pgDumpLocalComposeToFile(db: string, outPath: string): Promise<void> {
   await execa(
     'docker',
     [
@@ -38,7 +38,7 @@ export async function pgDumpLocalComposeToFile(outPath: string): Promise<void> {
       '-Fc',
       '--no-owner',
       '--no-acl',
-      'payload',
+      db,
     ],
     {
       cwd: PROJECT_ROOT,
@@ -87,7 +87,7 @@ export async function pgDumpRemoteDockerToDir(
   )
 }
 
-async function psqlComposeExec(psqlArgs: string[]): Promise<void> {
+async function psqlComposeExec(psqlArgs: string[]): Promise<string> {
   const r = await execa(
     'docker',
     ['compose', 'exec', '-T', 'postgres', 'psql', '-U', 'postgres', ...psqlArgs],
@@ -101,35 +101,39 @@ async function psqlComposeExec(psqlArgs: string[]): Promise<void> {
     const err = r.stderr || r.stdout
     throw new Error(err || `psql exited with ${r.exitCode}`)
   }
+  return r.stdout
 }
 
-export async function localDropAndCreatePayloadDb(): Promise<void> {
-  await psqlComposeExec([
-    '-d',
-    'postgres',
-    '-v',
-    'ON_ERROR_STOP=1',
-    '-c',
-    'DROP DATABASE IF EXISTS payload WITH (FORCE);',
-  ])
-  await psqlComposeExec([
-    '-d',
-    'postgres',
-    '-v',
-    'ON_ERROR_STOP=1',
-    '-c',
-    'CREATE DATABASE payload;',
-  ])
+/** One statement against the maintenance database. */
+const psqlAdmin = (sql: string) =>
+  psqlComposeExec(['-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-tA', '-c', sql])
+
+const sqlString = (value: string) => `'${value.replace(/'/g, "''")}'`
+
+/**
+ * Replace a local database with an empty one. The database comment survives:
+ * `.conductor/prune-dbs.sh` finds orphaned workspace databases by theirs, and
+ * `CREATE DATABASE` starts without one.
+ */
+export async function localDropAndCreateDb(db: string): Promise<void> {
+  const comment = await psqlAdmin(
+    `SELECT shobj_description(oid, 'pg_database') FROM pg_database WHERE datname = ${sqlString(db)};`,
+  )
+  await psqlAdmin(`DROP DATABASE IF EXISTS "${db}" WITH (FORCE);`)
+  await psqlAdmin(`CREATE DATABASE "${db}";`)
+  if (comment.trim()) {
+    await psqlAdmin(`COMMENT ON DATABASE "${db}" IS ${sqlString(comment.trim())};`)
+  }
 }
 
 /**
- * Restore a directory-format dump into the local `payload` database.
+ * Restore a directory-format dump into a local database.
  *
  * Parallel restore needs a seekable archive, so the dump is copied into the
  * container rather than piped over stdin. `--exit-on-error` keeps the strictness
  * `ON_ERROR_STOP=1` gave the old plain-SQL path.
  */
-export async function localRestorePayloadFromDumpDir(dumpDir: string): Promise<void> {
+export async function localRestoreFromDumpDir(db: string, dumpDir: string): Promise<void> {
   await execa(
     'docker',
     ['compose', 'exec', '-T', 'postgres', 'rm', '-rf', CONTAINER_RESTORE_PATH],
@@ -152,7 +156,7 @@ export async function localRestorePayloadFromDumpDir(dumpDir: string): Promise<v
         '-U',
         'postgres',
         '-d',
-        'payload',
+        db,
         '--no-owner',
         '--no-acl',
         '--exit-on-error',

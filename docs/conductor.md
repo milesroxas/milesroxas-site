@@ -38,7 +38,7 @@ The pre-push hook checks exactly what lands on `dev`, and git rejects the push i
 | Database | `payload_<city>` in the one shared `milesroxas-postgres-1` container (port 54330), cloned from the main dev DB `payload` |
 | Vercel Blob, Cloudflare, Resend, … | Shared with your main checkout — same keys, same stores |
 
-Never create `.env.local` in a workspace. Next.js loads it **over** `.env`, and `vercel env pull` writes it by default with `POSTGRES_URL` = Neon production — dev push would then offer to drop production tables. `lib.sh` refuses to run setup/dev/storybook while `.env.local` or `.env.development.local` names any DB other than the workspace one (`mv .env.local .env.local.neon-bak`). Pull production env only from the main checkout via the dev TUI, which writes `.env.production.pulled`.
+Never create `.env.local` in a workspace. Next.js loads it **over** `.env`, and `vercel env pull` writes it by default with `POSTGRES_URL` = Neon production — dev push would then offer to drop production tables. `lib.sh` refuses to run setup/dev/storybook while `.env.local` or `.env.development.local` names any DB other than the workspace one (`mv .env.local .env.local.neon-bak`). Pull production env via the dev TUI, which writes `.env.production.pulled`, a name Next.js never reads; run in a workspace it reads the main checkout's copy when one exists.
 
 `run_mode = "concurrent"`: because port and DB are per-workspace, any number of workspaces can run at once.
 
@@ -77,9 +77,10 @@ New workspace DBs are cloned from the main dev DB `payload` (`CREATE DATABASE �
 ```bash
 bash .conductor/setup.sh --reseed                    # fresh clone of payload
 bash .conductor/setup.sh --reseed --from production  # pg_dump straight from Neon
+pnpm dev:tui                                         # Pull production content → this workspace's DB
 ```
 
-`--from production` needs `.env.production.pulled` in the Conductor root (the main checkout) or a logged-in `vercel` CLI; it falls back to the local clone otherwise, and sets `PAYLOAD_SECRET` to production's so encrypted fields decrypt.
+`--from production` needs `.env.production.pulled` in the Conductor root (the main checkout) or a logged-in `vercel` CLI; it falls back to the local clone otherwise, and sets `PAYLOAD_SECRET` to production's so encrypted fields decrypt. The dev TUI's pull targets the DB the workspace `.env` names (never the shared `payload`), borrows the main checkout's Vercel link and pulled env, and keeps the database comment prune relies on.
 
 ### Shared container, never re-created from a workspace
 
