@@ -4,93 +4,69 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react'
-import { type ShaderMaterial, Texture, Vector2, VideoTexture, WebGLRenderTarget } from 'three'
+import { type ShaderMaterial, Texture, Vector2, VideoTexture } from 'three'
 import { FailureBoundary, useCanvasFailure } from '@/features/immersive/ui/failure-boundary'
 import { signalFirstFrame } from '@/features/immersive/ui/overlay'
 import { CANVAS_RESIZE } from '@/lib/webgl/canvas-resize'
 import { ContextGuard } from '@/lib/webgl/components/context-guard'
 import { MORE_WORK_MOTION } from './motion'
-import {
-  PLATE_FRAGMENT,
-  PLATE_RIPPLE_FRAGMENT,
-  PLATE_RIPPLE_VERTEX,
-  PLATE_VERTEX,
-} from './plate-shader'
+import { PLATE_FRAGMENT, PLATE_VERTEX, PLATE_WAVES } from './plate-shader'
 import type { PlateSignal } from './signal'
 
 gsap.registerPlugin(CustomEase)
 
 /**
- * The plate's live layer: one small classic WebGL canvas drawing a single
- * clip-space quad, on demand. It samples the plate's own image and video
- * elements, so nothing downloads twice. It draws while a transition runs and
- * on each new frame of a video it shows; a resting still plate draws nothing.
+ * The plate's live layer: one small classic WebGL canvas drawing a fine
+ * mesh, on demand. It samples the plate's own image and video elements, so
+ * nothing downloads twice. It draws while a wave runs, while the plate bows
+ * with the scroll, and on each new frame of a video it shows; a resting still
+ * plate draws nothing.
  */
 
-const { duration, ease } = MORE_WORK_MOTION.plate
-const { ripple } = MORE_WORK_MOTION
+const { plate } = MORE_WORK_MOTION
 
-/** The transition's look (`./plate-shader`); its timing is in `./motion`. */
+/** The plate's look (`./plate-shader`): a wave that travels up the plate and bends its frame. Timing is in `./motion`. */
 export const PLATE_LOOK = {
-  duration: duration / 1000,
-  ease: CustomEase.create('more-work-plate', ease.join(',')),
-  /** How deep the dithered band is, as a share of the frame. */
-  band: 0.45,
-  /** How far low noise bends the band's edge. */
-  warp: 0.2,
-  /** Dither cell, CSS pixels. */
-  cell: 2,
-  /** Red/blue split at the frame's edge mid-band, in UV. */
-  aberration: 0.018,
-  /** The arriving picture's starting scale. */
-  settle: 1.04,
-  /** How much larger the leaving picture drifts. */
-  drift: 0.02,
-} as const
-
-/** The ripple look (`PLATE_RIPPLE_FRAGMENT`): a wave that travels up the plate and bends its frame. */
-export const PLATE_RIPPLE = {
-  duration: ripple.duration / 1000,
-  ease: CustomEase.create('more-work-ripple', ripple.ease.join(',')),
-  /** How much faster a wave runs once another row is waiting. */
-  hurry: ripple.hurry,
+  duration: plate.duration / 1000,
+  ease: {
+    pointer: CustomEase.create('more-work-plate-pointer', plate.ease.pointer.join(',')),
+    scroll: CustomEase.create('more-work-plate-scroll', plate.ease.scroll.join(',')),
+  },
+  /** How much faster a wave runs once another row is waiting, and how long it takes to get there. */
+  hurry: plate.hurry,
+  hurryRamp: plate.hurryRamp / 1000,
   /** The deepest vertical stretch, as a share of the frame's height. */
-  amplitude: 0.04,
+  amplitude: 0.014,
   /** How far the sides swell out where the front passes, as a share of the frame's width. */
-  swell: 0.035,
+  swell: 0.01,
   /** Mesh segments each way: enough that the bent edges read as curves. */
   segments: 64,
-  /** Wavelengths up the frame. */
-  waves: 1.6,
+  /** Wavelengths up the frame: one, so the plate bends in a single broad swell. */
+  waves: 1,
   /** How far the slopes lighten and darken the picture. */
-  shade: 0.09,
+  shade: 0.035,
   /** How deep the soft front between the pictures is, as a share of the frame. */
   band: 0.85,
   /** How far the plate bows with the scroll at most, as a share of the frame's height. */
-  flex: 0.025,
+  flex: 0.015,
   /** Scroll speed, in rows per second, that bows it about three quarters of the way. */
   flexSpeed: 6,
   /** Seconds the bow takes to close about two thirds of the way to the scroll's speed. */
   flexLag: 0.3,
 } as const
 
-/** `dither` sweeps through an ordered dither (More work); `ripple` runs a wave up the picture (the dial). */
-export type PlateLook = 'dither' | 'ripple'
-
 // Hoisted so JSX never allocates fresh objects per render.
-const GL_CONFIG = { alpha: false, antialias: false, powerPreference: 'high-performance' } as const
 /** A bent plate leaves the page showing around it, and its curved edges need smoothing. */
-const GL_CONFIG_SHAPED = { ...GL_CONFIG, alpha: true, antialias: true } as const
+const GL_CONFIG = { alpha: true, antialias: true, powerPreference: 'high-performance' } as const
 const RESIZE_OPTIONS = { ...CANVAS_RESIZE, scroll: false, debounce: 100 } as const
 const DPR: [number, number] = [1, 2]
 /** R3F writes `pointer-events: auto` on its container; the plate is never a target. */
 const CANVAS_STYLE = { pointerEvents: 'none' } as const
-const PLANE_ARGS: [number, number] = [2, 2]
-const RIPPLE_PLANE_ARGS: [number, number, number, number] = [
+const PLANE_ARGS: [number, number, number, number] = [
   2,
   2,
-  PLATE_RIPPLE.segments,
-  PLATE_RIPPLE.segments,
+  PLATE_LOOK.segments,
+  PLATE_LOOK.segments,
 ]
 
 type PlateElement = HTMLImageElement | HTMLVideoElement
@@ -162,35 +138,46 @@ function onVideoFrames(video: HTMLVideoElement, callback: () => void) {
   return () => cancelAnimationFrame(handle)
 }
 
+/**
+ * What leads the plate, and so how it answers. `pointer` (More work) opens
+ * each wave fast and starts a row's wave at once, over a running one that
+ * quickens to land under it. `scroll` (the dial) opens calmer, and a row that
+ * arrives mid-wave waits for the running wave to pass, quickening it.
+ */
+export type PlateLead = 'pointer' | 'scroll'
+
 type PlateSceneProps = {
   media: PlateMedia[]
   index: number
   flex?: PlateSignal
-  look: PlateLook
   bleed: number
+  lead: PlateLead
   onFirstFrame: () => void
 }
 
-/**
- * What the transition runs between. `from` is a row's picture, or, when a
- * new row interrupts a transition, a snapshot of the frame as it stood, so
- * the next sweep starts from exactly what was on screen.
- */
-type Shown = { from: number | 'snapshot'; to: number }
+/** One wave carrying `row` over everything below it. */
+type Wave = { row: number; direction: number; tween: gsap.core.Tween; state: { progress: number } }
 
-function PlateScene({ media, index, flex, look, bleed, onFirstFrame }: PlateSceneProps) {
+const hurry = (tween: gsap.core.Tween) =>
+  gsap.to(tween, {
+    timeScale: PLATE_LOOK.hurry,
+    duration: PLATE_LOOK.hurryRamp,
+    ease: 'sine.inOut',
+    overwrite: true,
+  })
+
+function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateSceneProps) {
   const size = useThree((state) => state.size)
-  const gl = useThree((state) => state.gl)
-  const scene = useThree((state) => state.scene)
-  const camera = useThree((state) => state.camera)
   const invalidate = useThree((state) => state.invalidate)
   const materialRef = useRef<ShaderMaterial>(null)
   const framesDrawn = useRef(0)
-  const shown = useRef<Shown>({ from: index, to: index })
-  const stopVideos = useRef<() => void>(() => {})
-  const tween = useRef<gsap.core.Tween | null>(null)
-  /** The ripple's next row, waiting for the running wave to pass. */
+  /** The row at rest under every running wave. */
+  const base = useRef(index)
+  /** Running waves, oldest first. */
+  const waves = useRef<Wave[]>([])
+  /** The next row, waiting for a wave to pass. */
   const queued = useRef<number | null>(null)
+  const stopVideos = useRef<() => void>(() => {})
 
   const textures = useMemo(
     () =>
@@ -204,154 +191,148 @@ function PlateScene({ media, index, flex, look, bleed, onFirstFrame }: PlateScen
     }
   }, [textures])
 
-  // Two, alternated: a snapshot must never be drawn into the target it samples.
-  const snapshots = useMemo(
-    () => [0, 1].map(() => new WebGLRenderTarget(1, 1, { depthBuffer: false })),
-    [],
-  )
-  const nextSnapshot = useRef(0)
-  useEffect(
-    () => () => {
-      for (const target of snapshots) target.dispose()
-    },
-    [snapshots],
-  )
-
   // Initial values only: runtime updates go through materialRef.
   const uniforms = useMemo(
     () => ({
-      uFrom: { value: textures[shown.current.to] as Texture },
-      uTo: { value: textures[shown.current.to] as Texture },
-      uFromCover: { value: new Vector2(1, 1) },
-      uToCover: { value: new Vector2(1, 1) },
-      uProgress: { value: 1 },
-      uDirection: { value: 1 },
+      uBase: { value: textures[base.current] as Texture },
+      uBaseCover: { value: new Vector2(1, 1) },
+      uTex: { value: Array.from({ length: PLATE_WAVES }, () => textures[base.current] as Texture) },
+      uCover: { value: Array.from({ length: PLATE_WAVES }, () => new Vector2(1, 1)) },
+      uProgress: { value: new Array<number>(PLATE_WAVES).fill(0) },
+      uDirection: { value: new Array<number>(PLATE_WAVES).fill(1) },
       uAspect: { value: 1 },
-      uBand: { value: look === 'ripple' ? PLATE_RIPPLE.band : PLATE_LOOK.band },
-      uWarp: { value: PLATE_LOOK.warp },
-      uCell: { value: PLATE_LOOK.cell },
-      uAberration: { value: PLATE_LOOK.aberration },
-      uSettle: { value: PLATE_LOOK.settle },
-      uDrift: { value: PLATE_LOOK.drift },
-      uAmplitude: { value: PLATE_RIPPLE.amplitude },
-      uWaves: { value: PLATE_RIPPLE.waves },
-      uShade: { value: PLATE_RIPPLE.shade },
-      uSwell: { value: PLATE_RIPPLE.swell },
+      uBand: { value: PLATE_LOOK.band },
+      uAmplitude: { value: PLATE_LOOK.amplitude },
+      uWaves: { value: PLATE_LOOK.waves },
+      uShade: { value: PLATE_LOOK.shade },
+      uSwell: { value: PLATE_LOOK.swell },
       uInset: { value: 1 / (1 + 2 * bleed) },
       uFlex: { value: 0 },
-      uFlexDepth: { value: PLATE_RIPPLE.flex },
+      uFlexDepth: { value: PLATE_LOOK.flex },
     }),
-    [textures, look, bleed],
+    [textures, bleed],
   )
 
-  /** Draws the frame as it stands into a spare target and returns it. */
-  const snapshot = () => {
-    const target = snapshots[nextSnapshot.current]
-    nextSnapshot.current = 1 - nextSnapshot.current
-    const buffer = gl.getDrawingBufferSize(new Vector2())
-    target.setSize(buffer.x, buffer.y)
-    gl.setRenderTarget(target)
-    gl.render(scene, camera)
-    gl.setRenderTarget(null)
-    return target.texture
-  }
+  /** The row the plate is heading for. */
+  const target = () => waves.current.at(-1)?.row ?? base.current
 
-  /** Points the uniforms at `shown` and redraws for as long as a video in it plays. */
-  const show = (fromTexture?: Texture) => {
+  /** Writes each wave's progress; idle slots sit at 0, where a wave shows nothing. */
+  const tick = () => {
     const u = materialRef.current?.uniforms
     if (!u) return
-    const { from, to } = shown.current
-    const aspect = u.uAspect.value
-    if (from === 'snapshot') {
-      if (fromTexture) u.uFrom.value = fromTexture
-      u.uFromCover.value.set(1, 1)
-    } else {
-      u.uFrom.value = textures[from]
-      coverScale(media[from], aspect, u.uFromCover.value)
+    for (let i = 0; i < PLATE_WAVES; i++) {
+      const wave = waves.current[i]
+      u.uProgress.value[i] = wave?.state.progress ?? 0
+      u.uDirection.value[i] = wave?.direction ?? 1
     }
-    u.uTo.value = textures[to]
-    coverScale(media[to], aspect, u.uToCover.value)
+    invalidate()
+  }
+
+  /** Points the uniforms at the base and the waves, and redraws while a video in them plays. */
+  const show = () => {
+    const u = materialRef.current?.uniforms
+    if (!u) return
+    const aspect = u.uAspect.value
+    u.uBase.value = textures[base.current]
+    coverScale(media[base.current], aspect, u.uBaseCover.value)
+    for (let i = 0; i < PLATE_WAVES; i++) {
+      const row = waves.current[i]?.row ?? base.current
+      u.uTex.value[i] = textures[row]
+      coverScale(media[row], aspect, u.uCover.value[i])
+    }
     stopVideos.current()
-    const playing = [...new Set([from === 'snapshot' ? null : media[from], media[to]])]
-    const stops = playing
+    const rows = new Set([base.current, ...waves.current.map((wave) => wave.row)])
+    const stops = [...rows]
+      .map((row) => media[row])
       .filter((el): el is HTMLVideoElement => el instanceof HTMLVideoElement)
       .map((video) => onVideoFrames(video, invalidate))
     stopVideos.current = () => {
       for (const stop of stops) stop()
     }
-    invalidate()
+    tick()
   }
 
   useEffect(() => () => stopVideos.current(), [])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; a new size or material is the trigger
   useEffect(() => {
     const u = materialRef.current?.uniforms
     if (!u) return
     u.uAspect.value = size.width / Math.max(size.height, 1)
-    u.uCell.value = PLATE_LOOK.cell * gl.getPixelRatio()
     show()
-    // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; the size is the trigger
-  }, [size.width, size.height, gl, show])
+  }, [size.width, size.height, uniforms])
+
+  /** How many waves may run at once. */
+  const room = lead === 'pointer' ? PLATE_WAVES : 1
 
   /**
-   * Runs a full transition to row `to` from whatever is on screen: the
-   * picture at rest, or a snapshot when it lands mid-sweep. The sweep runs
-   * down the plate when the list moved down, up when it moved up.
+   * A finished wave shows its picture whole: it becomes the base, and any
+   * wave under it is gone from view.
    */
-  const start = (to: number) => {
-    const u = materialRef.current?.uniforms
-    if (!u) return
-    const state = shown.current
-    const midway = u.uProgress.value < 1
-    const fromTexture = midway ? snapshot() : undefined
-    const timing = look === 'ripple' ? PLATE_RIPPLE : PLATE_LOOK
-    u.uDirection.value = to > state.to ? 1 : -1
-    shown.current = { from: midway ? 'snapshot' : state.to, to }
-    u.uProgress.value = 0
-    show(fromTexture)
-    tween.current?.kill()
-    tween.current = gsap.to(u.uProgress, {
-      value: 1,
-      duration: timing.duration,
-      ease: timing.ease,
-      onUpdate: invalidate,
-      onComplete: () => {
-        const next = queued.current
-        queued.current = null
-        if (next !== null && next !== shown.current.to) startRef.current(next)
-      },
-    })
+  const land = (wave: Wave) => {
+    const at = waves.current.indexOf(wave)
+    for (const under of waves.current.slice(0, at)) under.tween.kill()
+    waves.current = waves.current.slice(at + 1)
+    base.current = wave.row
+    const next = queued.current
+    queued.current = null
+    if (next !== null && next !== target()) start(next)
+    else show()
   }
+
+  /**
+   * Starts a wave to row `row`: up the plate when the list moved down, down
+   * it when the list moved up. Waves already running quicken to land under it.
+   */
+  const start = (row: number) => {
+    for (const under of waves.current) hurry(under.tween)
+    const state = { progress: 0 }
+    const wave: Wave = {
+      row,
+      direction: row > target() ? 1 : -1,
+      state,
+      tween: gsap.to(state, {
+        progress: 1,
+        duration: PLATE_LOOK.duration,
+        ease: PLATE_LOOK.ease[lead],
+        onUpdate: tick,
+        onComplete: () => landRef.current(wave),
+      }),
+    }
+    waves.current.push(wave)
+    show()
+  }
+  const landRef = useRef(land)
+  landRef.current = land
   const startRef = useRef(start)
   startRef.current = start
 
   useEffect(
     () => () => {
-      tween.current?.kill()
+      for (const { tween } of waves.current) {
+        // The hurry is a tween on the wave's own tween.
+        gsap.killTweensOf(tween)
+        tween.kill()
+      }
     },
     [],
   )
 
-  // The dither cuts to a new row at once. The ripple never cuts a wave: the
-  // newest row waits, and the running wave quickens to make way for it.
+  // A wave is never cut. A row that arrives while the plate has no room for
+  // another wave waits, and the running waves quicken to make way for it.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `target` reads refs; the row is the trigger
   useEffect(() => {
-    const u = materialRef.current?.uniforms
-    if (!u) return
-    const running = tween.current?.isActive()
-    if (look === 'ripple' && running) {
-      queued.current = index === shown.current.to ? null : index
-      if (queued.current !== null) {
-        gsap.to(tween.current, {
-          timeScale: PLATE_RIPPLE.hurry,
-          duration: 0.6,
-          ease: 'sine.inOut',
-          overwrite: true,
-        })
-      }
+    if (index === target()) {
+      queued.current = null
       return
     }
-    if (index !== shown.current.to) startRef.current(index)
-  }, [index, look])
+    if (waves.current.length >= room) {
+      queued.current = index
+      for (const wave of waves.current) hurry(wave.tween)
+      return
+    }
+    startRef.current(index)
+  }, [index, room])
 
   // The plate bows with the scroll on a damped follow, so it leans into a
   // flick and eases back once the page rests.
@@ -365,8 +346,8 @@ function PlateScene({ media, index, flex, look, bleed, onFirstFrame }: PlateScen
       // A frame's timestamp can precede the `performance.now()` that queued it.
       const dt = Math.min(Math.max((now - then) / 1000, 0), 0.1)
       then = now
-      const goal = Math.tanh(flex.get() / PLATE_RIPPLE.flexSpeed)
-      value += (goal - value) * (1 - Math.exp(-dt / PLATE_RIPPLE.flexLag))
+      const goal = Math.tanh(flex.get() / PLATE_LOOK.flexSpeed)
+      value += (goal - value) * (1 - Math.exp(-dt / PLATE_LOOK.flexLag))
       if (Math.abs(goal - value) < 0.0005) value = goal
       const u = materialRef.current?.uniforms
       if (u) {
@@ -393,11 +374,11 @@ function PlateScene({ media, index, flex, look, bleed, onFirstFrame }: PlateScen
 
   return (
     <mesh frustumCulled={false}>
-      <planeGeometry args={look === 'ripple' ? RIPPLE_PLANE_ARGS : PLANE_ARGS} />
+      <planeGeometry args={PLANE_ARGS} />
       <shaderMaterial
         ref={materialRef}
-        vertexShader={look === 'ripple' ? PLATE_RIPPLE_VERTEX : PLATE_VERTEX}
-        fragmentShader={look === 'ripple' ? PLATE_RIPPLE_FRAGMENT : PLATE_FRAGMENT}
+        vertexShader={PLATE_VERTEX}
+        fragmentShader={PLATE_FRAGMENT}
         uniforms={uniforms}
         depthTest={false}
         depthWrite={false}
@@ -413,18 +394,17 @@ export type PlateRuntimeProps = {
   frameRef: RefObject<HTMLElement | null>
   count: number
   index: number
-  /** The scroll speed the ripple bows with, in rows per second. */
+  /** The scroll speed the plate bows with, in rows per second. */
   flex?: PlateSignal
-  look?: PlateLook
   /**
    * How far the canvas reaches past the frame on each side, as a share of
-   * the frame, so a look that bends the plate has room to move its edges.
+   * the frame, so the wave has room to move the plate's edges.
    */
-  bleed?: number
+  bleed: number
+  lead: PlateLead
   onReady: () => void
   onFailure: (reason: PlateFailureReason) => void
 }
-
 /**
  * Waits until every picture in the plate can be sampled, then draws. A
  * picture that fails to load is a failure like a refused context: the owner
@@ -436,8 +416,8 @@ export default function PlateRuntime({
   count,
   index,
   flex,
-  look = 'dither',
-  bleed = 0,
+  bleed,
+  lead,
   onReady,
   onFailure,
 }: PlateRuntimeProps) {
@@ -468,7 +448,7 @@ export default function PlateRuntime({
         dpr={DPR}
         flat
         frameloop="demand"
-        gl={bleed > 0 ? GL_CONFIG_SHAPED : GL_CONFIG}
+        gl={GL_CONFIG}
         linear
         onCreated={handleCreated}
         resize={RESIZE_OPTIONS}
@@ -479,7 +459,7 @@ export default function PlateRuntime({
             bleed={bleed}
             flex={flex}
             index={index}
-            look={look}
+            lead={lead}
             media={media}
             onFirstFrame={handleFirstFrame}
           />

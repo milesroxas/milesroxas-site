@@ -460,8 +460,8 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
                   always
                   className="aspect-auto size-full"
                   index={opening ?? active}
+                  lead="scroll"
                   items={items}
-                  look="ripple"
                   opening={opening !== null}
                   flex={flex}
                   ref={plateRef}

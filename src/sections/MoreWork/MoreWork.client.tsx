@@ -3,7 +3,16 @@
 import { IconArrowRight } from '@tabler/icons-react'
 import Link from 'next/link'
 import type React from 'react'
-import { type RefObject, useEffect, useId, useMemo, useRef, useState, ViewTransition } from 'react'
+import {
+  type RefObject,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  ViewTransition,
+} from 'react'
 import { Media } from '@/components/Media'
 import { choreographWorkMorph, useWorkCardMorph, workMorphName } from '@/heros/WorkHero/morph'
 import { cursorTarget } from '@/providers/Cursor/variants'
@@ -24,7 +33,7 @@ type RowProps = {
   /** This row is opening through its own picture: name it for the morph. */
   morphing: boolean
   plateRef: RefObject<HTMLDivElement | null>
-  /** `now` skips the hover intent: focus and clicks are deliberate. */
+  /** `now` skips the plate's pace: a click opens the row it shows. */
   onActivate: (index: number, now?: boolean) => void
   onOpen: (slug: string) => void
 }
@@ -67,7 +76,7 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
           className="flex flex-col gap-5 plate:gap-6 py-7 md:flex-row md:items-start md:gap-8"
           href={href}
           onClick={handleClick}
-          onFocus={() => onActivate(index, true)}
+          onFocus={() => onActivate(index)}
           onPointerEnter={() => onActivate(index)}
           transitionTypes={['work-open']}
         >
@@ -120,26 +129,57 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
 }
 
 /**
+ * The row the plate shows, paced (`MORE_WORK_MOTION.pace`): from rest it
+ * follows at once, and while it is still changing it waits for the pointer
+ * to settle, latest row wins.
+ */
+function usePlatePace(initial: number) {
+  const { settle, spacing } = MORE_WORK_MOTION.pace
+  const [shown, setShown] = useState(initial)
+  const shownRef = useRef(initial)
+  const changedAt = useRef(Number.NEGATIVE_INFINITY)
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(timer.current), [])
+
+  const show = useCallback((index: number) => {
+    clearTimeout(timer.current)
+    if (index === shownRef.current) return
+    shownRef.current = index
+    changedAt.current = performance.now()
+    setShown(index)
+  }, [])
+
+  const request = useCallback(
+    (index: number, now = false) => {
+      clearTimeout(timer.current)
+      if (index === shownRef.current) return
+      const since = performance.now() - changedAt.current
+      if (now || since >= spacing) return show(index)
+      timer.current = setTimeout(() => show(index), Math.max(settle, spacing - since))
+    },
+    [settle, spacing, show],
+  )
+
+  return [shown, request] as const
+}
+
+/**
  * "More work" (approved in Paper, "Related Work — 1 Index"): a contents page
  * of other case studies with one living plate beside it. The plate column
  * sticks while the index scrolls; the caption names what it shows.
  */
 export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
   const [active, setActive] = useState(0)
+  const [shownIndex, showRow] = usePlatePace(0)
   const [opening, setOpening] = useState<Opening | null>(null)
   const plateRef = useRef<HTMLDivElement>(null)
   const headingId = useId()
-  const shown = items[active] ?? items[0]
-  // The plate follows a row the pointer rests on, not every row it crosses.
-  const intent = useRef<ReturnType<typeof setTimeout>>(undefined)
-  const settle = () => clearTimeout(intent.current)
-  useEffect(() => () => clearTimeout(intent.current), [])
+  const shown = items[shownIndex] ?? items[0]
   const activate = (index: number, now = false) => {
-    settle()
     // Once a row opens, the plate holds its picture while the page clears around it.
     if (opening) return
-    if (now) setActive(index)
-    else intent.current = setTimeout(() => setActive(index), MORE_WORK_MOTION.hoverIntent)
+    setActive(index)
+    showRow(index, now)
   }
   // One picture carries the morph: two mounted under one name would break it.
   const open = (slug: string) => setOpening({ slug, onPlate: isPlateLayout() })
@@ -194,7 +234,7 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
                   share="work-morph"
                 >
                   <MoreWorkPlate
-                    index={active}
+                    index={shownIndex}
                     items={items}
                     opening={Boolean(opening)}
                     ref={plateRef}
@@ -203,13 +243,13 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
                 <div className="flex items-center justify-between gap-4 font-mono text-xs/none">
                   <span className="truncate font-medium">{shown?.client ?? shown?.title}</span>
                   <span className="shrink-0 text-muted-foreground tabular-nums">
-                    {active + 1} of {items.length}
+                    {shownIndex + 1} of {items.length}
                   </span>
                 </div>
               </div>
             </ScrollReveal>
           </div>
-          <ul className="border-foreground border-t" onPointerLeave={settle}>
+          <ul className="border-foreground border-t">
             {items.map((item, index) => (
               <MoreWorkRow
                 active={index === active}

@@ -16,7 +16,7 @@ import { useNearViewport } from '@/hooks/use-near-viewport'
 import { GPU_PRIORITY } from '@/lib/webgl/gpu-budget'
 import { useGpuLease } from '@/lib/webgl/use-gpu-lease'
 import { cn } from '@/utilities/ui'
-import type { PlateLook } from './plate-runtime'
+import type { PlateLead } from './plate-runtime'
 import type { MoreWorkItem } from './query'
 import type { PlateSignal } from './signal'
 
@@ -37,11 +37,11 @@ const subscribeLayout = (onChange: () => void) => {
 export const isPlateLayout = () => matchMedia(PLATE_LAYOUT_QUERY).matches
 
 /**
- * The ripple bends the plate's own edges, so its canvas reaches this share of
- * the frame past each side, past the deepest bend (`PLATE_RIPPLE`).
+ * The wave bends the plate's own edges, so its canvas reaches this share of
+ * the frame past each side, past the deepest bend (`PLATE_LOOK`).
  */
-const RIPPLE_BLEED = 0.08
-const RIPPLE_BLEED_STYLE = { inset: `${-RIPPLE_BLEED * 100}%` } as const
+const PLATE_BLEED = 0.05
+const PLATE_BLEED_STYLE = { inset: `${-PLATE_BLEED * 100}%` } as const
 
 const usePlateLayout = () => useSyncExternalStore(subscribeLayout, isPlateLayout, () => false)
 
@@ -57,26 +57,26 @@ type Props = {
   ref: RefObject<HTMLDivElement | null>
   /** Live at every size, not only beside the hover index (`plate:`). */
   always?: boolean
-  /** The scroll speed the ripple bows with, in rows per second. */
+  /** The scroll speed the plate bows with, in rows per second. */
   flex?: PlateSignal
   /** The frame's aspect and any other class it needs; 1.6 by default. */
   className?: string
   /** The pictures' `sizes`. */
   size?: string
-  /** How the live layer moves between pictures. */
-  look?: PlateLook
+  /** What leads the plate: the pointer by default, the scroll for the dial. */
+  lead?: PlateLead
 }
 
 /**
  * The index's one picture. Every work's picture is stacked in the frame and
  * the active one shows, with a slow crossfade: that is the whole plate under
  * reduced motion, without WebGL, or until the live layer is ready. Over it,
- * where the budget admits one, a canvas dissolves from picture to picture
+ * where the budget admits one, a canvas runs a wave from picture to picture
  * (`./plate-runtime`), sampling these same image and video elements, and
  * hides again the moment a row opens, so the view transition carries the
- * DOM picture. The ripple bends the frame itself: its canvas reaches past
- * the frame, and the DOM pictures and ground hide while it draws, so the
- * page shows wherever the plate's edge pulls in.
+ * DOM picture. The wave bends the frame itself: its canvas reaches past the
+ * frame, and the DOM pictures and ground hide while it draws, so the page
+ * shows wherever the plate's edge pulls in.
  */
 export function MoreWorkPlate({
   items,
@@ -87,7 +87,7 @@ export function MoreWorkPlate({
   flex,
   className,
   size = '46vw',
-  look,
+  lead = 'pointer',
 }: Props) {
   const { hasGPU } = useDeviceDetection()
   const plateLayout = usePlateLayout()
@@ -102,19 +102,12 @@ export function MoreWorkPlate({
   const live = useGpuLease(id, wanted, 'plate', GPU_PRIORITY.block)
   // A canvas that yields its slot comes back blank: wait for its first frame again.
   if (!live && ready) setReady(false)
-  const bleed = look === 'ripple' ? RIPPLE_BLEED : 0
   const drawn = live && ready && !opening
-  const shaped = bleed > 0 && drawn
 
   return (
     <div
       ref={ref}
-      className={cn(
-        'relative aspect-[1.6] w-full',
-        bleed === 0 && 'overflow-clip',
-        !shaped && 'bg-muted',
-        className,
-      )}
+      className={cn('relative aspect-[1.6] w-full', !drawn && 'bg-muted', className)}
       data-slot="more-work-plate"
     >
       {items.map(
@@ -126,7 +119,7 @@ export function MoreWorkPlate({
                 'absolute inset-0',
                 // Opening swaps at once: the morph carries this picture, not a crossfade.
                 !opening && 'transition-opacity duration-(--more-work-swap) ease-[ease]',
-                i === index && !shaped ? 'opacity-100' : 'opacity-0',
+                i === index && !drawn ? 'opacity-100' : 'opacity-0',
               )}
               data-plate-layer={i}
             >
@@ -148,18 +141,18 @@ export function MoreWorkPlate({
             'pointer-events-none absolute inset-0',
             drawn ? 'opacity-100' : 'opacity-0',
           )}
-          style={bleed > 0 ? RIPPLE_BLEED_STYLE : undefined}
+          style={PLATE_BLEED_STYLE}
         >
           {/* Also catches the runtime chunk failing to load. */}
           <FailureBoundary onError={handleFailure}>
             <Suspense fallback={null}>
               <PlateRuntime
-                bleed={bleed}
+                bleed={PLATE_BLEED}
                 count={items.length}
                 flex={flex}
                 frameRef={ref}
                 index={index}
-                look={look}
+                lead={lead}
                 onFailure={handleFailure}
                 onReady={handleReady}
               />
