@@ -49,10 +49,18 @@ const MarqueeItems = ({ items, keyPrefix }: { items: string[]; keyPrefix: string
 /**
  * The opening's load-in, played in CSS from the server markup (the case study
  * hero's `hero-*` utilities) so it starts on first paint and never waits on
- * the bundle: the portrait wipes open and settles, then each marquee fades up,
- * and the chrome arrives last (`data-slot="home-hero"` sets its cue in
- * globals.css).
+ * the bundle, on one 400ms beat: the portrait wipes open and settles, each
+ * marquee fades up, and the chrome locks into place last. The chrome's beat
+ * is stated again in globals.css (`body:has([data-slot="home-hero"])`);
+ * change the two together.
  */
+const BEAT = {
+  portrait: 0,
+  marqueeTop: 400,
+  marqueeBottom: 800,
+  chrome: 1200,
+} as const
+
 const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as React.CSSProperties
 
 const marqueeIn = 'motion-safe:animate-hero-in motion-reduce:animate-hero-fade'
@@ -62,14 +70,20 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => (
     className="relative flex h-[90vh] w-full flex-col items-center overflow-hidden bg-background md:h-screen"
     data-slot="home-hero"
   >
-    <div className={cn('absolute top-[40vh] z-0 w-full', marqueeIn)} style={enterAt(800)}>
+    <div
+      className={cn('absolute top-[40vh] z-0 w-full', marqueeIn)}
+      style={enterAt(BEAT.marqueeTop)}
+    >
       <div className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-foreground')}>
         <MarqueeItems items={SKILLS_TEXT} keyPrefix="skill" />
       </div>
     </div>
 
     <div className="relative z-10 flex h-[90vh] items-center justify-center md:h-screen">
-      <div className="w-[30vh] overflow-hidden rounded-sm motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade">
+      <div
+        className="w-[30vh] overflow-hidden rounded-sm motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
+        style={enterAt(BEAT.portrait)}
+      >
         <Media
           htmlElement={null}
           className="h-full w-full object-cover"
@@ -81,7 +95,10 @@ export const HomeHero: React.FC<HeroProps> = ({ media }) => (
       </div>
     </div>
 
-    <div className={cn('absolute top-[50vh] z-20 w-full', marqueeIn)} style={enterAt(1000)}>
+    <div
+      className={cn('absolute top-[50vh] z-20 w-full', marqueeIn)}
+      style={enterAt(BEAT.marqueeBottom)}
+    >
       <div
         className={cn(
           styles.marquee,

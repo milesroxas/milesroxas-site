@@ -2139,36 +2139,52 @@ body {
   opacity: 0;
 }
 
-/* First paint: the chrome arrives once the page's opening has drawn the eye.
-   The top bar blurs up like the heroes' small copy (`hero-in`); the dock
-   rises the way it returns after a transition. `--chrome-enter-at` is the
-   page's cue: the homepage waits for its portrait to wipe open and its
-   marquees to settle. `backwards` holds the start through the wait and lets
-   go at the end, so `data-hidden` keeps its transitions afterwards. Reduced
-   motion: the chrome is simply there. */
+/* First paint: the chrome arrives once the page's opening has drawn the eye,
+   both halves on one cue. The top bar settles down 0.5rem and the dock
+   settles up 0.5rem, fading on the site's settle curve while the travel
+   rides the press release curve, so each locks into place with a hair of
+   overshoot. `--chrome-enter-at` is the page's cue: 600ms on a page with no
+   choreography of its own; the homepage's last beat (HomeHero's `BEAT`).
+   `backwards` holds the start through the wait and lets go at the end, so
+   `data-hidden` keeps its transitions afterwards. Reduced motion: the chrome
+   is simply there. */
 @media (prefers-reduced-motion: no-preference) {
   body {
     --chrome-enter-at: 600ms;
   }
 
   body:has([data-slot="home-hero"]) {
-    --chrome-enter-at: 1100ms;
+    --chrome-enter-at: 1200ms;
   }
 
   .chrome-top {
-    animation: hero-in 700ms var(--ease-out-quint) var(--chrome-enter-at, 0ms) backwards;
+    animation:
+      chrome-fade 500ms var(--ease-out-quint) var(--chrome-enter-at, 0ms) backwards,
+      chrome-top-lock 600ms var(--press-release-ease) var(--chrome-enter-at, 0ms) backwards;
   }
 
   .dock {
-    animation: chrome-dock-in 700ms var(--ease-out-quint) calc(var(--chrome-enter-at, 0ms) + 120ms)
-      backwards;
+    animation:
+      chrome-fade 500ms var(--ease-out-quint) var(--chrome-enter-at, 0ms) backwards,
+      chrome-dock-lock 600ms var(--press-release-ease) var(--chrome-enter-at, 0ms) backwards;
   }
 }
 
-@keyframes chrome-dock-in {
+@keyframes chrome-fade {
   from {
     opacity: 0;
-    translate: 0 1rem;
+  }
+}
+
+@keyframes chrome-top-lock {
+  from {
+    translate: 0 -0.5rem;
+  }
+}
+
+@keyframes chrome-dock-lock {
+  from {
+    translate: 0 0.5rem;
   }
 }
 
