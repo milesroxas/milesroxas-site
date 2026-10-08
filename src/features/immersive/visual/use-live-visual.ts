@@ -98,7 +98,7 @@ function useEligibility(
   // Stories only (see `admission`): the lifecycle without the gates.
   const forced = admission === 'force' && unblocked
   const eligible = forced || (probeWanted && deviceSupports(capability, supports))
-  return { capability, eligible }
+  return { capability, eligible, probing: probeWanted && capability === null }
 }
 
 /**
@@ -144,10 +144,19 @@ function useRuntimeMount(identity: string, live: boolean, failure: string | null
   return { mounted, generation, ready, handleReady, unmount }
 }
 
-/** What the owner publishes on its root: the status, and the failure once there is one. */
-export const liveStatusAttributes = (status: LiveVisualStatus, failure: string | null) => ({
+/**
+ * What the owner publishes on its root: the status, the failure once there is
+ * one, and `data-visual-pending` while the poster stands in for a live frame
+ * still on its way (a page transition holds its reveal until it lands).
+ */
+export const liveStatusAttributes = (
+  status: LiveVisualStatus,
+  failure: string | null,
+  pending = false,
+) => ({
   'data-visual-status': status,
   ...(failure ? { 'data-visual-failure': failure } : {}),
+  ...(pending ? { 'data-visual-pending': '' } : {}),
 })
 
 function liveStatus(
@@ -166,7 +175,7 @@ export function useLiveVisual<Reason extends string>(options: LiveVisualOptions)
   const { rootRef, placement, kind, active, identity, onStatusChange } = options
   const id = useId()
   const [failure, setFailure] = useState<Reason | 'chunk' | null>(null)
-  const { capability, eligible } = useEligibility(options, failure)
+  const { capability, eligible, probing } = useEligibility(options, failure)
 
   // Presence: draw only while unpaused, near, visible, uncovered and settled.
   const [paused] = useMotionPaused()
@@ -194,10 +203,13 @@ export function useLiveVisual<Reason extends string>(options: LiveVisualOptions)
 
   const status = liveStatus(failure, mounted, ready, live)
   useEffect(() => onStatusChange?.(status), [status, onStatusChange])
+  // A paused, held or ineligible slot keeps its poster: that still is final.
+  const pending = !failure && !ready && active && !paused && (eligible || probing)
 
   return {
     status,
     failure,
+    pending,
     capability,
     /** The runtime should be in the tree. */
     mounted,

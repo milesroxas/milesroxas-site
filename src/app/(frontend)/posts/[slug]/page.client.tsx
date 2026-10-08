@@ -4,12 +4,11 @@ import React, { useEffect } from 'react'
 import { ChromeTitle } from '@/components/SiteChrome/ChromeTitle'
 import { useLenis } from '@/hooks/useLenis'
 import type { Post } from '@/payload-types'
-import { restoreChrome } from '@/stores/chromeStore'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { categoryKeys } from '@/utilities/reactKeyDomains'
 
 /**
- * Arriving on a post: the chrome comes back and the page starts at its top.
+ * Arriving on a post, the page starts at its top.
  * Without `header`, the opening is the post's own hero (`PostHero`).
  */
 const PageClient: React.FC<{ post: Post; header?: boolean }> = ({ post, header = true }) => {
@@ -18,7 +17,6 @@ const PageClient: React.FC<{ post: Post; header?: boolean }> = ({ post, header =
   const lenis = useLenis()
 
   useEffect(() => {
-    restoreChrome()
     lenis?.scrollTo(0, { immediate: true })
   }, [lenis])
 

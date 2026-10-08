@@ -33,11 +33,10 @@ context work out of the box.
 
 ## Deliberately not covered
 
-Components that require the live app shell — the page-transition GSAP flow,
+Components that require the live app shell — the page transitions,
 `SiteFrame`, scroll choreography, or server-only Payload access — are out of
 scope for isolated stories:
 
-- `HighImpactHero` (page transition clone handoff, zustand site-frame store)
 - `Header` / `Footer` server components (Payload DB fetch via `getPayload`);
   `Form` block (submits to the Payload API)
 - Three.js / R3F scenes

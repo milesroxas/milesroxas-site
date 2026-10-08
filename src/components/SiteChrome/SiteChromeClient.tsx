@@ -5,13 +5,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { AskPanel } from '@/features/ask/AskPanel'
 import type { AskHandoffTerms } from '@/features/ask/handoff'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { useChromeStore } from '@/stores/chromeStore'
 import { Dock } from './Dock'
 import { TopBar } from './TopBar'
 import { activeTabIndex, type ChromeTab, tabCurrent } from './tabs'
-
-/** A page that never hands the chrome back (an interrupted transition) gets it back after this. */
-const RESTORE_FALLBACK_MS = 2000
 
 type SiteChromeAsk = {
   suggestions: string[]
@@ -64,33 +60,16 @@ function useAskToggle(ask: SiteChromeAsk | null) {
   return { askOpen, askPresent, setAskPresent, viaKeyboard, toggleAsk, changeAskFromPanel }
 }
 
-/** A transition that never reached its hero still hands the chrome back. */
-function useRestoreFallback(
-  visible: boolean,
-  setVisible: (visible: boolean) => void,
-  pathname: string,
-) {
-  // biome-ignore lint/correctness/useExhaustiveDependencies(pathname): each new page restarts the fallback
-  useEffect(() => {
-    if (visible) return
-    const timer = window.setTimeout(() => setVisible(true), RESTORE_FALLBACK_MS)
-    return () => window.clearTimeout(timer)
-  }, [visible, setVisible, pathname])
-}
-
 /**
  * The site's chrome, on every public page: the top bar (wordmark, the
  * page's place, the clock) and the dock (the pages and Ask).
  *
  * The current tab follows the route, and follows a press at once: the fill
- * moves on the tap, not once the next page has loaded. During the card →
- * case study transition the chrome steps out of the way (`useChromeStore`).
+ * moves on the tap, not once the next page has loaded.
  */
 export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
   const pathname = usePathname()
   const phone = useIsMobile()
-  const visible = useChromeStore((state) => state.visible)
-  const setVisible = useChromeStore((state) => state.setVisible)
 
   const [pressed, setPressed] = useState<{ on: string; index: number } | null>(null)
   const press = pressed && pressed.on === pathname ? pressed.index : null
@@ -102,10 +81,8 @@ export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
   const { askOpen, askPresent, setAskPresent, viaKeyboard, toggleAsk, changeAskFromPanel } =
     useAskToggle(ask)
 
-  useRestoreFallback(visible, setVisible, pathname)
-
   return (
-    <div className="contents" data-hidden={visible ? undefined : ''} id="site-chrome">
+    <div className="contents" id="site-chrome">
       <TopBar section={active >= 0 ? tabs[active].label : null} />
       <Dock
         active={active}

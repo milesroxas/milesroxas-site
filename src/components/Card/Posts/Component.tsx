@@ -3,11 +3,12 @@
 import Link from 'next/link'
 import type React from 'react'
 import { Badge } from '@/components/ui/badge'
+import { useCurtainLink } from '@/features/page-transition/use-curtain-link'
 import type { Post } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
 import { DEFAULT_PUBLISHER, isExternalPost } from '@/utilities/externalArticle'
 import { cn } from '@/utilities/ui'
-import { type CardAspect, CardImage, useCardLink } from '../shared'
+import { type CardAspect, CardImage } from '../shared'
 
 export type CardPostData = Pick<Post, 'slug' | 'meta' | 'title' | 'hero'> &
   Partial<Pick<Post, 'source' | 'external'>>
@@ -19,7 +20,6 @@ interface PostCardProps {
   title?: string
   index?: number
   aspect?: CardAspect
-  imageRef?: React.RefObject<HTMLDivElement | null>
 }
 
 export const PostCard: React.FC<PostCardProps> = ({
@@ -29,7 +29,6 @@ export const PostCard: React.FC<PostCardProps> = ({
   title: titleFromProps,
   index,
   aspect = 'wide',
-  imageRef: imageRefProp,
 }) => {
   const { slug, meta, title, hero } = doc || {}
   // The card reads the publisher only; the URL stays with the post page.
@@ -37,12 +36,12 @@ export const PostCard: React.FC<PostCardProps> = ({
   const description = meta?.description
   const sanitizedDescription = description?.replace(/\s+/g, ' ')
   const href = `/${relationTo}/${slug}`
-  const { containerRef, imageRef, handleTransition } = useCardLink(href, imageRefProp)
+  const open = useCurtainLink(href, hero)
 
   return (
-    <article ref={containerRef} className={cn('h-full', className)}>
-      <Link {...cursorTarget('view')} href={href} onClick={handleTransition} className="not-prose">
-        <CardImage aspect={aspect} hero={hero} imageRef={imageRef} index={index} />
+    <article className={cn('h-full', className)}>
+      <Link {...cursorTarget('view')} href={href} onClick={open} className="not-prose">
+        <CardImage aspect={aspect} hero={hero} index={index} />
 
         {(titleFromProps || title) && (
           <div

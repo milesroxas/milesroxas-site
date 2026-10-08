@@ -5,13 +5,11 @@ import { useEffect } from 'react'
 import { ChromeTitle } from '@/components/SiteChrome/ChromeTitle'
 import { useLenis } from '@/hooks/useLenis'
 import type { Work } from '@/payload-types'
-import { restoreChrome } from '@/stores/chromeStore'
 
 const PageClient: React.FC<{ work: Work }> = ({ work }) => {
   const lenis = useLenis()
   const { title } = work
   useEffect(() => {
-    restoreChrome()
     lenis?.scrollTo(0, { immediate: true })
   }, [lenis])
 

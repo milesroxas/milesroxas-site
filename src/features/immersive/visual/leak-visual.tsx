@@ -131,7 +131,7 @@ function LeakLayer({
       aria-hidden
       className="pointer-events-none absolute inset-0 overflow-hidden"
       data-visual-layer="lightLeak"
-      {...liveStatusAttributes(slot.status, slot.failure)}
+      {...liveStatusAttributes(slot.status, slot.failure, slot.pending)}
       {...(bleeding ? { [VISUAL_BLEED_ATTR]: '' } : {})}
     >
       <VisualPosterStack

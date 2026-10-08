@@ -153,7 +153,7 @@ export function StreakVisual({
       data-visual="streakField"
       data-visual-descriptor={serialized}
       data-visual-look={descriptor.look}
-      {...liveStatusAttributes(slot.status, slot.failure)}
+      {...liveStatusAttributes(slot.status, slot.failure, slot.pending)}
     >
       <VisualPosterStack
         imgClassName={imgClassName}

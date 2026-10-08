@@ -8,12 +8,12 @@ const meta = {
   component: PostCard,
   tags: ['autodocs'],
   parameters: {
-    // Clicking the card kicks off the GSAP page-transition flow, which needs
+    // Clicking the card opens the post behind the page curtain, which needs
     // the live app shell; stories are render-only.
     docs: {
       description: {
         component:
-          'Post listing card. The click-driven page transition (GSAP Flip + router) is not exercised in Storybook.',
+          'Post listing card. The click-driven page transition (curtain + router) is not exercised in Storybook.',
       },
     },
   },
@@ -25,7 +25,6 @@ const meta = {
       control: 'select',
       options: ['wide', 'portrait', 'square'],
     },
-    imageRef: { table: { disable: true } },
   },
   decorators: [
     (Story) => (

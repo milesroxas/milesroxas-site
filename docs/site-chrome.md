@@ -140,9 +140,18 @@ rules in `globals.css`). Reduced motion skips the exit and the scale: the link
 navigates at once, the card's picture fades out and the hero's fades in. A
 modified click (new tab) leaves the page as it is.
 
-The post card → detail page FLIP (`src/hooks/useCardTransition.ts`) hides the
-chrome (`useChromeStore.setVisible(false)`) as its clone fills the screen.
-The destination brings it back: `HighImpact` at 70% of the clone's landing,
-the work and post page clients through `restoreChrome()`. A
-page that never does gets it back after two seconds (`SiteChromeClient`).
-`transitionPhase` in the same store tracks the clone for the heroes.
+A post card opens its post behind a curtain
+(`src/features/page-transition/curtain.ts`). The page leaves under a mask: a
+curtain of the page's ground drops from the top edge (800ms) under the top
+bar and dock, which stay. The post loads behind it, and the curtain lifts
+top-down (1000ms, both on one ease-in-out) only once the post is complete on screen
+(`page-ready.ts`): fonts loaded, pictures decoded, videos holding a frame,
+and every effect drawing live with its poster faded out. A slot whose poster
+is about to give way publishes `data-visual-pending` (`useLiveVisual`); one
+that stays a poster (reduced motion, touch, paused motion) never does. The
+click starts the post's route prefetch and its effect runtime download
+(`preloadVisualRuntime`), so both land inside the wait. Held, the page's CSS
+animations pause (`data-page-held`), so the hero's load-in plays as the
+curtain lifts. The wait gives up after 4 seconds, the navigation after 10.
+Reduced motion fades the curtain. A modified click (new tab) leaves the page
+as it is.

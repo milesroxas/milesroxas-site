@@ -9,7 +9,6 @@ import type { Category, Media as MediaType, Post } from '@/payload-types'
 import { externalArticle } from '@/utilities/externalArticle'
 import { cn } from '@/utilities/ui'
 import { BEAT, enterAt, enterIn } from './parts'
-import { PostHeroRoot } from './Root.client'
 
 type Props = {
   post: Pick<
@@ -63,6 +62,7 @@ function postFacts(post: Props['post']): Fact[] {
  * the picture share a foot line. On a phone they stack, title first. Without
  * media the opening is only the title and byline. An effect chosen on the
  * hero grounds the whole band behind both; a pinned face paints the band.
+ * Otherwise it paints the visitor's theme, like the case study opening.
  */
 export function PostHero({ post }: Props) {
   const { hero, title } = post
@@ -70,8 +70,12 @@ export function PostHero({ post }: Props) {
   const facts = postFacts(post)
 
   return (
-    <PostHeroRoot
-      className={ground ? 'relative isolate overflow-clip' : undefined}
+    <header
+      className={cn(
+        'grid gap-10 bg-background px-gutter pt-[calc(var(--chrome-top)+--spacing(10))] pb-16 text-foreground md:items-end md:gap-x-16 md:pt-[calc(var(--chrome-top)+--spacing(20))] md:pb-24 md:has-data-[slot=post-hero-media]:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]',
+        ground && 'relative isolate overflow-clip',
+      )}
+      data-slot="post-hero"
       data-theme={surface ?? undefined}
     >
       <div className="flex flex-col gap-10 md:gap-14">
@@ -108,9 +112,8 @@ export function PostHero({ post }: Props) {
       </div>
 
       {media && <FeaturedImage media={media} />}
-      {/* After the picture: the card's clone lands on the first img in the hero. */}
       <HeroGround ground={ground} handoff={!media} />
-    </PostHeroRoot>
+    </header>
   )
 }
 
@@ -127,18 +130,18 @@ function FeaturedImage({ media }: { media: MediaType }) {
       style={{ width: `min(100%, min(60svh, 34rem) * ${ratio})` }}
     >
       <div
-        className="relative w-full overflow-clip bg-muted in-data-[arrival=load]:motion-safe:animate-hero-wipe in-data-[arrival=load]:motion-reduce:animate-hero-fade"
+        className="relative w-full overflow-clip bg-muted motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
         data-hero-media=""
         data-slot="post-hero-media"
         style={{ ...enterAt(BEAT.media), aspectRatio: ratio }}
       >
         <Media
           fill
-          imgClassName="object-cover in-data-[arrival=load]:motion-safe:animate-hero-settle"
+          imgClassName="object-cover motion-safe:animate-hero-settle"
           priority
           resource={media}
           size="(min-width: 48rem) 42vw, 100vw"
-          videoClassName="object-cover in-data-[arrival=load]:motion-safe:animate-hero-settle"
+          videoClassName="object-cover motion-safe:animate-hero-settle"
         />
       </div>
       {media.caption && (

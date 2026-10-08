@@ -1200,6 +1200,68 @@ html:active-view-transition-type(work-open)::view-transition-new(root) {
   }
 }
 
+/* A post card opening its post (src/features/page-transition/curtain.ts).
+   The page leaves under a mask: a curtain of the page's ground drops from
+   the top edge, under the chrome. Both sweeps run on one gentle
+   ease-in-out, so the eye can follow the edge across the screen. The post loads behind it, and the
+   curtain lifts top-down only once the post is complete on screen (its
+   pictures decoded, its effect drawing live rather than its poster). While
+   held, the page's CSS openings wait (`data-page-held`), so the hero's
+   load-in plays as the curtain lifts instead of behind it. Reduced motion:
+   the curtain fades. */
+[data-page-curtain] {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  background: var(--background);
+}
+
+[data-page-curtain="cover"] {
+  animation: page-curtain-cover 800ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+[data-page-curtain="lift"] {
+  animation: page-curtain-lift 1000ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+html[data-page-held] body :not(#site-chrome, #site-chrome *, [data-page-curtain]) {
+  animation-play-state: paused;
+}
+
+@keyframes page-curtain-cover {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes page-curtain-lift {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(100% 0 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-page-curtain="cover"] {
+    animation: page-curtain-fade 240ms ease both;
+  }
+
+  [data-page-curtain="lift"] {
+    animation: page-curtain-fade 320ms ease reverse both;
+  }
+}
+
+@keyframes page-curtain-fade {
+  from {
+    opacity: 0;
+  }
+}
+
 /* Disclosure body (FAQ answers, Ask sources): a body opens and closes as a
    grid track, 0fr ↔ 1fr, so height follows the content without measuring
    it; the box inside fades with the track. Exit is shorter than enter, and
@@ -2152,25 +2214,13 @@ body {
   }
 }
 
-/* A page transition owns the screen: the chrome steps out and returns. */
-#site-chrome[data-hidden] .dock {
-  opacity: 0;
-  translate: 0 1rem;
-  pointer-events: none;
-  transition-duration: 200ms;
-}
-
-#site-chrome[data-hidden] .chrome-top {
-  opacity: 0;
-}
-
 /* First paint. The top bar is the first thing on screen: it fades in on the
    site's settle curve from 0ms, before the page's own opening. The dock comes
    last, fading while it settles up 0.5rem on the press release curve, so it
    locks into place with a hair of overshoot. `--chrome-dock-at` is the page's
    cue for it: 920ms on a page with no choreography of its own; the homepage's
    last beat (HomeHero's `BEAT`). `backwards` holds the start through the wait
-   and lets go at the end, so `data-hidden` keeps its transitions afterwards.
+   and lets go at the end, so the chrome's own transitions run afterwards.
    Reduced motion: the chrome is simply there. */
 @media (prefers-reduced-motion: no-preference) {
   body {
@@ -2206,12 +2256,10 @@ body {
 
 /* A work card opening (`.work-morph`): the chrome stays put while the page
    and the picture under it hand off. */
-/* biome-ignore lint/style/noDescendingSpecificity: sets only the transition name */
 html:active-view-transition-type(work-open) .chrome-top {
   view-transition-name: chrome-top;
 }
 
-/* biome-ignore lint/style/noDescendingSpecificity: sets only the transition name */
 html:active-view-transition-type(work-open) .dock {
   view-transition-name: chrome-dock;
 }
@@ -2460,10 +2508,6 @@ html:active-view-transition-type(work-open) .dock {
   .dock[data-ask="open"] .dock-tabs {
     scale: 1;
     filter: none;
-  }
-
-  #site-chrome[data-hidden] .dock {
-    translate: 0 0;
   }
 
   .chrome-title {
