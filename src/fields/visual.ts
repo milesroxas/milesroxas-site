@@ -253,6 +253,8 @@ const posterMediaField = (filterOptions?: FilterOptions): UploadField => ({
   label: 'Poster image',
   ...(filterOptions ? { filterOptions } : {}),
   admin: {
+    // A Studio look brings its own poster for each ground (`visualPosters`).
+    condition: (_, siblingData) => !siblingData?.studio,
     description:
       'Optional still shown before the effect runs, and wherever it cannot (reduced motion, no WebGL, menus, social). Images only. Empty uses the look’s built-in poster.',
   },

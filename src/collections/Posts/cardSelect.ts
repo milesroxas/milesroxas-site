@@ -6,6 +6,8 @@ export const postCardSelect = {
   slug: true,
   hero: {
     media: true,
+    visualType: true,
+    shader: true,
   },
   categories: true,
   meta: {

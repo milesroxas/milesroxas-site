@@ -3,6 +3,7 @@
 import gsap from 'gsap'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
+import { visibleMedia } from '@/hooks/useCardTransition'
 import { useChromeStore } from '@/stores/chromeStore'
 
 type ChromeState = ReturnType<typeof useChromeStore.getState>
@@ -62,7 +63,7 @@ const landCloneOnMedia = (
 
 /**
  * Lands the card transition's clone (`useCardTransition`) on the first
- * img/video inside the returned ref, or fades it out when there is none.
+ * visible img/video inside the returned ref, or fades it out when there is none.
  */
 export function useTransitionClonePickup<T extends HTMLElement = HTMLDivElement>() {
   const heroRef = useRef<T>(null)
@@ -81,7 +82,7 @@ export function useTransitionClonePickup<T extends HTMLElement = HTMLDivElement>
 
     clone.style.transformOrigin = 'top left'
 
-    const mediaEl = heroEl.querySelector('img, video') as HTMLElement | null
+    const mediaEl = visibleMedia(heroEl)
     if (!mediaEl) {
       fadeCloneOut(clone, setChromeVisible, setTransitionPhase)
       return

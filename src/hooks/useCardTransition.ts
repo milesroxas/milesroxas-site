@@ -9,6 +9,15 @@ import { useChromeStore } from '@/stores/chromeStore'
 
 gsap.registerPlugin(Flip, useGSAP)
 
+/**
+ * The first img/video under `root` that renders. An effect's poster pair keeps
+ * the other theme's still in the DOM at `display: none`.
+ */
+export const visibleMedia = (root: Element | null | undefined) =>
+  (Array.from(root?.querySelectorAll<HTMLElement>('img, video') ?? []).find(
+    (el) => el.getClientRects().length > 0,
+  ) ?? null) as HTMLElement | null
+
 /** Clones the media over itself, fixed in place, and stashes it for the destination hero to pick up. */
 function stashClone(mediaEl: HTMLElement): HTMLElement {
   const clone = mediaEl.cloneNode(true) as HTMLElement
@@ -53,7 +62,7 @@ export function useCardTransition({ href, imageRef, scope }: UseCardTransitionAr
     e.preventDefault()
 
     const containerEl = imageRef.current
-    const mediaEl = containerEl?.querySelector('img, video') as HTMLElement | null
+    const mediaEl = visibleMedia(containerEl)
 
     if (!mediaEl) {
       router.push(href)

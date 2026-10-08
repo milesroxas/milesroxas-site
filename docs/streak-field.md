@@ -205,7 +205,7 @@ Where it is used: mostly on pages without media of their own, so Pages (High and
 | `shader.speed` | 0..1 | Multiplies the look's `timeScale`. 0 freezes the field. Empty is the look as shipped. |
 | `shader.intensity` | 0.5..1.25 | Multiplies the look's `brightness`. Empty is the look as shipped. |
 | `shader.pointerInteraction` | checkbox | Honored only where the placement allows pointer terms and the field runs live. |
-| `shader.posterMedia` | upload, images only | Replaces the built-in poster. Video uploads are refused server side. Picker is the site media library; on Work Pages only, it is scoped to the case study's libraries. |
+| `shader.posterMedia` | upload, images only | Replaces a shipped look's built-in poster. Hidden once a Studio look is chosen: its own light and dark posters win. Video uploads are refused server side. Picker is the site media library; on Work Pages only, it is scoped to the case study's libraries. |
 
 Menu previews use a parallel slot: `menuPreviewType` (`automatic` / `media` / `streakField`) plus `menuPreviewShader`, beside the existing `menuPreview` upload. Missing type is legacy resolution; explicit `automatic` inherits the destination's own visual even when an old upload is still stored.
 
