@@ -14,8 +14,8 @@ gsap.registerPlugin(useGSAP)
 
 /**
  * Panel-swap choreography for dropdown-driven blocks. Opacity only, with
- * timings from `SCROLL_REVEAL_SWAP` — not the under-media entrance (blur,
- * lift, 600ms), which is first-seen language and reads as a replay when a
+ * timings from `SCROLL_REVEAL_SWAP` — not the under-media entrance (mask
+ * wipe, 600ms), which is first-seen language and reads as a replay when a
  * dropdown fires it. Media can still take the entrance zoom when the
  * consumer asks (`scaleMedia`) and the entrance still carries one; the zoom
  * value is imported from the reveal that owns it, never restated, so a mask-
