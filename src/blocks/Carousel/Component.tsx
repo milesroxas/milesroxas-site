@@ -251,7 +251,7 @@ const STACK_MEDIA_CLASS = cn(
  * nearest first, on the slower pacing the site's media reveals keep. Only
  * `translate`, on the frame inside the card, so nothing reflows and it
  * composes with the per-frame pose. Once per mount, so a tab swap deals the
- * new deck as its wipe uncovers it (the observer counts the panel's clip).
+ * new deck once it shows (the swap holds the panel clipped until then).
  * Reduced motion starts dealt.
  */
 const STACK_DEAL = { delay: 220, stagger: 180, duration: 1100 } as const
