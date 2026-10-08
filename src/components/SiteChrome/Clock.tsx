@@ -51,14 +51,12 @@ function useNewYorkTime(): { label: string; zone: string; iso: string } | null {
 export function Clock() {
   const time = useNewYorkTime()
   return (
-    <p className="flex items-center gap-1.5 text-xs/4 md:gap-2 md:text-[0.8125rem]/[1.125rem]">
+    <p className="flex items-center gap-1.5 text-xs/4 md:text-[0.8125rem]/[1.125rem]">
       <span className="text-(--chrome-ink-quiet) max-md:sr-only">New York</span>
-      {/* Width held for "12:00 PM" so the label never shifts when the time
-          lands; set flush right so the row keeps its edge. */}
-      <time
-        className="inline-block min-w-[8ch] text-right font-mono text-(--chrome-ink) tabular-nums"
-        dateTime={time?.iso}
-      >
+      {/* Sized to the time itself so the label sits a fixed gap from the
+          digits; the row is anchored right, so only the label moves, once,
+          when the hour gains a digit. */}
+      <time className="font-mono text-(--chrome-ink) tabular-nums" dateTime={time?.iso}>
         {time?.label}
       </time>
       {time && <span className="font-mono text-(--chrome-ink-quiet) md:hidden">{time.zone}</span>}

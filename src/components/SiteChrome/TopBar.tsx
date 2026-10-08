@@ -56,7 +56,7 @@ export function TopBar({ section }: { section: string | null }) {
         <Logo className="h-auto w-32 md:w-40" color="currentColor" />
       </Link>
 
-      <div className="flex shrink-0 items-center gap-2 md:gap-3">
+      <div className="flex shrink-0 items-center gap-4 md:gap-5">
         <Clock />
         <ThemeToggle />
       </div>
