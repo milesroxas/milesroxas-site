@@ -2154,7 +2154,7 @@ body {
   }
 
   body:has([data-slot="home-hero"]) {
-    --chrome-enter-at: 1200ms;
+    --chrome-enter-at: 800ms;
   }
 
   .chrome-top {

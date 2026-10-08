@@ -88,8 +88,8 @@ button uses the same hook.
   halves at once: the top bar settles down 0.5rem and the dock settles up
   0.5rem, fading on the settle curve while the travel rides the press release
   curve, so each locks into place. Every page cues it with
-  `--chrome-enter-at` on `body` (600ms); the homepage cues it at 1200ms, the
-  last of its 400ms beats (`HomeHero`'s `BEAT`). Client navigations never
+  `--chrome-enter-at` on `body` (600ms); the homepage cues it at 800ms, the
+  last of its 320ms beats (`HomeHero`'s `BEAT`). Client navigations never
   replay it.
 - The current tab's fill is one layer clipped to the current tab; a new page
   slides the clip on `--ease-spring` (damping 1, response 0.35s). Going a

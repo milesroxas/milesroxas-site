@@ -31,18 +31,18 @@ const SKILLS_TEXT = [
 /**
  * The opening's load-in, played in CSS from the server markup (the case study
  * hero's `hero-*` utilities) so it starts on first paint and never waits on
- * the bundle, on one 400ms beat: the portrait wipes open and settles, each
- * marquee's words rise out of their line 40ms apart (the case study title's
- * word step), and the chrome locks into place last. The chrome's beat is
- * stated again in globals.css (`body:has([data-slot="home-hero"])`); change
- * the two together.
+ * the bundle, on one 320ms beat: the portrait wipes open and settles, the
+ * back strip's words start rising while it is half open and the front strip's
+ * follow a beat later, each 40ms apart (the case study title's word step),
+ * and the chrome locks into place last. The chrome's beat is stated again in
+ * globals.css (`body:has([data-slot="home-hero"])`); change the two together.
  */
 const BEAT = {
   portrait: 0,
-  marqueeTop: 400,
-  marqueeBottom: 800,
+  marqueeTop: 160,
+  marqueeBottom: 480,
   word: 40,
-  chrome: 1200,
+  chrome: 800,
 } as const
 
 const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as React.CSSProperties
