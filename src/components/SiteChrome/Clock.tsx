@@ -52,7 +52,7 @@ export function Clock() {
   const time = useNewYorkTime()
   return (
     <p className="flex items-center gap-1.5 text-xs/4 md:text-[0.8125rem]/[1.125rem]">
-      <span className="text-(--chrome-ink-quiet) max-md:sr-only">New York</span>
+      <span className="text-(--chrome-ink-quiet) max-md:sr-only">Brooklyn, NY</span>
       {/* Sized to the time itself so the label sits a fixed gap from the
           digits; the row is anchored right, so only the label moves, once,
           when the hour gains a digit. */}
