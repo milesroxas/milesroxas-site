@@ -106,8 +106,9 @@ void main() {
 `
 
 /**
- * The dial's transition: a liquid wave that runs up the plate with the page
- * and bends the plate itself, not only the picture inside it. The plate is a
+ * The dial's transition: a liquid wave that runs up the plate, or down it
+ * when the list goes back (`uDirection`), and bends the plate itself, not
+ * only the picture inside it. The plate is a
  * fine mesh drawn on a canvas `uInset` larger than the frame, so its edges
  * are free to move: the wave stretches and squeezes it vertically by
  * `uAmplitude` of the frame at most, sways its sides, and swells it sideways
@@ -115,11 +116,13 @@ void main() {
  * cloth. The arriving picture rises in from the bottom behind a soft front,
  * `uBand` of the frame deep and bent by the wave, and the slopes are shaded
  * by `uShade`. The wave is strongest on the front and rises and falls with
- * the transition, so a plate at rest is a still, exact rectangle, and its
- * phase follows `uProgress`, so a scrubbed wave runs back when the page does.
+ * the transition, so a plate at rest is a still, exact rectangle. Between
+ * waves the plate bows with the scroll (`uFlex`, signed, -1 to 1), `uFlexDepth`
+ * of the frame at most, so a fast scroll moves the plate, not its pictures.
  */
 const PLATE_RIPPLE_WAVE = /* glsl */ `
 uniform float uProgress;
+uniform float uDirection;
 uniform float uAspect;
 uniform float uBand;
 uniform float uAmplitude;
@@ -138,12 +141,13 @@ struct Ripple {
 
 Ripple ripple(vec2 uv) {
   Ripple r;
+  // 0 where the arriving picture enters: the bottom, or the top going back.
+  float y = uDirection < 0.0 ? 1.0 - uv.y : uv.y;
   // Wavefronts across the frame, gently bowed so they read as water, not stripes.
-  r.phase = TAU * (uv.y * uWaves - uProgress * 1.25) + sin(uv.x * uAspect * 2.2) * 0.7;
+  r.phase = TAU * (y * uWaves - uProgress * 1.25) + sin(uv.x * uAspect * 2.2) * 0.7;
   float wave = sin(r.phase);
 
-  // 0 at the bottom, where the arriving picture enters, 1 at the top.
-  float field = uv.y + wave * 0.06;
+  float field = y + wave * 0.06;
   float front = uProgress * (1.0 + uBand);
   r.local = clamp((front - field) / uBand, 0.0, 1.0);
 
@@ -161,12 +165,16 @@ Ripple ripple(vec2 uv) {
 export const PLATE_RIPPLE_VERTEX = /* glsl */ `
 ${PLATE_RIPPLE_WAVE}
 uniform float uInset;
+uniform float uFlex;
+uniform float uFlexDepth;
 
 varying vec2 vUv;
 
 void main() {
   vUv = uv;
   vec2 p = uv + ripple(uv).bend;
+  // The middle trails the edges, like a sheet drawn through water.
+  p.y += uFlex * uFlexDepth * sin(PI * uv.x);
   gl_Position = vec4((p * 2.0 - 1.0) * uInset, 0.0, 1.0);
 }
 `

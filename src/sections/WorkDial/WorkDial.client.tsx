@@ -9,7 +9,7 @@ import { cursorTarget } from '@/providers/Cursor/variants'
 import { moreWorkMotionStyle } from '@/sections/MoreWork/motion'
 import { MoreWorkPlate } from '@/sections/MoreWork/Plate'
 import type { MoreWorkItem } from '@/sections/MoreWork/query'
-import { createPlateScrub } from '@/sections/MoreWork/scrub'
+import { createPlateSignal } from '@/sections/MoreWork/signal'
 
 /**
  * How a row falls off with distance from the centre line. Prominence falls
@@ -52,6 +52,16 @@ const DIAL = {
   /** How long the page rests before it settles on the nearest row, and how long the settle takes. */
   settleAfter: 180,
   settle: 1.3,
+  /**
+   * The plate changes only for a row the reader stops on: one that has held
+   * the centre line this long, ms, while the page moves slower than
+   * `commitSpeed` rows a second. A fast scroll bows the plate instead of
+   * flicking through every picture it passes.
+   */
+  commitAfter: 160,
+  commitSpeed: 2.5,
+  /** How long the page must be still, ms, before its speed reads as zero. */
+  restAfter: 120,
   /**
    * The dial scrolls heavier than the rest of the site: a wheel notch moves
    * it less, and the page glides longer after it, so each turn lands with
@@ -120,13 +130,14 @@ type WorkDialProps = {
 /**
  * The works index as a dial: one picture fixed in the centre, the list
  * turning past it. The row on the centre line is the one shown; rows dim,
- * shrink and tilt away with distance from it, like a drum. Scroll position
- * scrubs the plate's dissolve between pictures, so the change tracks the
- * page and reverses with it, and a resting page settles on the nearest row.
+ * shrink and tilt away with distance from it, like a drum. The plate follows
+ * the row the reader stops on, not every row the page passes, and bows with
+ * the scroll's speed in between; a resting page settles on the nearest row.
  * Clicking a row or the picture opens the case study through the plate.
  */
 export function WorkDial({ items, title, lead }: WorkDialProps) {
   const lenis = useLenis()
+  /** The row the plate shows: the last one the reader stopped on. */
   const [active, setActive] = useState(0)
   const [opening, setOpening] = useState<number | null>(null)
   const plateRef = useRef<HTMLDivElement>(null)
@@ -134,7 +145,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
   const focusRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLOListElement>(null)
   const linksRef = useRef<(HTMLAnchorElement | null)[]>([])
-  const scrub = useMemo(createPlateScrub, [])
+  const flex = useMemo(createPlateSignal, [])
   const geometry = useRef({ listTop: 0, row: 1 })
   const openingRef = useRef(false)
   openingRef.current = opening !== null
@@ -175,7 +186,23 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     const reach = { above: 1, below: 1 }
     let current = 0
     let settleTimer: ReturnType<typeof setTimeout> | undefined
+    let commitTimer: ReturnType<typeof setTimeout> | undefined
+    let restTimer: ReturnType<typeof setTimeout> | undefined
     let touching = false
+    /** Rows a second, signed, and where and when the page last moved. */
+    let speed = 0
+    let lastPosition = 0
+    let movedAt = 0
+
+    const commit = () => {
+      if (openingRef.current) return
+      const moving = performance.now() - movedAt < DIAL.restAfter ? Math.abs(speed) : 0
+      if (moving > DIAL.commitSpeed) {
+        commitTimer = setTimeout(commit, 60)
+        return
+      }
+      setActive(current)
+    }
 
     const update = () => {
       const { listTop, row } = geometry.current
@@ -205,13 +232,14 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
         el.style.setProperty('--dial-scale', (1 - (1 - DIAL.scale) * fall).toFixed(4))
         el.style.setProperty('--dial-tilt', (-side * Math.min(u, 1) * DIAL.tilt).toFixed(2))
       })
-      if (openingRef.current) return
-      scrub.set(position)
+      if (openingRef.current) return position
       const next = Math.round(position)
       if (next !== current) {
         current = next
-        setActive(next)
+        clearTimeout(commitTimer)
+        commitTimer = setTimeout(commit, DIAL.commitAfter)
       }
+      return position
     }
 
     const settle = () => {
@@ -237,7 +265,22 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     }
 
     const onScroll = () => {
-      update()
+      const position = update()
+      const now = performance.now()
+      const dt = (now - movedAt) / 1000
+      if (dt > 0) {
+        // A scroll after a pause starts from rest; steady ones average over a few frames.
+        const instant = dt < 0.1 ? (position - lastPosition) / dt : 0
+        speed += (instant - speed) * 0.35
+        movedAt = now
+        lastPosition = position
+      }
+      if (!reduced.matches) flex.set(speed)
+      clearTimeout(restTimer)
+      restTimer = setTimeout(() => {
+        speed = 0
+        flex.set(0)
+      }, DIAL.restAfter)
       clearTimeout(settleTimer)
       settleTimer = setTimeout(settle, DIAL.settleAfter)
     }
@@ -249,10 +292,12 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
       }
       reach.above = Math.max(line.offsetTop - frame.offsetTop, 1)
       reach.below = Math.max(frame.offsetTop + frame.offsetHeight - line.offsetTop, 1)
-      update()
+      lastPosition = update()
     }
 
     measure()
+    // A page that opens part way down shows its row at once.
+    setActive(current)
     const resize = new ResizeObserver(measure)
     resize.observe(list)
     resize.observe(frame)
@@ -267,8 +312,10 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
       removeEventListener('touchend', onTouchEnd)
       removeEventListener('touchcancel', onTouchEnd)
       clearTimeout(settleTimer)
+      clearTimeout(commitTimer)
+      clearTimeout(restTimer)
     }
-  }, [lenis, scrub])
+  }, [lenis, flex])
 
   const focusRow = (index: number) => {
     const top = restingScroll(geometry.current, index)
@@ -341,8 +388,8 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
                   items={items}
                   look="ripple"
                   opening={opening !== null}
+                  flex={flex}
                   ref={plateRef}
-                  scrub={scrub}
                   size="(min-width: 64rem) 42vw, 100vw"
                 />
               </ViewTransition>

@@ -18,7 +18,7 @@ import { useGpuLease } from '@/lib/webgl/use-gpu-lease'
 import { cn } from '@/utilities/ui'
 import type { PlateLook } from './plate-runtime'
 import type { MoreWorkItem } from './query'
-import type { PlateScrub } from './scrub'
+import type { PlateSignal } from './signal'
 
 const PlateRuntime = lazy(() => import('./plate-runtime'))
 
@@ -57,8 +57,8 @@ type Props = {
   ref: RefObject<HTMLDivElement | null>
   /** Live at every size, not only beside the hover index (`plate:`). */
   always?: boolean
-  /** The dissolve follows this position instead of tweening to `index`. */
-  scrub?: PlateScrub
+  /** The scroll speed the ripple bows with, in rows per second. */
+  flex?: PlateSignal
   /** The frame's aspect and any other class it needs; 1.6 by default. */
   className?: string
   /** The pictures' `sizes`. */
@@ -84,7 +84,7 @@ export function MoreWorkPlate({
   opening,
   ref,
   always = false,
-  scrub,
+  flex,
   className,
   size = '46vw',
   look,
@@ -156,12 +156,12 @@ export function MoreWorkPlate({
               <PlateRuntime
                 bleed={bleed}
                 count={items.length}
+                flex={flex}
                 frameRef={ref}
                 index={index}
                 look={look}
                 onFailure={handleFailure}
                 onReady={handleReady}
-                scrub={scrub}
               />
             </Suspense>
           </FailureBoundary>

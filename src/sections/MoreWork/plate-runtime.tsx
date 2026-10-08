@@ -16,7 +16,7 @@ import {
   PLATE_RIPPLE_VERTEX,
   PLATE_VERTEX,
 } from './plate-shader'
-import type { PlateScrub } from './scrub'
+import type { PlateSignal } from './signal'
 
 gsap.registerPlugin(CustomEase)
 
@@ -28,6 +28,7 @@ gsap.registerPlugin(CustomEase)
  */
 
 const { duration, ease } = MORE_WORK_MOTION.plate
+const { ripple } = MORE_WORK_MOTION
 
 /** The transition's look (`./plate-shader`); its timing is in `./motion`. */
 export const PLATE_LOOK = {
@@ -45,12 +46,14 @@ export const PLATE_LOOK = {
   settle: 1.04,
   /** How much larger the leaving picture drifts. */
   drift: 0.02,
-  /** Scrubbed, the share of the way between two rows where each picture still rests whole. */
-  hold: 0.2,
 } as const
 
 /** The ripple look (`PLATE_RIPPLE_FRAGMENT`): a wave that travels up the plate and bends its frame. */
 export const PLATE_RIPPLE = {
+  duration: ripple.duration / 1000,
+  ease: CustomEase.create('more-work-ripple', ripple.ease.join(',')),
+  /** How much faster a wave runs once another row is waiting. */
+  hurry: ripple.hurry,
   /** The deepest vertical stretch, as a share of the frame's height. */
   amplitude: 0.04,
   /** How far the sides swell out where the front passes, as a share of the frame's width. */
@@ -63,23 +66,16 @@ export const PLATE_RIPPLE = {
   shade: 0.09,
   /** How deep the soft front between the pictures is, as a share of the frame. */
   band: 0.85,
-  /** Scrubbed, the share of the way between two rows where each picture still rests whole. */
-  hold: 0.05,
-  /**
-   * Scrubbed, the wave trails the page rather than tracking it frame for
-   * frame: the seconds it takes to close about two thirds of the distance.
-   * A quick flick still plays the whole change, slowly.
-   */
-  lag: 0.75,
+  /** How far the plate bows with the scroll at most, as a share of the frame's height. */
+  flex: 0.025,
+  /** Scroll speed, in rows per second, that bows it about three quarters of the way. */
+  flexSpeed: 6,
+  /** Seconds the bow takes to close about two thirds of the way to the scroll's speed. */
+  flexLag: 0.3,
 } as const
 
 /** `dither` sweeps through an ordered dither (More work); `ripple` runs a wave up the picture (the dial). */
 export type PlateLook = 'dither' | 'ripple'
-
-const smoothstep = (edge0: number, edge1: number, x: number) => {
-  const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1)
-  return t * t * (3 - 2 * t)
-}
 
 // Hoisted so JSX never allocates fresh objects per render.
 const GL_CONFIG = { alpha: false, antialias: false, powerPreference: 'high-performance' } as const
@@ -169,7 +165,7 @@ function onVideoFrames(video: HTMLVideoElement, callback: () => void) {
 type PlateSceneProps = {
   media: PlateMedia[]
   index: number
-  scrub?: PlateScrub
+  flex?: PlateSignal
   look: PlateLook
   bleed: number
   onFirstFrame: () => void
@@ -182,7 +178,7 @@ type PlateSceneProps = {
  */
 type Shown = { from: number | 'snapshot'; to: number }
 
-function PlateScene({ media, index, scrub, look, bleed, onFirstFrame }: PlateSceneProps) {
+function PlateScene({ media, index, flex, look, bleed, onFirstFrame }: PlateSceneProps) {
   const size = useThree((state) => state.size)
   const gl = useThree((state) => state.gl)
   const scene = useThree((state) => state.scene)
@@ -192,8 +188,9 @@ function PlateScene({ media, index, scrub, look, bleed, onFirstFrame }: PlateSce
   const framesDrawn = useRef(0)
   const shown = useRef<Shown>({ from: index, to: index })
   const stopVideos = useRef<() => void>(() => {})
-  /** Scrubbed, where the trailing transition stands. */
-  const trail = useRef<number | null>(null)
+  const tween = useRef<gsap.core.Tween | null>(null)
+  /** The ripple's next row, waiting for the running wave to pass. */
+  const queued = useRef<number | null>(null)
 
   const textures = useMemo(
     () =>
@@ -241,6 +238,8 @@ function PlateScene({ media, index, scrub, look, bleed, onFirstFrame }: PlateSce
       uShade: { value: PLATE_RIPPLE.shade },
       uSwell: { value: PLATE_RIPPLE.swell },
       uInset: { value: 1 / (1 + 2 * bleed) },
+      uFlex: { value: 0 },
+      uFlexDepth: { value: PLATE_RIPPLE.flex },
     }),
     [textures, look, bleed],
   )
@@ -294,91 +293,101 @@ function PlateScene({ media, index, scrub, look, bleed, onFirstFrame }: PlateSce
     // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; the size is the trigger
   }, [size.width, size.height, gl, show])
 
-  // A new row starts a full transition from whatever is on screen: the
-  // picture at rest, or a snapshot when it lands mid-sweep. The sweep runs
-  // down the plate when the pointer moved down the list, up when it moved up.
-  useEffect(() => {
+  /**
+   * Runs a full transition to row `to` from whatever is on screen: the
+   * picture at rest, or a snapshot when it lands mid-sweep. The sweep runs
+   * down the plate when the list moved down, up when it moved up.
+   */
+  const start = (to: number) => {
     const u = materialRef.current?.uniforms
+    if (!u) return
     const state = shown.current
-    if (!u || scrub || index === state.to) return
     const midway = u.uProgress.value < 1
     const fromTexture = midway ? snapshot() : undefined
-    u.uDirection.value = index > state.to ? 1 : -1
-    shown.current = { from: midway ? 'snapshot' : state.to, to: index }
+    const timing = look === 'ripple' ? PLATE_RIPPLE : PLATE_LOOK
+    u.uDirection.value = to > state.to ? 1 : -1
+    shown.current = { from: midway ? 'snapshot' : state.to, to }
     u.uProgress.value = 0
     show(fromTexture)
-    const tween = gsap.to(u.uProgress, {
+    tween.current?.kill()
+    tween.current = gsap.to(u.uProgress, {
       value: 1,
-      duration: PLATE_LOOK.duration,
-      ease: PLATE_LOOK.ease,
+      duration: timing.duration,
+      ease: timing.ease,
       onUpdate: invalidate,
-      overwrite: true,
+      onComplete: () => {
+        const next = queued.current
+        queued.current = null
+        if (next !== null && next !== shown.current.to) startRef.current(next)
+      },
     })
-    return () => {
-      tween.kill()
-    }
-    // biome-ignore lint/correctness/useExhaustiveDependencies: `show` and `snapshot` read refs; the row is the trigger
-  }, [index, scrub, invalidate, snapshot, show])
+  }
+  const startRef = useRef(start)
+  startRef.current = start
 
-  // Scrubbed, the sweep sits wherever the page does: always down the plate
-  // towards the next row, so scrolling back plays it in reverse. The ripple
-  // trails the page on a damped follow, so it eases in and out of a change.
+  useEffect(
+    () => () => {
+      tween.current?.kill()
+    },
+    [],
+  )
+
+  // The dither cuts to a new row at once. The ripple never cuts a wave: the
+  // newest row waits, and the running wave quickens to make way for it.
   useEffect(() => {
-    if (!scrub || media.length < 2) return
-    const last = media.length - 1
-    const hold = look === 'ripple' ? PLATE_RIPPLE.hold : PLATE_LOOK.hold
-    const lag = look === 'ripple' ? PLATE_RIPPLE.lag : 0
-    const target = () => Math.min(Math.max(scrub.get(), 0), last)
-    // Kept across re-runs: a re-render mid-change must not jump the trail to the page.
-    let position = trail.current ?? target()
+    const u = materialRef.current?.uniforms
+    if (!u) return
+    const running = tween.current?.isActive()
+    if (look === 'ripple' && running) {
+      queued.current = index === shown.current.to ? null : index
+      if (queued.current !== null) {
+        gsap.to(tween.current, {
+          timeScale: PLATE_RIPPLE.hurry,
+          duration: 0.6,
+          ease: 'sine.inOut',
+          overwrite: true,
+        })
+      }
+      return
+    }
+    if (index !== shown.current.to) startRef.current(index)
+  }, [index, look])
+
+  // The plate bows with the scroll on a damped follow, so it leans into a
+  // flick and eases back once the page rests.
+  useEffect(() => {
+    if (!flex) return
+    let value = 0
     let frame = 0
     let then = 0
-
-    const draw = () => {
-      const u = materialRef.current?.uniforms
-      if (!u) return
-      const from = Math.min(Math.max(Math.floor(position), 0), last - 1)
-      const state = shown.current
-      u.uProgress.value = smoothstep(hold, 1 - hold, position - from)
-      u.uDirection.value = 1
-      if (state.from !== from || state.to !== from + 1) {
-        shown.current = { from, to: from + 1 }
-        show()
-      } else invalidate()
-    }
 
     const step = (now: number) => {
       // A frame's timestamp can precede the `performance.now()` that queued it.
       const dt = Math.min(Math.max((now - then) / 1000, 0), 0.1)
       then = now
-      const goal = target()
-      position += (goal - position) * (1 - Math.exp(-dt / lag))
-      if (Math.abs(goal - position) < 0.0005) position = goal
-      trail.current = position
-      draw()
-      frame = position === goal ? 0 : requestAnimationFrame(step)
+      const goal = Math.tanh(flex.get() / PLATE_RIPPLE.flexSpeed)
+      value += (goal - value) * (1 - Math.exp(-dt / PLATE_RIPPLE.flexLag))
+      if (Math.abs(goal - value) < 0.0005) value = goal
+      const u = materialRef.current?.uniforms
+      if (u) {
+        u.uFlex.value = value
+        invalidate()
+      }
+      frame = value === goal ? 0 : requestAnimationFrame(step)
     }
 
     const follow = () => {
-      if (lag <= 0) {
-        position = target()
-        trail.current = position
-        return draw()
-      }
       if (frame) return
       then = performance.now()
       frame = requestAnimationFrame(step)
     }
 
-    draw()
-    follow()
-    const unsubscribe = scrub.subscribe(follow)
+    const unsubscribe = flex.subscribe(follow)
     return () => {
       unsubscribe()
       cancelAnimationFrame(frame)
     }
-    // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; the source is the trigger
-  }, [scrub, media, look, invalidate, show])
+  }, [flex, invalidate])
 
   useFrame(() => signalFirstFrame(framesDrawn, onFirstFrame))
 
@@ -404,8 +413,8 @@ export type PlateRuntimeProps = {
   frameRef: RefObject<HTMLElement | null>
   count: number
   index: number
-  /** Follow this position instead of tweening between rows. */
-  scrub?: PlateScrub
+  /** The scroll speed the ripple bows with, in rows per second. */
+  flex?: PlateSignal
   look?: PlateLook
   /**
    * How far the canvas reaches past the frame on each side, as a share of
@@ -426,7 +435,7 @@ export default function PlateRuntime({
   frameRef,
   count,
   index,
-  scrub,
+  flex,
   look = 'dither',
   bleed = 0,
   onReady,
@@ -468,11 +477,11 @@ export default function PlateRuntime({
         {media && (
           <PlateScene
             bleed={bleed}
+            flex={flex}
             index={index}
             look={look}
             media={media}
             onFirstFrame={handleFirstFrame}
-            scrub={scrub}
           />
         )}
         <ContextGuard kind="plate" onLost={handleContextLost} />
