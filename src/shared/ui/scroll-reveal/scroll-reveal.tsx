@@ -2,15 +2,16 @@
 
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
+import { SplitText } from 'gsap/SplitText'
 import { type ReactNode, useRef } from 'react'
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 
-gsap.registerPlugin(useGSAP)
+gsap.registerPlugin(SplitText, useGSAP)
 
 /**
  * Every tunable the reveal timeline reads. Targets run on two tracks — text
- * (`data-reveal`, plus `data-reveal="panel"` for opacity + y without blur)
- * and media (`data-reveal="media"`) — each staggered in document order and
+ * (`data-reveal`, plus `data-reveal="panel"` for opacity + y without blur and
+ * `data-reveal="lines"`, whose copy enters one rendered line per beat) and media (`data-reveal="media"`) — each staggered in document order and
  * gated on its own target; `mediaOffset` delays one track after its gate.
  */
 export type ScrollRevealTuning = {
@@ -426,9 +427,40 @@ function addMediaTweens(
   })
 }
 
+const REVEAL_LINE_CLASS = 'reveal-line'
+
+/** `[data-reveal]` targets in document order, a `lines` target as its split lines. */
+function revealTargets(root: HTMLElement) {
+  return Array.from(root.querySelectorAll<HTMLElement>('[data-reveal]')).flatMap((target) =>
+    target.dataset.reveal === 'lines'
+      ? Array.from(target.querySelectorAll<HTMLElement>(`.${REVEAL_LINE_CLASS}`))
+      : [target],
+  )
+}
+
+/**
+ * Splits every `data-reveal="lines"` target into rendered lines and calls
+ * `onSplit` after each split. Rich text splits per block so a line never spans
+ * two paragraphs. autoSplit re-splits on resize and font load.
+ */
+function splitRevealLines(hosts: HTMLElement[], onSplit: () => void) {
+  const blocks = hosts.flatMap((host) => {
+    const children = Array.from(host.querySelectorAll<HTMLElement>('p, h1, h2, h3, h4, h5, h6, li'))
+    return children.length ? children : [host]
+  })
+  return SplitText.create(blocks, {
+    type: 'lines',
+    linesClass: REVEAL_LINE_CLASS,
+    aria: 'none',
+    autoSplit: true,
+    onSplit,
+  })
+}
+
 /**
  * Builds the entrance over `root`'s reveal targets and gates it on scroll;
- * returns the cleanup that disconnects the gates.
+ * returns the cleanup that disconnects the gates. `onEnter` fires when the
+ * first track starts to play.
  */
 function playReveal(
   root: HTMLElement,
@@ -436,6 +468,7 @@ function playReveal(
   tuning: ResolvedTuning,
   gateSelector: string | undefined,
   onComplete: () => void,
+  onEnter: () => void = () => {},
 ) {
   const textTargets = targets.filter((target) => target.dataset.reveal !== 'media')
   const mediaTargets = targets.filter((target) => target.dataset.reveal === 'media')
@@ -455,7 +488,10 @@ function playReveal(
     addTextTweens(tl, textTargets, textStart, tuning)
     addMediaTweens(tl, mediaTargets, mediaStart, tuning)
     arm(tl, targets)
-    return observeRevealGate(overrideGate, tuning.enterOffset, () => tl.play())
+    return observeRevealGate(overrideGate, tuning.enterOffset, () => {
+      onEnter()
+      tl.play()
+    })
   }
 
   /** One track on its own timeline, gated on its own uppermost target. */
@@ -464,7 +500,10 @@ function playReveal(
     addTweens(tl)
     arm(tl, track)
     const gate = uppermostRevealTarget(track) ?? root
-    return observeRevealGate(gate, tuning.enterOffset, () => tl.play())
+    return observeRevealGate(gate, tuning.enterOffset, () => {
+      onEnter()
+      tl.play()
+    })
   }
 
   const stops: Array<() => void> = []
@@ -486,6 +525,7 @@ function playReveal(
  * marked `data-reveal` drop into place with a blur settle when that copy
  * enters the viewport, `data-reveal="panel"` is the same track without blur
  * (opacity + y only — so glass surfaces keep `backdrop-filter`), and
+ * `data-reveal="lines"` drops its copy in one rendered line per beat, and
  * `data-reveal="media"` targets mask-wipe open from the top when the media
  * itself has entered. Neighbouring text targets that share a
  * `data-reveal-group` value land on one beat — an eyebrow and its heading are
@@ -515,16 +555,39 @@ export function ScrollReveal({
     () => {
       const root = rootRef.current
       if (!root) return
-      const targets = Array.from(root.querySelectorAll<HTMLElement>('[data-reveal]'))
-      if (!targets.length) return
+      if (!root.querySelector('[data-reveal]')) return
 
       if (prefersReducedMotion) {
-        gsap.set(targets, { clearProps: 'all' })
+        gsap.set(revealTargets(root), { clearProps: 'all' })
         onCompleteRef.current?.()
         return
       }
 
-      return playReveal(root, targets, resolved, gateSelector, () => onCompleteRef.current?.())
+      const play = (onEnter?: () => void) =>
+        playReveal(
+          root,
+          revealTargets(root),
+          resolved,
+          gateSelector,
+          () => onCompleteRef.current?.(),
+          onEnter,
+        )
+
+      const lineHosts = Array.from(root.querySelectorAll<HTMLElement>('[data-reveal="lines"]'))
+      if (!lineHosts.length) return play()
+
+      // A re-split before the entrance rebuilds it over the new lines. After
+      // it, the new lines are already at rest.
+      let entered = false
+      let stop: (() => void) | undefined
+      splitRevealLines(lineHosts, () => {
+        if (entered) return
+        stop?.()
+        stop = play(() => {
+          entered = true
+        })
+      })
+      return () => stop?.()
     },
     {
       scope: rootRef,
