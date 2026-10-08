@@ -2141,33 +2141,31 @@ body {
   opacity: 0;
 }
 
-/* First paint: the chrome arrives once the page's opening has drawn the eye.
-   The top bar fades in on the site's settle curve; the dock comes one beat
-   later and last, fading while it settles up 0.5rem on the press release
-   curve, so it locks into place with a hair of overshoot. `--chrome-enter-at`
-   is the page's cue: 600ms on a page with no choreography of its own; the
-   homepage's last beat (HomeHero's `BEAT`). `backwards` holds the start
-   through the wait and lets go at the end, so `data-hidden` keeps its
-   transitions afterwards. Reduced motion: the chrome is simply there. */
+/* First paint. The top bar is the first thing on screen: it fades in on the
+   site's settle curve from 0ms, before the page's own opening. The dock comes
+   last, fading while it settles up 0.5rem on the press release curve, so it
+   locks into place with a hair of overshoot. `--chrome-dock-at` is the page's
+   cue for it: 920ms on a page with no choreography of its own; the homepage's
+   last beat (HomeHero's `BEAT`). `backwards` holds the start through the wait
+   and lets go at the end, so `data-hidden` keeps its transitions afterwards.
+   Reduced motion: the chrome is simply there. */
 @media (prefers-reduced-motion: no-preference) {
   body {
-    --chrome-enter-at: 600ms;
-    --chrome-beat: 320ms;
+    --chrome-dock-at: 920ms;
   }
 
   body:has([data-slot="home-hero"]) {
-    --chrome-enter-at: 800ms;
+    --chrome-dock-at: 1120ms;
   }
 
   .chrome-top {
-    animation: chrome-fade 500ms var(--ease-out-quint) var(--chrome-enter-at, 0ms) backwards;
+    animation: chrome-fade 500ms var(--ease-out-quint) backwards;
   }
 
   .dock {
-    --dock-at: calc(var(--chrome-enter-at, 0ms) + var(--chrome-beat, 0ms));
     animation:
-      chrome-fade 500ms var(--ease-out-quint) var(--dock-at) backwards,
-      chrome-dock-lock 600ms var(--press-release-ease) var(--dock-at) backwards;
+      chrome-fade 500ms var(--ease-out-quint) var(--chrome-dock-at, 0ms) backwards,
+      chrome-dock-lock 600ms var(--press-release-ease) var(--chrome-dock-at, 0ms) backwards;
   }
 }
 
