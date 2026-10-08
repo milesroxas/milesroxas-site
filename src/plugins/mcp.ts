@@ -65,6 +65,8 @@ const SURFACE_NOTES: Record<string, string> = {
 
 /** Site plumbing behind the published pages. */
 const OPERATIONS: Record<string, string> = {
+  capabilities:
+    'Capabilities: the kinds of work a case study lists. A work links to them by id in `capabilities`, in the order its hero shows them',
   categories: 'Post categories (nested). Posts link to them by id',
   clients: 'Clients a work was made for. A work links to one by id in `client`',
   forms:

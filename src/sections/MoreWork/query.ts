@@ -1,6 +1,6 @@
 import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
-import type { Client, Media, Work } from '@/payload-types'
+import type { Capability, Client, Media, Work } from '@/payload-types'
 import { populatedDoc, relationshipIds } from '@/utilities/relationshipId'
 
 /** How many works the index lists. */
@@ -41,7 +41,9 @@ export const toWorkIndexItem = (doc: WorkIndexDoc): MoreWorkItem | null =>
         title: doc.title,
         client: populatedDoc<Client>(doc.client)?.title ?? null,
         industry: doc.industry ?? null,
-        capabilities: doc.capabilities ?? [],
+        capabilities: (doc.capabilities ?? []).flatMap(
+          (capability) => populatedDoc<Capability>(capability)?.title ?? [],
+        ),
         media: populatedDoc<Media>(doc.hero?.media),
       }
     : null

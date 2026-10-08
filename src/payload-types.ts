@@ -72,6 +72,7 @@ export interface Config {
     posts: Post;
     works: Work;
     media: Media;
+    capabilities: Capability;
     categories: Category;
     clients: Client;
     inquiries: Inquiry;
@@ -100,6 +101,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     works: WorksSelect<false> | WorksSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    capabilities: CapabilitiesSelect<false> | CapabilitiesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     clients: ClientsSelect<false> | ClientsSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
@@ -4553,9 +4555,9 @@ export interface Work {
   industry?: string | null;
   role?: string | null;
   /**
-   * One capability per entry, in the order the hero lists them.
+   * Listed in the hero in this order: drag to reorder. Pick a capability, or add a new one here.
    */
-  capabilities?: string[] | null;
+  capabilities?: (number | Capability)[] | null;
   intro?: WorkIntro;
   layout: (
     | WorkSectionBlock
@@ -4627,6 +4629,19 @@ export interface Work {
  */
 export interface Client {
   id: number;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "capabilities".
+ */
+export interface Capability {
+  id: number;
+  _order?: string | null;
   title: string;
   slug?: string | null;
   slugLock?: boolean | null;
@@ -5488,6 +5503,12 @@ export interface PayloadMcpApiKey {
     update?: boolean | null;
     delete?: boolean | null;
   };
+  capabilities?: {
+    find?: boolean | null;
+    create?: boolean | null;
+    update?: boolean | null;
+    delete?: boolean | null;
+  };
   categories?: {
     find?: boolean | null;
     create?: boolean | null;
@@ -5720,6 +5741,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'capabilities';
+        value: number | Capability;
       } | null)
     | ({
         relationTo: 'categories';
@@ -6933,6 +6958,18 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "capabilities_select".
+ */
+export interface CapabilitiesSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
@@ -7291,6 +7328,14 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         delete?: T;
       };
   posts?:
+    | T
+    | {
+        find?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+      };
+  capabilities?:
     | T
     | {
         find?: T;

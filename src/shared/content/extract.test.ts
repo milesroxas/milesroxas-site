@@ -77,6 +77,28 @@ describe('extractDocMarkdown', () => {
     )
   })
 
+  it("lists a work's capabilities by name, in the work's order", async () => {
+    const { payload, find } = stubPayload({
+      capabilities: [
+        { id: 1, title: 'Brand Identity' },
+        { id: 2, title: 'Web Design' },
+      ],
+    })
+    const markdown = await extractDocMarkdown(payload, walkSurface, {
+      title: 'Identity for Higher-Stakes Work',
+      capabilities: [2, 1],
+    } as never)
+
+    expect(markdown).toBe(
+      ['# Identity for Higher-Stakes Work', 'Capabilities: Web Design, Brand Identity'].join(
+        '\n\n',
+      ),
+    )
+    expect(find).toHaveBeenCalledWith(
+      expect.objectContaining({ collection: 'capabilities', overrideAccess: false }),
+    )
+  })
+
   it('reads a figure through its words and a code block as a fenced listing, inside a Section', async () => {
     const { payload } = stubPayload({})
     const markdown = await extractDocMarkdown(payload, walkSurface, {

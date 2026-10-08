@@ -22,8 +22,8 @@ import type { ContentSurface, GlobalSurface } from './surfaces'
  *   (work-pages → case-studies), it is hydrated and walked too — its narrative
  *   is what the page renders.
  * - **Relationships.** Allowlisted relationship keys (`RELATION_KEYS`: a
- *   work's client) resolve to the public substance of the related record, the
- *   client's name. Everything else stays a bare id and is dropped.
+ *   work's client and capabilities) resolve to the public substance of the
+ *   related record, its name. Everything else stays a bare id and is dropped.
  * - **Structured arrays.** Case-study metrics and contact details render as
  *   compact lines instead of scattered field values.
  *
@@ -38,14 +38,18 @@ import type { ContentSurface, GlobalSurface } from './surfaces'
  */
 
 /**
- * The relationship keys followed into the corpus: a work's client, by name.
- * sas-site follows more (testimonials, projects, taxonomy); this site has none
- * of those collections (docs/composer-roadmap.md, Phase 5). Every other related
- * document (works in a Columns block, related posts) is indexed on its own.
+ * The relationship keys followed into the corpus: a work's client and
+ * capabilities, by name. sas-site follows more (testimonials, projects); this
+ * site has none of those collections (docs/composer-roadmap.md, Phase 5). Every
+ * other related document (works in a Columns block, related posts) is indexed
+ * on its own.
  */
-type RelationCollection = 'clients'
+type RelationCollection = 'capabilities' | 'clients'
 
-const RELATION_KEYS: Record<string, RelationCollection> = { client: 'clients' }
+const RELATION_KEYS: Record<string, RelationCollection> = {
+  capabilities: 'capabilities',
+  client: 'clients',
+}
 
 const MAX_DOC_CHARS = 30_000
 
@@ -175,17 +179,25 @@ async function resolveRelations(
   payload: Payload,
   refs: RelationRef[],
 ): Promise<Map<string, string>> {
-  const ids = [...new Set(refs.map((ref) => ref.id))]
-  const { docs } = await payload.find({
-    collection: 'clients',
-    where: { id: { in: ids } },
-    depth: 0,
-    limit: ids.length,
-    pagination: false,
-    overrideAccess: false,
-    select: { title: true },
-  })
-  return new Map(docs.map((doc) => [`clients:${doc.id}`, doc.title] as const))
+  const collections = [...new Set(refs.map((ref) => ref.collection))]
+  const found = await Promise.all(
+    collections.map(async (collection) => {
+      const ids = [
+        ...new Set(refs.filter((ref) => ref.collection === collection).map((ref) => ref.id)),
+      ]
+      const { docs } = await payload.find({
+        collection,
+        where: { id: { in: ids } },
+        depth: 0,
+        limit: ids.length,
+        pagination: false,
+        overrideAccess: false,
+        select: { title: true },
+      })
+      return docs.map((doc) => [`${collection}:${doc.id}`, doc.title] as const)
+    }),
+  )
+  return new Map(found.flat())
 }
 
 /** A reference's rendered substance the first time it appears, undefined after. */
@@ -230,7 +242,10 @@ async function renderParts(payload: Payload, parts: Part[]): Promise<string[]> {
   const rendered =
     refs.length > 0 ? await resolveRelations(payload, refs) : new Map<string, string>()
 
-  const TERM_LABEL: Partial<Record<RelationCollection, string>> = { clients: 'Client' }
+  const TERM_LABEL: Partial<Record<RelationCollection, string>> = {
+    capabilities: 'Capabilities',
+    clients: 'Client',
+  }
 
   const out: string[] = []
   const seen = new Set<string>()

@@ -1,4 +1,4 @@
-import type { Client, Work } from '@/payload-types'
+import type { Capability, Client, Work } from '@/payload-types'
 import { populatedDoc } from '@/utilities/relationshipId'
 import {
   WorkHeroCapabilities,
@@ -25,6 +25,9 @@ type Props = Pick<Work, 'capabilities' | 'client' | 'hero' | 'industry' | 'role'
 export function WorkHero({ capabilities, client, hero, industry, role, slug, title }: Props) {
   const media = hero?.media && typeof hero.media === 'object' ? hero.media : null
   const clientName = populatedDoc<Client>(client)?.title
+  const capabilityNames = (capabilities ?? []).flatMap(
+    (capability) => populatedDoc<Capability>(capability)?.title ?? [],
+  )
   const facts = [
     { label: 'Industry', value: industry },
     { label: 'Role', value: role },
@@ -54,7 +57,7 @@ export function WorkHero({ capabilities, client, hero, industry, role, slug, tit
           <WorkHeroMedia media={media} slug={slug} />
         </WorkHeroStage>
       )}
-      {capabilities && capabilities.length > 0 && <WorkHeroCapabilities items={capabilities} />}
+      {capabilityNames.length > 0 && <WorkHeroCapabilities items={capabilityNames} />}
     </WorkHeroRoot>
   )
 }

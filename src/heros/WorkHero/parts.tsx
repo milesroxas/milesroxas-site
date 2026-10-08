@@ -192,8 +192,7 @@ function WorkHeroCapabilities({
         {items.map((item, i) => {
           const at = enterAt(BEAT.capabilities + (i + 1) * BEAT.capability)
           return (
-            // biome-ignore lint/suspicious/noArrayIndexKey: capabilities are plain strings and may repeat
-            <li className="flex items-center gap-2" key={i}>
+            <li className="flex items-center gap-2" key={item}>
               {i > 0 && <Rule className="w-10 max-md:hidden" style={at} />}
               <span className={cn('text-lg/none md:text-xl/none', enterIn)} style={at}>
                 {item}

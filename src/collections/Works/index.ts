@@ -92,10 +92,13 @@ export const Works: CollectionConfig<'works'> = {
             },
             {
               name: 'capabilities',
-              type: 'text',
+              type: 'relationship',
+              relationTo: 'capabilities',
               hasMany: true,
               admin: {
-                description: 'One capability per entry, in the order the hero lists them.',
+                description:
+                  'Listed in the hero in this order: drag to reorder. Pick a capability, or add a new one here.',
+                isSortable: true,
               },
             },
             pageIntroField(),

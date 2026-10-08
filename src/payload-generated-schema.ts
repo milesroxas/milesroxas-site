@@ -3432,7 +3432,7 @@ export const enum_forms_confirmation_type = pgEnum(
 );
 export const enum_payload_jobs_log_task_slug = pgEnum(
   "enum_payload_jobs_log_task_slug",
-  ["inline", "askQuestionRetention", "schedulePublish"],
+  ["inline", "askQuestionRetention", "cloudflareMediaSweep", "schedulePublish"],
 );
 export const enum_payload_jobs_log_state = pgEnum(
   "enum_payload_jobs_log_state",
@@ -3440,7 +3440,7 @@ export const enum_payload_jobs_log_state = pgEnum(
 );
 export const enum_payload_jobs_task_slug = pgEnum(
   "enum_payload_jobs_task_slug",
-  ["inline", "askQuestionRetention", "schedulePublish"],
+  ["inline", "askQuestionRetention", "cloudflareMediaSweep", "schedulePublish"],
 );
 export const enum_payload_folders_folder_type = pgEnum(
   "enum_payload_folders_folder_type",
@@ -11256,25 +11256,6 @@ export const works = pgTable(
   ],
 );
 
-export const works_texts = pgTable(
-  "works_texts",
-  {
-    id: serial("id").primaryKey(),
-    order: integer("order").notNull(),
-    parent: integer("parent_id").notNull(),
-    path: varchar("path").notNull(),
-    text: varchar("text"),
-  },
-  (columns) => [
-    index("works_texts_order_parent").on(columns.order, columns.parent),
-    foreignKey({
-      columns: [columns["parent"]],
-      foreignColumns: [works.id],
-      name: "works_texts_parent_fk",
-    }).onDelete("cascade"),
-  ],
-);
-
 export const works_rels = pgTable(
   "works_rels",
   {
@@ -11282,6 +11263,7 @@ export const works_rels = pgTable(
     order: integer("order"),
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
+    capabilitiesID: integer("capabilities_id"),
     pagesID: integer("pages_id"),
     postsID: integer("posts_id"),
     worksID: integer("works_id"),
@@ -11291,6 +11273,7 @@ export const works_rels = pgTable(
     index("works_rels_order_idx").on(columns.order),
     index("works_rels_parent_idx").on(columns.parent),
     index("works_rels_path_idx").on(columns.path),
+    index("works_rels_capabilities_id_idx").on(columns.capabilitiesID),
     index("works_rels_pages_id_idx").on(columns.pagesID),
     index("works_rels_posts_id_idx").on(columns.postsID),
     index("works_rels_works_id_idx").on(columns.worksID),
@@ -11299,6 +11282,11 @@ export const works_rels = pgTable(
       columns: [columns["parent"]],
       foreignColumns: [works.id],
       name: "works_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["capabilitiesID"]],
+      foreignColumns: [capabilities.id],
+      name: "works_rels_capabilities_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["pagesID"]],
@@ -13024,25 +13012,6 @@ export const _works_v = pgTable(
   ],
 );
 
-export const _works_v_texts = pgTable(
-  "_works_v_texts",
-  {
-    id: serial("id").primaryKey(),
-    order: integer("order").notNull(),
-    parent: integer("parent_id").notNull(),
-    path: varchar("path").notNull(),
-    text: varchar("text"),
-  },
-  (columns) => [
-    index("_works_v_texts_order_parent").on(columns.order, columns.parent),
-    foreignKey({
-      columns: [columns["parent"]],
-      foreignColumns: [_works_v.id],
-      name: "_works_v_texts_parent_fk",
-    }).onDelete("cascade"),
-  ],
-);
-
 export const _works_v_rels = pgTable(
   "_works_v_rels",
   {
@@ -13050,6 +13019,7 @@ export const _works_v_rels = pgTable(
     order: integer("order"),
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
+    capabilitiesID: integer("capabilities_id"),
     pagesID: integer("pages_id"),
     postsID: integer("posts_id"),
     worksID: integer("works_id"),
@@ -13059,6 +13029,7 @@ export const _works_v_rels = pgTable(
     index("_works_v_rels_order_idx").on(columns.order),
     index("_works_v_rels_parent_idx").on(columns.parent),
     index("_works_v_rels_path_idx").on(columns.path),
+    index("_works_v_rels_capabilities_id_idx").on(columns.capabilitiesID),
     index("_works_v_rels_pages_id_idx").on(columns.pagesID),
     index("_works_v_rels_posts_id_idx").on(columns.postsID),
     index("_works_v_rels_works_id_idx").on(columns.worksID),
@@ -13067,6 +13038,11 @@ export const _works_v_rels = pgTable(
       columns: [columns["parent"]],
       foreignColumns: [_works_v.id],
       name: "_works_v_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["capabilitiesID"]],
+      foreignColumns: [capabilities.id],
+      name: "_works_v_rels_capabilities_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["pagesID"]],
@@ -13139,42 +13115,6 @@ export const media = pgTable(
       mode: "number",
     }),
     sizes_thumbnail_filename: varchar("sizes_thumbnail_filename"),
-    sizes_square_url: varchar("sizes_square_url"),
-    sizes_square_width: numeric("sizes_square_width", { mode: "number" }),
-    sizes_square_height: numeric("sizes_square_height", { mode: "number" }),
-    sizes_square_mimeType: varchar("sizes_square_mime_type"),
-    sizes_square_filesize: numeric("sizes_square_filesize", { mode: "number" }),
-    sizes_square_filename: varchar("sizes_square_filename"),
-    sizes_small_url: varchar("sizes_small_url"),
-    sizes_small_width: numeric("sizes_small_width", { mode: "number" }),
-    sizes_small_height: numeric("sizes_small_height", { mode: "number" }),
-    sizes_small_mimeType: varchar("sizes_small_mime_type"),
-    sizes_small_filesize: numeric("sizes_small_filesize", { mode: "number" }),
-    sizes_small_filename: varchar("sizes_small_filename"),
-    sizes_medium_url: varchar("sizes_medium_url"),
-    sizes_medium_width: numeric("sizes_medium_width", { mode: "number" }),
-    sizes_medium_height: numeric("sizes_medium_height", { mode: "number" }),
-    sizes_medium_mimeType: varchar("sizes_medium_mime_type"),
-    sizes_medium_filesize: numeric("sizes_medium_filesize", { mode: "number" }),
-    sizes_medium_filename: varchar("sizes_medium_filename"),
-    sizes_large_url: varchar("sizes_large_url"),
-    sizes_large_width: numeric("sizes_large_width", { mode: "number" }),
-    sizes_large_height: numeric("sizes_large_height", { mode: "number" }),
-    sizes_large_mimeType: varchar("sizes_large_mime_type"),
-    sizes_large_filesize: numeric("sizes_large_filesize", { mode: "number" }),
-    sizes_large_filename: varchar("sizes_large_filename"),
-    sizes_xlarge_url: varchar("sizes_xlarge_url"),
-    sizes_xlarge_width: numeric("sizes_xlarge_width", { mode: "number" }),
-    sizes_xlarge_height: numeric("sizes_xlarge_height", { mode: "number" }),
-    sizes_xlarge_mimeType: varchar("sizes_xlarge_mime_type"),
-    sizes_xlarge_filesize: numeric("sizes_xlarge_filesize", { mode: "number" }),
-    sizes_xlarge_filename: varchar("sizes_xlarge_filename"),
-    sizes_og_url: varchar("sizes_og_url"),
-    sizes_og_width: numeric("sizes_og_width", { mode: "number" }),
-    sizes_og_height: numeric("sizes_og_height", { mode: "number" }),
-    sizes_og_mimeType: varchar("sizes_og_mime_type"),
-    sizes_og_filesize: numeric("sizes_og_filesize", { mode: "number" }),
-    sizes_og_filename: varchar("sizes_og_filename"),
   },
   (columns) => [
     index("media_folder_idx").on(columns.folder),
@@ -13184,22 +13124,38 @@ export const media = pgTable(
     index("media_sizes_thumbnail_sizes_thumbnail_filename_idx").on(
       columns.sizes_thumbnail_filename,
     ),
-    index("media_sizes_square_sizes_square_filename_idx").on(
-      columns.sizes_square_filename,
-    ),
-    index("media_sizes_small_sizes_small_filename_idx").on(
-      columns.sizes_small_filename,
-    ),
-    index("media_sizes_medium_sizes_medium_filename_idx").on(
-      columns.sizes_medium_filename,
-    ),
-    index("media_sizes_large_sizes_large_filename_idx").on(
-      columns.sizes_large_filename,
-    ),
-    index("media_sizes_xlarge_sizes_xlarge_filename_idx").on(
-      columns.sizes_xlarge_filename,
-    ),
-    index("media_sizes_og_sizes_og_filename_idx").on(columns.sizes_og_filename),
+  ],
+);
+
+export const capabilities = pgTable(
+  "capabilities",
+  {
+    id: serial("id").primaryKey(),
+    _order: varchar("_order"),
+    title: varchar("title").notNull(),
+    slug: varchar("slug"),
+    slugLock: boolean("slug_lock").default(true),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => [
+    index("capabilities__order_idx").on(columns._order),
+    uniqueIndex("capabilities_title_idx").on(columns.title),
+    index("capabilities_slug_idx").on(columns.slug),
+    index("capabilities_updated_at_idx").on(columns.updatedAt),
+    index("capabilities_created_at_idx").on(columns.createdAt),
   ],
 );
 
@@ -14322,6 +14278,10 @@ export const payload_mcp_api_keys = pgTable(
     posts_create: boolean("posts_create").default(false),
     posts_update: boolean("posts_update").default(false),
     posts_delete: boolean("posts_delete").default(false),
+    capabilities_find: boolean("capabilities_find").default(false),
+    capabilities_create: boolean("capabilities_create").default(false),
+    capabilities_update: boolean("capabilities_update").default(false),
+    capabilities_delete: boolean("capabilities_delete").default(false),
     categories_find: boolean("categories_find").default(false),
     categories_create: boolean("categories_create").default(false),
     categories_update: boolean("categories_update").default(false),
@@ -14580,6 +14540,7 @@ export const payload_locked_documents_rels = pgTable(
     postsID: integer("posts_id"),
     worksID: integer("works_id"),
     mediaID: integer("media_id"),
+    capabilitiesID: integer("capabilities_id"),
     categoriesID: integer("categories_id"),
     clientsID: integer("clients_id"),
     inquiriesID: integer("inquiries_id"),
@@ -14601,6 +14562,9 @@ export const payload_locked_documents_rels = pgTable(
     index("payload_locked_documents_rels_posts_id_idx").on(columns.postsID),
     index("payload_locked_documents_rels_works_id_idx").on(columns.worksID),
     index("payload_locked_documents_rels_media_id_idx").on(columns.mediaID),
+    index("payload_locked_documents_rels_capabilities_id_idx").on(
+      columns.capabilitiesID,
+    ),
     index("payload_locked_documents_rels_categories_id_idx").on(
       columns.categoriesID,
     ),
@@ -14653,6 +14617,11 @@ export const payload_locked_documents_rels = pgTable(
       columns: [columns["mediaID"]],
       foreignColumns: [media.id],
       name: "payload_locked_documents_rels_media_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["capabilitiesID"]],
+      foreignColumns: [capabilities.id],
+      name: "payload_locked_documents_rels_capabilities_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["categoriesID"]],
@@ -18359,18 +18328,16 @@ export const relations_works_blocks_media_block = relations(
     }),
   }),
 );
-export const relations_works_texts = relations(works_texts, ({ one }) => ({
-  parent: one(works, {
-    fields: [works_texts.parent],
-    references: [works.id],
-    relationName: "_texts",
-  }),
-}));
 export const relations_works_rels = relations(works_rels, ({ one }) => ({
   parent: one(works, {
     fields: [works_rels.parent],
     references: [works.id],
     relationName: "_rels",
+  }),
+  capabilitiesID: one(capabilities, {
+    fields: [works_rels.capabilitiesID],
+    references: [capabilities.id],
+    relationName: "capabilities",
   }),
   pagesID: one(pages, {
     fields: [works_rels.pagesID],
@@ -18497,9 +18464,6 @@ export const relations_works = relations(works, ({ one, many }) => ({
     fields: [works.meta_image],
     references: [media.id],
     relationName: "meta_image",
-  }),
-  _texts: many(works_texts, {
-    relationName: "_texts",
   }),
   _rels: many(works_rels, {
     relationName: "_rels",
@@ -19115,21 +19079,16 @@ export const relations__works_v_blocks_media_block = relations(
     }),
   }),
 );
-export const relations__works_v_texts = relations(
-  _works_v_texts,
-  ({ one }) => ({
-    parent: one(_works_v, {
-      fields: [_works_v_texts.parent],
-      references: [_works_v.id],
-      relationName: "_texts",
-    }),
-  }),
-);
 export const relations__works_v_rels = relations(_works_v_rels, ({ one }) => ({
   parent: one(_works_v, {
     fields: [_works_v_rels.parent],
     references: [_works_v.id],
     relationName: "_rels",
+  }),
+  capabilitiesID: one(capabilities, {
+    fields: [_works_v_rels.capabilitiesID],
+    references: [capabilities.id],
+    relationName: "capabilities",
   }),
   pagesID: one(pages, {
     fields: [_works_v_rels.pagesID],
@@ -19262,9 +19221,6 @@ export const relations__works_v = relations(_works_v, ({ one, many }) => ({
     references: [media.id],
     relationName: "version_meta_image",
   }),
-  _texts: many(_works_v_texts, {
-    relationName: "_texts",
-  }),
   _rels: many(_works_v_rels, {
     relationName: "_rels",
   }),
@@ -19276,6 +19232,7 @@ export const relations_media = relations(media, ({ one }) => ({
     relationName: "folder",
   }),
 }));
+export const relations_capabilities = relations(capabilities, () => ({}));
 export const relations_categories_breadcrumbs = relations(
   categories_breadcrumbs,
   ({ one }) => ({
@@ -19790,6 +19747,11 @@ export const relations_payload_locked_documents_rels = relations(
       fields: [payload_locked_documents_rels.mediaID],
       references: [media.id],
       relationName: "media",
+    }),
+    capabilitiesID: one(capabilities, {
+      fields: [payload_locked_documents_rels.capabilitiesID],
+      references: [capabilities.id],
+      relationName: "capabilities",
     }),
     categoriesID: one(categories, {
       fields: [payload_locked_documents_rels.categoriesID],
@@ -21001,7 +20963,6 @@ type DatabaseSchema = {
   works_blocks_form_block: typeof works_blocks_form_block;
   works_blocks_media_block: typeof works_blocks_media_block;
   works: typeof works;
-  works_texts: typeof works_texts;
   works_rels: typeof works_rels;
   __works_v_transition_v: typeof __works_v_transition_v;
   _works_v_blocks_feature_heading_offset: typeof _works_v_blocks_feature_heading_offset;
@@ -21046,9 +21007,9 @@ type DatabaseSchema = {
   _works_v_blocks_form_block: typeof _works_v_blocks_form_block;
   _works_v_blocks_media_block: typeof _works_v_blocks_media_block;
   _works_v: typeof _works_v;
-  _works_v_texts: typeof _works_v_texts;
   _works_v_rels: typeof _works_v_rels;
   media: typeof media;
+  capabilities: typeof capabilities;
   categories_breadcrumbs: typeof categories_breadcrumbs;
   categories: typeof categories;
   clients: typeof clients;
@@ -21303,7 +21264,6 @@ type DatabaseSchema = {
   relations_works_blocks_cta: typeof relations_works_blocks_cta;
   relations_works_blocks_form_block: typeof relations_works_blocks_form_block;
   relations_works_blocks_media_block: typeof relations_works_blocks_media_block;
-  relations_works_texts: typeof relations_works_texts;
   relations_works_rels: typeof relations_works_rels;
   relations_works: typeof relations_works;
   relations___works_v_transition_v: typeof relations___works_v_transition_v;
@@ -21348,10 +21308,10 @@ type DatabaseSchema = {
   relations__works_v_blocks_cta: typeof relations__works_v_blocks_cta;
   relations__works_v_blocks_form_block: typeof relations__works_v_blocks_form_block;
   relations__works_v_blocks_media_block: typeof relations__works_v_blocks_media_block;
-  relations__works_v_texts: typeof relations__works_v_texts;
   relations__works_v_rels: typeof relations__works_v_rels;
   relations__works_v: typeof relations__works_v;
   relations_media: typeof relations_media;
+  relations_capabilities: typeof relations_capabilities;
   relations_categories_breadcrumbs: typeof relations_categories_breadcrumbs;
   relations_categories: typeof relations_categories;
   relations_clients: typeof relations_clients;

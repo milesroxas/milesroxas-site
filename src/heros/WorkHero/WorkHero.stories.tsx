@@ -21,7 +21,12 @@ const meta = {
     },
     industry: 'Enterprise Technology',
     role: 'Lead Design / Development',
-    capabilities: ['Brand Expansion', 'Brand Communications', 'Website'],
+    capabilities: ['Brand Expansion', 'Brand Communications', 'Website'].map((title, i) => ({
+      id: i + 1,
+      title,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    })),
     hero: { media: imageMedia },
   },
 } satisfies Meta<typeof WorkHero>

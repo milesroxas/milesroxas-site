@@ -15,9 +15,8 @@ export const CONTENT_TEXT_KEYS = new Set([
   'answer',
   'body',
   // A work's details (Works › Opening), plain text fields here where
-  // sas-site relates them to taxonomy terms. Capabilities is a list of them.
-  // The client is a relationship, resolved by the extractor (`./extract`).
-  'capabilities',
+  // sas-site relates them to taxonomy terms. The client and capabilities are
+  // relationships, resolved by the extractor (`./extract`).
   'caption',
   'decision',
   'description',
