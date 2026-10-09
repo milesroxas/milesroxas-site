@@ -41,6 +41,7 @@ Storybook conventions:
 - Payload-shaped fixtures live in `src/stories/fixtures.ts` and must mirror `src/payload-types.ts`.
 - Block stories never hand-write `argTypes` for CMS fields: `blockControls('<slug>')` from `src/stories/block-controls` derives controls and default args from the block's Payload config via a generated manifest (`pnpm generate:block-controls`, checked by `pnpm check:block-controls` and the pre-push hook). Regenerate it, without asking, after changing a block's fields.
 - Config lives in `.storybook/` (`@storybook/nextjs-vite` framework); theme switching drives the site's `data-theme` attribute.
+- App-shell providers a component needs are mounted by preview decorators, one file each in `.storybook/` (`cursor.tsx` mounts the custom cursor with a toolbar toggle; Docs pages skip it). Add a decorator there rather than per story.
 - Components tied to the live app shell (page-transition GSAP flow, SiteChrome, server-only Payload access, R3F scenes) are intentionally not storied — see the Overview page in Storybook.
 
 ### Database Commands

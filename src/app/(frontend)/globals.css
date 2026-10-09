@@ -256,11 +256,10 @@
     border-color: var(--color-gray-200, currentColor);
   }
 
-  /* Same query that mounts the custom cursor (src/providers/Cursor). */
-  @media (hover: hover) and (pointer: fine) {
-    * {
-      cursor: none;
-    }
+  /* Set by the custom cursor while mounted (src/providers/Cursor). */
+  html[data-custom-cursor],
+  html[data-custom-cursor] * {
+    cursor: none;
   }
 }
 

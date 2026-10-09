@@ -91,11 +91,14 @@ export function Cursor() {
     const onLeave = () => delete root.dataset.visible
 
     const html = document.documentElement
+    // Hides the native cursor (globals.css) only while this one is mounted.
+    html.dataset.customCursor = ''
     document.addEventListener('mousemove', onMove, { passive: true })
     window.addEventListener('scroll', onScroll, { passive: true })
     html.addEventListener('mouseleave', onLeave)
 
     return () => {
+      delete html.dataset.customCursor
       document.removeEventListener('mousemove', onMove)
       window.removeEventListener('scroll', onScroll)
       html.removeEventListener('mouseleave', onLeave)
