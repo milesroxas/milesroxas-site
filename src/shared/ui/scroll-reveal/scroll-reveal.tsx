@@ -425,15 +425,39 @@ type Beat = {
 }
 
 /**
- * The wipe's hidden and open masks. Text opens past its line box, so
+ * The wipe's hidden and open mask edges. Text opens past its line box, so
  * ascenders and descenders that overhang a tight line height never pop in
  * when the mask is cleared. Open equals no clip, so clearing the mask at rest
  * changes nothing on screen.
  */
 const MASK = {
-  text: { from: 'inset(-25% -5% 125% -5%)', to: 'inset(-25% -5% -25% -5%)' },
-  media: { from: 'inset(0% 0% 100% 0%)', to: 'inset(0% 0% 0% 0%)' },
+  text: { from: '-25% -5% 125% -5%', to: '-25% -5% -25% -5%' },
+  media: { from: '0% 0% 100% 0%', to: '0% 0% 0% 0%' },
 } as const
+
+const CORNERS = ['TopLeft', 'TopRight', 'BottomRight', 'BottomLeft'] as const
+
+/**
+ * A media frame's resting corners as an `inset()` `round` clause, so the
+ * wipe's open edge is rounded like the frame it lands as. Read from the frame,
+ * else from the image or video it wraps; empty when the corners are square.
+ */
+function frameRound(frame: HTMLElement) {
+  for (const el of [frame, frame.querySelector('img, video')]) {
+    if (!el) continue
+    const style = getComputedStyle(el)
+    const radii = CORNERS.map((corner) => style[`border${corner}Radius`].split(' '))
+    if (radii.every((radius) => radius.some((value) => Number.parseFloat(value) === 0))) continue
+    const x = radii.map(([h]) => h)
+    const y = radii.map(([h, v = h]) => v)
+    return ` round ${x.join(' ')} / ${y.join(' ')}`
+  }
+  return ''
+}
+
+/** A beat's mask at `edge`, rounded like the media frame it opens. */
+const mask = (el: HTMLElement, kind: BeatKind, edge: 'from' | 'to') =>
+  `inset(${MASK[kind][edge]}${kind === 'media' ? frameRound(el) : ''})`
 
 /** Inline properties a shell writes; each cleared when the shell is torn down. */
 type InlineProp = 'visibility' | 'clip-path' | 'transform'
@@ -515,7 +539,7 @@ function playReveal(
   }
 
   const open = (el: HTMLElement, kind: BeatKind, delay: number) =>
-    el.animate([{ clipPath: MASK[kind].from }, { clipPath: MASK[kind].to }], {
+    el.animate([{ clipPath: mask(el, kind, 'from') }, { clipPath: mask(el, kind, 'to') }], {
       duration: (kind === 'media' ? tuning.mediaDuration : tuning.textDuration) * 1000,
       easing: beatEasing(kind === 'media' ? tuning.mediaEase : tuning.textEase),
       delay: delay * 1000,
@@ -608,7 +632,7 @@ function playReveal(
 
   const watch = (beats: Beat[]) => {
     for (const beat of beats) {
-      for (const el of beat.els) write(el, 'clip-path', MASK[beat.kind].from)
+      for (const el of beat.els) write(el, 'clip-path', `inset(${MASK[beat.kind].from})`)
       for (const el of mediaContents(beat))
         write(el, 'transform', `scale(${tuning.mediaScaleFrom})`)
     }
