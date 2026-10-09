@@ -71,8 +71,10 @@ describe('optionalFields', () => {
 describe('typeScale', () => {
   it('moves every role one rung up at large', () => {
     expect(typeScale(null)).toEqual(typeScale('small'))
-    expect(typeScale('small').heading).toBe('text-heading-3')
+    expect(typeScale('small').heading).toBe('text-lead leading-snug')
+    expect(typeScale('small').title).toBe('text-heading-2')
     expect(typeScale('large').body).toBe(typeScale('small').lead)
+    expect(typeScale('large').heading).toBe('text-heading-3')
     expect(typeScale('large').title).toBe('text-heading-1')
   })
 })

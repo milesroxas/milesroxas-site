@@ -14,35 +14,31 @@ export const eyebrowClassName = 'font-mono text-xs/none font-medium'
 
 export type TextSize = 'small' | 'large'
 
-// One ~1.2 ladder for every block. Each role picks a rung; Large moves all roles up one.
-const TYPE_LADDER = [
-  'text-base',
-  'text-lg',
-  'text-lead',
-  'text-heading-3',
-  'text-heading-2',
-  'text-heading-1',
-] as const
+type TextRole = 'body' | 'lead' | 'statement' | 'heading' | 'title'
+export type TypeScale = Record<TextRole, string>
 
-const ROLE_RUNG = {
-  body: 0,
-  /** Opener deck, or an item title in a run (question, insight). */
-  lead: 1,
-  statement: 2,
-  heading: 3,
-  /** Section opener h2 (Standard, Offset). */
-  title: 4,
-} as const
-
-type TextRole = keyof typeof ROLE_RUNG
-export type TypeScale = Record<TextRole, (typeof TYPE_LADDER)[number]>
-
-const scaleAt = (shift: 0 | 1) =>
-  Object.fromEntries(
-    Object.entries(ROLE_RUNG).map(([role, rung]) => [role, TYPE_LADDER[rung + shift]]),
-  ) as TypeScale
-
-const TYPE_SCALE: Record<TextSize, TypeScale> = { small: scaleAt(0), large: scaleAt(1) }
+// One ~1.2 ladder for every block; Large moves every role up one rung. A block heading sits a
+// rung over the copy it opens, not two: a 30px heading over 16px body out-shouts the block. The
+// Section heading blocks' title stands two rungs over that heading, so a section reads as a section.
+const TYPE_SCALE: Record<TextSize, TypeScale> = {
+  small: {
+    body: 'text-base',
+    /** Opener deck, or an item title in a run (question, insight). */
+    lead: 'text-lg',
+    statement: 'text-lead',
+    // `text-lead` carries body leading; a heading sets snug, as the prose h2 does.
+    heading: 'text-lead leading-snug',
+    /** Section heading h2 (Standard, Offset). */
+    title: 'text-heading-2',
+  },
+  large: {
+    body: 'text-lg',
+    lead: 'text-lead',
+    statement: 'text-heading-3',
+    heading: 'text-heading-3',
+    title: 'text-heading-1',
+  },
+}
 
 export const typeScale = (size: TextSize | null | undefined): TypeScale =>
   TYPE_SCALE[size ?? 'small']
