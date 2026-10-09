@@ -119,8 +119,8 @@ export const SCROLL_REVEAL_UNDER_MEDIA = {
   textDuration: 0.6,
   textEase: 'power3.out',
   stagger: 0.04,
-  mediaDuration: 0.8,
-  mediaEase: 'power3.out',
+  mediaDuration: 1.2,
+  mediaEase: 'power2.out',
   mediaScaleFrom: 1,
   mediaOffset: 0,
 } as const satisfies ScrollRevealTuning
