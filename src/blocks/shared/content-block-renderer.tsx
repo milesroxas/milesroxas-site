@@ -19,9 +19,8 @@ import { RichTransitionBlock } from '@/blocks/rich-transition/Component'
 import { SplitContentNarrowBlock } from '@/blocks/split-content/Component'
 import { SplitImageOffsetBlock } from '@/blocks/split-image-offset/Component'
 import { YouTubeBlock } from '@/blocks/youtube/Component'
-import { RevealSection } from '@/shared/ui/reveal-section'
-import { ScrollReveal, type ScrollRevealVariant } from '@/shared/ui/scroll-reveal'
-import { blockRevealVariants, type RevealMappedBlockSlug } from './reveal-variants'
+import { ScrollReveal } from '@/shared/ui/scroll-reveal'
+import { blockReveal } from './reveal-variants'
 
 /**
  * A slug-keyed component map. Each component takes its own block's props, so
@@ -61,16 +60,11 @@ export const sectionChildComponents = {
   youtube: YouTubeBlock,
 }
 
-/** GSAP variant for marker-carrying blocks (`'self'` = block owns its shell). */
-const gsapReveal = (blockType: string): ScrollRevealVariant | 'self' | undefined =>
-  blockType in blockRevealVariants
-    ? blockRevealVariants[blockType as RevealMappedBlockSlug]
-    : undefined
-
 /**
  * `node` inside the entrance `reveal-variants.ts` assigns `blockType`: its
- * own shell (`'self'`), the shared GSAP reveal, or the CSS block reveal.
- * Spacing is the block's own band; the wrapper never adds margin.
+ * own shell (`'self'`), the shared reveal over the block's markers, or the
+ * block opening whole as one frame (`'frame'`). Spacing is the block's own
+ * band; the wrapper never adds margin.
  */
 export const withBlockReveal = (
   blockType: string,
@@ -78,7 +72,7 @@ export const withBlockReveal = (
   node: React.ReactNode,
   className?: string,
 ) => {
-  const reveal = gsapReveal(blockType)
+  const reveal = blockReveal(blockType)
   if (reveal === 'self') {
     return (
       <div className={className} key={key}>
@@ -86,17 +80,17 @@ export const withBlockReveal = (
       </div>
     )
   }
-  if (reveal) {
+  if (reveal === 'frame') {
     return (
-      <ScrollReveal as="div" className={className} key={key} variant={reveal}>
-        {node}
+      <ScrollReveal as="div" className={className} key={key} variant="underMedia">
+        <div data-reveal="media">{node}</div>
       </ScrollReveal>
     )
   }
   return (
-    <RevealSection className={className} key={key}>
+    <ScrollReveal as="div" className={className} key={key} variant={reveal}>
       {node}
-    </RevealSection>
+    </ScrollReveal>
   )
 }
 

@@ -1,8 +1,8 @@
 /**
  * Band themes: the surface a composition band paints, stated once for every
  * surface that offers the choice (each block's `theme` select, the Section
- * block, hero bands) and for every shell that renders it (`Section`, the
- * work-page `RevealSection`, blocks with a bespoke shell). A plain module so
+ * block, hero bands) and for every shell that renders it (`Section`, blocks
+ * with a bespoke shell). A plain module so
  * Payload config can import it without pulling React into the config graph.
  *
  * Values are stored in the DB (one Postgres enum per table): relabel freely,

@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { Container } from '@/components/Container'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
-import { RevealSection } from '@/shared/ui/reveal-section'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { imageMedia, paragraph, richText, text } from '@/stories/fixtures'
 import { BAND_THEME_OPTIONS, type BandTheme } from './band-theme'
@@ -71,17 +70,19 @@ const MediaUnderCopy = () => (
   </ScrollReveal>
 )
 
-/** A block without markers takes the CSS block reveal instead. */
-const CssRevealBlock = () => (
-  <RevealSection>
-    <Container>
-      <BlockGrid>
-        <p className="text-lead md:col-span-6 md:col-start-3">
-          A block with no reveal markers fades up as one piece.
-        </p>
-      </BlockGrid>
-    </Container>
-  </RevealSection>
+/** A block without markers of its own opens whole, as one frame. */
+const FrameRevealBlock = () => (
+  <ScrollReveal as="div" variant="underMedia">
+    <div data-reveal="media">
+      <Container>
+        <BlockGrid>
+          <p className="text-lead md:col-span-6 md:col-start-3">
+            A block with no reveal markers opens as one piece.
+          </p>
+        </BlockGrid>
+      </Container>
+    </div>
+  </ScrollReveal>
 )
 
 type BandArgs = {
@@ -94,7 +95,7 @@ const Band = ({ spacing, theme }: BandArgs) => (
     <div className={STACK_SPACING[spacing]}>
       <IntroCopy heading="One band, many blocks" />
       <MediaUnderCopy />
-      <CssRevealBlock />
+      <FrameRevealBlock />
     </div>
   </Section>
 )

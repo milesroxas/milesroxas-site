@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { type DiagramSpec, layoutDiagram } from '@/features/figures'
 import { DIAGRAM_CORPUS } from '@/features/figures/corpus'
 import { DiagramFigure } from '@/features/figures/ui/diagram/diagram-figure'
-import { RevealSection } from '@/shared/ui/reveal-section'
+import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { FigureShell } from '../Shell'
 
 /**
@@ -68,14 +68,16 @@ export const OnInvertedBand: Story = {
   ),
 }
 
-/** Inside the block reveal, as on a page: nodes surface in reading order and edges draw from their source. */
+/** Inside the block reveal, as on a page: the figure opens whole as one frame. */
 export const Entrance: Story = {
   render: (args, { loaded }) => (
-    <RevealSection>
-      <FigureShell>
-        <DiagramFigure {...args} layout={loaded.layout} />
-      </FigureShell>
-    </RevealSection>
+    <ScrollReveal as="div" variant="underMedia">
+      <div data-reveal="media">
+        <FigureShell>
+          <DiagramFigure {...args} layout={loaded.layout} />
+        </FigureShell>
+      </div>
+    </ScrollReveal>
   ),
 }
 
