@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { CHART_CORPUS } from '@/features/figures/corpus'
+import { blockControls } from '@/stories/block-controls'
 import { ChartBlock } from './Component'
 
 /**
@@ -13,20 +14,19 @@ const figure = (name: keyof typeof CHART_CORPUS) => {
   return { spec, textAlternative, title }
 }
 
+const controls = blockControls<typeof ChartBlock>('chart')
+
 const meta = {
   title: 'Blocks/Figures/Chart',
   component: ChartBlock,
   parameters: { layout: 'fullscreen' },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'chart',
     id: 'story-chart',
-    width: 'wide',
     caption: 'Illustrative numbers from the acceptance corpus.',
     ...figure('frameTimeByCount'),
-  },
-  argTypes: {
-    theme: { control: 'select', options: ['light', 'dark', 'neutral', 'brand'] },
-    width: { control: 'select', options: ['text', 'wide', 'full'] },
   },
 } satisfies Meta<typeof ChartBlock>
 

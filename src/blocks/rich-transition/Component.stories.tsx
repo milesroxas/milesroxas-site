@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { paragraph, richText, text } from '@/stories/fixtures'
 import { RichTransition } from './RichTransition'
 
@@ -10,18 +11,20 @@ const body = richText(
   ),
 )
 
+const controls = blockControls<typeof RichTransition>('richTransition')
+
 const meta = {
   title: 'Blocks/SectionHeading/Standard',
   component: RichTransition,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     eyebrow: 'Part two',
     heading: 'A Visual Language Rooted in the Real World',
     body,
-    layout: 'offset',
-    theme: 'default',
   },
 } satisfies Meta<typeof RichTransition>
 

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { YouTubeBlock } from './Component'
 
 /**
@@ -7,13 +8,17 @@ import { YouTubeBlock } from './Component'
  */
 const URL = 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
 
+const controls = blockControls<typeof YouTubeBlock>('youtube')
+
 const meta = {
   title: 'Blocks/Media/YouTube',
   component: YouTubeBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'youtube',
     url: URL,
   },

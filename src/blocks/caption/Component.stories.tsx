@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { mediaFixture, videoFixture } from '@/stories/fixtures'
 import { CaptionBlock } from './Component'
+
+const controls = blockControls<typeof CaptionBlock>('caption')
 
 const meta = {
   title: 'Blocks/Media/Caption',
@@ -8,7 +11,9 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'caption',
     media: mediaFixture,
   },

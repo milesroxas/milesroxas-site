@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { paragraph, richText, text } from '@/stories/fixtures'
 import { FaqBlock } from './Component'
 
@@ -50,13 +51,17 @@ const items = [
   },
 ]
 
+const controls = blockControls<typeof FaqBlock>('faq')
+
 const meta = {
   title: 'Blocks/Interactive/FAQ',
   component: FaqBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'faq',
     eyebrow: 'Questions',
     heading: 'Things people ask before they hire us',
@@ -64,7 +69,6 @@ const meta = {
     enableLink: true,
     prompt: 'Did not find your answer?',
     link: { type: 'custom', url: '/contact', label: 'Ask us directly' },
-    theme: 'default',
   },
 } satisfies Meta<typeof FaqBlock>
 

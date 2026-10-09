@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { mediaFixture, paragraph, richText, text } from '@/stories/fixtures'
 import { SplitImageOffsetBlock } from './Component'
 
@@ -8,20 +9,23 @@ const body = richText(
   ),
 )
 
+const controls = blockControls<typeof SplitImageOffsetBlock>('splitImageOffset')
+
 const meta = {
   title: 'Blocks/MediaAndContent/PairOffset',
   component: SplitImageOffsetBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'splitImageOffset',
     heading: 'Make the relationships visible',
     body,
     largeMedia: mediaFixture,
     smallMedia: mediaFixture,
     captionPosition: 'right',
-    theme: 'default',
   },
 } satisfies Meta<typeof SplitImageOffsetBlock>
 

@@ -22,6 +22,11 @@
 #    migrations; .github/workflows/migrations.yml repeats the check on the
 #    PR merge commit.
 #
+# 5) Runs scripts/generate-block-controls.ts --check whenever a block config,
+#    a field factory or the Storybook control manifest changed: the stories'
+#    controls are generated from the block configs, and a stale manifest
+#    offers editors options the CMS no longer has.
+#
 # Matching is an allowlist of files that define Drizzle/Payload schema (fields,
 # collections, globals, block configs, plugin field overrides) — not whole
 # trees. UI, hooks, endpoints, and tests under the same folders must not trip
@@ -72,15 +77,37 @@ SNAPSHOT_RE='^src/migrations/[0-9].*\.json$'
 INTEGRATION_BRANCH=dev
 INTEGRATION_REF="origin/$INTEGRATION_BRANCH"
 
+# Storybook block controls are generated from the block configs (CLAUDE.md →
+# Storybook). The manifest and the generator count as inputs too.
+CONTROLS_RES=(
+  '^src/blocks/.*/(config\.ts|fields\.ts)$'
+  '^src/blocks/shared/(fields|section-blocks|carousel-fields)\.ts$'
+  '^src/fields/.*\.ts$'
+  '^src/stories/block-controls/'
+  '^scripts/generate-block-controls\.ts$'
+)
+
 zero='0000000000000000000000000000000000000000'
 fail=0
 need_drift_check=0
+need_controls_check=0
 fetched_integration=0
 
 is_schema_path() {
   local f="$1"
   local re
   for re in "${SCHEMA_RES[@]}"; do
+    if [[ "$f" =~ $re ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+is_controls_path() {
+  local f="$1"
+  local re
+  for re in "${CONTROLS_RES[@]}"; do
     if [[ "$f" =~ $re ]]; then
       return 0
     fi
@@ -155,6 +182,9 @@ check_range() {
     [[ -z "$f" ]] && continue
     if is_schema_path "$f"; then
       schema_hits+="  $f"$'\n'
+    fi
+    if is_controls_path "$f"; then
+      need_controls_check=1
     fi
   done <<<"$changed"
 
@@ -235,6 +265,12 @@ done
 
 if [[ "$need_drift_check" == 1 ]]; then
   run_drift_check
+fi
+
+if [[ "$need_controls_check" == 1 ]]; then
+  if ! pnpm exec tsx scripts/generate-block-controls.ts --check </dev/null >&2; then
+    fail=1
+  fi
 fi
 
 exit "$fail"

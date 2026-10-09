@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import type { RichTextInsightsBlock, RichTextPillListBlock } from '@/payload-types'
+import { blockControls } from '@/stories/block-controls'
 import {
   blockNode,
   heading,
@@ -89,16 +90,19 @@ const pillList = (id = 'pills', eyebrow: string | null = 'What the business know
     ].map((label) => ({ id: label, label })),
   } satisfies RichTextPillListBlock)
 
+const controls = blockControls<typeof RichTextBlock>('richText')
+
 const meta = {
   title: 'Blocks/Text/RichText',
   component: RichTextBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'richText',
     body,
-    theme: 'default',
   },
 } satisfies Meta<typeof RichTextBlock>
 

@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { richTextFixture } from '@/shared/testing/richTextFixture'
+import { blockControls } from '@/stories/block-controls'
 import { mediaFixture, videoFixture } from '@/stories/fixtures'
 import { FeatureImageStatementBlock } from './Component'
+
+const controls = blockControls<typeof FeatureImageStatementBlock>('featureImageStatement')
 
 const meta = {
   title: 'Blocks/Media/Statement',
@@ -9,7 +12,9 @@ const meta = {
   parameters: {
     layout: 'padded',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'featureImageStatement',
     media: mediaFixture,
     caption: richTextFixture(

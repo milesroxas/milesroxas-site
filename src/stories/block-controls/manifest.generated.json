@@ -1,0 +1,2595 @@
+{
+  "archive": {
+    "slug": "archive",
+    "label": "Archive",
+    "fields": [
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "cardStyle",
+        "label": "Card Style",
+        "control": "select",
+        "options": [
+          {
+            "label": "Card",
+            "value": "card"
+          },
+          {
+            "label": "Featured",
+            "value": "featured"
+          }
+        ],
+        "defaultValue": "card"
+      },
+      {
+        "name": "introContent",
+        "label": "Intro Content",
+        "control": "none"
+      },
+      {
+        "name": "populateBy",
+        "label": "Populate By",
+        "control": "select",
+        "options": [
+          {
+            "label": "Collection",
+            "value": "collection"
+          },
+          {
+            "label": "Individual Selection",
+            "value": "selection"
+          }
+        ],
+        "defaultValue": "collection"
+      },
+      {
+        "name": "relationTo",
+        "label": "Collections To Show",
+        "if": {
+          "arg": "populateBy",
+          "eq": "collection"
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "Posts",
+            "value": "posts"
+          },
+          {
+            "label": "Works",
+            "value": "works"
+          }
+        ],
+        "defaultValue": "posts"
+      },
+      {
+        "name": "categories",
+        "label": "Categories To Show",
+        "if": {
+          "arg": "populateBy",
+          "eq": "collection"
+        },
+        "control": "none"
+      },
+      {
+        "name": "limit",
+        "label": "Limit",
+        "if": {
+          "arg": "populateBy",
+          "eq": "collection"
+        },
+        "control": "none"
+      },
+      {
+        "name": "selectedDocs",
+        "label": "Selection",
+        "description": "The order of items here will be preserved in the display",
+        "if": {
+          "arg": "populateBy",
+          "eq": "selection"
+        },
+        "control": "none"
+      }
+    ]
+  },
+  "callout": {
+    "slug": "callout",
+    "label": "Call Out",
+    "fields": [
+      {
+        "name": "richText",
+        "label": "Rich Text",
+        "control": "none"
+      }
+    ]
+  },
+  "caption": {
+    "slug": "caption",
+    "label": "Caption",
+    "fields": [
+      {
+        "name": "media",
+        "label": "Media",
+        "control": "none"
+      },
+      {
+        "name": "captionOverride",
+        "label": "Caption Override",
+        "description": "Replaces the media document's canonical caption for this placement only.",
+        "control": "none"
+      },
+      {
+        "name": "size",
+        "label": "Size",
+        "description": "Full width runs edge to edge across the page. Contained fills the page column; Inset and Small sit centred in it, all with rounded corners. Presentation for this placement only; the media document itself stays layout-neutral.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Full width",
+            "value": "full"
+          },
+          {
+            "label": "Contained",
+            "value": "contained"
+          },
+          {
+            "label": "Inset",
+            "value": "inset"
+          },
+          {
+            "label": "Small",
+            "value": "small"
+          }
+        ],
+        "defaultValue": "contained"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "carousel": {
+    "slug": "carousel",
+    "label": "Carousel",
+    "fields": [
+      {
+        "name": "slides",
+        "label": "Slides",
+        "control": "none"
+      },
+      {
+        "name": "width",
+        "label": "Width",
+        "description": "Full width runs edge to edge of the browser window.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Contained",
+            "value": "contained"
+          },
+          {
+            "label": "Full width",
+            "value": "full-width"
+          }
+        ],
+        "defaultValue": "contained"
+      },
+      {
+        "name": "showArrows",
+        "label": "Show arrows",
+        "description": "Previous/next buttons. Contained places them beside the slides; full width overlays them on the slides.",
+        "group": "Design",
+        "control": "boolean",
+        "defaultValue": false
+      },
+      {
+        "name": "slideSize",
+        "label": "Slide Size",
+        "description": "Slides visible at once from tablet up. Phones always show one slide plus a sliver of its neighbours, whichever size is picked.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Full width",
+            "value": "full"
+          },
+          {
+            "label": "Half",
+            "value": "half"
+          },
+          {
+            "label": "One third",
+            "value": "third"
+          }
+        ],
+        "defaultValue": "full"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "carouselSplit": {
+    "slug": "carouselSplit",
+    "label": "Carousel split",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "description": "The copy column beside the deck.",
+        "control": "none"
+      },
+      {
+        "name": "slides",
+        "label": "Slides",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "carouselPosition",
+        "label": "Layout",
+        "description": "Arrange the deck on the left or the right of the copy.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "left",
+            "value": "left"
+          },
+          {
+            "label": "right",
+            "value": "right"
+          }
+        ],
+        "defaultValue": "right"
+      },
+      {
+        "name": "slideSize",
+        "label": "Slide Size",
+        "description": "Slides visible at once within the deck column, from tablet up. Phones always show one slide plus a sliver of its neighbours.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Full width",
+            "value": "full"
+          },
+          {
+            "label": "Half",
+            "value": "half"
+          },
+          {
+            "label": "One third",
+            "value": "third"
+          }
+        ],
+        "defaultValue": "full"
+      },
+      {
+        "name": "showArrows",
+        "label": "Show arrows",
+        "description": "Previous/next buttons beside the slides. They take an outer gutter from the deck column, which is already the narrower half of a split.",
+        "group": "Design",
+        "control": "boolean",
+        "defaultValue": false
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "carouselTabs": {
+    "slug": "carouselTabs",
+    "label": "Carousel tabs",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "description": "The copy column beside the tabs.",
+        "control": "none"
+      },
+      {
+        "name": "tabs",
+        "label": "Tabs",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "deckStyle",
+        "label": "Deck Style",
+        "description": "Coverflow centres the slide with its neighbours either side. Stack piles the next slides behind the current one, like boards in a presentation.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Coverflow",
+            "value": "coverflow"
+          },
+          {
+            "label": "Stack",
+            "value": "stack"
+          }
+        ],
+        "defaultValue": "coverflow"
+      },
+      {
+        "name": "slideSize",
+        "label": "Slide Size",
+        "description": "Slides visible at once inside a tab panel, from tablet up. Phones always show one slide plus a sliver of its neighbours.",
+        "group": "Design",
+        "if": {
+          "arg": "deckStyle",
+          "eq": "coverflow"
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "Full width",
+            "value": "full"
+          },
+          {
+            "label": "Half",
+            "value": "half"
+          },
+          {
+            "label": "One third",
+            "value": "third"
+          }
+        ],
+        "defaultValue": "full"
+      },
+      {
+        "name": "tabSize",
+        "label": "Tab size",
+        "description": "Default sets the tab index at a comfortable reading size. Small tightens its rows, for five or more tabs.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "default",
+            "value": "default"
+          },
+          {
+            "label": "small",
+            "value": "small"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "chart": {
+    "slug": "chart",
+    "label": "Chart",
+    "fields": [
+      {
+        "name": "title",
+        "label": "Title",
+        "description": "Says what the figure shows. Shown above it and used as its heading.",
+        "control": "text"
+      },
+      {
+        "name": "textAlternative",
+        "label": "Text Alternative",
+        "description": "What the figure shows and the takeaway, in plain sentences. Read aloud by screen readers and indexed for search and Ask, so write it for someone who cannot see the figure.",
+        "control": "text"
+      },
+      {
+        "name": "caption",
+        "label": "Caption",
+        "description": "Optional line under the figure: context, method, a caveat.",
+        "control": "text"
+      },
+      {
+        "name": "dataSource",
+        "label": "Source",
+        "description": "Optional attribution under the caption.",
+        "control": "none"
+      },
+      {
+        "name": "width",
+        "label": "Width",
+        "description": "How wide the drawing runs: the reading column, that column plus one each side, or all eight. Wide keeps the title, caption and description on the reading column.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Text column",
+            "value": "text"
+          },
+          {
+            "label": "Wide",
+            "value": "wide"
+          },
+          {
+            "label": "Full",
+            "value": "full"
+          }
+        ],
+        "defaultValue": "wide"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "spec",
+        "label": "Spec",
+        "description": "Bar, line, area, scatter or diverging bar. Up to 4 series and 500 rows; one y axis. The editor flags anything the spec does not allow as you type.",
+        "control": "none"
+      }
+    ]
+  },
+  "code": {
+    "slug": "code",
+    "label": "Code",
+    "fields": [
+      {
+        "name": "language",
+        "label": "Language",
+        "control": "select",
+        "options": [
+          {
+            "label": "TypeScript",
+            "value": "typescript"
+          },
+          {
+            "label": "TSX",
+            "value": "tsx"
+          },
+          {
+            "label": "JavaScript",
+            "value": "javascript"
+          },
+          {
+            "label": "CSS",
+            "value": "css"
+          },
+          {
+            "label": "JSON",
+            "value": "json"
+          },
+          {
+            "label": "GLSL",
+            "value": "glsl"
+          },
+          {
+            "label": "Shell",
+            "value": "bash"
+          }
+        ],
+        "defaultValue": "typescript"
+      },
+      {
+        "name": "code",
+        "label": "Code",
+        "control": "none"
+      }
+    ]
+  },
+  "content": {
+    "slug": "content",
+    "label": "Columns",
+    "fields": [
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "containerWidth",
+        "label": "Container Width",
+        "description": "Control the width of the content container",
+        "control": "select",
+        "options": [
+          {
+            "label": "Contained (default width)",
+            "value": "contained"
+          },
+          {
+            "label": "Full Width (edge to edge)",
+            "value": "fullWidth"
+          }
+        ],
+        "defaultValue": "contained"
+      },
+      {
+        "name": "space",
+        "label": "Spacing",
+        "control": "none"
+      },
+      {
+        "name": "columns",
+        "label": "Columns",
+        "control": "none"
+      }
+    ]
+  },
+  "cta": {
+    "slug": "cta",
+    "label": "Call to Action",
+    "fields": [
+      {
+        "name": "richText",
+        "label": "Rich Text",
+        "control": "none"
+      },
+      {
+        "name": "links",
+        "label": "Links",
+        "control": "none"
+      }
+    ]
+  },
+  "diagram": {
+    "slug": "diagram",
+    "label": "Diagram",
+    "fields": [
+      {
+        "name": "title",
+        "label": "Title",
+        "description": "Says what the figure shows. Shown above it and used as its heading.",
+        "control": "text"
+      },
+      {
+        "name": "textAlternative",
+        "label": "Text Alternative",
+        "description": "What the figure shows and the takeaway, in plain sentences. Read aloud by screen readers and indexed for search and Ask, so write it for someone who cannot see the figure.",
+        "control": "text"
+      },
+      {
+        "name": "caption",
+        "label": "Caption",
+        "description": "Optional line under the figure: context, method, a caveat.",
+        "control": "text"
+      },
+      {
+        "name": "dataSource",
+        "label": "Source",
+        "description": "Optional attribution under the caption.",
+        "control": "none"
+      },
+      {
+        "name": "width",
+        "label": "Width",
+        "description": "How wide the drawing runs: the reading column, that column plus one each side, or all eight. Wide keeps the title, caption and description on the reading column.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Text column",
+            "value": "text"
+          },
+          {
+            "label": "Wide",
+            "value": "wide"
+          },
+          {
+            "label": "Full",
+            "value": "full"
+          }
+        ],
+        "defaultValue": "wide"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "spec",
+        "label": "Spec",
+        "description": "A flow, state, sequence or timeline. Say what connects to what; positions are computed when you save. The editor flags anything the spec does not allow as you type.",
+        "control": "none"
+      }
+    ]
+  },
+  "faq": {
+    "slug": "faq",
+    "label": "FAQ",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "items",
+        "label": "Items",
+        "control": "none"
+      },
+      {
+        "name": "enableLink",
+        "label": "Show contact link",
+        "description": "A prompt and link at the end of the header row, for readers whose question is not listed.",
+        "control": "boolean"
+      },
+      {
+        "name": "prompt",
+        "label": "Prompt",
+        "description": "Sits beside the link, e.g. \"Did not find your answer?\"",
+        "if": {
+          "arg": "enableLink",
+          "truthy": true
+        },
+        "control": "text"
+      },
+      {
+        "name": "link",
+        "label": "Link",
+        "if": {
+          "arg": "enableLink",
+          "truthy": true
+        },
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "featureHeadingOffset": {
+    "slug": "featureHeadingOffset",
+    "label": "Offset",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "description": "Supporting copy in the offset right column.",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "featureImageStatement": {
+    "slug": "featureImageStatement",
+    "label": "Statement",
+    "fields": [
+      {
+        "name": "media",
+        "label": "Media",
+        "control": "none"
+      },
+      {
+        "name": "caption",
+        "label": "Statement",
+        "description": "Set large beneath the image.",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "textPosition",
+        "label": "Layout",
+        "description": "Which edge the statement aligns to beneath the image.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "left",
+            "value": "left"
+          },
+          {
+            "label": "right",
+            "value": "right"
+          }
+        ],
+        "defaultValue": "left"
+      },
+      {
+        "name": "imageWidth",
+        "label": "Image Width",
+        "description": "Contained keeps the image in the site container; full bleeds edge to edge.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "contained",
+            "value": "contained"
+          },
+          {
+            "label": "full",
+            "value": "full"
+          }
+        ],
+        "defaultValue": "contained"
+      },
+      {
+        "name": "aspectRatio",
+        "label": "Aspect Ratio",
+        "description": "Crop for the image, at both widths. Responsive keeps the taller small-screen crop that widens to 21:9 from md up.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Responsive (3:2, 21:9 from md)",
+            "value": "responsive"
+          },
+          {
+            "label": "16:9",
+            "value": "16-9"
+          },
+          {
+            "label": "3:2",
+            "value": "3-2"
+          },
+          {
+            "label": "21:9",
+            "value": "21-9"
+          }
+        ],
+        "defaultValue": "responsive"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "featureTabs": {
+    "slug": "featureTabs",
+    "label": "Tabs",
+    "fields": [
+      {
+        "name": "tabs",
+        "label": "Tabs",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "tabSize",
+        "label": "Tab size",
+        "description": "Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "default",
+            "value": "default"
+          },
+          {
+            "label": "small",
+            "value": "small"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "formBlock": {
+    "slug": "formBlock",
+    "label": "Form Block",
+    "fields": [
+      {
+        "name": "form",
+        "label": "Form",
+        "control": "none"
+      },
+      {
+        "name": "space",
+        "label": "Spacing",
+        "control": "none"
+      },
+      {
+        "name": "enableIntro",
+        "label": "Enable Intro Content",
+        "control": "boolean"
+      },
+      {
+        "name": "introAlign",
+        "label": "Intro alignment",
+        "if": {
+          "arg": "enableIntro",
+          "truthy": true
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "Left",
+            "value": "left"
+          },
+          {
+            "label": "Center",
+            "value": "center"
+          }
+        ],
+        "defaultValue": "left"
+      },
+      {
+        "name": "introContent",
+        "label": "Intro Content",
+        "if": {
+          "arg": "enableIntro",
+          "truthy": true
+        },
+        "control": "none"
+      }
+    ]
+  },
+  "fullMedia": {
+    "slug": "fullMedia",
+    "label": "Stacked",
+    "fields": [
+      {
+        "name": "showContent",
+        "label": "Show content",
+        "description": "Off renders the media on its own, with no copy beneath it.",
+        "control": "boolean",
+        "defaultValue": true
+      },
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "if": {
+          "arg": "showContent",
+          "truthy": true
+        },
+        "control": "text"
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "if": {
+          "arg": "showContent",
+          "truthy": true
+        },
+        "control": "none"
+      },
+      {
+        "name": "media",
+        "label": "Media",
+        "description": "Contained uses the aspect ratio below. Full width crops to 16:9 on small screens and 21:9 from md up.",
+        "control": "none"
+      },
+      {
+        "name": "visualType",
+        "label": "Visual",
+        "description": "Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Media upload",
+            "value": "media"
+          },
+          {
+            "label": "Streak Field",
+            "value": "streakField"
+          },
+          {
+            "label": "Light leak",
+            "value": "lightLeak"
+          }
+        ]
+      },
+      {
+        "name": "shader",
+        "label": "Effect",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "if": {
+          "arg": "showContent",
+          "truthy": true
+        },
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "width",
+        "label": "Width",
+        "description": "Contained keeps the media in the page column. Full width bleeds edge to edge.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Contained",
+            "value": "contained"
+          },
+          {
+            "label": "Full width",
+            "value": "full-width"
+          }
+        ],
+        "defaultValue": "contained"
+      },
+      {
+        "name": "aspectRatio",
+        "label": "Aspect Ratio",
+        "description": "Crop for contained media.",
+        "group": "Design",
+        "if": {
+          "arg": "width",
+          "eq": "contained"
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "16:9",
+            "value": "16-9"
+          },
+          {
+            "label": "3:2",
+            "value": "3-2"
+          },
+          {
+            "label": "21:9",
+            "value": "21-9"
+          }
+        ],
+        "defaultValue": "16-9"
+      },
+      {
+        "name": "contentPosition",
+        "label": "Layout",
+        "description": "Arrange the content row on the left or the right below the media (desktop only; smaller screens always sit left).",
+        "group": "Design",
+        "if": {
+          "arg": "showContent",
+          "truthy": true
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "left",
+            "value": "left"
+          },
+          {
+            "label": "right",
+            "value": "right"
+          }
+        ],
+        "defaultValue": "left"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "imagePair": {
+    "slug": "imagePair",
+    "label": "Pair",
+    "fields": [
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "description": "Shown when source is \"Custom\", or as a Work or Lab Page override for canonical content.",
+        "control": "none"
+      },
+      {
+        "name": "portraitMedia",
+        "label": "Portrait Media",
+        "description": "Cropped to 4:5.",
+        "control": "none"
+      },
+      {
+        "name": "landscapeMedia",
+        "label": "Landscape Media",
+        "description": "Cropped to 16:10.",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "portraitPosition",
+        "label": "Layout: primary media",
+        "description": "Arrange the portrait on the left or the right; the landscape fills the other column. On small screens the left image stacks first.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "left",
+            "value": "left"
+          },
+          {
+            "label": "right",
+            "value": "right"
+          }
+        ],
+        "defaultValue": "left"
+      },
+      {
+        "name": "textPosition",
+        "label": "Layout: content",
+        "description": "Which image the text sits under. Under the portrait it stays compact; under the landscape it runs larger and wider.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "under-portrait",
+            "value": "under-portrait"
+          },
+          {
+            "label": "under-landscape",
+            "value": "under-landscape"
+          }
+        ],
+        "defaultValue": "under-portrait"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "insightList": {
+    "slug": "insightList",
+    "label": "Insight list",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "summary",
+        "label": "Summary",
+        "description": "Short supporting line under the heading.",
+        "control": "text"
+      },
+      {
+        "name": "items",
+        "label": "Items",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "layout",
+        "label": "Layout",
+        "description": "Side by side keeps the heading beside two insights per row. Stacked sets it above three per row. Ledger keeps the heading beside one ruled row per insight, title and description side by side.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Side by side",
+            "value": "side"
+          },
+          {
+            "label": "Stacked",
+            "value": "stacked"
+          },
+          {
+            "label": "Ledger",
+            "value": "ledger"
+          }
+        ],
+        "defaultValue": "side"
+      },
+      {
+        "name": "markSize",
+        "label": "Mark size",
+        "description": "Size of the SVG mark on every insight.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Medium",
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "medium"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "mediaBlock": {
+    "slug": "mediaBlock",
+    "label": "Media Block",
+    "fields": [
+      {
+        "name": "media",
+        "label": "Media",
+        "control": "none"
+      },
+      {
+        "name": "aspectRatio",
+        "label": "Aspect Ratio",
+        "control": "select",
+        "options": [
+          {
+            "label": "Landscape (16:9)",
+            "value": "landscape"
+          },
+          {
+            "label": "Square (1:1)",
+            "value": "square"
+          },
+          {
+            "label": "Portrait (4:5)",
+            "value": "portrait"
+          },
+          {
+            "label": "Original",
+            "value": "original"
+          }
+        ],
+        "defaultValue": "landscape"
+      },
+      {
+        "name": "fullWidth",
+        "label": "Full Width Display",
+        "description": "Makes the media span the full width of its container. Note: For true edge-to-edge display, set both this option AND use \"Full Width\" in the parent Content Block settings.",
+        "control": "boolean",
+        "defaultValue": false
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "showCaption",
+        "label": "Show Caption",
+        "control": "boolean",
+        "defaultValue": true
+      },
+      {
+        "name": "captionLayout",
+        "label": "Caption Layout",
+        "if": {
+          "arg": "showCaption",
+          "truthy": true
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "Center",
+            "value": "center"
+          },
+          {
+            "label": "Left",
+            "value": "left"
+          },
+          {
+            "label": "Right",
+            "value": "right"
+          },
+          {
+            "label": "Split Left",
+            "value": "split-left"
+          },
+          {
+            "label": "Split Right",
+            "value": "split-right"
+          }
+        ],
+        "defaultValue": "center"
+      },
+      {
+        "name": "richText",
+        "label": "Rich Text",
+        "if": {
+          "arg": "showCaption",
+          "truthy": true
+        },
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text Size",
+        "if": {
+          "arg": "showCaption",
+          "truthy": true
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "sm",
+            "value": "sm"
+          },
+          {
+            "label": "base",
+            "value": "base"
+          },
+          {
+            "label": "lg",
+            "value": "lg"
+          },
+          {
+            "label": "xl",
+            "value": "xl"
+          },
+          {
+            "label": "2xl",
+            "value": "2xl"
+          }
+        ],
+        "defaultValue": "base"
+      },
+      {
+        "name": "space",
+        "label": "Spacing",
+        "control": "none"
+      }
+    ]
+  },
+  "mediaContentSplit": {
+    "slug": "mediaContentSplit",
+    "label": "Split",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "description": "Shown when source is \"Custom\", or as a Work or Lab Page override for canonical content.",
+        "control": "none"
+      },
+      {
+        "name": "media",
+        "label": "Media",
+        "control": "none"
+      },
+      {
+        "name": "visualType",
+        "label": "Visual",
+        "description": "Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Media upload",
+            "value": "media"
+          },
+          {
+            "label": "Streak Field",
+            "value": "streakField"
+          },
+          {
+            "label": "Light leak",
+            "value": "lightLeak"
+          }
+        ]
+      },
+      {
+        "name": "shader",
+        "label": "Effect",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "layout",
+        "label": "Layout",
+        "description": "Arrange the media on the left or the right of the content.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "left",
+            "value": "left"
+          },
+          {
+            "label": "right",
+            "value": "right"
+          }
+        ],
+        "defaultValue": "left"
+      },
+      {
+        "name": "aspectRatio",
+        "label": "Aspect Ratio",
+        "description": "Crop for the media column.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "16:9",
+            "value": "16-9"
+          },
+          {
+            "label": "3:2",
+            "value": "3-2"
+          },
+          {
+            "label": "21:9",
+            "value": "21-9"
+          }
+        ],
+        "defaultValue": "16-9"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "richText": {
+    "slug": "richText",
+    "label": "Rich text",
+    "fields": [
+      {
+        "name": "body",
+        "label": "Body",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "richTransition": {
+    "slug": "richTransition",
+    "label": "Standard",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "control": "none"
+      },
+      {
+        "name": "layout",
+        "label": "Layout",
+        "description": "How the copy sits on the band.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Offset",
+            "value": "offset"
+          },
+          {
+            "label": "Left",
+            "value": "left"
+          },
+          {
+            "label": "Center",
+            "value": "centered"
+          },
+          {
+            "label": "Split",
+            "value": "split"
+          },
+          {
+            "label": "Statement",
+            "value": "statement"
+          },
+          {
+            "label": "Prose",
+            "value": "prose"
+          }
+        ],
+        "defaultValue": "offset"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "headingLevel",
+        "label": "Heading level",
+        "description": "Outline level and type size for the Prose layout, set against the article body rather than the page headings.",
+        "group": "Design",
+        "if": {
+          "arg": "layout",
+          "eq": "prose"
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "H2 (opens a section)",
+            "value": "h2"
+          },
+          {
+            "label": "H3 (opens a subsection)",
+            "value": "h3"
+          },
+          {
+            "label": "H4 (opens a passage)",
+            "value": "h4"
+          }
+        ],
+        "defaultValue": "h2"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "section": {
+    "slug": "section",
+    "label": "Section",
+    "fields": [
+      {
+        "name": "customize",
+        "label": "Customize section",
+        "description": "Override the surface, band padding, and space between blocks. Off uses the page surface and default rhythm.",
+        "control": "boolean",
+        "defaultValue": false
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "The band this section paints. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it, to flip this section against its neighbours.",
+        "if": {
+          "arg": "customize",
+          "truthy": true
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "spacing",
+        "label": "Band",
+        "description": "Top and bottom padding of the section. \"None\" is for a section whose content owns its shell.",
+        "if": {
+          "arg": "customize",
+          "truthy": true
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Tight",
+            "value": "tight"
+          },
+          {
+            "label": "Loose",
+            "value": "loose"
+          },
+          {
+            "label": "None",
+            "value": "none"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "stack",
+        "label": "Between blocks",
+        "description": "Space between nested blocks. Independent of Band. \"None\" sits them flush.",
+        "if": {
+          "arg": "customize",
+          "truthy": true
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Tight",
+            "value": "tight"
+          },
+          {
+            "label": "Loose",
+            "value": "loose"
+          },
+          {
+            "label": "None",
+            "value": "none"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "blocks",
+        "label": "Blocks",
+        "control": "none"
+      }
+    ]
+  },
+  "slider": {
+    "slug": "slider",
+    "label": "Slider",
+    "fields": [
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "introContent",
+        "label": "Intro Content",
+        "control": "none"
+      },
+      {
+        "name": "style",
+        "label": "Style",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Cropped",
+            "value": "cropped"
+          },
+          {
+            "label": "Single",
+            "value": "single"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "space",
+        "label": "Spacing",
+        "control": "none"
+      },
+      {
+        "name": "slides",
+        "label": "Slides",
+        "control": "none"
+      }
+    ]
+  },
+  "splitContentNarrow": {
+    "slug": "splitContentNarrow",
+    "label": "Split narrow",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "description": "Shown when source is \"Custom\", or as a Work or Lab Page override for canonical content.",
+        "control": "none"
+      },
+      {
+        "name": "media",
+        "label": "Media",
+        "control": "none"
+      },
+      {
+        "name": "visualType",
+        "label": "Visual",
+        "description": "Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Media upload",
+            "value": "media"
+          },
+          {
+            "label": "Streak Field",
+            "value": "streakField"
+          },
+          {
+            "label": "Light leak",
+            "value": "lightLeak"
+          }
+        ]
+      },
+      {
+        "name": "shader",
+        "label": "Effect",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "imagePosition",
+        "label": "Layout",
+        "description": "Arrange the image on the left or the right of the text.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "left",
+            "value": "left"
+          },
+          {
+            "label": "right",
+            "value": "right"
+          }
+        ],
+        "defaultValue": "left"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "splitImageOffset": {
+    "slug": "splitImageOffset",
+    "label": "Pair offset",
+    "fields": [
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "description": "Shown when source is \"Custom\", or as a Work or Lab Page override for canonical content.",
+        "control": "none"
+      },
+      {
+        "name": "largeMedia",
+        "label": "Large Media",
+        "description": "Cropped to 5:4.",
+        "control": "none"
+      },
+      {
+        "name": "smallMedia",
+        "label": "Small Media",
+        "description": "Cropped to 3:2. Shown above the caption.",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "captionPosition",
+        "label": "Layout",
+        "description": "Place the small image and caption on the left or the right of the large image.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "left",
+            "value": "left"
+          },
+          {
+            "label": "right",
+            "value": "right"
+          }
+        ],
+        "defaultValue": "left"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "tabs": {
+    "slug": "tabs",
+    "label": "Tab slider",
+    "fields": [
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "none"
+      },
+      {
+        "name": "space",
+        "label": "Spacing",
+        "control": "none"
+      },
+      {
+        "name": "tabs",
+        "label": "Tabs",
+        "control": "none"
+      }
+    ]
+  },
+  "youtube": {
+    "slug": "youtube",
+    "label": "YouTube",
+    "fields": [
+      {
+        "name": "url",
+        "label": "Url",
+        "description": "Paste any YouTube link. A start time in the link (the \"Start at\" box on YouTube's share panel) is kept.",
+        "control": "text"
+      },
+      {
+        "name": "title",
+        "label": "Title",
+        "description": "Shown over the poster the way YouTube shows it, and read out as the play button's label.",
+        "control": "text"
+      },
+      {
+        "name": "size",
+        "label": "Size",
+        "description": "Full width runs edge to edge across the page (inside rich text it fills the text column). Contained fills the page column; Inset and Small sit centred in it, all with rounded corners, matching the Caption block.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Full width",
+            "value": "full"
+          },
+          {
+            "label": "Contained",
+            "value": "contained"
+          },
+          {
+            "label": "Inset",
+            "value": "inset"
+          },
+          {
+            "label": "Small",
+            "value": "small"
+          }
+        ],
+        "defaultValue": "contained"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  }
+}

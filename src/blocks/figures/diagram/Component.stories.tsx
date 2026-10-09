@@ -3,6 +3,7 @@ import { type DiagramSpec, layoutDiagram } from '@/features/figures'
 import { DIAGRAM_CORPUS } from '@/features/figures/corpus'
 import { DiagramFigure } from '@/features/figures/ui/diagram/diagram-figure'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
+import { blockControls } from '@/stories/block-controls'
 import { FigureShell } from '../Shell'
 
 /**
@@ -21,7 +22,7 @@ const meta = {
   component: DiagramFigure,
   parameters: { layout: 'fullscreen' },
   args: { blockId: 'story-diagram', layout: null, width: 'wide', ...figure('visualResolves') },
-  argTypes: { width: { control: 'select', options: ['text', 'wide', 'full'] } },
+  argTypes: { width: blockControls<typeof DiagramFigure>('diagram').argTypes.width },
   loaders: [async ({ args }) => ({ layout: await layoutDiagram(args.spec) })],
   render: (args, { loaded }) => (
     <FigureShell>

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { mediaFixture, paragraph, richText, text } from '@/stories/fixtures'
 import { ImagePairBlock } from './Component'
 
@@ -8,21 +9,22 @@ const body = richText(
   ),
 )
 
+const controls = blockControls<typeof ImagePairBlock>('imagePair')
+
 const meta = {
   title: 'Blocks/MediaAndContent/Pair',
   component: ImagePairBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'imagePair',
     heading: 'Make the relationships visible',
     body,
     portraitMedia: mediaFixture,
     landscapeMedia: mediaFixture,
-    portraitPosition: 'left',
-    textPosition: 'under-portrait',
-    theme: 'default',
   },
 } satisfies Meta<typeof ImagePairBlock>
 

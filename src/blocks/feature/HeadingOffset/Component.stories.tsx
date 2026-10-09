@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { richTextFixture } from '@/shared/testing/richTextFixture'
+import { blockControls } from '@/stories/block-controls'
 import { FeatureHeadingOffsetBlock } from './Component'
+
+const controls = blockControls<typeof FeatureHeadingOffsetBlock>('featureHeadingOffset')
 
 const meta = {
   title: 'Blocks/SectionHeading/Offset',
@@ -8,7 +11,9 @@ const meta = {
   parameters: {
     layout: 'padded',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'featureHeadingOffset',
     eyebrow: 'Eyebrow text',
     heading: 'Make your expertise easier to understand and easier to choose.',

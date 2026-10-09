@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { insightMarkFixtures } from '@/stories/fixtures'
 import { InsightListBlock } from './Component'
 
@@ -44,21 +45,22 @@ const items = [
   },
 ]
 
+const controls = blockControls<typeof InsightListBlock>('insightList')
+
 const meta = {
   title: 'Blocks/Lists/InsightList',
   component: InsightListBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'insightList',
     eyebrow: 'Where clarity breaks down',
     heading: 'Deep expertise does not always translate into a clear market story.',
     summary: 'Six patterns we see most often. Usually more than one at once.',
-    layout: 'side',
-    markSize: 'medium',
     items,
-    theme: 'default',
   },
 } satisfies Meta<typeof InsightListBlock>
 

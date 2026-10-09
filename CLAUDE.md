@@ -39,6 +39,7 @@ Storybook conventions:
 
 - Stories are colocated with components as `*.stories.tsx` (CSF3, `satisfies Meta`).
 - Payload-shaped fixtures live in `src/stories/fixtures.ts` and must mirror `src/payload-types.ts`.
+- Block stories never hand-write `argTypes` for CMS fields: `blockControls('<slug>')` from `src/stories/block-controls` derives controls and default args from the block's Payload config via a generated manifest (`pnpm generate:block-controls`, checked by `pnpm check:block-controls` and the pre-push hook). Regenerate it, without asking, after changing a block's fields.
 - Config lives in `.storybook/` (`@storybook/nextjs-vite` framework); theme switching drives the site's `data-theme` attribute.
 - Components tied to the live app shell (page-transition GSAP flow, SiteChrome, server-only Payload access, R3F scenes) are intentionally not storied — see the Overview page in Storybook.
 
@@ -72,7 +73,7 @@ Storybook conventions:
 - For schema changes:
   1. Update collection/global/field definitions.
   2. Local schema syncs via Drizzle push on `pnpm dev` (push runs only against a local `POSTGRES_URL`).
-  3. Regenerate types/import maps (`pnpm generate:types`, `pnpm generate:importmap`) without asking.
+  3. Regenerate types/import maps (`pnpm generate:types`, `pnpm generate:importmap`) and, for a block field, the Storybook control manifest (`pnpm generate:block-controls`) without asking.
   4. Ask before `pnpm migrate:create`. On approval, review the SQL and commit the `.ts` + `.json` together. The Vercel build (`pnpm ci`) applies it.
   5. Run `pnpm check:migrations` and `pnpm check:migrations:drift`. The migration must cover every schema change in the branch; if a field was added after it was generated, regenerate it (ask first).
   6. Before a migration lands on `dev` (direct push or PR): `git fetch origin && git rebase origin/dev`. If `dev` gained a migration, delete the branch's (`.ts` + `.json`) and regenerate it (ask first). The pre-push hook and `.github/workflows/migrations.yml` enforce this (`docs/conductor.md`).

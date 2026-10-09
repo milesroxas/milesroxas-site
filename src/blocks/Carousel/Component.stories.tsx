@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { mediaFixture, videoFixture } from '@/stories/fixtures'
 import { CarouselBlock } from './Component'
 
@@ -8,17 +9,19 @@ const slides = Array.from({ length: 5 }, (_, i) => ({
   caption: `Slide ${i + 1} caption`,
 }))
 
+const controls = blockControls<typeof CarouselBlock>('carousel')
+
 const meta = {
   title: 'Blocks/Interactive/Carousel',
   component: CarouselBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'carousel',
     slides,
-    slideSize: 'full',
-    width: 'contained',
     showArrows: true,
   },
 } satisfies Meta<typeof CarouselBlock>

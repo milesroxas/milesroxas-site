@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import {
   contentColumnFixture,
   mediaFixture,
@@ -22,18 +23,21 @@ const body = richText(
   ),
 )
 
+const controls = blockControls<typeof SplitContentNarrowBlock>('splitContentNarrow')
+
 const meta = {
   title: 'Blocks/MediaAndContent/SplitNarrow',
   component: SplitContentNarrowBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'splitContentNarrow',
     media: mediaFixture,
     body,
     imagePosition: 'right',
-    theme: 'default',
   },
 } satisfies Meta<typeof SplitContentNarrowBlock>
 

@@ -3,6 +3,7 @@ import { FullMediaBlock } from '@/blocks/full-media/Component'
 import { RichTextBlock } from '@/blocks/rich-text/Component'
 import { RichTransition } from '@/blocks/rich-transition/RichTransition'
 import { SplitContentNarrowBlock } from '@/blocks/split-content/Component'
+import { blockControls } from '@/stories/block-controls'
 import { mediaFixture, paragraph, richText, text } from '@/stories/fixtures'
 import { SectionBand } from './SectionBand'
 
@@ -70,13 +71,17 @@ const opensWithProseHeading = (
   </>
 )
 
+const controls = blockControls<typeof SectionBand>('section')
+
 const meta = {
   title: 'Blocks/Section',
   component: SectionBand,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     children,
   },
 } satisfies Meta<typeof SectionBand>

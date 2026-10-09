@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import type { Media } from '@/payload-types'
+import { blockControls } from '@/stories/block-controls'
 import {
   imageMedia,
   mediaFixture,
@@ -25,21 +26,22 @@ const tabs = [
 
 const body = richText(paragraph(text('3 distinct ways to tell an impactful story.')))
 
+const controls = blockControls<typeof CarouselTabsBlock>('carouselTabs')
+
 const meta = {
   title: 'Blocks/Interactive/CarouselTabs',
   component: CarouselTabsBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'carouselTabs',
     body,
     eyebrow: 'Discovery',
     heading: 'Finding solutions to expand visual language',
-    slideSize: 'full',
-    tabSize: 'default',
     tabs,
-    theme: 'default',
   },
 } satisfies Meta<typeof CarouselTabsBlock>
 

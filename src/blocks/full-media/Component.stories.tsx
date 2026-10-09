@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { mediaFixture, paragraph, richText, text, videoFixture } from '@/stories/fixtures'
 import { FullMediaBlock } from './Component'
 
@@ -13,22 +14,23 @@ const body = richText(
   ),
 )
 
+const controls = blockControls<typeof FullMediaBlock>('fullMedia')
+
 const meta = {
   title: 'Blocks/MediaAndContent/Stacked',
   component: FullMediaBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'fullMedia',
-    showContent: true,
     eyebrow: 'Eyebrow',
     heading: 'Make the relationships visible',
     media: mediaFixture,
     body,
     width: 'full-width',
-    contentPosition: 'left',
-    theme: 'default',
   },
 } satisfies Meta<typeof FullMediaBlock>
 

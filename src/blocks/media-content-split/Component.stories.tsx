@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import {
   contentColumnFixture,
   mediaFixture,
@@ -22,21 +23,22 @@ const body = richText(
   ),
 )
 
+const controls = blockControls<typeof MediaContentSplitBlock>('mediaContentSplit')
+
 const meta = {
   title: 'Blocks/MediaAndContent/Split',
   component: MediaContentSplitBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'mediaContentSplit',
     eyebrow: 'About',
     heading: 'A branding agency for complex offerings',
     body,
     media: mediaFixture,
-    layout: 'left',
-    aspectRatio: '16-9',
-    theme: 'default',
   },
 } satisfies Meta<typeof MediaContentSplitBlock>
 

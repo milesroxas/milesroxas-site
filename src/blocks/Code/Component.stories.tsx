@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { CodeBlock } from './Component'
-import { CODE_LANGUAGES } from './config'
 
 const tsSample = `type Block = {
   blockType: string
@@ -33,21 +33,18 @@ vec2 curl(vec2 p) {
 const shellSample = `pnpm cms:upload ./shots/studio-inspector.png \\
   --alt "The Studio inspector with the relief group open"`
 
+const controls = blockControls<typeof CodeBlock>('code')
+
 const meta = {
   title: 'Blocks/Code',
   component: CodeBlock,
   parameters: {
     layout: 'padded',
   },
-  argTypes: {
-    language: {
-      control: 'select',
-      options: CODE_LANGUAGES.map((language) => language.value),
-    },
-  },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'code',
-    language: 'typescript',
     code: tsSample,
   },
 } satisfies Meta<typeof CodeBlock>

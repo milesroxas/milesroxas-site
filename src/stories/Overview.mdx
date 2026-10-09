@@ -24,8 +24,20 @@ context work out of the box.
   `satisfies Meta`).
 - Payload document fixtures live in `src/stories/fixtures.ts` and mirror
   `src/payload-types.ts`. Keep them minimal: only fields components read.
+- Block stories take their controls from the block's Payload config:
+  `blockControls('<slug>')` (`src/stories/block-controls`) gives every select,
+  radio, checkbox and text field the editor's options, labels, descriptions,
+  Design grouping and show/hide rules, and seeds the editor's defaults as
+  args. The Controls panel can then reproduce any configuration the CMS
+  offers. The manifest it reads is generated (`pnpm generate:block-controls`)
+  because block configs import server-only editor code; regenerate it after
+  changing a block's fields (`pnpm check:block-controls` says when).
 - The light/dark toggle in the toolbar drives the site's `data-theme`
   attribute, matching the production theming mechanism.
+- The site's custom cursor (`src/providers/Cursor`) is mounted over every
+  story, as `Providers` does in the app; `cursorTarget('view')` and friends
+  show their labels here too. The Cursor toolbar switches back to the native
+  pointer. Docs pages always use the native pointer.
 - Every story runs as a browser test via the Vitest addon
   (`pnpm test:storybook`); interaction coverage lives in `play` functions.
 - Accessibility checks run through the a11y addon in `todo` mode — violations

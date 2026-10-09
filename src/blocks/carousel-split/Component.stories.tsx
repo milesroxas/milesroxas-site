@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { blockControls } from '@/stories/block-controls'
 import { mediaFixture, paragraph, richText, text, videoFixture } from '@/stories/fixtures'
 import { CarouselSplitBlock } from './Component'
 
@@ -21,20 +22,21 @@ const body = richText(
   ),
 )
 
+const controls = blockControls<typeof CarouselSplitBlock>('carouselSplit')
+
 const meta = {
   title: 'Blocks/MediaAndContent/CarouselSplit',
   component: CarouselSplitBlock,
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'carouselSplit',
     body,
-    carouselPosition: 'right',
     heading: 'The gap in brand storytelling',
-    slideSize: 'full',
     slides,
-    theme: 'default',
   },
 } satisfies Meta<typeof CarouselSplitBlock>
 
