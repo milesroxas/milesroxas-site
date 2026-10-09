@@ -3,11 +3,10 @@ import { designFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 
 /**
- * A large 5:4 image beside a narrower column holding a 3:2 image with caption
- * copy beneath it. The caption column splits into two equal rows so the copy
- * always starts at the section's vertical midpoint — the offset the block is
- * named for — and on large screens a trailing quarter column holds the caption
- * side off the page edge while the section itself runs to it.
+ * A large 5:4 figure beside a narrower column holding a 3:2 figure with
+ * caption copy beneath it, on the composition grid (5 columns and 3). The
+ * caption starts where the small figure ends, the offset the block is named
+ * for. `captionPosition` picks the side.
  *
  * Self-contained by default (authors the body inline), so it can be dropped
  * into any collection's `blocks` field. On Work and Lab Pages the `source`
