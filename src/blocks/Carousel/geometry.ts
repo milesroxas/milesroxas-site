@@ -47,6 +47,15 @@ export const loopAwareDiff = (
     : scrollSnap + (1 - scrollProgress)
 }
 
+/**
+ * The snap a deck opens on when embla couldn't loop it (too few slides to
+ * fill the window): the middle one, so the active slide keeps a neighbour on
+ * each side. An even count opens on the earlier of its two middles, keeping
+ * closer to the editor's order. A looping deck opens on 0 as usual.
+ */
+export const openingSnap = (loop: boolean, count: number): number =>
+  loop ? 0 : Math.max(0, Math.floor((count - 1) / 2))
+
 /** Visit every slide with its signed distance (in snaps) from the scroll position. */
 export const forEachSnapDistance = (
   engine: SnapEngine,

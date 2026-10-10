@@ -4,7 +4,7 @@ import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import type { CarouselApi } from '@/components/ui/carousel'
 import type { CaOffsets, DissolveMap } from './filters'
-import { computeTweenFactor, forEachSnapDistance } from './geometry'
+import { computeTweenFactor, forEachSnapDistance, openingSnap } from './geometry'
 import { collectSlideRefs, createPlaybackController, type SlideRefs } from './playback'
 import { captionOpacity, clamp, type DeckPose, type SlideVisualState } from './visual-state'
 
@@ -190,12 +190,25 @@ export const useCarouselEffects = ({
         api.scrollNext()
       }
 
+      // Embla drops `loop` when the slides can't fill the window, and the deck
+      // would then open with nothing left of its first slide. Open on the
+      // middle instead (see `openingSnap`). Once, on mount, so a resize that
+      // drops the loop keeps the reader's place; a deck the reader has already
+      // moved is left alone. The stack pins every slide into one slot, so it
+      // has no sides to balance.
+      const open = () => {
+        if (stacked || api.selectedScrollSnap() !== 0) return
+        const snap = openingSnap(api.internalEngine().options.loop, api.scrollSnapList().length)
+        if (snap !== 0) api.scrollTo(snap, true)
+      }
+
       onReInit()
       api.on('reInit', onReInit)
       api.on('scroll', tween)
       api.on('settle', onSettle)
       document.addEventListener('visibilitychange', onVisibility)
       if (stacked) trackNode.addEventListener('click', onClick)
+      open()
 
       return () => {
         trackNode.removeEventListener('click', onClick)

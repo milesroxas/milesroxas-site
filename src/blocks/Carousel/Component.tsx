@@ -490,14 +490,16 @@ const CarouselSlide: React.FC<{
               src={placeholderOf(media)}
             />
           )}
-          {/* Playback is gated by useCarouselEffects: only the active slide plays. */}
+          {/* Playback is gated by useCarouselEffects: only the active slide plays.
+              `w-full`: a source narrower than the slide would otherwise sit at
+              its natural width inside the plate, which fills the slide. */}
           <Media
             autoPlay={false}
-            imgClassName={cornerClass}
+            imgClassName={cn(cornerClass, 'w-full')}
             onLoad={picture.onLoad}
             pictureClassName={PICTURE_CLASS[picture.state]}
             resource={slide.media}
-            videoClassName={cornerClass}
+            videoClassName={cn(cornerClass, 'w-full')}
           />
           {posterSrc && (
             // Poster sits over the paused video and melts away through the
@@ -586,6 +588,11 @@ const CAROUSEL_OPTS: React.ComponentProps<typeof Carousel>['opts'] = {
   // `basis-full` this is identical to `start` — the slide is the
   // column — so one rule covers every size.
   align: 'center',
+  // Embla drops `loop` when the deck can't fill the window (a short deck on
+  // a wide screen). Trimmed snaps would then pin the first slide to the left
+  // edge and break the even snap spacing ./geometry assumes, so every snap
+  // stays centred, and the deck opens on its middle one (`openingSnap`).
+  containScroll: false,
 }
 
 /**

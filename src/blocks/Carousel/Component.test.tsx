@@ -188,7 +188,7 @@ describe('CarouselBlock', () => {
       <CarouselBlock {...baseProps} width="full-width" slideSize="full" />,
     )
     expect(container.querySelector('[data-testid="media"]')?.getAttribute('data-img-class')).toBe(
-      'rounded-lg @min-[calc(100vw-1.5rem)]:rounded-none',
+      'rounded-lg @min-[calc(100vw-1.5rem)]:rounded-none w-full',
     )
   })
 
@@ -196,12 +196,12 @@ describe('CarouselBlock', () => {
     const contained = render(<CarouselBlock {...baseProps} />)
     expect(
       contained.container.querySelector('[data-testid="media"]')?.getAttribute('data-img-class'),
-    ).toBe('rounded-lg')
+    ).toBe('rounded-lg w-full')
     cleanup()
     const bleedHalf = render(<CarouselBlock {...baseProps} width="full-width" slideSize="half" />)
     expect(
       bleedHalf.container.querySelector('[data-testid="media"]')?.getAttribute('data-img-class'),
-    ).toBe('rounded-lg')
+    ).toBe('rounded-lg w-full')
   })
 
   it('overlays the arrows on mobile and only reserves gutter room from md', () => {

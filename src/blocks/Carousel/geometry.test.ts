@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { computeTweenFactor, forEachSnapDistance, loopAwareDiff, type SnapEngine } from './geometry'
+import {
+  computeTweenFactor,
+  forEachSnapDistance,
+  loopAwareDiff,
+  openingSnap,
+  type SnapEngine,
+} from './geometry'
 
 /** 4 half-size slides: snaps every 1/3 of progress space, one slide per snap. */
 const engineOf = (overrides?: Partial<SnapEngine>): SnapEngine => ({
@@ -20,6 +26,22 @@ describe('computeTweenFactor', () => {
     expect(computeTweenFactor([0])).toBe(1)
     expect(computeTweenFactor([])).toBe(1)
     expect(computeTweenFactor([0.5, 0.5])).toBe(1)
+  })
+})
+
+describe('openingSnap', () => {
+  it('opens a looping deck on its first slide', () => {
+    expect(openingSnap(true, 3)).toBe(0)
+    expect(openingSnap(true, 8)).toBe(0)
+  })
+
+  it('opens an unlooped deck on its middle slide, the earlier one of an even count', () => {
+    expect(openingSnap(false, 3)).toBe(1)
+    expect(openingSnap(false, 5)).toBe(2)
+    expect(openingSnap(false, 4)).toBe(1)
+    expect(openingSnap(false, 2)).toBe(0)
+    expect(openingSnap(false, 1)).toBe(0)
+    expect(openingSnap(false, 0)).toBe(0)
   })
 })
 
