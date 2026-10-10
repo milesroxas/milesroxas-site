@@ -32,11 +32,29 @@ import { type ChartModel, chartModel, directLabels, formatValue, formatX } from 
  * rounded data end and a square baseline, a 10% area wash, 8px dots with a
  * surface ring, a hairline solid grid, text in text tokens. One y axis, always.
  *
- * Marks do not animate in: this chunk mounts before the chart scrolls into
- * view, so a grow-in would play unseen, and the frame fades the canvas over
- * its placeholder instead. The tooltip tracks the pointer with no easing; a
- * readout that trails the cursor reads as lag.
+ * Marks enter once, as the figure's reveal beat plays (`LazyChart` mounts
+ * the canvas on that beat): bars grow from the baseline, lines and areas
+ * draw along their length, dots surface, each series a step after the last.
+ * The entrance waits for the frame's wipe to open most of the plot and lands
+ * on the site's content pace (`ENTER`); values and end labels appear as their
+ * marks land (Recharts hides them while a mark is moving). The tooltip tracks
+ * the pointer with no easing; a readout that trails the cursor reads as lag.
  */
+
+/**
+ * The marks' entrance, in ms. `begin` sits inside the under-media wipe (1.2s,
+ * power2.out: most of the frame is open by then); `easing` is that wipe's
+ * curve, so the marks settle the way the frame did. A line has further to
+ * travel than a bar and takes a little longer.
+ */
+const ENTER = {
+  begin: 400,
+  series: 150,
+  bar: 1000,
+  line: 1200,
+  dot: 800,
+  easing: 'cubic-bezier(0.215,0.61,0.355,1)',
+} as const
 
 const BAR_SIZE = 24
 const BAR_RADIUS = 4
@@ -49,8 +67,10 @@ const CATEGORY_TICK = { fill: INK, fontSize: 12 }
 /**
  * A label drawn over the plot wears a halo in the ground color (the diagram
  * labels' rule), so a line passing under it breaks cleanly around the glyphs.
+ * `figure-annotation` is what the stylesheet brings in after the marks.
  */
 const PLOT_LABEL = {
+  className: 'figure-annotation',
   fill: INK,
   fontSize: 12,
   paintOrder: 'stroke',
@@ -62,7 +82,21 @@ const PLOT_LABEL = {
 const LABEL_ROOM = 48
 
 /** What every mark component draws from. */
-type Drawing = { labels: ReturnType<typeof directLabels>; model: ChartModel; spec: ChartSpec }
+type Drawing = {
+  /** Whether the marks enter, or are simply there (reduced motion, a beat already over). */
+  animate: boolean
+  labels: ReturnType<typeof directLabels>
+  model: ChartModel
+  spec: ChartSpec
+}
+
+/** A mark's entrance, as Recharts takes it: the series' step in the cascade and its kind's duration. */
+const entrance = (drawing: Drawing, index: number, duration: number) => ({
+  animationBegin: ENTER.begin + index * ENTER.series,
+  animationDuration: duration,
+  animationEasing: ENTER.easing,
+  isAnimationActive: drawing.animate,
+})
 
 const isBarKind = (kind: ChartKind) => kind === 'bar' || kind === 'diverging-bar'
 
@@ -251,14 +285,18 @@ const EndLabel = ({ labels, model, spec }: Drawing) =>
     />
   ) : null
 
-/** Stroke shared by lines and area outlines; a reference series draws dashed as well as neutral. */
+/**
+ * Stroke shared by lines and area outlines; a reference series draws dashed
+ * as well as neutral. Caps are butt, not round: the entrance draws the line
+ * as a growing dash, and a round cap paints a dot at each end of a dash of
+ * zero length, so the points would show before the line reached them.
+ */
 const stroke = (slot: ChartModel['slots'][number]) => ({
   activeDot: { r: 4, stroke: SURFACE, strokeWidth: 2 },
   dataKey: slot.key,
-  isAnimationActive: false,
   stroke: slot.color,
   strokeDasharray: slot.reference ? '4 4' : undefined,
-  strokeLinecap: 'round' as const,
+  strokeLinecap: 'butt' as const,
   strokeLinejoin: 'round' as const,
   strokeWidth: 2,
   type: 'linear' as const,
@@ -277,11 +315,11 @@ const BarMarks = ({ drawing, frame }: { drawing: Drawing; frame: Frame }) => {
       layout={horizontal ? 'vertical' : 'horizontal'}
     >
       <Scaffold {...drawing} />
-      {slots.map((slot) => (
+      {slots.map((slot, index) => (
         <Bar
+          {...entrance(drawing, index, ENTER.bar)}
           dataKey={slot.key}
           fill={slot.color}
-          isAnimationActive={false}
           key={slot.key}
           maxBarSize={BAR_SIZE}
           shape={barShape(horizontal)}
@@ -305,16 +343,24 @@ const BarMarks = ({ drawing, frame }: { drawing: Drawing; frame: Frame }) => {
 const ScatterMarks = ({ drawing, frame }: { drawing: Drawing; frame: Frame }) => (
   <ScatterChart {...frame} accessibilityLayer>
     <Scaffold {...drawing} />
-    {drawing.model.slots.map((slot) => (
+    {drawing.model.slots.map((slot, index) => (
       <Scatter
+        {...entrance(drawing, index, ENTER.dot)}
         data={frame.data.filter((datum) => typeof datum[slot.key] === 'number')}
         dataKey={slot.key}
         fill={slot.color}
-        isAnimationActive={false}
         key={slot.key}
         name={slot.label}
-        shape={({ cx, cy }: { cx?: number; cy?: number }) => (
-          <circle cx={cx} cy={cy} fill={slot.color} r={5} stroke={SURFACE} strokeWidth={2} />
+        // `size` is Recharts' abstract point area, 64 at rest; it grows from 0 on entrance.
+        shape={({ cx, cy, size = 64 }: { cx?: number; cy?: number; size?: number }) => (
+          <circle
+            cx={cx}
+            cy={cy}
+            fill={slot.color}
+            r={5 * Math.sqrt(size / 64)}
+            stroke={SURFACE}
+            strokeWidth={2}
+          />
         )}
       />
     ))}
@@ -324,9 +370,10 @@ const ScatterMarks = ({ drawing, frame }: { drawing: Drawing; frame: Frame }) =>
 const AreaMarks = ({ drawing, frame }: { drawing: Drawing; frame: Frame }) => (
   <AreaChart {...frame} accessibilityLayer>
     <Scaffold {...drawing} />
-    {drawing.model.slots.map((slot) => (
+    {drawing.model.slots.map((slot, index) => (
       <Area
         {...stroke(slot)}
+        {...entrance(drawing, index, ENTER.line)}
         fill={slot.color}
         fillOpacity={slot.reference ? 0 : 0.1}
         key={slot.key}
@@ -340,8 +387,14 @@ const AreaMarks = ({ drawing, frame }: { drawing: Drawing; frame: Frame }) => (
 const LineMarks = ({ drawing, frame }: { drawing: Drawing; frame: Frame }) => (
   <LineChart {...frame} accessibilityLayer>
     <Scaffold {...drawing} />
-    {drawing.model.slots.map((slot) => (
-      <Line {...stroke(slot)} connectNulls={false} dot={false} key={slot.key}>
+    {drawing.model.slots.map((slot, index) => (
+      <Line
+        {...stroke(slot)}
+        {...entrance(drawing, index, ENTER.line)}
+        connectNulls={false}
+        dot={false}
+        key={slot.key}
+      >
         <EndLabel {...drawing} />
       </Line>
     ))}
@@ -356,7 +409,7 @@ const MARKS: Record<ChartKind, (props: { drawing: Drawing; frame: Frame }) => Re
   scatter: ScatterMarks,
 }
 
-export default function ChartCanvas({ spec }: { spec: ChartSpec }) {
+export default function ChartCanvas({ animate, spec }: { animate: boolean; spec: ChartSpec }) {
   const model = chartModel(spec)
   const labels = directLabels(spec, model)
   const Marks = MARKS[spec.kind]
@@ -367,12 +420,14 @@ export default function ChartCanvas({ spec }: { spec: ChartSpec }) {
     model.slots.map((slot) => [slot.key, { color: slot.color, label: slot.label }]),
   )
   return (
+    // `data-enter` lets the stylesheet bring the annotations in after the marks (globals.css, "Figures").
     <ChartContainer
       className="figure-chart-canvas aspect-auto size-full [&_.figure-axis-category_.recharts-cartesian-axis-tick_text]:fill-foreground [&_.recharts-cartesian-axis-tick_text]:tabular-nums [&_.recharts-label-list_text]:tabular-nums"
       config={config}
+      data-enter={animate ? '' : undefined}
     >
       <Marks
-        drawing={{ labels, model, spec }}
+        drawing={{ animate, labels, model, spec }}
         frame={{
           data: model.data,
           margin: { bottom: 4, left: 4, right: labelsPastPlot ? LABEL_ROOM : 12, top: 12 },

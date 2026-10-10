@@ -111,9 +111,10 @@ The detail is in the message itself because the MCP tools relay `error.message` 
 
 ## Motion
 
-- Diagram entrance is explanatory: nodes surface in reading order (the order listed in the spec) and each solid edge draws from its source, 40ms apart, capped so a 40-node graph lands inside a second. Nodes only fade, because the block's own reveal already travels. It keys off `.reveal-section[data-visible]`, so outside a reveal shell nothing is hidden.
+- A figure block opens as one frame of the under-media reveal (`reveal-variants.ts`: a 1.2s top-down wipe). What happens inside waits for most of that frame to be open (`--figure-enter-wait`, 360ms for a diagram; `ENTER.begin`, 400ms for a chart) and then carries on past the wipe at the site's content pace, so the reader watches the figure assemble instead of catching the tail of it.
+- Diagram entrance is explanatory: nodes surface in reading order (the order listed in the spec), 80ms apart over a 640ms fade, and each solid edge draws from its source over 720ms with its arrowhead and label arriving as it lands; the step is capped so a 40-node graph lands inside about two seconds. Nodes only fade, because the block's own reveal already travels. It keys off the shell's `data-reveal-state`, so outside a reveal shell nothing is hidden. Timings are the `--figure-enter-*` custom properties in `globals.css`.
 - `animated` edges march toward the arrowhead, linear, for six cycles after the reveal and again while the pointer is over the figure, then rest. A loop that never stops repaints a figure nobody is looking at.
-- Chart marks do not animate in: the chunk mounts before the chart is on screen. The canvas fades over its placeholder instead. The tooltip tracks the pointer with no easing.
+- Chart marks enter once, on the figure's beat: the chunk is fetched a screen ahead (`lazy-chart.tsx`) but the canvas mounts only when the shell marks the frame `data-reveal-state` (`use-reveal-beat.ts`), so the entrance plays on screen. Bars grow from the baseline over 1s, lines and areas draw along their length over 1.2s, dots surface over 0.8s, each series 150ms after the last, on the wipe's own curve (`ENTER` in `chart-canvas.tsx`). Values and end labels appear as their marks land. A beat already over when the chunk arrives (a mid-page reload) draws the chart still. The tooltip tracks the pointer with no easing.
 - All of it sits under `prefers-reduced-motion: no-preference`. With reduced motion nothing is hidden, drawn or marched.
 
 Rules live in `globals.css` under "Figures".

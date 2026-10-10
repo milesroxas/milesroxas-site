@@ -2715,19 +2715,30 @@ html:active-view-transition-type(work-open) .dock {
    Nodes only fade, because the frame already opens, and a second translate
    would double the motion. Everything that enters on a beat carries
    `.figure-step`; `--i` is its reading-order step, capped by the renderer so
-   a 40-node graph still lands inside a second. Outside a reveal shell
-   (Storybook, the admin) nothing is hidden and nothing plays.
+   a 40-node graph still lands inside about two seconds. Outside a reveal
+   shell (Storybook, the admin) nothing is hidden and nothing plays.
+
+   Pace: the frame's wipe takes 1.2s to open top-down, so the first step waits
+   until most of the frame is open and the cascade carries on past the wipe
+   at the site's content pace (`--figure-enter-*`): a reader watches the
+   figure assemble rather than catching the tail of it.
 
    All of it sits under `no-preference`: with reduced motion nothing is ever
    hidden, drawn or marched, the figure is simply there. */
+:root {
+  --figure-enter-wait: 360ms;
+  --figure-enter-step: 80ms;
+  --figure-enter-fade: 640ms;
+  --figure-enter-draw: 720ms;
+}
 /* A live data path is dashed at rest, in every motion setting. */
 .figure-edge[data-march] {
   stroke-dasharray: 4 6;
 }
 @media (prefers-reduced-motion: no-preference) {
   [data-reveal-state] .figure-step {
-    animation: figure-fade 400ms var(--ease-out-quint) both;
-    animation-delay: calc(var(--i, 0) * 40ms + 120ms);
+    animation: figure-fade var(--figure-enter-fade) var(--ease-out-quint) both;
+    animation-delay: calc(var(--i, 0) * var(--figure-enter-step) + var(--figure-enter-wait));
   }
   [data-reveal-shell] [data-reveal]:not([data-reveal-state]) .figure-step {
     opacity: 0;
@@ -2738,11 +2749,17 @@ html:active-view-transition-type(work-open) .dock {
   [data-reveal-state] .figure-edge[data-draw] {
     stroke-dasharray: 1;
     animation-name: figure-draw;
-    animation-duration: 500ms;
+    animation-duration: var(--figure-enter-draw);
   }
   /* An arrowhead and a label arrive as their edge finishes drawing. */
   [data-reveal-state] .figure-mark {
-    animation-delay: calc(var(--i, 0) * 40ms + 420ms);
+    animation-delay: calc(
+      var(--i, 0) *
+      var(--figure-enter-step) +
+      var(--figure-enter-wait) +
+      var(--figure-enter-draw) -
+      120ms
+    );
   }
 
   /* Live data path: dashes march toward the arrowhead. Constant motion, so
@@ -2751,9 +2768,16 @@ html:active-view-transition-type(work-open) .dock {
      keeps repainting a figure nobody is looking at. */
   [data-reveal-state] .figure-edge[data-march] {
     animation:
-      figure-fade 400ms var(--ease-out-quint) both,
+      figure-fade var(--figure-enter-fade) var(--ease-out-quint) both,
       figure-march 900ms linear 6;
-    animation-delay: calc(var(--i, 0) * 40ms + 120ms), calc(var(--i, 0) * 40ms + 520ms);
+    animation-delay:
+      calc(var(--i, 0) * var(--figure-enter-step) + var(--figure-enter-wait)),
+      calc(
+        var(--i, 0) *
+        var(--figure-enter-step) +
+        var(--figure-enter-wait) +
+        var(--figure-enter-fade)
+      );
   }
   @media (hover: hover) and (pointer: fine) {
     [data-reveal-state] .figure-diagram:hover .figure-edge[data-march] {
@@ -2780,13 +2804,21 @@ html:active-view-transition-type(work-open) .dock {
   }
 }
 
-/* The lazy chart replaces its placeholder in place; a short fade keeps that
-   from reading as a pop. The marks themselves do not animate: the chunk
-   mounts before the chart scrolls into view, so a grow-in would play unseen. */
+/* The lazy chart replaces its placeholder in place as the figure's beat
+   starts; the axes and grid fade over the hairline so the swap never reads
+   as a pop, then the marks enter (features/figures/ui/chart/chart-canvas).
+   An annotation is read against the marks, so when they enter (`data-enter`)
+   it arrives once the last series has landed. */
 .figure-chart-canvas {
-  transition: opacity 300ms var(--ease-out-quint);
+  transition: opacity 500ms var(--ease-out-quint);
   @starting-style {
     opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .figure-chart-canvas[data-enter]
+    :is(.recharts-reference-line, .recharts-reference-dot, .figure-annotation) {
+    animation: figure-fade var(--figure-enter-fade) var(--ease-out-quint) 1800ms both;
   }
 }
 

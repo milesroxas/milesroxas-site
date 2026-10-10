@@ -1,20 +1,25 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNearViewport } from '@/hooks/use-near-viewport'
+import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import { cn } from '@/utilities/ui'
 import type { ChartSpec } from '../../spec/chart'
 import { chartBox, chartModel } from './model'
+import { useRevealBeat } from './use-reveal-beat'
 
 /**
- * The chart library in its own chunk, requested when the figure comes within
- * a screen of the viewport. A page with no chart never downloads it, and a
- * long article pays for each chart as the reader approaches it.
+ * The chart library in its own chunk. It is fetched when the figure comes
+ * within a screen of the viewport and drawn when the figure's reveal beat
+ * starts, so the marks enter on screen (`useRevealBeat`) with the chunk
+ * already in hand. A page with no chart never downloads it, and a long
+ * article pays for each chart as the reader approaches it.
  */
-const ChartCanvas = dynamic(() => import('./chart-canvas'), { ssr: false })
+const loadCanvas = () => import('./chart-canvas')
+const ChartCanvas = dynamic(loadCanvas, { ssr: false })
 
-/** How far ahead of the viewport to start loading: about one screen, so the chart is there on arrival. */
+/** How far ahead of the viewport to fetch the chunk: about one screen, so it is there when the beat starts. */
 const LOAD_MARGIN = '100% 0px'
 
 /**
@@ -37,6 +42,11 @@ export function LazyChart({
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const near = useNearViewport(ref, LOAD_MARGIN, { once: true })
+  const beat = useRevealBeat(ref)
+  const reducedMotion = usePrefersReducedMotion()
+  useEffect(() => {
+    if (near) void loadCanvas()
+  }, [near])
   const box = chartBox(chartModel(spec))
   return (
     // A group, not an image: the canvas inside is keyboard operable (arrow
@@ -46,12 +56,14 @@ export function LazyChart({
       aria-describedby={describedBy}
       aria-label={labelledBy ? undefined : label}
       aria-labelledby={labelledBy}
-      className={cn('relative w-full border-b border-border', box.className)}
+      className={cn('relative w-full border-border border-b', box.className)}
       ref={ref}
       role="group"
       style={box.height ? { height: box.height } : undefined}
     >
-      {near ? <ChartCanvas spec={spec} /> : null}
+      {near && beat !== 'waiting' ? (
+        <ChartCanvas animate={beat === 'playing' && !reducedMotion} spec={spec} />
+      ) : null}
     </div>
   )
 }
