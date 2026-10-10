@@ -1116,7 +1116,7 @@ export interface ImagePairBlock {
    */
   portraitMedia: number | Media;
   /**
-   * Cropped to 16:10.
+   * Matches the portrait height: about 1.37:1 beside it (export 1736 × 1270), 16:10 on phones.
    */
   landscapeMedia: number | Media;
   /**

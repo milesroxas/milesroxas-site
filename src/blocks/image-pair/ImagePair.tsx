@@ -9,9 +9,10 @@ import { Section } from '../shared/section'
 import { typeScale } from '../shared/typography'
 
 /**
- * Two figures side by side on the composition grid: the 16:10 landscape spans
- * 5 columns, the 4:5 portrait 3 (the grid's 2:1 approximation; the figures no
- * longer resolve to exactly equal heights, the portrait runs a little taller).
+ * Two figures side by side on the composition grid: the 4:5 portrait spans 3
+ * columns, the landscape 5. From `md` the landscape drops its ratio and
+ * stretches to the portrait's row height (about 1.37:1, the exact ratio drifts
+ * with the fixed gap), so both always share a height; below `md` it is 16:10.
  * `portraitPosition` picks the side. Text lands in row 2 spanning 3 columns
  * from the start of whichever figure `textPosition` names; below `md` the grid
  * collapses and text always stacks last.
@@ -51,7 +52,7 @@ export const ImagePair = ({
   const landscapeFigure = (
     <MediaCell
       className={cn(
-        'relative aspect-16/10 w-full overflow-hidden rounded-lg bg-muted md:col-span-5 md:row-start-1',
+        'relative aspect-16/10 w-full overflow-hidden rounded-lg bg-muted md:col-span-5 md:row-start-1 md:aspect-auto',
         landscapeStart,
       )}
       resource={landscape}

@@ -3,10 +3,10 @@ import { designFields, textSizeField, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 
 /**
- * Two images side by side — a 4:5 portrait beside a 16:10 landscape on a 1:2
- * column split, which lands both at the same rendered height. Text sits under
- * one of the images and is sized to that column: compact under the portrait,
- * large under the landscape.
+ * Two images side by side: a 4:5 portrait on 3 columns beside a landscape on 5
+ * that stretches to the portrait's height. Text sits under one of the images
+ * and is sized to that column: compact under the portrait, large under the
+ * landscape.
  *
  * Self-contained by default (authors the body inline), so it can be dropped
  * into any collection's `blocks` field. On Work and Lab Pages the `source`
@@ -42,7 +42,10 @@ export const ImagePair: Block = {
       type: 'upload',
       relationTo: 'media',
       required: true,
-      admin: { description: 'Cropped to 16:10.' },
+      admin: {
+        description:
+          'Matches the portrait height: about 1.37:1 beside it (export 1736 × 1270), 16:10 on phones.',
+      },
     },
     designFields([
       textSizeField(),

@@ -1429,7 +1429,7 @@
       {
         "name": "landscapeMedia",
         "label": "Landscape Media",
-        "description": "Cropped to 16:10.",
+        "description": "Matches the portrait height: about 1.37:1 beside it (export 1736 × 1270), 16:10 on phones.",
         "control": "none"
       },
       {
