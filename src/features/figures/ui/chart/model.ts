@@ -114,15 +114,24 @@ export const chartBox = (model: ChartModel): { className?: string; height?: numb
   return { height: model.data.length * band + 56 }
 }
 
+/** The most bars a chart may label at the tip before the numbers crowd the marks. */
+const MAX_LABELLED_BARS = 16
+
 /**
  * Direct value labels, sparingly: they supplement the legend and the table,
- * and a number on every mark is noise. Bars label their tips only when one
- * series has few enough rows to leave air. Lines label their last point, and
- * only while the end points sit far enough apart not to collide.
+ * and a number on every mark is noise. Standing bars label their caps only
+ * when one series has few enough rows to leave air; lying bars each own a row,
+ * so up to two series can carry a tip value while the count stays small.
+ * Lines label their last point, and only while the end points sit far enough
+ * apart not to collide.
  */
 export function directLabels(spec: ChartSpec, model: ChartModel): 'bar-tips' | 'line-ends' | null {
-  if (isBarKind(spec))
-    return model.slots.length === 1 && model.data.length <= 12 ? 'bar-tips' : null
+  if (isBarKind(spec)) {
+    const bars = model.slots.length * model.data.length
+    if (model.horizontal)
+      return model.slots.length <= 2 && bars <= MAX_LABELLED_BARS ? 'bar-tips' : null
+    return model.slots.length === 1 && bars <= 12 ? 'bar-tips' : null
+  }
   if (spec.kind === 'scatter') return null
   const last = model.data.at(-1)
   const ends = model.slots.flatMap((slot) => {

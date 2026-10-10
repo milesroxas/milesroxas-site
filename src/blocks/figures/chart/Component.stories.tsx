@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { CHART_CORPUS } from '@/features/figures/corpus'
+import type { ChartSpec } from '@/features/figures/spec/chart'
 import { blockControls } from '@/stories/block-controls'
 import { ChartBlock } from './Component'
 
@@ -43,6 +44,33 @@ export const LineOverTime: Story = { args: figure('lcpByFace') }
 export const BarHorizontal: Story = { args: figure('noiseCost') }
 
 export const BarGrouped: Story = { args: figure('posterWeight') }
+
+/** Two lying series with few rows: every tip carries its value, the key sits on the title line. */
+export const BarHorizontalGrouped: Story = {
+  args: {
+    title: 'Before and after the platform',
+    caption:
+      'Days per task before and after. Content went from eight sources (Google Drive, Figma, local files and more) to one, and the MCP server lets the team write to that one source directly.',
+    textAlternative:
+      'The gap between site updates fell from 90 days to 7, a case study from 45 days to 14, and a new post from 14 days to 1.5.',
+    spec: {
+      specVersion: 1,
+      kind: 'bar',
+      orientation: 'horizontal',
+      x: { key: 'task', type: 'category' },
+      y: { label: 'Days' },
+      series: [
+        { key: 'before', label: 'Before' },
+        { key: 'after', label: 'After' },
+      ],
+      rows: [
+        { task: 'Gap between site updates', before: 90, after: 7 },
+        { task: 'Produce a case study', before: 45, after: 14 },
+        { task: 'Publish new content', before: 14, after: 1.5 },
+      ],
+    } satisfies ChartSpec,
+  },
+}
 
 /** Time under bars draws as dated bands. */
 export const BarOverTime: Story = { args: figure('studioPublishes') }

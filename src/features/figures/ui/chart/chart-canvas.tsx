@@ -44,6 +44,8 @@ const SURFACE = 'var(--background)'
 const INK = 'var(--foreground)'
 const MUTED = 'var(--muted-foreground)'
 const TICK = { fill: MUTED, fontSize: 12 }
+/** A category name is what the reader looks up a bar by, so it reads in ink; a measure tick recedes. */
+const CATEGORY_TICK = { fill: INK, fontSize: 12 }
 /**
  * A label drawn over the plot wears a halo in the ground color (the diagram
  * labels' rule), so a line passing under it breaks cleanly around the glyphs.
@@ -159,8 +161,10 @@ const measuresFromZero = (kind: ChartKind) => isBarKind(kind) || kind === 'area'
 /** The axis the x values sit on: bands for categories, a continuous scale for a measure or time. */
 const positionAxis = ({ model, spec }: Drawing) => ({
   axisLine: false,
+  // The container paints every tick muted by class; `figure-axis-category` wins it back for names.
+  className: model.continuousX ? undefined : 'figure-axis-category',
   dataKey: 'x',
-  tick: TICK,
+  tick: model.continuousX ? TICK : CATEGORY_TICK,
   tickFormatter: (input: number | string) =>
     model.continuousX ? formatX(spec, input) : String(input),
   tickLine: false,
@@ -286,7 +290,9 @@ const BarMarks = ({ drawing, frame }: { drawing: Drawing; frame: Frame }) => {
             <LabelList
               fill={INK}
               fontSize={12}
+              fontWeight={500}
               formatter={formatter(drawing.spec)}
+              offset={8}
               position={horizontal ? 'right' : 'top'}
             />
           ) : null}
@@ -361,7 +367,10 @@ export default function ChartCanvas({ spec }: { spec: ChartSpec }) {
     model.slots.map((slot) => [slot.key, { color: slot.color, label: slot.label }]),
   )
   return (
-    <ChartContainer className="figure-chart-canvas aspect-auto size-full" config={config}>
+    <ChartContainer
+      className="figure-chart-canvas aspect-auto size-full [&_.figure-axis-category_.recharts-cartesian-axis-tick_text]:fill-foreground [&_.recharts-cartesian-axis-tick_text]:tabular-nums [&_.recharts-label-list_text]:tabular-nums"
+      config={config}
+    >
       <Marks
         drawing={{ labels, model, spec }}
         frame={{

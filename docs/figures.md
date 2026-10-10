@@ -30,7 +30,7 @@ A figure's attribution group is `dataSource`, not `source`, following sas-site, 
 
 ## The frame every figure shares
 
-`title`, `textAlternative` (required), `caption`, `dataSource` (`label`, `href`, https only), `width` (`text`, `wide`, `full` on the 8-column grid), `theme`. The frame renders the `<figure>`, the title with its anchor link, the caption, and a native `<details>` holding the text alternative and the data view (a table for a chart, ordered lists for a diagram). All of it is server HTML.
+`title`, `textAlternative` (required), `caption`, `dataSource` (`label`, `href`, https only), `width` (`text`, `wide`, `full` on the 8-column grid), `theme`. The frame renders the `<figure>`, a header row (the title with its anchor link and, flush right on the same baseline, whatever the kind hands over as `aside`: a chart's legend), the caption, and a native `<details>` holding the text alternative and the data view (a table for a chart, ordered lists for a diagram). All of it is server HTML. On a `wide` figure the header spans the drawing's columns, so the title sits over the drawing's left edge; the caption and disclosure stay on the reading column with the prose.
 
 `title`, `caption` and `textAlternative` are TEXT_KEYS in the content walk (`src/shared/content/extract.ts`), so a figure reaches search and Ask through its words. `spec` and `geometry` are skipped there: they are data and coordinates, not prose.
 
@@ -38,7 +38,7 @@ A figure's attribution group is `dataSource`, not `source`, following sas-site, 
 
 Kinds: bar, line, area, scatter, diverging bar. The spec is data and encoding only. Read the schema for the fields, their descriptions and their limits; nothing here restates them.
 
-Decided once in the renderer and not authorable: the four categorical colors in fixed order (never cycled), a neutral for `reference` series that does not use up a categorical slot, 2px lines, bars capped at 24px with a rounded data end and a square baseline (whichever way the bar points), a 10% area wash, 8px dots with a surface ring, a hairline solid grid, text in text tokens, one y axis. A legend appears for two or more series. Direct labels are selective: bar tips only for one series with few rows, line ends only while they sit far enough apart to read (`directLabels`).
+Decided once in the renderer and not authorable: the four categorical colors in fixed order (never cycled), a neutral for `reference` series that does not use up a categorical slot, 2px lines, bars capped at 24px with a rounded data end and a square baseline (whichever way the bar points), a 10% area wash, 8px dots with a surface ring, a hairline solid grid, text in text tokens, one y axis. A legend appears for two or more series, at the end of the title line, with keys that mirror the marks (a dashed stroke for a reference line). Category names read in ink and measure ticks in the muted token; tick and label numerals are tabular. Axes are named at the plot's corners: the left axis on a line above its ticks, the bottom axis under the right end of its run. Direct labels are selective: bar caps only for one standing series with few rows, bar tips for up to two lying series while the bars stay few, line ends only while they sit far enough apart to read (`directLabels`).
 
 Series are re-keyed to fixed slots (`s0`..`s3`) before they reach Recharts. An authored key never becomes a data key, a CSS variable or a class, so nothing from the CMS reaches a stylesheet.
 
