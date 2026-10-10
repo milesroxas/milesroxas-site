@@ -1,6 +1,7 @@
 # Media
 
-How an upload becomes an image or video on the site, and what keeps it that way.
+How an upload becomes an image or video on the site, and what keeps it that way. What size to
+export for each block: [media-dimensions.md](media-dimensions.md).
 
 | Concern | Where |
 | --- | --- |
