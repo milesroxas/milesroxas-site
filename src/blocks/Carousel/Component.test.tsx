@@ -263,6 +263,12 @@ describe('slideImageSizes', () => {
     )
   })
 
+  it('the height cap bounds every width once the deck knows its aspect', () => {
+    expect(slideImageSizes('full', true, false, 16 / 9)).toBe(
+      '(min-width: 1024px) min(100vw, calc(70vh * 1.7778)), (min-width: 768px) min(100vw, calc(70vh * 1.7778)), min(75vw, calc(70vh * 1.7778))',
+    )
+  })
+
   it('a full-bleed half is five eighths of the window; a stack fills it', () => {
     expect(slideImageSizes('half', true, false)).toBe(
       '(min-width: 1024px) calc(100vw * 0.6250), (min-width: 768px) calc(100vw * 0.6250), 75vw',

@@ -124,24 +124,31 @@ const COLUMN_WIDTHS: [query: string, width: string][] = [
 const shareOf = (fraction: number, width: string) =>
   fraction === 1 ? width : `calc(${width} * ${fraction.toFixed(4)})`
 
+/**
+ * `slideAspect` is the deck's `SLIDE_HEIGHT_CAP`: on a short window the slide
+ * is narrower than its share, and the image can be too.
+ */
 export const slideImageSizes = (
   slideSize: CarouselBlockProps['slideSize'],
   isFullWidth: boolean,
   isStack: boolean,
+  slideAspect?: number,
 ): string => {
   const size = slideSize ?? 'full'
   const share = isStack
     ? { md: 1 }
     : (isFullWidth && fullWidthSlideShares[size]) || slideShares[size]
   const lg = share.lg ?? share.md
-  const phone = isStack ? '100vw' : '75vw'
+  const capped = (width: string) =>
+    slideAspect === undefined ? width : `min(${width}, calc(70vh * ${slideAspect.toFixed(4)}))`
+  const phone = capped(isStack ? '100vw' : '75vw')
   if (isFullWidth) {
-    return `(min-width: 1024px) ${shareOf(lg, '100vw')}, (min-width: 768px) ${shareOf(share.md, '100vw')}, ${phone}`
+    return `(min-width: 1024px) ${capped(shareOf(lg, '100vw'))}, (min-width: 768px) ${capped(shareOf(share.md, '100vw'))}, ${phone}`
   }
   return [
     ...COLUMN_WIDTHS.map(
       ([query, width]) =>
-        `${query} ${shareOf(query === '(min-width: 768px)' ? share.md : lg, width)}`,
+        `${query} ${capped(shareOf(query === '(min-width: 768px)' ? share.md : lg, width))}`,
     ),
     phone,
   ].join(', ')
@@ -407,7 +414,8 @@ const deckLayout = (
       : undefined
 
   const gutter = isStack ? STACK_LAYOUT.gutter : slideGutterClasses[size]
-  return { captionClassName, cornerClass, gutter, sizeClass, trackStyle }
+  const imageSizes = slideImageSizes(slideSize, isFullWidth, isStack, slideAspect)
+  return { captionClassName, cornerClass, gutter, imageSizes, sizeClass, trackStyle }
 }
 
 /**
@@ -718,14 +726,13 @@ export const CarouselBlock: React.FC<Props> = (props) => {
   if (!renderableSlides.length) return null
 
   const isFullWidth = width === 'full-width'
-  const { captionClassName, cornerClass, gutter, sizeClass, trackStyle } = deckLayout(
+  const { captionClassName, cornerClass, gutter, imageSizes, sizeClass, trackStyle } = deckLayout(
     renderableSlides,
     slideSize,
     isFullWidth,
     isStack,
     frame,
   )
-  const imageSizes = slideImageSizes(slideSize, isFullWidth, isStack)
 
   return (
     <Section bare={bare} spacing="loose" theme={theme}>
