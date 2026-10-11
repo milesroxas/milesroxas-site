@@ -64,6 +64,7 @@ export const CarouselSplit = ({
             <CarouselBlock
               bare
               blockType="carousel"
+              columnShare={{ md: 5 / 8, lg: 6 / 8 }}
               enableGutter={false}
               showArrows={block.showArrows}
               slideSize={block.slideSize}

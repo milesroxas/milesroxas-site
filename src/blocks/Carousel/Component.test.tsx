@@ -251,29 +251,40 @@ describe('sharedDeckFrame', () => {
 })
 
 describe('slideImageSizes', () => {
+  const contained = { isFullWidth: false, isStack: false }
+  const fullWidth = { isFullWidth: true, isStack: false }
+
   it('a contained full slide is the page column, three quarters of a phone', () => {
-    expect(slideImageSizes('full', false, false)).toBe(
+    expect(slideImageSizes({ ...contained, slideSize: 'full' })).toBe(
       '(min-width: 1536px) 88rem, (min-width: 1280px) calc(100vw - 12rem), (min-width: 1024px) calc(100vw - 8rem), (min-width: 768px) calc(100vw - 7rem), 75vw',
     )
   })
 
   it('a third steps from five eighths at md to five twelfths from lg', () => {
-    expect(slideImageSizes('third', false, false)).toContain(
+    expect(slideImageSizes({ ...contained, slideSize: 'third' })).toContain(
       '(min-width: 1024px) calc(calc(100vw - 8rem) * 0.4167), (min-width: 768px) calc(calc(100vw - 7rem) * 0.6250)',
     )
   })
 
   it('the height cap bounds every width once the deck knows its aspect', () => {
-    expect(slideImageSizes('full', true, false, 16 / 9)).toBe(
+    expect(slideImageSizes({ ...fullWidth, slideAspect: 16 / 9, slideSize: 'full' })).toBe(
       '(min-width: 1024px) min(100vw, calc(70vh * 1.7778)), (min-width: 768px) min(100vw, calc(70vh * 1.7778)), min(75vw, calc(70vh * 1.7778))',
     )
   })
 
+  it('a grid cell narrows the column before the slide takes its share', () => {
+    expect(
+      slideImageSizes({ ...contained, columnShare: { md: 5 / 8, lg: 6 / 8 }, slideSize: 'half' }),
+    ).toContain(
+      '(min-width: 1024px) calc(calc(calc(100vw - 8rem) * 0.7500) * 0.8000), (min-width: 768px) calc(calc(calc(100vw - 7rem) * 0.6250) * 0.8000), 75vw',
+    )
+  })
+
   it('a full-bleed half is five eighths of the window; a stack fills it', () => {
-    expect(slideImageSizes('half', true, false)).toBe(
+    expect(slideImageSizes({ ...fullWidth, slideSize: 'half' })).toBe(
       '(min-width: 1024px) calc(100vw * 0.6250), (min-width: 768px) calc(100vw * 0.6250), 75vw',
     )
-    expect(slideImageSizes('full', true, true)).toBe(
+    expect(slideImageSizes({ isFullWidth: true, isStack: true, slideSize: 'full' })).toBe(
       '(min-width: 1024px) 100vw, (min-width: 768px) 100vw, 100vw',
     )
   })
