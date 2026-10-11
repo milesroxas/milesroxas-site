@@ -46,6 +46,15 @@ export for each block: [media-dimensions.md](media-dimensions.md).
    answers it with a 429 challenge page unless a WAF rule bypasses
    `/api/cloudflare-stream-webhook` the way `Agent API bypass` does for `/api/mcp`. Until that rule
    exists, readiness arrives with the next sweep instead of within minutes.
+   Playback (`src/components/Media/VideoMedia`) goes through hls.js, or Safari's native player.
+   hls.js is given a 6 Mbps opening estimate capped to the frame's rendered size, since its own
+   0.5 Mbps guess opens every video at 240p; Safari gets `clientBandwidthHint` from the frame's
+   width, the only control its player offers. hls.js loads no segment until the element is asked
+   to play, and a `play()` that lands before the manifest (the carousel settles on a slide while
+   hls.js is still importing) is kept from the element's play/pause events and honoured once the
+   manifest parses. The stored `cloudflareStreamPlaybackUrl` is recomputed from the uid on every
+   read (`resolveStreamUrls`); rows written before 2026-02-26 hold a doubled host and are never
+   served as stored.
 6. **A temp-file upload carries its bytes.** When Payload parks a file on disk (a browser upload
    read back for the thumbnail, or a Local API `tempFilePath`), `req.file.data` is empty and the
    Blob adapter would write zero bytes over the original. It did, for every webp uploaded from the

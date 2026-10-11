@@ -24,6 +24,31 @@ function readyStreamUrl(resource: MediaType): string | undefined {
   return hlsUrl && isReady ? hlsUrl : undefined
 }
 
+/**
+ * Mbps for Safari's native player, which offers no rendition control: Stream's
+ * `clientBandwidthHint` pins the manifest to the rendition nearest this value,
+ * so pick it from the frame the video renders in.
+ */
+export function bandwidthHintFor(video: HTMLVideoElement): number {
+  const width = (video.clientWidth || window.innerWidth) * (window.devicePixelRatio || 1)
+  if (width <= 800) return 1.5
+  if (width <= 1500) return 3
+  return 6
+}
+
+/**
+ * hls.js opens every video at 240p: its default bandwidth guess is 0.5 Mbps and
+ * it only climbs after measuring segments. These loops play muted in a sized
+ * frame, so assume a fast line and let the frame's own size cap the rendition.
+ * Nothing loads until the element is asked to play (eager: at once).
+ */
+export const hlsConfigFor = (eager: boolean) => ({
+  enableWorker: true,
+  abrEwmaDefaultEstimate: 6_000_000,
+  capLevelToPlayerSize: true,
+  autoStartLoad: eager,
+})
+
 function fallbackSrcFor({ url }: MediaType): string {
   return getMediaUrl(url)
 }
@@ -77,13 +102,18 @@ function useVideoStrategy(priority: boolean, resource: MediaProps['resource']) {
   return strategy
 }
 
-/** Cloudflare Stream playback through HLS.js (dynamic import to avoid blocking main bundle) */
+/**
+ * Cloudflare Stream playback through hls.js (dynamic import to avoid blocking
+ * the main bundle). The source attaches after the import and a manifest fetch,
+ * and a `play()` from the carousel's settle or the visibility observer can land
+ * before then, on an element with no source. The intent is kept from the
+ * element's own play/pause events and honoured once the manifest is parsed.
+ */
 function useHlsStream(
   videoRef: React.RefObject<HTMLVideoElement | null>,
   resource: MediaProps['resource'],
+  eager: boolean,
 ) {
-  const hlsRef = useRef<{ destroy: () => void } | null>(null)
-
   useEffect(() => {
     const video = videoRef.current
     if (!video || !resource || typeof resource !== 'object') return
@@ -91,34 +121,54 @@ function useHlsStream(
     const hlsUrl = readyStreamUrl(resource)
     if (!hlsUrl) return
 
-    // Safari supports HLS natively — just set the src
     if (supportsNativeHls()) {
-      video.src = hlsUrl
+      video.src = `${hlsUrl}?clientBandwidthHint=${bandwidthHintFor(video)}`
       return
     }
 
     let cancelled = false
     let hlsInstance: InstanceType<typeof import('hls.js').default> | null = null
+    let manifestParsed = false
+    let loading = eager
+    let wantsPlay = !video.paused
+
+    const startLoad = () => {
+      if (loading || !manifestParsed) return
+      loading = true
+      hlsInstance?.startLoad()
+    }
+    const onPlay = () => {
+      wantsPlay = true
+      startLoad()
+    }
+    const onPause = () => {
+      wantsPlay = false
+    }
+    video.addEventListener('play', onPlay)
+    video.addEventListener('pause', onPause)
 
     import('hls.js').then(({ default: Hls }) => {
       if (cancelled || !videoRef.current) return
       if (!Hls.isSupported()) return
 
-      hlsInstance = new Hls({
-        enableWorker: true,
-        startLevel: -1,
+      hlsInstance = new Hls(hlsConfigFor(eager))
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+        manifestParsed = true
+        if (!wantsPlay) return
+        startLoad()
+        void playIfPaused(video)
       })
       hlsInstance.loadSource(hlsUrl)
       hlsInstance.attachMedia(video)
-      hlsRef.current = hlsInstance
     })
 
     return () => {
       cancelled = true
+      video.removeEventListener('play', onPlay)
+      video.removeEventListener('pause', onPause)
       hlsInstance?.destroy()
-      hlsRef.current = null
     }
-  }, [resource, videoRef])
+  }, [eager, resource, videoRef])
 }
 
 /** For non-priority videos, start playback when the element becomes visible */
@@ -162,7 +212,8 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const hasRetriedRef = useRef(false)
   const strategy = useVideoStrategy(priority, resource)
-  useHlsStream(videoRef, resource)
+  const eager = autoPlay && strategy.shouldAutoplay
+  useHlsStream(videoRef, resource, eager)
   usePlayWhenVisible(videoRef, autoPlay, priority, strategy.shouldAutoplay)
 
   if (!resource || typeof resource !== 'object') return null
@@ -170,7 +221,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
   return (
     <video
       poster={posterUrlFor(resource)}
-      autoPlay={autoPlay && strategy.shouldAutoplay}
+      autoPlay={eager}
       // `fill` covers the caller's aspect frame, as ImageMedia's fill image does.
       className={cn(fill && 'absolute inset-0 size-full object-cover', videoClassName)}
       controls={false}
@@ -182,7 +233,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
       ref={videoRef}
       preload={strategy.preload}
       onCanPlay={async () => {
-        if (autoPlay && strategy.shouldAutoplay) await playIfPaused(videoRef.current)
+        if (eager) await playIfPaused(videoRef.current)
       }}
       onLoadedData={() => {
         onLoad?.()
