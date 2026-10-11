@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mediaFixture, videoFixture } from '@/stories/fixtures'
-import { CarouselBlock, sharedDeckFrame } from './Component'
+import { CarouselBlock, sharedDeckFrame, slideImageSizes } from './Component'
 import { stackCardFraction } from './visual-state'
 
 // The effects hook needs a live embla engine + GSAP; its geometry and playback
@@ -247,5 +247,28 @@ describe('sharedDeckFrame', () => {
     expect(
       sharedDeckFrame([[{ id: 'a', media: { ...mediaFixture, height: null, width: null } }]]),
     ).toBeUndefined()
+  })
+})
+
+describe('slideImageSizes', () => {
+  it('a contained full slide is the page column, three quarters of a phone', () => {
+    expect(slideImageSizes('full', false, false)).toBe(
+      '(min-width: 1536px) 88rem, (min-width: 1280px) calc(100vw - 12rem), (min-width: 1024px) calc(100vw - 8rem), (min-width: 768px) calc(100vw - 7rem), 75vw',
+    )
+  })
+
+  it('a third steps from five eighths at md to five twelfths from lg', () => {
+    expect(slideImageSizes('third', false, false)).toContain(
+      '(min-width: 1024px) calc(calc(100vw - 8rem) * 0.4167), (min-width: 768px) calc(calc(100vw - 7rem) * 0.6250)',
+    )
+  })
+
+  it('a full-bleed half is five eighths of the window; a stack fills it', () => {
+    expect(slideImageSizes('half', true, false)).toBe(
+      '(min-width: 1024px) calc(100vw * 0.6250), (min-width: 768px) calc(100vw * 0.6250), 75vw',
+    )
+    expect(slideImageSizes('full', true, true)).toBe(
+      '(min-width: 1024px) 100vw, (min-width: 768px) 100vw, 100vw',
+    )
   })
 })

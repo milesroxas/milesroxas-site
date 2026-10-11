@@ -3,6 +3,7 @@
 import type { StaticImageData } from 'next/image'
 import NextImage from 'next/image'
 import type React from 'react'
+import { useState } from 'react'
 import type { Media as MediaType } from '@/payload-types'
 import { cloudflareImageLoader, isCloudflareImageUrl } from '@/utilities/cloudflareImageLoader'
 import { getMediaUrl } from '@/utilities/getMediaURL'
@@ -35,6 +36,9 @@ function resolveImageSrc(resource: MediaType): {
   }
 }
 
+const RETRIES = 2
+const RETRY_DELAY_MS = 1500
+
 export const ImageMedia: React.FC<MediaProps> = (props) => {
   const {
     alt: altFromProps,
@@ -49,6 +53,16 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     loading: loadingFromProps,
     onLoad,
   } = props
+
+  // A request the network drops (a stalled handshake to the CDN) leaves the
+  // image failed for good: browsers never retry on their own, and a caller
+  // waiting on `onLoad` (the carousel's blurred plate) would wait forever.
+  // Remounting the element asks again, twice at most.
+  const [attempt, setAttempt] = useState(0)
+  const retry = () => {
+    if (attempt >= RETRIES) return
+    window.setTimeout(() => setAttempt(attempt + 1), RETRY_DELAY_MS)
+  }
 
   let width: number | undefined
   let height: number | undefined
@@ -86,6 +100,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         crossOrigin={crossOrigin}
         fill={fill}
         height={!fill ? height : undefined}
+        key={attempt}
+        onError={retry}
         placeholder="blur"
         blurDataURL={placeholderBlur}
         priority={priority}

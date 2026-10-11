@@ -231,7 +231,10 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
       onClick={onClick}
       playsInline
       ref={videoRef}
-      preload={strategy.preload}
+      // Safari's native HLS treats `metadata` as the first segment of every
+      // video on the page, all competing with the images; nothing loads until
+      // a slide or the visibility observer asks to play.
+      preload={eager ? strategy.preload : 'none'}
       onCanPlay={async () => {
         if (eager) await playIfPaused(videoRef.current)
       }}

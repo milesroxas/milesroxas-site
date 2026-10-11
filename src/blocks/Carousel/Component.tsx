@@ -98,6 +98,56 @@ const fullWidthSizeClasses: Partial<Record<NonNullable<CarouselBlockProps['slide
   }
 
 /**
+ * The slide's share of its column, mirroring the basis classes above, as the
+ * `sizes` hint for its image. Without it the browser assumes `100vw` and asks
+ * Cloudflare for a 3840px variant of an 830px slide: a size no one has cached
+ * yet, rendered on demand, at twice the bytes the slide can show.
+ */
+type SlideShare = { md: number; lg?: number }
+const slideShares: Record<NonNullable<CarouselBlockProps['slideSize']>, SlideShare> = {
+  full: { md: 1 },
+  half: { md: 0.8 },
+  third: { md: 0.625, lg: 5 / 12 },
+}
+const fullWidthSlideShares: Partial<
+  Record<NonNullable<CarouselBlockProps['slideSize']>, SlideShare>
+> = { half: { md: 0.625 } }
+
+/** The page column from `md` up (globals.css `container`): the window less its padding, capped. */
+const COLUMN_WIDTHS: [query: string, width: string][] = [
+  ['(min-width: 1536px)', '88rem'],
+  ['(min-width: 1280px)', 'calc(100vw - 12rem)'],
+  ['(min-width: 1024px)', 'calc(100vw - 8rem)'],
+  ['(min-width: 768px)', 'calc(100vw - 7rem)'],
+]
+
+const shareOf = (fraction: number, width: string) =>
+  fraction === 1 ? width : `calc(${width} * ${fraction.toFixed(4)})`
+
+export const slideImageSizes = (
+  slideSize: CarouselBlockProps['slideSize'],
+  isFullWidth: boolean,
+  isStack: boolean,
+): string => {
+  const size = slideSize ?? 'full'
+  const share = isStack
+    ? { md: 1 }
+    : (isFullWidth && fullWidthSlideShares[size]) || slideShares[size]
+  const lg = share.lg ?? share.md
+  const phone = isStack ? '100vw' : '75vw'
+  if (isFullWidth) {
+    return `(min-width: 1024px) ${shareOf(lg, '100vw')}, (min-width: 768px) ${shareOf(share.md, '100vw')}, ${phone}`
+  }
+  return [
+    ...COLUMN_WIDTHS.map(
+      ([query, width]) =>
+        `${query} ${shareOf(query === '(min-width: 768px)' ? share.md : lg, width)}`,
+    ),
+    phone,
+  ].join(', ')
+}
+
+/**
  * Slide gutter, split evenly across both edges (8px + 8px = the same 16px
  * between slides as shadcn's default `-ml-4`/`pl-4`). The default puts the
  * whole gutter on one edge, which under `align: 'center'` pushes the active
@@ -422,6 +472,7 @@ const CarouselSlide: React.FC<{
   deal: Deal
   frame?: DeckFrame
   gutterClass: string
+  imageSizes: string
   isStack: boolean
   count: number
   pose: DeckPose
@@ -436,6 +487,7 @@ const CarouselSlide: React.FC<{
   deal,
   frame,
   gutterClass,
+  imageSizes,
   isStack,
   pose,
   restSigned,
@@ -499,6 +551,7 @@ const CarouselSlide: React.FC<{
             onLoad={picture.onLoad}
             pictureClassName={PICTURE_CLASS[picture.state]}
             resource={slide.media}
+            size={imageSizes}
             videoClassName={cn(cornerClass, 'w-full')}
           />
           {posterSrc && (
@@ -672,6 +725,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
     isStack,
     frame,
   )
+  const imageSizes = slideImageSizes(slideSize, isFullWidth, isStack)
 
   return (
     <Section bare={bare} spacing="loose" theme={theme}>
@@ -709,6 +763,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
                 deal={stackDeal.deal}
                 frame={frame}
                 gutterClass={gutter.slide}
+                imageSizes={imageSizes}
                 isStack={isStack}
                 key={slide.id}
                 pose={deckPose[style]}
