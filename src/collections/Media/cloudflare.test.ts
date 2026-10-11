@@ -4,12 +4,21 @@ vi.mock('@/utilities/cloudflare', () => ({
   deleteCloudflareImage: vi.fn(async () => {}),
   deleteStreamVideo: vi.fn(async () => {}),
   getImageDeliveryUrl: (id: string) => `https://imagedelivery.net/hash/${id}/public`,
+  getStreamVideoReady: vi.fn(async () => true),
   uploadImageToCloudflare: vi.fn(async () => ({ id: 'img-1', variants: [] })),
   uploadVideoToStream: vi.fn(async () => ({ uid: 'vid-1', playbackUrl: 'https://stream/vid-1' })),
 }))
 
 import * as cf from '@/utilities/cloudflare'
-import { blobUrl, hasStaleAssets, isSynced, syncKind, syncMediaToCloudflare } from './cloudflare'
+import {
+  blobUrl,
+  hasStaleAssets,
+  isSynced,
+  sweepMedia,
+  syncKind,
+  syncMediaToCloudflare,
+  writeCloudflareFields,
+} from './cloudflare'
 
 const logger = { error: vi.fn(), info: vi.fn(), warn: vi.fn() }
 
@@ -119,5 +128,66 @@ describe('syncMediaToCloudflare', () => {
   it('lets an upload failure through to the caller', async () => {
     vi.mocked(cf.uploadImageToCloudflare).mockRejectedValueOnce(new Error('down'))
     await expect(syncMediaToCloudflare(image, undefined, logger)).rejects.toThrow('down')
+  })
+})
+
+describe('writeCloudflareFields', () => {
+  it("writes the row directly, in the caller's transaction, with no hook in the loop", async () => {
+    const updateOne = vi.fn(async () => ({}))
+    const payload = { db: { updateOne } } as unknown as Parameters<typeof writeCloudflareFields>[0]
+    const req = { transactionID: 7 } as unknown as Parameters<typeof writeCloudflareFields>[3]
+    await writeCloudflareFields(payload, 1, { cloudflareStreamReady: true }, req)
+    expect(updateOne).toHaveBeenCalledWith({
+      collection: 'media',
+      id: 1,
+      data: { cloudflareStreamReady: true },
+      req,
+      returning: false,
+    })
+  })
+})
+
+describe('sweepMedia', () => {
+  const video = { id: 2, filename: 'v.mp4', mimeType: 'video/mp4', cloudflareStreamUid: 'vid-0' }
+  const fakePayload = (unsynced: object[], unready: object[]) => {
+    const updateOne = vi.fn(async () => ({}))
+    const find = vi.fn(async ({ where }: { where: { or?: unknown; and?: unknown } }) => ({
+      docs: where.or ? unsynced : unready,
+    }))
+    return { payload: { db: { updateOne }, find, logger } as never, updateOne }
+  }
+
+  it('syncs the unsynced, marks the encoded videos ready, and counts failures', async () => {
+    const { payload, updateOne } = fakePayload([image], [video, { ...video, id: 3 }])
+    vi.mocked(cf.getStreamVideoReady)
+      .mockResolvedValueOnce(true)
+      .mockRejectedValueOnce(new Error('x'))
+    const result = await sweepMedia(payload)
+    expect(result).toEqual({ failed: 1, ready: 1, synced: 1 })
+    expect(updateOne).toHaveBeenCalledTimes(2)
+    expect(updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 1,
+        data: expect.objectContaining({ cloudflareImageId: 'img-1' }),
+      }),
+    )
+    expect(updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 2, data: { cloudflareStreamReady: true } }),
+    )
+  })
+
+  it('leaves a video Stream is still encoding alone', async () => {
+    const { payload, updateOne } = fakePayload([], [video])
+    vi.mocked(cf.getStreamVideoReady).mockResolvedValueOnce(false)
+    expect(await sweepMedia(payload)).toEqual({ failed: 0, ready: 0, synced: 0 })
+    expect(updateOne).not.toHaveBeenCalled()
+  })
+
+  it('writes nothing on a dry run', async () => {
+    const { payload, updateOne } = fakePayload([image], [video])
+    await sweepMedia(payload, { dryRun: true })
+    expect(updateOne).not.toHaveBeenCalled()
+    expect(cf.uploadImageToCloudflare).not.toHaveBeenCalled()
+    expect(cf.getStreamVideoReady).not.toHaveBeenCalled()
   })
 })

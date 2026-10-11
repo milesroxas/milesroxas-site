@@ -2,11 +2,16 @@ import crypto from 'node:crypto'
 import configPromise from '@payload-config'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
+import { writeCloudflareFields } from '@/collections/Media/cloudflare'
 
 // Reject webhooks whose signature timestamp is older than this (replay protection)
 const SIGNATURE_TOLERANCE_SECONDS = 5 * 60
 
 /**
+ * Marks a video ready to play from Stream the moment Cloudflare says so. The
+ * daily sweep (`jobs/cloudflareMediaSweep`) reaches the same state by asking
+ * Stream, so a webhook that never arrives only delays HLS playback.
+ *
  * Verify the Cloudflare Stream webhook signature.
  * See: https://developers.cloudflare.com/stream/manage-video-library/using-webhooks/
  */
@@ -78,12 +83,7 @@ export async function POST(request: Request) {
   const mediaDoc = docs[0]
 
   if (readyToStream) {
-    await payload.update({
-      collection: 'media',
-      id: mediaDoc.id,
-      data: { cloudflareStreamReady: true },
-      context: { skipCloudflareSync: true },
-    })
+    await writeCloudflareFields(payload, mediaDoc.id, { cloudflareStreamReady: true })
 
     payload.logger.info(`[Cloudflare Webhook] Video ready: ${uid} (media ID: ${mediaDoc.id})`)
   }

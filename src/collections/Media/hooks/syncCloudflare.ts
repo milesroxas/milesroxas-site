@@ -10,7 +10,7 @@ import {
   getStreamPlaybackUrl,
   getStreamThumbnailUrl,
 } from '@/utilities/cloudflare'
-import { syncMediaToCloudflare } from '../cloudflare'
+import { syncMediaToCloudflare, writeCloudflareFields } from '../cloudflare'
 
 /**
  * Cloudflare Stream URLs for the video poster and player, computed at read time.
@@ -31,9 +31,12 @@ export const resolveStreamUrls: CollectionAfterReadHook = ({ doc }) => {
 
 /**
  * Syncs the saved file to Cloudflare in the same request, so the admin and
- * `cms:upload` see the asset at once. A failed upload is logged and the save
- * still succeeds: the site falls back to the Blob URL and the daily sweep
- * (`jobs/cloudflareMediaSweep`) retries the document.
+ * `cms:upload` see the asset at once. The fields are written to the row in
+ * the save's own transaction, with no hook in the loop and nothing left on
+ * `req.context`, so a request that saves several files (the Studio publishes
+ * two posters on one request) syncs every one. A failed upload is logged and
+ * the save still succeeds: the site falls back to the Blob URL and the daily
+ * sweep (`jobs/cloudflareMediaSweep`) retries the document.
  */
 export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   doc,
@@ -41,20 +44,14 @@ export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   req,
   context,
 }) => {
-  // Skip our own field writes, and the storage plugin's nested metadata update:
-  // the outer save syncs once the file is on Blob.
-  if (context?.skipCloudflareSync || context?.skipCloudStorage) return doc
+  // The storage plugin's nested metadata update: the outer save syncs once
+  // the file is on Blob.
+  if (context?.skipCloudStorage) return doc
 
   try {
     const fields = await syncMediaToCloudflare(doc, previousDoc, req.payload.logger)
     if (!fields) return doc
-    await req.payload.update({
-      collection: 'media',
-      id: doc.id,
-      data: fields,
-      context: { skipCloudflareSync: true },
-      req, // Keep the write in the same transaction as the triggering change
-    })
+    await writeCloudflareFields(req.payload, doc.id, fields, req)
     Object.assign(doc, fields)
   } catch (err) {
     req.payload.logger.error({ msg: '[Cloudflare] Upload failed', err, id: doc.id })

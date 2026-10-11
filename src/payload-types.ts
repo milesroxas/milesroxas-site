@@ -7885,6 +7885,7 @@ export interface TaskCloudflareMediaSweep {
   input?: unknown;
   output: {
     synced?: number | null;
+    ready?: number | null;
     failed?: number | null;
   };
 }

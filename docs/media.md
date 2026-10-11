@@ -26,19 +26,31 @@ export for each block: [media-dimensions.md](media-dimensions.md).
    other render comes from Cloudflare, so more sizes only cost upload time and Blob writes. Payload
    re-reads a browser upload from Blob to make it, which is the one server-side cost per image.
 3. **Cloudflare serves.** After the storage adapter has written the file, `syncCloudflareUpload`
-   asks Cloudflare Images (images) or Stream (videos) to fetch it from Blob and writes the ids back
-   in the same transaction. The admin and `cms:upload` see the asset at once. The front end prefers
-   `cloudflareImageUrl` (the `public` variant, through `next/image`) or the Stream HLS URL once the
-   webhook has marked it ready, and falls back to the Blob URL.
+   asks Cloudflare Images (images) or Stream (videos) to fetch it from Blob and writes the ids
+   straight to the row (`writeCloudflareFields`, `payload.db.updateOne`) in the same transaction.
+   No hook sees that write: a `payload.update` would run the storage adapter again, which
+   re-uploads the file it kept on the request, and Payload merges the call's `context` into
+   `req.context` and leaves it there, so a skip flag would silence the sync for the next file
+   saved on the same request (the Studio publishes two posters on one request; the second never
+   synced until 2026-10-11). The admin and `cms:upload` see the asset at once. The front end
+   prefers `cloudflareImageUrl` (the `public` variant, through `next/image`) or the Stream HLS
+   URL once the video is marked ready, and falls back to the Blob URL.
 4. **A failed sync never blocks a save.** It is logged as `[Cloudflare] Upload failed` after three
    attempts on rate limits, 5xx and network errors. The document is on the site from Blob meanwhile.
-   `cloudflareMediaSweep` runs at 05:00 UTC (the daily cron in `vercel.json` executes it) and syncs
-   every image or video still without its asset.
-5. **A temp-file upload carries its bytes.** When Payload parks a file on disk (a browser upload
+   `cloudflareMediaSweep` runs at 05:00 UTC (the daily cron in `vercel.json` executes it; it needs
+   `CRON_SECRET` on the deployment or the run endpoint answers 401 and nothing runs). It syncs every
+   image or video still without its asset and marks every video Stream has finished encoding.
+5. **A video is marked ready two ways.** The Stream webhook sets `cloudflareStreamReady` as soon
+   as encoding finishes; the sweep asks Stream for every video still unmarked. The webhook is a
+   plain server-to-server POST, so Vercel's Bot Protection (managed ruleset, action `challenge`)
+   answers it with a 429 challenge page unless a WAF rule bypasses
+   `/api/cloudflare-stream-webhook` the way `Agent API bypass` does for `/api/mcp`. Until that rule
+   exists, readiness arrives with the next sweep instead of within minutes.
+6. **A temp-file upload carries its bytes.** When Payload parks a file on disk (a browser upload
    read back for the thumbnail, or a Local API `tempFilePath`), `req.file.data` is empty and the
    Blob adapter would write zero bytes over the original. It did, for every webp uploaded from the
    admin until 2026-10-07. `readTempFile` fills the buffer first.
-6. **Replacing or deleting a file purges Cloudflare.** A replacement is detected by filename or by
+7. **Replacing or deleting a file purges Cloudflare.** A replacement is detected by filename or by
    a new object folder, so a same-name re-upload from the admin still purges the old asset.
 
 Flexible variants are on for the Cloudflare account (since 2026-10-07). `cloudflareImageUrl` stores
@@ -50,7 +62,7 @@ component renders `CloudflareImage` to get the loader; a client component passes
 ## Scripts
 
 ```bash
-pnpm exec tsx --env-file=.env scripts/resync-cloudflare-media.ts [--dry-run]   # run the sweep now
+pnpm exec tsx --env-file=.env scripts/resync-cloudflare-media.ts [--dry-run]   # sync + mark ready now
 pnpm exec tsx --env-file=.env scripts/prune-blob-sizes.ts [--delete]           # drop pre-2026-10 size files from Blob
 ```
 
@@ -63,5 +75,6 @@ candidate.
 
 `BLOB_READ_WRITE_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`,
 `CLOUDFLARE_IMAGES_ACCOUNT_HASH`, `CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN`,
-`CLOUDFLARE_STREAM_WEBHOOK_SECRET`. Local dev shares the production Blob store and Cloudflare
-account: a local upload is a real asset, and deleting the document removes it.
+`CLOUDFLARE_STREAM_WEBHOOK_SECRET`, and `CRON_SECRET` for the sweep. Local dev shares the
+production Blob store and Cloudflare account: a local upload is a real asset, and deleting the
+document removes it.

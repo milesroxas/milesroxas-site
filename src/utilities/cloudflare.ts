@@ -128,8 +128,8 @@ export async function deleteCloudflareImage(imageId: string): Promise<void> {
 }
 
 /**
- * Construct a Cloudflare Images delivery URL for a named variant. Flexible
- * variants (`w=...,q=...`) are off on this account; `public` is the one in use.
+ * Construct a Cloudflare Images delivery URL for a named variant. `public` is
+ * the stored one; `cloudflareImageLoader` rewrites it to a flexible variant.
  */
 export function getImageDeliveryUrl(imageId: string, variant = 'public'): string {
   return `https://imagedelivery.net/${getImagesAccountHash()}/${imageId}/${variant}`
@@ -175,6 +175,25 @@ export async function uploadVideoToStream(
     uid,
     playbackUrl: getStreamPlaybackUrl(uid),
   }
+}
+
+/**
+ * Whether Stream has finished encoding a video. Throws when the lookup
+ * fails; callers decide whether that is fatal.
+ */
+export async function getStreamVideoReady(uid: string): Promise<boolean> {
+  const res = await cloudflareFetch(
+    `${CLOUDFLARE_API_BASE}/${getAccountId()}/stream/${uid}`,
+    () => ({
+      method: 'GET',
+      headers: authHeaders(),
+    }),
+  )
+  const json = await res.json()
+  if (!json.success) {
+    throw new Error(`Cloudflare Stream lookup failed for ${uid}: ${JSON.stringify(json.errors)}`)
+  }
+  return json.result?.readyToStream === true
 }
 
 /**

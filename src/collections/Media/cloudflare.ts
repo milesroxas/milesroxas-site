@@ -1,11 +1,12 @@
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest } from 'payload'
 import type { Media } from '@/payload-types'
 import * as cf from '@/utilities/cloudflare'
 
 /**
  * The Cloudflare side of a Media document, shared by the upload hook, the
- * daily sweep job and the resync script (docs/media.md). The hook syncs a
- * file in the request that saved it; the sweep catches whatever that missed.
+ * Stream webhook, the daily sweep job and the resync script (docs/media.md).
+ * The hook syncs a file in the request that saved it; the sweep catches
+ * whatever that missed and marks the videos Stream has finished encoding.
  */
 
 /** A Media document as the hooks and the Local API hand it over. */
@@ -22,6 +23,23 @@ export type CloudflareFields = Pick<
 >
 
 type Logger = Pick<Payload['logger'], 'error' | 'info' | 'warn'>
+
+/**
+ * Writes Cloudflare fields straight to the row. They are derived data the
+ * site owns, so no hook needs to see the write: going through `payload.update`
+ * would run the storage adapter again (it re-uploads the file it kept on the
+ * request) and leave a skip flag on `req.context` that the next create in the
+ * same request would inherit. With `req` the write joins the caller's
+ * transaction.
+ */
+export async function writeCloudflareFields(
+  payload: Payload,
+  id: Media['id'],
+  fields: Partial<CloudflareFields>,
+  req?: PayloadRequest,
+): Promise<void> {
+  await payload.db.updateOne({ collection: 'media', id, data: fields, req, returning: false })
+}
 
 const cleared: CloudflareFields = {
   cloudflareImageId: null,
@@ -139,41 +157,100 @@ export async function findUnsynced(payload: Payload): Promise<Media[]> {
   return docs
 }
 
-export type SweepResult = { failed: number; synced: number }
+/** Every video on Stream that the site still plays from Blob. */
+export async function findUnready(payload: Payload): Promise<Media[]> {
+  const { docs } = await payload.find({
+    collection: 'media',
+    depth: 0,
+    limit: 0,
+    pagination: false,
+    where: {
+      and: [
+        { cloudflareStreamUid: { exists: true } },
+        { cloudflareStreamReady: { not_equals: true } },
+      ],
+    },
+  })
+  return docs
+}
 
-/**
- * Syncs every unsynced image and video, one at a time so a Cloudflare rate
- * limit never turns into a burst. Each document is written with the sync
- * skipped (`skipCloudflareSync`), so the hook does not run a second time.
- */
-export async function sweepUnsynced(
+export type SweepResult = { failed: number; ready: number; synced: number }
+
+type SweepOptions = { dryRun?: boolean; logger?: Logger }
+
+const label = (doc: Media) => `${doc.id} ${doc.filename ?? ''} (${doc.mimeType ?? 'unknown'})`
+
+/** Uploads each unsynced image or video and stores its ids. */
+async function syncUnsynced(
   payload: Payload,
-  { dryRun = false, logger = payload.logger }: { dryRun?: boolean; logger?: Logger } = {},
-): Promise<SweepResult> {
-  const docs = await findUnsynced(payload)
-  logger.info({ msg: '[Cloudflare] Sweep', unsynced: docs.length, dryRun })
-  const result: SweepResult = { failed: 0, synced: 0 }
+  docs: Media[],
+  result: SweepResult,
+  { dryRun, logger }: Required<SweepOptions>,
+): Promise<void> {
   for (const doc of docs) {
-    const label = `${doc.id} ${doc.filename ?? ''} (${doc.mimeType ?? 'unknown'})`
     if (dryRun) {
-      logger.info({ msg: `[Cloudflare] Would sync ${label}` })
+      logger.info({ msg: `[Cloudflare] Would sync ${label(doc)}` })
       continue
     }
     try {
       const fields = await syncMediaToCloudflare(doc, undefined, logger)
       if (!fields) continue
-      await payload.update({
-        collection: 'media',
-        id: doc.id,
-        data: fields,
-        context: { skipCloudflareSync: true },
-      })
+      await writeCloudflareFields(payload, doc.id, fields)
       result.synced += 1
-      logger.info({ msg: `[Cloudflare] Synced ${label}` })
+      logger.info({ msg: `[Cloudflare] Synced ${label(doc)}` })
     } catch (err) {
       result.failed += 1
-      logger.error({ msg: `[Cloudflare] Sync failed for ${label}`, err })
+      logger.error({ msg: `[Cloudflare] Sync failed for ${label(doc)}`, err })
     }
   }
+}
+
+/** Marks each video Stream has finished encoding. */
+async function markReady(
+  payload: Payload,
+  docs: Media[],
+  result: SweepResult,
+  { dryRun, logger }: Required<SweepOptions>,
+): Promise<void> {
+  for (const doc of docs) {
+    if (!doc.cloudflareStreamUid) continue
+    if (dryRun) {
+      logger.info({ msg: `[Cloudflare] Would check Stream for ${label(doc)}` })
+      continue
+    }
+    try {
+      if (!(await cf.getStreamVideoReady(doc.cloudflareStreamUid))) continue
+      await writeCloudflareFields(payload, doc.id, { cloudflareStreamReady: true })
+      result.ready += 1
+      logger.info({ msg: `[Cloudflare] Stream ready for ${label(doc)}` })
+    } catch (err) {
+      result.failed += 1
+      logger.error({ msg: `[Cloudflare] Stream check failed for ${label(doc)}`, err })
+    }
+  }
+}
+
+/**
+ * Brings every Media document in step with Cloudflare: uploads each image or
+ * video still without its asset, then marks each video Stream has finished
+ * encoding. One document at a time, so a Cloudflare rate limit never turns
+ * into a burst. The Stream webhook marks a video ready sooner when it can
+ * reach the site; this is the path that does not depend on it.
+ */
+export async function sweepMedia(
+  payload: Payload,
+  { dryRun = false, logger = payload.logger }: SweepOptions = {},
+): Promise<SweepResult> {
+  const result: SweepResult = { failed: 0, ready: 0, synced: 0 }
+  const unsynced = await findUnsynced(payload)
+  const unready = await findUnready(payload)
+  logger.info({
+    msg: '[Cloudflare] Sweep',
+    unsynced: unsynced.length,
+    unready: unready.length,
+    dryRun,
+  })
+  await syncUnsynced(payload, unsynced, result, { dryRun, logger })
+  await markReady(payload, unready, result, { dryRun, logger })
   return result
 }
