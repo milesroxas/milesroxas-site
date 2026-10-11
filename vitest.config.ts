@@ -33,7 +33,11 @@ export default defineConfig({
           browser: {
             enabled: true,
             headless: true,
-            provider: playwright(),
+            // Claude Code cloud sessions point this at their pre-installed
+            // Chromium (.claude/hooks/session-start.sh); unset uses Playwright's.
+            provider: playwright({
+              launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
+            }),
             instances: [{ browser: 'chromium' }],
           },
         },
