@@ -4,6 +4,7 @@ import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import type { Media as MediaType } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaURL'
+import { streamPosterUrl } from '@/utilities/streamPoster'
 import { cn } from '@/utilities/ui'
 import { getVideoLoadingStrategy } from '@/utilities/videoOptimization'
 
@@ -53,12 +54,15 @@ function fallbackSrcFor({ url }: MediaType): string {
   return getMediaUrl(url)
 }
 
-/** Poster improves FCP/LCP by showing an image immediately while video loads. */
-function posterUrlFor(resource: MediaType) {
-  return (
-    resource.cloudflareStreamThumbnailUrl ??
-    (resource.thumbnailURL ? getMediaUrl(resource.thumbnailURL) : undefined)
-  )
+/**
+ * The poster paints the frame until the first segment lands, and is the LCP
+ * element in a hero. Stream's default thumbnail is 640 px wide, so a retina
+ * hero asks for 1920 and any other frame 1280 (`poster` takes one URL).
+ */
+function posterUrlFor(resource: MediaType, priority: boolean) {
+  const streamThumbnail = resource.cloudflareStreamThumbnailUrl
+  if (streamThumbnail) return streamPosterUrl(streamThumbnail, priority ? 1920 : 1280)
+  return resource.thumbnailURL ? getMediaUrl(resource.thumbnailURL) : undefined
 }
 
 async function playIfPaused(video: HTMLVideoElement | null) {
@@ -220,7 +224,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
 
   return (
     <video
-      poster={posterUrlFor(resource)}
+      poster={posterUrlFor(resource, priority)}
       autoPlay={eager}
       // `fill` covers the caller's aspect frame, as ImageMedia's fill image does.
       className={cn(fill && 'absolute inset-0 size-full object-cover', videoClassName)}

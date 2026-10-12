@@ -24,6 +24,7 @@ import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import type { CarouselBlock as CarouselBlockProps } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
 import { cloudflareImageLoader, isCloudflareImageUrl } from '@/utilities/cloudflareImageLoader'
+import { streamPosterSrcSet, streamPosterUrl } from '@/utilities/streamPoster'
 import { cn } from '@/utilities/ui'
 import { CarouselFilters } from './filters'
 import { useCarouselEffects } from './use-carousel-effects'
@@ -443,9 +444,11 @@ const deckLayout = (
  * A picture still loading shows a blurred 32px copy of itself on a muted
  * plate, then comes into focus as the full picture fades over it. One the
  * browser already holds (a deck shown before) is there at once. Cloudflare
- * resizes the copy; any other source keeps the plate alone.
+ * resizes the copy; any other source keeps the plate alone. The fade is
+ * loading feedback, not a content transition: it clears as soon as the bytes
+ * are there, in one 300 ms ease-out, the plate going with it.
  */
-const PLATE_CLEAR = 'transition-opacity delay-900 duration-300'
+const PLATE_CLEAR = 'transition-opacity duration-300 ease-out'
 
 const placeholderOf = (media: PopulatedMedia) => {
   const src = media.cloudflareImageUrl
@@ -480,7 +483,7 @@ type PictureState = 'loading' | 'loaded' | 'held'
 /** `relative` lifts the picture over the plate, which is positioned. */
 const PICTURE_CLASS: Record<PictureState, string> = {
   loading: 'relative block opacity-0',
-  loaded: 'relative block transition-opacity duration-900 ease-[ease]',
+  loaded: 'relative block transition-opacity duration-300 ease-out',
   held: 'relative block',
 }
 
@@ -591,8 +594,14 @@ const CarouselSlide: React.FC<{
               className="pointer-events-none absolute inset-0"
               data-carousel-poster
             >
-              {/* biome-ignore lint/performance/noImgElement: a Stream thumbnail URL, already sized by Cloudflare */}
-              <img alt="" className={cn(cornerClass, 'size-full object-cover')} src={posterSrc} />
+              {/* biome-ignore lint/performance/noImgElement: a Stream thumbnail, sized by Cloudflare per the slide's share */}
+              <img
+                alt=""
+                className={cn(cornerClass, 'size-full object-cover')}
+                sizes={imageSizes}
+                src={streamPosterUrl(posterSrc, 1280)}
+                srcSet={streamPosterSrcSet(posterSrc)}
+              />
             </div>
           )}
           {veilClass && (

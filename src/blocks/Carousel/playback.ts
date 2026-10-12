@@ -2,9 +2,9 @@ import { gsap } from 'gsap'
 import type { CarouselApi } from '@/components/ui/carousel'
 import type { DissolveMap } from './filters'
 
-/** Poster dissolve: peak displacement (px) and duration (s). */
+/** Poster dissolve: peak displacement (px) and duration (s). Ease-out: the melt is loudest in the frames the eye is on. */
 const DISSOLVE_SCALE = 90
-const DISSOLVE_DURATION = 0.9
+const DISSOLVE_DURATION = 0.6
 
 /** Poster overlay lifecycle — animated only on state change, never re-triggered. */
 type PosterState = 'covered' | 'revealing' | 'revealed' | 'covering'
@@ -95,8 +95,8 @@ export const createPlaybackController = ({
         },
         onComplete,
       })
-      .to(proxy, { scale: DISSOLVE_SCALE, duration: DISSOLVE_DURATION, ease: 'power2.in' }, 0)
-      .to(poster, { autoAlpha: 0, duration: DISSOLVE_DURATION, ease: 'power2.inOut' }, 0)
+      .to(proxy, { scale: DISSOLVE_SCALE, duration: DISSOLVE_DURATION, ease: 'power2.out' }, 0)
+      .to(poster, { autoAlpha: 0, duration: DISSOLVE_DURATION, ease: 'power2.out' }, 0)
   }
 
   const revealPoster = contextSafe((refs: SlideRefs) => {

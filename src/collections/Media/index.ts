@@ -7,6 +7,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../../access/anyone'
 import { authenticated } from '../../access/authenticated'
+import { adminThumbnail } from './adminThumbnail'
 import { readTempFile } from './hooks/readTempFile'
 import { resolveStreamUrls, syncCloudflareDelete } from './hooks/syncCloudflare'
 
@@ -77,7 +78,7 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
-    adminThumbnail: 'thumbnail',
+    adminThumbnail,
     focalPoint: true,
     // One server-side size, for the admin list and the Studio pickers. The
     // site serves every image from Cloudflare Images (docs/media.md), so more
