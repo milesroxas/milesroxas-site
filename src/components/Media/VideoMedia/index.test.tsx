@@ -1,7 +1,7 @@
 import { cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { videoFixture } from '@/stories/fixtures'
-import { bandwidthHintFor, hlsConfigFor, VideoMedia } from './index'
+import { bandwidthHintFor, hlsConfigFor, VideoMedia, warmVideo } from './index'
 
 type Listener = () => void
 
@@ -45,6 +45,7 @@ const play = vi.fn(function (this: HTMLMediaElement) {
 const pause = vi.fn(function (this: HTMLMediaElement) {
   this.dispatchEvent(new Event('pause'))
 })
+const load = vi.fn()
 
 const renderReady = async () => {
   const { container } = render(<VideoMedia autoPlay={false} resource={readyVideo} />)
@@ -59,6 +60,8 @@ beforeEach(() => {
   pause.mockClear()
   Object.defineProperty(HTMLMediaElement.prototype, 'play', { configurable: true, value: play })
   Object.defineProperty(HTMLMediaElement.prototype, 'pause', { configurable: true, value: pause })
+  load.mockClear()
+  Object.defineProperty(HTMLMediaElement.prototype, 'load', { configurable: true, value: load })
 })
 
 afterEach(cleanup)
@@ -96,12 +99,65 @@ describe('VideoMedia over Cloudflare Stream', () => {
     expect(hls.startLoad).toHaveBeenCalledTimes(1)
   })
 
+  it('a warm before the manifest starts the load once it parses, without playing', async () => {
+    const { video, hls } = await renderReady()
+    warmVideo(video)
+    expect(hls.startLoad).not.toHaveBeenCalled()
+    hls.parseManifest()
+    expect(hls.startLoad).toHaveBeenCalledTimes(1)
+    expect(play).not.toHaveBeenCalled()
+    expect(load).not.toHaveBeenCalled()
+  })
+
+  it('a warm after the manifest starts the load once', async () => {
+    const { video, hls } = await renderReady()
+    hls.parseManifest()
+    warmVideo(video)
+    warmVideo(video)
+    expect(hls.startLoad).toHaveBeenCalledTimes(1)
+    expect(play).not.toHaveBeenCalled()
+  })
+
   it('renders no mp4 source once Stream is ready, and the mp4 before', () => {
     const ready = render(<VideoMedia autoPlay={false} resource={readyVideo} />)
     expect(ready.container.querySelector('source')).toBeNull()
     ready.unmount()
     const raw = render(<VideoMedia autoPlay={false} resource={videoFixture} />)
     expect(raw.container.querySelector('source')?.getAttribute('src')).toContain('flower.mp4')
+  })
+})
+
+describe('VideoMedia on the native player', () => {
+  it("a warm raises preload and asks an untouched element to load (Safari's HLS)", async () => {
+    const canPlayType = HTMLMediaElement.prototype.canPlayType
+    Object.defineProperty(HTMLMediaElement.prototype, 'canPlayType', {
+      configurable: true,
+      value: () => 'maybe',
+    })
+    try {
+      const { container } = render(<VideoMedia autoPlay={false} resource={readyVideo} />)
+      const video = container.querySelector('video') as HTMLVideoElement
+      await vi.waitFor(() => expect(video.getAttribute('src')).toContain('clientBandwidthHint'))
+      expect(instances).toHaveLength(0)
+      expect(video.preload).toBe('none')
+      warmVideo(video)
+      expect(video.preload).toBe('auto')
+      expect(load).toHaveBeenCalledTimes(1)
+      expect(play).not.toHaveBeenCalled()
+    } finally {
+      Object.defineProperty(HTMLMediaElement.prototype, 'canPlayType', {
+        configurable: true,
+        value: canPlayType,
+      })
+    }
+  })
+
+  it('a warm loads a plain mp4 the same way', () => {
+    const { container } = render(<VideoMedia autoPlay={false} resource={videoFixture} />)
+    const video = container.querySelector('video') as HTMLVideoElement
+    warmVideo(video)
+    expect(video.preload).toBe('auto')
+    expect(load).toHaveBeenCalledTimes(1)
   })
 })
 

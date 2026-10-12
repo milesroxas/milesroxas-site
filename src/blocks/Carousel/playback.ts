@@ -1,4 +1,5 @@
 import { gsap } from 'gsap'
+import { warmVideo } from '@/components/Media/VideoMedia'
 import type { CarouselApi } from '@/components/ui/carousel'
 import type { DissolveMap } from './filters'
 
@@ -40,7 +41,16 @@ type PlaybackOptions = {
   dissolveId: string
   dissolveMap: DissolveMap
   getSlideRefs: () => (SlideRefs | null)[]
+  /** Whether the deck is near the window: neighbours are warmed only then. */
+  inView: () => boolean
   reducedMotion: boolean
+}
+
+/** The snaps either side of `selected`, looping; a two-slide deck has one neighbour. */
+export const neighboursOf = (selected: number, count: number): number[] => {
+  if (count < 2) return []
+  if (count === 2) return [(selected + 1) % 2]
+  return [(selected - 1 + count) % count, (selected + 1) % count]
 }
 
 const isCovered = (refs: SlideRefs): boolean =>
@@ -60,11 +70,19 @@ const playVideo = (video: HTMLVideoElement): void => {
 /**
  * Drives the active slide's video playback and the poster overlays.
  *
- * Keyed off `settle` (never `select`, which fires mid-drag and would thrash
- * poster fades): the active slide's video plays once frames exist while its
- * poster melts through the displacement filter; deselected videos pause and
- * their posters fade back. Reveals wait for frames — otherwise the poster
- * would melt into a black rectangle.
+ * `syncVideos` runs on `select` (embla names the target the moment a drag is
+ * released or an arrow is pressed) and again on `settle`: the active slide's
+ * video plays once frames exist while its poster melts through the
+ * displacement filter; deselected videos pause and their posters fade back.
+ * Reveals wait for frames, otherwise the poster would melt into a black
+ * rectangle. Starting on `select` puts the fetch under the slide's own
+ * travel, so the melt lands while the deck is still moving, which is the
+ * motion it was made to pair with.
+ *
+ * Once the active slide can paint (or is an image), the two slides beside it
+ * are warmed (`warmVideo`): their opening frames fetch while nothing else is
+ * asked for, so the next slide reveals as soon as it is chosen. Only once the
+ * deck is near the window, and once per video.
  */
 export const createPlaybackController = ({
   api,
@@ -72,12 +90,25 @@ export const createPlaybackController = ({
   dissolveId,
   dissolveMap,
   getSlideRefs,
+  inView,
   reducedMotion,
 }: PlaybackOptions) => {
   // The page-load reveal skips the displacement melt: on a static page it
   // reads as a smoke glitch — it only makes sense paired with slide motion.
   let hasRevealedOnce = false
   const pendingCanplay = new Map<HTMLVideoElement, () => void>()
+  const warmed = new WeakSet<HTMLVideoElement>()
+
+  const warmNeighbours = (): void => {
+    if (!inView()) return
+    const refs = getSlideRefs()
+    for (const index of neighboursOf(api.selectedScrollSnap(), refs.length)) {
+      const video = refs[index]?.video
+      if (!video || warmed.has(video)) continue
+      warmed.add(video)
+      warmVideo(video)
+    }
+  }
 
   const finishReveal = (refs: SlideRefs, poster: HTMLElement) => () => {
     poster.style.filter = ''
@@ -133,6 +164,7 @@ export const createPlaybackController = ({
   const revealWhenReady = (refs: SlideRefs, video: HTMLVideoElement, index: number): void => {
     if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
       if (isCovered(refs)) revealPoster(refs)
+      warmNeighbours()
       return
     }
     if (pendingCanplay.has(video)) return
@@ -140,6 +172,7 @@ export const createPlaybackController = ({
     const onCanPlay = () => {
       pendingCanplay.delete(video)
       if (api.selectedScrollSnap() === index) revealPoster(refs)
+      warmNeighbours()
     }
     pendingCanplay.set(video, onCanPlay)
     video.addEventListener('canplay', onCanPlay, { once: true })
@@ -161,7 +194,8 @@ export const createPlaybackController = ({
 
   const syncVideos = (): void => {
     const selected = api.selectedScrollSnap()
-    getSlideRefs().forEach((refs, index) => {
+    const slides = getSlideRefs()
+    slides.forEach((refs, index) => {
       if (!refs) return
       if (index === selected) {
         activateSlide(refs, index)
@@ -169,6 +203,8 @@ export const createPlaybackController = ({
         deactivateSlide(refs)
       }
     })
+    // An image slide has nothing to wait for (a video's warm follows its frames).
+    if (!slides[selected]?.video) warmNeighbours()
   }
 
   const dispose = (): void => {

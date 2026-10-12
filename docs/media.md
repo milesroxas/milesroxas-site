@@ -64,9 +64,15 @@ export for each block: [media-dimensions.md](media-dimensions.md).
    hls.js is given a 6 Mbps opening estimate capped to the frame's rendered size, since its own
    0.5 Mbps guess opens every video at 240p; Safari gets `clientBandwidthHint` from the frame's
    width, the only control its player offers. hls.js loads no segment until the element is asked
-   to play, and a `play()` that lands before the manifest (the carousel settles on a slide while
+   to play, and a `play()` that lands before the manifest (the carousel selects a slide while
    hls.js is still importing) is kept from the element's play/pause events and honoured once the
-   manifest parses. The stored `cloudflareStreamPlaybackUrl` is recomputed from the uid on every
+   manifest parses. Chrome's built-in HLS player answers `canPlayType` too now, so current Chrome
+   and Safari both play the manifest URL natively, pinned to one rendition by the hint.
+   A `mediawarm` event on the element (`warmVideo`) fetches its opening frames without playing:
+   hls.js starts its load, the native player gets `preload="auto"`. The carousel plays the chosen
+   slide on embla's `select` (the moment a drag is released, about a second before it settles)
+   and warms the two slides beside it once the active one can paint, so the next slide reveals
+   as soon as it is chosen rather than after a manifest, a playlist and a segment. The stored `cloudflareStreamPlaybackUrl` is recomputed from the uid on every
    read (`resolveStreamUrls`); rows written before 2026-02-26 hold a doubled host and are never
    served as stored.
 6. **A temp-file upload carries its bytes.** When Payload parks a file on disk (a browser upload

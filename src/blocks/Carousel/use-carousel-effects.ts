@@ -64,7 +64,10 @@ type Options = {
  * - `settle` writes the same value rounded to the whole snap embla rests on,
  *   because it can stop a hair off-snap; the active slide always ends
  *   dead-flat facing the viewer. Same source, same math — no second writer.
- *   Settle also drives playback and posters (see ./playback).
+ * - `select` and `settle` both sync playback and posters (see ./playback):
+ *   select names the target the moment a drag is released, a second before
+ *   embla's spring settles, so the video is fetching under the slide's own
+ *   travel; settle is the same sync again, for a release that kept its snap.
  *
  * The chromatic-aberration tear rides scroll velocity through a gsap.quickTo
  * envelope driving only the feOffset dx values. The SVG filter itself stays
@@ -142,15 +145,29 @@ export const useCarouselEffects = ({
         paintSlides(identity)
       }
 
-      // --- Playback + posters (settle-driven, see ./playback) ---------------
+      // --- Playback + posters (select- and settle-driven, see ./playback) ---
+      // Neighbours warm once the deck is within half a window of view.
+      let inView = false
       const playback = createPlaybackController({
         api,
         contextSafe,
         dissolveId,
         dissolveMap,
         getSlideRefs: () => slideRefs,
+        inView: () => inView,
         reducedMotion,
       })
+      const viewObserver = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return
+          viewObserver.disconnect()
+          inView = true
+          playback.syncVideos()
+        },
+        { rootMargin: '50% 0px' },
+      )
+
+      const onSelect = contextSafe(() => playback.syncVideos())
 
       const onSettle = contextSafe(() => {
         // Embla can rest a hair off-snap; round so the active slide ends
@@ -205,16 +222,20 @@ export const useCarouselEffects = ({
       onReInit()
       api.on('reInit', onReInit)
       api.on('scroll', tween)
+      api.on('select', onSelect)
       api.on('settle', onSettle)
       document.addEventListener('visibilitychange', onVisibility)
       if (stacked) trackNode.addEventListener('click', onClick)
+      viewObserver.observe(trackNode)
       open()
 
       return () => {
+        viewObserver.disconnect()
         trackNode.removeEventListener('click', onClick)
         document.removeEventListener('visibilitychange', onVisibility)
         api.off('reInit', onReInit)
         api.off('scroll', tween)
+        api.off('select', onSelect)
         api.off('settle', onSettle)
         playback.dispose()
         trackNode.style.filter = ''

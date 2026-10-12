@@ -55,6 +55,17 @@ function fallbackSrcFor({ url }: MediaType): string {
 }
 
 /**
+ * Asks a paused video to fetch its opening frames without playing them, so a
+ * later `play()` starts at once. A carousel warms the slides beside the
+ * active one. Dispatched on the element because the carousel drives its
+ * videos through DOM refs; `VideoMedia` listens (`useWarm`, `useHlsStream`).
+ */
+export const WARM_EVENT = 'mediawarm'
+export const warmVideo = (video: HTMLVideoElement): void => {
+  video.dispatchEvent(new Event(WARM_EVENT))
+}
+
+/**
  * The poster paints the frame until the first segment lands, and is the LCP
  * element in a hero. Stream's default thumbnail is 640 px wide, so a retina
  * hero asks for 1920 and any other frame 1280 (`poster` takes one URL).
@@ -135,6 +146,7 @@ function useHlsStream(
     let manifestParsed = false
     let loading = eager
     let wantsPlay = !video.paused
+    let warm = false
 
     const startLoad = () => {
       if (loading || !manifestParsed) return
@@ -148,8 +160,13 @@ function useHlsStream(
     const onPause = () => {
       wantsPlay = false
     }
+    const onWarm = () => {
+      warm = true
+      startLoad()
+    }
     video.addEventListener('play', onPlay)
     video.addEventListener('pause', onPause)
+    video.addEventListener(WARM_EVENT, onWarm)
 
     import('hls.js').then(({ default: Hls }) => {
       if (cancelled || !videoRef.current) return
@@ -158,9 +175,9 @@ function useHlsStream(
       hlsInstance = new Hls(hlsConfigFor(eager))
       hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
         manifestParsed = true
-        if (!wantsPlay) return
+        if (!wantsPlay && !warm) return
         startLoad()
-        void playIfPaused(video)
+        if (wantsPlay) void playIfPaused(video)
       })
       hlsInstance.loadSource(hlsUrl)
       hlsInstance.attachMedia(video)
@@ -170,9 +187,29 @@ function useHlsStream(
       cancelled = true
       video.removeEventListener('play', onPlay)
       video.removeEventListener('pause', onPause)
+      video.removeEventListener(WARM_EVENT, onWarm)
       hlsInstance?.destroy()
     }
   }, [eager, resource, videoRef])
+}
+
+/**
+ * The native player's warm: `preload` goes to `auto`, and an element that has
+ * fetched nothing yet is asked to load, since a player parked by `none` does
+ * not always notice the change. hls.js owns its element's loading, so this
+ * stays out of its way (`useHlsStream` handles the warm there).
+ */
+function useWarm(videoRef: React.RefObject<HTMLVideoElement | null>, hasStream: boolean) {
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || (hasStream && !supportsNativeHls())) return
+    const onWarm = () => {
+      video.preload = 'auto'
+      if (video.readyState === HTMLMediaElement.HAVE_NOTHING && video.paused) video.load()
+    }
+    video.addEventListener(WARM_EVENT, onWarm)
+    return () => video.removeEventListener(WARM_EVENT, onWarm)
+  }, [hasStream, videoRef])
 }
 
 /** For non-priority videos, start playback when the element becomes visible */
@@ -218,6 +255,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
   const strategy = useVideoStrategy(priority, resource)
   const eager = autoPlay && strategy.shouldAutoplay
   useHlsStream(videoRef, resource, eager)
+  useWarm(videoRef, Boolean(resource && typeof resource === 'object' && readyStreamUrl(resource)))
   usePlayWhenVisible(videoRef, autoPlay, priority, strategy.shouldAutoplay)
 
   if (!resource || typeof resource !== 'object') return null
