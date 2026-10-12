@@ -86,7 +86,7 @@ Storybook conventions:
 
 ## Architecture Pointers
 
-- Public routes live in `src/app/(frontend)`.
+- Public routes live in `src/app/(frontend)`. Pages are cached HTML (`export const revalidate = 600`, busted on publish by the collections' revalidate hooks). Never call `cookies()` or `headers()` in a page tree directly: the only request read is `hasWorkAccess`, passed as a function to `resolveVisibleWork`, which calls it only for a protected work. The proxy turns `?access=<key>` into the cookie and redirects to the clean URL.
 - Payload admin/API routes live in `src/app/(payload)`.
 - Collections are in `src/collections` (`pages`, `posts`, `works`, `media`, `capabilities`, `categories`, `clients`, `users`).
 - Layout blocks are in `src/blocks`.

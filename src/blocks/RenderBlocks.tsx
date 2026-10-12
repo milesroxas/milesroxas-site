@@ -116,11 +116,9 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
 }) => {
   if (!Array.isArray(blocks) || blocks.length === 0) return null
 
-  // Check if user has access to protected works (cookie persists across navigation)
-  const hasAccess = await hasWorkAccess()
-
-  // Process blocks to replace protected works with fallbacks
-  const processedBlocks = await processLayoutBlocks(blocks, hasAccess)
+  // Protected works resolve to their fallbacks; the visitor's cookie is read
+  // only when one is met, so a page of public blocks stays cached HTML.
+  const processedBlocks = await processLayoutBlocks(blocks, hasWorkAccess)
   const edges = bandEdges(processedBlocks.map(blockSurface))
 
   return (

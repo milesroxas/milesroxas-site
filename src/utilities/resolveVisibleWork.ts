@@ -2,6 +2,7 @@ import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import type { Work } from '@/payload-types'
+import type { WorkAccess } from '@/utilities/checkWorkAccess'
 
 /**
  * Resolve which work a visitor is allowed to see.
@@ -16,7 +17,7 @@ import type { Work } from '@/payload-types'
  */
 export async function resolveVisibleWork(
   work: Work,
-  hasAccess: boolean,
+  access: WorkAccess,
   depth = 2,
 ): Promise<Work | null> {
   // A block or relation populated by a trusted fetch carries the work whatever its status.
@@ -24,9 +25,11 @@ export async function resolveVisibleWork(
     return null
   }
 
-  if (!work.isProtected || hasAccess) {
-    return work
-  }
+  if (!work.isProtected) return work
+
+  // Only now is the visitor's cookie read: a public work never makes the render dynamic.
+  const hasAccess = typeof access === 'function' ? await access() : access
+  if (hasAccess) return work
 
   if (!work.fallbackWork) {
     return null

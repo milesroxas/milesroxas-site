@@ -1,10 +1,12 @@
-import { cookies, draftMode, headers } from 'next/headers'
+import { cookies, draftMode } from 'next/headers'
+import { cache } from 'react'
 
 const ACCESS_COOKIE = 'site_access'
 
 /**
  * Valid access keys, comma-separated in the WORK_ACCESS_KEYS env var.
- * Share links like: yoursite.com?access=<key>
+ * Share links like: yoursite.com/works/<slug>?access=<key>; the proxy turns
+ * the key into the `site_access` cookie and redirects to the clean URL.
  */
 const VALID_ACCESS_KEYS = (process.env.WORK_ACCESS_KEYS ?? '')
   .split(',')
@@ -12,41 +14,24 @@ const VALID_ACCESS_KEYS = (process.env.WORK_ACCESS_KEYS ?? '')
   .filter(Boolean)
 
 /**
- * Check if the visitor may see protected works.
- * Draft mode counts as access (it is only enabled for authenticated preview),
- * otherwise the URL query param (initial visit) and cookie (subsequent
- * navigation) are checked against the configured access keys.
+ * Whether the visitor may see protected works, or how to find out. Reading the
+ * cookie makes the render dynamic, so `resolveVisibleWork` takes the function
+ * and calls it only when it meets a protected work: a page of public works
+ * stays cached HTML.
  */
-export async function hasWorkAccess(): Promise<boolean> {
+export type WorkAccess = boolean | (() => Promise<boolean>)
+
+/**
+ * Whether the visitor may see protected works. Draft mode counts as access
+ * (it is only enabled for authenticated preview); otherwise the cookie is
+ * checked against the configured keys. Memoised per request.
+ */
+export const hasWorkAccess = cache(async (): Promise<boolean> => {
   const { isEnabled: draft } = await draftMode()
   if (draft) return true
 
   if (VALID_ACCESS_KEYS.length === 0) return false
 
-  const accessValue = await getAccessValue()
-  return accessValue !== null && VALID_ACCESS_KEYS.includes(accessValue)
-}
-
-/**
- * Get the access value from URL query param or cookie
- */
-async function getAccessValue(): Promise<string | null> {
-  // Check URL query param first (for initial visit with ?access=...)
-  const headersList = await headers()
-  const url = headersList.get('x-url')
-
-  if (url) {
-    try {
-      const urlObj = new URL(url)
-      const accessParam = urlObj.searchParams.get('access')
-      if (accessParam) return accessParam
-    } catch {
-      // Invalid URL, continue to cookie check
-    }
-  }
-
-  // Fall back to cookie (for subsequent navigation)
-  const cookieStore = await cookies()
-  const accessCookie = cookieStore.get(ACCESS_COOKIE)
-  return accessCookie?.value || null
-}
+  const accessValue = (await cookies()).get(ACCESS_COOKIE)?.value
+  return Boolean(accessValue) && VALID_ACCESS_KEYS.includes(accessValue as string)
+})

@@ -18,8 +18,10 @@ import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 
-// Force dynamic rendering to support query param access control
-export const dynamic = 'force-dynamic'
+// Cached HTML, regenerated every ten minutes and on publish (revalidateWork).
+// While a protected work exists the index reads the visitor's cookie and
+// renders per request, from the cached query.
+export const revalidate = 600
 
 type IndexedWork = WorkIndexDoc & { isProtected?: boolean | null }
 
@@ -73,11 +75,11 @@ const queryWorksIndex = cache(async (): Promise<WorksIndex | null> => {
 
 export default async function Page() {
   const { isEnabled: draft } = await draftMode()
-  const [index, works, hasAccess] = await Promise.all([
+  const [index, works] = await Promise.all([
     queryWorksIndex(),
     draft ? getWorksDraft() : getWorksPublished(),
-    hasWorkAccess(),
   ])
+  const hasAccess = works.some((work) => work.isProtected) ? await hasWorkAccess() : false
 
   // Protected works stay off the index without access; no fallback stands in here.
   const items = works

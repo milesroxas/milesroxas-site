@@ -5,7 +5,7 @@ import type { CardPostData } from '@/components/Card/Posts/Component'
 
 import type { CardWorkData } from '@/components/Card/Works/Component'
 import type { ArchiveBlock as ArchiveBlockProps, Work } from '@/payload-types'
-import { hasWorkAccess } from '@/utilities/checkWorkAccess'
+import { hasWorkAccess, type WorkAccess } from '@/utilities/checkWorkAccess'
 import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
 
 import ArchiveBlockClient from './ArchiveBlockClient'
@@ -29,7 +29,7 @@ async function fetchPostsByCollection(
 async function fetchWorksByCollection(
   limit: number,
   categoryFilter: ReturnType<typeof getCategoryFilter>,
-  hasAccess: boolean,
+  access: WorkAccess,
 ) {
   const payload = await getPayload({ config: configPromise })
 
@@ -48,7 +48,7 @@ async function fetchWorksByCollection(
   })
 
   const processedWorks = await Promise.all(
-    fetchedWorks.docs.map((work) => resolveVisibleWork(work, hasAccess)),
+    fetchedWorks.docs.map((work) => resolveVisibleWork(work, access)),
   )
 
   return processedWorks.filter((work): work is Work => work !== null) as CardWorkData[]
@@ -56,7 +56,7 @@ async function fetchWorksByCollection(
 
 async function extractSelectedDocs(
   selectedDocs: ArchiveBlockProps['selectedDocs'],
-  hasAccess: boolean,
+  access: WorkAccess,
 ) {
   const posts: CardPostData[] = []
   const works: CardWorkData[] = []
@@ -71,7 +71,7 @@ async function extractSelectedDocs(
     if (doc.relationTo === 'posts') {
       posts.push(doc.value as CardPostData)
     } else if (doc.relationTo === 'works') {
-      const visibleWork = await resolveVisibleWork(doc.value as Work, hasAccess)
+      const visibleWork = await resolveVisibleWork(doc.value as Work, access)
       if (visibleWork) {
         works.push(visibleWork as CardWorkData)
       }
@@ -95,9 +95,6 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps> = async (props) => {
 
   const limit = limitFromProps || 3
 
-  // Check if user has access to protected works (cookie persists across navigation)
-  const hasAccess = await hasWorkAccess()
-
   let posts: CardPostData[] = []
   let works: CardWorkData[] = []
 
@@ -108,10 +105,10 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps> = async (props) => {
     if (relationTo === 'posts') {
       posts = await fetchPostsByCollection(limit, categoryFilter)
     } else if (relationTo === 'works') {
-      works = await fetchWorksByCollection(limit, categoryFilter, hasAccess)
+      works = await fetchWorksByCollection(limit, categoryFilter, hasWorkAccess)
     }
   } else if (populateBy === 'selection') {
-    const extractedDocs = await extractSelectedDocs(selectedDocs, hasAccess)
+    const extractedDocs = await extractSelectedDocs(selectedDocs, hasWorkAccess)
     posts = extractedDocs.posts
     works = extractedDocs.works
   }

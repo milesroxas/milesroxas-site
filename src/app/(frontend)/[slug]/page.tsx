@@ -13,8 +13,8 @@ import HomeTemplate from '@/templates/Homepage/HomeTemplate'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
-// Force dynamic rendering to support query param access control
-export const dynamic = 'force-dynamic'
+// Cached HTML, regenerated every ten minutes and on publish (revalidatePage).
+export const revalidate = 600
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })

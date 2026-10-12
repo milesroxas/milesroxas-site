@@ -17,8 +17,9 @@ import { generateMeta } from '@/utilities/generateMeta'
 import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
 import PageClient from './page.client'
 
-// Force dynamic rendering to support query param access control
-export const dynamic = 'force-dynamic'
+// Cached HTML, regenerated every ten minutes and on publish (revalidateWork).
+// Only a protected work reads the visitor's cookie and so renders per request.
+export const revalidate = 600
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -61,8 +62,7 @@ export default async function Work({ params: paramsPromise }: Args) {
   if (!work) return <PayloadRedirects url={url} />
 
   // Protected works resolve to their fallback (or 404 without one)
-  const hasAccess = await hasWorkAccess()
-  const visibleWork = await resolveVisibleWork(work, hasAccess)
+  const visibleWork = await resolveVisibleWork(work, hasWorkAccess)
 
   if (!visibleWork) notFound()
 
@@ -97,8 +97,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const work = await queryWorkBySlug({ slug })
 
   // Never leak protected-work meta: resolve to the fallback (or nothing)
-  const hasAccess = await hasWorkAccess()
-  const visibleWork = work ? await resolveVisibleWork(work, hasAccess) : null
+  const visibleWork = work ? await resolveVisibleWork(work, hasWorkAccess) : null
 
   return generateMeta({ doc: visibleWork })
 }

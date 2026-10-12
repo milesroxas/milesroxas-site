@@ -60,20 +60,14 @@ export function proxy(request: NextRequest) {
     return reportResponse(request)
   }
 
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-url', request.url)
-
-  const response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  })
-
-  // Check for access param in URL
+  // A share link (`?access=<key>`) becomes a cookie and the clean URL: the
+  // page then reads the cookie alone, the key stays out of history and
+  // analytics, and a public work keeps its cached HTML (checkWorkAccess.ts).
   const accessParam = request.nextUrl.searchParams.get('access')
-
   if (accessParam) {
-    // Set cookie when access param is present - persists access across navigation
+    const clean = request.nextUrl.clone()
+    clean.searchParams.delete('access')
+    const response = NextResponse.redirect(clean, 307)
     response.cookies.set(ACCESS_COOKIE, accessParam, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -81,9 +75,10 @@ export function proxy(request: NextRequest) {
       maxAge: ACCESS_COOKIE_MAX_AGE,
       path: '/',
     })
+    return response
   }
 
-  return response
+  return NextResponse.next()
 }
 
 export const config = {

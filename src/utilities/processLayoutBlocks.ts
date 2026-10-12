@@ -1,4 +1,5 @@
 import type { ContentBlock, Page, Post, SliderBlock, Work } from '@/payload-types'
+import type { WorkAccess } from '@/utilities/checkWorkAccess'
 import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
 
 type LayoutBlock =
@@ -9,7 +10,7 @@ type LayoutBlock =
 /** Unlinks a slide whose work the visitor cannot open (unpublished, or protected without a fallback). */
 async function processSlides(
   slides: SliderBlock['slides'],
-  hasAccess: boolean,
+  access: WorkAccess,
 ): Promise<SliderBlock['slides']> {
   if (!slides?.length) return slides
 
@@ -18,7 +19,7 @@ async function processSlides(
       const link = item.slide.link
       if (link?.relationTo !== 'works' || typeof link.value !== 'object') return item
 
-      const visibleWork = await resolveVisibleWork(link.value, hasAccess)
+      const visibleWork = await resolveVisibleWork(link.value, access)
       return visibleWork ? item : { ...item, slide: { ...item.slide, link: null } }
     }),
   )
@@ -28,7 +29,7 @@ async function processSlides(
  * Process content block columns: unpublished works are removed, protected
  * works are replaced with fallbacks (or removed when no usable fallback exists)
  */
-async function processContentBlock(block: ContentBlock, hasAccess: boolean): Promise<ContentBlock> {
+async function processContentBlock(block: ContentBlock, access: WorkAccess): Promise<ContentBlock> {
   if (!block.columns?.length) {
     return block
   }
@@ -40,7 +41,7 @@ async function processContentBlock(block: ContentBlock, hasAccess: boolean): Pro
           ...column,
           slider: {
             ...column.slider,
-            slides: await processSlides(column.slider.slides, hasAccess),
+            slides: await processSlides(column.slider.slides, access),
           },
         }
       }
@@ -55,7 +56,7 @@ async function processContentBlock(block: ContentBlock, hasAccess: boolean): Pro
         return column
       }
 
-      const visibleWork = await resolveVisibleWork(work, hasAccess)
+      const visibleWork = await resolveVisibleWork(work, access)
 
       return {
         ...column,
@@ -83,7 +84,7 @@ async function processContentBlock(block: ContentBlock, hasAccess: boolean): Pro
  */
 export async function processLayoutBlocks(
   blocks: LayoutBlock[],
-  hasAccess: boolean,
+  access: WorkAccess,
 ): Promise<LayoutBlock[]> {
   if (!Array.isArray(blocks) || blocks.length === 0) {
     return blocks
@@ -93,10 +94,10 @@ export async function processLayoutBlocks(
     blocks.map(async (block) => {
       switch (block.blockType) {
         case 'content':
-          return processContentBlock(block as ContentBlock, hasAccess)
+          return processContentBlock(block as ContentBlock, access)
 
         case 'slider':
-          return { ...block, slides: await processSlides(block.slides, hasAccess) }
+          return { ...block, slides: await processSlides(block.slides, access) }
 
         // A Section nests Columns blocks too: their work entries hide the same way.
         case 'section':
@@ -104,7 +105,7 @@ export async function processLayoutBlocks(
             ...block,
             blocks: await Promise.all(
               (block.blocks ?? []).map((child) =>
-                child.blockType === 'content' ? processContentBlock(child, hasAccess) : child,
+                child.blockType === 'content' ? processContentBlock(child, access) : child,
               ),
             ),
           }
