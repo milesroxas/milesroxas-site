@@ -105,7 +105,8 @@ Done once on 2026-10-11; recorded so it can be repeated for another account.
 2. With the token, through the REST API (`accounts/<id>/r2/buckets`): create the bucket
    (`R2_BUCKET`, `milesroxas-media`), enable its Public Development URL (`domains/managed`,
    the `https://pub-….r2.dev` host is `R2_PUBLIC_URL`) and put the CORS rule the admin's
-   presigned PUT needs:
+   presigned PUT needs. The adapter sends `If-None-Match: *` with the file, so the rule must
+   allow that header or the browser's preflight gets 403 and the upload never starts:
    ```json
    {
      "rules": [
@@ -113,7 +114,7 @@ Done once on 2026-10-11; recorded so it can be repeated for another account.
          "allowed": {
            "origins": ["https://www.milesroxas.com", "http://localhost:3000"],
            "methods": ["PUT", "GET", "HEAD"],
-           "headers": ["content-type", "content-length"]
+           "headers": ["content-type", "content-length", "if-none-match"]
          },
          "exposeHeaders": ["ETag"],
          "maxAgeSeconds": 3600
