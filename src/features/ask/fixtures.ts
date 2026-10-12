@@ -32,9 +32,13 @@ export const askHandoffChat = createAskChat()
 /** Two source links spanning two surfaces, as a grounded answer carries them. */
 export const askSourcesFixture = [
   {
-    sourceId: '/who-we-help/platforms-digital-products',
-    title: 'Platforms & Digital Products',
-    url: '/who-we-help/platforms-digital-products',
+    sourceId: '/works/design-systems-for-organizational-scale',
+    title: 'Design Systems for Organizational Scale',
+    url: '/works/design-systems-for-organizational-scale',
   },
-  { sourceId: '/works/interchecks', title: 'Interchecks', url: '/works/interchecks' },
+  {
+    sourceId: '/posts/from-webflow-to-payload-a-cms-built-around-a-content-hub',
+    title: 'From Webflow to Payload: a CMS built around a Content Hub',
+    url: '/posts/from-webflow-to-payload-a-cms-built-around-a-content-hub',
+  },
 ]

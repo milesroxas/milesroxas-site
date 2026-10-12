@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import type { RichTextInsightsBlock, RichTextPillListBlock } from '@/payload-types'
+import type {
+  BannerBlock,
+  RichTextInsightsBlock,
+  RichTextPillListBlock,
+  YouTubeBlock,
+} from '@/payload-types'
 import { blockControls } from '@/stories/block-controls'
 import {
   blockNode,
@@ -90,6 +95,42 @@ const pillList = (id = 'pills', eyebrow: string | null = 'What the business know
     ].map((label) => ({ id: label, label })),
   } satisfies RichTextPillListBlock)
 
+const INLINE_CODE = 16
+
+const list = (tag: 'ul' | 'ol', ...items: string[]) => ({
+  type: 'list',
+  listType: tag === 'ul' ? 'bullet' : 'number',
+  tag,
+  start: 1,
+  children: items.map((item, index) => ({
+    type: 'listitem',
+    children: [text(item)],
+    direction: 'ltr',
+    format: '',
+    indent: 0,
+    value: index + 1,
+    version: 1,
+  })),
+  direction: 'ltr',
+  format: '',
+  indent: 0,
+  version: 1,
+})
+
+const youtube = blockNode({
+  blockType: 'youtube',
+  id: 'youtube',
+  url: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
+  title: 'Me at the zoo',
+} satisfies YouTubeBlock)
+
+const banner = blockNode({
+  blockType: 'banner',
+  id: 'banner',
+  style: 'info',
+  content: richText(paragraph(text('Kept from the post body this block replaced.'))),
+} satisfies BannerBlock)
+
 const controls = blockControls<typeof RichTextBlock>('richText')
 
 const meta = {
@@ -117,6 +158,44 @@ export const Default: Story = {}
 export const ParagraphsOnly: Story = {
   args: {
     body: richText(...paragraphs),
+  },
+}
+
+/** Large moves the reading column up a step (`proseBodyClassNames`). */
+export const LargeText: Story = {
+  args: { textSize: 'large' },
+}
+
+/** Everything else the editor offers in prose: h3, both lists and inline code. */
+export const ListsAndCode: Story = {
+  args: {
+    body: richText(
+      heading('h2', text('What changes on a page')),
+      paragraphs[0],
+      heading('h3', text('In the build')),
+      list('ul', 'One renderer per block', 'Typed fixtures for every story', 'No bespoke motion'),
+      heading('h3', text('In the release')),
+      list('ol', 'Push to dev', 'Review the preview', 'Release to main'),
+      paragraph(
+        text('Run '),
+        text('pnpm check:block-controls', INLINE_CODE),
+        text(' after changing the fields of a block.'),
+      ),
+    ),
+  },
+}
+
+/** A YouTube embed from the toolbar stays in the reading column. Needs network. */
+export const WithYouTube: Story = {
+  args: {
+    body: richText(...body.root.children, youtube, paragraphs[1]),
+  },
+}
+
+/** A Banner stays inline in the prose: the post body transform keeps them there. */
+export const WithBanner: Story = {
+  args: {
+    body: richText(heading('h2', text('Before the move')), banner, ...paragraphs),
   },
 }
 

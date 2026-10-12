@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect } from 'storybook/test'
 import { themeClasses } from '@/blocks/shared/band-theme'
 import { mediaFixture } from '@/stories/fixtures'
 import { cn } from '@/utilities/ui'
-import type { StreakVisualDescriptor } from './descriptor'
-import { VisualMotionToggle } from './motion-toggle'
+import { STREAK_FIELD_EFFECT } from '../studio/effects'
+import { snapshotRecipe, starterRecipe } from '../studio/recipe'
+import type { ReleaseDescriptor } from '../studio/release'
+import type { StreakFieldTuning } from '../ui/streak-field-tuning'
+import type { PosterMediaSource, StreakVisualDescriptor } from './descriptor'
 import { StreakVisual } from './streak-visual'
 
 /**
@@ -12,7 +16,8 @@ import { StreakVisual } from './streak-visual'
  * Storybook the slot behaves as on the site: a machine with WebGL2 and a
  * fine pointer goes live after the poster; reduced motion, a coarse pointer
  * or a software renderer keep the poster. `data-visual-status` on the frame
- * reports which.
+ * reports which, and `data-visual-pending` marks a poster still standing in
+ * for a live frame on its way (a page transition holds its reveal for it).
  */
 const descriptor = (over: Partial<StreakVisualDescriptor> = {}): StreakVisualDescriptor => ({
   look: 'signal-v1',
@@ -40,9 +45,8 @@ const meta = {
   render: (args) => (
     <div className="relative isolate min-h-svh bg-background text-foreground">
       <StreakVisual {...args} />
-      <div className="relative flex min-h-svh items-end justify-between p-10">
+      <div className="relative flex min-h-svh items-end p-10">
         <h2 className="max-w-xl text-balance text-heading-2">Signal, seen from the side.</h2>
-        <VisualMotionToggle />
       </div>
     </div>
   ),
@@ -51,6 +55,13 @@ const meta = {
 export default meta
 
 type Story = StoryObj<typeof meta>
+
+/** A poster that is the slot's final still: no live frame is coming, so nothing waits on it. */
+const settledPoster: NonNullable<Story['play']> = async ({ canvasElement }) => {
+  const frame = canvasElement.querySelector('[data-visual="streakField"]')
+  await expect(frame).toHaveAttribute('data-visual-status', 'poster')
+  await expect(frame).not.toHaveAttribute('data-visual-pending')
+}
 
 /** The default look as a hero background on the site theme (switch the toolbar theme to flip the ground). */
 export const Hero: Story = {}
@@ -102,9 +113,61 @@ export const UploadedPoster: Story = {
   args: { descriptor: descriptor({ posterMedia: mediaFixture }) },
 }
 
+/** The shipped topography stills stand in for the pair a published Studio look renders. */
+const studioPoster = (surface: 'light' | 'dark'): PosterMediaSource => ({
+  filename: `topography-v1-${surface}.webp`,
+  url: `/images/streak-field/topography-v1-${surface}.webp`,
+  width: 1600,
+  height: 900,
+  mimeType: 'image/webp',
+  updatedAt: '2026-10-08T00:00:00.000Z',
+})
+
+const studioRelease: ReleaseDescriptor<StreakFieldTuning> = {
+  id: 1,
+  sourceHash: 'a'.repeat(64),
+  snapshot: snapshotRecipe<StreakFieldTuning>(
+    STREAK_FIELD_EFFECT,
+    starterRecipe(STREAK_FIELD_EFFECT, 'topography-v1'),
+  ),
+  posters: { light: studioPoster('light'), dark: studioPoster('dark') },
+}
+
+/**
+ * A published Studio look on a post card: its own still for each theme wins
+ * over a single upload (`posterMedia`, ignored here), since one upload can only
+ * serve both grounds alike. Switch the toolbar theme to swap the still.
+ */
+export const StudioLookPosters: Story = {
+  args: {
+    descriptor: descriptor({ release: studioRelease, posterMedia: mediaFixture }),
+    placement: 'card',
+    fill: false,
+    className: 'aspect-3/2 w-96',
+  },
+  render: (args) => (
+    <div className="container py-16">
+      <StreakVisual {...args} />
+    </div>
+  ),
+  play: async (context) => {
+    await settledPoster(context)
+    const stills = [...context.canvasElement.querySelectorAll('[data-visual-poster]')]
+    await expect(stills.map((still) => still.getAttribute('data-visual-poster'))).toEqual([
+      'light',
+      'dark',
+    ])
+    for (const still of stills)
+      await expect(still.getAttribute('src')).toContain(
+        `topography-v1-${still.getAttribute('data-visual-poster')}`,
+      )
+  },
+}
+
 /** A stored preset that no longer ships: the fallback look, poster only, never live. */
 export const DegradedPreset: Story = {
   args: { descriptor: descriptor({ degraded: true }) },
+  play: settledPoster,
 }
 
 /** Repeated entries and menus: poster only by placement policy, no probe, no chunk. */
@@ -115,11 +178,13 @@ export const CardPlacement: Story = {
       <StreakVisual {...args} />
     </div>
   ),
+  play: settledPoster,
 }
 
 /** Held by its owner (a hero intro still playing): the poster stays until `active`. */
 export const HeldByOwner: Story = {
   args: { active: false },
+  play: settledPoster,
 }
 
 /** Slowed and dimmed by the editor's bounded multipliers, without pointer interaction. */

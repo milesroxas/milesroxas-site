@@ -27,6 +27,7 @@ export const Secondary: Story = {
   args: { variant: 'secondary' },
 }
 
+/** Ink is the `destructive-foreground` token on the destructive plate. */
 export const Destructive: Story = {
   args: { variant: 'destructive' },
 }
@@ -35,12 +36,14 @@ export const Outline: Story = {
   args: { variant: 'outline' },
 }
 
+/** The kind label on a Works card. */
 export const Work: Story = {
-  args: { children: 'Case Study', variant: 'work' },
+  args: { children: 'Work', variant: 'work' },
 }
 
+/** The kind label on a Posts card. */
 export const Post: Story = {
-  args: { children: 'Article', variant: 'post' },
+  args: { children: 'Post', variant: 'post' },
 }
 
 export const AllVariants: Story = {

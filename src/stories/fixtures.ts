@@ -9,7 +9,8 @@ import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { CardPostData } from '@/components/Card/Posts/Component'
 import type { CardWorkData } from '@/components/Card/Works/Component'
 import { TEXT_STYLE_STATE_KEY, type TextStyle } from '@/components/RichText/text-styles'
-import type { Media, Page } from '@/payload-types'
+import type { Media, Page, RichTextActionsBlock } from '@/payload-types'
+import type { MoreWorkItem } from '@/sections/MoreWork/query'
 
 const textNode = (text: string, format = 0) => ({
   detail: 0,
@@ -133,6 +134,59 @@ export const workCardData: CardWorkData = {
   },
 }
 
+/** One of the FPO pictures in `public/textures/`. */
+const textureMedia = (id: number, name: string, width: number, height: number): Media => ({
+  id,
+  alt: `${name} placeholder`,
+  url: `/textures/fpo-${name}.jpg`,
+  filename: `fpo-${name}.jpg`,
+  mimeType: 'image/jpeg',
+  width,
+  height,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+})
+
+/** Rows of a works index (More work, the works dial), as `toWorkIndexItem` reduces a work. */
+export const workIndexItems: MoreWorkItem[] = [
+  {
+    id: 1,
+    slug: 'brand-refresh',
+    title: 'Brand Refresh',
+    client: 'Northwind',
+    industry: 'Enterprise Technology',
+    capabilities: ['Brand Identity', 'Website'],
+    media: textureMedia(31, 'vault', 1280, 720),
+  },
+  {
+    id: 2,
+    slug: 'studio-site',
+    title: 'A studio site that explains itself',
+    client: 'Gentle Beast',
+    industry: 'Creative Services',
+    capabilities: ['Web Design', 'Web Development'],
+    media: textureMedia(32, 'gentlebeast', 1064, 625),
+  },
+  {
+    id: 3,
+    slug: 'product-launch',
+    title: 'Product Launch',
+    client: 'Arturo',
+    industry: 'Consumer',
+    capabilities: ['Product Design'],
+    media: textureMedia(33, 'arturo', 1064, 625),
+  },
+  {
+    id: 4,
+    slug: 'design-system',
+    title: 'Design System',
+    client: null,
+    industry: null,
+    capabilities: [],
+    media: imageMedia,
+  },
+]
+
 export const pageHero: Page['hero'] = {
   type: 'mediumImpact',
   richText: simpleRichText,
@@ -241,9 +295,9 @@ export const blockNode = (fields: Record<string, unknown>): SerializedNode => ({
 export const richText = (...children: SerializedNode[]): RichTextFixture => lexicalState(children)
 
 /**
- * A content-column body (Split, Split narrow): a kicker, copy, an h4 label
- * over a ruled list and a small note. The Actions row joins it with the
- * rich-text toolbar blocks (Phase 3).
+ * A content-column body (Split, Split narrow, Carousel split and tabs): a
+ * kicker, copy, an h4 label over a ruled list, a small note and the Actions
+ * row from the editor toolbar (`blocks/rich-text/actions`).
  */
 export const contentColumnFixture: RichTextFixture = richText(
   paragraph(text('What I do', 0, 'eyebrow')),
@@ -259,7 +313,33 @@ export const contentColumnFixture: RichTextFixture = richText(
     listItem(text('Motion and WebGL')),
   ),
   paragraph(text('Engagements run from a focused sprint to a standing retainer.', 0, 'small')),
+  blockNode({
+    blockType: 'actions',
+    id: 'actions',
+    links: [
+      {
+        id: 'actions-primary',
+        link: {
+          type: 'index',
+          indexPage: 'contact',
+          label: 'Start a project',
+          appearance: 'default',
+        },
+      },
+      {
+        id: 'actions-secondary',
+        link: { type: 'index', indexPage: 'works', label: 'See the work', appearance: 'outline' },
+      },
+    ],
+  } satisfies RichTextActionsBlock),
 )
+
+/**
+ * The `space` group a fresh legacy block (Columns, Media, Slider, Tab slider)
+ * starts with (`fields/sectionSpacing`). `blockControls` seeds top-level
+ * defaults only, so stories pass this.
+ */
+export const legacySpacingFixture = { pt: 'md', pb: 'md', mt: 'none', mb: 'none' } as const
 
 /** `imageMedia` with a Lexical caption, for blocks that render one. */
 export const mediaFixture: Media = {
@@ -282,6 +362,45 @@ export const videoFixture: Media = {
   width: 1280,
   height: 720,
   caption: richText(paragraph(text('A caption for a video media document.'))),
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+}
+
+/**
+ * An upload as production stores it (docs/media.md): the file on R2, served
+ * by Cloudflare Images, which `cloudflareImageLoader` resizes per breakpoint.
+ * A real upload from the site, so it needs network.
+ */
+export const cloudflareImageFixture: Media = {
+  id: 286,
+  alt: 'Suits & Sandals Payload CMS Dashboard View on iPad Mockup',
+  url: 'https://pub-e0565ffa45e84984859be62a26946601.r2.dev/sas-payload-dashboard.jpg',
+  cloudflareImageUrl:
+    'https://imagedelivery.net/mt_LnKhMMDR4a2uNBQuIoA/1bfe5c79-7244-4fa5-cef6-94fb6c84a800/public',
+  filename: 'sas-payload-dashboard.jpg',
+  mimeType: 'image/jpeg',
+  width: 1920,
+  height: 1280,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+}
+
+/**
+ * A video as production stores it: HLS and a poster from Cloudflare Stream,
+ * the R2 file as the fallback. Stream reports no dimensions.
+ */
+export const streamVideoFixture: Media = {
+  id: 321,
+  alt: 'Sample content page',
+  url: 'https://pub-e0565ffa45e84984859be62a26946601.r2.dev/content-page-scroll.mp4',
+  cloudflareStreamPlaybackUrl:
+    'https://customer-rw5jpz5ucwlw8rg0.cloudflarestream.com/b3c84f331eeec8a44065b52601096f02/manifest/video.m3u8',
+  cloudflareStreamThumbnailUrl:
+    'https://customer-rw5jpz5ucwlw8rg0.cloudflarestream.com/b3c84f331eeec8a44065b52601096f02/thumbnails/thumbnail.jpg',
+  cloudflareStreamReady: true,
+  filename: 'content-page-scroll.mp4',
+  mimeType: 'video/mp4',
+  filesize: 2_347_059,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
 }

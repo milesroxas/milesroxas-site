@@ -26,7 +26,8 @@ const present = (el: HTMLElement) => expect(el).toBeInTheDocument()
  */
 export async function openAskHandoff({ canvas, userEvent }: Canvas) {
   await userEvent.click(canvas.getByRole('button', { name: 'Talk to Miles' }))
-  await waitFor(() => present(canvas.getByLabelText('Name')))
+  // Both swap halves stand before the fields mount; a loaded test run needs past the default second.
+  await waitFor(() => present(canvas.getByLabelText('Name')), { timeout: 3000 })
   // The entrance half fades the incoming copy up from `autoAlpha: 0`, and a
   // hidden field drops what is typed into it. The panel focuses Name once it
   // has settled (fine pointer), so that focus is the signal the form is ready

@@ -4,7 +4,7 @@ import { simpleRichText } from '@/stories/fixtures'
 import { LowImpactHero } from './index'
 
 const meta = {
-  title: 'Heros/LowImpact',
+  title: 'Heroes/LowImpact',
   component: LowImpactHero,
   tags: ['autodocs'],
 } satisfies Meta<typeof LowImpactHero>

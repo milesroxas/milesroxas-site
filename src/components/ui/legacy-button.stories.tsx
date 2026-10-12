@@ -90,3 +90,16 @@ export const Disabled: Story = {
     await expect(canvas.getByRole('button')).toBeDisabled()
   },
 }
+
+/** `asChild` styles the child as the button (the 404 page's link home and CMSLink's buttons). */
+export const AsChild: Story = {
+  args: {
+    asChild: true,
+    children: <a href="/">Go home</a>,
+  },
+  play: async ({ canvasElement }) => {
+    const link = within(canvasElement).getByRole('link', { name: 'Go home' })
+    await expect(link).toHaveAttribute('href', '/')
+    await expect(within(canvasElement).queryByRole('button')).toBeNull()
+  },
+}

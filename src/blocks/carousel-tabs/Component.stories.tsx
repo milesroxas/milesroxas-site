@@ -1,11 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect, userEvent, waitFor, within } from 'storybook/test'
 import type { Media } from '@/payload-types'
 import { blockControls } from '@/stories/block-controls'
 import {
+  cloudflareImageFixture,
   imageMedia,
   mediaFixture,
   paragraph,
   richText,
+  streamVideoFixture,
   text,
   videoFixture,
 } from '@/stories/fixtures'
@@ -86,6 +89,63 @@ export const Video: Story = {
       },
       { id: 'tab-2', title: 'Still', slides: slides(2, 'Still') },
     ],
+  },
+}
+
+/**
+ * Production media: each deck's pictures focus in from a blurred Cloudflare
+ * copy, and a swap holds the old deck until the new one's first picture can
+ * paint. Needs network.
+ */
+export const CloudflareMedia: Story = {
+  args: {
+    tabs: [
+      {
+        id: 'tab-1',
+        title: 'Images',
+        slides: [1, 2, 3].map((n) => ({
+          id: `cf-image-${n}`,
+          media: cloudflareImageFixture,
+          caption: `Cloudflare Images ${n}`,
+        })),
+      },
+      {
+        id: 'tab-2',
+        title: 'Stream',
+        slides: [
+          { id: 'cf-stream', media: streamVideoFixture, caption: 'Cloudflare Stream' },
+          { id: 'cf-still', media: cloudflareImageFixture, caption: 'A still beside it' },
+        ],
+      },
+    ],
+  },
+}
+
+/**
+ * One deck captioned, one not: the shared frame reserves the caption line
+ * for every deck, so a swap never moves the page.
+ */
+export const CaptionsInOneTab: Story = {
+  args: {
+    tabs: [
+      { id: 'tab-1', title: 'Captioned', slides: slides(3, 'Captioned') },
+      {
+        id: 'tab-2',
+        title: 'Uncaptioned',
+        slides: slides(3, 'Uncaptioned').map((slide) => ({ ...slide, caption: null })),
+      },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const tab = canvas.getByRole('tab', { name: 'Uncaptioned' })
+    await userEvent.click(tab)
+    await waitFor(() => expect(tab).toHaveAttribute('aria-selected', 'true'))
+    // The old deck stays mounted through the hold and the dissolve.
+    await waitFor(
+      () => expect(canvasElement.querySelectorAll('[data-carousel-caption]')).toHaveLength(1),
+      { timeout: 4000 },
+    )
   },
 }
 

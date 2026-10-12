@@ -4,17 +4,21 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { imageMedia, paragraph, richText, text } from '@/stories/fixtures'
+import { bandEdges } from './band-edges'
 import { BAND_THEME_OPTIONS, type BandTheme } from './band-theme'
 import { BlockGrid } from './grid'
-import { Section, SPACING_SCALE, STACK_SPACING } from './section'
-import { eyebrowClassName } from './typography'
+import { Section, SPACING_SCALE, STACK_OPENER, STACK_SPACING } from './section'
+import { eyebrowClassName, typeScale } from './typography'
 
 /*
  * The composition band (`Section`) with the two site reveals inside it, as
- * the run blocks will compose them (docs/composer-roadmap.md, Phase 1).
- * Placeholder children stand in for the blocks, which land in Phase 3; the
- * reveal markers and tuning are the ported ones, unchanged.
+ * the run blocks compose them. Placeholder children stand in for the blocks
+ * (the Section block's story nests real ones), on the blocks' type scale:
+ * the section heading two rungs over a block heading, a block heading one
+ * over its copy.
  */
+
+const type = typeScale('small')
 
 const body = richText(
   paragraph(
@@ -24,24 +28,29 @@ const body = richText(
   ),
 )
 
-/** Copy cluster on the shared `intro` reveal: eyebrow, heading and body drop in. */
+/**
+ * A section heading on the shared `intro` reveal: eyebrow, heading and body
+ * drop in. It sits half a stack step above the block it titles (`STACK_OPENER`).
+ */
 const IntroCopy = ({ heading }: { heading: string }) => (
   <ScrollReveal as="div" variant="intro">
-    <Container>
-      <BlockGrid>
-        <div className="text-stack md:col-span-5">
-          <p className={eyebrowClassName} data-reveal="" data-reveal-group="heading">
-            Approach
-          </p>
-          <h2 className="text-heading-2" data-reveal="" data-reveal-group="heading">
-            {heading}
-          </h2>
-          <div data-reveal="">
-            <RichText data={body} enableGutter={false} enableProse={false} />
+    <div data-section-heading>
+      <Container>
+        <BlockGrid>
+          <div className="text-stack md:col-span-5">
+            <p className={eyebrowClassName} data-reveal="" data-reveal-group="heading">
+              Approach
+            </p>
+            <h2 className={type.title} data-reveal="" data-reveal-group="heading">
+              {heading}
+            </h2>
+            <div data-reveal="">
+              <RichText data={body} enableGutter={false} enableProse={false} />
+            </div>
           </div>
-        </div>
-      </BlockGrid>
-    </Container>
+        </BlockGrid>
+      </Container>
+    </div>
   </ScrollReveal>
 )
 
@@ -51,7 +60,7 @@ const MediaUnderCopy = () => (
     <Container>
       <BlockGrid>
         <div className="text-stack md:col-span-4" data-reveal="">
-          <h3 className="text-heading-3">Stacked media</h3>
+          <h3 className={type.heading}>Stacked media</h3>
         </div>
         <div
           className="relative aspect-16/9 overflow-hidden bg-muted md:col-span-8"
@@ -92,7 +101,7 @@ type BandArgs = {
 
 const Band = ({ spacing, theme }: BandArgs) => (
   <Section spacing={spacing} theme={theme}>
-    <div className={STACK_SPACING[spacing]}>
+    <div className={`${STACK_SPACING[spacing]} ${STACK_OPENER[spacing]}`}>
       <IntroCopy heading="One band, many blocks" />
       <MediaUnderCopy />
       <FrameRevealBlock />
@@ -126,12 +135,20 @@ export const Tight: Story = { args: { spacing: 'tight' } }
 
 export const Loose: Story = { args: { spacing: 'loose', theme: 'inverted' } }
 
-/** All four surfaces stacked, the way adjacent bands meet on a page. */
+const ALL_THEMES = BAND_THEME_OPTIONS.map(({ value }) => value)
+
+/**
+ * All four surfaces stacked, the way adjacent bands meet on a page: where the
+ * surface changes (`bandEdges`, as `RenderBlocks` marks it) a painted band
+ * adds a full step inside its edge.
+ */
 export const AllBands: Story = {
   render: (args) => (
     <>
-      {BAND_THEME_OPTIONS.map(({ value: theme }) => (
-        <Band key={theme} spacing={args.spacing} theme={theme} />
+      {bandEdges(ALL_THEMES).map((edge, index) => (
+        <div className="contents" data-band-edge={edge} key={ALL_THEMES[index]}>
+          <Band spacing={args.spacing} theme={ALL_THEMES[index]} />
+        </div>
       ))}
     </>
   ),

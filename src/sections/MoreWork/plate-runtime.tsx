@@ -242,10 +242,16 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
     }
     stopVideos.current()
     const rows = new Set([base.current, ...waves.current.map((wave) => wave.row)])
-    const stops = [...rows]
-      .map((row) => media[row])
-      .filter((el): el is HTMLVideoElement => el instanceof HTMLVideoElement)
-      .map((video) => onVideoFrames(video, invalidate))
+    // The texture is marked here, not left to VideoTexture's own frame loop:
+    // `dispose()` cancels that loop for good, and StrictMode disposes once on mount.
+    const stops = [...rows].flatMap((row) => {
+      const video = media[row]
+      if (!(video instanceof HTMLVideoElement)) return []
+      return onVideoFrames(video, () => {
+        textures[row].needsUpdate = true
+        invalidate()
+      })
+    })
     stopVideos.current = () => {
       for (const stop of stops) stop()
     }

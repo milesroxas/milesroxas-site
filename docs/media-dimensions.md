@@ -14,8 +14,9 @@ What size to export an image or video for each block that holds media. Measured 
   enough for frames 768px or narrower. Cloudflare Stream builds the smaller renditions. Export MP4
   (H.264). Go to 2560px only for a full-bleed frame that must stay sharp on large monitors.
 - **Frames crop to fill, from the centre.** There is no focal point. Export at the listed ratio
-  and nothing is lost; where a frame changes ratio between phone and desktop, keep the subject in
-  the band both crops share (noted per block).
+  and nothing is lost; where a frame changes ratio between phone and desktop, no single export
+  escapes a crop at every width, so the listed ratio is the one that matters most (usually
+  desktop) and the note says what the other widths trim and where to keep the subject.
 - **Keep images under 10 MB.** JPEG at high quality or PNG for flat graphics; no need to export
   WebP/AVIF yourself.
 
@@ -41,8 +42,8 @@ What size to export an image or video for each block that holds media. Measured 
 | Media and content | 16:9 / 3:2 / 21:9 | chosen ratio, 4 columns | 1440 × 810 / 1440 × 960 / 1440 × 617 | 1920 wide at the same ratio |
 | Split content (narrow) | | 5:4 on phones, 3:2 from tablet; 5 columns on tablet, 6 from desktop | 2100 × 1400 (3:2). Subject in the centre 5:4 (middle 83% of the width) | 1920 × 1280 |
 | Carousel split | | each slide keeps its own ratio; 5 columns on tablet, 6 from desktop | 2100 wide | 1920 wide |
-| Image pair | Portrait (either side, per Portrait position) | 4:5, 3 columns | 1200 × 1500 | 1080 × 1350 |
-| Image pair | Landscape | stretches to the portrait's height from tablet (about 1.37:1, 1.40:1 at the narrowest), 16:10 on phones, 5 columns | 1736 × 1270. Subject in the centre 16:10 band (middle 85% of the height) | 1920 × 1400 |
+| Image pair | Portrait (either side, per Portrait position) | 4:5 at every width, 3 columns (508px on desktop, 576px stacked on a phone) | 1200 × 1500 (4:5). Never cropped | 1080 × 1350 (4:5). Never cropped |
+| Image pair | Landscape | stretches to the portrait's height from tablet, 5 columns: 868 × 635 (1.37:1) on desktop, up to 1.41:1 at a 768px window; 16:10 on phones | 1736 × 1270 (1.37:1). Uncropped on a window 1600px and wider; tablets trim up to 3% of the height, phones trim 15% (7% off the top and bottom). Keep the subject in the middle 85% of the height | 1920 × 1400 (1.37:1), even dimensions. Same crops as the image |
 | Split image offset | Large image | 5:4, 5 columns | 1800 × 1440 | 1350 × 1080 |
 | Split image offset | Small image | 3:2, 3 columns | 1200 × 800 | 1280 × 854 |
 

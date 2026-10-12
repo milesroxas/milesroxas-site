@@ -118,8 +118,11 @@ const SingleStyleSlider: React.FC<{
       }}
     >
       <CarouselContent className="gap-4">
-        {slides.map(({ slide }, index) => (
-          <CarouselItem key={slideKeys.fromSlide(slide, index)} className="w-full basis-full">
+        {slides.map(({ id, slide }, index) => (
+          <CarouselItem
+            key={slideKeys.fromSlide({ id, image: slide.image }, index)}
+            className="w-full basis-full"
+          >
             <div className="mx-auto aspect-video w-full">
               <SlideContent slide={slide} index={index} fullWidth={fullWidth} isSingleStyle />
             </div>
@@ -151,9 +154,9 @@ const DefaultStyleSlider: React.FC<{
       }}
     >
       <CarouselContent className="gap-2">
-        {slides.map(({ slide }, index) => (
+        {slides.map(({ id, slide }, index) => (
           <CarouselItem
-            key={slideKeys.fromSlide(slide, index)}
+            key={slideKeys.fromSlide({ id, image: slide.image }, index)}
             className={cn(
               'basis-4/6 md:basis-3/4 lg:basis-2/3 2xl:basis-1/2',
               currentIndex === index ? 'z-20' : 'opacity-30',

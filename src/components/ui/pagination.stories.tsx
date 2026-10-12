@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect, within } from 'storybook/test'
 
 import {
   Pagination,
@@ -44,4 +45,34 @@ export const Default: Story = {
       </PaginationContent>
     </Pagination>
   ),
+}
+
+/** The first page, as the posts archive renders it: Previous is disabled and no gap leads. */
+export const FirstPage: Story = {
+  render: () => (
+    <Pagination>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious disabled />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink isActive>1</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink>2</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('button', { name: 'Go to previous page' })).toBeDisabled()
+    await expect(canvas.getByRole('button', { name: '1' })).toHaveAttribute('aria-current', 'page')
+  },
 }

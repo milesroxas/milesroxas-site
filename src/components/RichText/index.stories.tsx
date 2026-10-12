@@ -43,6 +43,25 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/**
+ * The article scale (`prose-h*` classes): every in-body heading stays below
+ * the page's h1, and h3/h4 carry hierarchy by weight at near-body sizes.
+ */
+export const HeadingLadder: Story = {
+  args: {
+    data: richText(
+      heading('h1', text('Heading one, a step below the page title')),
+      paragraph(text('Body copy under the first heading.')),
+      heading('h2', text('Heading two at lead size')),
+      paragraph(text('Body copy under the second heading.')),
+      heading('h3', text('Heading three in medium weight')),
+      paragraph(text('Body copy under the third heading.')),
+      heading('h4', text('Heading four in medium weight')),
+      paragraph(text('Body copy under the fourth heading.')),
+    ),
+  },
+}
+
 export const Emphasis: Story = {
   args: {
     data: richText(

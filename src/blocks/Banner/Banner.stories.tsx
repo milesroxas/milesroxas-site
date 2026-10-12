@@ -3,8 +3,9 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { paragraphRichText } from '@/stories/fixtures'
 import { BannerBlock } from './Component'
 
+// A Rich text body block, not a layout block, so it has no `blockControls` manifest entry.
 const meta = {
-  title: 'Blocks/Banner',
+  title: 'Blocks/Text/Banner',
   component: BannerBlock,
   tags: ['autodocs'],
   args: {

@@ -16,7 +16,14 @@ context work out of the box.
   cards, pagination). Payload-shaped data comes from `src/stories/fixtures.ts`.
 - **Blocks** — CMS layout blocks from `src/blocks`, rendered with the same
   fixture data the live site would receive from Payload.
-- **Heros** — hero configurations from `src/heros`.
+- **Heroes** — page, work and post openings from `src/heros`.
+- **Sections** — page-level sections from `src/sections` (work intro, external
+  article band, related work and posts).
+- **Features** — self-contained feature UI from `src/features` (Ask's pieces,
+  the contents button, the contact page).
+- **Foundation** — the shared section band and the `ScrollReveal` entrance
+  every block plays over.
+- **Immersive** — Studio effects and their posters from `src/features/immersive`.
 
 ## Conventions
 
@@ -45,13 +52,17 @@ context work out of the box.
 
 ## Deliberately not covered
 
-Components that require the live app shell — the page transitions,
-`SiteFrame`, scroll choreography, or server-only Payload access — are out of
-scope for isolated stories:
+Components that require the live app shell — the page transitions, the site
+chrome, or server-only Payload access — are out of scope for isolated stories:
 
-- `Header` / `Footer` server components (Payload DB fetch via `getPayload`);
-  `Form` block (submits to the Payload API)
+- `SiteChrome` (top bar, dock, Ask panel), driven by the Header and Site Info
+  globals and `src/stores/chromeStore.ts`
+- The page-transition flow (`src/features/page-transition`: the post curtain
+  and the work card morph)
+- `Footer` and other server components that fetch through `getPayload`;
+  the `archive` block (queries Payload) and the `formBlock` block (submits to
+  the Payload API)
 - Three.js / R3F scenes
 
-Cards and heros that *reference* the transition system still render here —
+Cards and heroes that *reference* the transition system still render here —
 only the click-driven transition itself is a no-op in isolation.

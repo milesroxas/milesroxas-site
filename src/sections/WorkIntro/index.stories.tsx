@@ -10,8 +10,14 @@ const meta = {
   component: WorkIntro,
   parameters: {
     layout: 'fullscreen',
-    // GSAP drives the entrance; snapshot the reduced-motion (final) state.
+    // The shared scroll reveal drives the entrance; snapshot the reduced-motion (final) state.
     chromatic: { prefersReducedMotion: 'reduce' },
+    docs: {
+      description: {
+        component:
+          'The introduction band after a work or post hero: one statement, centred in a band one screen tall less the gaps around it, so the statement is all that shows. Its lines rise out of masks, one after another, on the shared scroll reveal.',
+      },
+    },
   },
   args: {
     title: 'Background',
@@ -35,5 +41,12 @@ export const WithOverrideBody: Story = {
 export const TwoParagraphs: Story = {
   args: {
     summary: `${summary}\n\nVisitors gained a clearer path through the platform while retaining access to the technical depth they needed.`,
+  },
+}
+
+/** A short statement still holds the screen, centred. */
+export const OneLine: Story = {
+  args: {
+    summary: 'A platform for small business growth.',
   },
 }

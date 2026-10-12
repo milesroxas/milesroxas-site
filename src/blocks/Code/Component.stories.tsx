@@ -36,7 +36,7 @@ const shellSample = `pnpm cms:upload ./shots/studio-inspector.png \\
 const controls = blockControls<typeof CodeBlock>('code')
 
 const meta = {
-  title: 'Blocks/Code',
+  title: 'Blocks/Text/Code',
   component: CodeBlock,
   parameters: {
     layout: 'padded',

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect } from 'storybook/test'
 import { Section } from '@/blocks/shared/section'
 import { Media } from '@/components/Media'
 import { mediaFixture } from '@/stories/fixtures'
@@ -12,7 +13,8 @@ import { LeakVisual } from './leak-visual'
  * is clipped to the media frame; bleeding, it leaves the frame and washes
  * across the block (`Section`) from the corner the editor pinned it to.
  * `admission: 'force'` runs the lifecycle on any machine; on the site the same
- * gates as every live visual apply.
+ * gates as every live visual apply. The layer reports them as
+ * `data-visual-status`, with `data-visual-pending` while a live frame is due.
  */
 const descriptor = (over: Partial<LeakVisualDescriptor> = {}): LeakVisualDescriptor => ({
   look: 'film-v1',
@@ -119,5 +121,15 @@ export const PinnedDark: Story = {
   ),
 }
 
-/** Repeated entries: poster only by placement policy, no probe, no chunk. */
-export const PosterOnly: Story = { args: { placement: 'card', admission: 'auto' } }
+/**
+ * Repeated entries: poster only by placement policy, no probe, no chunk. The
+ * still is final, so the layer never marks itself `data-visual-pending`.
+ */
+export const PosterOnly: Story = {
+  args: { placement: 'card', admission: 'auto' },
+  play: async ({ canvasElement }) => {
+    const layer = canvasElement.querySelector('[data-visual-layer="lightLeak"]')
+    await expect(layer).toHaveAttribute('data-visual-status', 'poster')
+    await expect(layer).not.toHaveAttribute('data-visual-pending')
+  },
+}

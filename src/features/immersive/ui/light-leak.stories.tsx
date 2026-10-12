@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { LIGHT_LEAK_PAPER } from '../presets'
+import { LIGHT_LEAK_AMBER, LIGHT_LEAK_PAPER } from '../presets'
 import { LightLeak } from './light-leak'
 import { leakExcite } from './light-leak-excite'
 
@@ -56,7 +56,7 @@ function Page() {
             {...leakExcite()}
             className="rounded-md border border-border bg-card/60 p-6"
           >
-            <p className="text-sm text-card-foreground">{title}</p>
+            <p className="text-card-foreground text-sm">{title}</p>
             <div className="mt-4 h-24 rounded-sm bg-linear-to-br from-muted to-accent" />
           </div>
         ))}
@@ -87,12 +87,12 @@ export const OverAPage: Story = {
 export const OverASection: Story = {
   render: (args) => (
     <div data-theme="dark" className="min-h-svh bg-background text-foreground">
-      <div className="px-10 py-24 text-sm text-muted-foreground">Plain section — no leak here.</div>
-      <section className="relative isolate border-y border-border">
+      <div className="px-10 py-24 text-muted-foreground text-sm">Plain section — no leak here.</div>
+      <section className="relative isolate border-border border-y">
         <Page />
         <LightLeak {...args} />
       </section>
-      <div className="px-10 py-24 text-sm text-muted-foreground">Plain section — no leak here.</div>
+      <div className="px-10 py-24 text-muted-foreground text-sm">Plain section — no leak here.</div>
     </div>
   ),
 }
@@ -109,12 +109,12 @@ export const AcrossTheSection: Story = {
   },
   render: (args) => (
     <div data-theme="dark" className="min-h-svh bg-background text-foreground">
-      <div className="px-10 py-24 text-sm text-muted-foreground">Plain section — no leak here.</div>
-      <section className="relative isolate border-y border-border">
+      <div className="px-10 py-24 text-muted-foreground text-sm">Plain section — no leak here.</div>
+      <section className="relative isolate border-border border-y">
         <Page />
         <LightLeak {...args} />
       </section>
-      <div className="px-10 py-24 text-sm text-muted-foreground">Plain section — no leak here.</div>
+      <div className="px-10 py-24 text-muted-foreground text-sm">Plain section — no leak here.</div>
     </div>
   ),
 }
@@ -124,6 +124,21 @@ export const LowerSampleTier: Story = {
   args: {
     samples: 3,
   },
+  render: (args) => (
+    <div data-theme="dark" className="relative isolate min-h-svh bg-background text-foreground">
+      <Page />
+      <LightLeak {...args} />
+    </div>
+  ),
+}
+
+/**
+ * The `amber-v1` look: hot gold over lilac, the slat fan pulled to a razor at
+ * its top end, and a hover flare that gathers light rather than closing the
+ * blinds.
+ */
+export const Amber: Story = {
+  args: LIGHT_LEAK_AMBER,
   render: (args) => (
     <div data-theme="dark" className="relative isolate min-h-svh bg-background text-foreground">
       <Page />

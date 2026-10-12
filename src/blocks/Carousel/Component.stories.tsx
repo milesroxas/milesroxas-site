@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect } from 'storybook/test'
 import { blockControls } from '@/stories/block-controls'
-import { mediaFixture, videoFixture } from '@/stories/fixtures'
+import {
+  cloudflareImageFixture,
+  mediaFixture,
+  streamVideoFixture,
+  videoFixture,
+} from '@/stories/fixtures'
 import { CarouselBlock } from './Component'
 
 const slides = Array.from({ length: 5 }, (_, i) => ({
@@ -30,7 +36,20 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
+/**
+ * One caption line under the deck: it shows the slide nearest the scroll
+ * position, while each slide keeps its own caption for readers.
+ */
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const lines = canvasElement.querySelectorAll('[data-carousel-caption]')
+    await expect(lines).toHaveLength(1)
+    await expect(lines[0]).toHaveAttribute('aria-hidden', 'true')
+    await expect(canvasElement.querySelectorAll('[data-caption] .sr-only')).toHaveLength(
+      slides.length,
+    )
+  },
+}
 
 export const WithoutArrows: Story = {
   args: {
@@ -70,6 +89,17 @@ export const Third: Story = {
 }
 
 /**
+ * Too few slides to fill a wide window, so embla drops the loop: snaps stay
+ * centred and the deck opens on its middle slide, a neighbour either side.
+ */
+export const ShortDeck: Story = {
+  args: {
+    slideSize: 'third',
+    slides: slides.slice(0, 3),
+  },
+}
+
+/**
  * Phone width: every size drops to a three-quarter slide so a sliver of each
  * neighbour stays in frame, and the arrows overlay the slides instead of
  * reserving an outer gutter.
@@ -81,15 +111,28 @@ export const MobilePeek: Story = {
   globals: {
     viewport: { value: 'mobile1', isRotated: false },
   },
-  parameters: {
-    // Chromatic snapshots this one at phone width so the peek is regression-covered.
-    chromatic: { viewports: [390] },
-  },
 }
 
+/** No slide carries a caption, so the deck reserves no caption line. */
 export const WithoutCaptions: Story = {
   args: {
     slides: slides.map((slide) => ({ ...slide, caption: null })),
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector('[data-carousel-caption]')).toBeNull()
+  },
+}
+
+/**
+ * Some slides uncaptioned: the caption line keeps its one-line slot and
+ * empties for them, so the block never moves as captions come and go.
+ */
+export const SomeCaptions: Story = {
+  args: {
+    slides: slides.map((slide, i) => (i % 2 ? { ...slide, caption: null } : slide)),
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelectorAll('[data-carousel-caption]')).toHaveLength(1)
   },
 }
 
@@ -108,7 +151,8 @@ export const MixedAspectRatios: Story = {
 /**
  * Portrait media: at four fifths of a desktop column a 4:5 slide would run
  * taller than the window, so the deck is capped at the width where its
- * tallest media reaches 70svh. Shrink the browser height and the deck follows.
+ * tallest media reaches 70svh, and the image `sizes` hint honours the same
+ * cap. Shrink the browser height and the deck follows.
  */
 export const Portrait: Story = {
   args: {
@@ -130,6 +174,25 @@ export const Portrait: Story = {
 export const WithVideo: Story = {
   args: {
     slides: [slides[0], { id: 'slide-video', media: videoFixture, caption: null }, slides[2]],
+  },
+}
+
+/**
+ * Production media: a Cloudflare Images slide focuses in from a blurred 32px
+ * copy of itself, and a Stream slide paints its sized poster over the paused
+ * video, dissolving it once the slide is active. Needs network.
+ */
+export const CloudflareMedia: Story = {
+  args: {
+    slideSize: 'half',
+    slides: [
+      { id: 'cf-image-1', media: cloudflareImageFixture, caption: 'Cloudflare Images' },
+      { id: 'cf-stream', media: streamVideoFixture, caption: 'Cloudflare Stream' },
+      { id: 'cf-image-2', media: cloudflareImageFixture, caption: 'Cloudflare Images' },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelectorAll('[data-carousel-poster]')).toHaveLength(1)
   },
 }
 

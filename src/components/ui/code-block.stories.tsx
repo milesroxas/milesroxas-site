@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { themeClasses } from '@/blocks/shared/band-theme'
 import { CodeBlock } from './code-block'
 
 const shortSample = `export const BlockGrid = ({ className, subgrid = false, ...props }: Props) => (
@@ -119,10 +120,14 @@ export const WithoutLineNumbers: Story = {
   args: { lineNumbers: false },
 }
 
-/** On a dark band the panel takes the band's deeper plate, not a lighter card. */
-export const OnDarkBand: Story = {
+/**
+ * On an inverted band (dark on a light visit, light on a dark one) the panel
+ * stays the always-dark plate; its hairline keeps it a surface where the two
+ * grounds land close.
+ */
+export const OnInvertedBand: Story = {
   render: (args) => (
-    <div className="bg-background p-12" data-band="dark">
+    <div className={`${themeClasses.inverted} p-12`}>
       <CodeBlock {...args} />
     </div>
   ),

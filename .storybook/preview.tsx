@@ -8,7 +8,7 @@ import { cursorGlobalTypes, withCursor } from './cursor'
 import './fonts.css'
 
 const ibmPlexSans = IBM_Plex_Sans({
-  weight: ['300', '400', '600', '700'],
+  weight: ['300', '400', '500', '600', '700'],
   subsets: ['latin'],
   variable: '--font-ibm-plex-sans',
 })

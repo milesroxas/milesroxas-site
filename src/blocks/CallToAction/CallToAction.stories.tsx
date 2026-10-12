@@ -1,13 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-
+import { blockControls } from '@/stories/block-controls'
 import { simpleRichText } from '@/stories/fixtures'
 import { CallToActionBlock } from './Component'
 
+const controls = blockControls<typeof CallToActionBlock>('cta')
+
 const meta = {
-  title: 'Blocks/CallToAction',
+  title: 'Blocks/FormsAndCTAs/CallToAction',
   component: CallToActionBlock,
   tags: ['autodocs'],
+  parameters: {
+    layout: 'fullscreen',
+  },
+  argTypes: controls.argTypes,
   args: {
+    ...controls.args,
     blockType: 'cta',
     richText: simpleRichText,
     links: [
@@ -22,9 +29,6 @@ const meta = {
       },
     ],
   },
-  argTypes: {
-    blockType: { table: { disable: true } },
-  },
 } satisfies Meta<typeof CallToActionBlock>
 
 export default meta
@@ -32,6 +36,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
+/** The most the editor allows: a primary link and an outline one beside it. */
 export const TwoLinks: Story = {
   args: {
     links: [

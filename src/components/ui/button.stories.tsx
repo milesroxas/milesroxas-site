@@ -37,6 +37,7 @@ const meta = {
         'xs',
         'sm',
         'lg',
+        'xl',
         'icon',
         'icon-xs',
         'icon-sm',
@@ -100,21 +101,48 @@ export const PillSecondary: Story = {
   args: { size: 'pill', variant: 'secondary', children: <span>Close</span> },
 }
 
-/** Conversation action: Ask's suggestion chips and handoff card buttons. */
-export const Chat: Story = {
+/** Editorial page action: the contact form's submit, a 44px touch target. */
+export const ExtraLarge: Story = {
+  args: { size: 'xl', children: 'Send message' },
+}
+
+/** Sending holds focus with `aria-disabled` rather than `disabled`, as the contact form does. */
+export const ExtraLargeSending: Story = {
   args: {
-    size: 'chat',
+    size: 'xl',
+    'aria-disabled': true,
     children: (
       <>
-        Request an estimate
-        <IconArrowRight data-icon="inline-end" />
+        <Spinner />
+        Sending…
       </>
     ),
   },
 }
 
+/** Conversation action: Ask's rating reasons and handoff buttons, on the chrome's 8px corner. */
+export const Chat: Story = {
+  args: {
+    size: 'chat',
+    className: 'font-normal',
+    children: 'Talk to Miles',
+  },
+}
+
 export const ChatOutline: Story = {
-  args: { size: 'chat', variant: 'outline', children: 'What does it cost?' },
+  args: { size: 'chat', variant: 'outline', className: 'font-normal', children: 'Incomplete' },
+}
+
+/** The handoff form's send row: a ghost Cancel beside the one action. */
+export const ChatActions: Story = {
+  render: () => (
+    <div className="flex items-center justify-end gap-2">
+      <Button className="font-normal" size="chat" variant="ghost">
+        Cancel
+      </Button>
+      <Button size="chat">Send to Miles</Button>
+    </div>
+  ),
 }
 
 export const Icon: Story = {
@@ -148,8 +176,18 @@ export const Loading: Story = {
   },
 }
 
+/** Text-flow link: the handoff card's footer action. */
 export const Clear: Story = {
-  args: { size: 'clear', variant: 'link' },
+  args: {
+    size: 'clear',
+    variant: 'link',
+    children: (
+      <>
+        Contact page
+        <IconArrowRight data-icon="inline-end" />
+      </>
+    ),
+  },
 }
 
 /** Editorial text action in the field-label voice (Edit, Edit and resend). */

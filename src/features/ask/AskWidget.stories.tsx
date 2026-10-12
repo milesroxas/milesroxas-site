@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect, waitFor } from 'storybook/test'
 import { AskWidget } from './AskWidget'
 import {
   askHandoffChat,
@@ -10,6 +11,9 @@ import {
 import { askSwapSettled, openAskHandoff, sendAskHandoff, stubInquiryIntake } from './storyPlays'
 
 /**
+ * The /ask page's surface. The dock's Ask panel renders the same transcript
+ * (`TranscriptItems`) but lives in the site chrome, so it is not storied here.
+ *
  * All stories drive the real `useChat` lifecycle through a scripted transport
  * (vendored @shadcn/helpers ai-sdk): no /api/ask route, network, or API key.
  * Type a question (3+ characters) and submit to play the next scripted reply.
@@ -22,7 +26,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="w-[32rem]">
+      <div className="w-lg">
         <Story />
       </div>
     ),
@@ -34,6 +38,18 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+const CRAFT_AND_CODE = {
+  sourceId: '/works/craft-and-code-for-an-evolving-agency',
+  title: 'Craft and Code for an Evolving Agency',
+  url: '/works/craft-and-code-for-an-evolving-agency',
+}
+
+const FOURTEEN_BRANCHES = {
+  sourceId: '/posts/fourteen-branches-one-afternoon-how-i-work-in-parallel-as-a-solo-engineer',
+  title: 'Fourteen branches, one afternoon: how I work in parallel as a solo engineer',
+  url: '/posts/fourteen-branches-one-afternoon-how-i-work-in-parallel-as-a-solo-engineer',
+}
+
 /**
  * Assistant-only script: whatever the user types, the next scripted reply
  * streams back (sources first, then the grounded answer), mirroring what
@@ -44,30 +60,22 @@ type Story = StoryObj<typeof meta>
 const scriptedAnswers = createAskChat()
   .assistant(({ writer }) => {
     writer
+      .sourceUrl(CRAFT_AND_CODE)
       .sourceUrl({
-        sourceId: '/posts/beyond-the-logo',
-        title: 'Beyond the logo: brand systems that scale',
-        url: '/posts/beyond-the-logo',
-      })
-      .sourceUrl({
-        sourceId: '/posts/websites-that-sell',
-        title: 'Websites that sell the way you do',
-        url: '/posts/websites-that-sell',
+        sourceId: '/posts/building-a-shader-studio-in-payload-cms',
+        title: 'Building a shader studio in Payload CMS',
+        url: '/posts/building-a-shader-studio-in-payload-cms',
       })
       .sleep(1_200)
       .text(
-        'Suits & Sandals focuses on brand strategy, identity systems, and web design for growing companies. "Beyond the logo" walks through how the identity work scales past launch, and "Websites that sell the way you do" covers how the sites are built to carry that positioning.',
+        'Miles designs and builds content-driven sites on Payload CMS. "Craft and Code for an Evolving Agency" covers the Suits & Sandals site, built so one content source serves the website, custom tools and AI features, and "Building a shader studio in Payload CMS" walks through a plugin that lets editors tune a GPU shader and publish it like an image.',
       )
   })
   .assistant(({ writer }) => {
     writer
-      .sourceUrl({
-        sourceId: '/posts/positioning-first',
-        title: 'Positioning first, pixels second',
-        url: '/posts/positioning-first',
-      })
+      .sourceUrl(FOURTEEN_BRANCHES)
       .text(
-        'Engagements start with discovery and positioning before any design work. "Positioning first, pixels second" describes that sequence in detail.',
+        'He runs several tasks at once, each in its own worktree with its own port and database. "Fourteen branches, one afternoon" describes that setup in detail.',
       )
   })
   .assistant(({ writer }) => {
@@ -87,16 +95,12 @@ export const Default: Story = {
 
 /** Transcript seeded to its final state: the answered UI, sources collapsed. */
 const answeredChat = createAskChat()
-  .user('What services does Suits & Sandals offer?')
+  .user('What kind of work does Miles do?')
   .assistant(({ writer }) => {
     writer
-      .sourceUrl({
-        sourceId: '/posts/beyond-the-logo',
-        title: 'Beyond the logo: brand systems that scale',
-        url: '/posts/beyond-the-logo',
-      })
+      .sourceUrl(CRAFT_AND_CODE)
       .text(
-        'Suits & Sandals offers brand strategy, identity systems, and web design. The "Beyond the logo" case study covers how those identity systems are built to scale.',
+        'Miles designs and builds websites and the systems behind them. "Craft and Code for an Evolving Agency" covers the Suits & Sandals site, designed and built on Payload CMS so one content source serves the website, custom tools and AI features.',
       )
   })
 
@@ -109,11 +113,11 @@ export const Answered: Story = {
 
 /** The sources disclosure opened: inset rows, one per page, on the shared disclosure track. */
 const sourcesChat = createAskChat()
-  .user('Have you worked with platforms before a raise?')
+  .user('Has Miles built systems that several teams share?')
   .assistant(({ writer }) => {
     for (const source of askSourcesFixture) writer.sourceUrl(source)
     writer.text(
-      'Yes. A lot of our work is with platforms and digital products, often right before a raise or a big launch.',
+      'Yes. For NextStreet he built one design system that supports multiple products and teams, and the Suits & Sandals CMS moved to Payload so one record feeds the site, Ask and agents.',
     )
   })
 
@@ -153,6 +157,22 @@ export const HandoffForm: Story = {
   args: Handoff.args,
   parameters: askSwapSettled,
   play: openAskHandoff,
+}
+
+/** Cancel puts the form back to the offer row, and keyboard focus back on the chip that opened it. */
+export const HandoffCancelled: Story = {
+  args: Handoff.args,
+  parameters: askSwapSettled,
+  play: async (context) => {
+    await openAskHandoff(context)
+    await context.userEvent.click(context.canvas.getByRole('button', { name: 'Cancel' }))
+    await waitFor(
+      () =>
+        expect(context.canvas.getByRole('button', { name: 'Talk to Miles' })).toBeInTheDocument(),
+      { timeout: 3000 },
+    )
+    await waitFor(() => expect(context.canvas.queryByLabelText('Name')).not.toBeInTheDocument())
+  },
 }
 
 /** The visitor already wrote their address: the form lands open with it filled, marked "From your message". */
@@ -205,7 +225,7 @@ const partialChat = createAskChat()
     for (const source of askSourcesFixture) writer.sourceUrl(source)
     writer
       .text(
-        'Most projects start with a short call about goals, timeline, and budget. From there we send a scoped estimate, so you know what the work covers before anything is signed.',
+        'Most projects start with a short call about goals, timeline and budget. The case studies show how earlier projects were scoped, from a design system for several teams to a CMS move.',
       )
       .tool('handoff', { input: { reason: 'estimate' }, output: askHandoffFixture('estimate') })
   })
@@ -227,12 +247,12 @@ const thinCaseStudyChat = createAskChat()
   .assistant(({ writer }) => {
     writer
       .sourceUrl({
-        sourceId: '/works/gentlebeast',
-        title: 'GentleBeast',
-        url: '/works/gentlebeast',
+        sourceId: '/works/brand-expression-through-digital-experience',
+        title: 'Brand Expression Through Digital Experience',
+        url: '/works/brand-expression-through-digital-experience',
       })
       .text(
-        'For Gentle Beast we worked across product design, web design, UX strategy and brand identity. We carried their existing identity into a richer website: an expanded visual language on a flexible Webflow system, with a structured course catalog that makes lessons, instructors and common questions easy to explore.',
+        'For GentleBeast, an on-demand puppy training service, Miles designed and built a website that turns the brand narrative into a clear, conversion-ready experience.',
       )
       .tool('handoff', { input: { reason: 'case_study' }, output: askHandoffFixture('case_study') })
   })
@@ -261,13 +281,9 @@ export const NoSources: Story = {
  * so there is always a way forward.
  */
 const emptyReplyChat = createAskChat()
-  .user('What does an engagement look like?')
+  .user('How does Miles run a project?')
   .assistant(({ writer }) => {
-    writer.sourceUrl({
-      sourceId: '/posts/positioning-first',
-      title: 'Positioning first, pixels second',
-      url: '/posts/positioning-first',
-    })
+    writer.sourceUrl(FOURTEEN_BRANCHES)
   })
 
 export const EmptyReply: Story = {
@@ -283,14 +299,7 @@ export const EmptyReply: Story = {
  * source list) with the composer's button as Stop.
  */
 const sourcesOnlyChat = createAskChat().assistant(({ writer }) => {
-  writer
-    .sourceUrl({
-      sourceId: '/posts/positioning-first',
-      title: 'Positioning first, pixels second',
-      url: '/posts/positioning-first',
-    })
-    .sleep(300_000)
-    .text('This reply never arrives in the demo.')
+  writer.sourceUrl(FOURTEEN_BRANCHES).sleep(300_000).text('This reply never arrives in the demo.')
 })
 
 export const AwaitingFirstToken: Story = {
@@ -298,7 +307,7 @@ export const AwaitingFirstToken: Story = {
     transport: sourcesOnlyChat.transport(),
   },
   play: async ({ canvas, userEvent }) => {
-    await userEvent.type(canvas.getByRole('textbox'), 'What does an engagement look like?')
+    await userEvent.type(canvas.getByRole('textbox'), 'How does Miles run a project?')
     await userEvent.keyboard('{Enter}')
   },
 }
