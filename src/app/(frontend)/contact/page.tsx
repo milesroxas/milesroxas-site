@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
+import { JsonLd } from '@/components/JsonLd'
 import { ContactTemplate } from '@/features/contact/ContactTemplate'
 import type { ContactPage, SiteInfo } from '@/payload-types'
 import { CONTACT_PAGE_DEFAULTS, type ContactPageCopy } from '@/shared/content/contact'
 import { inquiryResponseTime } from '@/shared/content/inquiry'
+import { generateMeta } from '@/utilities/generateMeta'
 import { getCachedGlobal } from '@/utilities/getGlobals'
-import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { breadcrumbSchema, contactPageSchema } from '@/utilities/schema'
 
 const loadContactPage = () =>
   Promise.all([
@@ -31,24 +33,39 @@ const resolveCopy = (page: ContactPage | null): ContactPageCopy => {
  */
 export default async function ContactRoute() {
   const [page, siteInfo] = await loadContactPage()
+  const copy = resolveCopy(page)
 
   return (
-    <ContactTemplate
-      copy={resolveCopy(page)}
-      email={siteInfo?.contactEmail ?? null}
-      responseTime={inquiryResponseTime(siteInfo)}
-    />
+    <>
+      <JsonLd
+        data={[
+          contactPageSchema({
+            name: page?.meta?.title || 'Contact',
+            description: page?.meta?.description || copy.lead,
+          }),
+          breadcrumbSchema([{ name: 'Contact', path: '/contact' }]),
+        ]}
+      />
+      <ContactTemplate
+        copy={copy}
+        email={siteInfo?.contactEmail ?? null}
+        responseTime={inquiryResponseTime(siteInfo)}
+      />
+    </>
   )
 }
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page] = await loadContactPage()
-  const title = `${page?.meta?.title || 'Contact'} | Miles Roxas`
-  const description = page?.meta?.description || resolveCopy(page).lead
 
-  return {
-    title,
-    description,
-    openGraph: mergeOpenGraph({ title, description, url: '/contact' }),
-  }
+  return generateMeta({
+    doc: {
+      title: 'Contact',
+      meta: {
+        title: page?.meta?.title,
+        description: page?.meta?.description || resolveCopy(page).lead,
+      },
+    },
+    pathname: '/contact',
+  })
 }

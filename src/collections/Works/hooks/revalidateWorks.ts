@@ -7,9 +7,9 @@ export const { afterChange: revalidateWork, afterDelete: revalidateDelete } =
   revalidateDocument<Work>({
     noun: 'work',
     pathFor: (slug) => `/works/${slug}`,
+    // The sitemap and llms.txt follow through the AEO plugin (plugins/aeo).
     revalidateLists: () => {
       revalidatePath('/works')
-      revalidateTag('works-sitemap', 'max')
       revalidateTag('works', 'max')
     },
   })

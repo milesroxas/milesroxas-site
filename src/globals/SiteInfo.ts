@@ -12,18 +12,20 @@ const revalidateSiteInfo: GlobalAfterChangeHook = ({ doc, req: { payload, contex
 }
 
 /**
- * Site-wide facts and the Ask switch (docs/composer-roadmap.md, Phase 5).
- * A trimmed port of sas-site's Site Info global (its AEO plugin): only what
- * Ask reads. The company facts are what Ask can answer "who are you" and
- * "how do I reach you" from (`renderSiteInfo` in shared/content/extract.ts);
- * the inquiry promises are what the handoff shows; `ask.hidden` takes Ask off
- * the site.
+ * Site-wide facts, the Ask switch, and the site's public identity
+ * (docs/composer-roadmap.md, Phase 5; docs/aeo.md). A port of sas-site's Site
+ * Info global (its AEO plugin). The facts are what Ask answers "who are you"
+ * and "how do I reach you" from (`renderSiteInfo` in shared/content/extract.ts)
+ * and what the Person and WebSite JSON-LD, llms.txt and the default share
+ * metadata are built from (`utilities/schema.ts`, `plugins/aeo`); the inquiry
+ * promises are what the handoff shows; `ask.hidden` takes Ask off the site.
  */
 export const SiteInfo: GlobalConfig = {
   slug: 'site-info',
   label: 'Site Info',
   admin: {
-    description: 'Site-wide facts the Ask assistant answers from, and the Ask switch.',
+    description:
+      'Site-wide facts: what Ask answers from, what search engines and AI assistants read about the site, and the Ask switch.',
   },
   access: {
     read: () => true,
@@ -31,6 +33,14 @@ export const SiteInfo: GlobalConfig = {
   },
   fields: [
     { name: 'name', type: 'text', required: true, defaultValue: 'Miles Roxas' },
+    {
+      name: 'jobTitle',
+      type: 'text',
+      admin: {
+        description:
+          'What you do, as a search result or an AI assistant would say it ("Design engineer").',
+      },
+    },
     {
       name: 'legalName',
       type: 'text',
@@ -137,8 +147,31 @@ export const SiteInfo: GlobalConfig = {
       ],
     },
     {
+      name: 'headshot',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description:
+          'The picture search engines and AI assistants show for you (Person structured data). Square, at least 400×400px.',
+      },
+    },
+    {
+      name: 'ogImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Default preview image',
+      admin: {
+        description:
+          'The share card for every page that has no SEO image of its own. Landscape, at least 1200×630px.',
+      },
+    },
+    {
       name: 'address',
       type: 'group',
+      admin: {
+        description:
+          'Where you are based. Only the city, state and country are published in structured data.',
+      },
       fields: [
         { name: 'streetAddress', type: 'text' },
         { name: 'city', type: 'text' },
@@ -150,7 +183,10 @@ export const SiteInfo: GlobalConfig = {
     {
       name: 'socialProfiles',
       type: 'array',
-      admin: { description: 'Profile URLs Ask can point to (LinkedIn, GitHub, Dribbble).' },
+      admin: {
+        description:
+          'Profile URLs (LinkedIn, GitHub, Dribbble). Ask points to them, and structured data lists them as sameAs so search engines and AI assistants match this site to those profiles.',
+      },
       fields: [
         { name: 'label', type: 'text', required: true },
         { name: 'url', type: 'text', required: true },
@@ -159,9 +195,10 @@ export const SiteInfo: GlobalConfig = {
     {
       name: 'llmsNotes',
       type: 'textarea',
-      label: 'Notes for Ask',
+      label: 'Notes for Ask and AI assistants',
       admin: {
-        description: 'Optional extra paragraph Ask can answer from (what you are known for).',
+        description:
+          'Optional extra paragraph Ask can answer from and llms.txt ends with (what you are known for).',
       },
     },
   ],

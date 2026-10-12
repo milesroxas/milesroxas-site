@@ -3,6 +3,7 @@ import type { Metadata } from 'next/types'
 import { AskWidget } from '@/features/ask/AskWidget'
 import { resolveAskHandoffTerms } from '@/features/ask/handoff'
 import type { SiteInfo } from '@/payload-types'
+import { generateMeta } from '@/utilities/generateMeta'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 
 export default async function Page() {
@@ -23,8 +24,12 @@ export default async function Page() {
   )
 }
 
-export function generateMetadata(): Metadata {
-  return {
-    title: 'Ask | Miles Roxas',
-  }
+export function generateMetadata(): Promise<Metadata> {
+  return generateMeta({
+    doc: {
+      title: 'Ask',
+      meta: { description: 'Ask about the work and writing on this site, answered from it.' },
+    },
+    pathname: '/ask',
+  })
 }

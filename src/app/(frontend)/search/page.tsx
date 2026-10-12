@@ -69,7 +69,9 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
 }
 
 export function generateMetadata(): Metadata {
+  // Query results: the documents they list are the pages to index, not this one.
   return {
-    title: `Payload Website Template Search`,
+    title: 'Search',
+    robots: { index: false, follow: true },
   }
 }

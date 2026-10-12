@@ -138,7 +138,7 @@ const globals: MCPPluginConfig['globals'] = {
   },
   'site-info': {
     description:
-      'Site-wide facts the Ask assistant answers from (name, tagline, description, contact), the inquiry promises, and the Ask switch',
+      'Site-wide facts (name, job title, tagline, description, contact, social profiles, headshot and default preview image): what Ask answers from and what structured data, llms.txt and share cards show. Also the inquiry promises and the Ask switch',
     enabled: { find: true, update: true },
   },
   'works-index': {

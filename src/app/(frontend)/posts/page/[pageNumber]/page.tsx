@@ -4,6 +4,7 @@ import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
 import { PageRange } from '@/components/PageRange'
 import { Pagination } from '@/components/Pagination'
+import { generateMeta } from '@/utilities/generateMeta'
 import PageNumberClient from './page.client'
 
 export const revalidate = 600
@@ -62,9 +63,9 @@ export default async function Page({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { pageNumber } = await paramsPromise
-  return {
-    title: `Posts Page ${pageNumber || ''} | Miles Roxas`,
-  }
+  // Page 1 is the index itself; later pages are their own canonical URLs.
+  const pathname = pageNumber === '1' ? '/posts' : `/posts/page/${pageNumber}`
+  return generateMeta({ doc: { title: `Posts, page ${pageNumber}` }, pathname })
 }
 
 export async function generateStaticParams() {

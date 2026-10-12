@@ -7559,7 +7559,7 @@ export interface Header {
   createdAt?: string | null;
 }
 /**
- * Site-wide facts the Ask assistant answers from, and the Ask switch.
+ * Site-wide facts: what Ask answers from, what search engines and AI assistants read about the site, and the Ask switch.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-info".
@@ -7567,6 +7567,10 @@ export interface Header {
 export interface SiteInfo {
   id: number;
   name: string;
+  /**
+   * What you do, as a search result or an AI assistant would say it ("Design engineer").
+   */
+  jobTitle?: string | null;
   /**
    * Registered legal name, if different from the name above.
    */
@@ -7615,6 +7619,17 @@ export interface SiteInfo {
         }[]
       | null;
   };
+  /**
+   * The picture search engines and AI assistants show for you (Person structured data). Square, at least 400×400px.
+   */
+  headshot?: (number | null) | Media;
+  /**
+   * The share card for every page that has no SEO image of its own. Landscape, at least 1200×630px.
+   */
+  ogImage?: (number | null) | Media;
+  /**
+   * Where you are based. Only the city, state and country are published in structured data.
+   */
   address?: {
     streetAddress?: string | null;
     city?: string | null;
@@ -7623,7 +7638,7 @@ export interface SiteInfo {
     country?: string | null;
   };
   /**
-   * Profile URLs Ask can point to (LinkedIn, GitHub, Dribbble).
+   * Profile URLs (LinkedIn, GitHub, Dribbble). Ask points to them, and structured data lists them as sameAs so search engines and AI assistants match this site to those profiles.
    */
   socialProfiles?:
     | {
@@ -7633,7 +7648,7 @@ export interface SiteInfo {
       }[]
     | null;
   /**
-   * Optional extra paragraph Ask can answer from (what you are known for).
+   * Optional extra paragraph Ask can answer from and llms.txt ends with (what you are known for).
    */
   llmsNotes?: string | null;
   updatedAt?: string | null;
@@ -7762,6 +7777,7 @@ export interface HeaderSelect<T extends boolean = true> {
  */
 export interface SiteInfoSelect<T extends boolean = true> {
   name?: T;
+  jobTitle?: T;
   legalName?: T;
   tagline?: T;
   description?: T;
@@ -7784,6 +7800,8 @@ export interface SiteInfoSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  headshot?: T;
+  ogImage?: T;
   address?:
     | T
     | {

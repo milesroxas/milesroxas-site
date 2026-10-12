@@ -5,27 +5,33 @@ import { searchPlugin } from '@payloadcms/plugin-search'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import type { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
-import type { Plugin } from 'payload'
+import type { GlobalSlug, Plugin } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
-import type { Page, Post } from '@/payload-types'
+import type { Page, Post, Work } from '@/payload-types'
+import { aeoPlugin } from '@/plugins/aeo'
 import { askIndexPlugin } from '@/plugins/ask-index'
 import { figuresPlugin } from '@/plugins/figures'
 import { mcp } from '@/plugins/mcp'
 import { streakStudioPlugin } from '@/plugins/streak-studio'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 import { searchFields } from '@/search/fieldOverrides'
-import { SEARCH_COLLECTIONS } from '@/shared/content/surfaces'
+import { SEARCH_COLLECTIONS, surfaceByCollection, surfaceDocPath } from '@/shared/content/surfaces'
 import { getServerSideURL } from '@/utilities/getURL'
 
-const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Miles Roxas` : 'Miles Roxas'
-}
+/** The page's own title: the root layout's title template adds " | Miles Roxas". */
+const generateTitle: GenerateTitle<Post | Page | Work> = ({ doc }) => doc?.title ?? ''
 
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
+/** Globals with an SEO tab publish at a fixed path. */
+const GLOBAL_PATHS: Partial<Record<GlobalSlug, string>> = { 'works-index': '/works' }
+
+/** The document's public URL, by its collection's surface (a work under /works, home at /). */
+const generateURL: GenerateURL<Post | Page | Work> = ({ doc, collectionSlug, globalSlug }) => {
   const url = getServerSideURL()
-
-  return doc?.slug ? `${url}/${doc.slug}` : url
+  if (globalSlug) return `${url}${GLOBAL_PATHS[globalSlug] ?? ''}`
+  const surface = collectionSlug ? surfaceByCollection.get(collectionSlug) : undefined
+  if (!doc?.slug || !surface) return url
+  return `${url}${surfaceDocPath(surface, doc.slug)}`
 }
 
 export const plugins: Plugin[] = [
@@ -125,6 +131,8 @@ export const plugins: Plugin[] = [
   // Agent authoring server at /api/mcp (docs/mcp.md). Full config
   // (collections, globals, capability policy, block tools) lives in ./mcp.
   mcp,
+  // llms.txt, the sitemap and IndexNow follow publishes (docs/aeo.md).
+  aeoPlugin(),
   // Last: it hooks the collections and globals every plugin above has added.
   askIndexPlugin(),
 ]

@@ -7,7 +7,8 @@ import type { CollectionSlug, GlobalSlug } from 'payload'
  *
  * - `plugins/index.ts` — plugin-seo `generateURL` and the search plugin's
  *   collection list
- * - `plugins/aeo/sections.ts` — llms.txt / llms-full.txt sections
+ * - `plugins/aeo` — llms.txt / llms-full.txt sections, the sitemap, the
+ *   markdown alternates and IndexNow (docs/aeo.md)
  * - `features/ask` — retrieval corpus (search index + embeddings)
  *
  * Adding a new public collection here puts it on every surface at once.

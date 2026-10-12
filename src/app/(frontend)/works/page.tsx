@@ -4,6 +4,7 @@ import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import { cache } from 'react'
+import { JsonLd } from '@/components/JsonLd'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import type { WorksIndex } from '@/payload-types'
 import {
@@ -17,6 +18,7 @@ import { WORKS_INDEX_DEFAULTS } from '@/shared/content/worksIndex'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getCachedGlobal } from '@/utilities/getGlobals'
+import { breadcrumbSchema, worksIndexSchema } from '@/utilities/schema'
 
 // Cached HTML, regenerated every ten minutes and on publish (revalidateWork).
 // While a protected work exists the index reads the visitor's cookie and
@@ -87,10 +89,19 @@ export default async function Page() {
     .map(toWorkIndexItem)
     .filter((item): item is MoreWorkItem => item !== null)
   const title = index?.title || WORKS_INDEX_DEFAULTS.heading
+  const jsonLd = (
+    <JsonLd
+      data={[
+        worksIndexSchema(index ?? {}, WORKS_INDEX_DEFAULTS),
+        breadcrumbSchema([{ name: 'Work', path: '/works' }]),
+      ]}
+    />
+  )
 
   if (items.length === 0) {
     return (
       <section className="px-gutter pt-[calc(var(--chrome-top)+--spacing(12))] pb-[calc(var(--dock-clearance)+--spacing(12))]">
+        {jsonLd}
         {draft && <LivePreviewListener />}
         <h1 className="text-heading-1">{title}</h1>
         <p className="mt-4 text-base text-muted-foreground">No work is published yet.</p>
@@ -100,6 +111,7 @@ export default async function Page() {
 
   return (
     <>
+      {jsonLd}
       {draft && <LivePreviewListener />}
       <WorkDial items={items} lead={index?.lead} title={title} />
     </>

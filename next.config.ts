@@ -111,6 +111,20 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   redirects,
 
+  // Markdown alternates for agents (docs/aeo.md): /posts/foo.md and
+  // /works/foo.md, and content negotiation (Accept: text/markdown) on the
+  // page itself. All resolve to the handler at /md/[collection]/[slug].
+  async rewrites() {
+    return [
+      { source: '/:collection(posts|works)/:slug.md', destination: '/md/:collection/:slug' },
+      {
+        source: '/:collection(posts|works)/:slug',
+        destination: '/md/:collection/:slug',
+        has: [{ type: 'header', key: 'accept', value: '.*text/markdown.*' }],
+      },
+    ]
+  },
+
   async headers() {
     return [
       {

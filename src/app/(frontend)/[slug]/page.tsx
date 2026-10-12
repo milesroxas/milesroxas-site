@@ -5,13 +5,23 @@ import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
 import { cache } from 'react'
 import { slugWhere } from '@/app/(frontend)/slug-where'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { JsonLd } from '@/components/JsonLd'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { ContentsButton } from '@/features/contents'
 import { RenderHero } from '@/heros/RenderHero'
 import HomeTemplate from '@/templates/Homepage/HomeTemplate'
 import { generateMeta } from '@/utilities/generateMeta'
+import {
+  breadcrumbSchema,
+  faqPageSchema,
+  profilePageSchema,
+  webPageSchema,
+} from '@/utilities/schema'
 import PageClient from './page.client'
+
+/** Where a page publishes: `home` is the site root (shared/content/surfaces.ts). */
+const pagePath = (slug: string) => (slug === 'home' ? '/' : `/${slug}`)
 
 // Cached HTML, regenerated every ten minutes and on publish (revalidatePage).
 export const revalidate = 600
@@ -63,13 +73,25 @@ export default async function Page({ params: paramsPromise }: Args) {
   // the homepage
   if (slug === 'home') {
     const { hero, layout } = page
-    return <HomeTemplate hero={hero} layout={layout} />
+    return (
+      <>
+        <JsonLd data={[profilePageSchema(page), faqPageSchema(layout)]} />
+        <HomeTemplate hero={hero} layout={layout} />
+      </>
+    )
   }
 
   const { hero, layout, showContents } = page
 
   return (
     <article className="pb-24">
+      <JsonLd
+        data={[
+          webPageSchema(page, url),
+          breadcrumbSchema([{ name: page.title, path: url }]),
+          faqPageSchema(layout),
+        ]}
+      />
       <PageClient />
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
@@ -87,8 +109,9 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
     slug,
   })
 
-  return generateMeta({ doc: page })
+  return generateMeta({ doc: page, pathname: pagePath(slug) })
 }
+
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()
 

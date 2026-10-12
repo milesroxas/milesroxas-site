@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 import { cache, Suspense } from 'react'
 import { slugWhere } from '@/app/(frontend)/slug-where'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { JsonLd } from '@/components/JsonLd'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { ContentsButton } from '@/features/contents'
@@ -15,6 +16,7 @@ import { WorkIntro } from '@/sections/WorkIntro'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { generateMeta } from '@/utilities/generateMeta'
 import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
+import { breadcrumbSchema, creativeWorkSchema, faqPageSchema } from '@/utilities/schema'
 import PageClient from './page.client'
 
 // Cached HTML, regenerated every ten minutes and on publish (revalidateWork).
@@ -74,6 +76,17 @@ export default async function Work({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
 
       <article className="relative z-10">
+        {/* The visible work's facts only: a protected work's stand-in describes itself. */}
+        <JsonLd
+          data={[
+            creativeWorkSchema(visibleWork),
+            breadcrumbSchema([
+              { name: 'Work', path: '/works' },
+              { name: visibleWork.title, path: `/works/${visibleWork.slug}` },
+            ]),
+            faqPageSchema(layout),
+          ]}
+        />
         <WorkHero {...visibleWork} />
         <PageClient work={visibleWork} />
         {/* Arriving from a work card, the body loads in after the hero (globals.css). */}
@@ -99,7 +112,14 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   // Never leak protected-work meta: resolve to the fallback (or nothing)
   const visibleWork = work ? await resolveVisibleWork(work, hasWorkAccess) : null
 
-  return generateMeta({ doc: visibleWork })
+  // The canonical URL is the stand-in's own page: this address is not the public one.
+  return generateMeta({
+    doc: visibleWork,
+    pathname: `/works/${visibleWork?.slug ?? slug}`,
+    ...(visibleWork && !visibleWork.isProtected
+      ? { markdownPath: `/works/${visibleWork.slug}.md` }
+      : {}),
+  })
 }
 
 const queryWorkBySlug = cache(async ({ slug }: { slug: string }) => {

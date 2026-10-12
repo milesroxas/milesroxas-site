@@ -4,19 +4,22 @@ import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { JsonLd } from '@/components/JsonLd'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import RichText from '@/components/RichText/Legacy'
 import { ContentsButton } from '@/features/contents'
 import { PostHero } from '@/heros/PostHero'
 import { RenderHero } from '@/heros/RenderHero'
-import type { Post as PostDoc } from '@/payload-types'
+import type { Post as PostDoc, SiteInfo } from '@/payload-types'
 import { ExternalArticle } from '@/sections/ExternalArticle'
 import { getMorePosts, MorePosts } from '@/sections/MorePosts'
 import { WorkIntro } from '@/sections/WorkIntro'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { externalArticle } from '@/utilities/externalArticle'
 import { generateMeta } from '@/utilities/generateMeta'
+import { getCachedGlobal } from '@/utilities/getGlobals'
+import { blogPostingSchema, breadcrumbSchema, faqPageSchema } from '@/utilities/schema'
 import { cn } from '@/utilities/ui'
 import PageClient from './page.client'
 
@@ -81,13 +84,26 @@ export default async function Post({ params: paramsPromise }: Args) {
   // An external post keeps any body it had before it was switched; only the link out renders.
   const external = externalArticle(post)
   const editorial = post.hero.type === 'editorial'
-  const morePosts = await getMorePosts(post)
+  const [morePosts, siteInfo] = await Promise.all([
+    getMorePosts(post),
+    getCachedGlobal('site-info', 1)() as Promise<SiteInfo | null>,
+  ])
 
   return (
     <>
       <article
         className={cn('bg-tertiary text-tertiary-foreground', !editorial && 'pt-24 md:pt-0')}
       >
+        <JsonLd
+          data={[
+            blogPostingSchema(post, siteInfo ?? {}),
+            breadcrumbSchema([
+              { name: 'Posts', path: '/posts' },
+              { name: post.title, path: url },
+            ]),
+            faqPageSchema(post.layout),
+          ]}
+        />
         {/* Allows redirects for valid pages too */}
         <PayloadRedirects disableNotFound url={url} />
 
@@ -121,7 +137,17 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { slug = '' } = await paramsPromise
   const post = await queryPostBySlug({ slug })
 
-  return generateMeta({ doc: post })
+  return generateMeta({
+    doc: post,
+    pathname: `/posts/${slug}`,
+    article: {
+      authors: (post?.populatedAuthors ?? []).flatMap((author) =>
+        author.name ? [author.name] : [],
+      ),
+    },
+    // An external post links out; its markdown would be the introduction alone.
+    ...(post && !externalArticle(post) ? { markdownPath: `/posts/${slug}.md` } : {}),
+  })
 }
 
 const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {

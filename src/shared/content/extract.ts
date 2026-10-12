@@ -282,16 +282,20 @@ type SurfaceDoc = {
 /**
  * Markdown for one surface document. `doc` must have been read as the public
  * sees it (`draft: false`, `overrideAccess: false`) — see `readPublicDoc`.
+ * `frontMatter` lines (URL, dates) go under the title, for the markdown the
+ * site serves to agents (plugins/aeo); the Ask corpus passes none.
  */
 export async function extractDocMarkdown(
   payload: Payload,
   surface: ContentSurface,
   doc: SurfaceDoc,
+  frontMatter: string[] = [],
 ): Promise<string> {
   const record = doc as Doc
   const parts: Part[] = []
 
   if (doc.title) parts.push(`# ${doc.title}`)
+  if (frontMatter.length) parts.push(frontMatter.join('\n'))
   const description = doc.meta?.description?.trim()
   if (description) parts.push(description)
 
