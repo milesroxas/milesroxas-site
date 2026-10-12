@@ -96,27 +96,37 @@ already in R2 at the same size is skipped, so it can run again.
 
 ## Setup (R2)
 
-1. R2 > Create bucket (`milesroxas-media`, location automatic).
-2. Bucket > Settings > Public access > Custom domain: `media.milesroxas.com` (on the zone, so the
-   CDN caches it). That URL is `R2_PUBLIC_URL`.
-3. Bucket > Settings > CORS policy, so the admin's presigned PUT is allowed:
+Done once on 2026-10-11; recorded so it can be repeated for another account.
+
+1. R2 > Manage API tokens > Create: permission Admin Read & Write, all buckets, no expiry. The
+   page shows a Token value (`R2_ADMIN_TOKEN`, setup only, the app never reads it), an Access Key
+   ID (`R2_ACCESS_KEY_ID`) and a Secret Access Key (`R2_SECRET_ACCESS_KEY`). `R2_ACCOUNT_ID` is
+   the Cloudflare account id, the same value as `CLOUDFLARE_ACCOUNT_ID`.
+2. With the token, through the REST API (`accounts/<id>/r2/buckets`): create the bucket
+   (`R2_BUCKET`, `milesroxas-media`), enable its Public Development URL (`domains/managed`,
+   the `https://pub-….r2.dev` host is `R2_PUBLIC_URL`) and put the CORS rule the admin's
+   presigned PUT needs:
    ```json
-   [
-     {
-       "AllowedOrigins": ["https://www.milesroxas.com", "http://localhost:3000"],
-       "AllowedMethods": ["PUT", "GET", "HEAD"],
-       "AllowedHeaders": ["content-type", "content-length"],
-       "ExposeHeaders": ["ETag"],
-       "MaxAgeSeconds": 3600
-     }
-   ]
+   {
+     "rules": [
+       {
+         "allowed": {
+           "origins": ["https://www.milesroxas.com", "http://localhost:3000"],
+           "methods": ["PUT", "GET", "HEAD"],
+           "headers": ["content-type", "content-length"]
+         },
+         "exposeHeaders": ["ETag"],
+         "maxAgeSeconds": 3600
+       }
+     ]
+   }
    ```
-   Add a Conductor workspace's port or a preview host when uploading from there.
-4. R2 > Manage API tokens > Create: Object Read & Write, this bucket only. The token's Access Key
-   ID and Secret Access Key are `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`; the account id on
-   that page is `R2_ACCOUNT_ID`.
-5. Set the five `R2_*` variables in `.env` and on Vercel (Production and Preview), run the
-   migration once, deploy, then drop `BLOB_READ_WRITE_TOKEN` and the Blob store.
+   Add a Conductor workspace's port or a preview host when uploading from there. A custom
+   domain would need the zone on Cloudflare; milesroxas.com's DNS is on Vercel. The r2.dev URL
+   is rate limited, which is fine here: only Cloudflare's own ingest and the fallback for an
+   unsynced file ever read the origin.
+3. Set the five `R2_*` variables in `.env` and on Vercel (Production and Preview), run the
+   migration once, release, then drop `BLOB_READ_WRITE_TOKEN` and the Blob store.
 
 ## Environment
 
