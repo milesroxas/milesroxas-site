@@ -31,7 +31,7 @@ const image = {
   id: 1,
   filename: 'a.jpg',
   mimeType: 'image/jpeg',
-  url: 'https://store.public.blob.vercel-storage.com/key/a.jpg',
+  url: 'https://media.example.com/key/a.jpg',
 }
 
 beforeEach(() => vi.clearAllMocks())

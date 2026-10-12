@@ -81,7 +81,7 @@ export const Media: CollectionConfig = {
     focalPoint: true,
     // One server-side size, for the admin list and the Studio pickers. The
     // site serves every image from Cloudflare Images (docs/media.md), so more
-    // sizes only cost upload time and Blob writes.
+    // sizes only cost upload time and bucket writes.
     imageSizes: [
       {
         name: 'thumbnail',

@@ -35,7 +35,7 @@ export const resolveStreamUrls: CollectionAfterReadHook = ({ doc }) => {
  * the save's own transaction, with no hook in the loop and nothing left on
  * `req.context`, so a request that saves several files (the Studio publishes
  * two posters on one request) syncs every one. A failed upload is logged and
- * the save still succeeds: the site falls back to the Blob URL and the daily
+ * the save still succeeds: the site falls back to the origin URL and the daily
  * sweep (`jobs/cloudflareMediaSweep`) retries the document.
  */
 export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
@@ -45,7 +45,7 @@ export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   context,
 }) => {
   // The storage plugin's nested metadata update: the outer save syncs once
-  // the file is on Blob.
+  // the file is in the bucket.
   if (context?.skipCloudStorage) return doc
 
   try {
@@ -80,9 +80,9 @@ export const syncCloudflareDelete: CollectionAfterDeleteHook = async ({ doc, req
 
 /**
  * Registers the upload sync after the storage adapter's `afterChange`, which is
- * what puts a server-side upload (`/api/agent/media`) on Blob. Run before it,
- * Cloudflare is asked to fetch a URL that does not exist yet.
- * List it after `vercelBlobStorage` in `payload.config.ts`.
+ * what puts a server-side upload (`/api/agent/media`) in the bucket. Run before
+ * it, Cloudflare is asked to fetch a URL that does not exist yet.
+ * List it after `s3Storage` in `payload.config.ts`.
  */
 export const cloudflareMediaSync = (): Plugin => (config) => ({
   ...config,

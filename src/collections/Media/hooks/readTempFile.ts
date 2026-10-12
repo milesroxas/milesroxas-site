@@ -4,10 +4,10 @@ import type { CollectionBeforeChangeHook } from 'payload'
 /**
  * Gives the storage adapter the bytes of a file Payload parked on disk.
  *
- * Payload streams a browser upload back from Blob into a temp file when it
+ * Payload streams a browser upload back from the bucket into a temp file when it
  * needs the full file (to make `thumbnail`), leaving `req.file.data` empty.
  * It then drops the client-upload marker from a webp, gif or tiff, which it
- * re-encodes through sharp, so the Blob adapter uploads the original again
+ * re-encodes through sharp, so the storage adapter uploads the original again
  * from `data` alone and writes zero bytes over the browser's copy. The same
  * happens to any Local API upload that passes `tempFilePath`. Reading the
  * temp file here, before the adapter's own `beforeChange` hooks, makes that

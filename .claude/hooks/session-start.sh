@@ -13,13 +13,11 @@ cd "$CLAUDE_PROJECT_DIR"
 pnpm install
 
 # Scripts run with `tsx --env-file=.env` (check:migrations:drift in the pre-push
-# hook). Local Docker Postgres only, never Neon; .env is gitignored. The blob
-# token is a placeholder: without one the storage plugin drops media's
-# `_objectKey` field and the drift check reports a false DROP COLUMN.
+# hook). Local Docker Postgres only, never Neon; .env is gitignored. The R2
+# variables stay empty: the storage adapter inserts media's `_objectKey` field
+# whether or not it can reach a bucket.
 if [ ! -f .env ]; then
-  sed -e "s/^PAYLOAD_SECRET=.*/PAYLOAD_SECRET=$(openssl rand -hex 32)/" \
-    -e 's/^BLOB_READ_WRITE_TOKEN=.*/BLOB_READ_WRITE_TOKEN=vercel_blob_rw_cloudsession_placeholder/' \
-    .env.example > .env
+  sed -e "s/^PAYLOAD_SECRET=.*/PAYLOAD_SECRET=$(openssl rand -hex 32)/" .env.example > .env
 fi
 
 # Storybook tests: use the container's Chromium rather than downloading the

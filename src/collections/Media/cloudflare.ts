@@ -57,12 +57,13 @@ export function syncKind(mimeType: string | null | undefined): 'image' | 'video'
 }
 
 /**
- * The file's public Blob URL. The storage adapter's `url` field hook writes it
- * (`disablePayloadAccessControl` in `payload.config.ts`) from the object's own
- * folder, `_objectKey/filename`, which a browser upload always has; it runs in
- * the read phase, before `afterChange`, so the hook sees the final URL.
+ * The file's public URL on the origin bucket. The storage adapter's `url`
+ * field hook writes it (`generateFileURL` in `payload.config.ts`) from the
+ * object's own folder, `_objectKey/filename`, which a browser upload always
+ * has; it runs in the read phase, before `afterChange`, so the hook sees the
+ * final URL. Cloudflare fetches the file from here.
  */
-export function blobUrl(doc: MediaDoc): string | null {
+export function originUrl(doc: MediaDoc): string | null {
   const url = doc.url
   return typeof url === 'string' && url.startsWith('http') ? url : null
 }
@@ -125,9 +126,9 @@ export async function syncMediaToCloudflare(
   if (stale) await purgeAssets(doc, logger)
   if (isSynced(current)) return stale ? cleared : null
 
-  const fileUrl = blobUrl(doc)
+  const fileUrl = originUrl(doc)
   if (!fileUrl) {
-    logger.warn({ msg: '[Cloudflare] No Blob URL to sync from', id: doc.id })
+    logger.warn({ msg: '[Cloudflare] No origin URL to sync from', id: doc.id })
     return stale ? cleared : null
   }
 
@@ -157,7 +158,7 @@ export async function findUnsynced(payload: Payload): Promise<Media[]> {
   return docs
 }
 
-/** Every video on Stream that the site still plays from Blob. */
+/** Every video on Stream that the site still plays from the origin bucket. */
 export async function findUnready(payload: Payload): Promise<Media[]> {
   const { docs } = await payload.find({
     collection: 'media',

@@ -11,9 +11,9 @@ vi.mock('@/utilities/cloudflare', () => ({
 
 import * as cf from '@/utilities/cloudflare'
 import {
-  blobUrl,
   hasStaleAssets,
   isSynced,
+  originUrl,
   sweepMedia,
   syncKind,
   syncMediaToCloudflare,
@@ -26,7 +26,7 @@ const image = {
   id: 1,
   filename: 'a.jpg',
   mimeType: 'image/jpeg',
-  url: 'https://store.public.blob.vercel-storage.com/key/a.jpg',
+  url: 'https://media.example.com/key/a.jpg',
   _objectKey: 'key',
 }
 
@@ -41,10 +41,10 @@ describe('syncKind', () => {
   })
 })
 
-describe('blobUrl', () => {
+describe('originUrl', () => {
   it('accepts only an absolute URL', () => {
-    expect(blobUrl({ id: 1, url: '/api/media/file/a.jpg' })).toBeNull()
-    expect(blobUrl(image)).toBe(image.url)
+    expect(originUrl({ id: 1, url: '/api/media/file/a.jpg' })).toBeNull()
+    expect(originUrl(image)).toBe(image.url)
   })
 })
 
@@ -94,7 +94,12 @@ describe('syncMediaToCloudflare', () => {
   })
 
   it('uploads a video to Stream, not yet ready', async () => {
-    const video = { id: 2, filename: 'v.mp4', mimeType: 'video/mp4', url: 'https://blob/v.mp4' }
+    const video = {
+      id: 2,
+      filename: 'v.mp4',
+      mimeType: 'video/mp4',
+      url: 'https://media.example.com/v.mp4',
+    }
     const fields = await syncMediaToCloudflare(video, undefined, logger)
     expect(fields).toMatchObject({ cloudflareStreamUid: 'vid-1', cloudflareStreamReady: false })
     expect(cf.uploadImageToCloudflare).not.toHaveBeenCalled()

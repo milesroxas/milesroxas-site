@@ -4,11 +4,12 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
 import { resendAdapter } from '@payloadcms/email-resend'
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { s3Storage } from '@payloadcms/storage-s3'
 import { buildConfig, type PayloadRequest } from 'payload'
 import sharp from 'sharp'
 import { askEmbeddingsTable } from '@/features/ask/schema'
 import { defaultLexical } from '@/fields/defaultLexical'
+import { r2FileUrl } from '@/utilities/r2'
 import { AskQuestions } from './collections/AskQuestions'
 import { Capabilities } from './collections/Capabilities'
 import { Categories } from './collections/Categories'
@@ -132,17 +133,27 @@ export default buildConfig({
   globals: [Header, SiteInfo, ContactPage, WorksIndex],
   plugins: [
     ...plugins,
-    vercelBlobStorage({
-      enabled: true,
+    // Cloudflare R2 is the origin for every file (docs/media.md). The admin
+    // uploads straight to the bucket on a presigned PUT (`clientUploads`), so
+    // a video never meets the 4.5 MB function body limit; server-side uploads
+    // (`/api/agent/media`, the Local API) go through the same adapter. Media
+    // reads are public, so `url` and the size URL point at the bucket's
+    // custom domain (`r2FileUrl`) instead of the serverless proxy, and that
+    // is the URL Cloudflare Images and Stream fetch from.
+    s3Storage({
+      bucket: process.env.R2_BUCKET || '',
       clientUploads: true,
-
       collections: {
-        // Media reads are public, so `url` and every size URL point straight at
-        // Blob (the object's own folder included) instead of the serverless proxy.
-        media: { disablePayloadAccessControl: true },
+        media: { disablePayloadAccessControl: true, generateFileURL: r2FileUrl },
       },
-
-      token: process.env.BLOB_READ_WRITE_TOKEN,
+      config: {
+        endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+        region: 'auto',
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+        },
+      },
     }),
     cloudflareMediaSync(),
   ],

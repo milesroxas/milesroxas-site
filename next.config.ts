@@ -32,12 +32,17 @@ const nextConfig: NextConfig = {
         port: url.port || undefined,
         pathname: '/**',
       },
-      // Allow Vercel Blob Storage
-      {
-        protocol: 'https',
-        hostname: '*.public.blob.vercel-storage.com',
-        pathname: '/**',
-      },
+      // The media bucket (Cloudflare R2 custom domain), the fallback source
+      // for an image Cloudflare Images has not taken yet.
+      ...(process.env.R2_PUBLIC_URL
+        ? [
+            {
+              protocol: 'https' as const,
+              hostname: new URL(process.env.R2_PUBLIC_URL).hostname,
+              pathname: '/**',
+            },
+          ]
+        : []),
       // Allow Cloudflare Images delivery
       {
         protocol: 'https',
