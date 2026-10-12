@@ -31,6 +31,7 @@ import * as migration_20261007_191027_post_hero_editorial from './20261007_19102
 import * as migration_20261007_195634_link_index_page from './20261007_195634_link_index_page';
 import * as migration_20261007_214502_media_sizes_sweep from './20261007_214502_media_sizes_sweep';
 import * as migration_20261008_021338_capabilities_taxonomy from './20261008_021338_capabilities_taxonomy';
+import * as migration_20261012_173742_aeo_site_info from './20261012_173742_aeo_site_info';
 
 export const migrations = [
   {
@@ -196,6 +197,11 @@ export const migrations = [
   {
     up: migration_20261008_021338_capabilities_taxonomy.up,
     down: migration_20261008_021338_capabilities_taxonomy.down,
-    name: '20261008_021338_capabilities_taxonomy'
+    name: '20261008_021338_capabilities_taxonomy',
+  },
+  {
+    up: migration_20261012_173742_aeo_site_info.up,
+    down: migration_20261012_173742_aeo_site_info.down,
+    name: '20261012_173742_aeo_site_info'
   },
 ];
