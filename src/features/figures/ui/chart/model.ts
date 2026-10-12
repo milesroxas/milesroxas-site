@@ -55,11 +55,25 @@ const numberFormats = {
 export const formatValue = (spec: ChartSpec, value: number): string =>
   numberFormats[spec.y.format ?? 'number'].format(value)
 
+/** An authored x (a row's value, an annotation's) as the reader sees it. */
 export const formatX = (spec: ChartSpec, value: number | string): string => {
   if (spec.x.type === 'number') return numberFormats.number.format(Number(value))
   if (spec.x.type !== 'time') return String(value)
-  return dateFormat.format(typeof value === 'number' ? value : toTime(value))
+  const time = typeof value === 'number' ? value : toTime(value)
+  // A string that is not a date (a band label, bad data) reads as itself rather than throwing.
+  return Number.isNaN(time) ? String(value) : dateFormat.format(time)
 }
+
+/**
+ * A datum's x as the reader sees it: a timestamp on a continuous time scale,
+ * otherwise already the band's label (`chartModel` formats dated bands once),
+ * so a tooltip or tick never re-parses a label as a date.
+ */
+export const formatDatumX = (
+  spec: ChartSpec,
+  model: Pick<ChartModel, 'continuousX'>,
+  x: number | string,
+): string => (model.continuousX ? formatX(spec, x) : String(x))
 
 const isBarKind = (spec: ChartSpec) => spec.kind === 'bar' || spec.kind === 'diverging-bar'
 

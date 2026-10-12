@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CHART_CORPUS } from '../../corpus'
 import type { ChartSpec } from '../../spec/chart'
-import { chartBox, chartModel, directLabels, formatValue } from './model'
+import { chartBox, chartModel, directLabels, formatDatumX, formatValue, formatX } from './model'
 
 const spec = (name: keyof typeof CHART_CORPUS) => CHART_CORPUS[name]?.spec as ChartSpec
 
@@ -63,5 +63,25 @@ describe('formatValue', () => {
   it('reads percent as a fraction of one and compacts large numbers', () => {
     expect(formatValue(spec('octavesVsDetail'), 0.42)).toBe('42%')
     expect(formatValue(spec('posterWeight'), 1580)).toBe('1.6K')
+  })
+})
+
+describe('formatX', () => {
+  it('never throws on a time axis: a label that is not a date reads as itself', () => {
+    const time = spec('studioPublishes')
+    expect(formatX(time, '2026-08-17')).toBe('Aug 17, 2026')
+    expect(formatX(time, 'Aug 17, 2026')).toBe('Aug 17, 2026')
+    expect(formatX(time, '')).toBe('')
+  })
+})
+
+describe('formatDatumX', () => {
+  it('formats a timestamp on a continuous scale and keeps a dated band label as it is', () => {
+    const lines = spec('lcpByFace')
+    const bars = spec('studioPublishes')
+    const line = chartModel(lines)
+    const bar = chartModel(bars)
+    expect(formatDatumX(lines, line, line.data[0]?.x as number)).toBe('Aug 3, 2026')
+    expect(formatDatumX(bars, bar, bar.data[0]?.x as string)).toBe('Aug 17, 2026')
   })
 })

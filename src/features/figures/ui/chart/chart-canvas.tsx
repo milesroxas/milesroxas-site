@@ -24,7 +24,14 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart'
 import type { ChartKind, ChartSpec } from '../../spec/chart'
-import { type ChartModel, chartModel, directLabels, formatValue, formatX } from './model'
+import {
+  type ChartModel,
+  chartModel,
+  directLabels,
+  formatDatumX,
+  formatValue,
+  formatX,
+} from './model'
 
 /**
  * The one chart renderer. Every mark rule is decided here, once, and none is
@@ -201,8 +208,7 @@ const positionAxis = ({ model, spec }: Drawing) => ({
   className: model.continuousX ? undefined : 'figure-axis-category',
   dataKey: 'x',
   tick: model.continuousX ? TICK : CATEGORY_TICK,
-  tickFormatter: (input: number | string) =>
-    model.continuousX ? formatX(spec, input) : String(input),
+  tickFormatter: (input: number | string) => formatDatumX(spec, model, input),
   tickLine: false,
   tickMargin: 8,
   ...(model.continuousX
@@ -258,7 +264,9 @@ const Scaffold = (drawing: Drawing) => {
         content={
           <ChartTooltipContent
             indicator={measuresFromZero(spec.kind) ? 'dot' : 'line'}
-            labelFormatter={(_, payload) => formatX(spec, payload?.[0]?.payload?.x ?? '')}
+            labelFormatter={(_, payload) =>
+              formatDatumX(spec, model, payload?.[0]?.payload?.x ?? '')
+            }
             valueFormatter={formatter(spec)}
           />
         }
