@@ -22,7 +22,7 @@ import { heroField } from '@/heros/config'
 import { generatePreviewPath } from '@/utilities/generatePreviewPath'
 import { postCardSelect } from './cardSelect'
 import { populateAuthors } from './hooks/populateAuthors'
-import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
+import { revalidateDelete, revalidatePost, revalidateUnpublish } from './hooks/revalidatePost'
 import { externalField, showsBody, sourceField } from './source'
 
 export const Posts: CollectionConfig<'posts'> = {
@@ -214,6 +214,7 @@ export const Posts: CollectionConfig<'posts'> = {
   ],
   hooks: {
     afterChange: [revalidatePost],
+    afterOperation: [revalidateUnpublish],
     afterRead: [populateAuthors],
     afterDelete: [revalidateDelete],
   },

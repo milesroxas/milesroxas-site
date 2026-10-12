@@ -1,7 +1,6 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 
 import { revalidateDocument } from '@/collections/shared/revalidateDocument'
-import type { Post } from '../../../payload-types'
 
 // The paginated posts index is ISR-cached; bust it alongside the tag.
 // Every post closes on other posts (More posts), so every post page goes too.
@@ -13,9 +12,12 @@ const revalidatePostsIndex = () => {
   revalidateTag('posts', 'max')
 }
 
-export const { afterChange: revalidatePost, afterDelete: revalidateDelete } =
-  revalidateDocument<Post>({
-    noun: 'post',
-    pathFor: (slug) => `/posts/${slug}`,
-    revalidateLists: revalidatePostsIndex,
-  })
+export const {
+  afterChange: revalidatePost,
+  afterOperation: revalidateUnpublish,
+  afterDelete: revalidateDelete,
+} = revalidateDocument<'posts'>({
+  noun: 'post',
+  pathFor: (slug) => `/posts/${slug}`,
+  revalidateLists: revalidatePostsIndex,
+})

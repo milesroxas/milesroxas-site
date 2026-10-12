@@ -1,7 +1,36 @@
 import { revalidatePath } from 'next/cache'
-import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, TypeWithID } from 'payload'
+import type {
+  CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
+  CollectionAfterOperationHook,
+  CollectionSlug,
+  TypeWithID,
+} from 'payload'
 
 type RoutedDoc = TypeWithID & { _status?: 'draft' | 'published' | null; slug?: string | null }
+
+/** What an afterOperation hook receives, however its collection is typed. */
+type OperationArg = { operation: string; args: unknown; result: unknown }
+
+/**
+ * The documents a live save left unpublished: an unpublish, whichever client
+ * sent it (the admin button, a scheduled job, MCP). A draft save (autosave,
+ * Save draft) never changes the live document and is skipped.
+ *
+ * afterChange's `previousDoc` cannot tell the two apart: it is the latest
+ * version, which is a draft as soon as one autosave follows a publish, so an
+ * unpublish looked like a draft-to-draft save and busted nothing.
+ */
+export const unpublishedByOperation = <T extends { _status?: string | null }>({
+  operation,
+  args,
+  result,
+}: OperationArg): T[] => {
+  if (operation !== 'update' && operation !== 'updateByID') return []
+  if ((args as { draft?: boolean }).draft) return []
+  const docs = operation === 'update' ? (result as { docs: T[] }).docs : [result as T]
+  return docs.filter((doc) => doc._status !== 'published')
+}
 
 type RevalidateDocumentOptions = {
   /** Singular noun for the log line ("post", "work"). */
@@ -13,43 +42,52 @@ type RevalidateDocumentOptions = {
 }
 
 /**
- * afterChange and afterDelete hooks that bust a routed document's page and the
- * lists it appears in: on publish, on unpublish (the old path), and on delete.
+ * Hooks that bust a routed document's page and the lists it appears in: on
+ * publish (afterChange), on unpublish (afterOperation), and on delete.
  */
-export const revalidateDocument = <T extends RoutedDoc>({
+export const revalidateDocument = <TSlug extends CollectionSlug>({
   noun,
   pathFor,
   revalidateLists,
 }: RevalidateDocumentOptions) => {
-  const afterChange: CollectionAfterChangeHook<T> = ({
+  const afterChange: CollectionAfterChangeHook<RoutedDoc> = ({
     doc,
-    previousDoc,
     req: { payload, context },
   }) => {
-    if (!context.disableRevalidate) {
-      if (doc._status === 'published') {
-        const path = pathFor(doc.slug)
+    if (!context.disableRevalidate && doc._status === 'published') {
+      const path = pathFor(doc.slug)
 
-        payload.logger.info(`Revalidating ${noun} at path: ${path}`)
+      payload.logger.info(`Revalidating ${noun} at path: ${path}`)
 
-        revalidatePath(path)
-        revalidateLists()
-      }
-
-      // If the document was previously published, we need to revalidate the old path
-      if (previousDoc?._status === 'published' && doc._status !== 'published') {
-        const oldPath = pathFor(previousDoc.slug)
-
-        payload.logger.info(`Revalidating old ${noun} at path: ${oldPath}`)
-
-        revalidatePath(oldPath)
-        revalidateLists()
-      }
+      revalidatePath(path)
+      revalidateLists()
     }
     return doc
   }
 
-  const afterDelete: CollectionAfterDeleteHook<T> = ({ doc, req: { context } }) => {
+  const afterOperation: CollectionAfterOperationHook<TSlug> = (arg) => {
+    const {
+      req: { payload, context },
+      result,
+    } = arg
+    if (context.disableRevalidate) return result
+
+    const docs = unpublishedByOperation<RoutedDoc>(arg)
+    if (docs.length === 0) return result
+
+    for (const doc of docs) {
+      const path = pathFor(doc.slug)
+
+      payload.logger.info(`Revalidating unpublished ${noun} at path: ${path}`)
+
+      revalidatePath(path)
+    }
+    revalidateLists()
+
+    return result
+  }
+
+  const afterDelete: CollectionAfterDeleteHook<RoutedDoc> = ({ doc, req: { context } }) => {
     if (!context.disableRevalidate) {
       revalidatePath(pathFor(doc?.slug))
       revalidateLists()
@@ -58,5 +96,5 @@ export const revalidateDocument = <T extends RoutedDoc>({
     return doc
   }
 
-  return { afterChange, afterDelete }
+  return { afterChange, afterOperation, afterDelete }
 }

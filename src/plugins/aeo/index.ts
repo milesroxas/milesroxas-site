@@ -3,10 +3,12 @@ import { after } from 'next/server'
 import type {
   CollectionAfterChangeHook,
   CollectionAfterDeleteHook,
+  CollectionAfterOperationHook,
   CollectionSlug,
   Config,
   Plugin,
 } from 'payload'
+import { unpublishedByOperation } from '@/collections/shared/revalidateDocument'
 import { CONTENT_SURFACES, type ContentSurface, surfaceDocPath } from '@/shared/content/surfaces'
 import { getServerSideURL } from '@/utilities/getURL'
 import { indexNowEnabled, submitToIndexNow } from './indexNow'
@@ -26,15 +28,17 @@ export const revalidatePublicListings = () => {
   revalidateTag(LLMS_CACHE_TAG, 'max')
 }
 
-const revalidateListings: CollectionAfterChangeHook<SurfaceDoc> = ({
-  doc,
-  previousDoc,
-  req: { context },
-}) => {
-  if (!context.disableRevalidate && (isPublished(doc) || isPublished(previousDoc))) {
+const revalidateListings: CollectionAfterChangeHook<SurfaceDoc> = ({ doc, req: { context } }) => {
+  if (!context.disableRevalidate && isPublished(doc)) revalidatePublicListings()
+  return doc
+}
+
+// An unpublish is only visible to afterOperation (collections/shared/revalidateDocument).
+const revalidateListingsOnUnpublish: CollectionAfterOperationHook = (arg) => {
+  if (!arg.req.context.disableRevalidate && unpublishedByOperation(arg).length) {
     revalidatePublicListings()
   }
-  return doc
+  return arg.result
 }
 
 const revalidateListingsOnDelete: CollectionAfterDeleteHook = ({ doc, req: { context } }) => {
@@ -59,8 +63,8 @@ const docUrl = (surface: ContentSurface, slug: string) =>
 
 /**
  * Pings IndexNow on the publish events that change what engines should fetch:
- * publish, unpublish, and a slug change (the old URL is submitted so engines
- * drop it). Draft saves and autosaves never reach the submit call.
+ * publish and a slug change (the old URL is submitted so engines drop it).
+ * Draft saves and autosaves never reach the submit call.
  */
 const indexNowAfterChange =
   (surface: ContentSurface): CollectionAfterChangeHook<SurfaceDoc> =>
@@ -70,14 +74,28 @@ const indexNowAfterChange =
     const urls: string[] = []
     if (isPublished(doc) && doc.slug) urls.push(docUrl(surface, doc.slug))
 
-    const unpublishedOrMoved =
-      isPublished(previousDoc) &&
-      previousDoc?.slug &&
-      (!isPublished(doc) || previousDoc.slug !== doc.slug)
-    if (unpublishedOrMoved && previousDoc?.slug) urls.push(docUrl(surface, previousDoc.slug))
+    const moved = isPublished(doc) && isPublished(previousDoc) && previousDoc.slug !== doc.slug
+    if (moved && previousDoc.slug) urls.push(docUrl(surface, previousDoc.slug))
 
     if (urls.length) await submitDeferred(() => submitToIndexNow(payload, urls))
     return doc
+  }
+
+/** Pings IndexNow with the URL of each work, post or page an unpublish took down. */
+const indexNowAfterOperation =
+  (surface: ContentSurface): CollectionAfterOperationHook =>
+  async (arg) => {
+    const {
+      req: { payload, context },
+      result,
+    } = arg
+    if (context.disableRevalidate || !indexNowEnabled()) return result
+
+    const urls = unpublishedByOperation<SurfaceDoc>(arg).flatMap((doc) =>
+      doc.slug ? [docUrl(surface, doc.slug)] : [],
+    )
+    if (urls.length) await submitDeferred(() => submitToIndexNow(payload, urls))
+    return result
   }
 
 const indexNowAfterDelete =
@@ -125,6 +143,11 @@ export const aeoPlugin =
               ...(collection.hooks?.afterDelete ?? []),
               revalidateListingsOnDelete,
               indexNowAfterDelete(surface),
+            ],
+            afterOperation: [
+              ...(collection.hooks?.afterOperation ?? []),
+              revalidateListingsOnUnpublish,
+              indexNowAfterOperation(surface),
             ],
           },
         }

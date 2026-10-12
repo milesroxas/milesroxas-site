@@ -10,7 +10,7 @@ import { authenticated } from '../../access/authenticated'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { worksReadAccess } from './access'
-import { revalidateDelete, revalidateWork } from './hooks/revalidateWorks'
+import { revalidateDelete, revalidateUnpublish, revalidateWork } from './hooks/revalidateWorks'
 
 export const Works: CollectionConfig<'works'> = {
   slug: 'works',
@@ -251,6 +251,7 @@ export const Works: CollectionConfig<'works'> = {
   ],
   hooks: {
     afterChange: [revalidateWork],
+    afterOperation: [revalidateUnpublish],
     beforeChange: [populatePublishedAt],
     afterDelete: [revalidateDelete],
   },
