@@ -2,8 +2,8 @@
 
 import { Chat } from '@ai-sdk/react'
 import { DefaultChatTransport, generateId } from 'ai'
-import { usePathname } from 'next/navigation'
 import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSitePathname } from '@/hooks/use-site-pathname'
 import type { AskFeedback } from './feedback'
 import type { AskHandoffSent } from './HandoffPanel'
 import type { AskUIMessage } from './handoff'
@@ -53,7 +53,7 @@ const scrollDepth = (): number => {
  * anything. Time counts only while the tab is visible.
  */
 function useAskJourney(): () => AskJourneyVisit[] {
-  const pathname = usePathname()
+  const pathname = useSitePathname()
   const closed = useRef(new Map<string, AskJourneyVisit>())
   const open = useRef<AskJourneyOpenVisit | null>(null)
 

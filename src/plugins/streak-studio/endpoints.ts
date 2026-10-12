@@ -193,4 +193,5 @@ const poster = (media: Media) => ({
   width: media.width,
   height: media.height,
   mimeType: media.mimeType,
+  cloudflareImageUrl: media.cloudflareImageUrl,
 })

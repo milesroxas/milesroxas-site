@@ -104,7 +104,8 @@ export type StoredVisualSlot = {
 export type PosterMediaSource = Pick<
   Media,
   'filename' | 'updatedAt' | 'url' | 'width' | 'height' | 'mimeType'
->
+> &
+  Partial<Pick<Media, 'cloudflareImageUrl'>>
 
 /** What every effect's descriptor carries: the look, the editor's bounded adjustments, the poster. */
 type EffectDescriptor<Look extends string, T extends Tuning> = {

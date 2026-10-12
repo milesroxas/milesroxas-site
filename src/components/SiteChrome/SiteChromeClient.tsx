@@ -1,10 +1,10 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AskPanel } from '@/features/ask/AskPanel'
 import type { AskHandoffTerms } from '@/features/ask/handoff'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { useSitePathname } from '@/hooks/use-site-pathname'
 import { Dock } from './Dock'
 import { TopBar } from './TopBar'
 import { activeTabIndex, type ChromeTab, tabCurrent } from './tabs'
@@ -68,7 +68,7 @@ function useAskToggle(ask: SiteChromeAsk | null) {
  * moves on the tap, not once the next page has loaded.
  */
 export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
-  const pathname = usePathname()
+  const pathname = useSitePathname()
   const phone = useIsMobile()
 
   const [pressed, setPressed] = useState<{ on: string; index: number } | null>(null)

@@ -36,9 +36,7 @@ export type PosterImage = {
  * Cloudflare Images delivery URL when the media has synced, else the stored file.
  */
 const mediaPosterImage = (media: PosterMediaSource): PosterImage | null => {
-  const src =
-    (media as { cloudflareImageUrl?: string | null }).cloudflareImageUrl ||
-    getMediaUrl(media.url, media.updatedAt)
+  const src = media.cloudflareImageUrl || getMediaUrl(media.url, media.updatedAt)
   if (!src) return null
   return {
     src,

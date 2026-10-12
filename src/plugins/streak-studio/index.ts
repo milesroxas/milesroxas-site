@@ -8,6 +8,7 @@ import {
   type PayloadRequest,
   type Plugin,
 } from 'payload'
+import type { Media, StreakLook } from '@/payload-types'
 import { StreakLooks } from './collections'
 import { LOOKS_SLUG } from './components/paths'
 
@@ -37,6 +38,56 @@ function slotGroups(fields: Field[], names = new Set<string>()): Set<string> {
     }
   }
   return names
+}
+
+/** What a visual slot reads of a poster still: `parseRelease` checks these. */
+const posterSource = (media: Media) => ({
+  filename: media.filename,
+  url: media.url,
+  updatedAt: media.updatedAt,
+  width: media.width,
+  height: media.height,
+  mimeType: media.mimeType,
+  cloudflareImageUrl: media.cloudflareImageUrl,
+})
+
+type LookPosters = Pick<StreakLook, 'id' | 'thumbnail' | 'lightPoster' | 'posters'>
+
+const mediaId = (value: StreakLook['thumbnail']): number | null =>
+  typeof value === 'number' ? value : value && typeof value === 'object' ? value.id : null
+
+/**
+ * The posters a look publishes with. The pair stored on the look froze each
+ * still's URL at publish time, and a still's address follows the media origin
+ * (the bucket moved from Vercel Blob to R2): the rows the look points at
+ * answer today's URL and the Cloudflare Images copy, so they win, and the
+ * stored pair stands in only where a row is gone.
+ */
+async function livePosters(req: PayloadRequest, looks: LookPosters[]) {
+  const ids = [
+    ...new Set(
+      looks.flatMap((look) =>
+        [mediaId(look.thumbnail), mediaId(look.lightPoster)].filter((id) => id !== null),
+      ),
+    ),
+  ]
+  const rows = new Map<number, Media>()
+  if (ids.length) {
+    const result = await req.payload.find({
+      collection: 'media',
+      where: { id: { in: ids } },
+      limit: ids.length,
+      depth: 0,
+      pagination: false,
+      req,
+    })
+    for (const row of result.docs) rows.set(row.id, row)
+  }
+  return (look: LookPosters) => {
+    const dark = rows.get(mediaId(look.thumbnail) ?? -1)
+    const light = rows.get(mediaId(look.lightPoster) ?? -1)
+    return dark && light ? { dark: posterSource(dark), light: posterSource(light) } : look.posters
+  }
 }
 
 /**
@@ -84,11 +135,25 @@ const hydrateStudioFields =
         // The published document, and of it only what `parseRelease` reads: this
         // lands in public page responses.
         draft: false,
-        select: { sourceHash: true, snapshot: true, posters: true },
+        select: {
+          sourceHash: true,
+          snapshot: true,
+          posters: true,
+          thumbnail: true,
+          lightPoster: true,
+        },
         req,
       })
+      const posters = await livePosters(req, result.docs)
       for (const id of missing) cache.set(id, null)
-      for (const look of result.docs) if (look.snapshot) cache.set(look.id, look)
+      for (const look of result.docs)
+        if (look.snapshot)
+          cache.set(look.id, {
+            id: look.id,
+            sourceHash: look.sourceHash,
+            snapshot: look.snapshot,
+            posters: posters(look),
+          })
     }
     for (const slot of slots)
       slot[SLOT_FIELD] = cache.get(Number(slot[SLOT_FIELD])) ?? slot[SLOT_FIELD]

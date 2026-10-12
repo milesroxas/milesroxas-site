@@ -1,10 +1,10 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import { type RefObject, useEffect, useRef, useState } from 'react'
 import { Kbd } from '@/components/ui/kbd'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { useSitePathname } from '@/hooks/use-site-pathname'
 import { onChromeScroll } from './chrome-scroll'
 import { AskGlyph, glyphForPath } from './glyphs'
 import { PageTabs } from './PageTabs'
@@ -26,7 +26,7 @@ const TOOLTIP_DELAY_MS = 600
  */
 function useMinimizedTabs(enabled: boolean) {
   const [minimized, setMinimized] = useState(false)
-  const pathname = usePathname()
+  const pathname = useSitePathname()
 
   // biome-ignore lint/correctness/useExhaustiveDependencies(pathname): a new page restores the bar
   useEffect(() => {

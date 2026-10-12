@@ -2,7 +2,6 @@
 
 import { IconAlertCircle, IconArrowUpLeft, IconX } from '@tabler/icons-react'
 import { useLenis } from 'lenis/react'
-import { usePathname } from 'next/navigation'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { createRef, type RefObject, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AskGlyph } from '@/components/SiteChrome/glyphs'
@@ -18,6 +17,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import { usePresence } from '@/hooks/use-presence'
 import { useSheetDrag } from '@/hooks/use-sheet-drag'
+import { useSitePathname } from '@/hooks/use-site-pathname'
 import { cn } from '@/utilities/ui'
 import { ASK_FOLLOW_UP_PLACEHOLDER, ASK_INTRO, ASK_PLACEHOLDER, ASK_RETRY, ASK_SCOPE } from './copy'
 import type { AskHandoffTerms } from './handoff'
@@ -62,7 +62,7 @@ export function AskPanel({
   ...props
 }: AskPanelProps) {
   const chat = useAskChat({})
-  const pathname = usePathname()
+  const pathname = useSitePathname()
   const lenis = useLenis()
 
   // A source link or the contact page navigates: Ask steps aside for it.
