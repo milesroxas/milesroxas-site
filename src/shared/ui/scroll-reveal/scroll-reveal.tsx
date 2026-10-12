@@ -409,7 +409,18 @@ function revealPieces(root: HTMLElement) {
 const precedes = (a: Element, b: Element) =>
   a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
 
-type BeatKind = 'text' | 'media'
+/**
+ * `text` and `media` beats are mask wipes. A `stage` beat (`data-reveal="stage"`)
+ * is a target that plays its own entrance (a chart growing its marks, a
+ * diagram drawing its edges): the shell hides it until its beat on the media
+ * track, marks it `data-reveal-state="playing"` and holds the media duration,
+ * and copy below it in document order waits for it to land, because that copy
+ * reads against what the stage drew.
+ */
+type BeatKind = 'text' | 'media' | 'stage'
+
+/** The kinds the shell wipes open. */
+type MaskKind = Exclude<BeatKind, 'stage'>
 
 type Beat = {
   els: HTMLElement[]
@@ -456,7 +467,7 @@ function frameRound(frame: HTMLElement) {
 }
 
 /** A beat's mask at `edge`, rounded like the media frame it opens. */
-const mask = (el: HTMLElement, kind: BeatKind, edge: 'from' | 'to') =>
+const mask = (el: HTMLElement, kind: MaskKind, edge: 'from' | 'to') =>
   `inset(${MASK[kind][edge]}${kind === 'media' ? frameRound(el) : ''})`
 
 /** Inline properties a shell writes; each cleared when the shell is torn down. */
@@ -480,13 +491,14 @@ function playReveal(
   onComplete: () => void,
 ) {
   const targets = Array.from(root.querySelectorAll<HTMLElement>('[data-reveal]'))
-  const isMedia = (el: HTMLElement) => el.dataset.reveal === 'media'
-  const hasMedia = targets.some(isMedia)
+  const kindOf = (el: HTMLElement): BeatKind =>
+    el.dataset.reveal === 'media' || el.dataset.reveal === 'stage' ? el.dataset.reveal : 'text'
+  const hasMedia = targets.some((el) => kindOf(el) !== 'text')
   const trackDelay = {
     text: hasMedia ? Math.max(0, -tuning.mediaOffset) : 0,
     media: Math.max(0, tuning.mediaOffset),
   }
-  const track = (beat: Beat) => (beat.kind === 'media' ? 'media' : 'text')
+  const track = (beat: Beat) => (beat.kind === 'text' ? 'text' : 'media')
   const cursors = {
     text: { at: -Infinity, target: -1, group: undefined as string | undefined },
     media: { at: -Infinity, target: -1, group: undefined as string | undefined },
@@ -520,6 +532,8 @@ function playReveal(
 
   const gate = gateSelector ? null : sharedGate(revealGateMargin(tuning.enterOffset))
   const byLead = new Map<Element, Beat>()
+  /** Every stage that has played, with when it lands: copy below one follows it. */
+  const stages: { el: Element; lands: number }[] = []
 
   const rest = (beat: Beat) => {
     if (beat.state === 'done') return
@@ -531,6 +545,7 @@ function playReveal(
     for (const animation of beat.animations) animation.cancel()
     for (const el of beat.els) {
       el.style.removeProperty('clip-path')
+      el.style.removeProperty('visibility')
       el.dataset.revealState = 'done'
     }
     for (const el of mediaContents(beat)) el.style.removeProperty('transform')
@@ -538,13 +553,20 @@ function playReveal(
     settle()
   }
 
-  const open = (el: HTMLElement, kind: BeatKind, delay: number) =>
-    el.animate([{ clipPath: mask(el, kind, 'from') }, { clipPath: mask(el, kind, 'to') }], {
-      duration: (kind === 'media' ? tuning.mediaDuration : tuning.textDuration) * 1000,
-      easing: beatEasing(kind === 'media' ? tuning.mediaEase : tuning.textEase),
+  const open = (el: HTMLElement, kind: BeatKind, delay: number) => {
+    const timing: KeyframeAnimationOptions = {
+      duration: (kind === 'text' ? tuning.textDuration : tuning.mediaDuration) * 1000,
+      easing: beatEasing(kind === 'text' ? tuning.textEase : tuning.mediaEase),
       delay: delay * 1000,
       fill: 'both',
-    })
+    }
+    // A stage draws itself; the shell only holds its beat's length.
+    if (kind === 'stage') return el.animate(null, timing)
+    return el.animate(
+      [{ clipPath: mask(el, kind, 'from') }, { clipPath: mask(el, kind, 'to') }],
+      timing,
+    )
+  }
 
   const zoom = (el: HTMLElement, delay: number) =>
     el.animate([{ transform: `scale(${tuning.mediaScaleFrom})` }, { transform: 'scale(1)' }], {
@@ -562,7 +584,13 @@ function playReveal(
     }
     const cursor = cursors[track(beat)]
     const now = performance.now() / 1000
-    const earliest = now + trackDelay[track(beat)]
+    const lead = beat.els[0] as HTMLElement
+    // Copy below a stage waits for it to land; a stage long landed holds nothing.
+    const follows =
+      beat.kind === 'text'
+        ? stages.filter((stage) => precedes(stage.el, lead) < 0).map((stage) => stage.lands)
+        : []
+    const earliest = Math.max(now + trackDelay[track(beat)], ...follows)
     const joins = beat.joins && cursor.target === beat.target - 1 && cursor.group === beat.group
     const at = Math.max(earliest, joins ? cursor.at : cursor.at + step)
     Object.assign(cursor, { at, target: beat.target, group: beat.group })
@@ -573,6 +601,10 @@ function playReveal(
       ...beat.els.map((el) => open(el, beat.kind, delay)),
       ...mediaContents(beat).map((el) => zoom(el, delay)),
     ]
+    if (beat.kind === 'stage') {
+      stages.push({ el: lead, lands: at + tuning.mediaDuration })
+      for (const el of beat.els) el.style.removeProperty('visibility')
+    }
     // Content with an entrance of its own (a diagram drawing its edges) keys on this.
     for (const el of beat.els) el.dataset.revealState = 'playing'
     // A cancelled animation rejects: teardown and re-splits land beats themselves.
@@ -586,7 +618,8 @@ function playReveal(
     const waiting = beats
       .filter((beat) => beat.state === 'waiting')
       .sort((a, b) => precedes(a.els[0] as HTMLElement, b.els[0] as HTMLElement))
-    for (const kind of ['text', 'media'] as const) {
+    // Media first, so copy entering with a stage sees when it lands.
+    for (const kind of ['media', 'text'] as const) {
       const burst = waiting.filter((beat) => track(beat) === kind)
       const step = cascadeStagger(tuning.stagger, burst.length)
       for (const beat of burst) play(beat, step)
@@ -630,12 +663,18 @@ function playReveal(
     if (onScreen.length) release(onScreen.map(([, beat]) => beat))
   })
 
-  const watch = (beats: Beat[]) => {
-    for (const beat of beats) {
-      for (const el of beat.els) write(el, 'clip-path', `inset(${MASK[beat.kind].from})`)
-      for (const el of mediaContents(beat))
-        write(el, 'transform', `scale(${tuning.mediaScaleFrom})`)
+  /** A beat's rest state before it plays: masked shut, or hidden whole for a stage. */
+  const hold = (beat: Beat) => {
+    if (beat.kind === 'stage') {
+      for (const el of beat.els) write(el, 'visibility', 'hidden')
+      return
     }
+    for (const el of beat.els) write(el, 'clip-path', `inset(${MASK[beat.kind].from})`)
+    for (const el of mediaContents(beat)) write(el, 'transform', `scale(${tuning.mediaScaleFrom})`)
+  }
+
+  const watch = (beats: Beat[]) => {
+    for (const beat of beats) hold(beat)
     if (overrideGate) {
       if (gateOpen) release(beats)
       else queued.push(...beats)
@@ -716,8 +755,9 @@ function playReveal(
 
   const indexes = { text: 0, media: 0 }
   for (const el of targets) {
-    if (isMedia(el)) {
-      watch([beat([el], 'media', indexes.media++)])
+    const kind = kindOf(el)
+    if (kind !== 'text') {
+      watch([beat([el], kind, indexes.media++)])
       outstanding += 1
       settle()
     } else {
@@ -756,7 +796,9 @@ function playReveal(
  * controls and inline boxes in it open whole on the same cascade, and
  * `data-reveal="media"` frames open on their own track. A target sharing a
  * `data-reveal-group` with the one before it lands on that target's last
- * beat. Every beat plays once.
+ * beat. A `data-reveal="stage"` target draws itself (a chart, a diagram): the
+ * shell hides it until its beat, marks it `data-reveal-state`, and holds the
+ * copy below it until the stage has landed. Every beat plays once.
  * Server-rendered children stay visible without JavaScript; reduced motion
  * renders the final state.
  */

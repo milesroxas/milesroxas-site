@@ -32,23 +32,25 @@ import { type ChartModel, chartModel, directLabels, formatValue, formatX } from 
  * rounded data end and a square baseline, a 10% area wash, 8px dots with a
  * surface ring, a hairline solid grid, text in text tokens. One y axis, always.
  *
- * Marks enter once, as the figure's reveal beat plays (`LazyChart` mounts
- * the canvas on that beat): bars grow from the baseline, lines and areas
- * draw along their length, dots surface, each series a step after the last.
- * The entrance waits for the frame's wipe to open most of the plot and lands
- * on the site's content pace (`ENTER`); values and end labels appear as their
- * marks land (Recharts hides them while a mark is moving). The tooltip tracks
- * the pointer with no easing; a readout that trails the cursor reads as lag.
+ * Marks enter once, as the figure's stage beat plays (`LazyChart` mounts
+ * the canvas on that beat): the axes and grid fade in, then bars grow from
+ * the baseline, lines and areas draw along their length, dots surface, each
+ * series a step after the last, at the site's content pace (`ENTER`). Values
+ * and end labels appear as their marks land (Recharts hides them while a mark
+ * is moving). The tooltip tracks the pointer with no easing; a readout that
+ * trails the cursor reads as lag.
  */
 
 /**
- * The marks' entrance, in ms. `begin` sits inside the under-media wipe (1.2s,
- * power2.out: most of the frame is open by then); `easing` is that wipe's
- * curve, so the marks settle the way the frame did. A line has further to
- * travel than a bar and takes a little longer.
+ * The marks' entrance, in ms. `begin` lets the scaffold fade
+ * (`.figure-chart-canvas`, 640ms) settle before anything grows from it;
+ * `easing` is the frame wipe's curve (power2.out), so a mark lands the way
+ * the site's media does. A line has further to travel than a bar and takes
+ * a little longer.
  */
 const ENTER = {
-  begin: 400,
+  begin: 250,
+
   series: 150,
   bar: 1000,
   line: 1200,

@@ -12,7 +12,8 @@ type PosterState = 'covered' | 'revealing' | 'revealed' | 'covering'
 
 export type SlideRefs = {
   node: HTMLElement
-  caption: HTMLElement | null
+  /** The slide's caption text, shown in the deck's caption line when it is nearest. */
+  caption: string
   veil: HTMLElement | null
   video: HTMLVideoElement | null
   poster: HTMLElement | null
@@ -25,7 +26,7 @@ export const collectSlideRefs = (slideNode: HTMLElement): SlideRefs | null => {
   if (!node) return null
   return {
     node,
-    caption: slideNode.querySelector<HTMLElement>('[data-carousel-caption]'),
+    caption: slideNode.dataset.caption ?? '',
     veil: slideNode.querySelector<HTMLElement>('[data-carousel-veil]'),
     video: slideNode.querySelector('video'),
     poster: slideNode.querySelector<HTMLElement>('[data-carousel-poster]'),

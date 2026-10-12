@@ -59,6 +59,8 @@ type Ids = ReturnType<typeof figureIds>
  * line, whatever the figure kind hands over (a chart's legend). One row, so
  * the title and the key read as one unit over the drawing, and the two share
  * a baseline; when the line cannot hold both, the aside wraps underneath.
+ * Both are reveal targets: the title opens line by line and the key follows
+ * it as one unit, before the drawing starts.
  */
 const Header = ({
   aside,
@@ -76,7 +78,7 @@ const Header = ({
   >
     {title ? (
       <div className="group/title flex min-w-0 items-baseline gap-2">
-        <h3 className="text-balance text-lead leading-snug" id={ids.title}>
+        <h3 className="text-balance text-lead leading-snug" data-reveal id={ids.title}>
           {title}
         </h3>
         {/* Hidden until the title is hovered; always there on focus, and on touch, where nothing hovers. */}
@@ -89,12 +91,12 @@ const Header = ({
         </a>
       </div>
     ) : null}
-    {aside}
+    {aside ? <div data-reveal>{aside}</div> : null}
   </div>
 )
 
 const Source = ({ href, label }: { href?: null | string; label: string }) => (
-  <span className="mt-1 block">
+  <p className="mt-1">
     Source:{' '}
     {href ? (
       <a
@@ -108,10 +110,15 @@ const Source = ({ href, label }: { href?: null | string; label: string }) => (
     ) : (
       label
     )}
-  </span>
+  </p>
 )
 
-/** The text alternative and the data view, behind a native `<details>`: no script, and findable in page. */
+/**
+ * The text alternative and the data view, behind a native `<details>`: no
+ * script, and findable in page. The summary line is the reveal target, not
+ * the details: a closed body still has boxes, and would be split and masked
+ * where nobody sees it.
+ */
 const Disclosure = ({
   className,
   dataView,
@@ -123,7 +130,10 @@ const Disclosure = ({
   ids: Ids
 }) => (
   <details className={cn('figure-data mt-4 text-sm', className)}>
-    <summary className="inline-flex cursor-pointer list-none items-center gap-1 rounded-sm text-muted-foreground [&::-webkit-details-marker]:hidden">
+    <summary
+      className="inline-flex cursor-pointer list-none items-center gap-1 rounded-sm text-muted-foreground [&::-webkit-details-marker]:hidden"
+      data-reveal
+    >
       <IconChevronRight aria-hidden className="figure-data-chevron size-4" />
       {dataView ? `Description and ${dataViewLabel}` : 'Description'}
     </summary>
@@ -146,6 +156,13 @@ const Disclosure = ({
  * labelled by the title and described by the text alternative (`figureIds`),
  * which works while the disclosure is closed: `aria-describedby` reads hidden
  * content.
+ *
+ * The entrance reads in the figure's own order, over the shared reveal's
+ * markers (`shared/ui/scroll-reveal`): the title and key open first, the
+ * visual is a stage that draws itself (`data-reveal="stage"`: the chart's
+ * marks grow, the diagram's steps surface, keyed on `data-reveal-state`),
+ * and the caption, source and disclosure wait for it to land, because they
+ * read against what it drew.
  */
 export const FigureFrame = ({
   aside,
@@ -168,13 +185,16 @@ export const FigureFrame = ({
       ) : null}
       {/* The visual is wrapped so it is one cell of the frame's subgrid: a figure
           kind hands its legend, axis labels and drawing over as siblings. */}
-      <div className={cn('min-w-0', place.visual)}>{children}</div>
+      <div className={cn('min-w-0', place.visual)} data-reveal="stage">
+        {children}
+      </div>
       {caption || source?.label ? (
-        <figcaption className={cn('mt-4 text-muted-foreground text-sm', place.text)}>
-          {caption}
+        <figcaption className={cn('mt-4 text-muted-foreground text-sm', place.text)} data-reveal>
+          {caption ? <p>{caption}</p> : null}
           {source?.label ? <Source href={source.href} label={source.label} /> : null}
         </figcaption>
       ) : null}
+
       <Disclosure
         className={place.text}
         dataView={dataView}

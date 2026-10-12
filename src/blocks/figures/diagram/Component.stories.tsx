@@ -21,7 +21,13 @@ const meta = {
   title: 'Blocks/Figures/Diagram',
   component: DiagramFigure,
   parameters: { layout: 'fullscreen' },
-  args: { blockId: 'story-diagram', layout: null, width: 'wide', ...figure('visualResolves') },
+  args: {
+    blockId: 'story-diagram',
+    caption: 'Illustrative steps from the acceptance corpus.',
+    layout: null,
+    width: 'wide',
+    ...figure('visualResolves'),
+  },
   argTypes: { width: blockControls<typeof DiagramFigure>('diagram').argTypes.width },
   loaders: [async ({ args }) => ({ layout: await layoutDiagram(args.spec) })],
   render: (args, { loaded }) => (
@@ -69,15 +75,13 @@ export const OnInvertedBand: Story = {
   ),
 }
 
-/** Inside the block reveal, as on a page: the figure opens whole as one frame. */
+/** Inside the block reveal, as on a page: the title opens, the drawing assembles, then the caption and disclosure follow it. */
 export const Entrance: Story = {
   render: (args, { loaded }) => (
     <ScrollReveal as="div" variant="underMedia">
-      <div data-reveal="media">
-        <FigureShell>
-          <DiagramFigure {...args} layout={loaded.layout} />
-        </FigureShell>
-      </div>
+      <FigureShell>
+        <DiagramFigure {...args} layout={loaded.layout} />
+      </FigureShell>
     </ScrollReveal>
   ),
 }

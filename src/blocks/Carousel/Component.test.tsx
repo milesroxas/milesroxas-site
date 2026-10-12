@@ -54,7 +54,8 @@ describe('CarouselBlock', () => {
     expect(slideMedia()).toHaveLength(2)
     // The video fixture has no Stream thumbnail, so nothing overlays it.
     expect(container.querySelectorAll('[data-carousel-poster]')).toHaveLength(0)
-    expect(screen.getByText('First caption')).toBeDefined()
+    // Once for readers inside the slide, once in the deck's caption line.
+    expect(screen.getAllByText('First caption')).toHaveLength(2)
   })
 
   it('skips slides whose media is an unpopulated id', () => {
@@ -84,13 +85,7 @@ describe('CarouselBlock', () => {
     expect(container.querySelectorAll('[data-carousel-poster] img')).toHaveLength(1)
   })
 
-  it('inks only the active slide caption at rest', () => {
-    const { container } = render(<CarouselBlock {...baseProps} slideSize="third" />)
-    const captions = [...container.querySelectorAll<HTMLElement>('[data-carousel-caption]')]
-    expect(captions.map((caption) => caption.style.opacity)).toEqual(['1'])
-  })
-
-  it('hides a non-active slide caption at rest', () => {
+  it('shows the opening slide in one caption line under the deck, outside the track', () => {
     const { container } = render(
       <CarouselBlock
         {...baseProps}
@@ -101,7 +96,21 @@ describe('CarouselBlock', () => {
       />,
     )
     const captions = [...container.querySelectorAll<HTMLElement>('[data-carousel-caption]')]
-    expect(captions.map((caption) => caption.style.opacity)).toEqual(['1', '0'])
+    expect(captions.map((caption) => caption.textContent)).toEqual(['First caption'])
+    expect(captions[0]?.closest('[data-slot="carousel-content"]')).toBeNull()
+    // The writer reads each slide's words from its item.
+    const items = [...container.querySelectorAll<HTMLElement>('[data-slot="carousel-item"]')]
+    expect(items.map((item) => item.dataset.caption)).toEqual(['First caption', 'Second caption'])
+  })
+
+  it('renders no caption line when no slide carries one', () => {
+    const { container } = render(
+      <CarouselBlock
+        {...baseProps}
+        slides={[{ id: 'slide-1', media: mediaFixture, caption: null }]}
+      />,
+    )
+    expect(container.querySelector('[data-carousel-caption]')).toBeNull()
   })
 
   it('gives the half size a four-fifths slide on a tighter gutter', () => {

@@ -2708,25 +2708,21 @@ html:active-view-transition-type(work-open) .dock {
 
 /* Diagram entrance: explanatory, not decorative. Nodes surface in reading
    order and each edge draws from its source, so the first thing a reader
-   learns is which way the figure runs. It rides the block's own reveal: the
-   shared shell marks its frame `data-reveal-state` as the frame's beat starts
-   (shared/ui/scroll-reveal), and the steps are hidden only inside a live
-   shell (`data-reveal-shell`), so without JavaScript nothing is hidden.
-   Nodes only fade, because the frame already opens, and a second translate
-   would double the motion. Everything that enters on a beat carries
-   `.figure-step`; `--i` is its reading-order step, capped by the renderer so
-   a 40-node graph still lands inside about two seconds. Outside a reveal
+   learns is which way the figure runs. The drawing is a stage of the block's
+   reveal (`data-reveal="stage"`, shared/ui/scroll-reveal): the shell keeps it
+   hidden until its beat, marks it `data-reveal-state` as the beat starts,
+   and holds the caption under it until the stage has landed. Nothing masks
+   the drawing, so the steps are the whole entrance and they only fade: the
+   title line above is already opening, and a translate on top would double
+   the motion. Everything that enters on a beat carries `.figure-step`; `--i`
+   is its reading-order step, capped by the renderer so a 40-node graph still
+   lands inside about two seconds. The drawing's frame (an axis, a rail, the
+   eras) is step 0, so it is there before the first node. Outside a reveal
    shell (Storybook, the admin) nothing is hidden and nothing plays.
-
-   Pace: the frame's wipe takes 1.2s to open top-down, so the first step waits
-   until most of the frame is open and the cascade carries on past the wipe
-   at the site's content pace (`--figure-enter-*`): a reader watches the
-   figure assemble rather than catching the tail of it.
 
    All of it sits under `no-preference`: with reduced motion nothing is ever
    hidden, drawn or marched, the figure is simply there. */
 :root {
-  --figure-enter-wait: 360ms;
   --figure-enter-step: 80ms;
   --figure-enter-fade: 640ms;
   --figure-enter-draw: 720ms;
@@ -2738,10 +2734,7 @@ html:active-view-transition-type(work-open) .dock {
 @media (prefers-reduced-motion: no-preference) {
   [data-reveal-state] .figure-step {
     animation: figure-fade var(--figure-enter-fade) var(--ease-out-quint) both;
-    animation-delay: calc(var(--i, 0) * var(--figure-enter-step) + var(--figure-enter-wait));
-  }
-  [data-reveal-shell] [data-reveal]:not([data-reveal-state]) .figure-step {
-    opacity: 0;
+    animation-delay: calc(var(--i, 0) * var(--figure-enter-step));
   }
   /* A solid edge draws along its length (`pathLength="1"` normalizes every
      path to the same dash math). A dashed edge cannot be drawn that way
@@ -2756,7 +2749,6 @@ html:active-view-transition-type(work-open) .dock {
     animation-delay: calc(
       var(--i, 0) *
       var(--figure-enter-step) +
-      var(--figure-enter-wait) +
       var(--figure-enter-draw) -
       120ms
     );
@@ -2771,13 +2763,8 @@ html:active-view-transition-type(work-open) .dock {
       figure-fade var(--figure-enter-fade) var(--ease-out-quint) both,
       figure-march 900ms linear 6;
     animation-delay:
-      calc(var(--i, 0) * var(--figure-enter-step) + var(--figure-enter-wait)),
-      calc(
-        var(--i, 0) *
-        var(--figure-enter-step) +
-        var(--figure-enter-wait) +
-        var(--figure-enter-fade)
-      );
+      calc(var(--i, 0) * var(--figure-enter-step)),
+      calc(var(--i, 0) * var(--figure-enter-step) + var(--figure-enter-fade));
   }
   @media (hover: hover) and (pointer: fine) {
     [data-reveal-state] .figure-diagram:hover .figure-edge[data-march] {
@@ -2804,13 +2791,14 @@ html:active-view-transition-type(work-open) .dock {
   }
 }
 
-/* The lazy chart replaces its placeholder in place as the figure's beat
-   starts; the axes and grid fade over the hairline so the swap never reads
-   as a pop, then the marks enter (features/figures/ui/chart/chart-canvas).
-   An annotation is read against the marks, so when they enter (`data-enter`)
-   it arrives once the last series has landed. */
+/* The lazy chart replaces its placeholder in place as the figure's stage
+   starts; the axes and grid fade over the hairline on the step fade (the
+   axis names beside them are `.figure-step` on the same beat), then the
+   marks grow from them (features/figures/ui/chart/chart-canvas). An
+   annotation is read against the marks, so when they enter (`data-enter`)
+   it arrives as the last series lands. */
 .figure-chart-canvas {
-  transition: opacity 500ms var(--ease-out-quint);
+  transition: opacity var(--figure-enter-fade) var(--ease-out-quint);
   @starting-style {
     opacity: 0;
   }
@@ -2818,7 +2806,7 @@ html:active-view-transition-type(work-open) .dock {
 @media (prefers-reduced-motion: no-preference) {
   .figure-chart-canvas[data-enter]
     :is(.recharts-reference-line, .recharts-reference-dot, .figure-annotation) {
-    animation: figure-fade var(--figure-enter-fade) var(--ease-out-quint) 1800ms both;
+    animation: figure-fade var(--figure-enter-fade) var(--ease-out-quint) 1500ms both;
   }
 }
 

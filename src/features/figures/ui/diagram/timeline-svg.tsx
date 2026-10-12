@@ -64,19 +64,20 @@ const Wide = ({ layout, spec }: { layout: TimelineLayout['wide']; spec: Timeline
         ) : null}
       </g>
     ))}
+    {/* The axis and its ends are the frame of the drawing: first beat, with the eras. */}
     <line
-      className="stroke-muted-foreground"
+      className="figure-step stroke-muted-foreground"
       strokeWidth={1.5}
       x1={0}
       x2={layout.width}
       y1={layout.axisY}
       y2={layout.axisY}
     />
-    <text className="fill-muted-foreground text-xs" x={0} y={layout.height - 8}>
+    <text className="figure-step fill-muted-foreground text-xs" x={0} y={layout.height - 8}>
       {formatDate(spec.range.start)}
     </text>
     <text
-      className="fill-muted-foreground text-xs"
+      className="figure-step fill-muted-foreground text-xs"
       textAnchor="end"
       x={layout.width}
       y={layout.height - 8}
@@ -116,13 +117,14 @@ const Narrow = ({ layout, spec }: { layout: TimelineLayout['narrow']; spec: Time
   return (
     <>
       <line
-        className="stroke-muted-foreground"
+        className="figure-step stroke-muted-foreground"
         strokeWidth={1.5}
         x1={rail}
         x2={rail}
         y1={0}
         y2={layout.height}
       />
+
       {layout.rows.map((row, order) => {
         if (row.kind === 'era')
           return (

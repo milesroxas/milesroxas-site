@@ -32,8 +32,11 @@ export const ChartFigure = ({ spec, ...frame }: ChartFigureProps) => {
       dataViewLabel="data table"
     >
       {/* The axes are named at the plot's corners, upright: the left axis on a
-          line above its ticks, the bottom axis under the end of its run. */}
-      {leftAxisLabel ? <p className="mb-2 text-muted-foreground text-xs">{leftAxisLabel}</p> : null}
+          line above its ticks, the bottom axis under the end of its run. They
+          fade in with the scaffold (`figure-step`, first beat of the stage). */}
+      {leftAxisLabel ? (
+        <p className="figure-step mb-2 text-muted-foreground text-xs">{leftAxisLabel}</p>
+      ) : null}
       <LazyChart
         describedBy={ids.description}
         label={name}
@@ -41,8 +44,11 @@ export const ChartFigure = ({ spec, ...frame }: ChartFigureProps) => {
         spec={spec}
       />
       {bottomAxisLabel ? (
-        <p className="mt-2 text-right text-muted-foreground text-xs">{bottomAxisLabel}</p>
+        <p className="figure-step mt-2 text-right text-muted-foreground text-xs">
+          {bottomAxisLabel}
+        </p>
       ) : null}
+
       <noscript>
         <p className="mt-3 text-muted-foreground text-sm">
           This chart needs JavaScript. Its values are in the data table below.

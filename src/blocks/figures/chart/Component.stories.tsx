@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { CHART_CORPUS } from '@/features/figures/corpus'
 import type { ChartSpec } from '@/features/figures/spec/chart'
+import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { blockControls } from '@/stories/block-controls'
 import { ChartBlock } from './Component'
 
@@ -78,6 +79,15 @@ export const BarOverTime: Story = { args: figure('studioPublishes') }
 export const Area: Story = { args: figure('octavesVsDetail') }
 
 export const Scatter: Story = { args: figure('countVsFps') }
+
+/** Inside the block reveal, as on a page: the title and key open, the marks enter, then the caption and disclosure follow them. */
+export const Entrance: Story = {
+  render: (args) => (
+    <ScrollReveal as="div" variant="underMedia">
+      <ChartBlock {...args} />
+    </ScrollReveal>
+  ),
+}
 
 /** The data end is rounded whichever way a bar points; the baseline stays square. */
 export const DivergingBar: Story = { args: figure('deltaFromDefault') }

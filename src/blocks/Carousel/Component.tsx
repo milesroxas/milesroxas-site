@@ -29,7 +29,6 @@ import { cn } from '@/utilities/ui'
 import { CarouselFilters } from './filters'
 import { useCarouselEffects } from './use-carousel-effects'
 import {
-  captionOpacity,
   type DeckPose,
   type DeckStyle,
   deckPose,
@@ -202,6 +201,8 @@ const slideGutterClasses: Record<
 const renderableSlidesOf = (slides: CarouselBlockProps['slides']): Slide[] =>
   (slides ?? []).filter((slide) => slide.media && typeof slide.media === 'object')
 
+const captionOf = (slide: Slide | undefined): string => slide?.caption ?? ''
+
 /**
  * Viewport-height cap on the slide width.
  *
@@ -266,16 +267,14 @@ export const sharedDeckFrame = (
   return aspect === undefined ? undefined : { aspect, caption, height }
 }
 
-/** The caption's `mt-4` and one `text-sm` line. */
-const CAPTION_RESERVE = '2.25rem'
-
 /**
  * Every slide in a framed deck stands on the frame's foot, so a shorter deck
  * keeps its bottom edge on the controls beside it (see Carousel tabs). `cqw`
- * is the slide's width: the item is a size container.
+ * is the slide's width: the item is a size container. The caption line sits
+ * under the deck (`DeckCaption`), outside the frame.
  */
 const frameStyle = (frame: DeckFrame): CSSProperties => ({
-  minHeight: `calc(${frame.height.toFixed(4)} * 100cqw${frame.caption ? ` + ${CAPTION_RESERVE}` : ''})`,
+  minHeight: `calc(${frame.height.toFixed(4)} * 100cqw)`,
 })
 
 /**
@@ -427,7 +426,7 @@ const deckLayout = (
     isFullWidth && size === 'full' && !isStack && '@min-[calc(100vw-1.5rem)]:rounded-none',
   )
 
-  // Media may bleed; captions stay on the page column. Only a full-width slide leaves it (from `md`).
+  // Media may bleed; the caption stays on the page column. Only a full-width slide leaves it (from `md`).
   const captionClassName = isFullWidth && size === 'full' && !isStack ? 'md:container' : undefined
 
   const trackStyle =
@@ -499,7 +498,6 @@ const usePictureState = (isImage: boolean) => {
 }
 
 const CarouselSlide: React.FC<{
-  captionClassName?: string
   cornerClass: string
   deal: Deal
   frame?: DeckFrame
@@ -513,7 +511,6 @@ const CarouselSlide: React.FC<{
   slide: Slide
   veilClass?: string
 }> = ({
-  captionClassName,
   cornerClass,
   count,
   deal,
@@ -537,6 +534,9 @@ const CarouselSlide: React.FC<{
   return (
     <CarouselItem
       className={cn('@container', gutterClass, sizeClass)}
+      // The visible caption is one line under the deck (`DeckCaption`); the
+      // per-frame writer reads each slide's here. Readers get it in place.
+      data-caption={captionOf(slide)}
       style={rest.zIndex === undefined ? undefined : { zIndex: rest.zIndex }}
     >
       {/* First child is the tween target. Server-rendered rest-state styles
@@ -613,22 +613,38 @@ const CarouselSlide: React.FC<{
             />
           )}
         </div>
-        {slide.caption && (
-          // Only the active slide carries ink; the fade is written by the same
-          // per-frame writer as the pose (see ./use-carousel-effects), and this
-          // rest-state opacity is that writer's frame 0.
-          <p
-            className={cn('mt-4 text-sm text-muted-foreground', captionClassName)}
-            data-carousel-caption
-            style={{ opacity: captionOpacity(restSigned) }}
-          >
-            {slide.caption}
-          </p>
-        )}
+        {slide.caption && <p className="sr-only">{slide.caption}</p>}
       </div>
     </CarouselItem>
   )
 }
+
+/**
+ * The deck's one caption line, under the track rather than in the slides.
+ * Inside a slide the text would ride the pose (a 3D turn, a scale, a blur)
+ * and the track's chromatic-aberration filter, and type rasterized through
+ * those reads soft and fringed while it moves. Out here it is plain text on
+ * the page: the per-frame writer (see ./use-carousel-effects) only swaps its
+ * words for the slide nearest the scroll position and writes its opacity,
+ * nothing else, so every frame paints crisp glyphs. The slot is always one
+ * line tall when any slide carries a caption (and in a shared frame, when
+ * any deck does), so the block never moves as captions come and go.
+ * `aria-hidden`: each slide keeps its caption for readers.
+ */
+const DeckCaption: React.FC<{
+  className?: string
+  captionRef: React.RefObject<HTMLParagraphElement | null>
+  text: string
+}> = ({ className, captionRef, text }) => (
+  <p
+    aria-hidden="true"
+    className={cn('mt-4 min-h-5 text-muted-foreground text-sm', className)}
+    data-carousel-caption
+    ref={captionRef}
+  >
+    {text}
+  </p>
+)
 
 /**
  * Below `md` the arrows overlay the slides in both widths: reserving an outer
@@ -710,16 +726,18 @@ const useDeckEffects = (deckStyle: DeckStyle) => {
     blue: null,
   })
   const dissolveMap = useRef<SVGFEDisplacementMapElement | null>(null)
+  const captionRef = useRef<HTMLParagraphElement>(null)
   useCarouselEffects({
     api,
     caId,
     caOffsets,
+    captionRef,
     dissolveId,
     dissolveMap,
     stacked: deckStyle === 'stack',
     pose: deckPose[deckStyle],
   })
-  return { caId, caOffsets, dissolveId, dissolveMap, setApi }
+  return { caId, caOffsets, captionRef, dissolveId, dissolveMap, setApi }
 }
 
 export const CarouselBlock: React.FC<Props> = (props) => {
@@ -740,7 +758,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
 
   const style: DeckStyle = deckStyle === 'stack' ? 'stack' : 'coverflow'
   const isStack = style === 'stack'
-  const { caId, caOffsets, dissolveId, dissolveMap, setApi } = useDeckEffects(style)
+  const { caId, caOffsets, captionRef, dissolveId, dissolveMap, setApi } = useDeckEffects(style)
   const stackDeal = useStackDeal(isStack)
   const handleApi = useCallback(
     (api: CarouselApi) => {
@@ -757,6 +775,7 @@ export const CarouselBlock: React.FC<Props> = (props) => {
   if (!renderableSlides.length) return null
 
   const isFullWidth = width === 'full-width'
+  const hasCaption = frame?.caption || renderableSlides.some((slide) => slide.caption)
   const { captionClassName, cornerClass, gutter, imageSizes, sizeClass, trackStyle } = deckLayout(
     renderableSlides,
     slideSize,
@@ -796,7 +815,6 @@ export const CarouselBlock: React.FC<Props> = (props) => {
           >
             {renderableSlides.map((slide, index) => (
               <CarouselSlide
-                captionClassName={captionClassName}
                 cornerClass={cornerClass}
                 count={renderableSlides.length}
                 deal={stackDeal.deal}
@@ -817,6 +835,13 @@ export const CarouselBlock: React.FC<Props> = (props) => {
           </CarouselContent>
           {showArrows && <CarouselArrows isFullWidth={isFullWidth} />}
         </Carousel>
+        {hasCaption && (
+          <DeckCaption
+            captionRef={captionRef}
+            className={captionClassName}
+            text={captionOf(renderableSlides[0])}
+          />
+        )}
       </div>
     </Section>
   )

@@ -2,6 +2,7 @@
 
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
+import type React from 'react'
 import type { CarouselApi } from '@/components/ui/carousel'
 import type { CaOffsets, DissolveMap } from './filters'
 import { computeTweenFactor, forEachSnapDistance, openingSnap } from './geometry'
@@ -43,6 +44,8 @@ type Options = {
   api: CarouselApi
   caId: string
   caOffsets: CaOffsets
+  /** The deck's caption line (see `DeckCaption` in ./Component). */
+  captionRef: React.RefObject<HTMLElement | null>
   dissolveId: string
   dissolveMap: DissolveMap
   /** The deck's pose (see ./visual-state); the server render uses the same one. */
@@ -80,6 +83,7 @@ export const useCarouselEffects = ({
   api,
   caId,
   caOffsets,
+  captionRef,
   dissolveId,
   dissolveMap,
   pose,
@@ -95,15 +99,26 @@ export const useCarouselEffects = ({
       let tweenFactor = 1
       let slideRefs: (SlideRefs | null)[] = []
 
-      const applySlide = (refs: SlideRefs, signed: number) => {
-        writeSlide(refs, pose(signed, slideRefs.length))
-        // Caption rides the same value on its own steeper ramp, so it is one
-        // more pure write per frame rather than a second animation.
-        if (refs.caption) refs.caption.style.opacity = String(captionOpacity(signed))
+      // The caption line shows the slide nearest the scroll position, on the
+      // caption's own steep ramp (`captionOpacity`): the outgoing words are
+      // gone a third of a snap out, the incoming ones rise over the last
+      // third, and the swap happens in between, at zero. One more pure write
+      // per frame, opacity only, so the type never resamples (see
+      // `DeckCaption` in ./Component).
+      let captionIndex = -1
+      const paintCaption = (index: number, signed: number) => {
+        const caption = captionRef.current
+        if (!caption) return
+        if (index !== captionIndex) {
+          captionIndex = index
+          caption.textContent = slideRefs[index]?.caption ?? ''
+        }
+        caption.style.opacity = String(captionOpacity(signed))
       }
 
       /** Paint every slide from the current scroll position, posing via `poseOf`. */
       const paintSlides = (poseOf: (signed: number) => number) => {
+        let nearest = { index: -1, signed: Number.POSITIVE_INFINITY }
         forEachSnapDistance(
           api.internalEngine(),
           api.scrollSnapList(),
@@ -111,9 +126,15 @@ export const useCarouselEffects = ({
           tweenFactor,
           (slideIndex, signed) => {
             const refs = slideRefs[slideIndex]
-            if (refs) applySlide(refs, poseOf(signed))
+            if (!refs) return
+            const posed = poseOf(signed)
+            writeSlide(refs, pose(posed, slideRefs.length))
+            if (Math.abs(posed) < Math.abs(nearest.signed)) {
+              nearest = { index: slideIndex, signed: posed }
+            }
           },
         )
+        if (nearest.index >= 0) paintCaption(nearest.index, nearest.signed)
       }
 
       // --- Chromatic aberration envelope -----------------------------------

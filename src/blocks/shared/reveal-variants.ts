@@ -8,7 +8,7 @@ import type { ScrollRevealVariant } from '@/shared/ui/scroll-reveal'
  * - A variant: the block carries `data-reveal` markers, and the shell plays
  *   that reveal over them.
  * - `'frame'`: the block has no markers of its own and opens whole, as one
- *   media beat of the under-media reveal (a chart, a form, a carousel).
+ *   media beat of the under-media reveal (a form, a carousel).
  * - `'self'`: the block mounts its own shell — renderers must never wrap it
  *   in a second entrance.
  *
@@ -24,11 +24,14 @@ export const blockRevealVariants = {
   carousel: 'frame',
   carouselSplit: 'frame',
   carouselTabs: 'frame',
-  chart: 'frame',
+  // The figure frame carries the markers: title and key, then the drawing
+  // as a stage that draws itself, then the caption and disclosure after it.
+  chart: 'underMedia',
   code: 'frame',
   content: 'intro',
   cta: 'frame',
-  diagram: 'frame',
+  diagram: 'underMedia',
+
   faq: 'intro',
   featureHeadingOffset: 'intro',
   featureTabs: 'intro',
