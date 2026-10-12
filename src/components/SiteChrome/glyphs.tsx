@@ -67,6 +67,33 @@ function ContactGlyph(props: GlyphProps) {
   )
 }
 
+/** The folded tab bar: two lines, the pages behind them. */
+export function MenuGlyph(props: GlyphProps) {
+  return (
+    <svg aria-hidden="true" {...stroke} strokeWidth={1.5} {...props}>
+      <path d="M3 5.25h10M3 10.75h10" />
+    </svg>
+  )
+}
+
+/** Closes what the menu opened, in the menu's own spot. */
+export function CloseGlyph(props: GlyphProps) {
+  return (
+    <svg aria-hidden="true" {...stroke} strokeWidth={1.5} {...props}>
+      <path d="m4.5 4.5 7 7M11.5 4.5l-7 7" />
+    </svg>
+  )
+}
+
+/** Leaves the site: the dock's "Visit" button. */
+export function ArrowOutGlyph(props: GlyphProps) {
+  return (
+    <svg aria-hidden="true" {...stroke} strokeWidth={1.5} {...props}>
+      <path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" />
+    </svg>
+  )
+}
+
 /** Ask's mark: a speech bubble with one point of attention. The dot takes the ink as a fill. */
 export function AskGlyph(props: GlyphProps) {
   return (

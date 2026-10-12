@@ -4595,6 +4595,16 @@ export interface Work {
   showContents?: boolean | null;
   status?: ('coming-soon' | 'live') | null;
   /**
+   * Where the work lives now. With a URL, the site chrome offers a "Visit" button on this case study.
+   */
+  link?: {
+    url?: string | null;
+    /**
+     * Optional, keep it short: it must fit beside the phone menu. Default: "Visit <host>", or "Visit site" when the host is over 16 characters.
+     */
+    label?: string | null;
+  };
+  /**
    * Requires query param to access this work
    */
   isProtected?: boolean | null;
@@ -6808,6 +6818,12 @@ export interface WorksSelect<T extends boolean = true> {
       };
   showContents?: T;
   status?: T;
+  link?:
+    | T
+    | {
+        url?: T;
+        label?: T;
+      };
   isProtected?: T;
   fallbackWork?: T;
   relatedWorks?: T;

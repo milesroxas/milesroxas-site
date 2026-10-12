@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { seoTab } from '@/collections/shared/seoTab'
+import { validateOutboundUrl } from '@/components/SiteChrome/outbound'
 import { contentsButtonField } from '@/fields/pageFields'
 import { pageIntroField } from '@/fields/pageHero'
 import { workLayoutBlocks } from '@/fields/pageLayoutBlocks'
@@ -137,6 +138,35 @@ export const Works: CollectionConfig<'works'> = {
                 {
                   label: 'Live',
                   value: 'live',
+                },
+              ],
+            },
+            {
+              name: 'link',
+              type: 'group',
+              label: 'Live site',
+              admin: {
+                description:
+                  'Where the work lives now. With a URL, the site chrome offers a "Visit" button on this case study.',
+              },
+              fields: [
+                {
+                  name: 'url',
+                  type: 'text',
+                  label: 'URL',
+                  validate: validateOutboundUrl,
+                  admin: {
+                    placeholder: 'https://',
+                  },
+                },
+                {
+                  name: 'label',
+                  type: 'text',
+                  label: 'Button label',
+                  admin: {
+                    description:
+                      'Optional, keep it short: it must fit beside the phone menu. Default: "Visit <host>", or "Visit site" when the host is over 16 characters.',
+                  },
                 },
               ],
             },

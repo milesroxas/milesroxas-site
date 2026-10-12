@@ -15,8 +15,35 @@ The chrome on every public route: the top bar, the dock and the Ask panel. The a
   current one. On a page under a tab (a case study under Work) that tab is
   outlined instead of filled, with `aria-current="true"`: the visitor is inside
   its section, and the tab keeps its hover and press as the way back to the
-  index. A press fills it at once. Text tabs in a glass bar from `md`; an icon tab bar on a phone,
-  which folds into its current tab while scrolling down.
+  index. A press fills it at once. Text tabs from `md`; an icon tab bar on a
+  phone, which folds into one Menu pill while scrolling down. The slot has
+  one glass, the plate (`.dock-plate`); the tabs and the Menu label are layers
+  on it. Folding is the plate shrinking to the pill's width (360ms,
+  `--ease-out-quint`) while the layers cross-fade, the outgoing one fast and
+  the incoming one a beat later, so there is never a double image. The pill
+  is the same on every page (where the reader is belongs to the top bar); a
+  tap unfolds the bar in place, with a close button standing where the pill
+  was, and a tap outside the dock, Escape, a downward scroll or reaching the
+  top fold it again. The close button arrives while the tabs are invisible
+  and leaves on a 200ms width transition, the fill placed frame by frame on
+  its tab (`useFollowClose` in `PageTabs.tsx`), so the tabs slide into its
+  room instead of jumping. Ask open (desktop): the slot and the Visit button
+  step back together (4px blur, 0.97) and return as one piece 110ms into the
+  close, landing as the field becomes the Ask button.
+- **Visit** (`DockLink` in `Dock.tsx`): on a case study whose work names a
+  live site (Works › Status › Live site), one solid ink button, the dock's
+  only filled control. Desktop: pinned to the right edge of the content
+  column, beside the centred dock. Phone: above the bar, edge to edge with
+  it; when the bar folds, filling the room between the Menu pill and Ask.
+  It is one element in both homes: the dock moves and resizes it with a GSAP
+  Flip (360ms, `--ease-out-quint`, position and width) from wherever it
+  stands, so a fold reversed mid-flight turns back without a jump; reduced
+  motion fades it into the new home. Ask locks the page and takes the
+  scrollbar; the fixed chrome keeps the gap as its right edge
+  (`--removed-body-scroll-bar-size`), so nothing shifts sideways. The page sets it through `useChromeStore().setLink`
+  (`works/[slug]/page.client.tsx`) and clears it on leaving. The label is
+  "Visit <host>", or "Visit site" past 16 characters (`outbound.ts`), unless
+  the work names one.
 - **Ask** (`src/features/ask/AskPanel.tsx`): a modal dialog anchored to the
   dock on desktop, a bottom sheet on a phone. ⌘K / Ctrl+K toggles it.
 - **Theme toggle** (`ThemeToggle.tsx`): light or dark, in the top bar beside
