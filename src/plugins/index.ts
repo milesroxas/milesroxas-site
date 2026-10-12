@@ -2,37 +2,19 @@ import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { searchPlugin } from '@payloadcms/plugin-search'
-import { seoPlugin } from '@payloadcms/plugin-seo'
-import type { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
-import type { GlobalSlug, Plugin } from 'payload'
+import type { Plugin } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
-import type { Page, Post, Work } from '@/payload-types'
 import { aeoPlugin } from '@/plugins/aeo'
 import { askIndexPlugin } from '@/plugins/ask-index'
 import { figuresPlugin } from '@/plugins/figures'
 import { mcp } from '@/plugins/mcp'
+import { seo } from '@/plugins/seo'
 import { streakStudioPlugin } from '@/plugins/streak-studio'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 import { searchFields } from '@/search/fieldOverrides'
-import { SEARCH_COLLECTIONS, surfaceByCollection, surfaceDocPath } from '@/shared/content/surfaces'
-import { getServerSideURL } from '@/utilities/getURL'
-
-/** The page's own title: the root layout's title template adds " | Miles Roxas". */
-const generateTitle: GenerateTitle<Post | Page | Work> = ({ doc }) => doc?.title ?? ''
-
-/** Globals with an SEO tab publish at a fixed path. */
-const GLOBAL_PATHS: Partial<Record<GlobalSlug, string>> = { 'works-index': '/works' }
-
-/** The document's public URL, by its collection's surface (a work under /works, home at /). */
-const generateURL: GenerateURL<Post | Page | Work> = ({ doc, collectionSlug, globalSlug }) => {
-  const url = getServerSideURL()
-  if (globalSlug) return `${url}${GLOBAL_PATHS[globalSlug] ?? ''}`
-  const surface = collectionSlug ? surfaceByCollection.get(collectionSlug) : undefined
-  if (!doc?.slug || !surface) return url
-  return `${url}${surfaceDocPath(surface, doc.slug)}`
-}
+import { SEARCH_COLLECTIONS } from '@/shared/content/surfaces'
 
 export const plugins: Plugin[] = [
   streakStudioPlugin(),
@@ -69,10 +51,7 @@ export const plugins: Plugin[] = [
     collections: ['categories'],
     generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''),
   }),
-  seoPlugin({
-    generateTitle,
-    generateURL,
-  }),
+  seo,
   formBuilderPlugin({
     fields: {
       payment: false,
