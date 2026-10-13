@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cascadeStagger, revealEasing, revealGateMargin } from './scroll-reveal'
+import { cascadeStagger, nextBeatAt, revealEasing, revealGateMargin } from './scroll-reveal'
 
 describe('cascadeStagger', () => {
   it('keeps the tuned stagger for a short burst', () => {
@@ -14,6 +14,20 @@ describe('cascadeStagger', () => {
   it('leaves a single beat alone', () => {
     expect(cascadeStagger(0.04, 1)).toBe(0.04)
     expect(cascadeStagger(0.04, 0)).toBe(0.04)
+  })
+})
+
+describe('nextBeatAt', () => {
+  it('cascades a stagger after the last beat on the track', () => {
+    expect(nextBeatAt(10, 10.2, 0.12)).toBeCloseTo(10.32)
+  })
+
+  it('starts at once when the track has been idle', () => {
+    expect(nextBeatAt(10, 3, 0.12)).toBe(10)
+  })
+
+  it('never queues a beat more than the cascade cap past its gate', () => {
+    expect(nextBeatAt(10, 12.5, 0.12)).toBeCloseTo(10.8)
   })
 })
 

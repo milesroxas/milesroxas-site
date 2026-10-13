@@ -215,6 +215,16 @@ export function cascadeStagger(stagger: number, count: number) {
   return count > 1 ? Math.min(stagger, REVEAL_MAX_CASCADE / (count - 1)) : stagger
 }
 
+/**
+ * When a beat starts: `step` after the last beat on its track, but never more
+ * than `REVEAL_MAX_CASCADE` after it could. A flick feeds the gate a line or
+ * two a frame, each its own burst, so without the cap the track's queue grew
+ * by a full stagger per line and copy on screen waited seconds for its turn.
+ */
+export function nextBeatAt(earliest: number, cursorAt: number, step: number) {
+  return Math.max(earliest, Math.min(cursorAt + step, earliest + REVEAL_MAX_CASCADE))
+}
+
 type GateListener = { onEnter: (targets: Element[]) => void }
 
 type SharedGate = {
@@ -425,6 +435,8 @@ type MaskKind = Exclude<BeatKind, 'stage'>
 type Beat = {
   els: HTMLElement[]
   kind: BeatKind
+  /** A split line's mask window (see `LINE_WINDOW`). */
+  mask?: HTMLElement
   /** Index of the target among its track's targets, in document order. */
   target: number
   group: string | undefined
@@ -445,6 +457,17 @@ const MASK = {
   text: { from: '-25% -5% 125% -5%', to: '-25% -5% -25% -5%' },
   media: { from: '0% 0% 100% 0%', to: '0% 0% 0% 0%' },
 } as const
+
+/**
+ * A split line's wipe as a transform pair, since WebKit runs `clip-path`
+ * animations on the main thread (bug 185816) and a paragraph is a dozen of
+ * them at once on a phone. Each line sits in a mask window clipped to the
+ * text mask's open edges. The window starts `LINE_TRAVEL` above the line and
+ * slides down while the line counter-translates, so the copy never moves and
+ * the open edge sweeps exactly where the clip-path wipe's did.
+ */
+const LINE_WINDOW = `inset(${MASK.text.to})`
+const LINE_TRAVEL = '150%'
 
 const CORNERS = ['TopLeft', 'TopRight', 'BottomRight', 'BottomLeft'] as const
 
@@ -471,7 +494,7 @@ const mask = (el: HTMLElement, kind: MaskKind, edge: 'from' | 'to') =>
   `inset(${MASK[kind][edge]}${kind === 'media' ? frameRound(el) : ''})`
 
 /** Inline properties a shell writes; each cleared when the shell is torn down. */
-type InlineProp = 'visibility' | 'clip-path' | 'transform'
+type InlineProp = 'visibility' | 'clip-path' | 'transform' | 'overflow'
 
 /**
  * Builds the entrance over `root`'s `data-reveal` targets and returns its
@@ -546,14 +569,19 @@ function playReveal(
     for (const el of beat.els) {
       el.style.removeProperty('clip-path')
       el.style.removeProperty('visibility')
+      el.style.removeProperty('transform')
       el.dataset.revealState = 'done'
+    }
+    for (const prop of ['transform', 'clip-path', 'overflow'] as const) {
+      beat.mask?.style.removeProperty(prop)
     }
     for (const el of mediaContents(beat)) el.style.removeProperty('transform')
     beat.onDone?.()
     settle()
   }
 
-  const open = (el: HTMLElement, kind: BeatKind, delay: number) => {
+  const open = (el: HTMLElement, beat: Beat, delay: number): Animation[] => {
+    const { kind } = beat
     const timing: KeyframeAnimationOptions = {
       duration: (kind === 'text' ? tuning.textDuration : tuning.mediaDuration) * 1000,
       easing: beatEasing(kind === 'text' ? tuning.textEase : tuning.mediaEase),
@@ -561,11 +589,28 @@ function playReveal(
       fill: 'both',
     }
     // A stage draws itself; the shell only holds its beat's length.
-    if (kind === 'stage') return el.animate(null, timing)
-    return el.animate(
-      [{ clipPath: mask(el, kind, 'from') }, { clipPath: mask(el, kind, 'to') }],
-      timing,
-    )
+    if (kind === 'stage') return [el.animate(null, timing)]
+    if (beat.mask) {
+      write(beat.mask, 'overflow', 'visible')
+      write(beat.mask, 'clip-path', LINE_WINDOW)
+      el.style.removeProperty('visibility')
+      return [
+        beat.mask.animate(
+          [{ transform: `translateY(-${LINE_TRAVEL})` }, { transform: 'translateY(0)' }],
+          timing,
+        ),
+        el.animate(
+          [{ transform: `translateY(${LINE_TRAVEL})` }, { transform: 'translateY(0)' }],
+          timing,
+        ),
+      ]
+    }
+    return [
+      el.animate(
+        [{ clipPath: mask(el, kind, 'from') }, { clipPath: mask(el, kind, 'to') }],
+        timing,
+      ),
+    ]
   }
 
   const zoom = (el: HTMLElement, delay: number) =>
@@ -592,13 +637,13 @@ function playReveal(
         : []
     const earliest = Math.max(now + trackDelay[track(beat)], ...follows)
     const joins = beat.joins && cursor.target === beat.target - 1 && cursor.group === beat.group
-    const at = Math.max(earliest, joins ? cursor.at : cursor.at + step)
+    const at = joins ? Math.max(earliest, cursor.at) : nextBeatAt(earliest, cursor.at, step)
     Object.assign(cursor, { at, target: beat.target, group: beat.group })
     beat.state = 'playing'
     playing.add(beat)
     const delay = at - now
     beat.animations = [
-      ...beat.els.map((el) => open(el, beat.kind, delay)),
+      ...beat.els.flatMap((el) => open(el, beat, delay)),
       ...mediaContents(beat).map((el) => zoom(el, delay)),
     ]
     if (beat.kind === 'stage') {
@@ -669,6 +714,13 @@ function playReveal(
       for (const el of beat.els) write(el, 'visibility', 'hidden')
       return
     }
+    // Hidden, not displaced: Chromium's IntersectionObserver clips a target
+    // by its ancestors' `clip-path`, so a line held outside its window would
+    // never reach the gate. The window and travel are set as the beat starts.
+    if (beat.mask) {
+      for (const el of beat.els) write(el, 'visibility', 'hidden')
+      return
+    }
     for (const el of beat.els) write(el, 'clip-path', `inset(${MASK[beat.kind].from})`)
     for (const el of mediaContents(beat)) write(el, 'transform', `scale(${tuning.mediaScaleFrom})`)
   }
@@ -698,37 +750,59 @@ function playReveal(
     animations: [],
   })
 
-  /** Splits a text target into line and unit beats and starts watching them. */
+  /**
+   * Splits a text target into line and unit beats and starts watching them.
+   * Each prose run is split on its own and measured against its unsplit
+   * height: a run the split reflows (an inline `code` sliced at a line break
+   * takes its padding twice and pushes a word down) is reverted at once and
+   * opens whole, so the page never moves when a target is split or joined.
+   */
   const prepare = (el: HTMLElement, target: number) => {
     if (!alive) return
     const group = el.dataset.revealGroup
     el.style.removeProperty('visibility')
     const pieces = revealPieces(el)
     let beats: Beat[] = []
-    let split: SplitText | undefined
     let remaining = 0
+    const heights = pieces.prose.map((run) => run.getBoundingClientRect().height)
+    const runs = pieces.prose.map((run) =>
+      SplitText.create(run, {
+        type: 'lines',
+        mask: 'lines',
+        aria: 'none',
+        autoSplit: true,
+        // A re-split mid-entrance (resize, late font) lands the target at rest.
+        onSplit: () => {
+          for (const pending of beats) rest(pending)
+        },
+      }),
+    )
     const join = () =>
       queueMicrotask(() => {
         el.dataset.revealState = 'done'
-        if (!split) return
-        splits.delete(split)
-        split.revert()
+        for (const run of runs) {
+          splits.delete(run)
+          run.revert()
+        }
       })
-    split = pieces.prose.length
-      ? SplitText.create(pieces.prose, {
-          type: 'lines',
-          aria: 'none',
-          autoSplit: true,
-          // A re-split mid-entrance (resize, late font) lands the target at rest.
-          onSplit: () => {
-            for (const pending of beats) rest(pending)
-          },
-        })
-      : undefined
-    if (split) splits.add(split)
-    const els = [...pieces.units, ...((split?.lines ?? []) as HTMLElement[])].sort(precedes)
-    beats = els.map((line) => ({
-      ...beat([line], 'text', target, group),
+    const units = [...pieces.units]
+    const masks = new Map<HTMLElement, HTMLElement>()
+    runs.forEach((run, i) => {
+      const prose = pieces.prose[i] as HTMLElement
+      if (Math.abs(prose.getBoundingClientRect().height - (heights[i] ?? 0)) > 0.5) {
+        run.revert()
+        units.push(prose)
+        return
+      }
+      splits.add(run)
+      run.lines.forEach((line, j) => {
+        masks.set(line as HTMLElement, run.masks[j] as HTMLElement)
+      })
+    })
+    const els = [...units, ...masks.keys()].sort(precedes)
+    beats = els.map((piece) => ({
+      ...beat([piece], 'text', target, group),
+      mask: masks.get(piece),
       onDone: () => {
         remaining -= 1
         if (remaining === 0) join()
