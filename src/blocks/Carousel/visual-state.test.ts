@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  captionVisualState,
   foldStackDistance,
   packedShift,
   projectedHalfWidth,
@@ -149,5 +150,29 @@ describe('foldStackDistance', () => {
     expect(foldStackDistance(-2, 4)).toBe(2)
     expect(foldStackDistance(3, 4)).toBe(3)
     expect(foldStackDistance(1, 2)).toBe(1)
+  })
+})
+
+describe('captionVisualState', () => {
+  it('rests flat and fully inked on the active slide', () => {
+    expect(captionVisualState(0)).toEqual({ opacity: 1, transform: 'translateY(0.00%)' })
+  })
+
+  it('rises out of the slot with a slide leaving left, and comes up from under it with the next', () => {
+    expect(captionVisualState(-0.25)).toEqual({ opacity: 0.5, transform: 'translateY(-50.00%)' })
+    expect(captionVisualState(0.25)).toEqual({ opacity: 0.5, transform: 'translateY(50.00%)' })
+  })
+
+  it('is out of the slot by the half-snap hand-over, and stays there beyond it', () => {
+    expect(captionVisualState(-0.5)).toEqual({ opacity: 0, transform: 'translateY(-100.00%)' })
+    expect(captionVisualState(0.5)).toEqual({ opacity: 0, transform: 'translateY(100.00%)' })
+    expect(captionVisualState(2)).toEqual({ opacity: 0, transform: 'translateY(100.00%)' })
+  })
+
+  it('keeps the fade and drops the travel under reduced motion', () => {
+    expect(captionVisualState(-0.25, true)).toEqual({
+      opacity: 0.5,
+      transform: 'translateY(0%)',
+    })
   })
 })

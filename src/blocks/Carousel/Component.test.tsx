@@ -163,8 +163,8 @@ describe('CarouselBlock', () => {
         ]}
       />,
     )
-    const track = container.querySelector('[data-slot="carousel-content"] > div')
-    expect(track?.getAttribute('style')).toContain('--carousel-slide-aspect: 0.8000')
+    const root = container.querySelector('[data-slot="carousel"]')
+    expect(root?.getAttribute('style')).toContain('--carousel-slide-aspect: 0.8000')
     for (const item of container.querySelectorAll('[data-slot="carousel-item"]')) {
       expect(item.className).toContain('max-w-[calc(70svh*var(--carousel-slide-aspect))]')
       expect(item.className).toContain('md:basis-4/5')

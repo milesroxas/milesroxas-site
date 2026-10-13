@@ -44,7 +44,7 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const lines = canvasElement.querySelectorAll('[data-carousel-caption]')
     await expect(lines).toHaveLength(1)
-    await expect(lines[0]).toHaveAttribute('aria-hidden', 'true')
+    await expect(lines[0]?.closest('[aria-hidden="true"]')).not.toBeNull()
     await expect(canvasElement.querySelectorAll('[data-caption] .sr-only')).toHaveLength(
       slides.length,
     )

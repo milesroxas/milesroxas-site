@@ -426,8 +426,11 @@ const deckLayout = (
     isFullWidth && size === 'full' && !isStack && '@min-[calc(100vw-1.5rem)]:rounded-none',
   )
 
-  // Media may bleed; the caption stays on the page column. Only a full-width slide leaves it (from `md`).
-  const captionClassName = isFullWidth && size === 'full' && !isStack ? 'md:container' : undefined
+  // The caption line sits under the slide (`DeckCaption`). A slide that runs
+  // the whole window (the same query as the corners) leaves it on the page
+  // column: a capped one is inset, and the line stays with it.
+  const captionClassName =
+    isFullWidth && size === 'full' && !isStack ? '@min-[calc(100vw-1.5rem)]:container' : undefined
 
   const trackStyle =
     slideAspect !== undefined
@@ -625,25 +628,43 @@ const CarouselSlide: React.FC<{
  * and the track's chromatic-aberration filter, and type rasterized through
  * those reads soft and fringed while it moves. Out here it is plain text on
  * the page: the per-frame writer (see ./use-carousel-effects) only swaps its
- * words for the slide nearest the scroll position and writes its opacity,
- * nothing else, so every frame paints crisp glyphs. The slot is always one
- * line tall when any slide carries a caption (and in a shared frame, when
- * any deck does), so the block never moves as captions come and go.
+ * words for the slide nearest the scroll position and writes its travel and
+ * opacity (`captionVisualState`), nothing else, so every frame paints crisp
+ * glyphs.
+ *
+ * The line sits under the active slide, not the column: a ghost slide, in
+ * the slide's own size, gutter and height cap classes, centred in the same
+ * track box, so its left edge is the active slide's left edge at every
+ * breakpoint and it wraps at the slide's width. The stack's slot starts on
+ * the column edge, so its line does too, as wide as the top card. The ghost
+ * clips: the words rise out of it and the next slide's come up from under
+ * it, one line tall when any slide carries a caption (and in a shared frame,
+ * when any deck does), so the block never moves as captions come and go.
  * `aria-hidden`: each slide keeps its caption for readers.
  */
 const DeckCaption: React.FC<{
   className?: string
   captionRef: React.RefObject<HTMLParagraphElement | null>
+  count: number
+  gutter: { slide: string; track: string }
+  isStack: boolean
+  sizeClass: string
   text: string
-}> = ({ className, captionRef, text }) => (
-  <p
-    aria-hidden="true"
-    className={cn('mt-4 min-h-5 text-muted-foreground text-sm', className)}
-    data-carousel-caption
-    ref={captionRef}
-  >
-    {text}
-  </p>
+}> = ({ className, captionRef, count, gutter, isStack, sizeClass, text }) => (
+  <div aria-hidden="true" className={cn('mt-4 flex', gutter.track, !isStack && 'justify-center')}>
+    <div
+      className={cn('@container shrink-0 overflow-hidden', sizeClass, gutter.slide)}
+      style={isStack ? { maxWidth: stackCardStyle(count).width } : undefined}
+    >
+      <p
+        className={cn('min-h-5 text-muted-foreground text-sm', className)}
+        data-carousel-caption
+        ref={captionRef}
+      >
+        {text}
+      </p>
+    </div>
+  </div>
 )
 
 /**
@@ -799,49 +820,58 @@ export const CarouselBlock: React.FC<Props> = (props) => {
           dissolveId={dissolveId}
           dissolveMap={dissolveMap}
         />
-        {/* Only the md+ contained layout reserves outer gutter room for the arrows. */}
+        {/* Only the md+ contained layout reserves outer gutter room for the arrows.
+            The slide aspect lives on the root so the caption's ghost slide takes
+            the same height cap as the track's slides. */}
         <Carousel
           className={cn(showArrows && !isFullWidth && 'md:mx-12', isStack && 'group/deck')}
           opts={isStack ? STACK_OPTS : CAROUSEL_OPTS}
           setApi={handleApi}
+          style={trackStyle}
         >
-          {/* items-center: slides keep their media's natural aspect ratio, so shorter slides align to the vertical middle of the tallest. */}
-          {/* A stack pins every board into the slot, so nothing needs clipping, and
-              clipping would cut the leaving board and the shadows off flat. */}
-          <CarouselContent
-            className={cn(gutter.track, 'items-center')}
-            style={trackStyle}
-            viewportClassName={isStack ? 'overflow-visible' : undefined}
-          >
-            {renderableSlides.map((slide, index) => (
-              <CarouselSlide
-                cornerClass={cornerClass}
-                count={renderableSlides.length}
-                deal={stackDeal.deal}
-                frame={frame}
-                gutterClass={gutter.slide}
-                imageSizes={imageSizes}
-                isStack={isStack}
-                key={slide.id}
-                pose={deckPose[style]}
-                // Before embla mounts nothing is looped, so a stack slide sits
-                // where it was laid out: `index` slides along.
-                restSigned={isStack ? index : restSignedDistance(index, renderableSlides.length)}
-                sizeClass={sizeClass}
-                slide={slide}
-                veilClass={isStack ? STACK_VEIL[theme ?? 'default'] : undefined}
-              />
-            ))}
-          </CarouselContent>
-          {showArrows && <CarouselArrows isFullWidth={isFullWidth} />}
+          {/* The arrows centre on the slides, not on the slides plus the caption line. */}
+          <div className="relative">
+            {/* items-center: slides keep their media's natural aspect ratio, so shorter slides align to the vertical middle of the tallest. */}
+            {/* A stack pins every board into the slot, so nothing needs clipping, and
+                clipping would cut the leaving board and the shadows off flat. */}
+            <CarouselContent
+              className={cn(gutter.track, 'items-center')}
+              viewportClassName={isStack ? 'overflow-visible' : undefined}
+            >
+              {renderableSlides.map((slide, index) => (
+                <CarouselSlide
+                  cornerClass={cornerClass}
+                  count={renderableSlides.length}
+                  deal={stackDeal.deal}
+                  frame={frame}
+                  gutterClass={gutter.slide}
+                  imageSizes={imageSizes}
+                  isStack={isStack}
+                  key={slide.id}
+                  pose={deckPose[style]}
+                  // Before embla mounts nothing is looped, so a stack slide sits
+                  // where it was laid out: `index` slides along.
+                  restSigned={isStack ? index : restSignedDistance(index, renderableSlides.length)}
+                  sizeClass={sizeClass}
+                  slide={slide}
+                  veilClass={isStack ? STACK_VEIL[theme ?? 'default'] : undefined}
+                />
+              ))}
+            </CarouselContent>
+            {showArrows && <CarouselArrows isFullWidth={isFullWidth} />}
+          </div>
+          {hasCaption && (
+            <DeckCaption
+              captionRef={captionRef}
+              className={captionClassName}
+              count={renderableSlides.length}
+              gutter={gutter}
+              isStack={isStack}
+              sizeClass={sizeClass}
+              text={captionOf(renderableSlides[0])}
+            />
+          )}
         </Carousel>
-        {hasCaption && (
-          <DeckCaption
-            captionRef={captionRef}
-            className={captionClassName}
-            text={captionOf(renderableSlides[0])}
-          />
-        )}
       </div>
     </Section>
   )

@@ -25,21 +25,36 @@ export const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max)
 
 /**
- * Snaps of distance over which a caption fades. Far steeper than the pose:
- * a caption is the one part of a slide that must not peek — a sliver of a
- * neighbour showing two letters of its caption reads as clipped text rather
- * than as a slide continuing off-frame — so the ink is gone a third of a snap
- * out, while the media is still only slightly recessed.
+ * Snaps of distance over which the caption line changes hands. Half a snap:
+ * the nearest slide (whose words the line shows) switches at exactly that
+ * distance, so the outgoing words have just left the slot as the incoming
+ * ones start up from its far edge, and the line is never blank mid-drag.
  */
-const CAPTION_FADE_SNAPS = 0.35
+const CAPTION_TRAVEL_SNAPS = 0.5
+
+export type CaptionVisualState = { opacity: number; transform: string }
 
 /**
- * Caption ink at a signed snap distance, on the same scroll position every
- * other slide value derives from. Left linear: it multiplies with the slide's
- * own opacity ramp above, and the product is already curved.
+ * The caption line at a signed snap distance, on the same scroll position
+ * every other slide value derives from. The words ride with their slide:
+ * leaving to the left they rise out of the one-line slot, and the next
+ * slide's words come up from under it (mirrored going back), so the line
+ * reads as a counter turning with the deck. The slot clips (see
+ * `DeckCaption` in ./Component); the fade is softness, not the hide. Left
+ * linear: during a drag the line follows the finger one to one, and an
+ * arrow press rides embla's own spring. Reduced motion keeps the fade and
+ * drops the travel.
  */
-export const captionOpacity = (signedSnapDistance: number): number =>
-  1 - clamp(Math.abs(signedSnapDistance) / CAPTION_FADE_SNAPS, 0, 1)
+export const captionVisualState = (
+  signedSnapDistance: number,
+  reducedMotion = false,
+): CaptionVisualState => {
+  const progress = clamp(signedSnapDistance / CAPTION_TRAVEL_SNAPS, -1, 1)
+  return {
+    opacity: 1 - Math.abs(progress),
+    transform: `translateY(${reducedMotion ? 0 : (progress * 100).toFixed(2)}%)`,
+  }
+}
 
 /** 1 on the active slide, 0 from one snap out. Every ramp of the pose runs on it. */
 const activeness = (distance: number): number => 1 - clamp(distance, 0, 1)

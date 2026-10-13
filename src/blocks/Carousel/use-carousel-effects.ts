@@ -7,7 +7,7 @@ import type { CarouselApi } from '@/components/ui/carousel'
 import type { CaOffsets, DissolveMap } from './filters'
 import { computeTweenFactor, forEachSnapDistance, openingSnap } from './geometry'
 import { collectSlideRefs, createPlaybackController, type SlideRefs } from './playback'
-import { captionOpacity, clamp, type DeckPose, type SlideVisualState } from './visual-state'
+import { captionVisualState, clamp, type DeckPose, type SlideVisualState } from './visual-state'
 
 gsap.registerPlugin(useGSAP)
 
@@ -99,12 +99,12 @@ export const useCarouselEffects = ({
       let tweenFactor = 1
       let slideRefs: (SlideRefs | null)[] = []
 
-      // The caption line shows the slide nearest the scroll position, on the
-      // caption's own steep ramp (`captionOpacity`): the outgoing words are
-      // gone a third of a snap out, the incoming ones rise over the last
-      // third, and the swap happens in between, at zero. One more pure write
-      // per frame, opacity only, so the type never resamples (see
-      // `DeckCaption` in ./Component).
+      // The caption line shows the slide nearest the scroll position, posed
+      // by `captionVisualState`: its words travel out of the clipped slot
+      // with their slide and the next slide's words come up behind them, the
+      // swap landing at half a snap where both are out of the slot. Two pure
+      // writes per frame, transform and opacity, on plain text outside the
+      // track (see `DeckCaption` in ./Component).
       let captionIndex = -1
       const paintCaption = (index: number, signed: number) => {
         const caption = captionRef.current
@@ -113,7 +113,9 @@ export const useCarouselEffects = ({
           captionIndex = index
           caption.textContent = slideRefs[index]?.caption ?? ''
         }
-        caption.style.opacity = String(captionOpacity(signed))
+        const state = captionVisualState(signed, reducedMotion)
+        caption.style.transform = state.transform
+        caption.style.opacity = String(state.opacity)
       }
 
       /** Paint every slide from the current scroll position, posing via `poseOf`. */
