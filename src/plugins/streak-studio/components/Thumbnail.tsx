@@ -2,7 +2,7 @@
 
 import { Link, useConfig } from '@payloadcms/ui'
 import type { DefaultCellComponentProps } from 'payload'
-import { STUDIO_GROUND } from '@/features/immersive/studio/effect'
+import { lookGround, studioGround } from '@/features/immersive/studio/ground'
 import type { Media } from '@/payload-types'
 
 /**
@@ -31,7 +31,11 @@ export function Thumbnail({
       alt=""
       width={120}
       height={68}
-      style={{ objectFit: 'cover', background: STUDIO_GROUND.dark, borderRadius: 4 }}
+      style={{
+        objectFit: 'cover',
+        background: studioGround(lookGround(rowData?.ground), 'dark'),
+        borderRadius: 4,
+      }}
     />
   ) : (
     <span>Draft</span>

@@ -2,8 +2,9 @@ import { randomUUID } from 'node:crypto'
 import { APIError, type Endpoint, type PayloadRequest } from 'payload'
 import sharp from 'sharp'
 import { authenticated } from '@/access/authenticated'
-import { STUDIO_GROUND, SURFACES } from '@/features/immersive/studio/effect'
+import { SURFACES } from '@/features/immersive/studio/effect'
 import { effectOf } from '@/features/immersive/studio/effects'
+import { type LookGround, lookGround, studioGround } from '@/features/immersive/studio/ground'
 import {
   type CaptureOptions,
   POSTER_CAPTURE,
@@ -70,6 +71,7 @@ export const lookEndpoints: Endpoint[] = [
             data.get(surface),
             { ...POSTER_CAPTURE, surface },
             `${look.title} ${surface} poster`,
+            lookGround(look.ground),
           )
         // Payload merges an operation's context into the request and leaves it
         // there, so the pass is handed over for this one write and taken back.
@@ -105,7 +107,13 @@ export const lookEndpoints: Endpoint[] = [
       const data = await form(req)
       const capture = studioInput(() => validateCapture(field(data, 'capture')))
       const look = await savedDraft(req, field(data, 'recipe'))
-      const output = await upload(req, data.get('image'), capture, `${look.title} artwork`)
+      const output = await upload(
+        req,
+        data.get('image'),
+        capture,
+        `${look.title} artwork`,
+        lookGround(look.ground),
+      )
       return Response.json({ doc: output })
     },
   },
@@ -134,6 +142,7 @@ async function upload(
   file: FormDataEntryValue | null,
   capture: CaptureOptions,
   title: string,
+  ground: LookGround,
 ): Promise<Media> {
   if (!file || typeof file === 'string' || file.size > STILL_UPLOAD_BUDGET)
     throw new APIError('Invalid image payload.', 400)
@@ -152,7 +161,7 @@ async function upload(
   if (metadata.format !== capture.format) {
     let pipeline = sharp(buffer)
     if (!capture.transparent)
-      pipeline = pipeline.flatten({ background: STUDIO_GROUND[capture.surface] })
+      pipeline = pipeline.flatten({ background: studioGround(ground, capture.surface) })
     output = await pipeline.toFormat(capture.format, { quality: STILL_QUALITY }).toBuffer()
   }
   const folders = await req.payload.find({

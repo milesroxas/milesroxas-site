@@ -3,14 +3,24 @@
 import { Button, toast, useDocumentInfo, useForm } from '@payloadcms/ui'
 import { useState } from 'react'
 import type { Effect } from '@/features/immersive/studio/effect'
+import { type LookGround, sameGround } from '@/features/immersive/studio/ground'
 import { canonicalJSON, type Recipe, snapshotRecipe } from '@/features/immersive/studio/recipe'
-import { useDraft } from './draft'
+import { useDraft, useGround } from './draft'
 import { type PublishedState, refreshStudio, useLook } from './look-store'
 import { publishLook } from './publish'
 
-function matchesLive(effect: Effect, recipe: Recipe, live: PublishedState | null) {
+function matchesLive(
+  effect: Effect,
+  recipe: Recipe,
+  ground: LookGround,
+  live: PublishedState | null,
+) {
   try {
-    return Boolean(live && canonicalJSON(snapshotRecipe(effect, recipe)) === live.key)
+    return Boolean(
+      live &&
+        canonicalJSON(snapshotRecipe(effect, recipe)) === live.key &&
+        sameGround(ground, live.ground),
+    )
   } catch {
     // An invalid draft is not what is published; the Inspector says what is wrong.
     return false
@@ -39,10 +49,11 @@ export function PublishButton() {
   } = useDocumentInfo()
   const { submit, reset } = useForm()
   const { effect, effectId, recipe } = useDraft()
+  const { ground } = useGround()
   const { live, uses } = useLook(id)
   const [busy, setBusy] = useState(false)
 
-  const unchanged = matchesLive(effect, recipe, live)
+  const unchanged = matchesLive(effect, recipe, ground, live)
   const places = uses.filter((use) => !use.historical).length
 
   return (
@@ -55,7 +66,7 @@ export function PublishButton() {
             await submit({ overrides: { _status: 'draft' } })
             return
           }
-          const doc = await publishLook(submit, { id, effect: effectId, recipe })
+          const doc = await publishLook(submit, { id, effect: effectId, recipe, ground })
           await reset(doc)
           setHasPublishedDoc(true)
           setUnpublishedVersionCount(0)

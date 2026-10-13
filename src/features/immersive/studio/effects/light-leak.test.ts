@@ -128,6 +128,13 @@ describe('light leak contract', () => {
     expect(parseRelease(LEAK, release())?.snapshot.renderer).toBe(LEAK.renderer)
     expect(parseRelease(STREAK_FIELD_EFFECT, release())).toBeNull()
   })
+
+  it('carries the look ground beside the snapshot, a bad face dropped, and none as empty', () => {
+    expect(parseRelease(LEAK, release())?.ground).toEqual({})
+    expect(
+      parseRelease(LEAK, { ...release(), ground: { dark: '#101010', light: 'paper' } })?.ground,
+    ).toEqual({ dark: '#101010' })
+  })
 })
 
 describe('light leak visual slot', () => {

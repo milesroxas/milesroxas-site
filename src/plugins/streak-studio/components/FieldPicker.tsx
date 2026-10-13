@@ -20,6 +20,7 @@ import {
   effectOf,
   isEffectId,
 } from '@/features/immersive/studio/effects'
+import { lookGround, studioGround } from '@/features/immersive/studio/ground'
 import { emptyRecipe, starterRecipe } from '@/features/immersive/studio/recipe'
 import type { VisualPlacement } from '@/features/immersive/visual/placement'
 import type { Media, StreakLook } from '@/payload-types'
@@ -39,6 +40,9 @@ const posterOf = (look: StreakLook) =>
   look.thumbnail && typeof look.thumbnail === 'object'
     ? ((look.thumbnail as Media).sizes?.thumbnail?.url ?? (look.thumbnail as Media).url)
     : null
+
+/** The colour under a look's dark poster: its own dark ground, else the site's. */
+const groundOf = (look: StreakLook | null) => studioGround(lookGround(look?.ground), 'dark')
 
 /**
  * The sibling that says which effect the slot chose, from this field's path:
@@ -61,6 +65,7 @@ const slotOf = (path: string): { label: string; placement: VisualPlacement } =>
 
 function Card({
   src,
+  ground = STUDIO_GROUND.dark,
   title,
   caption,
   selected,
@@ -69,6 +74,8 @@ function Card({
   children,
 }: {
   src?: string | null
+  /** The colour under the dark poster: a look's own dark ground, else the site's. */
+  ground?: string
   title: string
   caption?: string
   selected?: boolean
@@ -89,7 +96,7 @@ function Card({
     >
       <span
         className="flex aspect-video w-full items-center justify-center overflow-hidden rounded-sm text-muted-foreground"
-        style={{ backgroundColor: STUDIO_GROUND.dark }}
+        style={{ backgroundColor: ground }}
       >
         {src ? (
           // biome-ignore lint/performance/noImgElement: admin-only poster thumb; next/image is not loaded in the Payload admin
@@ -331,7 +338,7 @@ function ChosenLook({
     <div className="flex flex-wrap items-center gap-4 rounded-md border border-input p-2">
       <span
         className="block aspect-video w-36 shrink-0 overflow-hidden rounded-sm"
-        style={{ backgroundColor: STUDIO_GROUND.dark }}
+        style={{ backgroundColor: groundOf(selected) }}
       >
         {selected && posterOf(selected) && (
           // biome-ignore lint/performance/noImgElement: admin-only poster thumb; next/image is not loaded in the Payload admin
@@ -402,6 +409,7 @@ function LookGrid({
           <Card
             key={look.id}
             src={posterOf(look)}
+            ground={groundOf(look)}
             title={look.title}
             caption={look.snapshot ? `Your ${noun}` : `Your ${noun}, not published`}
             selected={look.id === id}

@@ -3,12 +3,19 @@
 import { Canvas, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
-import { type BlendMode, STUDIO_GROUND } from './effect'
+import type { BlendMode } from './effect'
 import { type EffectId, effectOf } from './effects'
+import { type LookGround, studioGround } from './ground'
 import { type CaptureOptions, type Snapshot, STILL_QUALITY } from './recipe'
 import { EFFECT_SCENES } from './scenes'
 
-export type CaptureInput = { effect: EffectId; snapshot: Snapshot; capture: CaptureOptions }
+export type CaptureInput = {
+  effect: EffectId
+  snapshot: Snapshot
+  capture: CaptureOptions
+  /** The look's own ground, which a filled still is laid over; absent, the site's background. */
+  ground?: LookGround
+}
 
 /**
  * One exact still, rendered in this browser: the effect's own scene stepped a
@@ -51,7 +58,7 @@ export function captureStill(input: CaptureInput): Promise<Blob> {
 }
 
 function CaptureScene({
-  input: { effect, capture, snapshot },
+  input: { effect, capture, snapshot, ground },
   onResult,
   onError,
 }: {
@@ -86,6 +93,7 @@ function CaptureScene({
           frames={snapshot.frame}
           capture={capture}
           blend={blend}
+          ground={ground}
           onResult={onResult}
           onError={onError}
         />
@@ -113,6 +121,7 @@ function encodeStill(
   source: HTMLCanvasElement,
   capture: CaptureOptions,
   blend: BlendMode | undefined,
+  ground: LookGround | undefined,
 ): Promise<Blob> {
   let canvas = source
   if (!capture.transparent) {
@@ -121,7 +130,7 @@ function encodeStill(
     canvas.height = source.height
     const context = canvas.getContext('2d')
     if (!context) throw new Error('The still could not be encoded.')
-    context.fillStyle = STUDIO_GROUND[capture.surface]
+    context.fillStyle = studioGround(ground, capture.surface)
     context.fillRect(0, 0, canvas.width, canvas.height)
     context.globalCompositeOperation = compositeOf(blend)
     context.drawImage(source, 0, 0)
@@ -139,12 +148,14 @@ function CaptureFrames({
   frames,
   capture,
   blend,
+  ground,
   onResult,
   onError,
 }: {
   frames: number
   capture: CaptureOptions
   blend: BlendMode | undefined
+  ground: LookGround | undefined
   onResult: (image: Blob) => void
   onError: (message: string) => void
 }) {
@@ -172,7 +183,7 @@ function CaptureFrames({
           if (frame % 20 === 19) await new Promise<void>((resolve) => setTimeout(resolve))
         }
         gl.getContext().finish()
-        const image = await encodeStill(gl.domElement, capture, blend)
+        const image = await encodeStill(gl.domElement, capture, blend, ground)
         if (!cancelled) callbacks.current.onResult(image)
       } catch (error) {
         if (!cancelled) callbacks.current.onError(String(error))
@@ -184,6 +195,6 @@ function CaptureFrames({
       cancelled = true
       cancelAnimationFrame(raf)
     }
-  }, [advance, blend, capture, frames, gl, scene])
+  }, [advance, blend, capture, frames, gl, ground, scene])
   return null
 }

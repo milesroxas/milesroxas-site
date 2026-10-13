@@ -8,6 +8,7 @@ import {
   type PayloadRequest,
   type Plugin,
 } from 'payload'
+import { lookGround } from '@/features/immersive/studio/ground'
 import type { Media, StreakLook } from '@/payload-types'
 import { StreakLooks } from './collections'
 import { LOOKS_SLUG } from './components/paths'
@@ -141,6 +142,7 @@ const hydrateStudioFields =
           posters: true,
           thumbnail: true,
           lightPoster: true,
+          ground: true,
         },
         req,
       })
@@ -153,6 +155,7 @@ const hydrateStudioFields =
             sourceHash: look.sourceHash,
             snapshot: look.snapshot,
             posters: posters(look),
+            ground: lookGround(look.ground),
           })
     }
     for (const slot of slots)

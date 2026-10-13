@@ -28,6 +28,7 @@ import {
   STUDIO_GROUND,
 } from '@/features/immersive/studio/effect'
 import { EFFECT_OPTIONS, type EffectId } from '@/features/immersive/studio/effects'
+import { type LookGround, sameGround, studioGround } from '@/features/immersive/studio/ground'
 import {
   canonicalJSON,
   FRAME_MAX,
@@ -41,7 +42,7 @@ import {
 } from '@/features/immersive/studio/recipe'
 import { VISUAL_PLACEMENTS, type VisualPlacement } from '@/features/immersive/visual/placement'
 import { cn } from '@/utilities/ui'
-import { useDraft } from './draft'
+import { useDraft, useGround } from './draft'
 import { when } from './History'
 import { type LookState, type LookUse, type PublishedState, useLook } from './look-store'
 import { EFFECT_COPY } from './parameters'
@@ -68,6 +69,7 @@ const clock = (at: number) =>
 function compareDraft(
   effect: Effect,
   recipe: Recipe,
+  ground: LookGround,
   session: StudioSession,
   { live: published, history }: LookState,
 ) {
@@ -79,15 +81,20 @@ function compareDraft(
     validation = (error as Error).message
   }
   const draftKey = snapshot ? canonicalJSON(snapshot) : ''
+  // The ground rides beside the snapshot, so it is read beside the key.
+  const same = (state: PublishedState) => state.key === draftKey && sameGround(state.ground, ground)
   return {
     validation,
     draftKey,
-    unchanged: Boolean(published && published.key === draftKey),
+    unchanged: Boolean(published && same(published)),
     // The published state the draft is identical to, whichever one it is: a
     // restored state matches itself, not "12 changes since published".
-    matched: history.find((state) => state.key === draftKey),
+    matched: history.find(same),
     sincePublished:
-      snapshot && published ? snapshotChanges(snapshot, JSON.parse(published.key)) : null,
+      snapshot && published
+        ? snapshotChanges(snapshot, JSON.parse(published.key)) +
+          Number(!sameGround(published.ground, ground))
+        : null,
     budget: snapshot
       ? effect.budget(
           effect.limit(snapshot[session.surface], session.placement),
@@ -253,8 +260,9 @@ export const Stage: UIFieldClientComponent = () => {
   const { id, key, effect, effectId, recipe, update } = draft
   const session = useStudioSession(key)
   const look = useLook(id)
+  const { ground } = useGround()
   const [live, setLive] = useState(true)
-  const state = compareDraft(effect, recipe, session, look)
+  const state = compareDraft(effect, recipe, ground, session, look)
   const actions = stageActions(draft)
   const patch: Patch = (next) => studioStore.patch(key, next)
 
@@ -286,6 +294,7 @@ export const Stage: UIFieldClientComponent = () => {
               session={session}
               effectId={effectId}
               recipe={recipe}
+              ground={studioGround(ground, session.surface)}
               state={state}
               onTurnOn={() => setLive(true)}
             />
@@ -667,6 +676,7 @@ function Viewport({
   session,
   effectId,
   recipe,
+  ground,
   state: { validation, budget },
   onTurnOn,
 }: {
@@ -674,6 +684,8 @@ function Viewport({
   session: StudioSession
   effectId: EffectId
   recipe: Recipe
+  /** The colour under the effect for the stage's face: the draft's own ground, else the site's. */
+  ground: string
   state: DraftState
   onTurnOn: () => void
 }) {
@@ -683,7 +695,7 @@ function Viewport({
       className="relative"
       style={{
         height: session.placement === 'menu' ? 300 : 495,
-        backgroundColor: STUDIO_GROUND[session.surface],
+        backgroundColor: ground,
       }}
     >
       <PreviewBadge live={live} session={session} />
@@ -701,6 +713,7 @@ function Viewport({
             recipe={shown}
             placement={session.placement}
             surface={session.surface}
+            ground={ground}
             paused={session.paused}
             generation={session.generation}
           />

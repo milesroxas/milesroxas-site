@@ -1,5 +1,6 @@
 import type { PosterMediaSource } from '../visual/descriptor'
 import { type EffectContract, parameterError, SURFACES, type Surface, type Tuning } from './effect'
+import { type LookGround, lookGround } from './ground'
 import { FRAME_MAX, type Snapshot } from './recipe'
 
 /** A published Studio look as a visual slot receives it: what `hydrateStudioFields` hands over. */
@@ -8,6 +9,8 @@ export type ReleaseDescriptor<T extends Tuning = Tuning> = {
   sourceHash: string
   snapshot: Snapshot<T>
   posters: Record<Surface, PosterMediaSource>
+  /** The look's own ground per face (`./ground`); absent or empty, the slot's ground shows. */
+  ground?: LookGround
 }
 
 /**
@@ -72,5 +75,11 @@ export function parseRelease<T extends Tuning>(
     )
       return null
   }
-  return { id: release.id, sourceHash: release.sourceHash, snapshot, posters: release.posters }
+  return {
+    id: release.id,
+    sourceHash: release.sourceHash,
+    snapshot,
+    posters: release.posters,
+    ground: lookGround(release.ground),
+  }
 }

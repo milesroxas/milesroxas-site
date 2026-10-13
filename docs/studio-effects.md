@@ -55,6 +55,8 @@ Every effect has two faces (`face(tuning, surface)`), and a slot draws the one f
 
 The takeover menu previews a pinned effect on the pinned ground (`menuVisual`), and the docked window reads it off the slot's own `data-theme`.
 
+**A look may bring its own ground.** A Studio look's `ground.dark` and `ground.light` (the Inspector's Ground section, `studio/ground.ts`) name the colour under the effect on each face. It is effect-blind and sits beside the recipe, not in the snapshot, so the posters stay transparent and nothing is re-rendered: the frame that honors a pin above paints it instead of `bg-background` (`[data-visual-ground]` in globals.css, with the pair as custom properties and the `dark` variant choosing the face). A bleeding leak never paints it, for the same reason it is never pinned. A face left empty keeps the ground the slot lands on. An export is flattened onto the same colour.
+
 ## Light leak
 
 Authored the same way as a Streak Field: Studio look or shipped look (Film, Amber), speed and intensity on a shipped look, pointer, poster override. It has no seed.

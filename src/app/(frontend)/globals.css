@@ -1700,6 +1700,20 @@ html[data-page-held] body :not(#site-chrome, #site-chrome *, [data-page-curtain]
   }
 }
 
+/* Visual ground (src/features/immersive/studio/ground.ts): a Studio look can
+   paint its own ground under each face. The slot's frame carries the pair as
+   custom properties and the `dark` variant picks the face, the way the poster
+   pair is gated, so the server HTML is already right and a theme flip is a
+   style change. A face the look leaves out keeps the ground the slot lands
+   on: every band repaints `--background`, so the fallback is that band. */
+[data-visual-ground] {
+  background-color: var(--visual-ground-light, var(--background));
+
+  @variant dark {
+    background-color: var(--visual-ground-dark, var(--background));
+  }
+}
+
 /* Visual bleed (src/features/immersive/visual/leak-visual.tsx): a visual that
    leaves its frame portals its layer onto the block root that spreads
    `VISUAL_HOST`. Only while it holds one does the root become the layer's

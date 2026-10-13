@@ -12,6 +12,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/utilities/ui'
+import { groundAttributes } from '../studio/ground'
 import type { LeakFailureReason, LightLeakRuntimeProps } from '../ui/light-leak-runtime'
 import { type LeakMirror, originMirror } from '../ui/light-leak-tuning'
 import { composeLeakTuning } from './compose'
@@ -217,6 +218,9 @@ export function LeakVisual({
         className,
       )}
       // Pinned, the frame's own ground (`bg-background`) is the pinned palette's.
+      // A look's own ground replaces it in a contained frame; bleeding, the
+      // band is the ground (globals.css, "Visual ground").
+      {...(bleeding ? {} : groundAttributes(descriptor.release?.ground))}
       data-theme={descriptor.surface ?? undefined}
       data-visual="lightLeak"
       data-visual-look={descriptor.look}

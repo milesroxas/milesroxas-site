@@ -5,7 +5,7 @@ import './studio.css'
 import { toast } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 import { Button } from '@/components/ui/button'
-import { STUDIO_GROUND } from '@/features/immersive/studio/effect'
+import { studioGround } from '@/features/immersive/studio/ground'
 import { canonicalJSON, snapshotRecipe } from '@/features/immersive/studio/recipe'
 import { useDraft } from './draft'
 import { type PublishedState, useLook } from './look-store'
@@ -92,7 +92,7 @@ function HistoryRow({
     <li className="flex flex-wrap items-center gap-4 py-3">
       <span
         className="block h-9 w-16 shrink-0 overflow-hidden rounded-sm border border-border"
-        style={{ backgroundColor: STUDIO_GROUND.dark }}
+        style={{ backgroundColor: studioGround(state.ground, 'dark') }}
       >
         {state.poster && (
           // biome-ignore lint/performance/noImgElement: admin-only poster thumb; next/image is not loaded in the Payload admin

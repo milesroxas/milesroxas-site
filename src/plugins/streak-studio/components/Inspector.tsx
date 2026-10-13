@@ -20,8 +20,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import type { Effect } from '@/features/immersive/studio/effect'
+import { type Effect, STUDIO_GROUND, SURFACES } from '@/features/immersive/studio/effect'
 import type { EffectId } from '@/features/immersive/studio/effects'
+import { type LookGround, studioGround } from '@/features/immersive/studio/ground'
 import {
   type CaptureOptions,
   EXPORT_CAPTURE,
@@ -30,11 +31,14 @@ import {
   validateRecipe,
 } from '@/features/immersive/studio/recipe'
 import { cn } from '@/utilities/ui'
-import { useDraft } from './draft'
+import { useDraft, useGround } from './draft'
 import { ParameterRow, RangePairRow, type RowParameter } from './ParameterRow'
 import {
   EFFECT_COPY,
   type EffectCopy,
+  fromHex,
+  GROUND_COPY,
+  GROUND_GROUP,
   type GroupSummary,
   lookGroups,
   parameterKeys,
@@ -180,8 +184,10 @@ export const Inspector: JSONFieldClientComponent = ({ path }) => {
   const panel = recipePanel(effect, copy, recipe, update)
   const { validation, changedKeys } = panel
   const [tab, setTab] = useState('look')
-  const sections = useOpenSections(lookGroups(effect, copy))
+  const sections = useOpenSections([GROUND_GROUP, ...lookGroups(effect, copy)])
   const pointerKeys = parameterKeys(effect, copy.pointerGroup)
+  const { ground } = useGround()
+  const groundChanges = SURFACES.filter((surface) => ground[surface]).length
 
   return (
     <TooltipProvider delayDuration={400} skipDelayDuration={600}>
@@ -193,7 +199,7 @@ export const Inspector: JSONFieldClientComponent = ({ path }) => {
       <div data-streak-studio="inspector" className="flex flex-col gap-3 px-(--row-gutter) pb-16">
         <Tabs value={tab} onValueChange={setTab} className="gap-0">
           <TabStrip
-            changed={changedKeys.length}
+            changed={changedKeys.length + groundChanges}
             showToggle={tab === 'look'}
             allOpen={sections.allOpen}
             onToggleAll={sections.toggleAll}
@@ -211,6 +217,7 @@ export const Inspector: JSONFieldClientComponent = ({ path }) => {
               effect={effect}
               effectId={effectId}
               recipe={recipe}
+              ground={ground}
               validation={validation}
             />
           </TabsContent>
@@ -306,6 +313,14 @@ function LookTab({
   return (
     <TabsContent value="look" className="flex flex-col pt-5">
       {groups.map((name) => {
+        if (name === GROUND_GROUP)
+          return (
+            <GroundGroup
+              key={name}
+              open={openGroups[name] ?? false}
+              onOpenChange={(next) => setOpenGroups((state) => ({ ...state, [name]: next }))}
+            />
+          )
         const keys = parameterKeys(effect, name)
         return (
           <Group
@@ -322,6 +337,58 @@ function LookTab({
         )
       })}
     </TabsContent>
+  )
+}
+
+/**
+ * The look's own ground, one colour row per face, on the same rows the
+ * parameters use: the swatch, the hex field, the dot and option-click reset.
+ * It is the look's field beside the recipe (`useGround`), so a change here is
+ * saved with the draft, shown on the stage at once, and published with the
+ * look; it is not an undo step. The default of each face is the site's
+ * background, which is what a face left empty paints.
+ */
+function GroundGroup({
+  open,
+  onOpenChange,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  const { ground, set } = useGround()
+  const faces = SURFACES.map((surface) => ({
+    surface,
+    hex: studioGround(ground, surface),
+    changed: Boolean(ground[surface]),
+  }))
+  return (
+    <Group
+      name={GROUND_GROUP}
+      summary={summaryNode({ swatches: faces.map(({ hex }) => fromHex(hex) ?? [0, 0, 0]) })}
+      changed={faces.filter(({ changed }) => changed).length}
+      open={open}
+      onOpenChange={onOpenChange}
+      onReset={() => {
+        for (const surface of SURFACES) set(surface, null)
+      }}
+    >
+      {faces.map(({ surface, hex, changed }) => (
+        <ParameterRow
+          key={surface}
+          parameter={{
+            name: `ground.${surface}`,
+            spec: { group: GROUND_GROUP, color: true },
+            copy: GROUND_COPY[surface],
+            fallback: fromHex(STUDIO_GROUND[surface]),
+          }}
+          value={fromHex(hex)}
+          changed={changed}
+          onChange={(next) => set(surface, toHex(next as readonly number[]))}
+          onReset={() => set(surface, null)}
+          onFix={() => {}}
+        />
+      ))}
+    </Group>
   )
 }
 
@@ -479,14 +546,20 @@ function openTab() {
   return tab
 }
 
-type ExportPanelProps = { effect: Effect; effectId: EffectId; recipe: Recipe; validation: string }
+type ExportPanelProps = {
+  effect: Effect
+  effectId: EffectId
+  recipe: Recipe
+  ground: LookGround
+  validation: string
+}
 
 /**
  * A still of this recipe at its capture frame, rendered in this browser and
  * filed in Media. The seed and the frame come from the recipe; scale raises
  * resolution without changing the composition.
  */
-function ExportPanel({ effect, effectId, recipe, validation }: ExportPanelProps) {
+function ExportPanel({ effect, effectId, recipe, ground, validation }: ExportPanelProps) {
   const { id } = useDocumentInfo()
   const { submit } = useForm()
   const [capture, setCapture] = useState<CaptureOptions>(EXPORT_CAPTURE)
@@ -498,7 +571,7 @@ function ExportPanel({ effect, effectId, recipe, validation }: ExportPanelProps)
     setBusy(true)
     try {
       if (!id) throw new Error('Save this look first.')
-      const { url } = await exportStill(submit, { id, effect: effectId, recipe }, capture)
+      const { url } = await exportStill(submit, { id, effect: effectId, recipe, ground }, capture)
       if (tab && url) tab.location.href = url
       else tab?.close()
       toast.success('Saved to Media, in the Streak Field Studio folder.')

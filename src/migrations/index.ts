@@ -33,6 +33,7 @@ import * as migration_20261007_214502_media_sizes_sweep from './20261007_214502_
 import * as migration_20261008_021338_capabilities_taxonomy from './20261008_021338_capabilities_taxonomy';
 import * as migration_20261012_173742_aeo_site_info from './20261012_173742_aeo_site_info';
 import * as migration_20261012_200421_works_live_site_link from './20261012_200421_works_live_site_link';
+import * as migration_20261013_140251_streak_look_ground from './20261013_140251_streak_look_ground';
 
 export const migrations = [
   {
@@ -208,6 +209,11 @@ export const migrations = [
   {
     up: migration_20261012_200421_works_live_site_link.up,
     down: migration_20261012_200421_works_live_site_link.down,
-    name: '20261012_200421_works_live_site_link'
+    name: '20261012_200421_works_live_site_link',
+  },
+  {
+    up: migration_20261013_140251_streak_look_ground.up,
+    down: migration_20261013_140251_streak_look_ground.down,
+    name: '20261013_140251_streak_look_ground'
   },
 ];

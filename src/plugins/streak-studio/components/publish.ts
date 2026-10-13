@@ -1,6 +1,7 @@
 import type { useForm } from '@payloadcms/ui'
 import { SURFACES } from '@/features/immersive/studio/effect'
 import { type EffectId, effectOf } from '@/features/immersive/studio/effects'
+import type { LookGround } from '@/features/immersive/studio/ground'
 import {
   type CaptureOptions,
   POSTER_CAPTURE,
@@ -15,15 +16,15 @@ import { sessionKey, studioStore } from './store'
 
 type Submit = ReturnType<typeof useForm>['submit']
 
-/** The saved look a still is rendered from. */
-export type Draft = { id: number | string; effect: EffectId; recipe: Recipe }
+/** The saved look a still is rendered from, and the ground a filled still is laid over. */
+export type Draft = { id: number | string; effect: EffectId; recipe: Recipe; ground: LookGround }
 
 /**
  * The stills of a recipe, rendered in this browser one after another (one
  * extra WebGL context at a time) with the live preview paused for the moment
  * it takes, so the capture has the GPU to itself.
  */
-async function stills({ id, effect, recipe }: Draft, captures: CaptureOptions[]) {
+async function stills({ id, effect, recipe, ground }: Draft, captures: CaptureOptions[]) {
   const key = sessionKey(id)
   const { captureStill } = await import('@/features/immersive')
   const snapshot = snapshotRecipe(effectOf(effect), recipe)
@@ -31,7 +32,8 @@ async function stills({ id, effect, recipe }: Draft, captures: CaptureOptions[])
   studioStore.patch(key, { paused: true })
   try {
     const images: Blob[] = []
-    for (const capture of captures) images.push(await captureStill({ effect, snapshot, capture }))
+    for (const capture of captures)
+      images.push(await captureStill({ effect, snapshot, capture, ground }))
     return images
   } finally {
     studioStore.patch(key, { paused: wasPaused })

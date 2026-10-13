@@ -10,6 +10,7 @@ import {
   useState,
 } from 'react'
 import { cn } from '@/utilities/ui'
+import { groundAttributes } from '../studio/ground'
 import type { StreakFailureReason, StreakFieldRuntimeProps } from '../ui/streak-field-runtime'
 import { composeStreakTuning } from './compose'
 import {
@@ -149,6 +150,9 @@ export function StreakVisual({
         descriptor.surface && 'bg-background',
         className,
       )}
+      // A look with a ground of its own paints it here, under the still and
+      // the canvas alike (globals.css, "Visual ground").
+      {...groundAttributes(descriptor.release?.ground)}
       data-theme={descriptor.surface ?? undefined}
       data-visual="streakField"
       data-visual-descriptor={serialized}

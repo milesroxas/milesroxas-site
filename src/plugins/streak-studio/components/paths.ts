@@ -6,5 +6,7 @@
 export const RECIPE_FIELD = 'recipe'
 /** Which effect the look is filed under: the contract its recipe is read against. */
 export const EFFECT_FIELD = 'effect'
+/** The look's own ground per face (`@/features/immersive/studio/ground`), a group of `dark` and `light`. */
+export const GROUND_FIELD = 'ground'
 
 export const LOOKS_SLUG = 'streak-looks'

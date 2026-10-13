@@ -13,6 +13,8 @@ type StudioPreviewProps = {
   recipe: Recipe
   placement: VisualPlacement
   surface: Surface
+  /** The colour under the effect: the look's own ground for this face, else the site's background. */
+  ground?: string
   paused: boolean
   generation: number
 }
@@ -25,13 +27,13 @@ const COPY_STYLE: CSSProperties = {
   maxWidth: '65%',
 }
 
-const stageStyle = (surface: Surface): CSSProperties => ({
+const stageStyle = (surface: Surface, ground = STUDIO_GROUND[surface]): CSSProperties => ({
   position: 'relative',
   isolation: 'isolate',
   width: '100%',
   height: '100%',
   minHeight: 300,
-  background: STUDIO_GROUND[surface],
+  background: ground,
   color: surface === 'dark' ? 'white' : '#111',
 })
 
@@ -44,6 +46,7 @@ export function StudioPreview({
   recipe,
   placement,
   surface,
+  ground,
   paused,
   generation,
 }: StudioPreviewProps) {
@@ -67,7 +70,7 @@ export function StudioPreview({
   )
 
   return (
-    <div ref={root} style={stageStyle(surface)}>
+    <div ref={root} style={stageStyle(surface, ground)}>
       {/* A blended effect washes over the page's content; one drawn with
           alpha is the ground the content sits on. */}
       {blend && copy}

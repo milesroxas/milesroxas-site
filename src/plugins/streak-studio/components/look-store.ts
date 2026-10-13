@@ -2,6 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from 'react'
 import { effectOf } from '@/features/immersive/studio/effects'
+import { type LookGround, lookGround } from '@/features/immersive/studio/ground'
 import {
   canonicalJSON,
   type Recipe,
@@ -19,6 +20,8 @@ export type PublishedState = {
   recipe: Recipe
   /** Canonical snapshot: equal keys draw equal pixels. */
   key: string
+  /** The ground the state was published with; not part of the key. */
+  ground: LookGround
   poster: string | null
 }
 
@@ -52,7 +55,13 @@ const posterOf = (media: unknown) =>
 function stateOf(
   id: string,
   at: string,
-  doc: { effect?: unknown; recipe?: unknown; snapshot?: unknown; thumbnail?: unknown },
+  doc: {
+    effect?: unknown
+    recipe?: unknown
+    snapshot?: unknown
+    thumbnail?: unknown
+    ground?: unknown
+  },
 ): PublishedState | null {
   try {
     // The stored snapshot is what the site draws. Looks published under the
@@ -65,6 +74,7 @@ function stateOf(
       at,
       recipe: doc.recipe as Recipe,
       key: canonicalJSON(snapshot),
+      ground: lookGround(doc.ground),
       poster: posterOf(doc.thumbnail),
     }
   } catch {

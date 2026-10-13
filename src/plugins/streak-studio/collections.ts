@@ -6,11 +6,12 @@ import {
   type Field,
 } from 'payload'
 import { authenticated } from '@/access/authenticated'
-import type { Effect } from '@/features/immersive/studio/effect'
+import { type Effect, STUDIO_GROUND, SURFACES } from '@/features/immersive/studio/effect'
 import { DEFAULT_EFFECT, EFFECT_OPTIONS, effectOf } from '@/features/immersive/studio/effects'
+import { GROUND_HEX_MESSAGE, isGroundHex } from '@/features/immersive/studio/ground'
 import { emptyRecipe, validateRecipe } from '@/features/immersive/studio/recipe'
 import { recipeJsonSchema } from '@/features/immersive/studio/recipe-schema'
-import { EFFECT_FIELD, LOOKS_SLUG, RECIPE_FIELD } from './components/paths'
+import { EFFECT_FIELD, GROUND_FIELD, LOOKS_SLUG, RECIPE_FIELD } from './components/paths'
 import { lookEndpoints } from './endpoints'
 import { recipeHash, storedRecipeHash, studioInput } from './hash'
 import { lockLook, PUBLISH, transactionDB } from './transaction'
@@ -193,6 +194,24 @@ export const StreakLooks: CollectionConfig = {
                   access: { create: internal, update: internal },
                 },
               ],
+            },
+            {
+              // Edited on the Inspector's Ground section, beside the stage,
+              // so the row is hidden here; it is in the form all the same.
+              name: GROUND_FIELD,
+              type: 'group',
+              label: 'Ground',
+              admin: { hidden: true },
+              fields: SURFACES.map((surface) => ({
+                name: surface,
+                type: 'text',
+                label: surface === 'dark' ? 'Dark ground' : 'Light ground',
+                validate: (value: string | null | undefined) =>
+                  !value || isGroundHex(value) || GROUND_HEX_MESSAGE,
+                admin: {
+                  description: `The colour painted behind the effect wherever this look sits on a ${surface} ground (cards, previews, block frames), as #rrggbb. Empty keeps the site's background, ${STUDIO_GROUND[surface]}.`,
+                },
+              })),
             },
             {
               name: 'archived',

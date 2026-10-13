@@ -1,4 +1,4 @@
-import type { Effect, Parameter, Tuning } from '@/features/immersive/studio/effect'
+import type { Effect, Parameter, Surface, Tuning } from '@/features/immersive/studio/effect'
 import type { EffectId } from '@/features/immersive/studio/effects'
 import { LIGHT_LEAK_COPY } from './copy/light-leak'
 import { STREAK_FIELD_COPY } from './copy/streak-field'
@@ -59,6 +59,21 @@ export type EffectCopy<T extends Tuning = Tuning, K extends string = string> = {
 export const EFFECT_COPY: Record<EffectId, EffectCopy> = {
   streakField: STREAK_FIELD_COPY,
   lightLeak: LIGHT_LEAK_COPY,
+}
+
+/** The Inspector's Ground section: the look's own colour under each face, effect-blind. */
+export const GROUND_GROUP = 'Ground'
+export const GROUND_COPY: Record<Surface, ParameterCopy> = {
+  dark: {
+    label: 'Dark',
+    description:
+      'The colour behind the effect wherever this look sits on a dark ground: cards, previews, block frames. The default is the site background.',
+  },
+  light: {
+    label: 'Light',
+    description:
+      'The colour behind the effect wherever this look sits on a light ground: cards, previews, block frames. The default is the site background.',
+  },
 }
 
 /** How an option reads in a control: the authored name, else Capitalized. */

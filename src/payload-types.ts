@@ -555,6 +555,16 @@ export interface StreakLook {
    * Rendered on Publish.
    */
   lightPoster?: (number | null) | Media;
+  ground?: {
+    /**
+     * The colour painted behind the effect wherever this look sits on a dark ground (cards, previews, block frames), as #rrggbb. Empty keeps the site's background, #09090b.
+     */
+    dark?: string | null;
+    /**
+     * The colour painted behind the effect wherever this look sits on a light ground (cards, previews, block frames), as #rrggbb. Empty keeps the site's background, #f5f5f4.
+     */
+    light?: string | null;
+  };
   /**
    * Hides the look from the picker. Places that use it keep working.
    */
@@ -7116,6 +7126,12 @@ export interface StreakLooksSelect<T extends boolean = true> {
   tags?: T;
   thumbnail?: T;
   lightPoster?: T;
+  ground?:
+    | T
+    | {
+        dark?: T;
+        light?: T;
+      };
   archived?: T;
   createdBy?: T;
   updatedBy?: T;
