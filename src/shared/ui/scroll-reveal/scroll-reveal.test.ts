@@ -1,5 +1,45 @@
 import { describe, expect, it } from 'vitest'
-import { cascadeStagger, nextBeatAt, revealEasing, revealGateMargin } from './scroll-reveal'
+import {
+  cascadeStagger,
+  nextBeatAt,
+  revealEasing,
+  revealGateMargin,
+  splitBatch,
+} from './scroll-reveal'
+
+describe('splitBatch', () => {
+  const queue = (costs: number[], clock: { now: number }) => {
+    const ran: number[] = []
+    const jobs = costs.map((cost, i) => () => {
+      clock.now += cost
+      ran.push(i)
+    })
+    return { jobs, ran }
+  }
+
+  it('runs jobs while the frame is under budget and leaves the rest queued', () => {
+    const clock = { now: 0 }
+    const { jobs, ran } = queue([1, 1, 1, 1, 1, 1], clock)
+    splitBatch(jobs, 0, () => clock.now)
+    expect(ran).toEqual([0, 1, 2, 3])
+    expect(jobs).toHaveLength(2)
+  })
+
+  it('always runs one job, even in a frame already over budget', () => {
+    const clock = { now: 10 }
+    const { jobs, ran } = queue([20, 1], clock)
+    splitBatch(jobs, 0, () => clock.now)
+    expect(ran).toEqual([0])
+    expect(jobs).toHaveLength(1)
+  })
+
+  it('counts the frame from its start, not from the first job', () => {
+    const clock = { now: 3 }
+    const { jobs, ran } = queue([0.5, 0.5, 0.5], clock)
+    splitBatch(jobs, 0, () => clock.now)
+    expect(ran).toEqual([0, 1])
+  })
+})
 
 describe('cascadeStagger', () => {
   it('keeps the tuned stagger for a short burst', () => {

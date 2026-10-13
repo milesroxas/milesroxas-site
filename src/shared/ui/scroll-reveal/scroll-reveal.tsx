@@ -225,6 +225,41 @@ export function nextBeatAt(earliest: number, cursorAt: number, step: number) {
   return Math.max(earliest, Math.min(cursorAt + step, earliest + REVEAL_MAX_CASCADE))
 }
 
+/** How much of a frame the split jobs may take (ms); the rest wait for the next one. */
+const SPLIT_BUDGET_MS = 4
+
+/**
+ * Runs queued split jobs: always one, then more while the frame that started
+ * at `start` is under budget. Splitting a whole rich-text block into lines in
+ * one frame held WebKit for 60 to 100ms mid-scroll, and the page leapt when
+ * the frame after it caught up.
+ */
+export function splitBatch(jobs: (() => void)[], start: number, now: () => number) {
+  do {
+    jobs.shift()?.()
+  } while (jobs.length && now() - start < SPLIT_BUDGET_MS)
+}
+
+const splitJobs: (() => void)[] = []
+let splitFramePending = false
+
+const runSplitJobs = (start: number) => {
+  splitFramePending = false
+  splitBatch(splitJobs, start, () => performance.now())
+  if (splitJobs.length) {
+    splitFramePending = true
+    requestAnimationFrame(runSplitJobs)
+  }
+}
+
+/** Queues a split job for the next frame's budget. */
+function scheduleSplit(job: () => void) {
+  splitJobs.push(job)
+  if (splitFramePending) return
+  splitFramePending = true
+  requestAnimationFrame(runSplitJobs)
+}
+
 type GateListener = { onEnter: (targets: Element[]) => void }
 
 type SharedGate = {
@@ -751,69 +786,88 @@ function playReveal(
   })
 
   /**
-   * Splits a text target into line and unit beats and starts watching them.
-   * Each prose run is split on its own and measured against its unsplit
-   * height: a run the split reflows (an inline `code` sliced at a line break
-   * takes its padding twice and pushes a word down) is reverted at once and
-   * opens whole, so the page never moves when a target is split or joined.
+   * Readies a text target as it nears the viewport. Its units are held and
+   * watched at once; each prose run stays hidden until its own split job
+   * (`scheduleSplit`) cuts it into line beats, so a block of many paragraphs
+   * costs a frame no more than its budget. A run is measured against its
+   * unsplit height: one the split reflows (an inline `code` sliced at a line
+   * break takes its padding twice and pushes a word down) is reverted and
+   * opens whole, so the page never moves when a run is split or joined. A
+   * run's lines join back once they have all landed; the target is `done`
+   * once every piece has.
    */
   const prepare = (el: HTMLElement, target: number) => {
     if (!alive) return
     const group = el.dataset.revealGroup
-    el.style.removeProperty('visibility')
     const pieces = revealPieces(el)
-    let beats: Beat[] = []
-    let remaining = 0
-    const heights = pieces.prose.map((run) => run.getBoundingClientRect().height)
-    const runs = pieces.prose.map((run) =>
-      SplitText.create(run, {
+    for (const run of pieces.prose) write(run, 'visibility', 'hidden')
+    el.style.removeProperty('visibility')
+    // Only the target's first piece in document order can join the target before it.
+    const first = [...pieces.units, ...pieces.prose].sort(precedes)[0]
+    // The target counted once until now; each piece counts once until it lands.
+    let pending = pieces.units.length + pieces.prose.length
+    outstanding += pending
+    settle()
+    const landed = () => {
+      pending -= 1
+      if (pending === 0) el.dataset.revealState = 'done'
+    }
+    const whole = (piece: HTMLElement): Beat => ({
+      ...beat([piece], 'text', target, group),
+      joins: piece === first && Boolean(group),
+      onDone: landed,
+    })
+    if (!pending) landed()
+    watch(pieces.units.map(whole))
+
+    /** The run's lines as beats, joined back once they have all landed. */
+    const lineBeats = (run: HTMLElement, split: SplitText): Beat[] => {
+      splits.add(split)
+      let remaining = split.lines.length
+      const join = () =>
+        queueMicrotask(() => {
+          splits.delete(split)
+          split.revert()
+          landed()
+        })
+      const lines = (split.lines as HTMLElement[]).map((line, i) => ({
+        ...beat([line], 'text', target, group),
+        mask: split.masks[i] as HTMLElement,
+        onDone: () => {
+          remaining -= 1
+          if (remaining === 0) join()
+        },
+      }))
+      if (lines[0] && run === first) lines[0].joins = Boolean(group)
+      // The run counted once until it was split; now once per line.
+      outstanding += lines.length
+      settle()
+      if (!lines.length) join()
+      return lines
+    }
+
+    const splitRun = (run: HTMLElement) => {
+      if (!alive) return
+      const height = run.getBoundingClientRect().height
+      let lines: Beat[] = []
+      const split = SplitText.create(run, {
         type: 'lines',
         mask: 'lines',
         aria: 'none',
         autoSplit: true,
-        // A re-split mid-entrance (resize, late font) lands the target at rest.
+        // A re-split mid-entrance (resize, late font) lands the run at rest.
         onSplit: () => {
-          for (const pending of beats) rest(pending)
+          for (const line of lines) rest(line)
         },
-      }),
-    )
-    const join = () =>
-      queueMicrotask(() => {
-        el.dataset.revealState = 'done'
-        for (const run of runs) {
-          splits.delete(run)
-          run.revert()
-        }
       })
-    const units = [...pieces.units]
-    const masks = new Map<HTMLElement, HTMLElement>()
-    runs.forEach((run, i) => {
-      const prose = pieces.prose[i] as HTMLElement
-      if (Math.abs(prose.getBoundingClientRect().height - (heights[i] ?? 0)) > 0.5) {
-        run.revert()
-        units.push(prose)
-        return
-      }
-      splits.add(run)
-      run.lines.forEach((line, j) => {
-        masks.set(line as HTMLElement, run.masks[j] as HTMLElement)
-      })
-    })
-    const els = [...units, ...masks.keys()].sort(precedes)
-    beats = els.map((piece) => ({
-      ...beat([piece], 'text', target, group),
-      mask: masks.get(piece),
-      onDone: () => {
-        remaining -= 1
-        if (remaining === 0) join()
-      },
-    }))
-    if (beats[0]) beats[0].joins = Boolean(group)
-    remaining = beats.length
-    outstanding += beats.length
-    settle()
-    if (!beats.length) join()
-    watch(beats)
+      const reflowed = Math.abs(run.getBoundingClientRect().height - height) > 0.5
+      if (reflowed) split.revert()
+      else lines = lineBeats(run, split)
+      watch(reflowed ? [whole(run)] : lines)
+      // Its pieces are held: the run itself may show.
+      run.style.removeProperty('visibility')
+    }
+    for (const run of pieces.prose) scheduleSplit(() => splitRun(run))
   }
 
   const prepareGate = sharedGate(PREPARE_MARGIN)
@@ -822,7 +876,9 @@ function playReveal(
     onEnter: (els) => {
       if (!alive) return
       document.fonts.ready.then(() => {
-        for (const el of els) prepare(el as HTMLElement, textIndex.get(el) ?? 0)
+        for (const el of els) {
+          scheduleSplit(() => prepare(el as HTMLElement, textIndex.get(el) ?? 0))
+        }
       })
     },
   }
