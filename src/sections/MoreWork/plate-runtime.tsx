@@ -5,6 +5,7 @@ import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react'
 import { type ShaderMaterial, Texture, Vector2, VideoTexture } from 'three'
+import { warmVideo } from '@/components/Media/VideoMedia'
 import { FailureBoundary, useCanvasFailure } from '@/features/immersive/ui/failure-boundary'
 import { signalFirstFrame } from '@/features/immersive/ui/overlay'
 import { CANVAS_RESIZE } from '@/lib/webgl/canvas-resize'
@@ -414,8 +415,9 @@ export type PlateRuntimeProps = {
 /**
  * Waits until every picture in the plate can be sampled, then draws. A
  * picture that fails to load is a failure like a refused context: the owner
- * keeps its DOM pictures. A video that never gets data leaves the canvas
- * unready, which looks the same.
+ * keeps its DOM pictures. A paused video fetches nothing on its own, so each
+ * is warmed (`warmVideo`) for its opening frames; one that never gets data
+ * leaves the canvas unready, which looks the same.
  */
 export default function PlateRuntime({
   frameRef,
@@ -438,6 +440,7 @@ export default function PlateRuntime({
     const controller = new AbortController()
     const { signal } = controller
     const sample = async (el: PlateElement) => {
+      if (el instanceof HTMLVideoElement) warmVideo(el)
       await whenDrawable(el, signal)
       return el instanceof HTMLVideoElement ? el : stillOf(el)
     }

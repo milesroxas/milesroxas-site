@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 
-import { workIndexItems } from '@/stories/fixtures'
+import { streamVideoFixture, workIndexItems } from '@/stories/fixtures'
 import { WorkDial } from './WorkDial.client'
 
 const meta = {
@@ -40,4 +40,17 @@ export const Default: Story = {
 
 export const WithoutLead: Story = {
   args: { lead: null },
+}
+
+/**
+ * A work whose picture is a video: the plate plays it only while its row is
+ * shown, and warms the rows either side. Streams from Cloudflare, so it needs
+ * network.
+ */
+export const WithVideo: Story = {
+  args: {
+    items: workIndexItems.map((item, index) =>
+      index === 1 ? { ...item, media: streamVideoFixture } : item,
+    ),
+  },
 }

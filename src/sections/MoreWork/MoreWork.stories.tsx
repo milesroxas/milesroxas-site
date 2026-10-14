@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 
-import { workIndexItems } from '@/stories/fixtures'
+import { streamVideoFixture, workIndexItems } from '@/stories/fixtures'
 import { MoreWorkIndex } from './MoreWork.client'
 
 const meta = {
@@ -40,4 +40,17 @@ export const Default: Story = {
 
 export const TwoWorks: Story = {
   args: { items: workIndexItems.slice(0, 2) },
+}
+
+/**
+ * A work whose picture is a video: on the plate it plays only while its row
+ * is shown; elsewhere the row carries it. Streams from Cloudflare, so it
+ * needs network.
+ */
+export const WithVideo: Story = {
+  args: {
+    items: workIndexItems.map((item, index) =>
+      index === 1 ? { ...item, media: streamVideoFixture } : item,
+    ),
+  },
 }

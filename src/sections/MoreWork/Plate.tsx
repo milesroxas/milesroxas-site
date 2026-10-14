@@ -5,7 +5,9 @@ import {
   type RefObject,
   Suspense,
   useCallback,
+  useEffect,
   useId,
+  useRef,
   useState,
   useSyncExternalStore,
 } from 'react'
@@ -17,6 +19,7 @@ import { GPU_PRIORITY } from '@/lib/webgl/gpu-budget'
 import { useGpuLease } from '@/lib/webgl/use-gpu-lease'
 import { cn } from '@/utilities/ui'
 import type { PlateLead } from './plate-runtime'
+import { createPlateVideos, type PlateVideos } from './plate-videos'
 import type { MoreWorkItem } from './query'
 import type { PlateSignal } from './signal'
 
@@ -44,6 +47,33 @@ const PLATE_BLEED = 0.05
 const PLATE_BLEED_STYLE = { inset: `${-PLATE_BLEED * 100}%` } as const
 
 const usePlateLayout = () => useSyncExternalStore(subscribeLayout, isPlateLayout, () => false)
+
+/**
+ * The layers' videos answer the plate, not the viewport (`./plate-videos`):
+ * only the shown row's plays. Nothing moves until the plate is near.
+ */
+function usePlateVideos(
+  ref: RefObject<HTMLElement | null>,
+  index: number,
+  near: boolean,
+  count: number,
+) {
+  const videos = useRef<PlateVideos | null>(null)
+  useEffect(() => {
+    const frame = ref.current
+    if (!frame || !near) return
+    const driver = createPlateVideos(frame, count)
+    videos.current = driver
+    return () => {
+      driver.dispose()
+      videos.current = null
+    }
+  }, [ref, near, count])
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `near` and `count` remount the driver above, which must then hear the row again
+  useEffect(() => {
+    videos.current?.show(index)
+  }, [index, near, count])
+}
 
 /** WebGL samples the plate's own pictures; an SVG has no reliable pixel size to fit. */
 const canSample = ({ media }: MoreWorkItem) =>
@@ -74,7 +104,7 @@ type Props = {
  * where the budget admits one, a canvas runs a wave from picture to picture
  * (`./plate-runtime`), sampling these same image and video elements, and
  * hides again the moment a row opens, so the view transition carries the
- * DOM picture. The wave bends the frame itself: its canvas reaches past the
+ * DOM picture. A video plays only while its row is shown (`usePlateVideos`). The wave bends the frame itself: its canvas reaches past the
  * frame, and the DOM pictures and ground hide while it draws, so the page
  * shows wherever the plate's edge pulls in.
  */
@@ -92,6 +122,7 @@ export function MoreWorkPlate({
   const { hasGPU } = useDeviceDetection()
   const plateLayout = usePlateLayout()
   const near = useNearViewport(ref, '50%', { once: true })
+  usePlateVideos(ref, index, near, items.length)
   const [failed, setFailed] = useState(false)
   const [ready, setReady] = useState(false)
   const handleFailure = useCallback(() => setFailed(true), [])
@@ -124,6 +155,7 @@ export function MoreWorkPlate({
               data-plate-layer={i}
             >
               <Media
+                autoPlay={false}
                 crossOrigin="anonymous"
                 fill
                 htmlElement={null}

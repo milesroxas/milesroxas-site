@@ -72,7 +72,10 @@ export for each block: [media-dimensions.md](media-dimensions.md).
    hls.js starts its load, the native player gets `preload="auto"`. The carousel plays the chosen
    slide on embla's `select` (the moment a drag is released, about a second before it settles)
    and warms the two slides beside it once the active one can paint, so the next slide reveals
-   as soon as it is chosen rather than after a manifest, a playlist and a segment. The stored `cloudflareStreamPlaybackUrl` is recomputed from the uid on every
+   as soon as it is chosen rather than after a manifest, a playlist and a segment. The works
+   index plate (`src/sections/MoreWork/plate-videos.ts`) does the same for its stacked rows: the
+   shown row's video plays, the rows either side warm, the rest fetch nothing, and its canvas
+   warms every video it has to sample. The stored `cloudflareStreamPlaybackUrl` is recomputed from the uid on every
    read (`resolveStreamUrls`); rows written before 2026-02-26 hold a doubled host and are never
    served as stored.
 6. **A temp-file upload carries its bytes.** When Payload parks a file on disk (a browser upload
