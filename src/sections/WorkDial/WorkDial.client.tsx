@@ -168,6 +168,9 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
   openingRef.current = opening !== null
 
   const shown = items[opening ?? active] ?? items[0]
+  /** Where an item sits on the drum against the shown one. */
+  const positionOf = (index: number) =>
+    index === (opening ?? active) ? 'shown' : index < (opening ?? active) ? 'past' : 'ahead'
   const count = String(items.length).padStart(2, '0')
 
   useEffect(() => {
@@ -474,11 +477,41 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
             className="work-dial-caption motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
             style={enterAt(720)}
           >
-            <span className="truncate font-medium">{shown?.client}</span>
+            {/* Every label stacked in one box, like the summaries, the shown one in ink. */}
+            <div className="work-dial-label">
+              {items.map((item, index) => (
+                <span data-position={positionOf(index)} key={item.id}>
+                  <span className="truncate font-medium">{item.client}</span>
+                  {item.client && item.industry && (
+                    <span aria-hidden className="work-dial-label-rule" />
+                  )}
+                  {item.industry && (
+                    <span className="truncate text-muted-foreground">{item.industry}</span>
+                  )}
+                </span>
+              ))}
+            </div>
             <span className="shrink-0 text-muted-foreground tabular-nums">
               {String((opening ?? active) + 1).padStart(2, '0')} / {count}
             </span>
           </div>
+          {/* Every summary stacked in one box, on the drum with its row: the
+              shown one is in ink, the others wait turned away above or below,
+              so a change turns the way the dial did. */}
+          {items.some((item) => item.summary) && (
+            <div
+              className="work-dial-summary motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
+              style={enterAt(800)}
+            >
+              {items.map((item, index) =>
+                item.summary ? (
+                  <p data-position={positionOf(index)} key={item.id}>
+                    {item.summary}
+                  </p>
+                ) : null,
+              )}
+            </div>
+          )}
         </div>
       </div>
 

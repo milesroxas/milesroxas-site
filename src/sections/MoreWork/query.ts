@@ -1,4 +1,5 @@
 import configPromise from '@payload-config'
+import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import { getPayload, type Where } from 'payload'
 import type { Capability, Client, Media, Work } from '@/payload-types'
 import { populatedDoc, relationshipIds } from '@/utilities/relationshipId'
@@ -14,6 +15,8 @@ export type MoreWorkItem = {
   client: string | null
   industry: string | null
   capabilities: string[]
+  /** The work's summary (its hero statement), else the SEO description. */
+  summary: string | null
   media: Media | null
 }
 
@@ -21,16 +24,24 @@ export type MoreWorkItem = {
 export const WORK_INDEX_SELECT = {
   title: true,
   slug: true,
-  hero: { media: true },
+  hero: { media: true, richText: true },
   client: true,
   industry: true,
   capabilities: true,
+  meta: { description: true },
 } as const
 
 export type WorkIndexDoc = Pick<
   Work,
-  'id' | 'title' | 'slug' | 'hero' | 'client' | 'industry' | 'capabilities'
+  'id' | 'title' | 'slug' | 'hero' | 'client' | 'industry' | 'capabilities' | 'meta'
 >
+
+const summaryOf = (doc: WorkIndexDoc) => {
+  const statement = doc.hero?.richText
+    ? convertLexicalToPlaintext({ data: doc.hero.richText }).trim()
+    : ''
+  return statement || doc.meta?.description || null
+}
 
 /** A work as an index row; null without a slug, which has no route to open. */
 export const toWorkIndexItem = (doc: WorkIndexDoc): MoreWorkItem | null =>
@@ -44,6 +55,7 @@ export const toWorkIndexItem = (doc: WorkIndexDoc): MoreWorkItem | null =>
         capabilities: (doc.capabilities ?? []).flatMap(
           (capability) => populatedDoc<Capability>(capability)?.title ?? [],
         ),
+        summary: summaryOf(doc),
         media: populatedDoc<Media>(doc.hero?.media),
       }
     : null

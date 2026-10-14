@@ -156,6 +156,8 @@ export const workIndexItems: MoreWorkItem[] = [
     client: 'Northwind',
     industry: 'Enterprise Technology',
     capabilities: ['Brand Identity', 'Website'],
+    summary:
+      'A new identity and site for an enterprise platform, built to read as one voice across sales and product.',
     media: textureMedia(31, 'vault', 1280, 720),
   },
   {
@@ -165,6 +167,8 @@ export const workIndexItems: MoreWorkItem[] = [
     client: 'Gentle Beast',
     industry: 'Creative Services',
     capabilities: ['Web Design', 'Web Development'],
+    summary:
+      'A studio site that says what the studio does in its own words, with the work doing the talking.',
     media: textureMedia(32, 'gentlebeast', 1064, 625),
   },
   {
@@ -174,6 +178,8 @@ export const workIndexItems: MoreWorkItem[] = [
     client: 'Arturo',
     industry: 'Consumer',
     capabilities: ['Product Design'],
+    summary:
+      'Launch design for a consumer product: the story, the page and the system behind both.',
     media: textureMedia(33, 'arturo', 1064, 625),
   },
   {
@@ -183,6 +189,7 @@ export const workIndexItems: MoreWorkItem[] = [
     client: null,
     industry: null,
     capabilities: [],
+    summary: null,
     media: imageMedia,
   },
 ]
