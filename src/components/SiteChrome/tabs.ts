@@ -28,7 +28,7 @@ const HOME_TAB: ChromeTab = { href: '/', label: 'Home', newTab: false }
 export function resolveChromeTabs(navItems: Header['navItems']): ChromeTab[] {
   const tabs = [HOME_TAB]
   for (const { link } of navItems ?? []) {
-    const href = resolveCmsLinkHref(link)
+    const href = resolveCmsLinkHref(link)?.replace(/\/+$/, '') || null
     if (!href || !link.label || tabs.some((tab) => tab.href === href)) continue
     tabs.push({ href, label: link.label, newTab: Boolean(link.newTab) })
   }

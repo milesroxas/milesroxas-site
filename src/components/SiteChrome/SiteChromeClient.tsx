@@ -61,6 +61,23 @@ function useAskToggle(ask: SiteChromeAsk | null) {
 }
 
 /**
+ * The tab pressed on this page, until the route moves: the next page
+ * (pressed or not), or Back and Forward, which may land here again with the
+ * press long over, hand the choice back to the route.
+ */
+function usePress(pathname: string) {
+  const [pressed, setPressed] = useState<{ on: string; index: number } | null>(null)
+  if (pressed && pressed.on !== pathname) setPressed(null)
+  useEffect(() => {
+    const clear = () => setPressed(null)
+    window.addEventListener('popstate', clear)
+    return () => window.removeEventListener('popstate', clear)
+  }, [])
+  const set = useCallback((index: number) => setPressed({ on: pathname, index }), [pathname])
+  return { index: pressed?.index ?? null, set }
+}
+
+/**
  * The site's chrome, on every public page: the top bar (wordmark, the
  * page's place, the clock) and the dock (the pages and Ask).
  *
@@ -71,11 +88,10 @@ export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
   const pathname = useSitePathname()
   const phone = useIsMobile()
 
-  const [pressed, setPressed] = useState<{ on: string; index: number } | null>(null)
-  const press = pressed && pressed.on === pathname ? pressed.index : null
-  const active = press ?? activeTabIndex(tabs, pathname)
+  const press = usePress(pathname)
+  const active = press.index ?? activeTabIndex(tabs, pathname)
   // A press heads for the tab's own page, so it fills at once.
-  const current = press !== null || active < 0 ? 'page' : tabCurrent(tabs[active], pathname)
+  const current = press.index !== null || active < 0 ? 'page' : tabCurrent(tabs[active], pathname)
 
   const triggerRef = useRef<HTMLButtonElement>(null)
   const { askOpen, askPresent, setAskPresent, viaKeyboard, toggleAsk, changeAskFromPanel } =
@@ -95,7 +111,7 @@ export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
             onOpen: () => toggleAsk(true, false),
           }
         }
-        onSelect={(index) => setPressed({ on: pathname, index })}
+        onSelect={press.set}
         tabs={tabs}
       />
       {ask && (

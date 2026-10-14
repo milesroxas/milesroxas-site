@@ -1,20 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { type MouseEvent, type RefObject, useLayoutEffect, useRef } from 'react'
+import { type RefObject, useLayoutEffect, useRef } from 'react'
 import { usePresence } from '@/hooks/use-presence'
 import { cn } from '@/utilities/ui'
 import { CloseGlyph, glyphForPath } from './glyphs'
 import type { ChromeTab, TabCurrent } from './tabs'
-
-/** A click the browser handles itself (new tab, new window, download): the page does not change here. */
-const opensElsewhere = (event: MouseEvent, tab: ChromeTab) =>
-  tab.newTab ||
-  event.button !== 0 ||
-  event.metaKey ||
-  event.ctrlKey ||
-  event.shiftKey ||
-  event.altKey
 
 /** Clips the fill to `tab`, or lifts it when no tab owns the page. */
 function placeIndicator(indicator: HTMLSpanElement, tab: HTMLAnchorElement | null | undefined) {
@@ -90,7 +81,7 @@ type PageTabsProps = {
   active: number
   /** The active tab's own page, or a page under it. */
   current: TabCurrent
-  /** A tab was pressed and this page is about to change to it. */
+  /** A tab was pressed and this page is about to change to it (client-side only). */
   onSelect: (index: number) => void
   /** Folded into the Menu pill (phones, scrolling down): out of the tab order. */
   minimized: boolean
@@ -182,9 +173,7 @@ export function PageTabs({
                 aria-current={index === active ? (current === 'page' ? 'page' : 'true') : undefined}
                 className="dock-tab chrome-focus pressable"
                 href={tab.href}
-                onClick={(event) => {
-                  if (!opensElsewhere(event, tab)) onSelect(index)
-                }}
+                onNavigate={() => onSelect(index)}
                 ref={(element) => {
                   tabRefs.current[index] = element
                 }}
