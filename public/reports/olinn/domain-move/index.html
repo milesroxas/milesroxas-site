@@ -438,7 +438,7 @@ table.data .copy-btn { color: var(--accent); flex: none; }
             <h3>Found while checking</h3>
             <ul>
               <li>Google's email-signing key (DKIM) is published on the bare domain instead of <code>google._domainkey</code>, so outgoing company mail most likely fails DKIM. Phase 4 fixes it.</li>
-              <li>The registrar's record for the domain changed on October 6 at 14:11 UTC and again on October 14 at 13:39 UTC. If the owner's name or email was changed recently, a transfer lock of up to 60 days can apply.</li>
+              <li>The domain shows only one status, clientTransferProhibited: the ordinary registrar lock the owner switches off in Phase 3. The registry's last real change was November 10, 2025, the last renewal. eNom's own WHOIS prints the query time as "Updated Date", so an October date there is not a change. Still, do not edit the owner's name, organization or email before the transfer: that starts a 60-day transfer lock under ICANN rules.</li>
               <li>DNSSEC is off today, so the nameservers can change without an extra step.</li>
             </ul>
           </div>
