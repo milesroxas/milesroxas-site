@@ -105,14 +105,13 @@ export function VisualPosterStack({
     >
       <Image
         alt=""
-        className={cn('absolute inset-0 size-full object-cover select-none', imgClassName)}
+        className={cn('select-none object-cover', imgClassName)}
         data-visual-poster={face.ground}
         draggable={false}
-        height={face.poster.height}
+        fill
         priority={face.priority}
         sizes={sizes}
         src={face.poster.src}
-        width={face.poster.width}
       />
     </div>
   ))

@@ -3,6 +3,7 @@
 import { useThree } from '@react-three/fiber'
 import { useEffect, useId } from 'react'
 import { type GpuLeaseKind, trackGpuContext } from '@/lib/webgl/gpu-budget'
+import '@/lib/webgl/three-console'
 
 /** The WebGPU renderer's loss hook; the classic renderer has none. */
 type DeviceLossHost = { onDeviceLost: (info: unknown) => void }
