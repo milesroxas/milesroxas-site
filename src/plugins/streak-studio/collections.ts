@@ -14,6 +14,7 @@ import { recipeJsonSchema } from '@/features/immersive/studio/recipe-schema'
 import { EFFECT_FIELD, GROUND_FIELD, LOOKS_SLUG, RECIPE_FIELD } from './components/paths'
 import { lookEndpoints } from './endpoints'
 import { recipeHash, storedRecipeHash, studioInput } from './hash'
+import { revalidateLookPublish, revalidateLookUnpublish } from './revalidate'
 import { lockLook, PUBLISH, transactionDB } from './transaction'
 import { lookUsage } from './usage'
 
@@ -120,6 +121,8 @@ export const StreakLooks: CollectionConfig = {
         return data
       },
     ],
+    afterChange: [revalidateLookPublish],
+    afterOperation: [revalidateLookUnpublish],
     beforeDelete: [
       async ({ id, req }) => {
         const uses = (await lookUsage(req, Number(id))).filter((use) => !use.historical)

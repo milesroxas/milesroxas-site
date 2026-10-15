@@ -53,6 +53,7 @@ const Preview = lazy(() =>
 )
 
 type Draft = ReturnType<typeof useDraft>
+type Ground = ReturnType<typeof useGround>
 type Patch = (next: Partial<StudioSession>) => void
 type Update = Draft['update']
 type DraftState = ReturnType<typeof compareDraft>
@@ -85,7 +86,8 @@ function compareDraft(
   const same = (state: PublishedState) => state.key === draftKey && sameGround(state.ground, ground)
   return {
     validation,
-    draftKey,
+    /** Whether a published state is the draft, ground included. */
+    matches: same,
     unchanged: Boolean(published && same(published)),
     // The published state the draft is identical to, whichever one it is: a
     // restored state matches itself, not "12 changes since published".
@@ -116,16 +118,10 @@ function statusText(id: Draft['id'], published: PublishedState | null, state: Dr
   return 'Draft, not yet published'
 }
 
-function stageActions({
-  key,
-  effect,
-  effectId,
-  recipe,
-  setValue,
-  update,
-  restore,
-  changeEffect,
-}: Draft) {
+function stageActions(
+  { key, effect, effectId, recipe, setValue, update, restore, changeEffect }: Draft,
+  ground: Ground,
+) {
   return {
     // A look's effect is open until it is first published; the draft starts over with it.
     chooseEffect: (next: EffectId) => {
@@ -148,15 +144,19 @@ function stageActions({
     keep: () => {
       studioStore.patch(key, {
         comparison: recipe,
+        comparisonGround: ground.ground,
         comparisonLabel: 'Kept comparison',
         comparisonAt: Date.now(),
         showComparison: false,
       })
     },
+    // A published state is its recipe and its ground, so both come back; only
+    // the recipe is an undo step.
     restoreState: (state: PublishedState, label: string) => {
       try {
         restore(state.recipe)
-        toast.success(`The draft is back at ${label}. Undo brings your changes back.`)
+        ground.replace(state.ground)
+        toast.success(`The draft is back at ${label}. Undo brings your recipe changes back.`)
       } catch {
         toast.error('This state holds values the current ranges no longer accept.')
       }
@@ -164,6 +164,7 @@ function stageActions({
     compareState: (state: PublishedState) =>
       studioStore.patch(key, {
         comparison: state.recipe,
+        comparisonGround: state.ground,
         comparisonLabel: when(state.at),
         comparisonAt: new Date(state.at).getTime(),
         showComparison: true,
@@ -260,11 +261,15 @@ export const Stage: UIFieldClientComponent = () => {
   const { id, key, effect, effectId, recipe, update } = draft
   const session = useStudioSession(key)
   const look = useLook(id)
-  const { ground } = useGround()
+  const groundField = useGround()
+  const { ground } = groundField
   const [live, setLive] = useState(true)
   const state = compareDraft(effect, recipe, ground, session, look)
-  const actions = stageActions(draft)
+  const actions = stageActions(draft, groundField)
   const patch: Patch = (next) => studioStore.patch(key, next)
+  // The stage paints the ground of what it shows: the comparison's while one is up.
+  const comparing = session.showComparison && Boolean(session.comparison)
+  const shownGround = studioGround(comparing ? session.comparisonGround : ground, session.surface)
 
   useUndoShortcut(actions.undo, actions.redo)
 
@@ -283,7 +288,7 @@ export const Stage: UIFieldClientComponent = () => {
             <PublishedList
               session={session}
               history={look.history}
-              draftKey={state.draftKey}
+              matches={state.matches}
               patch={patch}
               actions={actions}
             />
@@ -294,7 +299,7 @@ export const Stage: UIFieldClientComponent = () => {
               session={session}
               effectId={effectId}
               recipe={recipe}
-              ground={studioGround(ground, session.surface)}
+              ground={shownGround}
               state={state}
               onTurnOn={() => setLive(true)}
             />
@@ -531,13 +536,13 @@ function StarterList({
 function PublishedList({
   session,
   history,
-  draftKey,
+  matches,
   patch,
   actions,
 }: {
   session: StudioSession
   history: PublishedState[]
-  draftKey: string
+  matches: (state: PublishedState) => boolean
   patch: Patch
   actions: StageActions
 }) {
@@ -571,7 +576,7 @@ function PublishedList({
             key={state.id}
             state={state}
             onSite={index === 0}
-            matchesDraft={state.key === draftKey}
+            matchesDraft={matches(state)}
             actions={actions}
           />
         ))}
@@ -684,7 +689,7 @@ function Viewport({
   session: StudioSession
   effectId: EffectId
   recipe: Recipe
-  /** The colour under the effect for the stage's face: the draft's own ground, else the site's. */
+  /** The colour under what is shown, for the stage's face: the draft's or the comparison's own ground, else the site's. */
   ground: string
   state: DraftState
   onTurnOn: () => void

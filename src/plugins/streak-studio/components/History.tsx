@@ -5,9 +5,9 @@ import './studio.css'
 import { toast } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 import { Button } from '@/components/ui/button'
-import { studioGround } from '@/features/immersive/studio/ground'
+import { sameGround, studioGround } from '@/features/immersive/studio/ground'
 import { canonicalJSON, snapshotRecipe } from '@/features/immersive/studio/recipe'
-import { useDraft } from './draft'
+import { useDraft, useGround } from './draft'
 import { type PublishedState, useLook } from './look-store'
 import { studioStore } from './store'
 
@@ -26,6 +26,7 @@ export const when = (iso: string) =>
  */
 export const History: UIFieldClientComponent = () => {
   const { id, key, effect, recipe, restore } = useDraft()
+  const ground = useGround()
   const { history, loaded } = useLook(id)
   let draftKey = ''
   try {
@@ -33,11 +34,15 @@ export const History: UIFieldClientComponent = () => {
   } catch {
     // An invalid draft matches nothing.
   }
+  // A published state is its recipe and its ground: both are compared, both come back.
+  const matchesDraft = (state: PublishedState) =>
+    state.key === draftKey && sameGround(state.ground, ground.ground)
 
   const restoreState = (state: PublishedState) => {
     try {
       restore(state.recipe)
-      toast.success(`The draft is back at ${when(state.at)}. Undo in Studio reverses it.`)
+      ground.replace(state.ground)
+      toast.success(`The draft is back at ${when(state.at)}. Undo in Studio reverses the recipe.`)
     } catch {
       toast.error('This state holds values the current ranges no longer accept.')
     }
@@ -45,6 +50,7 @@ export const History: UIFieldClientComponent = () => {
   const compare = (state: PublishedState) => {
     studioStore.patch(key, {
       comparison: state.recipe,
+      comparisonGround: state.ground,
       comparisonLabel: when(state.at),
       comparisonAt: new Date(state.at).getTime(),
       showComparison: true,
@@ -66,7 +72,7 @@ export const History: UIFieldClientComponent = () => {
           key={state.id}
           state={state}
           onSite={index === 0}
-          matchesDraft={state.key === draftKey}
+          matchesDraft={matchesDraft(state)}
           onRestore={() => restoreState(state)}
           onCompare={() => compare(state)}
         />

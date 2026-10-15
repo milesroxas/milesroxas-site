@@ -164,6 +164,37 @@ export const StudioLookPosters: Story = {
   },
 }
 
+/**
+ * A published Studio look with a ground of its own: the frame paints it under
+ * the still and the live frame alike, the face following the site theme, so a
+ * card or block frame reads the look on its colour rather than the band's.
+ * Switch the toolbar theme to swap the face.
+ */
+export const StudioLookGround: Story = {
+  args: {
+    descriptor: descriptor({
+      release: { ...studioRelease, ground: { dark: '#1b1030', light: '#fff3e0' } },
+    }),
+    placement: 'card',
+    fill: false,
+    className: 'aspect-3/2 w-96',
+  },
+  render: (args) => (
+    <div className="container py-16">
+      <StreakVisual {...args} />
+    </div>
+  ),
+  play: async (context) => {
+    await settledPoster(context)
+    const frame = context.canvasElement.querySelector<HTMLElement>('[data-visual="streakField"]')
+    await expect(frame).toHaveAttribute('data-visual-ground')
+    await expect(frame?.style.getPropertyValue('--visual-ground-dark')).toBe('#1b1030')
+    await expect(frame?.style.getPropertyValue('--visual-ground-light')).toBe('#fff3e0')
+    const painted = frame && getComputedStyle(frame).backgroundColor
+    await expect(['rgb(27, 16, 48)', 'rgb(255, 243, 224)']).toContain(painted)
+  },
+}
+
 /** A stored preset that no longer ships: the fallback look, poster only, never live. */
 export const DegradedPreset: Story = {
   args: { descriptor: descriptor({ degraded: true }) },

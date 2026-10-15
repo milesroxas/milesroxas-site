@@ -31,6 +31,11 @@ export function useGround() {
     ground,
     set: (surface: keyof LookGround, next: string | null) =>
       (surface === 'dark' ? dark : light).setValue(next),
+    /** Both faces at once, as a published state carries them: a face it leaves out is cleared. */
+    replace: (next: LookGround) => {
+      dark.setValue(next.dark ?? null)
+      light.setValue(next.light ?? null)
+    },
   }
 }
 

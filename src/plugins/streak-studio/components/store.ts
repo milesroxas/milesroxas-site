@@ -1,6 +1,7 @@
 'use client'
 
 import { useSyncExternalStore } from 'react'
+import type { LookGround } from '@/features/immersive/studio/ground'
 import type { Recipe } from '@/features/immersive/studio/recipe'
 import type { VisualPlacement } from '@/features/immersive/visual/placement'
 
@@ -19,6 +20,8 @@ export type StudioSession = {
   /** Bumped to restart the preview from frame zero. */
   generation: number
   comparison: Recipe | null
+  /** The ground the comparison was kept or published with; the stage paints it under the comparison. */
+  comparisonGround: LookGround
   comparisonLabel: string
   comparisonAt: number | null
   showComparison: boolean
@@ -34,6 +37,7 @@ const initial = (): StudioSession => ({
   paused: false,
   generation: 0,
   comparison: null,
+  comparisonGround: {},
   comparisonLabel: '',
   comparisonAt: null,
   showComparison: false,
@@ -65,7 +69,8 @@ export const studioStore = {
   },
   /** Forget everything that was made of recipes: the undo stack and the kept comparison. */
   clear(key: string) {
-    const { history, future, comparison, showComparison, generation, ...kept } = read(key)
+    const { history, future, comparison, comparisonGround, showComparison, generation, ...kept } =
+      read(key)
     sessions.set(key, { ...initial(), ...kept, generation: generation + 1 })
     emit()
   },
