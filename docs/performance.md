@@ -39,7 +39,9 @@ defaults `sizes` to `100vw`, so a block that renders an image in a column must p
 frame (`posterWidth`), and the rendition is capped to the frame at no more than 1.5x device
 pixels by `capLevelToFrame` (`src/components/Media/VideoMedia/index.tsx`) when the load starts,
 because hls.js's own player-size cap measures once at manifest parse and lifts on a 0 × 0 box,
-which is what the hero's frame is that early.
+which is what the hero's frame is that early. Chrome and Safari do not use hls.js at all: they
+play the manifest natively, and `bandwidthHintFor` turns the same frame measurement into Stream's
+`clientBandwidthHint`, the one rendition control a native player has.
 
 **Public assets.** `next.config.ts` serves `/images/*` as immutable (file names carry a
 version) and `/textures/*` for a day with a week of stale-while-revalidate. A new folder under
