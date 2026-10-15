@@ -7680,6 +7680,23 @@ export interface SiteInfo {
       }[]
     | null;
   /**
+   * Organizations you belong to or founded (the agency, a studio). Structured data lists them as affiliation and worksFor, so an assistant can tie this site to the organization and its site.
+   */
+  affiliations?:
+    | {
+        name: string;
+        /**
+         * The organization's website.
+         */
+        url?: string | null;
+        /**
+         * Your role there ("Co-founder", "Creative director").
+         */
+        role?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Optional extra paragraph Ask can answer from and llms.txt ends with (what you are known for).
    */
   llmsNotes?: string | null;
@@ -7848,6 +7865,14 @@ export interface SiteInfoSelect<T extends boolean = true> {
     | {
         label?: T;
         url?: T;
+        id?: T;
+      };
+  affiliations?:
+    | T
+    | {
+        name?: T;
+        url?: T;
+        role?: T;
         id?: T;
       };
   llmsNotes?: T;

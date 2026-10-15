@@ -1,14 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import type { Post, SiteInfo, Work } from '@/payload-types'
+import { getServerSideURL } from './getURL'
 import {
   blogPostingSchema,
   breadcrumbSchema,
+  collectionPageSchema,
   creativeWorkSchema,
   faqPageSchema,
+  isSiteOwner,
   personSchema,
 } from './schema'
 
-const SITE = 'http://localhost:3000'
+const SITE = getServerSideURL()
 
 /** schema-dts types every node as a union with `string`; the tests read the object. */
 const plain = (schema: unknown) => JSON.parse(JSON.stringify(schema)) as Record<string, unknown>
@@ -46,9 +49,44 @@ describe('personSchema', () => {
   it('leaves out what Site Info does not say', () => {
     const person = plain(personSchema({}))
     expect(person.name).toBe('Miles Roxas')
+    expect(person.givenName).toBe('Miles')
+    expect(person.familyName).toBe('Roxas')
     expect(person).not.toHaveProperty('address')
     expect(person).not.toHaveProperty('sameAs')
     expect(person).not.toHaveProperty('jobTitle')
+    expect(person).not.toHaveProperty('affiliation')
+    expect(person).not.toHaveProperty('knowsAbout')
+  })
+
+  it('ties the person to their organizations and their vocabulary', () => {
+    const person = plain(
+      personSchema(
+        {
+          ...siteInfo,
+          affiliations: [
+            { name: 'Suits & Sandals', url: 'https://www.suits-sandals.com', role: 'Co-founder' },
+            { name: '' },
+          ],
+        },
+        { knowsAbout: ['Design System', '', 'Web Design'] },
+      ),
+    )
+    const organizations = [
+      { '@type': 'Organization', name: 'Suits & Sandals', url: 'https://www.suits-sandals.com' },
+    ]
+    expect(person.affiliation).toEqual(organizations)
+    expect(person.worksFor).toEqual(organizations)
+    expect(person.knowsAbout).toEqual(['Design System', 'Web Design'])
+  })
+})
+
+describe('isSiteOwner', () => {
+  it('matches the owner by full name or first name alone, never another person', () => {
+    expect(isSiteOwner('Miles Roxas', 'Miles Roxas')).toBe(true)
+    expect(isSiteOwner('miles', 'Miles Roxas')).toBe(true)
+    expect(isSiteOwner('Mil', 'Miles Roxas')).toBe(false)
+    expect(isSiteOwner('Ada', 'Miles Roxas')).toBe(false)
+    expect(isSiteOwner('', 'Miles Roxas')).toBe(false)
   })
 })
 
@@ -84,6 +122,14 @@ describe('blogPostingSchema', () => {
       { '@id': `${SITE}/#person` },
       { '@type': 'Person', name: 'Ada' },
     ])
+    expect(posting.isPartOf).toEqual({ '@id': `${SITE}/#website` })
+  })
+
+  it('reads a CMS user saved by first name as the owner', () => {
+    const posting = plain(
+      blogPostingSchema({ ...base, populatedAuthors: [{ name: 'Miles' }] }, siteInfo),
+    )
+    expect(posting.author).toEqual([{ '@id': `${SITE}/#person` }])
   })
 
   it('names the original publisher of an article written elsewhere', () => {
@@ -110,6 +156,7 @@ describe('creativeWorkSchema', () => {
       slug: 'redesign',
       industry: 'Fintech',
       client: { id: 2, title: 'Acme' },
+      link: { url: 'https://acme.example' },
       capabilities: [{ id: 3, title: 'Design' }, 4],
       layout: [],
       updatedAt: '2026-10-02T00:00:00.000Z',
@@ -117,10 +164,41 @@ describe('creativeWorkSchema', () => {
     } as unknown as Work
     const schema = plain(creativeWorkSchema(work))
     expect(schema.url).toBe(`${SITE}/works/redesign`)
-    expect(schema.about).toEqual({ '@type': 'Organization', name: 'Acme' })
+    expect(schema.mainEntityOfPage).toBe(`${SITE}/works/redesign`)
+    expect(schema.about).toEqual({
+      '@type': 'Organization',
+      name: 'Acme',
+      url: 'https://acme.example',
+    })
     expect(schema.keywords).toEqual(['Design'])
     expect(schema.genre).toBe('Fintech')
     expect(schema.creator).toEqual({ '@id': `${SITE}/#person` })
+  })
+})
+
+describe('collectionPageSchema', () => {
+  it('lists the index members in order, and nothing when there are none', () => {
+    const page = plain(
+      collectionPageSchema({
+        path: '/posts',
+        name: 'Posts',
+        items: [
+          { name: 'A', path: '/posts/a' },
+          { name: 'B', path: '/posts/b' },
+        ],
+      }),
+    )
+    expect(page.mainEntity).toEqual({
+      '@type': 'ItemList',
+      numberOfItems: 2,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'A', url: `${SITE}/posts/a` },
+        { '@type': 'ListItem', position: 2, name: 'B', url: `${SITE}/posts/b` },
+      ],
+    })
+    expect(plain(collectionPageSchema({ path: '/posts', name: 'Posts' }))).not.toHaveProperty(
+      'mainEntity',
+    )
   })
 })
 

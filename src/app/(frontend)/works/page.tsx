@@ -92,7 +92,11 @@ export default async function Page() {
   const jsonLd = (
     <JsonLd
       data={[
-        worksIndexSchema(index ?? {}, WORKS_INDEX_DEFAULTS),
+        worksIndexSchema(
+          index ?? {},
+          WORKS_INDEX_DEFAULTS,
+          items.map((item) => ({ name: item.title, path: `/works/${item.slug}` })),
+        ),
         breadcrumbSchema([{ name: 'Work', path: '/works' }]),
       ]}
     />

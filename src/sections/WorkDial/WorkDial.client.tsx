@@ -436,12 +436,13 @@ function Dial({ items, title, lead }: WorkDialProps) {
     <div className="work-dial" style={moreWorkMotionStyle}>
       <header className="work-dial-header">
         <div className="work-dial-heading">
-          <h1 className="flex items-start gap-2.5 text-heading-1" id="works-index-title">
-            <span className="overflow-clip pb-[0.08em]">
+          {/* The count sits beside the heading, not in it: the h1 reads "Work", not "Work11". */}
+          <div className="flex items-start gap-2.5 text-heading-1">
+            <h1 className="overflow-clip pb-[0.08em]" id="works-index-title">
               <span className="inline-block motion-safe:animate-hero-rise motion-reduce:animate-hero-fade">
                 {title}
               </span>
-            </span>
+            </h1>
             <span
               aria-hidden
               className="pt-1 font-medium font-mono text-xs/none tabular-nums tracking-normal motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
@@ -449,7 +450,7 @@ function Dial({ items, title, lead }: WorkDialProps) {
             >
               {count}
             </span>
-          </h1>
+          </div>
           {lead && (
             <p
               className="work-dial-lead motion-safe:animate-hero-in motion-reduce:animate-hero-fade"

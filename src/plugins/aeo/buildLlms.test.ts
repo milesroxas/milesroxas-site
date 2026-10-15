@@ -50,6 +50,25 @@ describe('llmsHeader', () => {
   it('promotes the description to the blockquote when there is no tagline', () => {
     expect(llmsHeader({ name: 'Miles Roxas', description: 'Longer.' }, SITE)).toContain('> Longer.')
   })
+
+  it('states where the person is based and the organizations they belong to', () => {
+    const header = llmsHeader(
+      {
+        name: 'Miles Roxas',
+        address: { streetAddress: '1 Main St', city: 'Brooklyn', state: 'NY', country: 'US' },
+        affiliations: [
+          { name: 'Suits & Sandals', url: 'https://www.suits-sandals.com', role: 'Co-founder' },
+          { name: 'Codalyn' },
+        ],
+      },
+      SITE,
+    )
+    expect(header).toContain('Based in: Brooklyn, NY, US')
+    expect(header).toContain(
+      'Affiliations: Co-founder, Suits & Sandals (https://www.suits-sandals.com); Codalyn',
+    )
+    expect(header).not.toContain('Main St')
+  })
 })
 
 describe('llmsEntries', () => {

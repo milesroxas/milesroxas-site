@@ -5,6 +5,8 @@ import type {
   ContactPage,
   CreativeWork,
   FAQPage,
+  ItemList,
+  Organization,
   Person,
   ProfilePage,
   WebPage,
@@ -46,6 +48,45 @@ const DEFAULT_NAME = 'Miles Roxas'
 
 const siteName = (siteInfo: Partial<SiteInfo>) => siteInfo.name || DEFAULT_NAME
 
+const normalizeName = (name: string) => name.trim().toLowerCase()
+
+/**
+ * Whether a credited name is the site owner. The CMS user is often saved by
+ * first name alone ("Miles"), so a name that is the owner's full name or its
+ * first word points at the Person entity rather than minting a second one.
+ */
+export const isSiteOwner = (name: string, owner: string): boolean => {
+  const candidate = normalizeName(name)
+  if (!candidate) return false
+  const full = normalizeName(owner)
+  return candidate === full || full.startsWith(`${candidate} `)
+}
+
+/** The city-level address, or nothing: the street and postal code are never published. */
+const postalAddress = (address: SiteInfo['address']) => {
+  if (!address?.city && !address?.state && !address?.country) return null
+  return {
+    '@type': 'PostalAddress' as const,
+    ...(address.city ? { addressLocality: address.city } : {}),
+    ...(address.state ? { addressRegion: address.state } : {}),
+    ...(address.country ? { addressCountry: address.country } : {}),
+  }
+}
+
+/** The owner's organizations, as schema Organizations with their sites. */
+const affiliationOrganizations = (siteInfo: Partial<SiteInfo>): Organization[] =>
+  (siteInfo.affiliations ?? []).flatMap((affiliation) =>
+    affiliation.name
+      ? [
+          {
+            '@type': 'Organization' as const,
+            name: affiliation.name,
+            ...(affiliation.url ? { url: affiliation.url } : {}),
+          },
+        ]
+      : [],
+  )
+
 /** The named taxonomy terms a relationship populated, as schema `keywords`. */
 const termNames = (terms: (number | Capability | Category)[] | null | undefined): string[] =>
   (terms ?? []).flatMap((term) => {
@@ -65,37 +106,43 @@ type PageFacts = Pick<Page, 'title' | 'meta' | 'publishedAt'> & { updatedAt?: st
  * The site owner. `sameAs` is the profile list search engines and AI
  * assistants reconcile the name against, so Site Info › Social profiles is
  * the field that matters most here. Only the city-level address is published.
+ * `knowsAbout` is the Capabilities taxonomy the case studies list, so the
+ * entity carries the same vocabulary the work does; `affiliation` and
+ * `worksFor` are Site Info › Affiliations, which tie the Person to the
+ * organizations' own sites.
  */
-export const personSchema = (siteInfo: Partial<SiteInfo>): WithContext<Person> => {
+export const personSchema = (
+  siteInfo: Partial<SiteInfo>,
+  extras: { knowsAbout?: string[] } = {},
+): WithContext<Person> => {
   const headshot = shareImage(siteInfo.headshot)
-  const { address } = siteInfo
-  const hasPlace = Boolean(address?.city || address?.state || address?.country)
+  const address = postalAddress(siteInfo.address)
+  const name = siteName(siteInfo)
+  const [givenName, ...familyParts] = name.split(/\s+/)
+  const familyName = familyParts.join(' ')
+  const organizations = affiliationOrganizations(siteInfo)
+  const knowsAbout = (extras.knowsAbout ?? []).filter(Boolean)
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
     '@id': absolute(`/${PERSON_ID}`),
-    name: siteName(siteInfo),
+    name,
+    ...(familyName ? { givenName, familyName } : {}),
     url: siteUrl(),
+    mainEntityOfPage: siteUrl(),
     ...(siteInfo.jobTitle ? { jobTitle: siteInfo.jobTitle } : {}),
     ...(siteInfo.description || siteInfo.tagline
       ? { description: siteInfo.description || siteInfo.tagline || undefined }
       : {}),
     ...(siteInfo.contactEmail ? { email: siteInfo.contactEmail } : {}),
     ...(headshot ? { image: headshot.url } : {}),
-    ...(hasPlace
-      ? {
-          address: {
-            '@type': 'PostalAddress',
-            ...(address?.city ? { addressLocality: address.city } : {}),
-            ...(address?.state ? { addressRegion: address.state } : {}),
-            ...(address?.country ? { addressCountry: address.country } : {}),
-          },
-        }
-      : {}),
+    ...(address ? { address } : {}),
     ...(siteInfo.socialProfiles?.length
       ? { sameAs: siteInfo.socialProfiles.map((profile) => profile.url) }
       : {}),
+    ...(organizations.length ? { affiliation: organizations, worksFor: organizations } : {}),
+    ...(knowsAbout.length ? { knowsAbout } : {}),
   }
 }
 
@@ -111,7 +158,11 @@ export const webSiteSchema = (siteInfo: Partial<SiteInfo>): WithContext<WebSite>
   inLanguage: 'en',
 })
 
-/** The home page: a profile page whose main entity is the site owner. */
+/**
+ * The home page: a profile page whose main entity is the site owner. Google's
+ * ProfilePage shape reads `dateCreated` and `dateModified`, so the publish
+ * date is stated under both names.
+ */
 export const profilePageSchema = (page: PageFacts): WithContext<ProfilePage> => ({
   '@context': 'https://schema.org',
   '@type': 'ProfilePage',
@@ -120,6 +171,7 @@ export const profilePageSchema = (page: PageFacts): WithContext<ProfilePage> => 
   ...(page.meta?.description ? { description: page.meta.description } : {}),
   mainEntity: personRef(),
   isPartOf: { '@id': absolute(`/${WEBSITE_ID}`) },
+  ...(page.publishedAt ? { dateCreated: page.publishedAt } : {}),
   ...withDates(page),
 })
 
@@ -134,10 +186,29 @@ export const webPageSchema = (page: PageFacts, path: string): WithContext<WebPag
   ...withDates(page),
 })
 
+/** One listed document, for the ItemList an index page carries. */
+export type ListedItem = { name: string; path: string }
+
+const itemList = (items: ListedItem[]): ItemList => ({
+  '@type': 'ItemList',
+  numberOfItems: items.length,
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    url: absolute(item.path),
+  })),
+})
+
+/**
+ * An index page. `items` are the documents it lists, in the order shown, so
+ * an engine reads the index's members without parsing the cards.
+ */
 export const collectionPageSchema = (args: {
   path: string
   name: string
   description?: string | null
+  items?: ListedItem[]
 }): WithContext<CollectionPage> => ({
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -146,13 +217,19 @@ export const collectionPageSchema = (args: {
   ...(args.description ? { description: args.description } : {}),
   isPartOf: { '@id': absolute(`/${WEBSITE_ID}`) },
   author: personRef(),
+  ...(args.items?.length ? { mainEntity: itemList(args.items) } : {}),
 })
 
-export const worksIndexSchema = (index: Partial<WorksIndex>, defaults: { heading: string }) =>
+export const worksIndexSchema = (
+  index: Partial<WorksIndex>,
+  defaults: { heading: string },
+  items: ListedItem[] = [],
+) =>
   collectionPageSchema({
     path: '/works',
     name: index.meta?.title || index.title || defaults.heading,
     description: index.meta?.description || index.lead,
+    items,
   })
 
 export const contactPageSchema = (args: {
@@ -193,10 +270,13 @@ export const blogPostingSchema = (
     ...(post.meta?.description ? { description: post.meta.description } : {}),
     url,
     mainEntityOfPage: url,
+    isPartOf: { '@id': absolute(`/${WEBSITE_ID}`) },
     ...(image ? { image: image.url } : {}),
     ...withDates(post),
     author: authors.length
-      ? authors.map((name) => (name === owner ? personRef() : { '@type': 'Person', name }))
+      ? authors.map((name) =>
+          isSiteOwner(name, owner) ? personRef() : { '@type': 'Person', name },
+        )
       : personRef(),
     publisher: external ? { '@type': 'Organization', name: external.publisher } : personRef(),
     ...(external ? { sameAs: external.url } : {}),
@@ -205,10 +285,15 @@ export const blogPostingSchema = (
   }
 }
 
-/** A case study: the work, its client, and the capabilities it lists. */
+/**
+ * A case study: the work, its client (with the live site when the work links
+ * one), and the capabilities it lists.
+ */
 export const creativeWorkSchema = (work: Work): WithContext<CreativeWork> => {
+  const url = absolute(`/works/${work.slug}`)
   const image = shareImage(work.meta?.image) ?? shareImage(work.hero?.media)
   const client = populatedDoc<Client>(work.client)?.title
+  const clientUrl = work.link?.url?.trim()
   const keywords = termNames(work.capabilities)
 
   return {
@@ -216,10 +301,22 @@ export const creativeWorkSchema = (work: Work): WithContext<CreativeWork> => {
     '@type': 'CreativeWork',
     name: work.title,
     ...(work.meta?.description ? { description: work.meta.description } : {}),
-    url: absolute(`/works/${work.slug}`),
+    url,
+    mainEntityOfPage: url,
+    isPartOf: { '@id': absolute(`/${WEBSITE_ID}`) },
     ...(image ? { image: image.url } : {}),
     creator: personRef(),
-    ...(client ? { about: { '@type': 'Organization', name: client } } : {}),
+    author: personRef(),
+    publisher: personRef(),
+    ...(client
+      ? {
+          about: {
+            '@type': 'Organization',
+            name: client,
+            ...(clientUrl ? { url: clientUrl } : {}),
+          },
+        }
+      : {}),
     ...(work.industry ? { genre: work.industry } : {}),
     ...(keywords.length ? { keywords } : {}),
     ...withDates(work),

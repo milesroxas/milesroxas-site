@@ -12,10 +12,17 @@ const heroes = {
   home: HomeHero,
 }
 
-export const RenderHero: React.FC<Page['hero']> = (props) => {
+type RenderHeroProps = Page['hero'] & {
+  /** The page's h1 for the home hero, which has no title of its own (HomeHero). */
+  heading?: string
+}
+
+export const RenderHero: React.FC<RenderHeroProps> = ({ heading, ...props }) => {
   const { type } = props || {}
 
   if (!type || type === 'none') return null
+
+  if (type === 'home') return <HomeHero {...props} heading={heading} />
 
   const HeroToRender = heroes[type]
 

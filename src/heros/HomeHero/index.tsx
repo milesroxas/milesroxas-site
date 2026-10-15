@@ -6,7 +6,14 @@ import { getCompositeKey } from '@/utilities/reactKeys'
 import { cn } from '@/utilities/ui'
 import styles from './homeHero.module.css'
 
-type HeroProps = Page['hero']
+type HeroProps = Page['hero'] & {
+  /**
+   * The page's h1. The opening is a portrait between two word strips with no
+   * title of its own, so the heading is for readers and crawlers (the logo in
+   * the top bar says the same name); it is kept out of the composition.
+   */
+  heading?: string
+}
 
 const EXPERIENCE_TEXT = [
   'Co-Founder',
@@ -86,11 +93,12 @@ const MarqueeItems = ({
 /** The strip's line: clips the words' rise; reduced motion fades the strip instead. */
 const marqueeLine = 'absolute w-full overflow-hidden motion-reduce:animate-hero-fade'
 
-export const HomeHero: React.FC<HeroProps> = ({ media }) => (
+export const HomeHero: React.FC<HeroProps> = ({ media, heading }) => (
   <div
     className="relative flex h-[90vh] w-full flex-col items-center overflow-hidden bg-background md:h-screen"
     data-slot="home-hero"
   >
+    {heading ? <h1 className="sr-only">{heading}</h1> : null}
     <div className={cn(marqueeLine, 'top-[40vh] z-0')} style={enterAt(BEAT.marqueeTop)}>
       <div className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-foreground')}>
         <MarqueeItems at={BEAT.marqueeTop} items={SKILLS_TEXT} keyPrefix="skill" />

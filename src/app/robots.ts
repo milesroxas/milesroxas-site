@@ -13,7 +13,8 @@ const DISALLOW = ['/admin', '/api/', '/next/', '/search']
  * (OAI-SearchBot, Claude-SearchBot, PerplexityBot, the *-User agents) decide
  * whether an answer can cite the site; the training crawlers (GPTBot,
  * ClaudeBot, Google-Extended, CCBot, meta-externalagent) decide whether the
- * models know it at all. A portfolio wants both. Allowing training is a
+ * models know it at all. The list is checked against Vercel's verified bot
+ * directory (bots.fyi), which is also what lets them past Bot Protection. A portfolio wants both. Allowing training is a
  * business choice: to withdraw it, move a crawler to TRAINING_DENIED.
  */
 const AI_CRAWLERS = [
@@ -30,6 +31,9 @@ const AI_CRAWLERS = [
   'Applebot-Extended',
   'Amazonbot',
   'meta-externalagent',
+  'Meta-ExternalFetcher',
+  'DuckAssistBot',
+  'MistralAI-User',
   'CCBot',
 ]
 

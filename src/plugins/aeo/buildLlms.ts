@@ -22,18 +22,39 @@ const DEFAULT_NAME = 'Miles Roxas'
 
 const trimmed = (value: string | null | undefined): string => value?.trim() ?? ''
 
-/** H1, blockquote summary, then the detail paragraphs, as the spec orders them. */
+/** City, region and country, the only parts of the address that are published. */
+const place = (address: SiteInfo['address']): string =>
+  [address?.city, address?.state, address?.country].map(trimmed).filter(Boolean).join(', ')
+
+/** "Co-founder, Suits & Sandals (https://…)" for each affiliation, joined with semicolons. */
+const affiliationLine = (siteInfo: Partial<SiteInfo>): string =>
+  (siteInfo.affiliations ?? [])
+    .flatMap(({ name, role, url }) => {
+      if (!trimmed(name)) return []
+      const who = trimmed(role) ? `${trimmed(role)}, ${trimmed(name)}` : trimmed(name)
+      return [trimmed(url) ? `${who} (${trimmed(url)})` : who]
+    })
+    .join('; ')
+
+/**
+ * H1, blockquote summary, then the detail paragraphs, as the spec orders them,
+ * and the facts that identify the person: site, role, place, affiliations.
+ */
 export function llmsHeader(siteInfo: Partial<SiteInfo>, siteUrl: string): string {
   const name = trimmed(siteInfo.name) || DEFAULT_NAME
   const tagline = trimmed(siteInfo.tagline)
   const description = trimmed(siteInfo.description)
   const role = trimmed(siteInfo.jobTitle)
+  const based = place(siteInfo.address)
+  const affiliations = affiliationLine(siteInfo)
 
   const lines = [`# ${name}`]
   if (tagline || description) lines.push('', `> ${tagline || description}`)
   if (tagline && description) lines.push('', description)
   lines.push('', `Website: ${siteUrl}`)
   if (role) lines.push(`Role: ${role}`)
+  if (based) lines.push(`Based in: ${based}`)
+  if (affiliations) lines.push(`Affiliations: ${affiliations}`)
   return lines.join('\n')
 }
 

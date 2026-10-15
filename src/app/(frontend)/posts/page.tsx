@@ -9,9 +9,41 @@ import { breadcrumbSchema, collectionPageSchema } from '@/utilities/schema'
 
 import PostsClient from './page.client'
 
-const POSTS_INDEX = { path: '/posts', title: 'Posts', description: 'Writing by Miles Roxas.' }
+/**
+ * The index's own words when the Pages document with the `posts` slug has
+ * none in its SEO tab. That document never renders (the route owns the path);
+ * its SEO title and description are the editor's handle on this page.
+ */
+const POSTS_INDEX = {
+  path: '/posts',
+  title: 'Posts',
+  description:
+    'Articles by Miles Roxas on design systems, brand strategy, Payload CMS, Webflow tooling and running a small design studio.',
+}
 
 export const revalidate = 600 // Revalidate every 10 minutes
+
+const getPostsIndexMeta = unstable_cache(
+  async () => {
+    const payload = await getPayload({ config: configPromise })
+    const { docs } = await payload.find({
+      collection: 'pages',
+      draft: false,
+      limit: 1,
+      overrideAccess: false,
+      pagination: false,
+      where: { slug: { equals: 'posts' } },
+      select: { meta: true },
+    })
+    const meta = docs[0]?.meta
+    return {
+      title: meta?.title?.trim() || POSTS_INDEX.title,
+      description: meta?.description?.trim() || POSTS_INDEX.description,
+    }
+  },
+  ['posts-index-meta'],
+  { revalidate: 600, tags: ['pages'] },
+)
 
 const getPosts = unstable_cache(
   async () => {
@@ -32,13 +64,21 @@ const getPosts = unstable_cache(
 )
 
 export default async function Page() {
-  const posts = await getPosts()
+  const [posts, meta] = await Promise.all([getPosts(), getPostsIndexMeta()])
+  const items = posts.docs.flatMap((post) =>
+    post.slug && post.title ? [{ name: post.title, path: `/posts/${post.slug}` }] : [],
+  )
 
   return (
     <div className="pt-24 pb-24">
       <JsonLd
         data={[
-          collectionPageSchema({ ...POSTS_INDEX, name: POSTS_INDEX.title }),
+          collectionPageSchema({
+            path: POSTS_INDEX.path,
+            name: POSTS_INDEX.title,
+            description: meta.description,
+            items,
+          }),
           breadcrumbSchema([{ name: POSTS_INDEX.title, path: POSTS_INDEX.path }]),
         ]}
       />
@@ -53,9 +93,10 @@ export default async function Page() {
   )
 }
 
-export function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
+  const meta = await getPostsIndexMeta()
   return generateMeta({
-    doc: { title: POSTS_INDEX.title, meta: { description: POSTS_INDEX.description } },
+    doc: { title: POSTS_INDEX.title, meta: { title: meta.title, description: meta.description } },
     pathname: POSTS_INDEX.path,
   })
 }

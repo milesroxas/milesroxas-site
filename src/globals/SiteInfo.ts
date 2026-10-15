@@ -193,6 +193,24 @@ export const SiteInfo: GlobalConfig = {
       ],
     },
     {
+      name: 'affiliations',
+      type: 'array',
+      labels: { singular: 'Affiliation', plural: 'Affiliations' },
+      admin: {
+        description:
+          'Organizations you belong to or founded (the agency, a studio). Structured data lists them as affiliation and worksFor, so an assistant can tie this site to the organization and its site.',
+      },
+      fields: [
+        { name: 'name', type: 'text', required: true },
+        { name: 'url', type: 'text', admin: { description: "The organization's website." } },
+        {
+          name: 'role',
+          type: 'text',
+          admin: { description: 'Your role there ("Co-founder", "Creative director").' },
+        },
+      ],
+    },
+    {
       name: 'llmsNotes',
       type: 'textarea',
       label: 'Notes for Ask and AI assistants',

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import type { SiteInfo } from '@/payload-types'
 import { getCachedGlobal } from './getGlobals'
 import { getServerSideURL } from './getURL'
+import { articleAuthors, resolveTitle } from './pageTitle'
 import { type ShareImage, shareImage } from './shareImage'
 
 /**
@@ -40,14 +41,6 @@ const siteName = (siteInfo: SiteInfo | null) => siteInfo?.name || DEFAULT_NAME
 
 const siteDescription = (siteInfo: SiteInfo | null) =>
   siteInfo?.description || siteInfo?.tagline || DEFAULT_DESCRIPTION
-
-/**
- * plugin-seo filled `meta.title` with the suffix already on it before the
- * title template took that job (`generateTitle` in plugins/index.ts); a stored
- * title keeps working either way.
- */
-const stripSiteSuffix = (title: string, name: string) =>
-  title.replace(new RegExp(`\\s*\\|\\s*${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`), '')
 
 /** A Twitter / X profile among the social profiles, as the `@handle` the card credits. */
 const twitterHandle = (siteInfo: SiteInfo | null): string | undefined => {
@@ -108,18 +101,6 @@ export type GenerateMetaArgs = {
   markdownPath?: string
 }
 
-/**
- * The document's own title, or the site name. The home page is the site, so it
- * carries the bare name unless its SEO title says otherwise.
- */
-const resolveTitle = (doc: MetaDoc | null, pathname: string, name: string) => {
-  const own = doc?.meta?.title ? stripSiteSuffix(doc.meta.title, name) : doc?.title
-  if (pathname === '/' && (!own || own === 'Home' || own === name)) {
-    return { title: { absolute: name } as const, text: name }
-  }
-  return { title: own || name, text: `${own || name} | ${name}` }
-}
-
 const articleFields = (doc: MetaDoc | null, authors: string[]) => ({
   type: 'article' as const,
   ...(doc?.publishedAt ? { publishedTime: doc.publishedAt } : {}),
@@ -150,7 +131,7 @@ export const generateMeta = async (args: GenerateMetaArgs): Promise<Metadata> =>
       description,
       images: ogImages(image),
       ...(article
-        ? articleFields(doc, article.authors?.length ? article.authors : [name])
+        ? articleFields(doc, articleAuthors(article.authors, name))
         : { type: 'website' }),
     },
     ...(doc?.meta?.noIndex ? { robots: { index: false, follow: false } } : {}),

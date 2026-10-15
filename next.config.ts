@@ -114,15 +114,20 @@ const nextConfig: NextConfig = {
   // Markdown alternates for agents (docs/aeo.md): /posts/foo.md and
   // /works/foo.md, and content negotiation (Accept: text/markdown) on the
   // page itself. All resolve to the handler at /md/[collection]/[slug].
+  // `beforeFiles`: the pages are prerendered, and an afterFiles rewrite runs
+  // only once no file answers the path, so on Vercel the cached HTML won the
+  // negotiation and the Accept header was never read.
   async rewrites() {
-    return [
-      { source: '/:collection(posts|works)/:slug.md', destination: '/md/:collection/:slug' },
-      {
-        source: '/:collection(posts|works)/:slug',
-        destination: '/md/:collection/:slug',
-        has: [{ type: 'header', key: 'accept', value: '.*text/markdown.*' }],
-      },
-    ]
+    return {
+      beforeFiles: [
+        { source: '/:collection(posts|works)/:slug.md', destination: '/md/:collection/:slug' },
+        {
+          source: '/:collection(posts|works)/:slug',
+          destination: '/md/:collection/:slug',
+          has: [{ type: 'header', key: 'accept', value: '.*text/markdown.*' }],
+        },
+      ],
+    }
   },
 
   async headers() {
