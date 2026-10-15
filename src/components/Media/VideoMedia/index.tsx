@@ -25,20 +25,47 @@ function readyStreamUrl(resource: MediaType): string | undefined {
   return hlsUrl && isReady ? hlsUrl : undefined
 }
 
-/**
- * Mbps for Safari's native player, which offers no rendition control: Stream's
- * `clientBandwidthHint` pins the manifest to the rendition nearest this value,
- * so pick it from the frame the video renders in.
- */
-export function bandwidthHintFor(video: HTMLVideoElement): number {
-  const width = (video.clientWidth || window.innerWidth) * (window.devicePixelRatio || 1)
-  if (width <= 800) return 1.5
-  if (width <= 1500) return 3
-  return 6
-}
-
 /** The most device pixels a rendition is chosen for: a muted loop reads fine at 1.5x. */
 const MAX_DEVICE_PIXEL_RATIO = 1.5
+
+/**
+ * The frame's size in device pixels, up to `MAX_DEVICE_PIXEL_RATIO`: the
+ * element's own box, or the frame around it while the element has none (the
+ * hero's video, early in its wipe). Zero when neither has a box yet.
+ */
+function frameDevicePixels(video: HTMLVideoElement): { width: number; height: number } {
+  const scale = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO)
+  const own = video.getBoundingClientRect()
+  const frame = video.parentElement?.getBoundingClientRect()
+  return {
+    width: (own.width || frame?.width || 0) * scale,
+    height: (own.height || frame?.height || 0) * scale,
+  }
+}
+
+/**
+ * Stream's ladder, Mbps by the rendition's long edge, from its own manifests
+ * (240p 0.27, 360p 0.40, 480p 0.60, 720p 1.2, 1080p 2.5; a landscape 1080p
+ * runs higher). `clientBandwidthHint` pins the native player (Safari, and
+ * Chrome, which answers `canPlayType` for HLS now) to the rendition nearest
+ * the value, the only control it offers, so the hint names the rendition the
+ * frame needs. A frame with no box yet gets the top of the ladder.
+ */
+const HINT_LADDER: ReadonlyArray<[longEdge: number, mbps: number]> = [
+  [426, 0.3],
+  [640, 0.45],
+  [852, 0.65],
+  [1280, 1.3],
+  [1920, 3],
+]
+const HINT_TOP_MBPS = 6
+
+export function bandwidthHintFor(video: HTMLVideoElement): number {
+  const { width, height } = frameDevicePixels(video)
+  const longEdge = Math.max(width, height)
+  if (!longEdge) return HINT_TOP_MBPS
+  return HINT_LADDER.find(([edge]) => longEdge <= edge)?.[1] ?? HINT_TOP_MBPS
+}
 
 /**
  * hls.js opens every video at 240p: its default bandwidth guess is 0.5 Mbps and
@@ -70,11 +97,7 @@ type HlsLevels = {
  * the box in device pixels.
  */
 export function capLevelToFrame(hls: HlsLevels, video: HTMLVideoElement): void {
-  const scale = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO)
-  const own = video.getBoundingClientRect()
-  const frame = video.parentElement?.getBoundingClientRect()
-  const width = (own.width || frame?.width || 0) * scale
-  const height = (own.height || frame?.height || 0) * scale
+  const { width, height } = frameDevicePixels(video)
   if (!width && !height) return
   const index = hls.levels.findIndex((level) => level.width >= width || level.height >= height)
   hls.autoLevelCapping = index === -1 ? hls.levels.length - 1 : index

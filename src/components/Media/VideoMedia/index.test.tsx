@@ -171,6 +171,12 @@ describe('rendition choice', () => {
     })
   })
 
+  const boxOf = (element: Element, width: number, height: number) =>
+    Object.defineProperty(element, 'getBoundingClientRect', {
+      configurable: true,
+      value: () => ({ width, height }),
+    })
+
   const STREAM_LEVELS = [
     { width: 240, height: 426 },
     { width: 360, height: 640 },
@@ -178,11 +184,6 @@ describe('rendition choice', () => {
     { width: 720, height: 1280 },
     { width: 1080, height: 1920 },
   ]
-  const boxOf = (element: Element, width: number, height: number) =>
-    Object.defineProperty(element, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => ({ width, height }),
-    })
 
   it('caps the level to the frame in device pixels, 1.5x at most', () => {
     const video = document.createElement('video')
@@ -210,16 +211,18 @@ describe('rendition choice', () => {
     expect(hls.autoLevelCapping).toBe(-1)
   })
 
-  it("Safari's hint follows the rendered width in device pixels", () => {
+  it('the native player hint names the rendition the frame needs, from its long edge', () => {
     const video = document.createElement('video')
-    const widthOf = (px: number) =>
-      Object.defineProperty(video, 'clientWidth', { configurable: true, value: px })
     window.devicePixelRatio = 2
-    widthOf(360)
-    expect(bandwidthHintFor(video)).toBe(1.5)
-    widthOf(640)
-    expect(bandwidthHintFor(video)).toBe(3)
-    widthOf(960)
+    // The home hero: 270 x 480 at 1.5x is 405 x 720, the 480 x 852 rendition.
+    boxOf(video, 270, 480)
+    expect(bandwidthHintFor(video)).toBe(0.65)
+    boxOf(video, 640, 360)
+    expect(bandwidthHintFor(video)).toBe(1.3)
+    boxOf(video, 1440, 810)
+    expect(bandwidthHintFor(video)).toBe(6)
+    // No box yet: the top of the ladder, never a guess from the viewport.
+    boxOf(video, 0, 0)
     expect(bandwidthHintFor(video)).toBe(6)
   })
 })
