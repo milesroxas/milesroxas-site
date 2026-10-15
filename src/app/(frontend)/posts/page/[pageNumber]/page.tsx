@@ -2,10 +2,15 @@ import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
-import { PageRange } from '@/components/PageRange'
 import { Pagination } from '@/components/Pagination'
+import {
+  type MorePostsDoc,
+  type MorePostsItem,
+  POST_ITEM_SELECT,
+  toPostItem,
+} from '@/sections/MorePosts/query'
+import { PostsIndex } from '@/sections/PostsIndex/PostsIndex.client'
 import { generateMeta } from '@/utilities/generateMeta'
-import PageNumberClient from './page.client'
 
 export const revalidate = 600
 
@@ -31,33 +36,19 @@ export default async function Page({ params: paramsPromise }: Args) {
     limit: POSTS_PER_PAGE,
     page: sanitizedPageNumber,
     overrideAccess: false,
+    select: POST_ITEM_SELECT,
   })
 
+  const items = (posts.docs as MorePostsDoc[])
+    .map(toPostItem)
+    .filter((item): item is MorePostsItem => item !== null)
+
   return (
-    <div className="pt-24 pb-24">
-      <div className="container mb-16">
-        <div className="max-w-none">
-          <h1>Posts</h1>
-        </div>
-      </div>
-
-      <div className="container mb-8">
-        <PageRange
-          collection="posts"
-          currentPage={posts.page}
-          limit={POSTS_PER_PAGE}
-          totalDocs={posts.totalDocs}
-        />
-      </div>
-
-      <PageNumberClient posts={posts.docs} />
-
-      <div className="container">
-        {posts?.page && posts?.totalPages > 1 && (
-          <Pagination page={posts.page} totalPages={posts.totalPages} />
-        )}
-      </div>
-    </div>
+    <PostsIndex items={items} title="Posts" total={posts.totalDocs}>
+      {posts.page && posts.totalPages > 1 && (
+        <Pagination className="pb-24" page={posts.page} totalPages={posts.totalPages} />
+      )}
+    </PostsIndex>
   )
 }
 

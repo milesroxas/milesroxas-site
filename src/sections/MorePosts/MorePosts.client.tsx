@@ -33,7 +33,7 @@ function Ink({ children }: { children: string }) {
   )
 }
 
-function Byline({ item }: { item: MorePostsItem }) {
+export function Byline({ item }: { item: MorePostsItem }) {
   const { publishedAt, source } = item
   if (!publishedAt && !source) return null
   return (

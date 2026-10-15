@@ -2,12 +2,17 @@ import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
-import { postCardSelect } from '@/collections/Posts/cardSelect'
 import { JsonLd } from '@/components/JsonLd'
+import { Pagination } from '@/components/Pagination'
+import {
+  type MorePostsDoc,
+  type MorePostsItem,
+  POST_ITEM_SELECT,
+  toPostItem,
+} from '@/sections/MorePosts/query'
+import { PostsIndex } from '@/sections/PostsIndex/PostsIndex.client'
 import { generateMeta } from '@/utilities/generateMeta'
 import { breadcrumbSchema, collectionPageSchema } from '@/utilities/schema'
-
-import PostsClient from './page.client'
 
 /**
  * The index's own words when the Pages document with the `posts` slug has
@@ -20,6 +25,8 @@ const POSTS_INDEX = {
   description:
     'Articles by Miles Roxas on design systems, brand strategy, Payload CMS, Webflow tooling and running a small design studio.',
 }
+
+const POSTS_PER_PAGE = 12
 
 export const revalidate = 600 // Revalidate every 10 minutes
 
@@ -52,44 +59,46 @@ const getPosts = unstable_cache(
     const posts = await payload.find({
       collection: 'posts',
       depth: 1,
-      limit: 12,
+      limit: POSTS_PER_PAGE,
       overrideAccess: false,
-      select: postCardSelect,
+      select: POST_ITEM_SELECT,
     })
 
-    return posts
+    return {
+      items: (posts.docs as MorePostsDoc[])
+        .map(toPostItem)
+        .filter((item): item is MorePostsItem => item !== null),
+      totalDocs: posts.totalDocs,
+      totalPages: posts.totalPages,
+    }
   },
   ['posts-archive'],
   { revalidate: 600, tags: ['posts'] },
 )
 
 export default async function Page() {
-  const [posts, meta] = await Promise.all([getPosts(), getPostsIndexMeta()])
-  const items = posts.docs.flatMap((post) =>
-    post.slug && post.title ? [{ name: post.title, path: `/posts/${post.slug}` }] : [],
-  )
+  const [{ items, totalDocs, totalPages }, meta] = await Promise.all([
+    getPosts(),
+    getPostsIndexMeta(),
+  ])
 
   return (
-    <div className="pt-24 pb-24">
+    <>
       <JsonLd
         data={[
           collectionPageSchema({
             path: POSTS_INDEX.path,
             name: POSTS_INDEX.title,
             description: meta.description,
-            items,
+            items: items.map((item) => ({ name: item.title, path: `/posts/${item.slug}` })),
           }),
           breadcrumbSchema([{ name: POSTS_INDEX.title, path: POSTS_INDEX.path }]),
         ]}
       />
-      <div className="container mb-16">
-        <div className="max-w-none">
-          <h1 className="text-center font-light text-7xl">Posts</h1>
-        </div>
-      </div>
-
-      <PostsClient posts={posts.docs} />
-    </div>
+      <PostsIndex items={items} title={POSTS_INDEX.title} total={totalDocs}>
+        {totalPages > 1 && <Pagination className="pb-24" page={1} totalPages={totalPages} />}
+      </PostsIndex>
+    </>
   )
 }
 

@@ -3431,3 +3431,304 @@ html:active-view-transition-type(work-open) .dock {
     transform: none;
   }
 }
+
+/* Posts index (src/sections/PostsIndex): a projection room. One ground holds
+   the viewport under the list and carries the shown post's texture as the
+   room's light, graded by a scrim of the page's own background: dense under
+   the type, open toward the right edge on desktop, a faint wash on phones.
+   The stage is sticky inside the index, so the light leaves with the list.
+   A change dissolves over `--posts-dissolve` while the arriving texture
+   settles from a slight push; a layer that has faded out is hidden, so only
+   the shown layer and the one leaving are ever painted. Rows come to full
+   ink at the reading line and dim away from it. */
+.posts-index {
+  --posts-column: min(66rem, 100vw - 2 * var(--spacing-gutter));
+  --posts-dissolve: 1600ms;
+  --posts-push: 2800ms;
+  --posts-ink: 700ms;
+  --posts-ease-dissolve: cubic-bezier(0.45, 0, 0.2, 1);
+  position: relative;
+}
+
+.posts-index-stage {
+  position: sticky;
+  top: 0;
+  /* The large viewport, so the light still reaches the foot once a phone's
+     browser bars collapse. */
+  height: 100lvh;
+  margin-bottom: -100lvh;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.posts-index-light {
+  position: absolute;
+  inset: 0;
+  animation: posts-lights-up 2000ms var(--ease-out-quint) 120ms both;
+}
+
+@keyframes posts-lights-up {
+  from {
+    opacity: 0;
+    scale: 1.04;
+  }
+}
+
+@keyframes posts-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.posts-index-ground {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  opacity: 0;
+  scale: 1.06;
+  transition:
+    opacity var(--posts-dissolve) var(--posts-ease-dissolve),
+    scale 0s linear var(--posts-dissolve),
+    visibility 0s linear var(--posts-dissolve);
+}
+
+.posts-index-ground[data-shown] {
+  visibility: visible;
+  opacity: 1;
+  scale: 1;
+  transition:
+    opacity var(--posts-dissolve) var(--posts-ease-dissolve),
+    scale var(--posts-push) var(--ease-out-quint),
+    visibility 0s;
+
+  /* A layer mounted already shown (a jump past the loaded rows) dissolves in too. */
+  @starting-style {
+    opacity: 0;
+    scale: 1.06;
+  }
+}
+
+/* Phones: an upload fades out top and foot, so a hard edge in the picture
+   never reads as the end of the room. */
+@media (width < 64rem) {
+  .posts-index-ground[data-kind="media"] > * {
+    mask-image: linear-gradient(to bottom, transparent 6%, #000 26%, #000 58%, transparent 84%);
+  }
+}
+
+/* An upload whose value fights the theme prints as a grey negative: a dark
+   texture on paper reads as ink, a light one in the dark as light. */
+.posts-index-ground[data-tone="dark"] > * {
+  @variant not-dark {
+    filter: invert(1) grayscale(1);
+  }
+}
+
+.posts-index-ground[data-tone="light"] > * {
+  @variant dark {
+    filter: invert(1) grayscale(1);
+  }
+}
+
+.posts-index-scrim {
+  position: absolute;
+  inset: 0;
+  /* Phones: text runs the full width, so the wash holds body text at 4.5:1
+     everywhere and the light reads through it, open only under the bar. */
+  background: linear-gradient(
+    to bottom,
+    var(--background) 3%,
+    color-mix(in oklab, var(--background) 40%, transparent) 9%,
+    color-mix(in oklab, var(--background) 80%, transparent) 22%,
+    color-mix(in oklab, var(--background) 80%, transparent) 86%,
+    var(--background)
+  );
+}
+
+@media (min-width: 64rem) {
+  .posts-index-scrim {
+    background:
+      linear-gradient(
+        to bottom,
+        var(--background),
+        transparent 24%,
+        transparent 78%,
+        var(--background) 98%
+      ),
+      /* Dense under the column, open toward both edges: the room is lit
+         from its sides. */
+      linear-gradient(
+        to right,
+        transparent,
+        color-mix(in oklab, var(--background) 84%, transparent)
+          calc(50% - var(--posts-column) / 2 + 2rem),
+        color-mix(in oklab, var(--background) 84%, transparent)
+          calc(50% + var(--posts-column) / 2 - 2rem),
+        transparent
+      );
+  }
+
+  /* An upload fades out top and foot, clear of the top bar and the dock. */
+  .posts-index-ground[data-kind="media"] > * {
+    mask-image: linear-gradient(to bottom, transparent 8%, #000 30%, #000 58%, transparent 82%);
+  }
+}
+
+.posts-index-body {
+  position: relative;
+  padding: calc(var(--chrome-top) + 4rem) var(--spacing-gutter) 0;
+}
+
+/* The list holds the middle of the room. */
+.posts-index-column {
+  width: var(--posts-column);
+  margin-inline: auto;
+}
+
+/* The top bar is words over the page; here the titles fade out under it. */
+.posts-index-veil {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  height: calc(var(--chrome-top) + 1.5rem);
+  margin: calc(-1 * (var(--chrome-top) + 4rem)) calc(-1 * var(--spacing-gutter))
+    calc(var(--chrome-top) + 4rem - (var(--chrome-top) + 1.5rem));
+  background: linear-gradient(var(--background) 55%, transparent);
+  pointer-events: none;
+}
+
+.posts-index-list {
+  /* The last rows can still reach the reading line. */
+  padding-block: 1.5rem 45svh;
+}
+
+.posts-index-link {
+  display: block;
+  padding-block: 1.75rem;
+  border-radius: 2px;
+  outline-offset: 0.5rem;
+}
+
+.posts-index-link:focus-visible {
+  outline: 2px solid var(--foreground);
+}
+
+.posts-index-enter {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.posts-index-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* The reading line's mark: a short rule that draws out on the shown row. */
+.posts-index-mark {
+  flex: none;
+  width: 2.5rem;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left center;
+  scale: 0.3 1;
+  transition: scale var(--posts-ink) var(--ease-out-quint);
+}
+
+.posts-index-row[data-shown] .posts-index-mark {
+  scale: 1 1;
+}
+
+/* Light, as /works and the homepage set their titles, at display size.
+   Away from the reading line only the title dims, and only as far as large
+   type still reads (3:1); the byline and summary keep their muted ink. */
+.posts-index-title {
+  max-width: 30ch;
+  font-size: clamp(1.75rem, 1.25rem + 1.6vw, 3rem);
+  font-weight: var(--font-weight-light);
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  opacity: 0.48;
+  transition: opacity var(--posts-ink) ease;
+}
+
+.posts-index-row[data-shown] .posts-index-title,
+.posts-index-link:focus-visible .posts-index-title {
+  opacity: 1;
+}
+
+.posts-index-summary {
+  max-width: 52ch;
+  margin-top: 1rem;
+  color: var(--muted-foreground);
+  transition: color var(--posts-ink) ease;
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+  text-wrap: pretty;
+}
+
+.posts-index-row[data-shown] .posts-index-summary {
+  color: color-mix(in oklab, var(--foreground) 78%, var(--background));
+}
+
+/* Phones: the byline follows the summary, so nothing sits above a title. */
+@media (width < 64rem) {
+  .posts-index-meta {
+    order: 1;
+  }
+}
+
+@media (min-width: 64rem) {
+  .posts-index-link {
+    padding-block: 2.5rem;
+  }
+
+  /* Meta in a column of its own, on the title's first line. */
+  .posts-index-enter {
+    grid-template-columns: 13rem minmax(0, 1fr);
+    gap: 0 2.5rem;
+  }
+
+  .posts-index-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding-top: 1rem;
+  }
+
+  .posts-index-summary {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .posts-index {
+    --posts-dissolve: 400ms;
+  }
+
+  .posts-index-light {
+    animation: posts-fade 400ms ease both;
+  }
+
+  .posts-index-ground {
+    scale: 1;
+    transition:
+      opacity var(--posts-dissolve) ease,
+      visibility 0s linear var(--posts-dissolve);
+  }
+
+  .posts-index-ground[data-shown] {
+    scale: 1;
+    transition: opacity var(--posts-dissolve) ease;
+
+    @starting-style {
+      scale: 1;
+    }
+  }
+
+  .posts-index-mark {
+    transition: none;
+  }
+}

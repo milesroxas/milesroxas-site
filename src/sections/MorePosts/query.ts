@@ -23,7 +23,8 @@ export type MorePostsItem = {
   metaImage: Media | null
 }
 
-const SELECT = {
+/** What a post row reads: the close under a post and the posts index. */
+export const POST_ITEM_SELECT = {
   title: true,
   slug: true,
   publishedAt: true,
@@ -34,12 +35,12 @@ const SELECT = {
   external: { publisher: true },
 } as const
 
-type MorePostsDoc = Pick<
+export type MorePostsDoc = Pick<
   Post,
   'id' | 'title' | 'slug' | 'publishedAt' | 'categories' | 'hero' | 'meta' | 'source' | 'external'
 >
 
-const toItem = (doc: MorePostsDoc): MorePostsItem | null =>
+export const toPostItem = (doc: MorePostsDoc): MorePostsItem | null =>
   doc.slug
     ? {
         id: doc.id,
@@ -82,7 +83,7 @@ export async function getMorePosts(
       limit,
       overrideAccess: false,
       pagination: false,
-      select: SELECT,
+      select: POST_ITEM_SELECT,
       sort: '-publishedAt',
       where: { and: [...(where ? [where] : []), { id: { not_in: taken() } }] },
     })
@@ -100,5 +101,5 @@ export async function getMorePosts(
 
   picked.push(...(await find()))
 
-  return picked.map(toItem).filter((item): item is MorePostsItem => item !== null)
+  return picked.map(toPostItem).filter((item): item is MorePostsItem => item !== null)
 }
