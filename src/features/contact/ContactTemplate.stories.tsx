@@ -4,9 +4,37 @@ import { expect, waitFor } from 'storybook/test'
 import { clearAskHandoff, saveAskHandoff } from '@/features/ask/handoff'
 import { stubInquiryIntake } from '@/features/ask/storyPlays'
 import { CONTACT_PAGE_DEFAULTS } from '@/shared/content/contact'
+import { imageMedia, workIndexItems } from '@/stories/fixtures'
 import { ContactTemplate } from './ContactTemplate'
+import type { ContactRecommendation } from './recommendations'
 
 type PlayContext = Parameters<NonNullable<StoryObj['play']>>[0]
+
+/** Two works in the Works order and the newest post, as the route fills an unpicked list. */
+const recommendations: ContactRecommendation[] = [
+  ...workIndexItems.slice(0, 2).map(
+    (work): ContactRecommendation => ({
+      key: `work-${work.id}`,
+      kind: 'work',
+      href: `/works/${work.slug}`,
+      title: work.title,
+      context: work.client,
+      publishedAt: null,
+      media: work.media,
+      hero: null,
+    }),
+  ),
+  {
+    key: 'post-1',
+    kind: 'post',
+    href: '/posts/designing-with-motion',
+    title: 'Designing with Motion',
+    context: 'Design',
+    publishedAt: '2026-08-12T00:00:00.000Z',
+    media: imageMedia,
+    hero: null,
+  },
+]
 
 /**
  * The /contact page: a three-field note to Miles that becomes its own receipt.
@@ -20,7 +48,14 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   args: {
     copy: { ...CONTACT_PAGE_DEFAULTS },
+    cv: { url: '/cv.pdf', filesize: 186_000 },
     email: 'hello@example.com',
+    profiles: [
+      { label: 'GitHub', url: 'https://github.com/example' },
+      { label: 'LinkedIn', url: 'https://www.linkedin.com/in/example' },
+      { label: 'YouTube', url: 'https://www.youtube.com/example' },
+    ],
+    recommendations,
     responseTime: 'within 3 business days',
   },
 } satisfies Meta<typeof ContactTemplate>
@@ -46,6 +81,11 @@ export const WithoutEmail: Story = {
   args: { email: null },
 }
 
+/** No CV chosen in the Contact page global and no profiles in Site Info: the sidebar is the intro alone. */
+export const WithoutSidebar: Story = {
+  args: { cv: null, profiles: [] },
+}
+
 /** Sent empty: every problem is named under its field, and focus goes to the first. */
 export const MissingFields: Story = {
   play: async ({ canvas, userEvent }) => {
@@ -56,9 +96,15 @@ export const MissingFields: Story = {
   },
 }
 
-/** Sent: both columns swap in place, the heading thanking the sender and the message read back. */
+/**
+ * Sent: the note seals (rules ink in, the button's spinner becomes a mark),
+ * the mark flies to the receipt's heading, the message is read back, and
+ * three things to open while the reply is on its way come in last.
+ * Study it with the toolbar's Speed control and the Interactions panel's rerun.
+ */
 export const Sent: Story = {
-  beforeEach: () => stubInquiryIntake(),
+  // A real round trip's wait, so the sending state shows before the seal.
+  beforeEach: () => stubInquiryIntake('MR-7K2Q', { delay: 900 }),
   play: async (context) => {
     await fillAndSend(context)
     await waitFor(
@@ -71,6 +117,22 @@ export const Sent: Story = {
       { timeout: 5000 },
     )
     await expect(context.canvas.getByText('MR-7K2Q')).toBeInTheDocument()
+    await expect(
+      context.canvas.getByRole('heading', { name: 'While you wait' }),
+    ).toBeInTheDocument()
+  },
+}
+
+/** Sent with nothing published to suggest: the receipt stands alone. */
+export const SentWithoutRecommendations: Story = {
+  args: { recommendations: [] },
+  beforeEach: () => stubInquiryIntake(),
+  play: async (context) => {
+    await fillAndSend(context)
+    await waitFor(() => expect(context.canvas.getByText('MR-7K2Q')).toBeInTheDocument(), {
+      timeout: 5000,
+    })
+    await expect(context.canvas.queryByRole('heading', { name: 'While you wait' })).toBeNull()
   },
 }
 

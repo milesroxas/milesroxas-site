@@ -24,7 +24,8 @@ export const ContactPage: GlobalConfig = {
   slug: 'contact-page',
   label: 'Contact page',
   admin: {
-    description: 'The copy on /contact. Reply time and email address live in Site Info.',
+    description:
+      'The copy and CV on /contact. Reply time, email address and profile links live in Site Info.',
   },
   access: {
     read: () => true,
@@ -90,6 +91,51 @@ export const ContactPage: GlobalConfig = {
               type: 'textarea',
               defaultValue: CONTACT_PAGE_DEFAULTS.sentBody,
               admin: { description: TOKENS },
+            },
+            {
+              name: 'recommendedHeading',
+              type: 'text',
+              defaultValue: CONTACT_PAGE_DEFAULTS.recommendedHeading,
+              admin: { description: 'Over the work and posts suggested under the receipt.' },
+            },
+            {
+              name: 'recommended',
+              type: 'relationship',
+              relationTo: ['works', 'posts'],
+              hasMany: true,
+              maxRows: 3,
+              // Protected client work never sits in a public list.
+              filterOptions: ({ relationTo }) =>
+                relationTo === 'works' ? { isProtected: { not_equals: true } } : true,
+              admin: {
+                description:
+                  'Up to three works or posts, in this order. Empty places fill with the first works in the Works order, then the newest post.',
+              },
+            },
+          ],
+        },
+        {
+          label: 'CV',
+          description: 'The download card beside the form. Hidden until a PDF is chosen.',
+          fields: [
+            {
+              name: 'cv',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'CV file',
+              filterOptions: { mimeType: { equals: 'application/pdf' } },
+              admin: { description: 'A PDF from Media. Clear it to take the card down.' },
+            },
+            {
+              name: 'cvHeading',
+              type: 'text',
+              defaultValue: CONTACT_PAGE_DEFAULTS.cvHeading,
+            },
+            {
+              name: 'cvNote',
+              type: 'text',
+              defaultValue: CONTACT_PAGE_DEFAULTS.cvNote,
+              admin: { description: 'One line under the heading. File type and size follow it.' },
             },
           ],
         },

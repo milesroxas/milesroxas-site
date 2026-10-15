@@ -1,16 +1,19 @@
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/JsonLd'
 import { ContactTemplate } from '@/features/contact/ContactTemplate'
+import { getContactRecommendations } from '@/features/contact/recommendations'
 import type { ContactPage, SiteInfo } from '@/payload-types'
 import { CONTACT_PAGE_DEFAULTS, type ContactPageCopy } from '@/shared/content/contact'
 import { inquiryResponseTime } from '@/shared/content/inquiry'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getCachedGlobal } from '@/utilities/getGlobals'
+import { getMediaUrl } from '@/utilities/getMediaURL'
 import { breadcrumbSchema, contactPageSchema } from '@/utilities/schema'
 
 const loadContactPage = () =>
   Promise.all([
-    getCachedGlobal('contact-page', 0)() as Promise<ContactPage>,
+    // Depth 1 for the CV's file. This route is the global's only reader.
+    getCachedGlobal('contact-page', 1)() as Promise<ContactPage>,
     // Depth 1 like the site chrome: the cache is keyed by slug alone, so both share one entry.
     getCachedGlobal('site-info', 1)() as Promise<SiteInfo>,
   ])
@@ -25,6 +28,13 @@ const resolveCopy = (page: ContactPage | null): ContactPageCopy => {
   return copy
 }
 
+/** The CV card's file, once one is chosen. */
+const resolveCv = (page: ContactPage | null) => {
+  const file = page?.cv
+  if (!file || typeof file !== 'object' || !file.url) return null
+  return { url: getMediaUrl(file.url), filesize: file.filesize ?? null }
+}
+
 /**
  * The contact page: a route rather than a Pages document, because the form
  * is fixed (name, email, message into Inquiries) and only its words are
@@ -34,6 +44,7 @@ const resolveCopy = (page: ContactPage | null): ContactPageCopy => {
 export default async function ContactRoute() {
   const [page, siteInfo] = await loadContactPage()
   const copy = resolveCopy(page)
+  const recommendations = await getContactRecommendations(page)
 
   return (
     <>
@@ -48,7 +59,10 @@ export default async function ContactRoute() {
       />
       <ContactTemplate
         copy={copy}
+        cv={resolveCv(page)}
         email={siteInfo?.contactEmail ?? null}
+        profiles={siteInfo?.socialProfiles ?? []}
+        recommendations={recommendations}
         responseTime={inquiryResponseTime(siteInfo)}
       />
     </>

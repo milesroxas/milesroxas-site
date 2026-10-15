@@ -7764,7 +7764,7 @@ export interface SiteInfo {
   createdAt?: string | null;
 }
 /**
- * The copy on /contact. Reply time and email address live in Site Info.
+ * The copy and CV on /contact. Reply time, email address and profile links live in Site Info.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact-page".
@@ -7793,6 +7793,34 @@ export interface ContactPage {
    * Use {name}, {email} and {responseTime} to fill in the sender and Site Info’s reply time.
    */
   sentBody?: string | null;
+  /**
+   * Over the work and posts suggested under the receipt.
+   */
+  recommendedHeading?: string | null;
+  /**
+   * Up to three works or posts, in this order. Empty places fill with the first works in the Works order, then the newest post.
+   */
+  recommended?:
+    | (
+        | {
+            relationTo: 'works';
+            value: number | Work;
+          }
+        | {
+            relationTo: 'posts';
+            value: number | Post;
+          }
+      )[]
+    | null;
+  /**
+   * A PDF from Media. Clear it to take the card down.
+   */
+  cv?: (number | null) | Media;
+  cvHeading?: string | null;
+  /**
+   * One line under the heading. File type and size follow it.
+   */
+  cvNote?: string | null;
   meta?: {
     /**
      * Browser tab and search title. Defaults to "Contact".
@@ -7952,6 +7980,11 @@ export interface ContactPageSelect<T extends boolean = true> {
   submitNote?: T;
   sentHeading?: T;
   sentBody?: T;
+  recommendedHeading?: T;
+  recommended?: T;
+  cv?: T;
+  cvHeading?: T;
+  cvNote?: T;
   meta?:
     | T
     | {

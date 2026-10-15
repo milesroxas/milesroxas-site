@@ -51,15 +51,16 @@ export async function sendAskHandoff(
 
 /**
  * Answers the inquiries intake the way /api/inquiries/submit does, with no
- * network. Returns the restore function, so a story's `beforeEach` can return
- * it as its cleanup.
+ * network, answering after `delay` ms as a real round trip would. Returns
+ * the restore function, so a story's `beforeEach` can return it as its cleanup.
  */
-export function stubInquiryIntake(reference = 'MR-7K2Q') {
+export function stubInquiryIntake(reference = 'MR-7K2Q', { delay = 0 } = {}) {
   const fetch = window.fetch
-  window.fetch = async (input, init) =>
-    String(input).endsWith('/api/inquiries/submit')
-      ? Response.json({ reference, submittedAt: new Date().toISOString() })
-      : fetch(input, init)
+  window.fetch = async (input, init) => {
+    if (!String(input).endsWith('/api/inquiries/submit')) return fetch(input, init)
+    if (delay) await new Promise((resolve) => setTimeout(resolve, delay))
+    return Response.json({ reference, submittedAt: new Date().toISOString() })
+  }
   return () => {
     window.fetch = fetch
   }

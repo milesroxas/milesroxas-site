@@ -1,13 +1,24 @@
 'use client'
 
-import { IconAlertCircle } from '@tabler/icons-react'
+import {
+  IconAlertCircle,
+  IconArrowUpRight,
+  IconBrandGithub,
+  IconBrandLinkedin,
+  IconBrandYoutube,
+  IconDownload,
+  IconFileCv,
+} from '@tabler/icons-react'
 import type React from 'react'
 import {
+  type CSSProperties,
   type Dispatch,
+  type Ref,
   type RefObject,
   type SetStateAction,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
@@ -31,17 +42,30 @@ import {
   clearAskHandoff,
   readAskHandoff,
 } from '@/features/ask/handoff'
+import { shake } from '@/features/contact/shake'
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import { useLenis } from '@/hooks/useLenis'
 import { type ContactPageCopy, fillContactTokens } from '@/shared/content/contact'
 import { INQUIRY_EMAIL_INVALID, INQUIRY_MESSAGE_MAX_LENGTH } from '@/shared/content/inquiry'
 import { useRevealSwap } from '@/shared/ui/scroll-reveal'
 import { isValidEmailAddress, normalizeEmailAddress } from '@/utilities/emailAddress'
+import { Recommended } from './Recommended'
+import type { ContactRecommendation } from './recommendations'
+
+/** Site Info's profile links, listed under the intro. */
+export type ContactProfile = { label: string; url: string }
+
+/** The Contact page global's CV file: the card shows only when there is one. */
+export type ContactCv = { url: string; filesize: number | null }
 
 export type ContactTemplateProps = {
   copy: ContactPageCopy
+  cv: ContactCv | null
   /** Site Info's contact address, offered beside the form for anyone who would rather write directly. */
   email: string | null
+  profiles: ContactProfile[]
+  /** Works and posts to open while the reply is on its way, shown under the receipt. */
+  recommendations: ContactRecommendation[]
   /** Site Info's reply promise, completing "Miles replies ___". */
   responseTime: string
 }
@@ -73,6 +97,57 @@ const validate = (values: Values): Errors => {
   return errors
 }
 
+/**
+ * The page's load-in, in ms after it mounts (held while the curtain covers it):
+ * the heading rises word by word, the copy and the form's fields fade up in
+ * reading order, and the links and CV follow once the form has landed.
+ */
+const BEAT = {
+  title: 80,
+  word: 40,
+  lead: 360,
+  email: 440,
+  field: 300,
+  fieldStep: 90,
+  elsewhere: 680,
+  elsewhereStep: 70,
+} as const
+
+/**
+ * The send, sealed, in ms after the intake answers: the button's spinner
+ * becomes a ring and check drawn in place, and the field rules ink in top to
+ * bottom (`lineStep` apart) as if the note were signed. At `pulse`, once the
+ * check is drawn, the button's plate and label dissolve and the mark swells,
+ * then shrinks away (CSS, `.contact-send`); the compose page fades out from
+ * `exit`, so the mark and the page leave on the same breath.
+ */
+const SEAL = { lineStep: 90, pulse: 600, exit: 900 } as const
+
+/** The seal's stroke in the mark's 40-unit box: 1.5px at the button's 16px, the receipt mark's weight. */
+const SEAL_STROKE = 3.75
+
+/**
+ * The receipt's arrival, in ms after it mounts. The mark fades up over the
+ * heading and draws itself again (CSS, `.contact-sent-mark`, from 120ms), the
+ * heading rising under it; the message is read back behind a top-down mask
+ * while its rule draws; the suggestions open last. A receipt that mounts
+ * above the fold (a phone) waits `offscreenHold` while the page scrolls up to it.
+ */
+const SENT_BEAT = {
+  title: 380,
+  body: 760,
+  rule: 200,
+  label: 320,
+  message: 440,
+  recommended: 1100,
+  offscreenHold: 450,
+} as const
+
+const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as CSSProperties
+
+/** Small copy and controls: fade up out of a light blur. */
+const enterIn = 'motion-safe:animate-hero-in motion-reduce:animate-hero-fade'
+
 const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name
 
 /** Lenis's `scrollTo` shape, for when smooth scrolling is off (touch, or not mounted yet). */
@@ -88,37 +163,42 @@ const scrollIntoViewNatively = (element: HTMLElement, { immediate }: { immediate
  * decision is made, and the direct address sits under the lead for anyone
  * who would rather not use a form.
  *
- * Sent, both columns swap in place on the shared panel choreography
- * (`useRevealSwap`, height morphing so the footer glides rather than jumps):
- * the heading thanks the sender by name and says where the reply goes, and
- * the message is read back in their own words. Reduced motion swaps directly.
+ * Sent, the note is sealed where it was written (`SEAL`), then the page
+ * swaps on the shared panel choreography (`useRevealSwap`, height morphing
+ * so the footer glides rather than jumps) and the receipt arrives
+ * (`SENT_BEAT`): the mark the button let go draws again over the heading, which thanks the
+ * sender by name and says where the reply goes, the message is read back in
+ * their own words, and a few works and posts are offered for the wait.
+ * Reduced motion skips the seal and fades everything in place.
  *
  * Arriving from Ask's "Contact page" link, the visitor's questions open the
  * message (theirs to edit) and the inquiry carries the chat, as on sas-site.
  */
-export function ContactTemplate({ copy, email, responseTime }: ContactTemplateProps) {
+export function ContactTemplate({
+  copy,
+  cv,
+  email,
+  profiles,
+  recommendations,
+  responseTime,
+}: ContactTemplateProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const sentHeadingRef = useRef<HTMLHeadingElement>(null)
+  const sealTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const [panel, setPanel] = useState(FORM)
   const [receipt, setReceipt] = useState<Receipt | null>(null)
+  const [sealed, setSealed] = useState(false)
   const reducedMotion = usePrefersReducedMotion()
-  const lenis = useLenis()
+
+  useEffect(() => () => clearTimeout(sealTimer.current), [])
 
   const swapTo = useRevealSwap({
     rootRef,
     active: panel,
     onSwap: setPanel,
-    // The receipt's heading takes focus so a screen reader starts there, and
-    // comes into view when the send button left it above the fold (a phone).
+    // The receipt's heading takes focus so a screen reader starts there.
     onSettled: () =>
-      requestAnimationFrame(() => {
-        const heading = sentHeadingRef.current
-        heading?.focus({ preventScroll: true })
-        if (heading && heading.getBoundingClientRect().top < 0) {
-          const scroller = lenis ?? { scrollTo: scrollIntoViewNatively }
-          scroller.scrollTo(heading, { offset: -120, immediate: reducedMotion })
-        }
-      }),
+      requestAnimationFrame(() => sentHeadingRef.current?.focus({ preventScroll: true })),
     morphHeight: true,
     scaleMedia: false,
   })
@@ -136,17 +216,27 @@ export function ContactTemplate({ copy, email, responseTime }: ContactTemplatePr
               copy={copy}
               headingRef={sentHeadingRef}
               receipt={receipt}
+              recommendations={recommendations}
               responseTime={responseTime}
+              rootRef={rootRef}
             />
           ) : (
             <Compose
               copy={copy}
+              cv={cv}
               email={email}
               onSent={(sent) => {
                 setReceipt(sent)
-                swapTo(SENT)
+                if (reducedMotion) {
+                  swapTo(SENT)
+                  return
+                }
+                setSealed(true)
+                sealTimer.current = setTimeout(() => swapTo(SENT), SEAL.exit)
               }}
+              profiles={profiles}
               responseTime={responseTime}
+              sealed={sealed}
             />
           )}
         </div>
@@ -158,15 +248,23 @@ export function ContactTemplate({ copy, email, responseTime }: ContactTemplatePr
 function Intro({ copy, email }: { copy: ContactPageCopy; email: string | null }) {
   return (
     <div className="flex flex-col items-start gap-6 lg:col-span-5" data-swap="text">
-      <h1 className="max-w-[16ch] text-balance text-heading-1">{copy.heading}</h1>
+      <RisingHeading>{copy.heading}</RisingHeading>
       {copy.lead ? (
-        <p className="max-w-[34ch] text-pretty text-lead text-muted-foreground">{copy.lead}</p>
+        <p
+          className={`max-w-[34ch] text-pretty text-lead text-muted-foreground ${enterIn}`}
+          style={enterAt(BEAT.lead)}
+        >
+          {copy.lead}
+        </p>
       ) : null}
       {email ? (
-        <p className="mt-2 text-base/relaxed text-muted-foreground">
+        <p
+          className={`mt-2 text-base/relaxed text-muted-foreground ${enterIn}`}
+          style={enterAt(BEAT.email)}
+        >
           Prefer email?{' '}
           <a
-            className="text-foreground underline decoration-foreground/30 underline-offset-4 transition-[text-decoration-color] hover:decoration-foreground"
+            className="text-foreground underline decoration-foreground/30 underline-offset-4 transition-[text-decoration-color] duration-300 hover:decoration-foreground"
             href={`mailto:${email}`}
           >
             {email}
@@ -174,6 +272,161 @@ function Intro({ copy, email }: { copy: ContactPageCopy; email: string | null })
         </p>
       ) : null}
     </div>
+  )
+}
+
+/** The heading, each word rising into place behind its own mask, as on a case study. */
+function RisingHeading({
+  at = BEAT.title,
+  children,
+  className,
+  ref,
+  tabIndex,
+}: {
+  at?: number
+  children: string
+  className?: string
+  ref?: Ref<HTMLHeadingElement>
+  tabIndex?: number
+}) {
+  const words = children.split(/\s+/).filter(Boolean)
+  return (
+    <h1
+      className={`max-w-[16ch] text-balance text-heading-1 motion-reduce:animate-hero-fade ${className ?? ''}`}
+      ref={ref}
+      tabIndex={tabIndex}
+    >
+      {/* Read whole: split into inline-blocks, the words would be named with gaps. */}
+      <span className="sr-only">{children}</span>
+      {words.map((word, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: a heading can repeat a word; position is its identity
+        <span aria-hidden key={i}>
+          <span className="-my-[0.15em] inline-block overflow-clip py-[0.15em] align-top">
+            <span
+              className="inline-block motion-safe:animate-hero-rise"
+              style={enterAt(at + i * BEAT.word)}
+            >
+              {word}
+            </span>
+          </span>
+          {i < words.length - 1 && ' '}
+        </span>
+      ))}
+    </h1>
+  )
+}
+
+const PROFILE_ICONS = [
+  { host: 'github.com', Icon: IconBrandGithub },
+  { host: 'linkedin.com', Icon: IconBrandLinkedin },
+  { host: 'youtube.com', Icon: IconBrandYoutube },
+]
+
+const profileIcon = (url: string) => {
+  try {
+    const { hostname } = new URL(url)
+    const match = PROFILE_ICONS.find(
+      ({ host }) => hostname === host || hostname.endsWith(`.${host}`),
+    )
+    return match?.Icon ?? IconArrowUpRight
+  } catch {
+    return IconArrowUpRight
+  }
+}
+
+const formatFileSize = (bytes: number) =>
+  bytes < 1024 * 1024
+    ? `${Math.max(1, Math.round(bytes / 1024))} KB`
+    : `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+
+/**
+ * Under the intro on a phone, after the form; beside the form's foot from lg:
+ * the profile links and the CV card, for anyone who would rather look first.
+ */
+function Elsewhere({
+  copy,
+  cv,
+  profiles,
+}: {
+  copy: ContactPageCopy
+  cv: ContactCv | null
+  profiles: ContactProfile[]
+}) {
+  if (!profiles.length && !cv) return null
+
+  return (
+    <div
+      className="flex flex-col gap-8 lg:col-span-5 lg:col-start-1 lg:row-start-2 lg:self-end"
+      data-swap="text"
+    >
+      {profiles.length ? (
+        <nav aria-label="Elsewhere">
+          <ul className="flex flex-wrap gap-x-6 gap-y-3">
+            {profiles.map((profile, i) => {
+              const Icon = profileIcon(profile.url)
+              return (
+                <li
+                  className={enterIn}
+                  key={profile.url}
+                  style={enterAt(BEAT.elsewhere + i * BEAT.elsewhereStep)}
+                >
+                  <a
+                    className="contact-profile inline-flex items-center gap-2 text-muted-foreground text-sm/5 transition-colors duration-300 hover:text-foreground"
+                    href={profile.url}
+                    rel="noopener me"
+                    target="_blank"
+                  >
+                    <Icon aria-hidden className="size-4" stroke={1.5} />
+                    <span>{profile.label}</span>
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+        </nav>
+      ) : null}
+      {cv ? (
+        <div
+          className={enterIn}
+          style={enterAt(BEAT.elsewhere + profiles.length * BEAT.elsewhereStep)}
+        >
+          <CvCard copy={copy} cv={cv} />
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+/** The CV: one quiet card, the whole of it the link. */
+function CvCard({ copy, cv }: { copy: ContactPageCopy; cv: ContactCv }) {
+  const meta = ['PDF', cv.filesize ? formatFileSize(cv.filesize) : null].filter(Boolean).join(' · ')
+
+  return (
+    <a
+      className="contact-cv group flex w-full max-w-sm items-center gap-4 rounded-lg p-4 ring-1 ring-foreground/10 hover:bg-foreground/[0.03] hover:ring-foreground/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+      download
+      href={cv.url}
+      rel="noopener"
+      target="_blank"
+    >
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-foreground/5 text-muted-foreground transition-[color,background-color] duration-300 group-hover:bg-foreground/10 group-hover:text-foreground">
+        <IconFileCv aria-hidden className="size-5" stroke={1.5} />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="font-medium text-foreground text-sm/5">{copy.cvHeading}</span>
+        {copy.cvNote ? (
+          <span className="text-muted-foreground text-sm/5">{copy.cvNote}</span>
+        ) : null}
+        <span className="font-mono text-muted-foreground text-xs/4 uppercase tracking-widest">
+          {meta}
+        </span>
+      </span>
+      <IconDownload
+        aria-hidden
+        className="size-4 shrink-0 text-muted-foreground transition-[color,translate] duration-300 ease-out-quint group-hover:translate-y-0.5 group-hover:text-foreground group-active:translate-y-1 group-active:duration-150"
+        stroke={1.5}
+      />
+    </a>
   )
 }
 
@@ -186,7 +439,7 @@ const problemProps = (error: string | undefined, id: string) => ({
 /** The message counter, once the message is close enough to the limit to need one. */
 const messageCounter = (count: number) =>
   count >= COUNTER_FROM ? (
-    <span aria-live="polite">
+    <span aria-live="polite" className={ENTER_NOTE}>
       {count.toLocaleString()} / {INQUIRY_MESSAGE_MAX_LENGTH.toLocaleString()}
     </span>
   ) : null
@@ -202,6 +455,12 @@ function useCheckedValues() {
   const [errors, setErrors] = useState<Errors>({})
   /** After the first send, every edit re-checks; before it, nothing nags. */
   const [attempted, setAttempted] = useState(false)
+  /**
+   * Set while Send is held. Leaving the email for Send would flag it on blur,
+   * the problem's line would push Send down under the pointer, and the click
+   * would land beside it. The send checks everything anyway.
+   */
+  const pressingSend = useRef(false)
 
   const edit = (field: FieldName, value: string) => {
     const next = { ...values, [field]: value }
@@ -215,21 +474,32 @@ function useCheckedValues() {
   // Checked on leaving the field only once something is typed: an empty field
   // is not a mistake until the visitor tries to send.
   const checkEmail = () => {
+    if (pressingSend.current) return
     if (values.email.trim() && !isValidEmailAddress(normalizeEmailAddress(values.email)))
       setErrors((current) => ({ ...current, email: INQUIRY_EMAIL_INVALID }))
   }
 
-  /** Flags every problem and focuses the first; true when there is none. */
+  /** Flags every problem, shakes those fields and focuses the first; true when there is none. */
   const checkAll = () => {
     setAttempted(true)
     const found = validate(values)
     setErrors(found)
-    const first = FIELD_ORDER.find((field) => found[field])
-    if (first) controls[first].current?.focus()
-    return !first
+    const flagged = FIELD_ORDER.filter((field) => found[field])
+    shake(flagged.map((field) => controls[field].current?.closest('[data-slot="field"]')))
+    if (flagged[0]) controls[flagged[0]].current?.focus()
+    return !flagged[0]
   }
 
-  return { checkAll, checkEmail, controls, edit, errors, setValues, values }
+  const pressSend = () => {
+    pressingSend.current = true
+    const release = () => {
+      pressingSend.current = false
+    }
+    window.addEventListener('pointerup', release, { once: true })
+    window.addEventListener('pointercancel', release, { once: true })
+  }
+
+  return { checkAll, checkEmail, controls, edit, errors, pressSend, setValues, values }
 }
 
 /**
@@ -312,14 +582,21 @@ type ComposeForm = ReturnType<typeof useCompose>
 
 function Compose({
   copy,
+  cv,
   email,
   onSent,
+  profiles,
   responseTime,
+  sealed,
 }: {
   copy: ContactPageCopy
+  cv: ContactCv | null
   email: string | null
   onSent: (receipt: Receipt) => void
+  profiles: ContactProfile[]
   responseTime: string
+  /** Sent: the note seals in place before the page swaps. Inert from here on. */
+  sealed: boolean
 }) {
   const ids = {
     name: useId(),
@@ -335,18 +612,28 @@ function Compose({
 
       <form
         aria-describedby={form.failure ? ids.status : undefined}
-        className="flex flex-col gap-10 lg:col-span-6 lg:col-start-7"
+        className="contact-form flex flex-col gap-10 lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1"
+        data-sealed={sealed || undefined}
+        inert={sealed}
         noValidate
         onSubmit={form.send}
       >
-        <NameField form={form} id={ids.name} />
-        <EmailField form={form} id={ids.email} />
-        <MessageField form={form} id={ids.message} placeholder={copy.messagePlaceholder} />
+        <NameField form={form} id={ids.name} order={0} />
+        <EmailField form={form} id={ids.email} order={1} />
+        <MessageField
+          form={form}
+          id={ids.message}
+          order={2}
+          placeholder={copy.messagePlaceholder}
+        />
 
         <SendRow
           copy={copy}
+          enter={BEAT.field + 3 * BEAT.fieldStep}
           failure={form.failure}
+          onPress={form.pressSend}
           responseTime={responseTime}
+          sealed={sealed}
           sending={form.sending}
           statusId={ids.status}
         />
@@ -357,17 +644,26 @@ function Compose({
           <input autoComplete="off" name="role" ref={form.honeypotRef} tabIndex={-1} />
         </div>
       </form>
+
+      <Elsewhere copy={copy} cv={cv} profiles={profiles} />
     </>
   )
 }
 
-function NameField({ form, id }: { form: ComposeForm; id: string }) {
+/** `order`: the field's place in reading order, which paces its entrance and its seal. */
+type FieldProps = { form: ComposeForm; id: string; order: number }
+
+/** The line control's own focus and problem colors give way to the ink `.contact-line` draws over its rule. */
+const LINE_FOCUS =
+  'text-foreground focus-visible:border-b-input not-placeholder-shown:focus-visible:border-b-foreground aria-invalid:border-b-input not-placeholder-shown:aria-invalid:border-b-foreground'
+
+function NameField({ form, id, order }: FieldProps) {
   return (
-    <ContactField error={form.errors.name} htmlFor={id} label="Name">
+    <ContactField error={form.errors.name} htmlFor={id} label="Name" line order={order}>
       <Input
         {...problemProps(form.errors.name, id)}
         autoComplete="name"
-        className="text-foreground"
+        className={LINE_FOCUS}
         id={id}
         maxLength={200}
         name="name"
@@ -382,13 +678,13 @@ function NameField({ form, id }: { form: ComposeForm; id: string }) {
   )
 }
 
-function EmailField({ form, id }: { form: ComposeForm; id: string }) {
+function EmailField({ form, id, order }: FieldProps) {
   return (
-    <ContactField error={form.errors.email} htmlFor={id} label="Email">
+    <ContactField error={form.errors.email} htmlFor={id} label="Email" line order={order}>
       <Input
         {...problemProps(form.errors.email, id)}
         autoComplete="email"
-        className="text-foreground"
+        className={LINE_FOCUS}
         id={id}
         inputMode="email"
         name="email"
@@ -405,24 +701,17 @@ function EmailField({ form, id }: { form: ComposeForm; id: string }) {
   )
 }
 
-function MessageField({
-  form,
-  id,
-  placeholder,
-}: {
-  form: ComposeForm
-  id: string
-  placeholder: string
-}) {
+function MessageField({ form, id, order, placeholder }: FieldProps & { placeholder: string }) {
   return (
     <ContactField
+      order={order}
       error={form.errors.message}
       htmlFor={id}
       label="Message"
       meta={messageCounter(form.values.message.length)}
       note={form.fromAsk ? 'Your questions from Ask are included. Edit anything.' : null}
     >
-      <FieldPanel>
+      <FieldPanel className="duration-300">
         <Textarea
           {...problemProps(form.errors.message, id)}
           className="text-foreground"
@@ -444,31 +733,61 @@ function MessageField({
 /** The send button with its reply promise, and the send's failure when there is one. */
 function SendRow({
   copy,
+  enter,
   failure,
+  onPress,
   responseTime,
+  sealed,
   sending,
   statusId,
 }: {
   copy: ContactPageCopy
+  enter: number
   failure: string | null
+  onPress: () => void
   responseTime: string
+  sealed: boolean
   sending: boolean
   statusId: string
 }) {
   return (
-    <div className="flex flex-col gap-5">
+    <div className={`flex flex-col gap-5 ${enterIn}`} style={enterAt(enter)}>
       {failure ? (
-        <FieldError className={ENTER_NOTE} id={statusId}>
+        <FieldError className="contact-problem" id={statusId}>
           <IconAlertCircle aria-hidden />
           {failure}
         </FieldError>
       ) : null}
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <Button aria-disabled={sending || undefined} size="xl" type="submit">
-          {sending ? <Spinner /> : null}
-          {sending ? 'Sending…' : copy.submitLabel}
+        <Button
+          aria-disabled={sending || undefined}
+          className="contact-send"
+          data-sealed={sealed || undefined}
+          onPointerDown={onPress}
+          style={{ '--seal-pulse': `${SEAL.pulse}ms` } as CSSProperties}
+          size="xl"
+          type="submit"
+        >
+          {sealed ? (
+            <SentMark className="contact-seal size-4" strokeWidth={SEAL_STROKE} />
+          ) : sending ? (
+            <Spinner />
+          ) : null}
+          {sealed ? (
+            // Held at the width of "Sending…", so the button keeps its size.
+            <span className="contact-send-label grid">
+              <span aria-hidden className="invisible col-start-1 row-start-1">
+                Sending…
+              </span>
+              <span className="col-start-1 row-start-1">Sent</span>
+            </span>
+          ) : sending ? (
+            'Sending…'
+          ) : (
+            copy.submitLabel
+          )}
         </Button>
-        <p className="text-muted-foreground text-sm/5">
+        <p className="text-muted-foreground text-sm/5" data-swap="text">
           {fillContactTokens(copy.submitNote, { responseTime })}
         </p>
       </div>
@@ -490,27 +809,42 @@ function ContactField({
   error,
   htmlFor,
   label,
+  line,
   meta,
   note,
+  order,
 }: {
   children: React.ReactNode
   error?: string
   htmlFor: string
   label: string
+  /** A line control, which takes the focus ink. */
+  line?: boolean
   meta?: React.ReactNode
   note?: string | null
+  order: number
 }) {
   return (
-    <Field className="gap-3" data-invalid={error ? true : undefined}>
+    <Field
+      className={`gap-3 ${enterIn}`}
+      data-invalid={error ? true : undefined}
+      data-swap="text"
+      style={
+        {
+          ...enterAt(BEAT.field + order * BEAT.fieldStep),
+          '--seal-at': `${order * SEAL.lineStep}ms`,
+        } as CSSProperties
+      }
+    >
       <div className="flex items-baseline justify-between gap-6">
-        <FieldLabel htmlFor={htmlFor} variant="mono">
+        <FieldLabel className="transition-colors duration-300" htmlFor={htmlFor} variant="mono">
           {label}
         </FieldLabel>
         {meta ? <FieldMeta>{meta}</FieldMeta> : null}
       </div>
-      {children}
+      {line ? <div className="contact-line">{children}</div> : children}
       {error ? (
-        <FieldError className={ENTER_NOTE} id={`${htmlFor}-error`}>
+        <FieldError className="contact-problem" id={`${htmlFor}-error`}>
           <IconAlertCircle aria-hidden />
           {error}
         </FieldError>
@@ -521,31 +855,65 @@ function ContactField({
   )
 }
 
+/**
+ * Once, as the receipt mounts on a phone, where the button sat far below the
+ * heading: the page scrolls up to the heading and the receipt holds its
+ * entrance until it arrives.
+ */
+function useSentArrival({
+  headingRef,
+  rootRef,
+}: {
+  headingRef: RefObject<HTMLHeadingElement | null>
+  rootRef: RefObject<HTMLDivElement | null>
+}) {
+  const reducedMotion = usePrefersReducedMotion()
+  const lenis = useLenis()
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the receipt arrives once, as it mounts
+  useLayoutEffect(() => {
+    const heading = headingRef.current
+    if (!heading || heading.getBoundingClientRect().top >= 0) return
+
+    const root = rootRef.current
+    if (!reducedMotion) root?.style.setProperty('--morph-hold', `${SENT_BEAT.offscreenHold}ms`)
+    const scroller = lenis ?? { scrollTo: scrollIntoViewNatively }
+    scroller.scrollTo(heading, { offset: -120, immediate: reducedMotion })
+    return () => {
+      root?.style.removeProperty('--morph-hold')
+    }
+  }, [])
+}
+
 function Sent({
   copy,
   headingRef,
   receipt,
+  recommendations,
   responseTime,
+  rootRef,
 }: {
   copy: ContactPageCopy
   headingRef: RefObject<HTMLHeadingElement | null>
   receipt: Receipt
+  recommendations: ContactRecommendation[]
   responseTime: string
+  rootRef: RefObject<HTMLDivElement | null>
 }) {
+  useSentArrival({ headingRef, rootRef })
   const tokens = { name: firstName(receipt.name), email: receipt.email, responseTime }
 
   return (
     <>
-      <div className="flex flex-col items-start gap-6 lg:col-span-5" data-swap="text">
-        <SentMark />
-        <h1
-          className="max-w-[16ch] text-balance text-heading-1 outline-none"
-          ref={headingRef}
-          tabIndex={-1}
-        >
+      <div className="flex flex-col items-start gap-6 lg:col-span-5">
+        <SentMark className="size-10 text-foreground" />
+        <RisingHeading at={SENT_BEAT.title} className="outline-none" ref={headingRef} tabIndex={-1}>
           {fillContactTokens(copy.sentHeading, tokens)}
-        </h1>
-        <p className="max-w-[34ch] text-pretty text-lead text-muted-foreground">
+        </RisingHeading>
+        <p
+          className={`max-w-[34ch] text-pretty text-lead text-muted-foreground ${enterIn}`}
+          style={enterAt(SENT_BEAT.body)}
+        >
           {fillContactTokens(copy.sentBody, tokens)}
         </p>
       </div>
@@ -553,37 +921,60 @@ function Sent({
       <section
         aria-label="Your message"
         className="flex flex-col gap-6 lg:col-span-6 lg:col-start-7"
-        data-swap="text"
       >
-        <div className="flex items-baseline justify-between gap-6 border-b border-b-foreground pb-3">
-          <p className="font-mono text-muted-foreground text-xs/4 uppercase tracking-widest">
+        <div className="relative flex items-baseline justify-between gap-6 pb-3">
+          <p
+            className={`font-mono text-muted-foreground text-xs/4 uppercase tracking-widest ${enterIn}`}
+            style={enterAt(SENT_BEAT.label)}
+          >
             Your message
           </p>
           {receipt.reference ? (
-            <p className="font-mono text-muted-foreground text-xs/4 uppercase tabular-nums tracking-widest">
+            <p
+              className={`font-mono text-muted-foreground text-xs/4 uppercase tabular-nums tracking-widest ${enterIn}`}
+              style={enterAt(SENT_BEAT.label + BEAT.word)}
+            >
               Ref <span className="text-foreground">{receipt.reference}</span>
             </p>
           ) : null}
+          <span
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 h-px origin-left bg-foreground motion-safe:animate-hero-draw motion-reduce:animate-hero-fade"
+            style={enterAt(SENT_BEAT.rule)}
+          />
         </div>
-        <p className="max-w-[60ch] whitespace-pre-line text-base/relaxed text-foreground md:text-lg/relaxed">
+        <p
+          className="max-w-[60ch] whitespace-pre-line text-base/relaxed text-foreground motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade md:text-lg/relaxed"
+          style={enterAt(SENT_BEAT.message)}
+        >
           {receipt.message}
         </p>
       </section>
+
+      <Recommended
+        at={SENT_BEAT.recommended}
+        heading={copy.recommendedHeading}
+        items={recommendations}
+      />
     </>
   )
 }
 
-/** The sent mark: a ring and a check that draw themselves once, after the swap lands. */
-function SentMark() {
+/**
+ * The sent mark: a ring and a check that draw themselves once, ring first.
+ * The button's seal is the same mark at 16px on a heavier stroke, so both
+ * read at 1.5px and the receipt's reads as the seal come back.
+ */
+function SentMark({ className, strokeWidth = 1.5 }: { className: string; strokeWidth?: number }) {
   return (
     <svg
       aria-hidden="true"
-      className="contact-sent-mark size-10 text-foreground"
+      className={`contact-sent-mark ${className}`}
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth={1.5}
+      strokeWidth={strokeWidth}
       viewBox="0 0 40 40"
     >
       <circle cx="20" cy="20" pathLength={1} r="18.25" />

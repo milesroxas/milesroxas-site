@@ -131,7 +131,7 @@ const collections: MCPPluginConfig['collections'] = Object.fromEntries([
 const globals: MCPPluginConfig['globals'] = {
   'contact-page': {
     description:
-      'The copy on /contact: form heading, lead, placeholder, the sent state, and SEO. Reply time and email address live in Site Info',
+      'The copy on /contact: form heading, lead, placeholder, the sent state, the suggestions under it (`recommended`: up to three `{ relationTo: works or posts, value: id }`, empty places fill automatically), the CV card (`cv` takes a PDF media id) and SEO. Reply time, email address and the profile links beside the form live in Site Info',
     enabled: { find: true, update: true },
   },
   header: {

@@ -11207,6 +11207,8 @@ export const works = pgTable(
     intro_body: jsonb("intro_body"),
     showContents: boolean("show_contents").default(false),
     status: enum_works_project_status("status"),
+    link_url: varchar("link_url"),
+    link_label: varchar("link_label"),
     isProtected: boolean("is_protected").default(false),
     fallbackWork: integer("fallback_work_id").references(
       (): AnyPgColumn => works.id,
@@ -12932,6 +12934,8 @@ export const _works_v = pgTable(
     version_intro_body: jsonb("version_intro_body"),
     version_showContents: boolean("version_show_contents").default(false),
     version_status: enum_works_project_status("version_status"),
+    version_link_url: varchar("version_link_url"),
+    version_link_label: varchar("version_link_label"),
     version_isProtected: boolean("version_is_protected").default(false),
     version_fallbackWork: integer("version_fallback_work_id").references(
       () => works.id,
@@ -13527,6 +13531,8 @@ export const streak_looks = pgTable(
     lightPoster: integer("light_poster_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    ground_dark: varchar("ground_dark"),
+    ground_light: varchar("ground_light"),
     archived: boolean("archived").default(false),
     createdBy: integer("created_by_id").references(() => users.id, {
       onDelete: "set null",
@@ -13619,6 +13625,8 @@ export const _streak_looks_v = pgTable(
         onDelete: "set null",
       },
     ),
+    version_ground_dark: varchar("version_ground_dark"),
+    version_ground_light: varchar("version_ground_light"),
     version_archived: boolean("version_archived").default(false),
     version_createdBy: integer("version_created_by_id").references(
       () => users.id,
@@ -14329,6 +14337,30 @@ export const payload_mcp_api_keys = pgTable(
     "payload-mcp-tool_patchBlock": boolean(
       "payload_mcp_tool_patch_block",
     ).default(false),
+    "payload-mcp-tool_updateSeo": boolean(
+      "payload_mcp_tool_update_seo",
+    ).default(false),
+    "payload-mcp-tool_describeFields": boolean(
+      "payload_mcp_tool_describe_fields",
+    ).default(false),
+    "payload-mcp-tool_createDocument": boolean(
+      "payload_mcp_tool_create_document",
+    ).default(false),
+    "payload-mcp-tool_updateDocument": boolean(
+      "payload_mcp_tool_update_document",
+    ).default(false),
+    "payload-mcp-tool_insertBlock": boolean(
+      "payload_mcp_tool_insert_block",
+    ).default(false),
+    "payload-mcp-tool_moveBlock": boolean(
+      "payload_mcp_tool_move_block",
+    ).default(false),
+    "payload-mcp-tool_removeBlock": boolean(
+      "payload_mcp_tool_remove_block",
+    ).default(false),
+    "payload-mcp-tool_updateMedia": boolean(
+      "payload_mcp_tool_update_media",
+    ).default(false),
     uploadMedia: boolean("upload_media").default(false),
     updatedAt: timestamp("updated_at", {
       mode: "string",
@@ -14888,69 +14920,152 @@ export const site_info_social_profiles = pgTable(
   ],
 );
 
-export const site_info = pgTable("site_info", {
-  id: serial("id").primaryKey(),
-  name: varchar("name").notNull().default("Miles Roxas"),
-  legalName: varchar("legal_name"),
-  tagline: varchar("tagline"),
-  description: varchar("description"),
-  foundingYear: numeric("founding_year", { mode: "number" }),
-  contactEmail: varchar("contact_email").default("miles@milesroxas.com"),
-  inquiries_responseTime: varchar("inquiries_response_time").default(
-    "within 2 business days",
-  ),
-  inquiries_scheduleUrl: varchar("inquiries_schedule_url"),
-  ask_hidden: boolean("ask_hidden").default(false),
-  address_streetAddress: varchar("address_street_address"),
-  address_city: varchar("address_city"),
-  address_state: varchar("address_state"),
-  address_postalCode: varchar("address_postal_code"),
-  address_country: varchar("address_country"),
-  llmsNotes: varchar("llms_notes"),
-  updatedAt: timestamp("updated_at", {
-    mode: "string",
-    withTimezone: true,
-    precision: 3,
-  }),
-  createdAt: timestamp("created_at", {
-    mode: "string",
-    withTimezone: true,
-    precision: 3,
-  }),
-});
+export const site_info_affiliations = pgTable(
+  "site_info_affiliations",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    name: varchar("name").notNull(),
+    url: varchar("url"),
+    role: varchar("role"),
+  },
+  (columns) => [
+    index("site_info_affiliations_order_idx").on(columns._order),
+    index("site_info_affiliations_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [site_info.id],
+      name: "site_info_affiliations_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
 
-export const contact_page = pgTable("contact_page", {
-  id: serial("id").primaryKey(),
-  heading: varchar("heading")
-    .notNull()
-    .default("Tell Miles what you’re working on."),
-  lead: varchar("lead").default(
-    "A role, a project, or a question about the work. A few lines is plenty.",
-  ),
-  messagePlaceholder: varchar("message_placeholder").default(
-    "What you’re hiring for or building, and where Miles fits in.",
-  ),
-  submitLabel: varchar("submit_label").default("Send to Miles"),
-  submitNote: varchar("submit_note").default("Miles replies {responseTime}."),
-  sentHeading: varchar("sent_heading").default(
-    "Thanks, {name}. Your message is with Miles.",
-  ),
-  sentBody: varchar("sent_body").default(
-    "He’ll reply to {email} {responseTime}. A confirmation is on its way to your inbox.",
-  ),
-  meta_title: varchar("meta_title"),
-  meta_description: varchar("meta_description"),
-  updatedAt: timestamp("updated_at", {
-    mode: "string",
-    withTimezone: true,
-    precision: 3,
-  }),
-  createdAt: timestamp("created_at", {
-    mode: "string",
-    withTimezone: true,
-    precision: 3,
-  }),
-});
+export const site_info = pgTable(
+  "site_info",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name").notNull().default("Miles Roxas"),
+    jobTitle: varchar("job_title"),
+    legalName: varchar("legal_name"),
+    tagline: varchar("tagline"),
+    description: varchar("description"),
+    foundingYear: numeric("founding_year", { mode: "number" }),
+    contactEmail: varchar("contact_email").default("miles@milesroxas.com"),
+    inquiries_responseTime: varchar("inquiries_response_time").default(
+      "within 2 business days",
+    ),
+    inquiries_scheduleUrl: varchar("inquiries_schedule_url"),
+    ask_hidden: boolean("ask_hidden").default(false),
+    headshot: integer("headshot_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    ogImage: integer("og_image_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    address_streetAddress: varchar("address_street_address"),
+    address_city: varchar("address_city"),
+    address_state: varchar("address_state"),
+    address_postalCode: varchar("address_postal_code"),
+    address_country: varchar("address_country"),
+    llmsNotes: varchar("llms_notes"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+  },
+  (columns) => [
+    index("site_info_headshot_idx").on(columns.headshot),
+    index("site_info_og_image_idx").on(columns.ogImage),
+  ],
+);
+
+export const contact_page = pgTable(
+  "contact_page",
+  {
+    id: serial("id").primaryKey(),
+    heading: varchar("heading")
+      .notNull()
+      .default("Tell Miles what you’re working on."),
+    lead: varchar("lead").default(
+      "A role, a project, or a question about the work. A few lines is plenty.",
+    ),
+    messagePlaceholder: varchar("message_placeholder").default(
+      "What you’re hiring for or building, and where Miles fits in.",
+    ),
+    submitLabel: varchar("submit_label").default("Send to Miles"),
+    submitNote: varchar("submit_note").default("Miles replies {responseTime}."),
+    sentHeading: varchar("sent_heading").default(
+      "Thanks, {name}. Your message is with Miles.",
+    ),
+    sentBody: varchar("sent_body").default(
+      "He’ll reply to {email} {responseTime}. A confirmation is on its way to your inbox.",
+    ),
+    recommendedHeading: varchar("recommended_heading").default(
+      "While you wait",
+    ),
+    cv: integer("cv_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    cvHeading: varchar("cv_heading").default("Miles’s CV"),
+    cvNote: varchar("cv_note").default(
+      "Roles, clients and tools, in one file.",
+    ),
+    meta_title: varchar("meta_title"),
+    meta_description: varchar("meta_description"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+  },
+  (columns) => [index("contact_page_cv_idx").on(columns.cv)],
+);
+
+export const contact_page_rels = pgTable(
+  "contact_page_rels",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order"),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    worksID: integer("works_id"),
+    postsID: integer("posts_id"),
+  },
+  (columns) => [
+    index("contact_page_rels_order_idx").on(columns.order),
+    index("contact_page_rels_parent_idx").on(columns.parent),
+    index("contact_page_rels_path_idx").on(columns.path),
+    index("contact_page_rels_works_id_idx").on(columns.worksID),
+    index("contact_page_rels_posts_id_idx").on(columns.postsID),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [contact_page.id],
+      name: "contact_page_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["worksID"]],
+      foreignColumns: [works.id],
+      name: "contact_page_rels_works_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["postsID"]],
+      foreignColumns: [posts.id],
+      name: "contact_page_rels_posts_fk",
+    }).onDelete("cascade"),
+  ],
+);
 
 export const works_index = pgTable(
   "works_index",
@@ -19910,15 +20025,70 @@ export const relations_site_info_social_profiles = relations(
     }),
   }),
 );
-export const relations_site_info = relations(site_info, ({ many }) => ({
+export const relations_site_info_affiliations = relations(
+  site_info_affiliations,
+  ({ one }) => ({
+    _parentID: one(site_info, {
+      fields: [site_info_affiliations._parentID],
+      references: [site_info.id],
+      relationName: "affiliations",
+    }),
+  }),
+);
+export const relations_site_info = relations(site_info, ({ one, many }) => ({
   ask_suggestions: many(site_info_ask_suggestions, {
     relationName: "ask_suggestions",
+  }),
+  headshot: one(media, {
+    fields: [site_info.headshot],
+    references: [media.id],
+    relationName: "headshot",
+  }),
+  ogImage: one(media, {
+    fields: [site_info.ogImage],
+    references: [media.id],
+    relationName: "ogImage",
   }),
   socialProfiles: many(site_info_social_profiles, {
     relationName: "socialProfiles",
   }),
+  affiliations: many(site_info_affiliations, {
+    relationName: "affiliations",
+  }),
 }));
-export const relations_contact_page = relations(contact_page, () => ({}));
+export const relations_contact_page_rels = relations(
+  contact_page_rels,
+  ({ one }) => ({
+    parent: one(contact_page, {
+      fields: [contact_page_rels.parent],
+      references: [contact_page.id],
+      relationName: "_rels",
+    }),
+    worksID: one(works, {
+      fields: [contact_page_rels.worksID],
+      references: [works.id],
+      relationName: "works",
+    }),
+    postsID: one(posts, {
+      fields: [contact_page_rels.postsID],
+      references: [posts.id],
+      relationName: "posts",
+    }),
+  }),
+);
+export const relations_contact_page = relations(
+  contact_page,
+  ({ one, many }) => ({
+    cv: one(media, {
+      fields: [contact_page.cv],
+      references: [media.id],
+      relationName: "cv",
+    }),
+    _rels: many(contact_page_rels, {
+      relationName: "_rels",
+    }),
+  }),
+);
 export const relations_works_index = relations(works_index, ({ one }) => ({
   meta_image: one(media, {
     fields: [works_index.meta_image],
@@ -21059,8 +21229,10 @@ type DatabaseSchema = {
   header_rels: typeof header_rels;
   site_info_ask_suggestions: typeof site_info_ask_suggestions;
   site_info_social_profiles: typeof site_info_social_profiles;
+  site_info_affiliations: typeof site_info_affiliations;
   site_info: typeof site_info;
   contact_page: typeof contact_page;
+  contact_page_rels: typeof contact_page_rels;
   works_index: typeof works_index;
   _works_index_v: typeof _works_index_v;
   payload_jobs_stats: typeof payload_jobs_stats;
@@ -21361,7 +21533,9 @@ type DatabaseSchema = {
   relations_header: typeof relations_header;
   relations_site_info_ask_suggestions: typeof relations_site_info_ask_suggestions;
   relations_site_info_social_profiles: typeof relations_site_info_social_profiles;
+  relations_site_info_affiliations: typeof relations_site_info_affiliations;
   relations_site_info: typeof relations_site_info;
+  relations_contact_page_rels: typeof relations_contact_page_rels;
   relations_contact_page: typeof relations_contact_page;
   relations_works_index: typeof relations_works_index;
   relations__works_index_v: typeof relations__works_index_v;

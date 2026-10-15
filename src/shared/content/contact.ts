@@ -17,6 +17,9 @@ export const CONTACT_PAGE_DEFAULTS = {
   submitNote: 'Miles replies {responseTime}.',
   sentHeading: 'Thanks, {name}. Your message is with Miles.',
   sentBody: 'He’ll reply to {email} {responseTime}. A confirmation is on its way to your inbox.',
+  recommendedHeading: 'While you wait',
+  cvHeading: 'Miles’s CV',
+  cvNote: 'Roles, clients and tools, in one file.',
 } as const
 
 export type ContactPageCopy = { -readonly [Key in keyof typeof CONTACT_PAGE_DEFAULTS]: string }

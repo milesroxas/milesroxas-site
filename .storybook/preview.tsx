@@ -4,6 +4,7 @@ import { IBM_Plex_Sans } from 'next/font/google'
 
 import '../src/app/(frontend)/globals.css'
 import { cursorGlobalTypes, withCursor } from './cursor'
+import { motionSpeedGlobalTypes, withMotionSpeed } from './motion-speed'
 // Provides the Geist Mono variable that RootLayout normally sets via next/font.
 import './fonts.css'
 
@@ -14,8 +15,8 @@ const ibmPlexSans = IBM_Plex_Sans({
 })
 
 const preview: Preview = {
-  globalTypes: cursorGlobalTypes,
-  initialGlobals: { cursor: 'site' },
+  globalTypes: { ...cursorGlobalTypes, ...motionSpeedGlobalTypes },
+  initialGlobals: { cursor: 'site', motionSpeed: '1' },
   parameters: {
     controls: {
       matchers: {
@@ -51,6 +52,7 @@ const preview: Preview = {
       </div>
     ),
     withCursor,
+    withMotionSpeed,
   ],
 }
 

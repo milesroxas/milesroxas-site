@@ -77,7 +77,10 @@
   --muted-foreground: hsl(240 4% 46%);
   --accent: hsl(21 90% 48%);
   --accent-foreground: hsl(240 6% 10%);
-  --destructive: hsl(0 72% 51%);
+  /* Error red. A crimson, held 26° off the orange accent so a problem never
+     reads as brand. As ink it clears 5.6:1 on the page ground and 5.2:1 on
+     the neutral stripe; white on it is 5.6:1. */
+  --destructive: hsl(355 80% 42%);
   --destructive-foreground: hsl(0 86% 97%);
   --border: hsl(240 6% 90%);
   --input: hsl(240 6% 90%);
@@ -145,8 +148,11 @@
   --muted-foreground: hsl(240 5% 65%);
   --accent: hsl(142 71% 45%);
   --accent-foreground: hsl(0 0% 98%);
-  --destructive: hsl(0 63% 31%);
-  --destructive-foreground: hsl(0 86% 97%);
+  /* The same red lifted to a coral for the dark ground: 6.6:1 as ink, 5.0:1
+     on the muted surface. A solid plate takes dark ink (6.6:1); white on
+     this red is under 3:1. */
+  --destructive: hsl(358 85% 68%);
+  --destructive-foreground: hsl(240 10% 4%);
   --border: hsl(240 4% 16%);
   --input: hsl(240 4% 16%);
   --ring: hsl(240 5% 84%);
@@ -2908,9 +2914,10 @@ html:active-view-transition-type(work-open) .dock {
   }
 }
 
-/* Contact: the sent mark draws itself once as the receipt lands, ring first
-   (from twelve o'clock), then the check. Rare, so it earns the beat; reduced
-   motion shows it drawn. */
+/* Contact: the sent mark draws itself once, ring first (from twelve
+   o'clock), then the check. The button's seal draws at once (`--mark-at`
+   0); the receipt's fades up as it draws, a beat in, plus `--morph-hold`
+   when the page first scrolls up to it. Reduced motion shows it drawn. */
 .contact-sent-mark circle {
   transform: rotate(-90deg);
   transform-box: fill-box;
@@ -2922,19 +2929,262 @@ html:active-view-transition-type(work-open) .dock {
   stroke-dashoffset: 0;
 }
 
+.contact-seal {
+  --mark-at: 0ms;
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .contact-sent-mark {
+    animation: contact-sent-arrive 480ms var(--ease-out-quint)
+      calc(var(--mark-at, 120ms) + var(--morph-hold, 0ms)) both;
+  }
+
   .contact-sent-mark circle {
-    animation: contact-sent-draw 420ms var(--ease-out-quint) 120ms both;
+    animation: contact-sent-draw 420ms var(--ease-out-quint)
+      calc(var(--mark-at, 120ms) + var(--morph-hold, 0ms)) both;
   }
 
   .contact-sent-mark path {
-    animation: contact-sent-draw 260ms var(--ease-out-quint) 440ms both;
+    animation: contact-sent-draw 260ms var(--ease-out-quint)
+      calc(var(--mark-at, 120ms) + 320ms + var(--morph-hold, 0ms)) both;
+  }
+
+  /* In the button the mark is the seal: drawn, then let go (`.contact-send`). */
+  .contact-seal {
+    animation: none;
+  }
+}
+
+@keyframes contact-sent-arrive {
+  from {
+    opacity: 0;
+    scale: 0.85;
   }
 }
 
 @keyframes contact-sent-draw {
   from {
     stroke-dashoffset: 1;
+  }
+}
+
+/* Contact: a line field's focus ink draws across its rule from the left and
+   retracts on blur. A problem draws the same ink in red and keeps it until
+   the value is fixed, when it hands back to the focus ink or retracts.
+   Reduced motion fades it in place. */
+.contact-line {
+  position: relative;
+}
+
+.contact-line::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: var(--primary);
+  pointer-events: none;
+  /* A clip, not a scale: a transformed line rasterizes off the pixel grid
+     the border snaps to, and the rule beneath shows through. The clip
+     overhangs top and bottom so it never shaves the 1px line itself. */
+  clip-path: inset(-1px 100% -1px 0);
+  transition:
+    clip-path 500ms var(--ease-out-quint),
+    background-color 300ms ease;
+}
+
+.contact-line:focus-within::after,
+.contact-line:has([aria-invalid="true"])::after {
+  clip-path: inset(-1px 0);
+}
+
+/* Red from the first frame of the draw; only the hand back to the focus ink fades. */
+.contact-line:has([aria-invalid="true"])::after {
+  background: var(--destructive);
+  transition-duration: 500ms, 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-line::after {
+    opacity: 0;
+    clip-path: inset(-1px 0);
+    transition:
+      opacity 200ms ease,
+      background-color 200ms ease;
+  }
+
+  .contact-line:focus-within::after {
+    opacity: 1;
+  }
+
+  .contact-line:has([aria-invalid="true"])::after {
+    opacity: 1;
+    transition-duration: 200ms, 0s;
+  }
+}
+
+/* A problem opens under its field on a top-down mask, and its glyph shakes
+   its head once the field's own shake (src/features/contact/shake.ts) has
+   mostly rung out: follow-through, not a second jolt. */
+.contact-problem {
+  clip-path: inset(0);
+  transition: clip-path 400ms var(--ease-out-quint);
+
+  @starting-style {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+.contact-problem > svg {
+  animation: contact-problem-wag 600ms ease-in-out 200ms both;
+}
+
+@keyframes contact-problem-wag {
+  14% {
+    rotate: -16deg;
+  }
+  36% {
+    rotate: 10deg;
+  }
+  58% {
+    rotate: -5deg;
+  }
+  80% {
+    rotate: 2deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-problem {
+    transition: opacity 200ms ease;
+
+    @starting-style {
+      clip-path: inset(0);
+      opacity: 0;
+    }
+  }
+
+  .contact-problem > svg {
+    animation: none;
+  }
+}
+
+/* Contact, sealing a sent note before the page swaps: the field rules ink in
+   down the form (each field's `--seal-at`), the message panel's edge with
+   them; the button's label comes in as "Sent". At `--seal-pulse`, once the
+   check is drawn, the plate and label dissolve and the mark, left alone,
+   swells and then shrinks away as the page fades out around it (ContactTemplate's
+   `SEAL`). Only played with motion allowed; reduced motion swaps straight
+   to the receipt. */
+.contact-form[data-sealed] .contact-line::after {
+  scale: 1;
+  transition-delay: var(--seal-at, 0ms);
+}
+
+.contact-form[data-sealed] [data-slot="field-panel"] {
+  border-color: var(--primary);
+  transition: border-color 500ms var(--ease-out-quint) var(--seal-at, 0ms);
+}
+
+.contact-send[data-sealed] {
+  background-color: transparent;
+  color: var(--foreground);
+  transition:
+    background-color 360ms var(--ease-out-quint) var(--seal-pulse),
+    color 360ms var(--ease-out-quint) var(--seal-pulse);
+}
+
+.contact-send[data-sealed] .contact-send-label {
+  animation:
+    contact-seal-in 280ms var(--ease-out-quint) both,
+    contact-seal-out 320ms var(--ease-out-quint) var(--seal-pulse) forwards;
+}
+
+.contact-send[data-sealed] .contact-seal {
+  animation: contact-seal-pulse 560ms var(--seal-pulse) forwards;
+}
+
+@keyframes contact-seal-in {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+@keyframes contact-seal-out {
+  to {
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+/* Out fast to the swell, then a held ease back down past rest as it fades. */
+@keyframes contact-seal-pulse {
+  0% {
+    animation-timing-function: var(--ease-out-quint);
+  }
+  38% {
+    scale: 1.3;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  100% {
+    scale: 0.8;
+    opacity: 0;
+  }
+}
+
+/* A profile link's underline draws in from the left and leaves to the right. */
+.contact-profile > span {
+  position: relative;
+}
+
+.contact-profile > span::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -2px;
+  height: 1px;
+  background: currentColor;
+  scale: 0 1;
+  transform-origin: right;
+  transition: scale 400ms var(--ease-out-quint);
+}
+
+.contact-profile:focus-visible > span::after {
+  scale: 1;
+  transform-origin: left;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .contact-profile:hover > span::after {
+    scale: 1;
+    transform-origin: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-profile > span::after {
+    transition: none;
+  }
+}
+
+/* The CV card: hover ink on the site's 300ms, a press on the shared press
+   tokens (subtle, for a card this wide). */
+.contact-cv {
+  transition:
+    background-color 300ms var(--ease-out-quint),
+    box-shadow 300ms var(--ease-out-quint),
+    scale var(--press-release-duration) var(--press-release-ease);
+}
+
+.contact-cv:active {
+  scale: var(--press-scale-subtle);
+  transition-duration: var(--press-duration);
+  transition-timing-function: var(--press-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-cv:active {
+    scale: none;
   }
 }
 
