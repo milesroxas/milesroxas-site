@@ -1,9 +1,9 @@
 'use client'
 
-import { Chat } from '@ai-sdk/react'
-import { DefaultChatTransport, generateId } from 'ai'
+import type { Chat } from '@ai-sdk/react'
 import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSitePathname } from '@/hooks/use-site-pathname'
+import { whenIdle } from '@/utilities/whenIdle'
 import type { AskFeedback } from './feedback'
 import type { AskHandoffSent } from './HandoffPanel'
 import type { AskUIMessage } from './handoff'
@@ -39,8 +39,54 @@ type AskSession = {
 
 const AskSessionContext = createContext<AskSession | null>(null)
 
-/** The site's one conversation, or null outside the provider (stories, tests, the admin). */
+/**
+ * The site's one conversation; null outside the provider (stories, tests,
+ * the admin) and until the runtime below has arrived.
+ */
 export const useAskSession = (): AskSession | null => use(AskSessionContext)
+
+/** Whether the conversation exists yet: a surface that reads it mounts once this is true. */
+export const useAskReady = (): boolean => use(AskSessionContext) !== null
+
+type AskRuntime = {
+  Chat: typeof import('@ai-sdk/react').Chat
+  DefaultChatTransport: typeof import('ai').DefaultChatTransport
+  generateId: typeof import('ai').generateId
+}
+
+let runtimePromise: Promise<AskRuntime> | undefined
+
+/**
+ * The chat runtime (the AI SDK and the schema library under it), fetched
+ * once. A static import put it in the chunk every page waits on, for a
+ * panel most visits never open; the provider asks for it once the page is
+ * idle, and a surface that needs it sooner can ask here.
+ */
+export const loadAskRuntime = (): Promise<AskRuntime> => {
+  runtimePromise ??= Promise.all([import('@ai-sdk/react'), import('ai')]).then(([react, ai]) => ({
+    Chat: react.Chat,
+    DefaultChatTransport: ai.DefaultChatTransport,
+    generateId: ai.generateId,
+  }))
+  return runtimePromise
+}
+
+function useAskRuntime(): AskRuntime | null {
+  const [runtime, setRuntime] = useState<AskRuntime | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    const cancelIdle = whenIdle(() => {
+      loadAskRuntime().then((loaded) => {
+        if (!cancelled) setRuntime(loaded)
+      })
+    })
+    return () => {
+      cancelled = true
+      cancelIdle()
+    }
+  }, [])
+  return runtime
+}
 
 const scrollDepth = (): number => {
   const { scrollHeight } = document.documentElement
@@ -104,21 +150,20 @@ function useAskJourney(): () => AskJourneyVisit[] {
 
 export function AskSessionProvider({ children }: { children: React.ReactNode }) {
   const journey = useAskJourney()
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport<AskUIMessage>({
-        api: '/api/ask',
-        // Resolved per request, so it is the page the question was asked on
-        // even after client-side navigation, and the journey up to that moment.
-        body: () => ({ pagePath: window.location.pathname, journey: journey() }),
-      }),
-    [journey],
-  )
-  const newChat = useCallback(
-    () => new Chat<AskUIMessage>({ id: generateId(), transport }),
-    [transport],
-  )
-  const [chat, setChat] = useState(newChat)
+  const runtime = useAskRuntime()
+  const newChat = useCallback(() => {
+    if (!runtime) return null
+    const transport = new runtime.DefaultChatTransport<AskUIMessage>({
+      api: '/api/ask',
+      // Resolved per request, so it is the page the question was asked on
+      // even after client-side navigation, and the journey up to that moment.
+      body: () => ({ pagePath: window.location.pathname, journey: journey() }),
+    })
+    return new runtime.Chat<AskUIMessage>({ id: runtime.generateId(), transport })
+  }, [runtime, journey])
+  const [chat, setChat] = useState<Chat<AskUIMessage> | null>(null)
+  // The first conversation, the render the runtime lands.
+  if (chat === null && runtime) setChat(newChat())
   const [sent, setSent] = useState<AskHandoffSent | null>(null)
   const [ratings, setRatings] = useState<AskFeedback['ratings']>({})
 
@@ -128,8 +173,8 @@ export function AskSessionProvider({ children }: { children: React.ReactNode }) 
     setRatings({})
   }, [newChat])
 
-  const session = useMemo<AskSession>(
-    () => ({ chat, sent, setSent, ratings, setRatings, reset }),
+  const session = useMemo<AskSession | null>(
+    () => chat && { chat, sent, setSent, ratings, setRatings, reset },
     [chat, sent, ratings, reset],
   )
 

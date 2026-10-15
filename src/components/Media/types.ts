@@ -19,6 +19,8 @@ export interface Props {
   loading?: 'lazy' | 'eager' // for NextImage only
   priority?: boolean // for NextImage only
   ref?: Ref<HTMLImageElement | HTMLVideoElement | null>
+  /** Video only. The poster's width in px, from the frame it fills; a priority video defaults to 1920, any other to 1280. */
+  posterWidth?: number
   resource?: MediaType | string | number | null // for Payload media
   size?: string // for NextImage only
   src?: StaticImageData // for static media

@@ -41,12 +41,15 @@ export function bandwidthHintFor(video: HTMLVideoElement): number {
  * hls.js opens every video at 240p: its default bandwidth guess is 0.5 Mbps and
  * it only climbs after measuring segments. These loops play muted in a sized
  * frame, so assume a fast line and let the frame's own size cap the rendition.
- * Nothing loads until the element is asked to play (eager: at once).
+ * The cap counts device pixels up to 1.5x: at the full ratio a 270px portrait
+ * on a phone asked for the 1280 rendition, 1.7 MB before the page had its
+ * scripts. Nothing loads until the element is asked to play (eager: at once).
  */
 export const hlsConfigFor = (eager: boolean) => ({
   enableWorker: true,
   abrEwmaDefaultEstimate: 6_000_000,
   capLevelToPlayerSize: true,
+  maxDevicePixelRatio: 1.5,
   autoStartLoad: eager,
 })
 
@@ -68,11 +71,14 @@ export const warmVideo = (video: HTMLVideoElement): void => {
 /**
  * The poster paints the frame until the first segment lands, and is the LCP
  * element in a hero. Stream's default thumbnail is 640 px wide, so a retina
- * hero asks for 1920 and any other frame 1280 (`poster` takes one URL).
+ * hero asks for 1920 and any other frame 1280 (`poster` takes one URL); a
+ * caller that knows its frame is narrower says so with `posterWidth`.
  */
-function posterUrlFor(resource: MediaType, priority: boolean) {
+function posterUrlFor(resource: MediaType, priority: boolean, posterWidth?: number) {
   const streamThumbnail = resource.cloudflareStreamThumbnailUrl
-  if (streamThumbnail) return streamPosterUrl(streamThumbnail, priority ? 1920 : 1280)
+  if (streamThumbnail) {
+    return streamPosterUrl(streamThumbnail, posterWidth ?? (priority ? 1920 : 1280))
+  }
   return resource.thumbnailURL ? getMediaUrl(resource.thumbnailURL) : undefined
 }
 
@@ -245,6 +251,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
     fill,
     onClick,
     onLoad,
+    posterWidth,
     resource,
     videoClassName,
     priority = false,
@@ -262,7 +269,7 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
 
   return (
     <video
-      poster={posterUrlFor(resource, priority)}
+      poster={posterUrlFor(resource, priority, posterWidth)}
       autoPlay={eager}
       // `fill` covers the caller's aspect frame, as ImageMedia's fill image does.
       className={cn(fill && 'absolute inset-0 size-full object-cover', videoClassName)}

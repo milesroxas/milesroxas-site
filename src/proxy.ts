@@ -84,12 +84,13 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * Pages only on the site's own host: not the API, Next's static output,
+     * the image optimizer, or any file with an extension (public/ assets,
+     * fonts, robots, sitemap, the markdown alternates). Each of those is
+     * served from the CDN and never needs the access cookie.
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|.*\\.[a-z0-9]+$).*)',
+    /* The reports host serves files too, so every path there goes through. */
+    { source: '/:path*', has: [{ type: 'host', value: 'reports\\..*' }] },
   ],
 }

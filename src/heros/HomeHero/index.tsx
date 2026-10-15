@@ -114,7 +114,10 @@ export const HomeHero: React.FC<HeroProps> = ({ media, heading }) => (
           htmlElement={null}
           className="h-full w-full object-cover"
           imgClassName="motion-safe:animate-hero-settle"
+          // The frame is 30vh wide: 640 covers it at 2x on any screen.
+          posterWidth={640}
           priority
+          size="30vh"
           videoClassName="motion-safe:animate-hero-settle"
           resource={media}
         />

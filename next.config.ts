@@ -53,7 +53,11 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    qualities: [100, 75],
+    qualities: [100, 85, 75],
+    // Optimized images stay cached for a year: every media URL carries its
+    // `updatedAt` as a cache tag, so a replaced file is a new URL. Without
+    // this the optimizer re-fetched the R2 origin every four hours.
+    minimumCacheTTL: 31536000,
     // Disable optimization in development to avoid private IP errors
     unoptimized: process.env.NODE_ENV === 'development',
   },
@@ -131,14 +135,16 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
+    const immutable = { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }
     return [
+      // Effect posters are versioned in their file names (`*-v1-dark.webp`).
+      { source: '/images/:path*', headers: [immutable] },
+      // Textures keep their names between revisions: a day in the browser,
+      // then a week of stale-while-revalidate behind the CDN.
       {
-        source: '/media/:path*',
+        source: '/textures/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' },
         ],
       },
     ]

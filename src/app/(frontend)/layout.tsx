@@ -1,5 +1,6 @@
 import configPromise from '@payload-config'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GeistMono } from 'geist/font/mono'
 import type { Metadata, Viewport } from 'next'
 import { unstable_cache } from 'next/cache'
@@ -10,7 +11,6 @@ import { getPayload } from 'payload'
 import type React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
-import { Clarity } from '@/components/Clarity'
 import { JsonLd } from '@/components/JsonLd'
 import { SiteChrome } from '@/components/SiteChrome/SiteChrome'
 import { Footer } from '@/Footer/Component'
@@ -86,7 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Footer />
         </Providers>
         <Analytics />
-        <Clarity />
+        <SpeedInsights />
         <PostHogProvider />
       </body>
     </html>

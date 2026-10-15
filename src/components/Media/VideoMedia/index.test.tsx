@@ -166,6 +166,7 @@ describe('rendition choice', () => {
     expect(hlsConfigFor(false)).toMatchObject({
       abrEwmaDefaultEstimate: 6_000_000,
       capLevelToPlayerSize: true,
+      maxDevicePixelRatio: 1.5,
       autoStartLoad: false,
     })
     expect(hlsConfigFor(true).autoStartLoad).toBe(true)

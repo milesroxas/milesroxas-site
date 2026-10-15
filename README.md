@@ -78,7 +78,6 @@ Cloudflare media:
 
 Analytics:
 
-- `NEXT_PUBLIC_CLARITY_ID`
 - `NEXT_PUBLIC_POSTHOG_KEY`
 - `NEXT_PUBLIC_POSTHOG_HOST`
 

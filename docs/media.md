@@ -53,17 +53,21 @@ export for each block: [media-dimensions.md](media-dimensions.md).
    `/api/cloudflare-stream-webhook` the way `Agent API bypass` does for `/api/mcp`. Until that rule
    exists, readiness arrives with the next sweep instead of within minutes.
    The poster is Stream's thumbnail sized by `streamPosterUrl` (`src/utilities/streamPoster.ts`):
-   Stream's default `thumbnail.jpg` is 640 px wide, a 4× upscale in a retina hero, so the hero asks
-   for 1920, any other frame 1280, and the carousel's poster overlay carries a 640/1280/1920
-   srcset with the slide's `sizes`. The admin list and pickers paint `adminThumbnail`
+   Stream's default `thumbnail.jpg` is 640 px wide, a 4× upscale in a retina hero, so a priority
+   video asks for 1920, any other frame 1280, and the carousel's poster overlay carries a
+   640/1280/1920 srcset with the slide's `sizes`. A caller whose frame is narrower says so with
+   `posterWidth`: the home hero's portrait is 30vh wide and takes 640 (its 1920 poster was a
+   356 KB JPEG and the page's LCP element, 73 KB at 640). The admin list and pickers paint `adminThumbnail`
    (`src/collections/Media/adminThumbnail.ts`): the Cloudflare image at 300 wide, a Stream frame
    for a video, else the size file beside the original. Payload's own thumbnail read the size's
    stored URL, empty for a browser upload, and fell back to a file route that looked on a disk
    nothing was written to, one 500 per row per list view.
    Playback (`src/components/Media/VideoMedia`) goes through hls.js, or Safari's native player.
    hls.js is given a 6 Mbps opening estimate capped to the frame's rendered size, since its own
-   0.5 Mbps guess opens every video at 240p; Safari gets `clientBandwidthHint` from the frame's
-   width, the only control its player offers. hls.js loads no segment until the element is asked
+   0.5 Mbps guess opens every video at 240p. The cap counts device pixels up to 1.5x
+   (`maxDevicePixelRatio`): at the full ratio the 270 px home portrait on a 3x phone asked for the
+   1280 rendition, 1.7 MB before the page had its scripts. Safari gets `clientBandwidthHint` from
+   the frame's width, the only control its player offers. hls.js loads no segment until the element is asked
    to play, and a `play()` that lands before the manifest (the carousel selects a slide while
    hls.js is still importing) is kept from the element's play/pause events and honoured once the
    manifest parses. Chrome's built-in HLS player answers `canPlayType` too now, so current Chrome
@@ -90,6 +94,11 @@ the `public` variant; `cloudflareImageLoader` (`src/utilities/cloudflareImageLoa
 to `w=<width>,q=<quality>,f=auto` per `next/image` breakpoint, so Cloudflare resizes and encodes
 (AVIF or WebP by Accept header) and Vercel's optimizer only handles non-Cloudflare sources. A server
 component renders `CloudflareImage` to get the loader; a client component passes it directly.
+
+Cloudflare Images takes JPEG, PNG, WebP, GIF, HEIC and SVG and refuses AVIF (code 5455), so the
+Media collection's `mimeTypes` stop an AVIF at the admin. One that got in before that rule stays
+on the bucket, served through Vercel's optimizer; `scripts/replace-avif-media.ts` re-encodes each
+as WebP and replaces the file, which runs the normal sync.
 
 ## Scripts
 

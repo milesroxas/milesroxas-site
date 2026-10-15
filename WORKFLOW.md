@@ -73,6 +73,5 @@ Do not create `.env.local` or `.env.production`: Next.js loads them over `.env`,
 | `CLOUDFLARE_IMAGES_ACCOUNT_HASH` | Cloudflare Images account hash |
 | `CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN` | Cloudflare Stream playback domain |
 | `CLOUDFLARE_STREAM_WEBHOOK_SECRET` | Cloudflare Stream webhook secret |
-| `NEXT_PUBLIC_CLARITY_ID` | Microsoft Clarity project ID |
 | `NEXT_PUBLIC_POSTHOG_KEY` | PostHog client key |
 | `NEXT_PUBLIC_POSTHOG_HOST` | PostHog API host |

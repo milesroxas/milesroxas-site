@@ -1,13 +1,22 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { AskPanel } from '@/features/ask/AskPanel'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { useAskReady } from '@/features/ask/AskSession'
 import type { AskHandoffTerms } from '@/features/ask/handoff'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useSitePathname } from '@/hooks/use-site-pathname'
+import { whenIdle } from '@/utilities/whenIdle'
 import { Dock } from './Dock'
 import { TopBar } from './TopBar'
 import { activeTabIndex, type ChromeTab, tabCurrent } from './tabs'
+
+/**
+ * The panel in its own chunk, fetched once the page is idle (with the chat
+ * runtime the session provider fetches then) and mounted once the session
+ * exists. A press before that opens it the moment it lands.
+ */
+const loadAskPanel = () => import('@/features/ask/AskPanel')
+const AskPanel = lazy(() => loadAskPanel().then((module) => ({ default: module.AskPanel })))
 
 type SiteChromeAsk = {
   suggestions: string[]
@@ -96,6 +105,13 @@ export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
   const triggerRef = useRef<HTMLButtonElement>(null)
   const { askOpen, askPresent, setAskPresent, viaKeyboard, toggleAsk, changeAskFromPanel } =
     useAskToggle(ask)
+  const askReady = useAskReady()
+  useEffect(() => {
+    if (!ask) return
+    return whenIdle(() => {
+      void loadAskPanel()
+    })
+  }, [ask])
 
   return (
     <div className="contents" id="site-chrome">
@@ -114,17 +130,19 @@ export function SiteChromeClient({ tabs, ask }: SiteChromeClientProps) {
         onSelect={press.set}
         tabs={tabs}
       />
-      {ask && (
-        <AskPanel
-          instant={viaKeyboard}
-          onOpenChange={changeAskFromPanel}
-          onPresenceChange={setAskPresent}
-          open={askOpen}
-          sheet={phone}
-          suggestions={ask.suggestions}
-          terms={ask.terms}
-          triggerRef={triggerRef}
-        />
+      {ask && askReady && (
+        <Suspense fallback={null}>
+          <AskPanel
+            instant={viaKeyboard}
+            onOpenChange={changeAskFromPanel}
+            onPresenceChange={setAskPresent}
+            open={askOpen}
+            sheet={phone}
+            suggestions={ask.suggestions}
+            terms={ask.terms}
+            triggerRef={triggerRef}
+          />
+        </Suspense>
       )}
     </div>
   )

@@ -91,7 +91,19 @@ export const Media: CollectionConfig = {
         width: 300,
       },
     ],
-    mimeTypes: ['image/*', 'video/*', 'application/pdf'],
+    // The image types Cloudflare Images accepts (docs/media.md). AVIF is
+    // refused there with code 5455, and an upload it refuses stays on the
+    // origin bucket for good; the admin says no before the file lands.
+    mimeTypes: [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'image/svg+xml',
+      'image/heic',
+      'video/*',
+      'application/pdf',
+    ],
   },
   // Enable folders for media organization
   folders: true,

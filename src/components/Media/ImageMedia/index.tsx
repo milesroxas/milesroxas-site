@@ -84,8 +84,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
 
   const sizes = sizeFromProps || '100vw'
 
-  // Cloudflare resizes its own images per breakpoint; quality 100 was tuned
-  // for Vercel's optimizer and stays with it.
+  // Cloudflare resizes its own images per breakpoint (quality 85, its
+  // default); Vercel's optimizer serves the rest at the same quality.
   const cloudflare = typeof src === 'string' && isCloudflareImageUrl(src)
 
   // `fill` images position against their direct parent (next/image requires it be
@@ -106,7 +106,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         blurDataURL={placeholderBlur}
         priority={priority}
         loader={cloudflare ? cloudflareImageLoader : undefined}
-        quality={cloudflare ? undefined : 100}
+        quality={cloudflare ? undefined : 85}
         loading={loading}
         sizes={sizes}
         src={src}

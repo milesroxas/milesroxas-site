@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import { CodeBlock as CodeSurface } from '@/components/ui/code-block'
+import { CodeSurface } from './CodeSurface'
 
 export type CodeBlockProps = {
   code: string
