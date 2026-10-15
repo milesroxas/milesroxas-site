@@ -33,9 +33,10 @@ const scan = () => {
   frame = 0
   const next = readBands()
   // Most mutations (an animation's class, a hover state) leave the bands as
-  // they were; only a changed list re-observes.
-  if (next.length === bands.length && next.every((band, index) => band === bands[index])) return
-  bands = next
+  // they were: the list keeps its identity, and a listener that sees the
+  // same list re-observes only if its own line has moved.
+  if (!(next.length === bands.length && next.every((band, index) => band === bands[index])))
+    bands = next
   for (const listener of listeners) listener(bands)
 }
 
@@ -99,8 +100,11 @@ const innermost = (crossing: Set<Element>) => {
  * IntersectionObserver whose root margin leaves only that line), so scrolling
  * costs no scroll handler and no layout read: the browser reports each band
  * as it crosses the line. The line is measured again on resize, since the
- * element's place changes with the breakpoint, and the ground is read again
- * when the site theme flips, since an inverted band flips with it.
+ * element's place changes with the breakpoint; after the element's own
+ * animations end, since the dock's entrance holds it below its place and a
+ * line measured there sat on the admin bar; and on any mutation that moved
+ * the element, since the admin bar appearing lifts the dock. The ground is
+ * read again when the site theme flips, since an inverted band flips with it.
  *
  * `mounted` is for an element that renders after the hook's first run (a
  * portal waiting on the document): flip it once the element exists.
@@ -120,17 +124,23 @@ export function useBandGround(
     const crossing = new Set<Element>()
     let intersection: IntersectionObserver | null = null
     let current: Element[] = []
+    let line = Number.NaN
+    let disposed = false
 
     const settle = () => {
       const band = innermost(crossing)
       setGround(band ? readGround(band) : undefined)
     }
 
+    const measure = () => {
+      const rect = element.getBoundingClientRect()
+      return Math.round(rect.top + rect.height / 2)
+    }
+
     const observe = () => {
       intersection?.disconnect()
       crossing.clear()
-      const rect = element.getBoundingClientRect()
-      const line = Math.round(rect.top + rect.height / 2)
+      line = measure()
       const below = Math.max(window.innerHeight - line - 1, 0)
       intersection = new IntersectionObserver(
         (entries) => {
@@ -144,14 +154,26 @@ export function useBandGround(
       )
       for (const band of current) intersection.observe(band)
       if (current.length === 0) settle()
+      // Mid-entrance (or any transition of its own), the element is not where
+      // it will rest: measure again once it is.
+      const running = element.getAnimations().filter((a) => a.playState !== 'finished')
+      if (running.length === 0) return
+      Promise.all(running.map((a) => a.finished)).then(
+        () => {
+          if (!disposed && measure() !== line) observe()
+        },
+        () => {},
+      )
     }
 
     const unsubscribe = subscribeBands((next) => {
+      if (next === current && measure() === line) return
       current = next
       observe()
     })
     window.addEventListener('resize', observe)
     return () => {
+      disposed = true
       unsubscribe()
       window.removeEventListener('resize', observe)
       intersection?.disconnect()

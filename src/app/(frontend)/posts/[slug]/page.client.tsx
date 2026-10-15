@@ -1,24 +1,14 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { ChromeTitle } from '@/components/SiteChrome/ChromeTitle'
-import { useLenis } from '@/hooks/useLenis'
 import type { Post } from '@/payload-types'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { categoryKeys } from '@/utilities/reactKeyDomains'
 
-/**
- * Arriving on a post, the page starts at its top.
- * Without `header`, the opening is the post's own hero (`PostHero`).
- */
+/** Without `header`, the opening is the post's own hero (`PostHero`). */
 const PageClient: React.FC<{ post: Post; header?: boolean }> = ({ post, header = true }) => {
   const { categories, publishedAt, title } = post
-
-  const lenis = useLenis()
-
-  useEffect(() => {
-    lenis?.scrollTo(0, { immediate: true })
-  }, [lenis])
 
   if (!header) return null
 

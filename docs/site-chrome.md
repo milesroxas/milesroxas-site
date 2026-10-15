@@ -107,7 +107,17 @@ that polarity as `data-theme`, so it takes its dark material over a dark band
 and its light glass over a light one, including an inverted band on a dark
 visit. Over the page itself it stamps nothing and follows the visitor's theme.
 Chrome marks itself `data-chrome` so it never counts as a band. The Contents
-button uses the same hook.
+button uses the same hook. The sample is a one-pixel line at the piece's
+centre, measured again whenever the piece moves: on resize, after its own
+entrance ends (the dock arrives from 8px below its place), and when a
+mutation shifts it (the admin bar appearing lifts the dock). A line measured
+during the entrance sat on the admin bar, and the dock wore its dark strip.
+
+Every route change lands at the top of the new page (`LenisRouteReset`,
+`src/providers/Lenis/index.tsx`), through Lenis itself: Next's own
+scroll-to-top is ignored while a Lenis ease is still running, and never
+fires on `/works`, whose desktop wrapper is `display: contents`. Back and
+Forward land at the top too, as on sas-site.
 
 ## Motion
 
