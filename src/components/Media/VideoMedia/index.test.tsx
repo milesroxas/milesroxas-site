@@ -1,7 +1,7 @@
 import { cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { videoFixture } from '@/stories/fixtures'
-import { bandwidthHintFor, hlsConfigFor, VideoMedia, warmVideo } from './index'
+import { bandwidthHintFor, capLevelToFrame, hlsConfig, VideoMedia, warmVideo } from './index'
 
 type Listener = () => void
 
@@ -162,14 +162,52 @@ describe('VideoMedia on the native player', () => {
 })
 
 describe('rendition choice', () => {
-  it('hls.js starts from a fast-line estimate capped to the frame', () => {
-    expect(hlsConfigFor(false)).toMatchObject({
+  it('hls.js starts from a fast-line estimate capped to the frame, and never on its own', () => {
+    expect(hlsConfig).toMatchObject({
       abrEwmaDefaultEstimate: 6_000_000,
       capLevelToPlayerSize: true,
       maxDevicePixelRatio: 1.5,
       autoStartLoad: false,
     })
-    expect(hlsConfigFor(true).autoStartLoad).toBe(true)
+  })
+
+  const STREAM_LEVELS = [
+    { width: 240, height: 426 },
+    { width: 360, height: 640 },
+    { width: 480, height: 852 },
+    { width: 720, height: 1280 },
+    { width: 1080, height: 1920 },
+  ]
+  const boxOf = (element: Element, width: number, height: number) =>
+    Object.defineProperty(element, 'getBoundingClientRect', {
+      configurable: true,
+      value: () => ({ width, height }),
+    })
+
+  it('caps the level to the frame in device pixels, 1.5x at most', () => {
+    const video = document.createElement('video')
+    const hls = { levels: STREAM_LEVELS, autoLevelCapping: -1 }
+    window.devicePixelRatio = 3
+    boxOf(video, 270, 480)
+    capLevelToFrame(hls, video)
+    // 405 x 720: the 480 x 852 rendition, not the 720 x 1280 one 3x would ask for.
+    expect(hls.autoLevelCapping).toBe(2)
+  })
+
+  it('reads the frame around a video that has no box yet, and leaves the cap alone with neither', () => {
+    const frame = document.createElement('div')
+    const video = document.createElement('video')
+    frame.append(video)
+    const hls = { levels: STREAM_LEVELS, autoLevelCapping: -1 }
+    window.devicePixelRatio = 1
+    boxOf(video, 0, 0)
+    boxOf(frame, 270, 480)
+    capLevelToFrame(hls, video)
+    expect(hls.autoLevelCapping).toBe(1)
+    boxOf(frame, 0, 0)
+    hls.autoLevelCapping = -1
+    capLevelToFrame(hls, video)
+    expect(hls.autoLevelCapping).toBe(-1)
   })
 
   it("Safari's hint follows the rendered width in device pixels", () => {

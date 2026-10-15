@@ -64,10 +64,12 @@ export for each block: [media-dimensions.md](media-dimensions.md).
    nothing was written to, one 500 per row per list view.
    Playback (`src/components/Media/VideoMedia`) goes through hls.js, or Safari's native player.
    hls.js is given a 6 Mbps opening estimate capped to the frame's rendered size, since its own
-   0.5 Mbps guess opens every video at 240p. The cap counts device pixels up to 1.5x
-   (`maxDevicePixelRatio`): at the full ratio the 270 px home portrait on a 3x phone asked for the
-   1280 rendition, 1.7 MB before the page had its scripts. Safari gets `clientBandwidthHint` from
-   the frame's width, the only control its player offers. hls.js loads no segment until the element is asked
+   0.5 Mbps guess opens every video at 240p. The cap is applied by `capLevelToFrame` the moment
+   the load starts, from the element's box or the frame around it, in device pixels up to 1.5x:
+   hls.js's own measurement runs once at manifest parse, when the hero's video has no box yet, and
+   a 0 × 0 box lifts the cap, so the 270 px portrait fetched the 720 x 1280 rendition, 1.7 MB
+   before the page had its scripts. Safari gets `clientBandwidthHint` from the frame's width, the
+   only control its player offers. hls.js loads no segment until the element is asked
    to play, and a `play()` that lands before the manifest (the carousel selects a slide while
    hls.js is still importing) is kept from the element's play/pause events and honoured once the
    manifest parses. Chrome's built-in HLS player answers `canPlayType` too now, so current Chrome

@@ -36,8 +36,10 @@ defaults `sizes` to `100vw`, so a block that renders an image in a column must p
 (`docs/media.md`).
 
 **Video.** The poster is the LCP element of any page with a video hero, so it is sized to the
-frame (`posterWidth`), and hls.js caps the rendition to the frame at no more than 1.5x device
-pixels (`hlsConfigFor` in `src/components/Media/VideoMedia/index.tsx`).
+frame (`posterWidth`), and the rendition is capped to the frame at no more than 1.5x device
+pixels by `capLevelToFrame` (`src/components/Media/VideoMedia/index.tsx`) when the load starts,
+because hls.js's own player-size cap measures once at manifest parse and lifts on a 0 × 0 box,
+which is what the hero's frame is that early.
 
 **Public assets.** `next.config.ts` serves `/images/*` as immutable (file names carry a
 version) and `/textures/*` for a day with a week of stale-while-revalidate. A new folder under

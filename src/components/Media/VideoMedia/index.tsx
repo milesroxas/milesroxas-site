@@ -37,21 +37,48 @@ export function bandwidthHintFor(video: HTMLVideoElement): number {
   return 6
 }
 
+/** The most device pixels a rendition is chosen for: a muted loop reads fine at 1.5x. */
+const MAX_DEVICE_PIXEL_RATIO = 1.5
+
 /**
  * hls.js opens every video at 240p: its default bandwidth guess is 0.5 Mbps and
  * it only climbs after measuring segments. These loops play muted in a sized
- * frame, so assume a fast line and let the frame's own size cap the rendition.
- * The cap counts device pixels up to 1.5x: at the full ratio a 270px portrait
- * on a phone asked for the 1280 rendition, 1.7 MB before the page had its
- * scripts. Nothing loads until the element is asked to play (eager: at once).
+ * frame, so assume a fast line and let the frame's own size cap the rendition
+ * (`capLevelToFrame` at load start, hls.js's own cap for later switches).
+ * Nothing loads until `startLoad`: at manifest parse for an eager video, on
+ * play or warm for the rest.
  */
-export const hlsConfigFor = (eager: boolean) => ({
+export const hlsConfig = {
   enableWorker: true,
   abrEwmaDefaultEstimate: 6_000_000,
   capLevelToPlayerSize: true,
-  maxDevicePixelRatio: 1.5,
-  autoStartLoad: eager,
-})
+  maxDevicePixelRatio: MAX_DEVICE_PIXEL_RATIO,
+  autoStartLoad: false,
+} as const
+
+type HlsLevels = {
+  levels: ReadonlyArray<{ width: number; height: number }>
+  autoLevelCapping: number
+}
+
+/**
+ * hls.js measures the element once, at manifest parse, and lifts its cap when
+ * the box is 0 × 0; the hero's video has no box yet that early in the wipe,
+ * so ABR's opening estimate picked 720p for a 270 px frame. Measured here at
+ * the moment the load starts instead, from the element or the frame around
+ * it, with hls.js's own rule: the first level at least as wide or as tall as
+ * the box in device pixels.
+ */
+export function capLevelToFrame(hls: HlsLevels, video: HTMLVideoElement): void {
+  const scale = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO)
+  const own = video.getBoundingClientRect()
+  const frame = video.parentElement?.getBoundingClientRect()
+  const width = (own.width || frame?.width || 0) * scale
+  const height = (own.height || frame?.height || 0) * scale
+  if (!width && !height) return
+  const index = hls.levels.findIndex((level) => level.width >= width || level.height >= height)
+  hls.autoLevelCapping = index === -1 ? hls.levels.length - 1 : index
+}
 
 function fallbackSrcFor({ url }: MediaType): string {
   return getMediaUrl(url)
@@ -150,14 +177,15 @@ function useHlsStream(
     let cancelled = false
     let hlsInstance: InstanceType<typeof import('hls.js').default> | null = null
     let manifestParsed = false
-    let loading = eager
+    let loading = false
     let wantsPlay = !video.paused
     let warm = false
 
     const startLoad = () => {
-      if (loading || !manifestParsed) return
+      if (loading || !manifestParsed || !hlsInstance) return
       loading = true
-      hlsInstance?.startLoad()
+      capLevelToFrame(hlsInstance, video)
+      hlsInstance.startLoad()
     }
     const onPlay = () => {
       wantsPlay = true
@@ -178,10 +206,10 @@ function useHlsStream(
       if (cancelled || !videoRef.current) return
       if (!Hls.isSupported()) return
 
-      hlsInstance = new Hls(hlsConfigFor(eager))
+      hlsInstance = new Hls(hlsConfig)
       hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
         manifestParsed = true
-        if (!wantsPlay && !warm) return
+        if (!eager && !wantsPlay && !warm) return
         startLoad()
         if (wantsPlay) void playIfPaused(video)
       })
