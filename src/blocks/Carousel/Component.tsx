@@ -640,7 +640,10 @@ const CarouselSlide: React.FC<{
  * clips: the words rise out of it and the next slide's come up from under
  * it, one line tall when any slide carries a caption (and in a shared frame,
  * when any deck does), so the block never moves as captions come and go.
- * `aria-hidden`: each slide keeps its caption for readers.
+ * The outer box clips sideways like the real track's viewport: the gutter's
+ * negative margin would otherwise reach past a full-width block's edges and
+ * give the page a horizontal scroll. `aria-hidden`: each slide keeps its
+ * caption for readers.
  */
 const DeckCaption: React.FC<{
   className?: string
@@ -651,18 +654,20 @@ const DeckCaption: React.FC<{
   sizeClass: string
   text: string
 }> = ({ className, captionRef, count, gutter, isStack, sizeClass, text }) => (
-  <div aria-hidden="true" className={cn('mt-4 flex', gutter.track, !isStack && 'justify-center')}>
-    <div
-      className={cn('@container shrink-0 overflow-hidden', sizeClass, gutter.slide)}
-      style={isStack ? { maxWidth: stackCardStyle(count).width } : undefined}
-    >
-      <p
-        className={cn('min-h-5 text-muted-foreground text-sm', className)}
-        data-carousel-caption
-        ref={captionRef}
+  <div aria-hidden="true" className="mt-4 overflow-x-clip">
+    <div className={cn('flex', gutter.track, !isStack && 'justify-center')}>
+      <div
+        className={cn('@container shrink-0 overflow-hidden', sizeClass, gutter.slide)}
+        style={isStack ? { maxWidth: stackCardStyle(count).width } : undefined}
       >
-        {text}
-      </p>
+        <p
+          className={cn('min-h-5 text-muted-foreground text-sm', className)}
+          data-carousel-caption
+          ref={captionRef}
+        >
+          {text}
+        </p>
+      </div>
     </div>
   </div>
 )
