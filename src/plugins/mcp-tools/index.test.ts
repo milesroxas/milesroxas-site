@@ -11,7 +11,8 @@ const jev = vi.hoisted(() => ({ systemOne: vi.fn() }))
 const jevConfigured = vi.hoisted(() => ({ on: true }))
 vi.mock('./jev', () => ({ mcpJevClient: () => (jevConfigured.on ? jev : null) }))
 
-import { mcpSiteTools } from './index'
+import { SEO_COLLECTIONS, SEO_GLOBALS } from '@/plugins/seo'
+import { mcpSiteTools, SEO_TARGETS } from './index'
 
 const page = {
   id: 6,
@@ -293,5 +294,104 @@ describe('findContent', () => {
     expect(out.judged).toBe(false)
     expect(out.rows.map((row: { id: number }) => row.id)).toEqual([1, 2])
     expect(out.note).toMatch(/unchecked/)
+  })
+})
+
+describe('updateSeo', () => {
+  const seoRequest = (capabilities: Capabilities) => {
+    const { req, payload } = request(capabilities)
+    const saved = (data: { meta: unknown }) =>
+      Promise.resolve({ id: 6, _status: 'draft', meta: data.meta })
+    payload.update.mockImplementation(({ data }) => saved(data))
+    Object.assign(payload, { updateGlobal: vi.fn().mockImplementation(({ data }) => saved(data)) })
+    return { req, payload: payload as typeof payload & { updateGlobal: ReturnType<typeof vi.fn> } }
+  }
+
+  it('covers every document with an SEO tab', () => {
+    expect(Object.keys(SEO_TARGETS)).toEqual(
+      expect.arrayContaining([...SEO_COLLECTIONS, ...SEO_GLOBALS, 'contact-page']),
+    )
+  })
+
+  it('refuses a key without update on the collection', async () => {
+    const { req, payload } = seoRequest({ works: { find: true } })
+    await expect(
+      call('updateSeo', { collection: 'works', id: 6, meta: { title: 'X' } }, req),
+    ).resolves.toMatch(/cannot update works/)
+    expect(payload.update).not.toHaveBeenCalled()
+  })
+
+  it('saves only the meta group, as a draft by default', async () => {
+    const { req, payload } = seoRequest(full)
+    const out = JSON.parse(
+      await call('updateSeo', { collection: 'pages', id: 6, meta: { description: 'D' } }, req),
+    )
+    expect(payload.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'pages',
+        id: 6,
+        data: { meta: { description: 'D' } },
+        draft: true,
+        overrideAccess: false,
+      }),
+    )
+    expect(out).toEqual({
+      collection: 'pages',
+      id: 6,
+      _status: 'draft',
+      meta: { description: 'D' },
+    })
+  })
+
+  it('needs an id for a collection', async () => {
+    const { req, payload } = seoRequest(full)
+    await expect(
+      call('updateSeo', { collection: 'pages', meta: { title: 'X' } }, req),
+    ).resolves.toMatch(/send the id/)
+    expect(payload.update).not.toHaveBeenCalled()
+  })
+
+  it('publishes a global without an id', async () => {
+    const { req, payload } = seoRequest({ worksIndex: { update: true } })
+    await call(
+      'updateSeo',
+      { collection: 'works-index', meta: { noIndex: false }, draft: false },
+      req,
+    )
+    expect(payload.updateGlobal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        slug: 'works-index',
+        data: { meta: { noIndex: false }, _status: 'published' },
+        draft: false,
+      }),
+    )
+  })
+
+  it('refuses a field the contact page does not have and saves it without drafts', async () => {
+    const { req, payload } = seoRequest({ contactPage: { update: true } })
+    await expect(
+      call('updateSeo', { collection: 'contact-page', meta: { image: 3 } }, req),
+    ).resolves.toMatch(/no SEO field image/)
+    await call('updateSeo', { collection: 'contact-page', meta: { title: 'Contact' } }, req)
+    const [[options]] = payload.updateGlobal.mock.calls
+    expect(options).toMatchObject({ slug: 'contact-page', data: { meta: { title: 'Contact' } } })
+    expect(options).not.toHaveProperty('draft')
+  })
+})
+
+describe('patchBlock publishing', () => {
+  it('sends the published status so draft: false publishes', async () => {
+    const { req, payload } = request(full)
+    await call(
+      'patchBlock',
+      { collection: 'pages', id: 6, blockId: 'c1', patch: { heading: 'Hi' }, draft: false },
+      req,
+    )
+    expect(payload.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        draft: false,
+        data: expect.objectContaining({ _status: 'published' }),
+      }),
+    )
   })
 })

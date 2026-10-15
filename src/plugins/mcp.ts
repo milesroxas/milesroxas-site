@@ -115,12 +115,14 @@ const collections: MCPPluginConfig['collections'] = Object.fromEntries([
     },
     AUTHORING,
   ),
-  // Media stays read-only: MCP tools cannot send binary uploads. Images come in
-  // through `pnpm cms:upload` (`uploadMediaCapability` below).
+  // Media stays read-only here: MCP tools cannot send binary uploads, and a
+  // generated update would expose the file and Cloudflare fields. Images come in
+  // through `pnpm cms:upload`, alt text and captions through the `updateMedia`
+  // site tool; both read `uploadMediaCapability` below.
   ...entries(
     {
       media:
-        'Uploaded images and videos. Read-only over MCP: reference existing documents by id. New images go through `pnpm cms:upload`',
+        'Uploaded images and videos. Reference existing documents by id. Set alt text and captions with updateMedia; new images go through `pnpm cms:upload`',
     },
     READ_ONLY,
   ),
@@ -245,7 +247,8 @@ const withCapabilityControls = (fields: Field[]): Field[] => {
 /**
  * The one capability that is not an MCP tool. MCP cannot carry a binary, so
  * media is added through `POST /api/agent/media` (`endpoints/agentMedia.ts`)
- * with the same key, and that endpoint reads this checkbox. It is its own
+ * with the same key, and that endpoint reads this checkbox, as does the
+ * `updateMedia` site tool for alt text and captions. It is its own
  * field rather than `create` on the media entry above because that would
  * register a create tool that can never receive a file. Off by default, like
  * every capability.
@@ -257,7 +260,7 @@ const uploadMediaCapability: Field = {
   defaultValue: false,
   admin: {
     position: 'sidebar',
-    description: 'Allow `pnpm cms:upload` with this key.',
+    description: 'Allow `pnpm cms:upload` and `updateMedia` with this key.',
   },
 }
 

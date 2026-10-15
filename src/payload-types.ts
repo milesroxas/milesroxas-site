@@ -371,6 +371,14 @@ export interface Post {
    * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
    */
   showContents?: boolean | null;
+  /**
+   * Write-only. Markdown for `content`: converted to rich text on save and never stored. Syntax the field cannot hold is refused with what to use instead.
+   */
+  markdown?: string | null;
+  /**
+   * Write-only. Send true beside `markdown` to overwrite `content` when it already has content.
+   */
+  replace?: boolean | null;
   content?: {
     root: {
       type: string;
@@ -457,6 +465,14 @@ export interface Post {
 export interface Media {
   id: number;
   alt?: string | null;
+  /**
+   * Write-only. Markdown for `caption`: converted to rich text on save and never stored. Syntax the field cannot hold is refused with what to use instead.
+   */
+  markdown?: string | null;
+  /**
+   * Write-only. Send true beside `markdown` to overwrite `caption` when it already has content.
+   */
+  replace?: boolean | null;
   caption?: {
     root: {
       type: string;
@@ -5608,9 +5624,41 @@ export interface PayloadMcpApiKey {
      * Change one block of a document by its id and save. `patch` holds only the fields to change; each replaces the stored field whole, so send a complete array (rows with their ids) when changing one row of it. `id` and `blockType` cannot change. Saves a draft unless `draft` is false, which publishes. Returns the saved block. A refused save names each problem by path: fix those and resend the same patch.
      */
     patchBlock?: boolean | null;
+    /**
+     * Set the SEO fields (`meta`) of a page, post, work, the works index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.
+     */
+    updateSeo?: boolean | null;
+    /**
+     * The fields a document or a block holds, so you can write `data` for createDocument and updateDocument or a `block` for insertBlock: name, type, required, options, relationTo (send ids), defaults and the field's own guidance, nested fields included. A `blocks` field lists the block types it takes; send one as `blockType` to describe that block. Rich text takes Lexical JSON unless a write-only `markdown` sibling is listed beside it.
+     */
+    describeFields?: boolean | null;
+    /**
+     * Create a page, post or work from plain JSON (describeFields lists the fields). Omit `slug`: it is generated from the title. Saves a draft unless `draft` is false, which publishes. Returns the new id, slug and status. A refused save names each problem by path: fix those and resend.
+     */
+    createDocument?: boolean | null;
+    /**
+     * Change top-level fields of a page, post or work (title, hero, intro, relationships, the post body, and the rest describeFields lists) without resending the document. Each field sent replaces the stored one whole, so send a complete group or array. Edit blocks with patchBlock, insertBlock, moveBlock and removeBlock, not by resending `layout`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; send `"_status": "draft"` with `draft: false` to unpublish. Returns the saved fields.
+     */
+    updateDocument?: boolean | null;
+    /**
+     * Add one block to a page, post or work: at the top level, or inside a Section by the Section's id. `block` needs its `blockType` (describeFields with that blockType lists its fields); leave out `id`, the server assigns one. Saves a draft unless `draft` is false, which publishes. Returns the new block's id and path.
+     */
+    insertBlock?: boolean | null;
+    /**
+     * Move one block of a page, post or work by its id: to another position, into a Section (by the Section's id), or out to the top level. Saves a draft unless `draft` is false, which publishes. Returns the block's new path.
+     */
+    moveBlock?: boolean | null;
+    /**
+     * Remove one block from a page, post or work by its id, nested blocks with it. Only when the user asks. Saves a draft unless `draft` is false, which publishes, so the live page keeps the block until then. Returns what was removed.
+     */
+    removeBlock?: boolean | null;
+    /**
+     * Set an image or video's alt text and caption by its media id. `caption` is Markdown, converted on save; it overwrites an existing caption only with `replace: true`. Needs the key's Upload media capability. The file itself is never touched: new files go through `pnpm cms:upload`.
+     */
+    updateMedia?: boolean | null;
   };
   /**
-   * Allow `pnpm cms:upload` with this key.
+   * Allow `pnpm cms:upload` and `updateMedia` with this key.
    */
   uploadMedia?: boolean | null;
   updatedAt: string;
@@ -6678,6 +6726,8 @@ export interface PostsSelect<T extends boolean = true> {
       };
   intro?: T | WorkIntroSelect<T>;
   showContents?: T;
+  markdown?: T;
+  replace?: T;
   content?: T;
   layout?:
     | T
@@ -6947,6 +6997,8 @@ export interface TabsBlockSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  markdown?: T;
+  replace?: T;
   caption?: T;
   cloudflareImageId?: T;
   cloudflareImageUrl?: T;
@@ -7467,6 +7519,14 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         locateBlock?: T;
         getBlock?: T;
         patchBlock?: T;
+        updateSeo?: T;
+        describeFields?: T;
+        createDocument?: T;
+        updateDocument?: T;
+        insertBlock?: T;
+        moveBlock?: T;
+        removeBlock?: T;
+        updateMedia?: T;
       };
   uploadMedia?: T;
   updatedAt?: T;

@@ -5,6 +5,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 import type { CollectionConfig } from 'payload'
 
+import { markdownInputFields } from '@/fields/markdownInput'
 import { anyone } from '../../access/anyone'
 import { authenticated } from '../../access/authenticated'
 import { adminThumbnail } from './adminThumbnail'
@@ -32,6 +33,7 @@ export const Media: CollectionConfig = {
       name: 'alt',
       type: 'text',
     },
+    ...markdownInputFields('caption'),
     {
       name: 'caption',
       type: 'richText',

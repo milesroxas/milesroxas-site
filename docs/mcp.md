@@ -12,7 +12,7 @@ tool that sas-site's roadmap had left as the next step: `findContent`.
 | --- | --- |
 | Plugin config: what is exposed, key collection, capability controls | [`src/plugins/mcp.ts`](../src/plugins/mcp.ts) |
 | Server instructions every client receives (2,048 characters at most) | [`src/plugins/mcp-instructions.ts`](../src/plugins/mcp-instructions.ts) |
-| Site tools: `findContent`, `outlineDocument`, `locateBlock`, `getBlock`, `patchBlock` | [`src/plugins/mcp-tools/`](../src/plugins/mcp-tools/index.ts) |
+| Site tools: `findContent`, `outlineDocument`, `locateBlock`, `getBlock`, `patchBlock`, `updateSeo`, `describeFields`, `createDocument`, `updateDocument`, `insertBlock`, `moveBlock`, `removeBlock`, `updateMedia` | [`src/plugins/mcp-tools/`](../src/plugins/mcp-tools/index.ts) |
 | Copy checks on every MCP write | [`src/plugins/mcp-write-checks.ts`](../src/plugins/mcp-write-checks.ts) |
 | Two-call delete | [`src/plugins/mcp-delete-confirmation.ts`](../src/plugins/mcp-delete-confirmation.ts) |
 | Image upload with an MCP key | [`src/endpoints/agentMedia.ts`](../src/endpoints/agentMedia.ts), `pnpm cms:upload` |
@@ -103,8 +103,8 @@ them into content; the email half of that rule is enforced (below).
 
 The generated tools move whole documents: `find*` returns the page, `update*` resends the whole
 `layout` as the client model's output tokens. The site tools move one block, or a handful of
-snippets, instead. Each needs its checkbox on the key, plus `find` (or `update` for `patchBlock`) on
-the collection it touches.
+snippets, instead. Each needs its checkbox on the key, plus `find`, `create` or `update` on the collection it touches (`updateMedia` reads the key's Upload
+media capability instead).
 
 | Tool | Does | Judged by |
 | --- | --- | --- |
@@ -113,10 +113,33 @@ the collection it touches.
 | `locateBlock` | Which block an editing instruction means: `found`, `unsure` or `none`, and the likely blocks with a probability each | Jev |
 | `getBlock` | One block by id, exactly as stored | Code |
 | `patchBlock` | Merges a partial block on the server and saves a draft (publishes only with `draft: false`) | Code |
+| `updateSeo` | Sets the `meta` group (title, description, image, noIndex) of a page, post, work, the works index or the contact page; draft unless `draft: false` | Code |
+| `describeFields` | The fields of a collection or of one block type: name, type, required, options, relationTo, guidance | Code |
+| `createDocument` | Creates a page, post or work from plain JSON | Code |
+| `updateDocument` | Replaces top-level fields of a page, post or work; `"_status": "draft"` with `draft: false` unpublishes | Code |
+| `insertBlock` | Adds a block at the top level or inside a Section, at an index | Code |
+| `moveBlock` | Moves a block to another position, into a Section or out of one | Code |
+| `removeBlock` | Removes a block and its nested blocks | Code |
+| `updateMedia` | Sets a media document's alt text and Markdown caption; never the file | Code |
 
 The intended flow for "change what the site says about X": `findContent` (which documents) →
 `locateBlock` on each with the user's words (which block) → `getBlock` → `patchBlock`. No page
 reaches the client's model.
+
+### Every client, every edit
+
+The generated `createPages`, `updatePages` and their Posts and Works twins run to 110-130 KB of
+schema each, one entry per layout block. Codex and the ChatGPT app drop a tool that large without a
+word (checked 2026-10-14: Codex listed every tool except those six), so those clients could not create
+a page or change a title. The site tools above cover everything those six do in about 1-3 KB each:
+`createDocument` and `updateDocument` take plain JSON that Payload validates, `describeFields` says
+what the JSON may hold one collection or block at a time, and the block tools reshape `layout`
+without resending it. Claude and Cursor still get the generated tools too.
+
+Every site tool that saves follows one draft rule (`withStatus` in `mcp-tools/shared.ts`): a draft by
+default, and `draft: false` publishes by sending `_status: 'published'`, because Payload keeps a draft
+when the flag comes alone. Rich text that agents write has a write-only `markdown` sibling: the Rich
+text block's `body`, a post's `content` and a media `caption`.
 
 ### How TypeSafe is used
 

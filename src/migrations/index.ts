@@ -35,6 +35,7 @@ import * as migration_20261012_173742_aeo_site_info from './20261012_173742_aeo_
 import * as migration_20261012_200421_works_live_site_link from './20261012_200421_works_live_site_link';
 import * as migration_20261013_140251_streak_look_ground from './20261013_140251_streak_look_ground';
 import * as migration_20261015_010159_site_info_affiliations from './20261015_010159_site_info_affiliations';
+import * as migration_20261015_011036_mcp_site_tools from './20261015_011036_mcp_site_tools';
 
 export const migrations = [
   {
@@ -220,6 +221,11 @@ export const migrations = [
   {
     up: migration_20261015_010159_site_info_affiliations.up,
     down: migration_20261015_010159_site_info_affiliations.down,
-    name: '20261015_010159_site_info_affiliations'
+    name: '20261015_010159_site_info_affiliations',
+  },
+  {
+    up: migration_20261015_011036_mcp_site_tools.up,
+    down: migration_20261015_011036_mcp_site_tools.down,
+    name: '20261015_011036_mcp_site_tools'
   },
 ];

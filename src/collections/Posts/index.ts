@@ -14,6 +14,7 @@ import { Banner } from '@/blocks/Banner/config'
 import { Code } from '@/blocks/Code/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { seoTab } from '@/collections/shared/seoTab'
+import { markdownInputFields } from '@/fields/markdownInput'
 import { contentsButtonField } from '@/fields/pageFields'
 import { pageIntroField } from '@/fields/pageHero'
 import { postLayoutBlocks } from '@/fields/pageLayoutBlocks'
@@ -70,6 +71,7 @@ export const Posts: CollectionConfig<'posts'> = {
         {
           fields: [
             contentsButtonField(),
+            ...markdownInputFields('content'),
             {
               name: 'content',
               type: 'richText',

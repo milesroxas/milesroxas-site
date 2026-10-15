@@ -1,5 +1,3 @@
-import type { MCPPluginConfig } from '@payloadcms/plugin-mcp'
-import type { CollectionSlug, PayloadRequest } from 'payload'
 // The plugin and the MCP SDK under it were built against zod 3; the project
 // is on zod 4. A `zod/v3` schema is what the SDK's converter expects.
 import { z } from 'zod/v3'
@@ -7,6 +5,7 @@ import { embedQuestions, queryNearestChunks } from '@/features/ask/embeddings'
 import { ASK_MODEL_API_KEY_VAR } from '@/features/ask/model'
 import { redactFreeText } from '@/features/ask/redact'
 import { type Doc, findBlock, outline, rootField, withBlock } from './blocks'
+import { documentTools } from './documents'
 import {
   FIND_CANDIDATES,
   FIND_LIMIT,
@@ -19,6 +18,21 @@ import {
 } from './find'
 import { mcpJevClient } from './jev'
 import { locateInOutline } from './locate'
+import {
+  cannot,
+  draftParam,
+  errorText,
+  json,
+  keyAllows,
+  type McpTool,
+  readTarget,
+  type SiteTool,
+  saveTarget,
+  type Target,
+  targetParams,
+  text,
+  withStatus,
+} from './shared'
 
 /**
  * Custom MCP tools: find where the site talks about something, outline a
@@ -44,69 +58,6 @@ import { locateInOutline } from './locate'
  * puts on `req.context.mcpApiKey`. The Local API then runs as the linked team
  * member with `overrideAccess: false`, so collection access rules apply too.
  */
-
-type McpTool = NonNullable<NonNullable<MCPPluginConfig['mcp']>['tools']>[number]
-
-/**
- * The plugin types `parameters` with its own zod 3 copy; comparing a
- * `zod/v3` shape against it makes tsc give up ("excessively deep"). Tools are
- * typed here with the shape kept simple and cast once at the export.
- */
-type SiteTool = Omit<McpTool, 'parameters'> & { parameters: Record<string, z.ZodTypeAny> }
-
-/** Collections with blocks in them. A slug not listed has no block to reach. */
-const BLOCK_COLLECTIONS = ['pages', 'works', 'posts'] as const satisfies readonly CollectionSlug[]
-
-type Target = (typeof BLOCK_COLLECTIONS)[number]
-
-const collectionEnum = z.enum(BLOCK_COLLECTIONS)
-
-/** The plugin's rule for a capability group name: `site-info` is `siteInfo`. */
-const toCamelCase = (slug: string): string =>
-  slug.replace(/[-_\s]+(.)?/g, (_, chr: string | undefined) => (chr ? chr.toUpperCase() : ''))
-
-type KeyCapabilities = Record<
-  string,
-  { find?: boolean | null; update?: boolean | null } | undefined
->
-
-const keyAllows = (req: PayloadRequest, slug: string, op: 'find' | 'update'): boolean => {
-  const key = req.context.mcpApiKey as KeyCapabilities | undefined
-  return Boolean(key?.[toCamelCase(slug)]?.[op])
-}
-
-const text = (body: string) => ({ content: [{ type: 'text' as const, text: body }] })
-
-const json = (value: unknown) => text(JSON.stringify(value))
-
-/** A refused save names each problem by path; surface those, not just the headline. */
-const errorText = (error: unknown): string => {
-  const message = error instanceof Error ? error.message : String(error)
-  const errors = (error as { data?: { errors?: unknown } })?.data?.errors
-  return errors ? `Error: ${message}\n${JSON.stringify(errors)}` : `Error: ${message}`
-}
-
-const cannot = (op: 'find' | 'update', slug: string) =>
-  text(`Error: this key cannot ${op} ${slug}. Ask an admin to grant it.`)
-
-const targetParams = {
-  collection: collectionEnum.describe('The collection the document is in, by slug.'),
-  id: z.union([z.string(), z.number()]).describe('The document id.'),
-}
-
-/** The latest version of the document, draft or published, as the team member may see it. */
-async function readTarget(req: PayloadRequest, collection: Target, id: string | number) {
-  const doc = await req.payload.findByID({
-    collection,
-    id,
-    depth: 0,
-    draft: true,
-    overrideAccess: false,
-    req,
-    user: req.user,
-  })
-  return doc as unknown as Doc
-}
 
 const findContent: SiteTool = {
   name: 'findContent',
@@ -281,11 +232,7 @@ const patchBlock: SiteTool = {
     patch: z
       .record(z.string(), z.unknown())
       .describe('The fields to change, as they appear in getBlock.'),
-    draft: z
-      .boolean()
-      .optional()
-      .default(true)
-      .describe('true saves a draft (the default); false publishes the document.'),
+    draft: draftParam,
   },
   handler: async (args, req) => {
     const {
@@ -308,17 +255,13 @@ const patchBlock: SiteTool = {
       if (!row) return text(`Error: no block with id "${blockId}" in ${collection} ${doc.id}`)
       const next = { ...row.block, ...patch, id: row.id, blockType: row.blockType }
       const field = rootField(row.path)
-      const saved = (await req.payload.update({
-        collection,
-        id: doc.id as string | number,
-        data: { [field]: withBlock(doc, row.path, next)[field] },
-        depth: 0,
-        draft,
-        overrideAccess: false,
-        overrideLock: true,
+      const saved = await saveTarget(
         req,
-        user: req.user,
-      })) as unknown as Doc
+        collection,
+        doc.id as string | number,
+        { [field]: withBlock(doc, row.path, next)[field] },
+        draft,
+      )
       const savedRow = findBlock(saved, blockId)
       return json({
         path: savedRow?.path ?? row.path,
@@ -331,6 +274,115 @@ const patchBlock: SiteTool = {
   },
 }
 
-const siteTools: SiteTool[] = [findContent, outlineDocument, locateBlock, getBlock, patchBlock]
+/**
+ * Every document with an SEO group (`meta`), and the fields each carries. The
+ * Contact page's group predates `seoTab` and holds only a title and description.
+ */
+const SEO_FIELDS = ['title', 'description', 'image', 'noIndex'] as const
+export const SEO_TARGETS = {
+  pages: SEO_FIELDS,
+  posts: SEO_FIELDS,
+  works: SEO_FIELDS,
+  'works-index': SEO_FIELDS,
+  'contact-page': ['title', 'description'],
+} as const satisfies Record<string, readonly (typeof SEO_FIELDS)[number][]>
+
+type SeoTarget = keyof typeof SEO_TARGETS
+
+const SEO_GLOBAL_TARGETS: ReadonlySet<SeoTarget> = new Set(['works-index', 'contact-page'])
+
+/** Targets without drafts save straight to the live document. */
+const SEO_UNVERSIONED: ReadonlySet<SeoTarget> = new Set(['contact-page'])
+
+type SeoMeta = Partial<Record<(typeof SEO_FIELDS)[number], unknown>>
+
+type SeoArgs = { collection: SeoTarget; id?: string | number; meta: SeoMeta; draft?: boolean }
+
+/** Why an `updateSeo` call cannot be saved as sent, or null. */
+const seoRefusal = ({ collection, id, meta }: SeoArgs): string | null => {
+  const allowed: readonly string[] = SEO_TARGETS[collection]
+  const unknown = Object.keys(meta).filter((field) => !allowed.includes(field))
+  if (unknown.length > 0) return `${collection} has no SEO field ${unknown.join(', ')}.`
+  if (Object.keys(meta).length === 0) return 'send at least one field in `meta`.'
+  if (!SEO_GLOBAL_TARGETS.has(collection) && id === undefined) {
+    return `send the id of the ${collection} document.`
+  }
+  return null
+}
+
+/**
+ * The generated `updatePages`, `updatePosts` and `updateWorks` schemas run to
+ * 110-130 KB each (every layout block), and clients with a schema budget
+ * (Codex, the ChatGPT app) drop those tools without a word. This one carries
+ * only the SEO group, so every client can set titles and descriptions.
+ */
+const updateSeo: SiteTool = {
+  name: 'updateSeo',
+  description:
+    'Set the SEO fields (`meta`) of a page, post, work, the works index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.',
+  parameters: {
+    collection: z
+      .enum(Object.keys(SEO_TARGETS) as [SeoTarget, ...SeoTarget[]])
+      .describe('The collection or global, by slug.'),
+    id: z
+      .union([z.string(), z.number()])
+      .optional()
+      .describe('The document id. Required for pages, posts and works; omit for a global.'),
+    meta: z
+      .object({
+        title: z.string().nullable().optional(),
+        description: z.string().nullable().optional(),
+        image: z.number().nullable().optional().describe('A media id.'),
+        noIndex: z.boolean().nullable().optional(),
+      })
+      .strict()
+      .describe('Only the SEO fields to change.'),
+    draft: draftParam,
+  },
+  handler: async (args, req) => {
+    const { collection, id, meta, draft = true } = args as SeoArgs
+    if (!keyAllows(req, collection, 'update')) return cannot('update', collection)
+    const refused = seoRefusal(args as SeoArgs)
+    if (refused) return text(`Error: ${refused}`)
+    const isGlobal = SEO_GLOBAL_TARGETS.has(collection)
+    const versioned = !SEO_UNVERSIONED.has(collection)
+    const common = {
+      data: versioned ? withStatus({ meta }, draft) : { meta },
+      depth: 0,
+      overrideAccess: false,
+      req,
+      user: req.user,
+      ...(versioned ? { draft } : {}),
+    }
+    try {
+      const saved = (isGlobal
+        ? await req.payload.updateGlobal({ ...common, slug: collection as 'works-index' })
+        : await req.payload.update({
+            ...common,
+            collection: collection as Target,
+            id: id as string | number,
+            overrideLock: true,
+          })) as unknown as Doc
+      return json({
+        collection,
+        ...(isGlobal ? {} : { id: saved.id }),
+        ...(versioned ? { _status: saved._status } : {}),
+        meta: saved.meta,
+      })
+    } catch (error) {
+      return text(errorText(error))
+    }
+  },
+}
+
+const siteTools: SiteTool[] = [
+  findContent,
+  outlineDocument,
+  locateBlock,
+  getBlock,
+  patchBlock,
+  updateSeo,
+  ...documentTools,
+]
 
 export const mcpSiteTools = siteTools as unknown as McpTool[]

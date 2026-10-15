@@ -1,3 +1,4 @@
+import { SECTION_CHILDREN_FIELD } from '@/blocks/section/shared'
 import { CONTENT_SKIP_KEYS, CONTENT_TEXT_KEYS, normalizeKey } from '@/shared/content/content-keys'
 import { lexicalToMarkdownString } from '@/shared/content/lexicalToMarkdown'
 
@@ -145,3 +146,45 @@ const outlineRow = (row: BlockRow): OutlineRow => {
 }
 
 export const outline = (doc: Doc): OutlineRow[] => listBlocks(doc).map(outlineRow)
+
+/** The top-level field every block-bearing collection keeps its Sections in. */
+export const LAYOUT_FIELD = 'layout'
+
+/** The value at a dotted path, or undefined. */
+export function valueAt(doc: Doc, path: string): unknown {
+  let node: unknown = doc
+  for (const segment of path.split('.')) {
+    if (!isRecord(node) && !Array.isArray(node)) return undefined
+    node = (node as Doc)[segment]
+  }
+  return node
+}
+
+/**
+ * Where new blocks go: the document's `layout`, or the nested `blocks` of a
+ * Section given by id. Null when the parent is missing or holds no blocks.
+ */
+export function containerPath(doc: Doc, parentId?: string): string | null {
+  if (!parentId) return LAYOUT_FIELD
+  const parent = findBlock(doc, parentId)
+  if (parent?.blockType !== 'section') return null
+  return `${parent.path}.${SECTION_CHILDREN_FIELD}`
+}
+
+/** A copy of the document with `block` inserted at `index` (end when omitted) of a container. */
+export function withInserted(doc: Doc, container: string, block: Doc, index?: number): Doc {
+  const rows = valueAt(doc, container)
+  const list = Array.isArray(rows) ? [...rows] : []
+  const at = index === undefined ? list.length : Math.max(0, Math.min(index, list.length))
+  list.splice(at, 0, block)
+  return withBlock(doc, container, list as unknown as Doc)
+}
+
+/** A copy of the document without the block at `path`. */
+export function withoutBlock(doc: Doc, path: string): Doc {
+  const cut = path.lastIndexOf('.')
+  const container = path.slice(0, cut)
+  const index = Number(path.slice(cut + 1))
+  const rows = valueAt(doc, container) as unknown[]
+  return withBlock(doc, container, rows.filter((_, i) => i !== index) as unknown as Doc)
+}
