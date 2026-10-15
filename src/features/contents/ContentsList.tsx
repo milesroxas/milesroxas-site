@@ -28,22 +28,27 @@ export type ContentsDensity = keyof typeof DENSITY
  * One row recipe for sections and "Back to top". Press compresses on the
  * shared recipe from the leading edge, so a wide row reads as pressed, not
  * slid; `pressable` owns the transition list, so the fill fades on it.
+ * Fills are the chrome's neutral inks (the dock's selected tab), never
+ * `--accent`: here that is the orange ink, and text on it fails contrast.
+ * The current row keeps its fill under the pointer.
  */
 const rowClassName = (density: ContentsDensity, current = false) =>
   cn(
-    'flex w-full shrink-0 cursor-pointer items-center px-3 text-left text-popover-foreground',
+    'flex w-full shrink-0 cursor-pointer items-center px-3 text-left text-(--chrome-ink)',
     'pressable pressable-subtle origin-left outline-hidden',
-    'hover:bg-accent active:bg-accent focus-visible:bg-accent focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset',
+    'active:bg-(--chrome-press) focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
     DENSITY[density],
-    current && 'bg-accent font-medium',
+    current
+      ? 'bg-(--chrome-selected) font-medium contrast-more:ring-1 contrast-more:ring-(--chrome-ink) contrast-more:ring-inset'
+      : 'hover:bg-(--chrome-hover) focus-visible:bg-(--chrome-hover)',
   )
 
 /** Fixed leading lane, so numbers and the arrow share one column across rows. */
 const LeadingLane = ({ children, current }: { children: ReactNode; current?: boolean }) => (
   <span
     className={cn(
-      'flex w-8 shrink-0 items-center font-mono text-xs/4',
-      current ? 'text-popover-foreground' : 'text-muted-foreground',
+      'flex w-8 shrink-0 items-center font-mono text-xs/4 tabular-nums',
+      current ? 'text-(--chrome-ink)' : 'text-(--chrome-ink-muted)',
     )}
   >
     {children}
@@ -72,7 +77,7 @@ function useCurrentRowInView() {
 /** The label over the list, and where the reader is in it. */
 function ListHeader({ current, total }: { current: number; total: number }) {
   return (
-    <div className="flex h-9 shrink-0 items-center justify-between px-3 font-mono text-xs/4 tracking-[0.08em] text-muted-foreground">
+    <div className="flex h-9 shrink-0 items-center justify-between px-3 font-mono text-xs/4 tracking-[0.08em] text-(--chrome-ink-muted) tabular-nums">
       <span className="uppercase">{CONTENTS_LIST_LABEL}</span>
       <span>
         {Math.max(current, 0) + 1} / {total}
@@ -106,7 +111,7 @@ function SectionRow({
         <LeadingLane current={isCurrent}>{position(index)}</LeadingLane>
         <span className="min-w-0 grow truncate">{entry.label}</span>
         <span className="flex size-5 shrink-0 items-center justify-center">
-          {isCurrent && <span className="size-2 rounded-full bg-foreground" />}
+          {isCurrent && <span className="size-1.5 rounded-full bg-current" />}
         </span>
       </a>
     </li>

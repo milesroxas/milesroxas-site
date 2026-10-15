@@ -155,6 +155,8 @@ function ContentsSheet({ id, open, entries, current, onClose, onJump }: Contents
       <SheetContent
         aria-describedby={undefined}
         className={sheetClassName(dragged)}
+        // The rows read the chrome inks; the sheet portals out of the anchor that sets them.
+        data-chrome=""
         data-lenis-prevent
         id={id}
         onCloseAutoFocus={(event) => {

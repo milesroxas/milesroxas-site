@@ -61,7 +61,8 @@ const SURFACE = {
     // The arrival pill sits over the circle and carries the lift for both.
     'group-hover/trigger:bg-muted group-data-[arrival=extended]:shadow-none',
   ),
-  open: 'scale-70 bg-accent',
+  // Open, it is the card's close control: the chrome's neutral fill, as a sheet's close button.
+  open: 'scale-70 bg-(--chrome-selected) group-hover/trigger:bg-(--chrome-press)',
 }
 
 /**
