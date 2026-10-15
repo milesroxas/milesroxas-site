@@ -12,7 +12,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The works index (`/works`) as a dial: one picture fixed in the centre and the list turning past it as the page scrolls. The row on the centre line is shown; the others dim, shrink and tilt away like a drum, and a resting page settles on the nearest row. Phones read it as a plain list under a pinned plate. The site scrolls it through Lenis; here it falls back to native scrolling. A row or the picture opens the case study by travelling the plate to the hero: Storybook mocks the router, so only the exit plays.',
+          'The works index (`/works`) as a dial: one picture fixed in the centre and the list turning past it as the page scrolls. The row on the centre line is shown; the others dim, shrink and tilt away like a drum, and a resting page settles on the nearest row. Below 64rem it is a plain, natively scrolled list instead (`WorkList`): every work with its own picture, client and summary, nothing pinned. The site scrolls it through Lenis; here it falls back to native scrolling. A row or the picture opens the case study by travelling the plate to the hero: Storybook mocks the router, so only the exit plays.',
       },
     },
   },
@@ -35,6 +35,20 @@ export const Default: Story = {
     await expect(rows).toHaveLength(workIndexItems.length)
     await expect(rows[0]).toHaveAttribute('href', '/works/brand-refresh')
     await expect(rows[0]).toHaveAttribute('data-active')
+  },
+}
+
+/** Below 64rem: the list, not the dial. A card opens through its own picture. */
+export const Phone: Story = {
+  globals: {
+    viewport: { value: 'mobile1', isRotated: false },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const cards = within(canvas.getByRole('list')).getAllByRole('link')
+    await expect(cards).toHaveLength(workIndexItems.length)
+    await expect(cards[0]).toHaveAttribute('href', '/works/brand-refresh')
+    await expect(canvasElement.querySelector('.work-dial')).toBeNull()
   },
 }
 

@@ -3078,103 +3078,33 @@ html:active-view-transition-type(work-open) .dock {
    (`--dial-y`), blur (`--dial-blur`), size (`--dial-scale`) and turn
    (`--dial-tilt`, in degrees) from its distance to that line. On desktop the
    heading holds the left margin and the titles turn on the right of the
-   plate. Phones pin the plate under the top bar and read each row just
-   beneath it, the rows to come below: a plain list, short rows so several
-   show at once, with no drum, only the ink and blur. */
+   plate. Below 64rem the index is a list instead (`WorkList.client.tsx`,
+   Tailwind only) and the dial is never mounted. */
 .work-dial {
-  --dial-row: 6.5rem;
-  --dial-plate-w: calc(100vw - 2 * var(--spacing-gutter));
+  --dial-row: 14rem;
+  --dial-plate-w: min(41.25vw, (100svh - var(--chrome-top) - var(--dock-clearance) - 6rem) * 1.6);
   --dial-plate-h: calc(var(--dial-plate-w) / 1.6);
-  /* Phones pin the heading under the top bar, in a band of this height. */
-  --dial-title-band: 2.5rem;
-  --dial-plate-top: calc(var(--chrome-top) + var(--dial-title-band));
-  --dial-window-top: calc(var(--dial-plate-top) + var(--dial-plate-h) + 2.75rem);
+  --dial-window-top: var(--chrome-top);
   --dial-window-bottom: calc(100svh - var(--dock-clearance));
-  /* Phones read just under the plate; the rows to come wait below. */
-  --dial-focus: calc(var(--dial-window-top) + var(--dial-row) / 2);
+  --dial-focus: calc((var(--dial-window-top) + var(--dial-window-bottom)) / 2);
+  --dial-plate-top: calc(var(--dial-focus) - var(--dial-plate-h) / 2);
   --dial-cols: minmax(0, 1fr) var(--dial-plate-w) minmax(0, 1fr);
   position: relative;
   padding-inline: var(--spacing-gutter);
 }
 
-@media (min-width: 64rem) {
-  .work-dial {
-    --dial-row: 14rem;
-    --dial-plate-w: min(41.25vw, (100svh - var(--chrome-top) - var(--dock-clearance) - 6rem) * 1.6);
-    --dial-window-top: var(--chrome-top);
-    --dial-focus: calc((var(--dial-window-top) + var(--dial-window-bottom)) / 2);
-    --dial-plate-top: calc(var(--dial-focus) - var(--dial-plate-h) / 2);
-  }
-
-  /* With summaries the plate also leaves room under itself for the caption
-     and four summary lines (9.5rem). The focus line, where the heading, the
-     plate's centre and the row in ink meet, rises by half that, so the plate
-     and its summary centre in the window as one group. */
-  .work-dial:has(.work-dial-summary) {
-    --dial-under: 9.5rem;
-    --dial-plate-w: min(
-      41.25vw,
-      (100svh - var(--chrome-top) - var(--dock-clearance) - 6rem - var(--dial-under)) *
-      1.6
-    );
-    --dial-focus: calc(
-      (var(--dial-window-top) + var(--dial-window-bottom) - var(--dial-under)) /
-      2
-    );
-  }
-}
-
-/* Phones: the heading, set small, sticks under the top bar for the whole
-   list, the plate below it; the lead scrolls away under the plate's band.
-   `display: contents` lets the heading stick to the dial rather than to its
-   own short wrapper. */
-@media (width < 64rem) {
-  .work-dial {
-    /* From the pinned heading's foot to the viewport's. */
-    --dial-title-release: calc(100svh - var(--chrome-top) - var(--dial-title-band));
-    padding-top: var(--chrome-top);
-  }
-
-  .work-dial-header,
-  .work-dial-heading {
-    display: contents;
-  }
-
-  /* The heading lets go as the plate does: its bottom margin reaches the
-     viewport's foot, so it leaves the dial with the stage. The next box's
-     negative margin collapses with it back to the usual gap. */
-  .work-dial-heading h1 {
-    margin-bottom: var(--dial-title-release);
-    position: sticky;
-    z-index: 20;
-    top: var(--chrome-top);
-    height: var(--dial-title-band);
-    align-items: center;
-    margin-inline: calc(-1 * var(--spacing-gutter));
-    padding-inline: var(--spacing-gutter);
-    background: var(--background);
-    /* Covers the top bar's strip too, so the plate and the page after the
-       dial pass under the heading rather than above it. */
-    box-shadow: 0 calc(-1 * var(--chrome-top)) 0 var(--background);
-    font-size: 1.5rem;
-  }
-
-  .work-dial-heading .work-dial-lead {
-    margin-top: calc(0.75rem - var(--dial-title-release));
-  }
-
-  .work-dial:not(:has(.work-dial-lead)) .work-dial-stage {
-    margin-top: calc(-1 * var(--dial-title-release));
-  }
-
-  /* The summary's four lines sit between the caption and the rows. */
-  .work-dial:has(.work-dial-summary) {
-    --dial-window-top: calc(var(--dial-plate-top) + var(--dial-plate-h) + 11rem);
-  }
-
-  .work-dial-summary > p {
-    -webkit-line-clamp: 4;
-  }
+/* With summaries the plate also leaves room under itself for the caption
+   and four summary lines (9.5rem). The focus line, where the heading, the
+   plate's centre and the row in ink meet, rises by half that, so the plate
+   and its summary centre in the window as one group. */
+.work-dial:has(.work-dial-summary) {
+  --dial-under: 9.5rem;
+  --dial-plate-w: min(
+    41.25vw,
+    (100svh - var(--chrome-top) - var(--dock-clearance) - 6rem - var(--dial-under)) *
+    1.6
+  );
+  --dial-focus: calc((var(--dial-window-top) + var(--dial-window-bottom) - var(--dial-under)) / 2);
 }
 
 /* The page's blurb, a rung under the shown work's summary. */
@@ -3225,23 +3155,6 @@ html:active-view-transition-type(work-open) .dock {
   /* The plate's canvas reaches past the frame; on phones that passes the gutter. */
   overflow-x: clip;
   pointer-events: none;
-}
-
-/* Phones: the rows pass under the plate, so its band is opaque, with a soft
-   edge where the rows run out rather than a rule. */
-.work-dial-stage::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: calc(var(--dial-window-top) + 0.25rem);
-  background: linear-gradient(to bottom, var(--background) calc(100% - 1.25rem), transparent);
-}
-
-@media (min-width: 64rem) {
-  .work-dial-stage::before {
-    content: none;
-  }
 }
 
 .work-dial-window {
@@ -3334,8 +3247,7 @@ html:active-view-transition-type(work-open) .dock {
    ones past are turned a little up and away, the ones ahead a little down
    (4deg, 2px of blur, a quarter line of travel). A change turns the way the
    dial did: the old one leaves at once and faster, the new one follows a beat
-   later. Phones have no drum, only ink and blur; reduced motion keeps the ink
-   alone. */
+   later. Reduced motion keeps the ink alone. */
 .work-dial-summary {
   position: absolute;
   top: calc(100% + 2.5rem);
@@ -3380,7 +3292,7 @@ html:active-view-transition-type(work-open) .dock {
   transition-delay: 120ms;
 }
 
-@media (width < 64rem), (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   .work-dial-label > span,
   .work-dial-summary > p {
     transform: none;
@@ -3512,9 +3424,9 @@ html:active-view-transition-type(work-open) .dock {
   border-radius: 2px;
 }
 
-/* Phones and reduced motion: the ink still follows the centre line; nothing
-   moves, turns or shrinks. */
-@media (width < 64rem), (prefers-reduced-motion: reduce) {
+/* Reduced motion: the ink still follows the centre line; nothing moves,
+   turns or shrinks. */
+@media (prefers-reduced-motion: reduce) {
   .work-dial-link {
     transform: none;
   }

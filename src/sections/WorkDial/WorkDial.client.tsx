@@ -2,7 +2,15 @@
 
 import Link from 'next/link'
 import type React from 'react'
-import { type CSSProperties, useEffect, useMemo, useRef, useState, ViewTransition } from 'react'
+import {
+  type CSSProperties,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  ViewTransition,
+} from 'react'
 import { choreographWorkMorph, useWorkCardMorph, workMorphName } from '@/heros/WorkHero/morph'
 import { useLenis } from '@/hooks/useLenis'
 import { cursorTarget } from '@/providers/Cursor/variants'
@@ -10,6 +18,7 @@ import { moreWorkMotionStyle } from '@/sections/MoreWork/motion'
 import { MoreWorkPlate } from '@/sections/MoreWork/Plate'
 import type { MoreWorkItem } from '@/sections/MoreWork/query'
 import { createPlateSignal } from '@/sections/MoreWork/signal'
+import { WorkList } from './WorkList.client'
 
 /**
  * How a row falls off with distance from the centre line. Prominence falls
@@ -40,13 +49,6 @@ const DIAL = {
   /** Pixels of blur a row gathers as it leaves, and the width of its bell, in rows. */
   blur: 8,
   blurSpread: 1.2,
-  /**
-   * Phones show the rows as a plain list (globals.css), several at once, so
-   * ink and blur fall off over a few rows rather than one. They scroll
-   * natively and never settle: a settle started under iOS's own momentum
-   * fights it.
-   */
-  phone: { inkSpread: 2.5, blurSpread: 3 },
   /** Where along the reach a row starts fading out, gone by the window's edge. */
   fadeFrom: 0.75,
   /** How long the page rests before it settles on the nearest row, and how long the settle takes. */
@@ -99,7 +101,7 @@ const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as CSSProperties
 type RowProps = {
   item: MoreWorkItem
   index: number
-  /** The row the plate shows; on desktop only it answers the pointer. */
+  /** The row the plate shows; only it answers the pointer. */
   active: boolean
   plateRef: React.RefObject<HTMLDivElement | null>
   onOpen: (index: number) => void
@@ -144,6 +146,36 @@ type WorkDialProps = {
   lead?: string | null
 }
 
+/** Below this the index is a list (`WorkList`); the dial is `lg:` in the markup. */
+const DIAL_QUERY = '(min-width: 64rem)'
+
+const subscribeDial = (onChange: () => void) => {
+  const query = matchMedia(DIAL_QUERY)
+  query.addEventListener('change', onChange)
+  return () => query.removeEventListener('change', onChange)
+}
+
+/**
+ * The works index: the dial on wide screens, the list on phones and tablets.
+ * The cached HTML carries both, each hidden by CSS at the other's sizes;
+ * once hydrated only the one that fits stays mounted, so a phone never runs
+ * the dial's scroll work or its plate.
+ */
+export function WorkDial(props: WorkDialProps) {
+  const dial = useSyncExternalStore(
+    subscribeDial,
+    () => matchMedia(DIAL_QUERY).matches,
+    () => null,
+  )
+
+  return (
+    <>
+      <div className="lg:hidden">{dial !== true && <WorkList {...props} />}</div>
+      <div className="hidden lg:contents">{dial !== false && <Dial {...props} />}</div>
+    </>
+  )
+}
+
 /**
  * The works index as a dial: one picture fixed in the centre, the list
  * turning past it. The row on the centre line is the one shown; rows dim,
@@ -152,7 +184,7 @@ type WorkDialProps = {
  * the scroll's speed in between; a resting page settles on the nearest row.
  * Clicking a row or the picture opens the case study through the plate.
  */
-export function WorkDial({ items, title, lead }: WorkDialProps) {
+function Dial({ items, title, lead }: WorkDialProps) {
   const lenis = useLenis()
   /** The row the plate shows: the last one the reader stopped on. */
   const [active, setActive] = useState(0)
@@ -181,9 +213,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-dial-row]'))
     const last = Math.max(rows.length - 1, 0)
     const reduced = matchMedia('(prefers-reduced-motion: reduce)')
-    const phone = matchMedia('(width < 64rem)')
-    // From the centre line to the window's edge, above and below: equal on
-    // desktop, short above on phones where rows leave under the plate.
+    // From the centre line to the window's edge, above and below.
     const reach = { above: 1, below: 1 }
     let current = 0
     let settleTimer: ReturnType<typeof setTimeout> | undefined
@@ -215,7 +245,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
       const { listTop, row } = geometry.current
       const raw = (scrollY - listTop) / row
       const position = clamp(raw, 0, last)
-      const { inkSpread, blurSpread } = phone.matches ? DIAL.phone : DIAL
+      const { inkSpread, blurSpread } = DIAL
       rows.forEach((el, i) => {
         const away = Math.abs(i - position)
         const offset = (i - position) * row
@@ -254,7 +284,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     }
 
     const lockOn = () => {
-      if (!lenis || touching || reduced.matches || phone.matches || openingRef.current) return
+      if (!lenis || touching || reduced.matches || openingRef.current) return
       const raw = (lenis.targetScroll - geometry.current.listTop) / geometry.current.row
       if (raw <= 0 || raw >= last) return
       const heading = Math.sign(lenis.targetScroll - lenis.animatedScroll)
@@ -314,7 +344,7 @@ export function WorkDial({ items, title, lead }: WorkDialProps) {
     }
 
     const settle = () => {
-      if (touching || reduced.matches || phone.matches || openingRef.current) return
+      if (touching || reduced.matches || openingRef.current) return
       const raw = (scrollY - geometry.current.listTop) / geometry.current.row
       if (raw <= 0 || raw >= last) return
       const nearest = Math.round(raw)
