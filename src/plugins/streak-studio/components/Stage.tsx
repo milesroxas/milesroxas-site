@@ -282,8 +282,8 @@ export const Stage: UIFieldClientComponent = () => {
         onKeyDown={stageKeys(session, patch, actions.randomize)}
       >
         <StageHeader draft={draft} look={look} state={state} session={session} actions={actions} />
-        <div className="grid grid-cols-1 @[768px]:grid-cols-[240px_minmax(0,1fr)]">
-          <aside className="flex flex-col border-b border-border bg-card @[768px]:border-r @[768px]:border-b-0">
+        <div className="grid @[768px]:grid-cols-[240px_minmax(0,1fr)] grid-cols-1">
+          <aside className="flex flex-col border-border @[768px]:border-r border-b @[768px]:border-b-0 bg-card">
             <StarterList effect={effect} surface={session.surface} update={update} />
             <PublishedList
               session={session}
@@ -336,7 +336,7 @@ function StageHeader({
   actions: StageActions
 }) {
   return (
-    <header className="flex min-h-14 flex-wrap items-center gap-x-3 gap-y-2 border-b border-border py-2 pr-4 pl-5">
+    <header className="flex min-h-14 flex-wrap items-center gap-x-3 gap-y-2 border-border border-b py-2 pr-4 pl-5">
       <DraftStatus
         title={EFFECT_COPY[effectId].title}
         id={id}
@@ -385,13 +385,13 @@ function DraftStatus({
 }) {
   return (
     <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-2.5">
-      <h2 className="text-[15px]/5 font-semibold">{title}</h2>
+      <h2 className="font-semibold text-[15px]/5">{title}</h2>
       {/* The status sets on the title's baseline, so the dot rides in
           the text rather than leading a flex row: a flex container takes
           its baseline from its first item, and an empty 6px span has
           none to give — the line would sit a pixel or two off the
           heading beside it. */}
-      <p className="text-xs/4 text-muted-foreground">
+      <p className="text-muted-foreground text-xs/4">
         <span
           aria-hidden
           className={cn(
@@ -490,8 +490,8 @@ function StarterList({
   const starters = lookOptions(effect)
   return (
     <>
-      <div className="flex h-10 items-center border-b border-border px-3.5">
-        <h3 className="flex-1 text-xs/4 font-semibold tracking-[0.02em]">Starters</h3>
+      <div className="flex h-10 items-center border-border border-b px-3.5">
+        <h3 className="flex-1 font-semibold text-xs/4 tracking-[0.02em]">Starters</h3>
         <span className="text-[11px]/3.5 text-muted-foreground tabular-nums">
           {starters.length}
         </span>
@@ -517,7 +517,7 @@ function StarterList({
                     style={{ backgroundColor: STUDIO_GROUND[surface] }}
                   />
                   <span className="min-w-0 flex-1 truncate">{look.label}</span>
-                  <span className="font-mono text-[10px]/3 tracking-[0.04em] text-muted-foreground uppercase">
+                  <span className="font-mono text-[10px]/3 text-muted-foreground uppercase tracking-[0.04em]">
                     {effect.lookTag?.(effect.looks[look.value])}
                   </span>
                 </button>
@@ -548,8 +548,8 @@ function PublishedList({
 }) {
   return (
     <>
-      <div className="flex h-10 items-center border-y border-border px-3.5">
-        <h3 className="flex-1 text-xs/4 font-semibold tracking-[0.02em]">Published</h3>
+      <div className="flex h-10 items-center border-border border-y px-3.5">
+        <h3 className="flex-1 font-semibold text-xs/4 tracking-[0.02em]">Published</h3>
         <Tooltip>
           <TooltipTrigger asChild>
             <button
@@ -707,7 +707,7 @@ function Viewport({
       {live && !validation ? (
         <Suspense
           fallback={
-            <p className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
+            <p className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">
               Loading preview…
             </p>
           }
@@ -736,7 +736,7 @@ function Viewport({
 
 function PreviewBadge({ live, session }: { live: boolean; session: StudioSession }) {
   return (
-    <span className="pointer-events-none absolute top-3 left-3 z-10 flex h-6 items-center gap-1.5 rounded-full bg-background/70 pr-2.5 pl-2 font-mono text-[11px]/3.5 tracking-[0.04em] text-foreground uppercase backdrop-blur-xs">
+    <span className="pointer-events-none absolute top-3 left-3 z-10 flex h-6 items-center gap-1.5 rounded-full bg-background/70 pr-2.5 pl-2 font-mono text-[11px]/3.5 text-foreground uppercase tracking-[0.04em] backdrop-blur-xs">
       <span
         aria-hidden
         className={cn(
@@ -753,8 +753,8 @@ function PreviewBadge({ live, session }: { live: boolean; session: StudioSession
 
 function PreviewOff({ validation, onTurnOn }: { validation: string; onTurnOn: () => void }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-xs text-muted-foreground">
-      <p className="max-w-xs text-center text-pretty">
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground text-xs">
+      <p className="max-w-xs text-pretty text-center">
         {validation ? validation : 'The live preview is off. Turn it on to see the recipe move.'}
       </p>
       {!validation && (
@@ -770,7 +770,7 @@ function BudgetReadout({ budget }: { budget: EffectBudget }) {
   return (
     <p
       className={cn(
-        'pointer-events-none absolute bottom-3 left-3 z-10 flex max-w-[calc(100%-24px)] items-start gap-1.5 rounded-full bg-background/70 py-1 pr-2.5 pl-2 font-mono text-[11px]/3.5 tracking-[0.02em] backdrop-blur-xs tabular-nums',
+        'pointer-events-none absolute bottom-3 left-3 z-10 flex max-w-[calc(100%-24px)] items-start gap-1.5 rounded-full bg-background/70 py-1 pr-2.5 pl-2 font-mono text-[11px]/3.5 tabular-nums tracking-[0.02em] backdrop-blur-xs',
         budget.capped ? 'text-warning' : 'text-muted-foreground',
       )}
     >
@@ -799,7 +799,7 @@ function Transport({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex min-h-14 flex-wrap items-center gap-4 border-t border-border px-4 py-3">
+    <div className="flex min-h-14 flex-wrap items-center gap-4 border-border border-t px-4 py-3">
       <ToggleGroup
         type="single"
         variant="segmented"
@@ -889,7 +889,7 @@ function SeedField({
   return (
     <label
       htmlFor="streak-seed"
-      className="flex items-center gap-2 text-xs/4 text-muted-foreground"
+      className="flex items-center gap-2 text-muted-foreground text-xs/4"
     >
       Seed
       <span className="flex h-[30px] items-center divide-x divide-input overflow-hidden rounded-md border border-input">
@@ -918,7 +918,7 @@ function FrameField({ recipe, update }: { recipe: Recipe; update: Update }) {
   return (
     <label
       htmlFor="streak-frame"
-      className="flex items-center gap-2 text-xs/4 text-muted-foreground"
+      className="flex items-center gap-2 text-muted-foreground text-xs/4"
     >
       Frame
       <span className="flex h-[30px] items-center divide-x divide-input overflow-hidden rounded-md border border-input">

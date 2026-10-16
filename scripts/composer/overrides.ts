@@ -1,5 +1,5 @@
 /**
- * Per-block exceptions to the Phase 6 rules (docs/composer-roadmap.md, D15),
+ * Per-block exceptions to the Phase 6 rules (docs/archive/composer-roadmap.md, D15),
  * keyed by the legacy block's id. `keep` leaves the legacy block in place at
  * the top level. To change a mapping, edit this file and run the script
  * again; nothing is changed in admin.

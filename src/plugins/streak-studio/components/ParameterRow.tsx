@@ -150,11 +150,11 @@ function ParameterTooltip({
       <TooltipContent variant="panel" side="left" sideOffset={12} collisionPadding={12}>
         <div className="flex flex-col gap-2">
           <div className="flex items-baseline gap-2">
-            <span className="flex-1 text-[13px]/4 font-semibold text-foreground">{copy.label}</span>
+            <span className="flex-1 font-semibold text-[13px]/4 text-foreground">{copy.label}</span>
             <span className="font-mono text-[11px]/3.5 text-muted-foreground">{name}</span>
           </div>
           <p className="text-pretty text-foreground/80">{copy.description}</p>
-          <p className="flex gap-3 font-mono text-[11px]/3.5 whitespace-nowrap text-muted-foreground">
+          <p className="flex gap-3 whitespace-nowrap font-mono text-[11px]/3.5 text-muted-foreground">
             {'min' in spec && (
               <>
                 <span>
@@ -173,7 +173,7 @@ function ParameterTooltip({
             </p>
           )}
           {'min' in spec && (
-            <p className="border-t border-muted pt-2 font-mono text-[10px]/3.5 tracking-[0.02em] text-muted-foreground uppercase">
+            <p className="border-muted border-t pt-2 font-mono text-[10px]/3.5 text-muted-foreground uppercase tracking-[0.02em]">
               ↑↓ step · ⇧ ×10 · ⏎ type
             </p>
           )}
@@ -222,7 +222,7 @@ function RowShell({
       <ParameterTooltip parameter={parameter} changed={changed}>
         <Label
           htmlFor={controlId(parameter.name)}
-          className="min-h-9 cursor-default gap-1.5 text-xs/4 text-foreground/80 transition-colors group-hover/row:text-foreground group-data-[changed]/row:text-foreground group-data-[inactive]/row:text-muted-foreground/60"
+          className="min-h-9 cursor-default gap-1.5 text-foreground/80 text-xs/4 transition-colors group-hover/row:text-foreground group-data-[changed]/row:text-foreground group-data-[inactive]/row:text-muted-foreground/60"
           onClick={(event) => {
             if (event.altKey) {
               event.preventDefault()

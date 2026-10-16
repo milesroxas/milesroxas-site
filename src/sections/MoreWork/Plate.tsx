@@ -29,7 +29,7 @@ const PlateRuntime = lazy(() => import('./plate-runtime'))
  * Where the index shows the plate: wide screens with a hovering pointer.
  * The `plate:` variant in globals.css is the same query for the markup.
  */
-export const PLATE_LAYOUT_QUERY = '(min-width: 64rem) and (hover: hover) and (pointer: fine)'
+const PLATE_LAYOUT_QUERY = '(min-width: 64rem) and (hover: hover) and (pointer: fine)'
 
 const subscribeLayout = (onChange: () => void) => {
   const query = matchMedia(PLATE_LAYOUT_QUERY)

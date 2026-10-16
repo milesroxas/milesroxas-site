@@ -14,7 +14,7 @@ export const HighImpactHero: React.FC<Page['hero']> = (hero) => {
 
   // Over an effect the media blends into it, as sas-site's hero does.
   const mediaClassName = cn(
-    'absolute inset-0 w-full h-full object-cover pointer-events-none',
+    'pointer-events-none absolute inset-0 h-full w-full object-cover',
     ground && '-z-20 opacity-85 mix-blend-soft-light',
   )
 

@@ -92,15 +92,19 @@ export const ASK_JUDGE_THRESHOLDS = {
 
 const REQUEST_CRITERIA = {
   // "What did you do for Arturo?" read as no request at all (confidence 0.15 to
-  // 0.22, measured 2026-09-21) until past work was named here and ruled out of
-  // `project`: "did for a client" sits next to "do for me".
+  // 0.22, measured 2026-09-21 on sas-site's wording) until past work was named
+  // here and ruled out of `project`: "did for a client" sits next to "do for
+  // me". The criteria name Miles, the person this site is about, where
+  // sas-site's named its studio; the shape and the boundary cases are the
+  // same. Hiring questions (experience, skills, roles) are information too.
   information:
-    'A question about the studio: how it works, how projects start, its process, who it has worked with, what it did for a client it names or on a past project, what it offers, what kinds of clients or platforms it works with, or how it prices in general.',
+    'A question about Miles: his work and case studies, what he did for a client or on a project the visitor names, his experience, background, skills and roles, how he works, how projects start, his process, who he has worked with, what he offers, what kinds of clients, products or platforms he works with, or how he prices in general.',
   estimate:
-    "A question about the visitor's own project: what it would cost, how long it would take, or when the studio could start.",
+    "A question about the visitor's own project: what it would cost, how long it would take, or when Miles could start.",
   project:
-    'The visitor says they have a project, or asks the studio to do something for them. Not a question about how projects start, and not a question about work the studio already did for a client.',
-  person: 'The visitor asks for a person by name or role, or asks to be called or emailed.',
+    'The visitor says they have a project, or asks Miles to do something for them. Not a question about how projects start, and not a question about work Miles already did for a client.',
+  person:
+    'The visitor asks to speak with Miles or another person, by name or role, or asks to be called or emailed. Not a question about who Miles is or what he has done.',
   conversation:
     'A thanks, a greeting, an acknowledgment, or a request to repeat or rephrase an earlier reply.',
   other: 'None of the above.',
@@ -115,15 +119,16 @@ const TURN_QUESTIONS = {
   // and a universal is a hop too many. So it is three literal questions,
   // combined in `routeTurn` (jev-1.13 jaggedness: literal reading).
   own_project: noul("Is `question` about the visitor's own project?", {
-    true: 'It asks what their own project would cost, how long it would take, when the studio could start, or whether the studio would take it on, or it says they have a project for the studio.',
-    false: 'It asks about the studio in general, asks for a person, or is about something else.',
+    true: 'It asks what their own project would cost, how long it would take, when Miles could start, or whether Miles would take it on, or it says they have a project for Miles.',
+    false:
+      'It asks about Miles or his work in general, asks for a person, or is about something else.',
   }),
   general_question: noul(
-    'Does any part of `question` ask about the studio in general: how it works, its process, who it has worked with, what it offers, which platforms or kinds of clients it works with, or how it prices in general?',
+    'Does any part of `question` ask about Miles in general: his work, experience, skills or background, how he works, his process, who he has worked with, what he offers, which platforms or kinds of clients he works with, or how he prices in general?',
     {
-      true: 'At least part of it could be answered from what the studio publishes about itself.',
+      true: 'At least part of it could be answered from what Miles publishes about himself and his work.',
       false:
-        "It is only about the visitor's own project, a request for a person, or not about the studio at all.",
+        "It is only about the visitor's own project, a request for a person, or not about Miles at all.",
     },
   ),
   names_work: noul('Does `question` name the kind of work the visitor wants done?', {
@@ -153,7 +158,7 @@ const CONTEXT_QUESTIONS = {
     {
       true: 'A pronoun or "this ..." stands for a project, client, service or article that is not named anywhere in `question`.',
       false:
-        'Every thing `question` asks about is named in it. "you" and "your" mean the studio and "I", "we", "my", "our", "us" mean the visitor: those do not count.',
+        'Every thing `question` asks about is named in it. "you" and "your" mean Miles and "I", "we", "my", "our", "us" mean the visitor: those do not count.',
     },
   ),
 }

@@ -106,7 +106,7 @@ function Card({
         )}
       </span>
       <span className="flex min-w-0 flex-col px-0.5 pb-0.5">
-        <span className="truncate text-xs/4 font-medium">{title}</span>
+        <span className="truncate font-medium text-xs/4">{title}</span>
         {caption && <span className="truncate text-[11px]/4 text-muted-foreground">{caption}</span>}
       </span>
     </button>
@@ -306,7 +306,7 @@ export const FieldPicker: RelationshipFieldClientComponent = ({ path, readOnly }
       )}
 
       {slot.error && (
-        <p role="alert" className="text-xs/4 text-destructive">
+        <p role="alert" className="text-destructive text-xs/4">
           {slot.error}
         </p>
       )}
@@ -346,10 +346,10 @@ function ChosenLook({
         )}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate text-[13px]/5 font-medium">
+        <span className="truncate font-medium text-[13px]/5">
           {selected?.title ?? `Look #${id}`}
         </span>
-        <span className="text-xs/4 text-muted-foreground">
+        <span className="text-muted-foreground text-xs/4">
           {live
             ? 'The page shows what is published. Edit it in Studio and publish to change it here.'
             : 'Not published yet, so the page shows the shipped look. Open it in Studio and publish.'}
@@ -478,7 +478,7 @@ function BrowseOrSearch({
   return (
     <button
       type="button"
-      className="pressable w-fit cursor-pointer text-xs/4 text-muted-foreground underline hover:text-foreground"
+      className="pressable w-fit cursor-pointer text-muted-foreground text-xs/4 underline hover:text-foreground"
       onClick={onBrowse}
     >
       Use a {noun} made in Studio

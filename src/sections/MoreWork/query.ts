@@ -5,7 +5,7 @@ import type { Capability, Client, Media, Work } from '@/payload-types'
 import { populatedDoc, relationshipIds } from '@/utilities/relationshipId'
 
 /** How many works the index lists. */
-export const MORE_WORK_LIMIT = 4
+const MORE_WORK_LIMIT = 4
 
 /** One row of the index: only what the row and the plate render. */
 export type MoreWorkItem = {

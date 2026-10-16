@@ -1,7 +1,6 @@
 import type {
   CollectionAfterChangeHook,
   CollectionAfterDeleteHook,
-  CollectionSlug,
   GlobalAfterChangeHook,
   Payload,
 } from 'payload'
@@ -65,7 +64,7 @@ export async function syncSurfaceDoc(
     return null
   }
 
-  const markdown = await extractDocMarkdown(payload, surface, doc)
+  const markdown = await extractDocMarkdown(payload, doc)
   const chunks = chunkMarkdown(markdown)
   const result = await replaceDocEmbeddings(
     payload,

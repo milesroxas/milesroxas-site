@@ -1,5 +1,5 @@
 /**
- * Small Lexical helpers for the composer transform (docs/composer-roadmap.md,
+ * Small Lexical helpers for the composer transform (docs/archive/composer-roadmap.md,
  * Phase 6). They read and rebuild serialized editor state as plain JSON: no
  * editor, no DOM, so the transform runs anywhere the Local API does.
  */

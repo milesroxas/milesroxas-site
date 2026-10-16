@@ -13,7 +13,7 @@ const revalidateSiteInfo: GlobalAfterChangeHook = ({ doc, req: { payload, contex
 
 /**
  * Site-wide facts, the Ask switch, and the site's public identity
- * (docs/composer-roadmap.md, Phase 5; docs/aeo.md). A port of sas-site's Site
+ * (docs/archive/composer-roadmap.md, Phase 5; docs/aeo.md). A port of sas-site's Site
  * Info global (its AEO plugin). The facts are what Ask answers "who are you"
  * and "how do I reach you" from (`renderSiteInfo` in shared/content/extract.ts)
  * and what the Person and WebSite JSON-LD, llms.txt and the default share

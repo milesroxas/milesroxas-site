@@ -1,5 +1,5 @@
 /**
- * The Phase 6 preservation check (docs/composer-roadmap.md): before anything
+ * The Phase 6 preservation check (docs/archive/composer-roadmap.md): before anything
  * is written, every media id and every non-empty string a legacy layout
  * carries must appear in the output. A document that fails is skipped and
  * reported; nothing is written for it.

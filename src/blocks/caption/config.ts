@@ -6,7 +6,7 @@ import { BLOCK_GROUPS } from '@/blocks/shared/groups'
 /**
  * sas-site's Caption block (its `mediaBlock`), under its own slug here: this
  * site's legacy `mediaBlock` keeps its slug, tables and rows
- * (docs/composer-roadmap.md, Section 4).
+ * (docs/archive/composer-roadmap.md, Section 4).
  */
 export const Caption: Block = {
   slug: 'caption',

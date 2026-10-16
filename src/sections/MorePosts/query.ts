@@ -6,7 +6,7 @@ import { DEFAULT_PUBLISHER, isExternalPost } from '@/utilities/externalArticle'
 import { populatedDoc, relationshipIds } from '@/utilities/relationshipId'
 
 /** How many posts close a post: one row of three. */
-export const MORE_POSTS_LIMIT = 3
+const MORE_POSTS_LIMIT = 3
 
 /** One post in the close: only what it renders. */
 export type MorePostsItem = {

@@ -73,7 +73,7 @@ export const workLayoutBlocks: Block[] = [
 ]
 
 /**
- * Posts compose sections after the article body (docs/composer-roadmap.md,
+ * Posts compose sections after the article body (docs/archive/composer-roadmap.md,
  * D5): the Section and the run, nothing legacy.
  */
 export const postLayoutBlocks: Block[] = [

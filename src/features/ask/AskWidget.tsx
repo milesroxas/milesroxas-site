@@ -162,7 +162,7 @@ function TranscriptCard({
   return (
     <Card
       data-lenis-prevent
-      className="mb-4 h-[min(60svh,32rem)] gap-0 py-0 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-300"
+      className="motion-safe:fade-in-0 mb-4 h-[min(60svh,32rem)] gap-0 py-0 motion-safe:animate-in motion-safe:duration-300"
     >
       <CardContent className="min-h-0 flex-1 overflow-hidden p-0">
         <MessageScrollerProvider autoScroll>

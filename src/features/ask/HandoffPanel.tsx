@@ -169,7 +169,7 @@ const handoffCardClass = (prominent: boolean) =>
     // the two that the inset variant also sets through a data attribute
     // of its own, which would otherwise win on source order.
     !prominent &&
-      'data-[panel=offer]:overflow-visible data-[panel=offer]:py-0 data-[panel=offer]:rounded-none! data-[panel=offer]:bg-transparent!',
+      'data-[panel=offer]:overflow-visible data-[panel=offer]:rounded-none! data-[panel=offer]:bg-transparent! data-[panel=offer]:py-0',
   )
 
 type HandoffProps = {

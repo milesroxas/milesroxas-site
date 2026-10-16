@@ -37,7 +37,7 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
 
 /**
  * Rich text for the legacy blocks, heroes and the post body: the renderer
- * this site shipped before the composer port (docs/composer-roadmap.md).
+ * this site shipped before the composer port (docs/archive/composer-roadmap.md).
  *
  * Its look comes from the site's own `prose-custom` / `prose-blocks` rules
  * in globals.css. It never carried a working Tailwind Typography `prose`

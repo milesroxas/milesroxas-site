@@ -1,14 +1,22 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
-  // CLI scripts run by hand (MIGRATIONS.md, src/features/ask/README.md, docs/composer-roadmap.md).
+  // CLI scripts run by hand (MIGRATIONS.md, src/features/ask/README.md, docs/composer-roadmap.md,
+  // docs/performance.md, docs/media.md); MDX pages are loaded by the Storybook docs config.
   "entry": [
     "scripts/add-missing-columns.ts",
+    "scripts/ask-judge-eval.ts",
     "scripts/backfill-ask-index.ts",
     "scripts/check-indexes.ts",
     "scripts/check-schema.ts",
     "scripts/compose-layouts.ts",
     "scripts/fix-indexes.ts",
-    "scripts/mark-migration.ts"
+    "scripts/mark-migration.ts",
+    "scripts/migrate-blob-to-r2.ts",
+    "scripts/perf/measure.mjs",
+    "scripts/perf/throttled.mjs",
+    "scripts/replace-avif-media.ts",
+    "scripts/resync-cloudflare-media.ts",
+    "src/**/*.mdx"
   ],
   // Loaded by `payload migrate` from the configured migration directory.
   "dynamicallyLoaded": ["src/migrations/index.ts"],

@@ -33,7 +33,7 @@ export const FeatureHeadingOffsetBlock: React.FC<FeatureHeadingOffsetBlockProps>
         <BlockGrid>
           <div className="text-stack md:col-span-4">
             {eyebrow ? (
-              <p className="text-sm tracking-widest uppercase" data-reveal>
+              <p className="text-sm uppercase tracking-widest" data-reveal>
                 {eyebrow}
               </p>
             ) : null}

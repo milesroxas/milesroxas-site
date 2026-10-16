@@ -1,12 +1,14 @@
 # Composer and editorial roadmap: sas-site parity without a Content Hub
 
+Status: closed
+
 Status: Phases 1 to 5 built 2026-09-27 on `dev` (notes under each phase). Phase 6's script is built and proven on the local Docker copy of production and on the Neon `preview/dev` branch; its production run is a cutover step (Phase 9). Phase 7: the code-only bullets are done, the three content ones wait for the cutover to soak. Phase 8 closed 2026-10-01: figures, the Carousel split, Carousel tabs and the visitor theme built 2026-09-30; nothing else is planned. Three workstreams landed on `dev` after the phases and are documented where they live, not here: the top bar, dock and Ask panel (`docs/site-chrome.md`, supersedes D10 and O3), the `/contact` inquiry form, and the `milesroxas-cms` MCP server (`docs/mcp.md`). Audit numbers come from the local Docker copy of production (`payload` on `127.0.0.1:54330`), pulled with the dev TUI; re-pull before any content step.
 
 Goal: give this site the same editorial experience as `~/SITES/sas-site` (referred to below as `sas:`), so that Work pages are composed from Sections and the shared block run, Posts compose like sas-site Lab Pages, the same Ask feature answers visitors, the same Studio shader plugin drives effects in heroes and media slots, and every ported block keeps its exact animation. All of it lands without losing a single existing document, block row, or version.
 
 Not in scope, on purpose: the Content Hub (case studies, lab projects, story beats, asset libraries, organizations, taxonomy collections), newsletters, the takeover menu, route transitions and hero landing, the AEO plugin (`llms.txt`), Sentry. Figures (chart, diagram, bespoke) are Phase 8. The `milesroxas-cms` MCP server was out of scope for this plan and shipped on its own (`docs/mcp.md`).
 
-Agents: read this before touching blocks, themes, heroes, or migrations in this repo. It plays the role `sas:docs/blocks-reorg-roadmap.md` plays there. Read that file too before porting: it records why the block system is shaped the way it is.
+The plan closed on 2026-10-15 with the merge to `main`; this file is a record of how the composer port was built, not a guide to follow.
 
 ---
 
@@ -532,10 +534,10 @@ The first three bullets stay open on purpose: each changes or retires production
 
 ### Phase 8: optional, in any order (the last code phase before the cutover)
 
-- [x] **Figures** (`chart`, `diagram`) with `sas:src/plugins/figures` and `sas:src/features/figures`, done 2026-09-30. Joins the run under Figures. Notes below; the system is documented in [figures.md](figures.md).
+- [x] **Figures** (`chart`, `diagram`) with `sas:src/plugins/figures` and `sas:src/features/figures`, done 2026-09-30. Joins the run under Figures. Notes below; the system is documented in [figures.md](../figures.md).
 - [x] **Carousel tabs** (`carouselTabs`), done 2026-09-30. A deck per tab, so a Tab slider keeps its tabs through Phase 6 (O9). Joins the run under Interactive. Notes below.
 - [x] **Carousel split** (`carouselSplit`), done 2026-09-30. A deck beside its copy, so a carousel can sit next to words as the legacy Columns grid allowed. Joins the run under Media and content, and Phase 6's C6 maps the legacy shape onto it. Notes below.
-- [x] **A visitor light/dark theme** (`sas:src/providers/Theme/*`, `InitTheme`), done 2026-09-30. Notes below; the toggle is documented in [site-chrome.md](site-chrome.md).
+- [x] **A visitor light/dark theme** (`sas:src/providers/Theme/*`, `InitTheme`), done 2026-09-30. Notes below; the toggle is documented in [site-chrome.md](../site-chrome.md).
 
 **Carousel tabs as built (2026-09-30).** `src/blocks/carousel-tabs/{config.ts, CarouselTabs.tsx, Component.tsx, Component.stories.tsx}`, registered in `sectionNestableBlocks` (Interactive, before Tabs) and in `sectionChildComponents`. Fields: `tabs` (two to eight rows of a `title` and that tab's slides), `slideSize`, `showArrows`, `tabSize`, `theme`. Tables `{pages,works,posts}_blocks_carousel_tabs(_tabs)(_slides)` plus `_v` twins.
 
@@ -658,7 +660,7 @@ Integration rules here:
 | O3 | Ask entry points beyond `/ask` and the nav | **Settled 2026-09-29**: the dock Ask panel (`docs/site-chrome.md`) |
 | O4 | Jev (TypeSafe) on for Ask? | Off at first (`ASK_JEV` unset); turn on shadow after a week of questions |
 | O5 | Add the `text` link appearance (D8)? | Not now; revisit when the Actions block is wanted with text links |
-| O6 | Figures in the run? | **Settled 2026-09-30**: chart and diagram are in the run ([figures.md](figures.md)); bespoke figures are not |
+| O6 | Figures in the run? | **Settled 2026-09-30**: chart and diagram are in the run ([figures.md](../figures.md)); bespoke figures are not |
 | O7 | Band token values | Start from sas-site's oklch values; retune against IBM Plex and the orange accent on `/demo`-style stories before Phase 3 ships |
 | O8 | Work Details tab (industry, role, deliverables) as a hero facts row like `CaseStudyHero`? | Yes, in Phase 4, read from the existing text fields; no schema |
 | O9 | Tab slider in Phase 6: every tab holds a slider (3 to 12 slides). sas-site's Tabs (`featureTabs`) holds one media per tab, so it would keep 13 of 73 images | **Settled 2026-09-30**: a `carouselTabs` block of our own, a deck per tab. TB1 maps every production Tab slider onto it, so all 13 tabs and 73 slides survive as tabs. The first answer here (flatten each tab into a Standard plus a Carousel) is now the TB2 fallback for a Tab slider that mixes copy into its tabs |

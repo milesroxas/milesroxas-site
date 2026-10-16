@@ -54,7 +54,7 @@ const TabPanel: React.FC<{ tab: FeatureTab; type: TypeScale }> = ({ tab, type })
       {tab.items?.length ? (
         <div className="flex flex-col gap-3">
           {tab.subheading ? (
-            <h4 className="font-mono text-sm font-normal text-muted-foreground">
+            <h4 className="font-mono font-normal text-muted-foreground text-sm">
               {tab.subheading}
             </h4>
           ) : null}
@@ -81,7 +81,7 @@ const TabPanel: React.FC<{ tab: FeatureTab; type: TypeScale }> = ({ tab, type })
       ) : null}
       {tab.caption ? (
         <div className="absolute right-4 bottom-4 max-w-72 rounded-md bg-card p-4 text-card-foreground md:right-8 md:bottom-9">
-          <p className="text-sm text-muted-foreground">{tab.caption}</p>
+          <p className="text-muted-foreground text-sm">{tab.caption}</p>
         </div>
       ) : null}
     </div>

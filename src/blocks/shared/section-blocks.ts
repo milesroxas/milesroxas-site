@@ -29,7 +29,7 @@ import { YouTube } from '@/blocks/youtube/config'
 export const figureBlocks: Block[] = [Chart, Diagram]
 
 /**
- * The Section-nestable run, ported from sas-site (docs/composer-roadmap.md,
+ * The Section-nestable run, ported from sas-site (docs/archive/composer-roadmap.md,
  * Phase 3) without its story blocks. Stated once so every
  * composition surface offers the same blocks under the same group labels.
  * Each collection nests this run inside its own Section instance and spreads

@@ -15,11 +15,11 @@ import {
 } from './journey'
 
 /**
- * One Ask conversation for the whole site. The takeover menu, the closing
- * band and the /ask page each used to mount their own chat, so a question
- * asked in the menu was unknown to the band under the same page. They now
- * read this session: one transcript, one chat id in the log, one handoff, one
- * set of ratings, whichever surface the visitor picks up next. It sits in the
+ * One Ask conversation for the whole site. The dock's AskPanel (panel or
+ * sheet) and the /ask page widget both read this session instead of mounting
+ * their own chat, so a question asked in the dock is known on the page: one
+ * transcript, one chat id in the log, one handoff, one set of ratings,
+ * whichever surface the visitor picks up next. It sits in the
  * root providers, above the header and every page, so it survives client-side
  * navigation; a full reload starts a new conversation, as before.
  *
@@ -62,7 +62,7 @@ let runtimePromise: Promise<AskRuntime> | undefined
  * panel most visits never open; the provider asks for it once the page is
  * idle, and a surface that needs it sooner can ask here.
  */
-export const loadAskRuntime = (): Promise<AskRuntime> => {
+const loadAskRuntime = (): Promise<AskRuntime> => {
   runtimePromise ??= Promise.all([import('@ai-sdk/react'), import('ai')]).then(([react, ai]) => ({
     Chat: react.Chat,
     DefaultChatTransport: ai.DefaultChatTransport,

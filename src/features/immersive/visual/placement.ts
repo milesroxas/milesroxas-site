@@ -24,12 +24,11 @@ export type PlacementLimits = {
 export const PLACEMENT_LIMITS: Record<VisualPlacement, PlacementLimits> = {
   hero: { live: true, dpr: 1.5, count: 8000, flow: true, pointer: true },
   block: { live: true, dpr: 1, count: 4000, flow: true, pointer: true },
-  // The takeover menu's docked window runs the current page's own field
-  // (src/Header/Menu/LiveVisual.tsx) once the dock has settled; hover
-  // previews and the handoff traveler stay posters. The window is drawn at
-  // 1:1 screen pixels, a fraction of the viewport, so the hero's density
-  // needs far fewer streaks and a crisp DPR costs little; the frame is
-  // inert, so the pointer never reaches it.
+  // No page surface uses `menu` here; it is kept from sas-site's takeover
+  // menu and the Studio stage can preview it. Sized for a small docked
+  // window drawn at 1:1 screen pixels, a fraction of the viewport, so the
+  // hero's density needs far fewer streaks and a crisp DPR costs little;
+  // that window was inert, so the pointer never reached it.
   menu: { live: true, dpr: 2, count: 1000, flow: true, pointer: false },
   // Repeated entries and pinned work previews stay static.
   card: { live: false, dpr: 1, count: 0, flow: false, pointer: false },

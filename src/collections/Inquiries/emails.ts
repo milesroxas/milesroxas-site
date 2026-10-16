@@ -4,10 +4,10 @@ import type { Payload } from 'payload'
  * The two inquiry emails, as plain HTML and text through Payload's email
  * adapter (Resend). sas-site renders them with react-email templates in its
  * brand; this site sends the same words without a template system
- * (docs/composer-roadmap.md, Phase 5).
+ * (docs/archive/composer-roadmap.md, Phase 5).
  */
 
-const escape = (value: string) =>
+const escapeHtml = (value: string) =>
   value
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
@@ -56,10 +56,10 @@ export async function sendInquiryNotificationEmail({
   ].join('\n')
   const html = wrap(
     paragraphs([
-      `<strong>${escape(typeLabel)}</strong> from ${escape(from)}, <a href="mailto:${escape(senderEmail)}">${escape(senderEmail)}</a>`,
-      ...rows.map(escape),
-      escape(excerpt).replaceAll('\n', '<br>'),
-      `<a href="${escape(adminUrl)}">Open in the admin</a> · ${escape(reference)}`,
+      `<strong>${escapeHtml(typeLabel)}</strong> from ${escapeHtml(from)}, <a href="mailto:${escapeHtml(senderEmail)}">${escapeHtml(senderEmail)}</a>`,
+      ...rows.map(escapeHtml),
+      escapeHtml(excerpt).replaceAll('\n', '<br>'),
+      `<a href="${escapeHtml(adminUrl)}">Open in the admin</a> · ${escapeHtml(reference)}`,
     ]),
   )
   return payload.sendEmail({
@@ -95,8 +95,8 @@ export async function sendInquiryReceivedEmail({
     paragraphs(
       lines.map((line) =>
         scheduleUrl && line.includes(scheduleUrl)
-          ? `If you would rather talk sooner, <a href="${escape(scheduleUrl)}">schedule a call</a>.`
-          : escape(line),
+          ? `If you would rather talk sooner, <a href="${escapeHtml(scheduleUrl)}">schedule a call</a>.`
+          : escapeHtml(line),
       ),
     ),
   )

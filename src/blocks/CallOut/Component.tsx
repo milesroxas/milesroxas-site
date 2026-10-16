@@ -22,7 +22,7 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => (
     </div>
     <div
       aria-hidden
-      className="pointer-events-none sticky bottom-0 z-10 -mt-36 h-36 bg-gradient-to-t from-background from-65% to-transparent"
+      className="pointer-events-none sticky bottom-0 z-10 -mt-36 h-36 bg-gradient-to-t from-65% from-background to-transparent"
     />
   </ScrollReveal>
 )

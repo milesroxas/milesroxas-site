@@ -66,11 +66,12 @@ export function useDocumentVisible(): boolean {
 const PAGE_FRAME_SELECTOR = '[data-page-frame]'
 
 /**
- * Whether the takeover menu covers the page: it marks the frame `inert`
- * while docked and the document `data-menu-handoff` for the flight out.
- * A covered field draws nothing and releases its admission. `enabled`
- * false never reports covered: the menu's own window lives inside that
- * inert frame and is the thing doing the covering.
+ * Whether a takeover covers the page. Kept from sas-site, where the menu
+ * marked the frame `inert` while docked and the document `data-menu-handoff`
+ * for the flight out; nothing in this repo sets `[data-page-frame]` or
+ * `data-menu-handoff`, so the gate is never true here. A covered field
+ * draws nothing and releases its admission. `enabled` false never reports
+ * covered: it is for a window that lives inside the covering frame.
  */
 export function usePageCovered(enabled = true): boolean {
   const [covered, setCovered] = useState(false)

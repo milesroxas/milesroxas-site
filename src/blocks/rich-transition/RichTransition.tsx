@@ -86,7 +86,7 @@ const Centered = ({ body, eyebrow, heading, textSize }: LayoutProps) => {
   const type = typeScale(textSize)
   return (
     <Container>
-      <div className="text-stack mx-auto max-w-5xl text-center">
+      <div className="mx-auto max-w-5xl text-center text-stack">
         <Eyebrow text={eyebrow} />
         <h2 className={cn(type.title, 'mx-auto max-w-3xl')} data-reveal data-reveal-group="heading">
           {heading}
@@ -100,7 +100,7 @@ const Centered = ({ body, eyebrow, heading, textSize }: LayoutProps) => {
 /** Statement: display-sized heading, body as a short caption underneath. */
 const Statement = ({ body, eyebrow, heading }: LayoutProps) => (
   <Container>
-    <div className="text-stack mx-auto max-w-5xl text-center">
+    <div className="mx-auto max-w-5xl text-center text-stack">
       <Eyebrow text={eyebrow} />
       <h2 className="text-display" data-reveal data-reveal-group="heading">
         {heading}

@@ -16,7 +16,7 @@ import { indexNowEnabled, submitToIndexNow } from './indexNow'
 /** The cache tag /llms.txt and /llms-full.txt are built under. */
 export const LLMS_CACHE_TAG = 'llms-txt'
 
-export const SITEMAP_PATH = '/sitemap.xml'
+const SITEMAP_PATH = '/sitemap.xml'
 
 type SurfaceDoc = { id: number | string; _status?: string | null; slug?: string | null }
 

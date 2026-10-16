@@ -19,7 +19,7 @@ export const ChartTable = ({ caption, spec }: { caption: string; spec: ChartSpec
     <table className="w-full border-collapse text-left text-sm">
       <caption className="sr-only">{caption}</caption>
       <thead className="sticky top-0 bg-background">
-        <tr className="border-b border-border">
+        <tr className="border-border border-b">
           <th className="px-3 py-2 font-medium" scope="col">
             {spec.x.label ?? spec.x.key}
           </th>
@@ -34,7 +34,7 @@ export const ChartTable = ({ caption, spec }: { caption: string; spec: ChartSpec
         {spec.rows.map((row, index) => {
           const x = row[spec.x.key]
           return (
-            <tr className="border-b border-border last:border-0" key={index}>
+            <tr className="border-border border-b last:border-0" key={index}>
               <th className="px-3 py-2 font-normal" scope="row">
                 {x === null || x === undefined ? '' : formatX(spec, x)}
               </th>

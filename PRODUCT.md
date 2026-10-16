@@ -28,8 +28,8 @@ Designer & Builder: "I design experiences and build the systems behind them." De
 
 - Next.js 16 App Router + Payload CMS 3; content is authored in Payload.
 - Works pages are composed from Sections (composer). Work cards transition into their case study with a GSAP Flip.
-- Ask exists as a feature (composer phase 5); it answers from site content only.
-- Site-wide chrome today: SiteFrame (viewport frame + bottom bar), a MENU pill that opens a full-screen overlay, a custom cursor, and Lenis smooth scrolling. Only the items listed under Brand Commitments are binding; the rest may be replaced.
+- Ask is grounded Q&A over site content, in the dock and at `/ask`; it answers from site content only.
+- Site-wide chrome today (`docs/site-chrome.md`): a top bar (wordmark and New York clock), a dock of page tabs with Ask as its own button, the Ask panel, a custom cursor, and Lenis smooth scrolling. Only the items listed under Brand Commitments are binding; the rest may be replaced.
 
 ## Brand Commitments
 
@@ -38,7 +38,7 @@ Designer & Builder: "I design experiences and build the systems behind them." De
 
 ## Evidence on Hand
 
-- 8 published Works and 4 published Posts in Payload, with hero media (Vercel Blob + Cloudflare Images/Stream).
+- 8 published Works and 4 published Posts in Payload, with hero media (Cloudflare R2 + Cloudflare Images/Stream).
 - Homepage: hero video (`public/media/home-hero.mp4`), Overview callout, and Strategy / Design / Development bands with six featured works.
 - No testimonials, client logos, or metrics are recorded. Do not invent them.
 

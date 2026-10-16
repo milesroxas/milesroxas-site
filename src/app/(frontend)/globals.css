@@ -693,7 +693,7 @@
 @source "lg:col-span-4 lg:col-span-6 lg:col-span-8 lg:col-span-12 border-border bg-card border-error bg-error/30 border-success bg-success/30 border-warning bg-warning/30";
 
 /* ==========================================================================
-   Composer foundation (docs/composer-roadmap.md, Phase 1).
+   Composer foundation (docs/archive/composer-roadmap.md, Phase 1).
    Ported from sas-site `src/app/(frontend)/globals.css` beside the tokens
    above, never in place of them (D14): only the ported blocks read these.
    ========================================================================== */
@@ -1976,6 +1976,7 @@ body {
     translate 300ms var(--ease-out-quint);
 }
 
+/* biome-ignore lint/style/noDescendingSpecificity: a base `> *` rule after another component's `[state] > *` rule; the two never match the same element. */
 .dock > * {
   pointer-events: auto;
 }
@@ -2823,6 +2824,7 @@ html:active-view-transition-type(work-open) .dock {
   transition: clip-path 500ms var(--ease-spring) 100ms;
 }
 
+/* biome-ignore lint/style/noDescendingSpecificity: same false positive as `.dock > *`. */
 .contents-arrival > * {
   opacity: 0;
   transition: opacity 150ms var(--ease-out-quint);

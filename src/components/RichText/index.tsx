@@ -194,8 +194,8 @@ export default function RichText(props: Props) {
              in blocks/shared/typography), so in-body headings stay below the
              page's h1. h3/h4 take medium — at near-body sizes weight, not
              size, carries hierarchy. */
-          'mx-auto prose dark:prose-invert': enableProse,
-          'prose-h1:text-heading-3 prose-h2:text-lead prose-h2:leading-snug prose-h2:font-normal prose-h3:text-lg prose-h3:font-medium xl:prose-h3:text-xl prose-h4:font-medium':
+          'prose dark:prose-invert mx-auto': enableProse,
+          'prose-h2:font-normal prose-h3:font-medium prose-h4:font-medium prose-h1:text-heading-3 prose-h2:text-lead prose-h3:text-lg prose-h2:leading-snug xl:prose-h3:text-xl':
             enableProse,
         },
         variantClasses[variant],

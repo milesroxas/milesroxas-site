@@ -1,7 +1,8 @@
 /**
  * The document's GPU budget: one registry for every effect that owns a
- * canvas (Streak Field, hero and work lenses, the footer light leak, the
- * scroll gallery, the More work plate, the global backdrop). Each holds a lease while it wants a
+ * canvas: the Streak Field and light leak slots (`use-live-visual.ts`), the
+ * bare `LightLeak` component (`ui/light-leak.tsx`) and the More work plate
+ * (`sections/MoreWork/Plate.tsx`). Each holds a lease while it wants a
  * live context; the registry admits the highest-priority leases up to
  * `GPU_LIVE_CEILING` in total and `GPU_KIND_CEILINGS` per kind, ranking by
  * priority and then arrival. An effect that is not admitted keeps its DOM

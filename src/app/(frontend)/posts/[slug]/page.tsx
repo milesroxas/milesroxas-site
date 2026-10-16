@@ -121,7 +121,7 @@ export default async function Post({ params: paramsPromise }: Args) {
         ) : (
           <>
             <PostBody post={post} />
-            {/* Composition (docs/composer-roadmap.md, Phase 3): Sections after the
+            {/* Composition (docs/archive/composer-roadmap.md, Phase 3): Sections after the
                 article body. Each band paints its own surface. */}
             <RenderBlocks blocks={post.layout} />
           </>

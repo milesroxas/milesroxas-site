@@ -1,7 +1,7 @@
 import type { Payload } from 'payload'
 import { describe, expect, it, vi } from 'vitest'
 import { extractDocMarkdown, extractGlobalMarkdown } from './extract'
-import { type ContentSurface, type GlobalSurface, surfaceByCollection } from './surfaces'
+import type { GlobalSurface } from './surfaces'
 
 const paragraph = (text: string) => ({
   root: {
@@ -28,17 +28,10 @@ function stubPayload(tables: Record<string, Record<string, unknown>[]>) {
   return { payload: { find, findGlobal } as unknown as Payload, find, findGlobal }
 }
 
-const walkSurface: ContentSurface = {
-  collection: 'pages',
-  title: 'Pages',
-  urlPrefix: '',
-  body: { kind: 'walk' },
-}
-
 describe('extractDocMarkdown', () => {
   it('walks allowlisted copy, skips enums, links, and internal fields', async () => {
     const { payload, find } = stubPayload({})
-    const markdown = await extractDocMarkdown(payload, walkSurface, {
+    const markdown = await extractDocMarkdown(payload, {
       title: 'Services',
       meta: { description: 'What we do.' },
       hero: { type: 'highImpact', eyebrow: 'Studio', lead: 'We design and build.' },
@@ -61,7 +54,7 @@ describe('extractDocMarkdown', () => {
 
   it("names a work's client, read as the public", async () => {
     const { payload, find } = stubPayload({ clients: [{ id: 7, title: 'Adacore' }] })
-    const markdown = await extractDocMarkdown(payload, walkSurface, {
+    const markdown = await extractDocMarkdown(payload, {
       title: 'Making software easier to understand',
       client: 7,
       industry: 'Enterprise Technology',
@@ -84,7 +77,7 @@ describe('extractDocMarkdown', () => {
         { id: 2, title: 'Web Design' },
       ],
     })
-    const markdown = await extractDocMarkdown(payload, walkSurface, {
+    const markdown = await extractDocMarkdown(payload, {
       title: 'Identity for Higher-Stakes Work',
       capabilities: [2, 1],
     } as never)
@@ -101,7 +94,7 @@ describe('extractDocMarkdown', () => {
 
   it('reads a figure through its words and a code block as a fenced listing, inside a Section', async () => {
     const { payload } = stubPayload({})
-    const markdown = await extractDocMarkdown(payload, walkSurface, {
+    const markdown = await extractDocMarkdown(payload, {
       title: 'Streak Field',
       layout: [
         {
@@ -137,7 +130,7 @@ describe('extractDocMarkdown', () => {
 
   it('renders only publicly approved metrics and contact details as compact lines', async () => {
     const { payload } = stubPayload({})
-    const markdown = await extractDocMarkdown(payload, walkSurface, {
+    const markdown = await extractDocMarkdown(payload, {
       title: 'Evidence',
       metrics: [
         {
@@ -162,13 +155,7 @@ describe('extractDocMarkdown', () => {
 
   it('walks a richText surface whole, so standfirsts and layout blocks are kept', async () => {
     const { payload } = stubPayload({})
-    const surface: ContentSurface = {
-      collection: 'posts',
-      title: 'Insights',
-      urlPrefix: '/posts',
-      body: { kind: 'richText', field: 'content' },
-    }
-    const markdown = await extractDocMarkdown(payload, surface, {
+    const markdown = await extractDocMarkdown(payload, {
       title: 'Post',
       standfirst: 'The short version.',
       content: paragraph('The long version.'),

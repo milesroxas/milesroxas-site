@@ -89,7 +89,7 @@ function Arrival({ extended }: { extended: boolean }) {
     // The parent carries the edge: a clip cuts off the pill's own shadow.
     <span aria-hidden className="contents-shape-shadow absolute inset-y-0 right-0" data-lift>
       <span
-        className="contents-arrival flex h-full items-center gap-2.5 bg-popover pr-6 pl-5 text-sm/5 font-medium whitespace-nowrap text-popover-foreground"
+        className="contents-arrival flex h-full items-center gap-2.5 whitespace-nowrap bg-popover pr-6 pl-5 font-medium text-popover-foreground text-sm/5"
         data-animating={animating || undefined}
         data-open={extended}
         ref={ref}
@@ -405,7 +405,7 @@ function SectionHint({ label, number }: { label: string; number: number }) {
   return (
     <span
       aria-hidden
-      className="pointer-events-none absolute top-1/2 right-full mr-2.5 flex h-7 -translate-y-1/2 items-center gap-2 rounded-lg bg-foreground px-2.5 text-xs/4 font-medium whitespace-nowrap text-background opacity-0 transition-opacity duration-150 group-data-[arrival=extended]:hidden peer-hover:opacity-100 peer-hover:delay-300 peer-focus-visible:opacity-100 motion-reduce:transition-none"
+      className="pointer-events-none absolute top-1/2 right-full mr-2.5 flex h-7 -translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-lg bg-foreground px-2.5 font-medium text-background text-xs/4 opacity-0 transition-opacity duration-150 peer-hover:opacity-100 peer-hover:delay-300 peer-focus-visible:opacity-100 group-data-[arrival=extended]:hidden motion-reduce:transition-none"
     >
       <span className="font-mono">{String(number).padStart(2, '0')}</span>
       {label}

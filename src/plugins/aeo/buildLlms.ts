@@ -181,7 +181,6 @@ async function docMarkdown(
   const shown = shownRecord(surface, record, siteInfo, original)
   const markdown = await extractDocMarkdown(
     payload,
-    surface,
     shown,
     docFrontMatter(doc, siteUrl, original?.url),
   )

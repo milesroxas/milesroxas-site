@@ -54,8 +54,8 @@ export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
         <span aria-hidden className="flex size-7 shrink-0 items-center justify-center">
           <IconChevronRight className="size-3.5 text-muted-foreground transition-[rotate,color] duration-200 ease-out-quint group-hover/disclosure:text-foreground group-aria-expanded/disclosure:rotate-90 motion-reduce:transition-none" />
         </span>
-        <span className="min-w-0 flex-1 text-xs/4 font-medium">Sources</span>
-        <span className="min-w-4 text-right text-xs/4 text-muted-foreground tabular-nums transition-colors group-hover/disclosure:text-foreground">
+        <span className="min-w-0 flex-1 font-medium text-xs/4">Sources</span>
+        <span className="min-w-4 text-right text-muted-foreground text-xs/4 tabular-nums transition-colors group-hover/disclosure:text-foreground">
           {sources.length}
         </span>
       </button>
@@ -91,7 +91,7 @@ function SourceRow({ source }: { source: SourceUrlUIPart }) {
           // row or the row above it.
           'before:absolute before:top-0 before:right-0 before:left-12 before:h-px before:bg-border group-first/row:before:hidden',
           'hover:before:opacity-0 focus-visible:before:opacity-0',
-          '[li:hover+li>&]:before:opacity-0 [li:has(:focus-visible)+li>&]:before:opacity-0',
+          '[li:has(:focus-visible)+li>&]:before:opacity-0 [li:hover+li>&]:before:opacity-0',
         )}
         href={source.url}
       >
@@ -106,11 +106,11 @@ function SourceRow({ source }: { source: SourceUrlUIPart }) {
             {source.title ?? source.url}
           </span>
           {surface ? (
-            <span className="truncate text-xs/4 text-muted-foreground">{surface.title}</span>
+            <span className="truncate text-muted-foreground text-xs/4">{surface.title}</span>
           ) : null}
         </span>
         <span aria-hidden className="flex size-4 shrink-0 items-center justify-center">
-          <IconArrowRight className="size-3.5 text-muted-foreground motion-safe:transition-[translate,color] motion-safe:duration-150 motion-safe:ease-out group-hover/source:text-foreground pointer-fine:group-hover/source:translate-x-px" />
+          <IconArrowRight className="size-3.5 text-muted-foreground pointer-fine:group-hover/source:translate-x-px group-hover/source:text-foreground motion-safe:transition-[translate,color] motion-safe:duration-150 motion-safe:ease-out" />
         </span>
       </Link>
     </li>

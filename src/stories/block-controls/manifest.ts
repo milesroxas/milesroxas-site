@@ -8,14 +8,10 @@ import type { Block, Condition, Field, FieldAffectingData, TabAsField } from 'pa
  * read in the browser by `./index.ts`. Plain data: everything here survives
  * JSON.
  */
-export type ControlOption = { label: string; value: string }
+type ControlOption = { label: string; value: string }
 
 /** The subset of Storybook's `if` that a Payload condition can be shown to equal. */
-export type ControlCondition = { arg: string } & (
-  | { eq: string }
-  | { neq: string }
-  | { truthy: boolean }
-)
+type ControlCondition = { arg: string } & ({ eq: string } | { neq: string } | { truthy: boolean })
 
 type FieldControlBase = {
   name: string

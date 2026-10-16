@@ -3,7 +3,7 @@
  * `thumbnail.jpg` is 640 px wide, a 4× upscale in a retina hero; `width` with
  * `fit=clip` keeps the frame's aspect and renders the size asked for.
  */
-export const POSTER_WIDTHS = [640, 1280, 1920] as const
+const POSTER_WIDTHS = [640, 1280, 1920] as const
 
 export const streamPosterUrl = (thumbnailUrl: string, width: number): string =>
   `${thumbnailUrl}?width=${width}&fit=clip`

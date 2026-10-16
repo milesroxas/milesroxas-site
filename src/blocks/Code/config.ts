@@ -7,7 +7,7 @@ import { BLOCK_GROUPS } from '@/blocks/shared/groups'
  * freely but never re-value. `glsl` and `bash` are not in the highlighter's
  * bundled set; `components/ui/code-block-languages.ts` registers them.
  */
-export const CODE_LANGUAGES = [
+const CODE_LANGUAGES = [
   { label: 'TypeScript', value: 'typescript' },
   { label: 'TSX', value: 'tsx' },
   { label: 'JavaScript', value: 'javascript' },

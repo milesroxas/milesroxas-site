@@ -49,8 +49,7 @@ pnpm guard:preview-db && payload migrate && pnpm build
 2. `pnpm dev` pushes the change into the local DB.
 3. `pnpm generate:types` (and `pnpm generate:importmap` for admin components).
 4. `pnpm migrate:create <name>`. Review the SQL. Commit the `.ts` and `.json` together.
-5. `pnpm check:migrations` (enum safety) and `pnpm check:migrations:drift` (newest snapshot against the config).
-6. Push. The Vercel build applies the migration to production on the next release to `main`. To rehearse it on the Neon preview branch first, deploy a preview of `dev` by hand before releasing.
+5. `pnpm check:migrations` and `pnpm check:migrations:drift`, then rebase onto `origin/dev` and push: [docs/conductor.md](docs/conductor.md) → Schema changes across workspaces.
 
 ```bash
 pnpm migrate:create <name>    # a file to review and commit; touches no database

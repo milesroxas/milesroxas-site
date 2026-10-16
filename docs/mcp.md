@@ -5,8 +5,8 @@ agents (Claude Code, Codex, Cursor) can author and manage CMS content through Pa
 control instead of raw REST calls. Clients register it as **`milesroxas-cms`**; the server calls
 itself "Miles Roxas Portfolio CMS".
 
-Ported from sas-site's `sas-cms` (its `docs/mcp.md` and `docs/typesafe-mcp-roadmap.md`), with one
-tool that sas-site's roadmap had left as the next step: `findContent`.
+Ported from sas-site's `sas-cms` server. Its docs (mcp.md and typesafe-mcp-roadmap.md) live in the
+sas-site repo, not here. One tool that sas-site's roadmap had left as the next step: `findContent`.
 
 | Piece | Where |
 | --- | --- |

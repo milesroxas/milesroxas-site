@@ -96,7 +96,7 @@ import { captureServerEvent } from '@/utilities/posthog-server'
  * `useChat`: embedding retrieval over the content corpus → matched documents
  * streamed back as source-url parts, followed by a grounded answer from the
  * model with those documents as the only allowed context. The model answers
- * in the studio's voice, gives partial answers when the sources only half
+ * in the site's voice, a guide to Miles's work, gives partial answers when the sources only half
  * cover a question, and never invents facts. When a person is the better next
  * step it calls the `handoff` tool, and the card it shows is worded in code
  * and filled from Site Info (src/features/ask/handoffTool.ts). Token

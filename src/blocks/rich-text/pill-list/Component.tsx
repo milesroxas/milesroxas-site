@@ -25,14 +25,14 @@ export const RichTextPillList: React.FC<RichTextPillListProps> = ({
   return (
     <div className={cn('not-prose flex flex-col gap-6', className)} data-reveal>
       {eyebrow ? (
-        <p className="font-mono text-xs/4 tracking-widest text-muted-foreground uppercase">
+        <p className="font-mono text-muted-foreground text-xs/4 uppercase tracking-widest">
           {eyebrow}
         </p>
       ) : null}
       <ul className="flex flex-wrap gap-2">
         {pills.map((pill, index) => (
           <li
-            className="rounded-full border border-border px-3.5 py-2 font-mono text-xs/4 tracking-wide text-foreground"
+            className="rounded-full border border-border px-3.5 py-2 font-mono text-foreground text-xs/4 tracking-wide"
             key={pill.id ?? index}
           >
             {pill.label}

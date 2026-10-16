@@ -26,7 +26,7 @@ export function resolveAskHandoff(siteInfo: SiteInfo, reason: AskHandoffReason):
 export function askHandoffTool(siteInfo: SiteInfo) {
   return tool({
     description:
-      'Offers the visitor a way to send their question to the team: a line under your reply with a button that opens a name and email form, filed to our inbox, with our reply time on it. Call it at most once, after any text, and only when a person is the best next step. Most answers need no offer. Never call it for a question the sources answer, such as how we work, how projects start, who we have worked with, or what we offer.',
+      'Offers the visitor a way to send their question to Miles: a line under your reply with a button that opens a name and email form, filed to his inbox, with his reply time on it. Call it at most once, after any text, and only when a person is the best next step. Most answers need no offer. Never call it for a question the sources answer, such as what Miles has built, his experience, how he works, how projects start, who he has worked with, or what he offers.',
     inputSchema: jsonSchema<{ reason: AskToolHandoffReason }>(
       {
         type: 'object',
@@ -35,7 +35,7 @@ export function askHandoffTool(siteInfo: SiteInfo) {
             type: 'string',
             enum: [...ASK_TOOL_HANDOFF_REASONS],
             description:
-              'estimate: what their own project would cost, how long it would take, or when we could start. project: they say they have a project, or ask us to do something for them (not a question about how we work or how projects start). person: they ask for a person by name or role, or to be called or emailed. contact_details: they shared an email address or phone number (a name alone is not a request). no_answer: nothing in the sources answers the question.',
+              'estimate: what their own project would cost, how long it would take, or when Miles could start. project: they say they have a project, or ask Miles to do something for them (not a question about how he works or how projects start). person: they ask to speak with Miles or another person, or to be called or emailed (not a question about who Miles is or what he has done). contact_details: they shared an email address or phone number (a name alone is not a request). no_answer: nothing in the sources answers the question.',
           },
         },
         required: ['reason'],

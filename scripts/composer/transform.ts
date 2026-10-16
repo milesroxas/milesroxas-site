@@ -1,5 +1,5 @@
 /**
- * Phase 6 layout transform (docs/composer-roadmap.md): legacy blocks become
+ * Phase 6 layout transform (docs/archive/composer-roadmap.md): legacy blocks become
  * the sas-site run, grouped into Sections. Pure: a layout in, a layout and a
  * report out. The CLI (`scripts/compose-layouts.ts`) reads, snapshots and
  * writes.

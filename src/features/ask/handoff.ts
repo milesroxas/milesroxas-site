@@ -104,7 +104,7 @@ type AskHandoffCopy = {
 export const ASK_HANDOFFS: Record<AskHandoffKind, AskHandoffCopy> = {
   estimate: {
     form: 'project',
-    lead: 'Pricing and timing depend on the project, so that one is for Miles.',
+    lead: 'Price and timing depend on the project, so that is a conversation for Miles.',
     offer: 'Want Miles to price it?',
   },
   project: {
@@ -114,17 +114,17 @@ export const ASK_HANDOFFS: Record<AskHandoffKind, AskHandoffCopy> = {
   },
   person: {
     form: 'general',
-    lead: "That's one for Miles, not the chat.",
+    lead: 'That is a question for Miles himself.',
     offer: 'Want Miles to reply?',
   },
   contact_details: {
     form: 'general',
-    lead: "Thanks. This chat can't pass details on, but Miles can take it from here.",
+    lead: 'Thanks. Nothing typed here reaches Miles on its own, but he can take it from here.',
     offer: 'Send your details to Miles?',
   },
   no_answer: {
     form: 'general',
-    lead: "The site doesn't cover that, but Miles can.",
+    lead: 'Nothing published here covers that yet, but Miles can answer it.',
     offer: 'Want Miles to answer?',
   },
   case_study: {

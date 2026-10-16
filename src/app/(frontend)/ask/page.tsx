@@ -28,7 +28,10 @@ export function generateMetadata(): Promise<Metadata> {
   return generateMeta({
     doc: {
       title: 'Ask',
-      meta: { description: 'Ask about the work and writing on this site, answered from it.' },
+      meta: {
+        description:
+          'Ask about Miles Roxas’s work and writing. Answers come from the case studies and posts on this site.',
+      },
     },
     pathname: '/ask',
   })

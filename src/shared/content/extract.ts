@@ -8,7 +8,7 @@ import {
   normalizeKey,
 } from './content-keys'
 import { lexicalToMarkdownString, type SerializedLexicalState } from './lexicalToMarkdown'
-import type { ContentSurface, GlobalSurface } from './surfaces'
+import type { GlobalSurface } from './surfaces'
 
 /**
  * Extracts a surface document's reader-facing substance as markdown, for the
@@ -40,7 +40,7 @@ import type { ContentSurface, GlobalSurface } from './surfaces'
 /**
  * The relationship keys followed into the corpus: a work's client and
  * capabilities, by name. sas-site follows more (testimonials, projects); this
- * site has none of those collections (docs/composer-roadmap.md, Phase 5). Every
+ * site has none of those collections (docs/archive/composer-roadmap.md, Phase 5). Every
  * other related document (works in a Columns block, related posts) is indexed
  * on its own.
  */
@@ -287,7 +287,6 @@ type SurfaceDoc = {
  */
 export async function extractDocMarkdown(
   payload: Payload,
-  surface: ContentSurface,
   doc: SurfaceDoc,
   frontMatter: string[] = [],
 ): Promise<string> {

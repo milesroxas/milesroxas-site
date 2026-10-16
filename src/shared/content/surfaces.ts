@@ -49,7 +49,7 @@ export type ContentSurface = {
 }
 
 /**
- * This site's public collections (docs/composer-roadmap.md, Phase 5): Pages at
+ * This site's public collections (docs/archive/composer-roadmap.md, Phase 5): Pages at
  * the root (`home` is `/`), Works under `/works`, Posts under `/posts`.
  * Protected works never reach the corpus: every read is an anonymous visitor's
  * (`overrideAccess: false`), and `worksReadAccess` hides them.

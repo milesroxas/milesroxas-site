@@ -113,7 +113,7 @@ function fallbackSrcFor({ url }: MediaType): string {
  * active one. Dispatched on the element because the carousel drives its
  * videos through DOM refs; `VideoMedia` listens (`useWarm`, `useHlsStream`).
  */
-export const WARM_EVENT = 'mediawarm'
+const WARM_EVENT = 'mediawarm'
 export const warmVideo = (video: HTMLVideoElement): void => {
   video.dispatchEvent(new Event(WARM_EVENT))
 }

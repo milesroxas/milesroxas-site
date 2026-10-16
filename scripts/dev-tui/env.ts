@@ -44,7 +44,7 @@ const exists = (file: string) =>
  * pulled production env, which `.conductor/settings.toml` deliberately does not
  * copy into every workspace.
  */
-export async function mainCheckoutRoot(): Promise<string | null> {
+async function mainCheckoutRoot(): Promise<string | null> {
   const r = await execa('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], {
     cwd: PROJECT_ROOT,
     reject: false,
@@ -152,9 +152,7 @@ const NEXT_DEV_POSTGRES_URL_FILES = [
 /**
  * Resolves `POSTGRES_URL` the same way `next dev` does (last file in the list wins).
  */
-export async function readAppPostgresUrl(): Promise<
-  { url: string; source: string } | { error: string }
-> {
+async function readAppPostgresUrl(): Promise<{ url: string; source: string } | { error: string }> {
   let url: string | undefined
   let source: string | undefined
   for (const rel of NEXT_DEV_POSTGRES_URL_FILES) {

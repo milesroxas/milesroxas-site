@@ -68,7 +68,7 @@ const Mark: React.FC<{ media: InsightItem['media']; size: InsightMarkSize }> = (
       className={cn(
         'shrink-0',
         MARK_SIZE_CLASS[size].box,
-        doc && 'bg-current mask-center mask-contain mask-no-repeat',
+        doc && 'mask-center mask-contain mask-no-repeat bg-current',
       )}
       style={src ? { maskImage: `url("${src}")` } : undefined}
     />
@@ -106,7 +106,7 @@ const InsightStack: React.FC<InsightProps> = ({
   return (
     <li
       className={cn(
-        'flex flex-col border-t border-border',
+        'flex flex-col border-border border-t',
         compact ? 'gap-2 pt-4' : 'gap-5 pt-5',
         className,
       )}
@@ -157,7 +157,7 @@ const InsightRow: React.FC<InsightProps> = ({
   return (
     <BlockGrid
       as="li"
-      className={cn('items-baseline gap-y-2 border-t border-border py-5', className)}
+      className={cn('items-baseline gap-y-2 border-border border-t py-5', className)}
       data-reveal
       data-reveal-group={group}
       subgrid

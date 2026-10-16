@@ -63,12 +63,12 @@ const FaqRow: React.FC<{ index: number; item: FaqItem; open: boolean; type: Type
   open,
   type,
 }) => (
-  <AccordionPrimitive.Item className="border-b border-border" value={item.id}>
+  <AccordionPrimitive.Item className="border-border border-b" value={item.id}>
     <AccordionPrimitive.Header className={cn(type.lead, 'leading-relaxed')}>
       <AccordionPrimitive.Trigger className="group pressable pressable-subtle flex w-full items-start gap-6 py-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/30">
         <span
           aria-hidden="true"
-          className="w-8 shrink-0 pt-2 font-mono text-xs/none text-muted-foreground transition-colors group-hover:text-foreground"
+          className="w-8 shrink-0 pt-2 font-mono text-muted-foreground text-xs/none transition-colors group-hover:text-foreground"
         >
           {ordinalLabel(index)}
         </span>
@@ -85,7 +85,7 @@ const FaqRow: React.FC<{ index: number; item: FaqItem; open: boolean; type: Type
       <div>
         <div className="ps-14 pe-11 pt-3 pb-7">
           <RichText
-            className={cn(type.body, 'leading-relaxed text-muted-foreground')}
+            className={cn(type.body, 'text-muted-foreground leading-relaxed')}
             data={item.answer}
             enableGutter={false}
             enableProse={false}
@@ -119,7 +119,7 @@ export const FaqAccordion: React.FC<{ items: FaqItem[]; textSize?: TextSize | nu
           column.length ? (
             <div
               className={cn(
-                'border-t border-foreground md:col-span-4',
+                'border-foreground border-t md:col-span-4',
                 columnIndex > 0 && 'max-md:border-t-0',
               )}
               data-reveal

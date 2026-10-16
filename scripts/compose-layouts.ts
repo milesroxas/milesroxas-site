@@ -1,5 +1,5 @@
 /**
- * Phase 6 of docs/composer-roadmap.md: move every legacy block onto the
+ * Phase 6 of docs/archive/composer-roadmap.md: move every legacy block onto the
  * sas-site run, grouped into Sections, with no re-authoring in admin (D15).
  * Rules live in `scripts/composer/rules.ts`, per-block exceptions in
  * `scripts/composer/overrides.ts`.

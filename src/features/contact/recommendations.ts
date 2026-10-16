@@ -7,7 +7,7 @@ import { type MorePostsDoc, POST_ITEM_SELECT, toPostItem } from '@/sections/More
 import { toWorkIndexItem, WORK_INDEX_SELECT, type WorkIndexDoc } from '@/sections/MoreWork/query'
 
 /** One row of three under the receipt. */
-export const CONTACT_RECOMMENDATIONS_LIMIT = 3
+const CONTACT_RECOMMENDATIONS_LIMIT = 3
 
 /** A work or post to open while the reply is on its way: only what its card renders. */
 export type ContactRecommendation = {

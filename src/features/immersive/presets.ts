@@ -12,8 +12,8 @@ import type { StreakFieldProps } from './ui/streak-field'
  */
 
 /**
- * The light leak's amber cut, dialed in on /demo/immersive — the look the
- * effect shipped with before the cooler default replaced it.
+ * The light leak's amber cut, dialed in on sas-site's demo page and ported:
+ * the look the effect shipped with before the cooler default replaced it.
  *
  * Where the default reads as blue shadow and cream highlight through a wide,
  * splayed slat fan, this one is hot gold over lilac with the fan pulled to a
@@ -37,8 +37,9 @@ export const LIGHT_LEAK_AMBER = {
 
 /**
  * The light leak over a pale ground — the shipped look for the site's light
- * theme, against `LIGHT_LEAK_DEFAULTS`' dark-ground look. Re-tune it on
- * /demo/immersive with the window's own light/dark button set to light.
+ * theme, against `LIGHT_LEAK_DEFAULTS`' dark-ground look. Dialed in on
+ * sas-site's demo page with its light/dark button set to light, and ported;
+ * re-tune it on the Studio stage with the ground set to light.
  *
  * `blendMode: 'multiply'` is the load-bearing delta: the default screen-like
  * blend adds light, and light added to white is still white, so the effect is
@@ -198,7 +199,7 @@ export const STREAK_FIELD_DEPTH_MAP = {
 } as const satisfies Partial<StreakFieldProps>
 
 /**
- * Technical Lines: dialed in on /demo/immersive. A schematic overlay, not a
+ * Technical Lines: dialed in on sas-site's demo page and ported. A schematic overlay, not a
  * tick grid. The default field is a dense sheet of short dashes; this one
  * thins the population, lengthens the stroke, and lets each dash bend
  * (`segments` 6) so the rows read as ruled lines rather than ticks.
@@ -232,7 +233,7 @@ export const STREAK_FIELD_TECHNICAL_LINES = {
 } as const satisfies Partial<StreakFieldProps>
 
 /**
- * Technical B2B: dialed in on /demo/immersive. A sparse schematic grid, not a
+ * Technical B2B: dialed in on sas-site's demo page and ported. A sparse schematic grid, not a
  * tick sheet and not terrain. Wide pitch and a low count leave air between
  * dashes; each stroke is long enough to read as a ruled mark, bent along
  * the field (`segments` 8) and fully oriented to it.

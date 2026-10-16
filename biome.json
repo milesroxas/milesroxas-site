@@ -219,6 +219,19 @@
           }
         }
       }
+    },
+    {
+      "includes": ["src/components/ui/**", "src/shared/testing/shadcn-helpers/**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          },
+          "nursery": {
+            "useSortedClasses": "off"
+          }
+        }
+      }
     }
   ]
 }

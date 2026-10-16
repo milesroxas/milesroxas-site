@@ -223,7 +223,7 @@ export const Inspector: JSONFieldClientComponent = ({ path }) => {
           </TabsContent>
         </Tabs>
         {(validation || errorMessage) && !panel.crossed && (
-          <p role="alert" className="text-xs/relaxed text-destructive">
+          <p role="alert" className="text-destructive text-xs/relaxed">
             {validation || errorMessage}
           </p>
         )}
@@ -251,7 +251,7 @@ function TabStrip({
   onToggleAll: () => void
 }) {
   return (
-    <div className="sticky top-0 z-20 -mx-(--row-gutter) flex h-(--inspector-tabs) items-center gap-5 border-b border-border bg-background px-(--row-gutter)">
+    <div className="sticky top-0 z-20 -mx-(--row-gutter) flex h-(--inspector-tabs) items-center gap-5 border-border border-b bg-background px-(--row-gutter)">
       <TabsList variant="line" className="h-full gap-5 border-b-0">
         <TabsTrigger value="look">Look</TabsTrigger>
         <TabsTrigger value="pointer">Pointer</TabsTrigger>
@@ -265,7 +265,7 @@ function TabStrip({
           does not move when the tab changes. */}
       <div className="ml-auto flex items-center gap-2.5">
         <span
-          className="font-mono text-[11px]/3.5 tracking-[0.02em] text-primary tabular-nums"
+          className="font-mono text-[11px]/3.5 text-primary tabular-nums tracking-[0.02em]"
           aria-live="polite"
         >
           {changed ? `${changed} changed` : ''}
@@ -412,7 +412,7 @@ function PointerTab({
   return (
     <TabsContent value="pointer" className="flex flex-col pt-5">
       <div className="flex items-start gap-4">
-        <p className="min-w-0 flex-1 text-xs/5 text-muted-foreground">{note}</p>
+        <p className="min-w-0 flex-1 text-muted-foreground text-xs/5">{note}</p>
         {/* Hidden rather than absent: the note beside it keeps one wrap
             whether or not anything has been changed, so a slider does
             not push every row down the moment it leaves its default. */}
@@ -428,7 +428,7 @@ function PointerTab({
           Reset
         </button>
       </div>
-      <div className="mt-4 flex flex-col gap-0.5 border-t border-border pt-3">{children}</div>
+      <div className="mt-4 flex flex-col gap-0.5 border-border border-t pt-3">{children}</div>
     </TabsContent>
   )
 }
@@ -461,15 +461,15 @@ function Group({
   children: React.ReactNode
 }) {
   return (
-    <Collapsible open={open} onOpenChange={onOpenChange} className="border-b border-border">
+    <Collapsible open={open} onOpenChange={onOpenChange} className="border-border border-b">
       {/* The section header parks under the tab strip while its own rows
           scroll, and hands over when the next group reaches it — so the name
           of the thing being edited is never off screen. */}
       <div className="sticky top-(--inspector-tabs) z-10 -mx-(--row-gutter) flex items-center gap-2.5 bg-background px-(--row-gutter)">
-        <CollapsibleTrigger className="w-auto min-w-0 flex-1 text-[11px]/4 tracking-[0.06em] text-muted-foreground uppercase hover:text-foreground data-[state=open]:text-foreground">
+        <CollapsibleTrigger className="w-auto min-w-0 flex-1 text-[11px]/4 text-muted-foreground uppercase tracking-[0.06em] hover:text-foreground data-[state=open]:text-foreground">
           {name}
           {!open && (
-            <span className="ml-auto flex items-center gap-2 font-mono text-[11px]/3.5 font-normal tracking-normal whitespace-nowrap text-muted-foreground normal-case tabular-nums">
+            <span className="ml-auto flex items-center gap-2 whitespace-nowrap font-mono font-normal text-[11px]/3.5 text-muted-foreground normal-case tabular-nums tracking-normal">
               {changed > 0 && (
                 <>
                   <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-primary" />
@@ -517,7 +517,7 @@ function ExportRow({
 }) {
   return (
     <div className="grid grid-cols-[var(--row-label)_minmax(0,1fr)_var(--row-value)] items-center gap-x-2.5">
-      <Label htmlFor={htmlFor} className="min-h-9 cursor-default text-xs/4 text-foreground/80">
+      <Label htmlFor={htmlFor} className="min-h-9 cursor-default text-foreground/80 text-xs/4">
         {label}
       </Label>
       {children}
@@ -585,7 +585,7 @@ function ExportPanel({ effect, effectId, recipe, ground, validation }: ExportPan
 
   return (
     <div className="flex flex-col">
-      <p className="max-w-[58ch] pb-3 text-xs/5 text-muted-foreground">
+      <p className="max-w-[58ch] pb-3 text-muted-foreground text-xs/5">
         The seed and capture frame come from the recipe. Scale raises resolution without changing
         the composition.
       </p>
@@ -628,7 +628,7 @@ function RenderFooter({
   onRender: () => void
 }) {
   return (
-    <div className="mt-4 border-t border-border pt-4">
+    <div className="mt-4 border-border border-t pt-4">
       <Button
         buttonStyle="secondary"
         size="small"

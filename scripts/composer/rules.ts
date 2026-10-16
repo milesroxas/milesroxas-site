@@ -1,5 +1,5 @@
 /**
- * The Phase 6 mapping rules (docs/composer-roadmap.md, "Rules"): each legacy
+ * The Phase 6 mapping rules (docs/archive/composer-roadmap.md, "Rules"): each legacy
  * block becomes the sas-site block and variant that does the same job. A rule
  * returns units: blocks that travel together, whether they open a Section,
  * and which band they sit on. `transform.ts` groups units into Sections.

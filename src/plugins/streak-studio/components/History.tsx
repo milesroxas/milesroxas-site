@@ -60,7 +60,7 @@ export const History: UIFieldClientComponent = () => {
 
   if (!id || (loaded && !history.length))
     return (
-      <p data-streak-studio="panel" className="text-xs text-muted-foreground">
+      <p data-streak-studio="panel" className="text-muted-foreground text-xs">
         Nothing published yet. Publish from Studio and each published state is kept here.
       </p>
     )
@@ -106,7 +106,7 @@ function HistoryRow({
         )}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="text-xs font-medium">{when(state.at)}</span>
+        <span className="font-medium text-xs">{when(state.at)}</span>
         <span className="text-[11px] text-muted-foreground">
           {[onSite && 'On the site now', matchesDraft && 'matches the draft']
             .filter(Boolean)

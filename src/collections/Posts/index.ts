@@ -90,7 +90,7 @@ export const Posts: CollectionConfig<'posts'> = {
                 },
               }),
               label: false,
-              // Optional since the composer port (docs/composer-roadmap.md,
+              // Optional since the composer port (docs/archive/composer-roadmap.md,
               // D5): a post can be composed from Sections alone.
             },
           ],

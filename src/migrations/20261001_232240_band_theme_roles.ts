@@ -1,7 +1,7 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-vercel-postgres'
 
 /**
- * Band themes become roles (docs/composer-roadmap.md, Section 5): one
+ * Band themes become roles (docs/archive/composer-roadmap.md, Section 5): one
  * vocabulary for every block's `theme`, the Section's and the five legacy
  * blocks', stated in src/blocks/shared/band-theme.ts. Ported from sas-site's
  * `band_theme_roles` (sas-site 20261001_183459), plus the legacy enums this

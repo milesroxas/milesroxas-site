@@ -14,9 +14,9 @@ export const Usage: UIFieldClientComponent = () => {
   if (!id || !loaded) return null
   return (
     <section data-streak-studio="panel" className="flex flex-col gap-2 text-xs/5">
-      <h3 className="text-xs/4 font-semibold tracking-[0.02em]">Used on</h3>
+      <h3 className="font-semibold text-xs/4 tracking-[0.02em]">Used on</h3>
       {current.length ? (
-        <ul className="flex flex-col divide-y divide-border border-y border-border">
+        <ul className="flex flex-col divide-y divide-border border-border border-y">
           {current.map((use) => (
             <li key={use.url} className="flex items-center gap-3 py-2">
               <span className="w-28 shrink-0 text-muted-foreground">{use.content}</span>

@@ -89,7 +89,7 @@ export type ScrollRevealProps = ScrollRevealTuning & {
  * independently of the under-media reveal — tuning one never moves the other.
  * Every block tagged `variant="intro"` reads exactly these values.
  */
-export const SCROLL_REVEAL_INTRO = {
+const SCROLL_REVEAL_INTRO = {
   textDuration: 0.9,
   textEase: 'power3.out',
   stagger: 0.12,
@@ -129,7 +129,7 @@ export const SCROLL_REVEAL_UNDER_MEDIA = {
  * Shared viewport gate: each beat holds until it has risen this fraction of
  * the viewport past the fold, and plays once.
  */
-export const SCROLL_REVEAL_TRIGGER_DEFAULTS = {
+const SCROLL_REVEAL_TRIGGER_DEFAULTS = {
   enterOffset: 0.25,
 } as const satisfies ScrollRevealTuning
 
@@ -314,7 +314,7 @@ function sharedGate(rootMargin: string) {
  * Position, not visible fraction: a block several screens tall never exposes
  * a useful ratio of itself.
  */
-export function observeRevealGate(gate: Element, enterOffset: number, onEnter: () => void) {
+function observeRevealGate(gate: Element, enterOffset: number, onEnter: () => void) {
   const shared = sharedGate(revealGateMargin(enterOffset))
   shared.observe(gate, { onEnter })
   return () => shared.unobserve(gate)

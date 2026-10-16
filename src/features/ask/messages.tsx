@@ -1,11 +1,12 @@
 'use client'
 
 import type { ChatStatus } from 'ai'
+import { useEffect, useState } from 'react'
 import { Bubble, BubbleContent } from '@/components/ui/bubble'
 import { Message, MessageContent } from '@/components/ui/message'
 import { MessageScrollerItem } from '@/components/ui/message-scroller'
 import { cn } from '@/utilities/ui'
-import { ASK_READING } from './copy'
+import { ASK_THINKING, ASK_THINKING_LABEL, ASK_WRITING } from './copy'
 import { type AskFeedback, AskFeedbackProvider } from './feedback'
 import { type AskHandoffReceipt, type AskHandoffSent, Handoff } from './HandoffPanel'
 import {
@@ -133,13 +134,56 @@ export function TranscriptItems({
           terms={terms}
         />
       ))}
-      {pending && <PendingItem />}
+      {pending && (
+        <PendingItem
+          opening={questionsAsked(messages) % ASK_THINKING.length}
+          writing={lastIsAssistant && hasSources(last)}
+        />
+      )}
     </AskFeedbackProvider>
   )
 }
 
-/** The Thinking shimmer, held while a reply has nothing to read yet. */
-function PendingItem() {
+/** The reply's pages have arrived: /api/ask streams them ahead of the first word. */
+const hasSources = (message: AskUIMessage) =>
+  message.parts.some((part) => part.type === 'source-url')
+
+/** How many questions the visitor has sent, the one count that holds still through a wait. */
+const questionsAsked = (messages: AskUIMessage[]) =>
+  messages.reduce((count, message) => (message.role === 'user' ? count + 1 : count), 0)
+
+/** How long each thinking line holds before the next: long enough to be read, short enough to move. */
+const THINKING_LINE_MS = 2_800
+
+/**
+ * The line under the dots while a reply has nothing to read yet. Before the
+ * pages are in, the thinking lines take turns on a timer from the opening
+ * line; once they are, one line says the answer is being written, since the
+ * first word is close. The opening line follows the turn, so a conversation
+ * whose replies all land in two seconds, as most do, still opens each wait
+ * on different words.
+ */
+function useThinkingLine(opening: number, writing: boolean): string {
+  const [line, setLine] = useState(opening)
+  useEffect(() => {
+    if (writing) return
+    const id = setInterval(
+      () => setLine((current) => (current + 1) % ASK_THINKING.length),
+      THINKING_LINE_MS,
+    )
+    return () => clearInterval(id)
+  }, [writing])
+  return writing ? ASK_WRITING : ASK_THINKING[line]
+}
+
+/**
+ * Thinking, held while a reply has nothing to read yet: three dots and one
+ * plain line about what Ask is doing, which changes while the wait goes on.
+ * A screen reader hears one steady label; the changing line is visual only,
+ * so the live region never reads out every swap.
+ */
+function PendingItem({ opening, writing }: { opening: number; writing: boolean }) {
+  const line = useThinkingLine(opening, writing)
   return (
     <MessageScrollerItem messageId="pending">
       <p
@@ -151,7 +195,14 @@ function PendingItem() {
           <span />
           <span />
         </span>
-        {ASK_READING}
+        <span className="sr-only">{ASK_THINKING_LABEL}</span>
+        <span
+          aria-hidden
+          className="motion-safe:fade-in-0 motion-safe:animate-in motion-safe:duration-500 motion-safe:ease-out"
+          key={line}
+        >
+          {line}
+        </span>
       </p>
     </MessageScrollerItem>
   )

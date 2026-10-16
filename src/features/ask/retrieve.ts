@@ -246,7 +246,7 @@ async function retrieveByKeywords(payload: Payload, question: string): Promise<R
     } | null
     if (!sourceDoc?.slug || !sourceDoc?.title) continue
 
-    const markdown = await extractDocMarkdown(payload, surface, sourceDoc)
+    const markdown = await extractDocMarkdown(payload, sourceDoc)
     sources.push({
       title: sourceDoc.title,
       url: surfaceDocPath(surface, sourceDoc.slug),

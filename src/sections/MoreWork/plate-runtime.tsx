@@ -27,7 +27,7 @@ gsap.registerPlugin(CustomEase)
 const { plate } = MORE_WORK_MOTION
 
 /** The plate's look (`./plate-shader`): a wave that travels up the plate and bends its frame. Timing is in `./motion`. */
-export const PLATE_LOOK = {
+const PLATE_LOOK = {
   duration: plate.duration / 1000,
   ease: {
     pointer: CustomEase.create('more-work-plate-pointer', plate.ease.pointer.join(',')),
