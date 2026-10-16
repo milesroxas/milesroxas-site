@@ -39,7 +39,7 @@ pnpm guard:preview-db && payload migrate && pnpm build
 
 `pnpm ci` is the only writer of the Neon schema and the `payload_migrations` ledger. Only pushes to `main` (production) deploy. `vercel.json` turns off git deployments for `dev` and every other branch to save build minutes. A preview of `dev` deploys only by hand (Vercel dashboard → Deployments → Create Deployment, ref `dev`) and builds against the Neon preview branch.
 
-`scripts/guard-preview-db.ts` aborts a non-production build whose `POSTGRES_URL` is the production Neon endpoint. It needs `PRODUCTION_DB_ENDPOINT` (the production endpoint id, `ep-...`) set as a Vercel env var for Preview.
+`scripts/guard-preview-db.ts` runs first and refuses two builds: a production build whose git ref is not `main` (a `vercel deploy --prod` from a branch, or a promote that rebuilds another ref), and a non-production build whose `POSTGRES_URL` is the production Neon endpoint. The second is what a CLI `vercel deploy` produces: the Neon integration injects the preview branch by webhook into git-triggered previews only, so a CLI preview builds with production credentials. Never deploy from the CLI. The guard needs `PRODUCTION_DB_ENDPOINT` (the production endpoint id, `ep-...`) set as a Vercel env var for Preview.
 
 `scripts/vercel-ignore-build.sh` (`ignoreCommand`) skips a build when every changed file is one the site never reads (docs, agent config, stories, local tooling). New inert paths go in its `INERT_RES`.
 

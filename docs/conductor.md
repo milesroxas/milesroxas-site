@@ -11,7 +11,7 @@ Same setup as sas-site. [Conductor](https://www.conductor.build/docs) runs sever
 
 ## Branch flow
 
-`dev` is the integration branch; `main` is production. A workspace branches from `origin/dev`. A push to `dev` does not deploy: `vercel.json` turns off git deployments for every branch except `main`, to save build minutes. A preview of `dev` deploys only by hand (Vercel dashboard → Deployments → Create Deployment, ref `dev`); it builds the Vercel preview and migrates the Neon preview branch.
+`dev` is the integration branch; `main` is production. A workspace branches from `origin/dev`. A push to `dev` does not deploy: `vercel.json` turns off git deployments for every branch except `main`, to save build minutes. A preview of `dev` deploys only by hand (Vercel dashboard → Deployments → Create Deployment, ref `dev`); it builds the Vercel preview and migrates the Neon preview branch. Never `vercel deploy` from a workspace: a CLI deployment is a preview that gets production database credentials, and `scripts/guard-preview-db.ts` refuses it (as it did on 2026-10-16).
 
 **Default: push straight to `dev`.** Miles works alone, so most work skips PRs:
 

@@ -82,6 +82,7 @@ Storybook conventions:
   - Do not run `pnpm migrate:create` unless the user asks in this conversation. Say a migration is needed and wait.
   - Never run `payload migrate` locally or against Neon by hand. Mixing push and migrations corrupts the ledger.
   - Never create `.env.local` / `.env.production`; Next.js loads them over `.env` and would point dev at Neon.
+  - Never run `vercel deploy` or `vercel --prod`. A CLI deployment is a preview that receives production database credentials (the Neon integration injects the preview branch into git-triggered previews only), and a `--prod` one would migrate production from a branch; `scripts/guard-preview-db.ts` refuses both. A preview of `dev` comes from the Vercel dashboard (Create Deployment, ref `dev`); production comes from Miles merging `dev` into `main`.
 - Whenever your work would make `migrate:create` ask create-vs-rename questions, end with an answer sheet: the suggested command, each expected prompt with the option to pick (renamed entity → **rename** from the old name; brand-new → **create**), and a one-line reason. `scripts/migrate-create.exp` takes the same answers (see `MIGRATIONS.md`).
 
 ## Architecture Pointers
