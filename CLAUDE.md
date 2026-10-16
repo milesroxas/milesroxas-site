@@ -98,6 +98,7 @@ Storybook conventions:
 - Scroll entrances are one system: the `ScrollReveal` shell in `src/shared/ui/scroll-reveal` plays over `data-reveal` markers, and `src/blocks/shared/reveal-variants.ts` says which reveal each block gets. The browser drives every beat (`Element.animate`); never add a bespoke GSAP entrance or a second reveal wrapper.
 - Site chrome (top bar, dock, Ask panel) is in `src/components/SiteChrome` and `src/features/ask/AskPanel.tsx`; the dock's tabs come from the Header global, Ask's switch and suggested questions from Site Info. Chrome state is in `src/stores/chromeStore.ts`; the post card → post curtain is in `src/features/page-transition`.
 - The agent authoring MCP server (`milesroxas-cms`, `/api/mcp`) is configured in `src/plugins/mcp.ts`, its site tools in `src/plugins/mcp-tools/`. Human docs: `docs/mcp.md`. A new collection or global is not exposed until it is listed there.
+- Copy in Miles's voice (site, LinkedIn, YouTube, CV) goes through the `miles-brand-content` skill: `.agents/skills/miles-brand-content`, symlinked into `.claude/skills/` for Claude Code. Its source of truth is `docs/miles-roxas-brand-context.md`; edit the guide, not the skill, when the brand changes.
 - Access rule: MCP API keys authenticate as `req.user` over REST too. Team-only access uses the `authenticated` helper (`user.collection === 'users'`) or `authenticatedOr(where)`, never `Boolean(req.user)`.
 
 <!-- BEGIN:nextjs-agent-rules -->

@@ -1,0 +1,29 @@
+{
+  "skill_name": "miles-brand-content",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "the summaries on my NextStreet and GentleBeast case studies read like agency copy. rewrite them so they sound like me, and fix the seo descriptions on both if they need it",
+      "expected_output": "Reads the live works, rewrites both summaries in Miles's voice with only verified facts, flags GentleBeast's empty role, checks SEO descriptions (100-155 chars, third person), and saves as drafts with top-level fields.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "write a linkedin post about the Ask feature on my portfolio, the RAG assistant that answers questions about my work. i want people to go read the write-up",
+      "expected_output": "A calm, specific LinkedIn post: point in the first line, one real decision, AI credited as a tool with Miles's role clear, no hype or hashtag wall, flags that the write-up is still a draft.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "plan a rewrite of my homepage hero and Site Info so they actually match my brand guide. don't write final copy yet, i just want the plan",
+      "expected_output": "A brief: reader, goal, evidence ledger, outline, open questions. Flags live copy that contradicts the guide (labels, year count), notes Site Info saves go live, writes nothing to the CMS.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "I'm applying for a Design Engineer role at Linear. write 4 CV bullets for my Suits & Sandals co-founder role, plus a short answer to the application question 'Why are you leaving your agency?'",
+      "expected_output": "Four verb-first bullets under 30 words with no inflated engineering claims, titles and dates flagged for checking, and an answer that frames the move to product work as deliberate.",
+      "files": []
+    }
+  ]
+}
