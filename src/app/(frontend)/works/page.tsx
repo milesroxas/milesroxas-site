@@ -135,5 +135,6 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     pathname: '/works',
+    ...(index?.meta?.noIndex ? {} : { markdownPath: '/works.md' }),
   })
 }

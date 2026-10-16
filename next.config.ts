@@ -116,20 +116,27 @@ const nextConfig: NextConfig = {
   redirects,
 
   // Markdown alternates for agents (docs/aeo.md): /posts/foo.md and
-  // /works/foo.md, and content negotiation (Accept: text/markdown) on the
-  // page itself. All resolve to the handler at /md/[collection]/[slug].
-  // `beforeFiles`: the pages are prerendered, and an afterFiles rewrite runs
-  // only once no file answers the path, so on Vercel the cached HTML won the
-  // negotiation and the Accept header was never read.
+  // /works/foo.md, the home page as /index.md (and the llmstxt.org
+  // /index.html.md), /works.md, /posts.md and /contact.md, and content
+  // negotiation (Accept: text/markdown) on each page itself. All resolve to the
+  // handlers under /md. `beforeFiles`: the pages are prerendered, and an
+  // afterFiles rewrite runs only once no file answers the path, so on Vercel
+  // the cached HTML won the negotiation and the Accept header was never read.
   async rewrites() {
+    const acceptsMarkdown = [{ type: 'header' as const, key: 'accept', value: '.*text/markdown.*' }]
     return {
       beforeFiles: [
         { source: '/:collection(posts|works)/:slug.md', destination: '/md/:collection/:slug' },
         {
           source: '/:collection(posts|works)/:slug',
           destination: '/md/:collection/:slug',
-          has: [{ type: 'header', key: 'accept', value: '.*text/markdown.*' }],
+          has: acceptsMarkdown,
         },
+        { source: '/index.md', destination: '/md/pages/home' },
+        { source: '/index.html.md', destination: '/md/pages/home' },
+        { source: '/', destination: '/md/pages/home', has: acceptsMarkdown },
+        { source: '/:page(works|posts|contact).md', destination: '/md/:page' },
+        { source: '/:page(works|posts|contact)', destination: '/md/:page', has: acceptsMarkdown },
       ],
     }
   },

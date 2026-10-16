@@ -13,7 +13,7 @@ sas-site's AEO plugin and docs, trimmed to a one-person portfolio.
 | robots.txt, with the AI crawlers named | [`src/app/robots.ts`](../src/app/robots.ts) |
 | Vercel Firewall: which clients may read the site at all | Vercel dashboard › project `milesroxas` › Firewall (see "Crawler access" below) |
 | sitemap.xml | [`src/app/sitemap.ts`](../src/app/sitemap.ts) |
-| llms.txt, llms-full.txt, markdown alternates, IndexNow key | [`src/app/(frontend)/(ai)/`](<../src/app/(frontend)/(ai)/>), built by [`src/plugins/aeo/buildLlms.ts`](../src/plugins/aeo/buildLlms.ts) |
+| llms.txt, llms-full.txt, markdown alternates, IndexNow key | [`src/app/(frontend)/(ai)/`](<../src/app/(frontend)/(ai)/>), built by [`src/plugins/aeo/buildLlms.ts`](../src/plugins/aeo/buildLlms.ts) (documents) and [`src/plugins/aeo/pageMarkdown.ts`](../src/plugins/aeo/pageMarkdown.ts) (the indexes and contact) |
 | Publish hooks: refresh the listings, ping IndexNow | [`src/plugins/aeo/index.ts`](../src/plugins/aeo/index.ts) |
 | Which collections are public, under which prefix | [`src/shared/content/surfaces.ts`](../src/shared/content/surfaces.ts) |
 | SEO tab on each collection (title, description, image, noindex) | [`src/collections/shared/seoTab.ts`](../src/collections/shared/seoTab.ts), plugin config in [`src/plugins/index.ts`](../src/plugins/index.ts) |
@@ -89,10 +89,23 @@ under `/posts`):
   50,000-URL limit.
 - **llms.txt** is the site in the llmstxt.org shape: H1, blockquote, a section per surface with
   one link and description per document, the contact section, then the Site Info notes.
-  **llms-full.txt** is the same with every document's text, the exact markdown the Ask corpus
-  embeds. **`/posts/<slug>.md`** and **`/works/<slug>.md`**, and `Accept: text/markdown` on the
-  page itself, serve one document's markdown with its URL and dates; the HTML page advertises it
-  with `<link rel="alternate" type="text/markdown">`.
+  **llms-full.txt** is the same with every document's text, as its page shows it.
+- **Markdown alternates.** Every page with something to read has one, as the llmstxt.org
+  proposal asks: the page's URL with `.md` added, and `Accept: text/markdown` on the page's own
+  URL (coding and browsing agents send it). The HTML page advertises it with
+  `<link rel="alternate" type="text/markdown">` and stays the canonical URL.
+
+  | Page | Alternate | Says |
+  | --- | --- | --- |
+  | `/` | `/index.md` (and the spec's `/index.html.md`) | Site Info's name and role as the H1, then the page |
+  | `/works/<slug>`, `/posts/<slug>` | `/works/<slug>.md`, `/posts/<slug>.md` | The document with its URL and dates |
+  | `/works`, `/posts` | `/works.md`, `/posts.md` | The index's heading and words, one link and description per document |
+  | `/contact` | `/contact.md` | The page's words, the form and its reply time, the email, the profiles, the CV |
+
+  Each says only what its page shows: an external post is its introduction and the link to the
+  original (the body it kept is left out), and the home page drops its hero's text, which never
+  renders. `/ask` has none: it is a chat box with nothing to read. Root pages other than home
+  have none either, since `/<slug>.md` would have to be routed beside every root file.
 - **On publish, unpublish, slug change and delete** the AEO plugin refreshes the sitemap and
   the two llms documents and, in production with `INDEXNOW_KEY` set, submits the changed URL
   (and the old one) to IndexNow. Draft saves never reach any of it.
@@ -159,6 +172,7 @@ must answer `200`, never `x-vercel-mitigated`.
 1. Add it to `CONTENT_SURFACES` in `src/shared/content/surfaces.ts`. That enrolls it in the
    sitemap, llms.txt, llms-full.txt, the publish hooks, IndexNow, plugin-seo's preview URL, the
    search index and the Ask corpus at once.
-2. Add its prefix to the rewrites in `next.config.ts` if it should have markdown alternates.
+2. Add its prefix to the rewrites in `next.config.ts` if it should have markdown alternates,
+   and pass `markdownPath` to `generateMeta` in its route.
 3. In its route, call `generateMeta` with `pathname` and render `<JsonLd>` with the fitting
    builder from `schema.ts` and a `breadcrumbSchema`.

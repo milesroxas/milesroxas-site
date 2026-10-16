@@ -109,7 +109,12 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
     slug,
   })
 
-  return generateMeta({ doc: page, pathname: pagePath(slug) })
+  return generateMeta({
+    doc: page,
+    pathname: pagePath(slug),
+    // Root pages other than home have no `.md` route (`/<slug>.md` would shadow files).
+    ...(slug === 'home' && page && !page.meta?.noIndex ? { markdownPath: '/index.md' } : {}),
+  })
 }
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {

@@ -3,11 +3,10 @@ import { JsonLd } from '@/components/JsonLd'
 import { ContactTemplate } from '@/features/contact/ContactTemplate'
 import { getContactRecommendations } from '@/features/contact/recommendations'
 import type { ContactPage, SiteInfo } from '@/payload-types'
-import { CONTACT_PAGE_DEFAULTS, type ContactPageCopy } from '@/shared/content/contact'
+import { resolveContactCopy, resolveContactCv } from '@/shared/content/contact'
 import { inquiryResponseTime } from '@/shared/content/inquiry'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getCachedGlobal } from '@/utilities/getGlobals'
-import { getMediaUrl } from '@/utilities/getMediaURL'
 import { breadcrumbSchema, contactPageSchema } from '@/utilities/schema'
 
 const loadContactPage = () =>
@@ -18,23 +17,6 @@ const loadContactPage = () =>
     getCachedGlobal('site-info', 1)() as Promise<SiteInfo>,
   ])
 
-/** Each field falls back on its own, so clearing one in the admin never blanks the page. */
-const resolveCopy = (page: ContactPage | null): ContactPageCopy => {
-  const copy = { ...CONTACT_PAGE_DEFAULTS } as ContactPageCopy
-  for (const key of Object.keys(copy) as (keyof ContactPageCopy)[]) {
-    const value = page?.[key]
-    if (typeof value === 'string' && value.trim()) copy[key] = value
-  }
-  return copy
-}
-
-/** The CV card's file, once one is chosen. */
-const resolveCv = (page: ContactPage | null) => {
-  const file = page?.cv
-  if (!file || typeof file !== 'object' || !file.url) return null
-  return { url: getMediaUrl(file.url), filesize: file.filesize ?? null }
-}
-
 /**
  * The contact page: a route rather than a Pages document, because the form
  * is fixed (name, email, message into Inquiries) and only its words are
@@ -43,7 +25,7 @@ const resolveCv = (page: ContactPage | null) => {
  */
 export default async function ContactRoute() {
   const [page, siteInfo] = await loadContactPage()
-  const copy = resolveCopy(page)
+  const copy = resolveContactCopy(page)
   const recommendations = await getContactRecommendations(page)
 
   return (
@@ -59,7 +41,7 @@ export default async function ContactRoute() {
       />
       <ContactTemplate
         copy={copy}
-        cv={resolveCv(page)}
+        cv={resolveContactCv(page)}
         email={siteInfo?.contactEmail ?? null}
         profiles={siteInfo?.socialProfiles ?? []}
         recommendations={recommendations}
@@ -77,9 +59,10 @@ export async function generateMetadata(): Promise<Metadata> {
       title: 'Contact',
       meta: {
         title: page?.meta?.title,
-        description: page?.meta?.description || resolveCopy(page).lead,
+        description: page?.meta?.description || resolveContactCopy(page).lead,
       },
     },
     pathname: '/contact',
+    markdownPath: '/contact.md',
   })
 }

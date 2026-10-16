@@ -11,43 +11,16 @@ import {
   toPostItem,
 } from '@/sections/MorePosts/query'
 import { PostsIndex } from '@/sections/PostsIndex/PostsIndex.client'
+import { POSTS_INDEX, readPostsIndexMeta } from '@/shared/content/postsIndex'
 import { generateMeta } from '@/utilities/generateMeta'
 import { breadcrumbSchema, collectionPageSchema } from '@/utilities/schema'
-
-/**
- * The index's own words when the Pages document with the `posts` slug has
- * none in its SEO tab. That document never renders (the route owns the path);
- * its SEO title and description are the editor's handle on this page.
- */
-const POSTS_INDEX = {
-  path: '/posts',
-  title: 'Posts',
-  description:
-    'Articles by Miles Roxas on design systems, brand strategy, Payload CMS, Webflow tooling and running a small design studio.',
-}
 
 const POSTS_PER_PAGE = 12
 
 export const revalidate = 600 // Revalidate every 10 minutes
 
 const getPostsIndexMeta = unstable_cache(
-  async () => {
-    const payload = await getPayload({ config: configPromise })
-    const { docs } = await payload.find({
-      collection: 'pages',
-      draft: false,
-      limit: 1,
-      overrideAccess: false,
-      pagination: false,
-      where: { slug: { equals: 'posts' } },
-      select: { meta: true },
-    })
-    const meta = docs[0]?.meta
-    return {
-      title: meta?.title?.trim() || POSTS_INDEX.title,
-      description: meta?.description?.trim() || POSTS_INDEX.description,
-    }
-  },
+  async () => readPostsIndexMeta(await getPayload({ config: configPromise })),
   ['posts-index-meta'],
   { revalidate: 600, tags: ['pages'] },
 )
@@ -107,5 +80,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return generateMeta({
     doc: { title: POSTS_INDEX.title, meta: { title: meta.title, description: meta.description } },
     pathname: POSTS_INDEX.path,
+    markdownPath: `${POSTS_INDEX.path}.md`,
   })
 }

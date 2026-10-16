@@ -145,8 +145,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
         author.name ? [author.name] : [],
       ),
     },
-    // An external post links out; its markdown would be the introduction alone.
-    ...(post && !externalArticle(post) ? { markdownPath: `/posts/${slug}.md` } : {}),
+    ...(post ? { markdownPath: `/posts/${slug}.md` } : {}),
   })
 }
 

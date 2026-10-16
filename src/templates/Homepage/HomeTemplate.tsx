@@ -1,14 +1,8 @@
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import type { Page, SiteInfo } from '@/payload-types'
+import { homeHeading } from '@/shared/content/home'
 import { getCachedGlobal } from '@/utilities/getGlobals'
-
-/** The home page's one heading: the owner's name and role, from Site Info. */
-const homeHeading = (siteInfo: SiteInfo | null) => {
-  const name = siteInfo?.name?.trim() || 'Miles Roxas'
-  const role = siteInfo?.jobTitle?.trim()
-  return role ? `${name}, ${role.charAt(0).toLowerCase()}${role.slice(1)}` : name
-}
 
 export default async function HomeTemplate({
   hero,

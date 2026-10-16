@@ -1,12 +1,13 @@
 import type { Payload } from 'payload'
 import type { SiteInfo } from '@/payload-types'
 import { extractDocMarkdown, readPublicDoc } from '@/shared/content/extract'
+import { homeHeading } from '@/shared/content/home'
 import {
   CONTENT_SURFACES,
   type ContentSurface,
   surfaceByCollection,
 } from '@/shared/content/surfaces'
-import { externalArticle } from '@/utilities/externalArticle'
+import { type ExternalArticle, externalArticle } from '@/utilities/externalArticle'
 import { getServerSideURL } from '@/utilities/getURL'
 import { listPublicDocs, type PublicDoc } from './publicDocs'
 
@@ -112,6 +113,7 @@ type SectionRenderer = (
   surface: ContentSurface,
   docs: PublicDoc[],
   siteUrl: string,
+  siteInfo: Partial<SiteInfo>,
 ) => Promise<string>
 
 async function buildDocument(payload: Payload, renderSection: SectionRenderer): Promise<string> {
@@ -121,7 +123,7 @@ async function buildDocument(payload: Payload, renderSection: SectionRenderer): 
   const sections: string[] = []
   for (const surface of CONTENT_SURFACES) {
     const docs = await listPublicDocs(payload, surface)
-    if (docs.length) sections.push(await renderSection(surface, docs, siteUrl))
+    if (docs.length) sections.push(await renderSection(surface, docs, siteUrl, siteInfo))
   }
 
   const notes = trimmed(siteInfo.llmsNotes)
@@ -141,7 +143,29 @@ export const buildLlmsTxt = (payload: Payload): Promise<string> =>
     async (surface, docs, siteUrl) => `## ${surface.title}\n\n${llmsEntries(docs, siteUrl)}`,
   )
 
-type ReadDoc = { markdown: string; external: boolean }
+type DocRecord = Record<string, unknown>
+
+/**
+ * The record as its page shows it. An external post renders its introduction
+ * and the link out, never the body and sections it kept from before; the home
+ * page renders Site Info's name and role over a portrait, never its hero's text.
+ */
+export function shownRecord(
+  surface: ContentSurface,
+  record: DocRecord,
+  siteInfo: Partial<SiteInfo>,
+  original: ExternalArticle | null,
+): DocRecord {
+  if (original) {
+    const { content: _content, layout: _layout, ...shown } = record
+    return shown
+  }
+  if (surface.homeSlug && record.slug === surface.homeSlug) {
+    const { hero: _hero, ...shown } = record
+    return { ...shown, title: homeHeading(siteInfo) }
+  }
+  return record
+}
 
 /** The document's markdown with its front matter, read again as the public sees it. */
 async function docMarkdown(
@@ -149,26 +173,31 @@ async function docMarkdown(
   surface: ContentSurface,
   doc: PublicDoc,
   siteUrl: string,
-): Promise<ReadDoc | null> {
+  siteInfo: Partial<SiteInfo>,
+): Promise<string | null> {
   const record = await readPublicDoc(payload, surface.collection, doc.id)
   if (!record) return null
-  const original = surface.collection === 'posts' ? externalArticle(record)?.url : undefined
+  const original = surface.collection === 'posts' ? externalArticle(record) : null
+  const shown = shownRecord(surface, record, siteInfo, original)
   const markdown = await extractDocMarkdown(
     payload,
     surface,
-    record,
-    docFrontMatter(doc, siteUrl, original),
+    shown,
+    docFrontMatter(doc, siteUrl, original?.url),
   )
-  return { markdown: tidyMarkdown(markdown, doc.title), external: Boolean(original) }
+  const body = tidyMarkdown(markdown, String(shown.title ?? doc.title))
+  return original
+    ? `${body}\n\n[Read the full article on ${original.publisher}](${original.url})`
+    : body
 }
 
 /** /llms-full.txt: the same index with every document's body under its section. */
 export const buildLlmsFullTxt = (payload: Payload): Promise<string> =>
-  buildDocument(payload, async (surface, docs, siteUrl) => {
+  buildDocument(payload, async (surface, docs, siteUrl, siteInfo) => {
     const bodies: string[] = []
     for (const doc of docs) {
-      const read = await docMarkdown(payload, surface, doc, siteUrl)
-      if (read) bodies.push(read.markdown)
+      const markdown = await docMarkdown(payload, surface, doc, siteUrl, siteInfo)
+      if (markdown) bodies.push(markdown)
     }
     return `## ${surface.title}\n\n${bodies.join('\n\n---\n\n')}`
   })
@@ -176,8 +205,8 @@ export const buildLlmsFullTxt = (payload: Payload): Promise<string> =>
 /**
  * One published document as standalone markdown: the `.md` alternate and the
  * `Accept: text/markdown` answer for its page. Null when the collection has no
- * public surface, the document is not public, or the article lives elsewhere
- * (the page only introduces it, and its metadata advertises no alternate).
+ * public surface or the document is not public. An article that lives
+ * elsewhere reads as its page does: the introduction and the link out.
  */
 export async function buildDocMarkdown(
   payload: Payload,
@@ -191,6 +220,12 @@ export async function buildDocMarkdown(
   const doc = docs.find((candidate) => candidate.slug === slug)
   if (!doc) return null
 
-  const read = await docMarkdown(payload, surface, doc, getServerSideURL())
-  return read && !read.external ? `${read.markdown}\n` : null
+  const markdown = await docMarkdown(
+    payload,
+    surface,
+    doc,
+    getServerSideURL(),
+    await readSiteInfo(payload),
+  )
+  return markdown ? `${markdown}\n` : null
 }
