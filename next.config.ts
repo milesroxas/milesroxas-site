@@ -32,8 +32,8 @@ const nextConfig: NextConfig = {
         port: url.port || undefined,
         pathname: '/**',
       },
-      // The media bucket (Cloudflare R2 custom domain), the fallback source
-      // for an image Cloudflare Images has not taken yet.
+      // The media bucket's public r2.dev URL (docs/media.md), the fallback
+      // source for an image Cloudflare Images has not taken yet.
       ...(process.env.R2_PUBLIC_URL
         ? [
             {

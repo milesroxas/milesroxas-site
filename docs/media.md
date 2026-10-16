@@ -145,9 +145,10 @@ Done once on 2026-10-11; recorded so it can be repeated for another account.
    }
    ```
    Add a Conductor workspace's port or a preview host when uploading from there. A custom
-   domain would need the zone on Cloudflare; milesroxas.com's DNS is on Vercel. The r2.dev URL
-   is rate limited, which is fine here: only Cloudflare's own ingest and the fallback for an
-   unsynced file ever read the origin.
+   domain needs the zone on Cloudflare (full setup, or a partial CNAME zone on a Business or
+   Enterprise plan); milesroxas.com's DNS is on Vercel, so the bucket keeps its r2.dev URL. That
+   URL is rate limited, which is fine here: only Cloudflare's own ingest, the fallback for a
+   file not yet synced, and a PDF (the CV on `/contact`) ever read the origin.
 3. Set the five `R2_*` variables in `.env` and on Vercel (Production and Preview), run the
    migration once, release, then drop `BLOB_READ_WRITE_TOKEN` and the Blob store.
 

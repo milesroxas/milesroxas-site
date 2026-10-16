@@ -60,6 +60,8 @@ const Mark: React.FC<{ media: InsightItem['media']; size: InsightMarkSize }> = (
   size,
 }) => {
   const doc = markDoc(media)
+  // The sanitized copy on Cloudflare Images (an SVG is served as stored), else the origin file.
+  const src = doc ? doc.cloudflareImageUrl || getMediaUrl(doc.url, doc.updatedAt) : undefined
   return (
     <span
       aria-hidden="true"
@@ -68,7 +70,7 @@ const Mark: React.FC<{ media: InsightItem['media']; size: InsightMarkSize }> = (
         MARK_SIZE_CLASS[size].box,
         doc && 'bg-current mask-center mask-contain mask-no-repeat',
       )}
-      style={doc ? { maskImage: `url("${getMediaUrl(doc.url, doc.updatedAt)}")` } : undefined}
+      style={src ? { maskImage: `url("${src}")` } : undefined}
     />
   )
 }

@@ -123,6 +123,13 @@ Noted and left alone:
   that carry its utility. Left as is. A new colour that flips with the ground goes in
   `palette-light` / `palette-dark` as a token, not a `dark:` utility.
 - `ImageMedia` inlines the same generic 2.6 KB blur placeholder per image. Brotli hides that too.
-- A few videos not on Stream still play from `r2.dev` through `<source>`.
-- An R2 custom domain would need the `milesroxas.com` zone on Cloudflare; its DNS is on Vercel.
-  With Cloudflare Images holding every image, nothing on the site reads `r2.dev` for an image.
+- Checked 2026-10-16: every video in production (81) is on Stream and marked ready, so no page
+  renders the `<source>` fallback; it only appears between an upload and Stream's ready mark.
+  No `<img>`, `<source>`, `<video>`, `<meta>`, JSON-LD, sitemap or llms output reads `r2.dev` on
+  any of the 23 sitemap pages. The origin host still appears as media `url` fields in the RSC
+  payload (text only, never fetched) and as the CV download on `/contact` (a PDF, which neither
+  Images nor Stream can hold).
+- An R2 custom domain is not possible without moving `milesroxas.com` to Cloudflare DNS, or a
+  partial (CNAME) zone, which needs a Business or Enterprise plan. Not worth either: nothing a
+  browser fetches on the site is on `r2.dev` apart from the CV. The per-host table from
+  `measure.mjs` shows any `r2.dev` traffic if that ever changes.
