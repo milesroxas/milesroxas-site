@@ -19,7 +19,7 @@ import { type ShareImage, shareImage } from './shareImage'
 const DEFAULT_NAME = 'Miles Roxas'
 /** Stands in until Site Info carries a description, so no page ships without one. */
 const DEFAULT_DESCRIPTION =
-  '16 years leading design teams and partnering with companies to launch brand identities and ship digital experiences.'
+  'Miles Roxas is a designer and builder with 16 years across brand, product and technology. He designs experiences and builds the systems behind them.'
 
 /** The fields a routed document carries that metadata reads. */
 export type MetaDoc = {

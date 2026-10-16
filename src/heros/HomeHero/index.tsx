@@ -16,12 +16,12 @@ type HeroProps = Page['hero'] & {
 }
 
 const EXPERIENCE_TEXT = [
-  'Co-Founder',
-  'Creative Director',
-  'Web Designer',
+  'Designer & Builder',
+  'Product Designer',
   'Brand Designer',
-  'Product Design',
+  'Web Designer',
   'Design Engineer',
+  'Co-Founder',
 ]
 
 const SKILLS_TEXT = [
@@ -31,7 +31,7 @@ const SKILLS_TEXT = [
   'Web Development',
   'Product Strategy',
   'Product Design',
-  'Design Engineer',
+  'Design Systems',
   '3D Modeling & Rendering',
 ]
 

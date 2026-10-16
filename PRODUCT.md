@@ -8,7 +8,7 @@ web
 
 ## Users
 
-Primary: recruiters and in-house hiring teams evaluating Miles Roxas for a senior role (creative director, design engineer, product/brand design lead). They arrive with limited time, skim the work to judge fit, and decide whether to reach out.
+Primary: recruiters and in-house hiring teams at product organizations evaluating Miles Roxas for a full-time, hands-on design role (product and web design, design systems, interaction, creative technology, design engineering). They arrive with limited time, skim the work to judge fit, and decide whether to reach out.
 
 ## Product Purpose
 
@@ -16,7 +16,7 @@ Personal portfolio for Miles Roxas. It presents selected case studies (Works) an
 
 ## Positioning
 
-Open decision: the one-line claim a neighboring portfolio could not copy has not been confirmed. Current homepage copy leads with "16 years leading design teams and partnering with companies to launch brand identities and ship digital experiences", framed across Strategy, Design and Development.
+Designer & Builder: "I design experiences and build the systems behind them." Design is the foundation and building is how ideas become real; leadership is experience, not the identity. Identity, voice and evidence rules live in `docs/miles-roxas-brand-context.md`.
 
 ## Operating Context
 
