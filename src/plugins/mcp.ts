@@ -1,5 +1,13 @@
 import { type MCPPluginConfig, mcpPlugin } from '@payloadcms/plugin-mcp'
-import type { CollapsibleField, CollectionSlug, Field, GroupField, Plugin } from 'payload'
+import type {
+  CollapsibleField,
+  CollectionSlug,
+  Config,
+  Endpoint,
+  Field,
+  GroupField,
+  Plugin,
+} from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { ASK_QUESTION_RETENTION_DAYS } from '@/features/ask/retention'
 import { withMcpDeleteConfirmation } from '@/plugins/mcp-delete-confirmation'
@@ -351,7 +359,39 @@ const server: Plugin = mcpPlugin({
   }),
 })
 
-export const mcp: Plugin = (config) =>
-  server(
-    withMcpWriteChecks(withMcpDeleteConfirmation(config, deletable), writable, writableGlobals),
+/**
+ * Keeps a tool call inside the request that carries it.
+ *
+ * The MCP transport answers a POST with a server-sent event stream and hands
+ * the Response back as soon as the stream is open; the tool runs afterwards
+ * and writes its result into the stream. Next flushes `revalidatePath` and
+ * `revalidateTag` when the route handler returns, so a publish over MCP
+ * queued its revalidation after the flush and the cached page never heard
+ * about it (the admin and REST publish inside the handler and were fine).
+ * Reading the stream to its end before returning puts the tool, and the
+ * revalidation it queues, before the flush. Tools answer once, so nothing
+ * is lost by not streaming.
+ */
+const settled = (handler: Endpoint['handler']): Endpoint['handler'] => {
+  return async (req) => {
+    const streamed = await handler(req)
+    const body = await streamed.arrayBuffer()
+    return new Response(body, { headers: streamed.headers, status: streamed.status })
+  }
+}
+
+const withSettledMcpResponse = (config: Config): Config => ({
+  ...config,
+  endpoints: config.endpoints?.map((endpoint) =>
+    endpoint.path === '/mcp' && endpoint.method === 'post'
+      ? { ...endpoint, handler: settled(endpoint.handler) }
+      : endpoint,
+  ),
+})
+
+export const mcp: Plugin = async (config) =>
+  withSettledMcpResponse(
+    await server(
+      withMcpWriteChecks(withMcpDeleteConfirmation(config, deletable), writable, writableGlobals),
+    ),
   )

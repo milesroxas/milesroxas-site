@@ -282,6 +282,12 @@ first `delete*` call.
 - `tools/list` for a key with Pages, Works, Posts and Site Info plus the site tools is about 490KB,
   nearly all of it the `create*` and `update*` schemas. Claude Code loads schemas on demand; a
   client that loads every schema pays that per turn, so grant only what an agent needs.
+- A POST to `/api/mcp` is answered as a server-sent event stream, and the transport hands the
+  Response back before the tool has run. Next flushes `revalidatePath` and `revalidateTag` when the
+  route handler returns, so a publish over MCP used to queue its revalidation after the flush and
+  the cached page stayed stale until `revalidate = 600` expired. `withSettledMcpResponse` in
+  `mcp.ts` reads the stream to its end before returning, which keeps the tool, and the
+  revalidation it queues, inside the request. Keep it if the endpoint is ever re-registered.
 
 ## Next with TypeSafe
 
