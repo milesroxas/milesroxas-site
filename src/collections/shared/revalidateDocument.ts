@@ -52,10 +52,12 @@ export const revalidateDocument = <TSlug extends CollectionSlug>({
 }: RevalidateDocumentOptions) => {
   const afterChange: CollectionAfterChangeHook<RoutedDoc> = ({
     doc,
+    previousDoc,
     req: { payload, context },
   }) => {
     if (!context.disableRevalidate && doc._status === 'published') {
-      const path = pathFor(doc.slug)
+      // A `select` on the write narrows `doc`; the stored document still has the slug.
+      const path = pathFor(doc.slug ?? previousDoc?.slug)
 
       payload.logger.info(`Revalidating ${noun} at path: ${path}`)
 
@@ -76,6 +78,12 @@ export const revalidateDocument = <TSlug extends CollectionSlug>({
     if (docs.length === 0) return result
 
     for (const doc of docs) {
+      if (!doc.slug) {
+        payload.logger.warn(
+          `Unpublished ${noun} ${doc.id} came back without a slug; its page is not busted`,
+        )
+        continue
+      }
       const path = pathFor(doc.slug)
 
       payload.logger.info(`Revalidating unpublished ${noun} at path: ${path}`)
