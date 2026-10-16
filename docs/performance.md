@@ -116,8 +116,12 @@ Noted and left alone:
 - The production `payload_jobs` table was empty: the daily sweep (`cloudflareMediaSweep`) has
   never queued, so a sync the upload hook misses is never retried. `/api/payload-jobs/run`
   answers 429 from outside, which is the WAF; whether Vercel's own cron reaches it is unverified.
-- `.band-inverted` duplicates about 690 colour rules in the stylesheet (333 KB raw, 45 KB on the
-  wire). Brotli hides most of it.
+- The `dark` variant's polarity selector (`src/styles/shadcn-theme.css`, about 940 bytes) is
+  repeated on each of the 57 rules that use it, mostly the ported shadcn `dark:` utilities: about
+  54 KB of the 333 KB raw stylesheet. Production serves it brotli, which costs about 250 bytes
+  (34.5 KB with it, 34.2 KB with a one-class stand-in), and each copy is matched only on elements
+  that carry its utility. Left as is. A new colour that flips with the ground goes in
+  `palette-light` / `palette-dark` as a token, not a `dark:` utility.
 - `ImageMedia` inlines the same generic 2.6 KB blur placeholder per image. Brotli hides that too.
 - A few videos not on Stream still play from `r2.dev` through `<source>`.
 - An R2 custom domain would need the `milesroxas.com` zone on Cloudflare; its DNS is on Vercel.
