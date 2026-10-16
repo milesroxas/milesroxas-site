@@ -6,5 +6,5 @@ export const homeHeading = (
 ) => {
   const name = siteInfo?.name?.trim() || 'Miles Roxas'
   const role = siteInfo?.jobTitle?.trim()
-  return role ? `${name}, ${role.charAt(0).toLowerCase()}${role.slice(1)}` : name
+  return role ? `${name}, ${role}` : name
 }

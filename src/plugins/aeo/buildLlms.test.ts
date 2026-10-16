@@ -130,7 +130,7 @@ const surface = (collection: string) => {
 describe('shownRecord', () => {
   const pages = surface('pages')
   const posts = surface('posts')
-  const siteInfo = { name: 'Miles Roxas', jobTitle: 'Design lead and engineer' }
+  const siteInfo = { name: 'Miles Roxas', jobTitle: 'Designer & Builder' }
 
   it('leaves out the body and sections an external post keeps but never renders', () => {
     const record = { title: 'A', intro: { body: 'Why' }, content: 'Old body', layout: [] }
@@ -149,7 +149,7 @@ describe('shownRecord', () => {
     const record = { slug: 'home', title: 'Home', hero: { richText: 'Home' }, layout: [] }
     expect(shownRecord(pages, record, siteInfo, null)).toEqual({
       slug: 'home',
-      title: 'Miles Roxas, design lead and engineer',
+      title: 'Miles Roxas, Designer & Builder',
       layout: [],
     })
   })
