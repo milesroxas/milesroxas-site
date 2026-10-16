@@ -36,7 +36,7 @@ The pre-push hook checks exactly what lands on `dev`, and git rejects the push i
 | Ports | `$CONDUCTOR_PORT` for Next, `+1` for Storybook (Conductor reserves `CONDUCTOR_PORT..+9`) |
 | Open button | Site, Admin (`/admin`) and Storybook URLs for the workspace ports (`preview_urls`) |
 | Database | `payload_<city>` in the one shared `milesroxas-postgres-1` container (port 54330), cloned from the main dev DB `payload` |
-| Vercel Blob, Cloudflare, Resend, … | Shared with your main checkout — same keys, same stores |
+| Cloudflare R2, Images, Stream, Resend, … | Shared with your main checkout — same keys, same stores |
 
 Never create `.env.local` in a workspace. Next.js loads it **over** `.env`, and `vercel env pull` writes it by default with `POSTGRES_URL` = Neon production — dev push would then offer to drop production tables. `lib.sh` refuses to run setup/dev/storybook while `.env.local` or `.env.development.local` names any DB other than the workspace one (`mv .env.local .env.local.neon-bak`). Pull production env via the dev TUI, which writes `.env.production.pulled`, a name Next.js never reads; run in a workspace it reads the main checkout's copy when one exists.
 

@@ -18,7 +18,7 @@ export for each block: [media-dimensions.md](media-dimensions.md).
 ## The pipeline
 
 1. **R2 is the origin.** Every file lives in the Cloudflare R2 bucket `R2_BUCKET`, served from
-   its custom domain `R2_PUBLIC_URL` (edge cached, no egress charge). The admin uploads straight
+   its public URL `R2_PUBLIC_URL` (the r2.dev URL, see Setup; no egress charge). The admin uploads straight
    from the browser on a presigned PUT (`clientUploads`): the server mints a fresh
    `<_objectKey>/<filename>` key per upload and never receives the bytes, so a video never meets
    Vercel's 4.5 MB body limit. `pnpm cms:upload` and the Local API upload server-side, with no

@@ -9,7 +9,7 @@ frontend.
 - Next.js 16 + React 19 + TypeScript
 - Payload CMS 3.90 (`@payloadcms/next`)
 - Postgres via `@payloadcms/db-vercel-postgres`
-- Vercel Blob storage with Cloudflare media sync hooks
+- Cloudflare R2 storage (browser uploads) with Cloudflare Images and Stream sync hooks
 - Tailwind CSS 4, Radix UI, shadcn/ui
 - GSAP, Three.js, React Three Fiber
 - Biome for linting and formatting
@@ -65,8 +65,15 @@ Core:
 - `NEXT_PUBLIC_SERVER_URL`
 - `PREVIEW_SECRET`
 - `CRON_SECRET`
-- `BLOB_READ_WRITE_TOKEN`
 - `RESEND_API_KEY`
+
+R2 media origin:
+
+- `R2_ACCOUNT_ID`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+- `R2_BUCKET`
+- `R2_PUBLIC_URL`
 
 Cloudflare media:
 

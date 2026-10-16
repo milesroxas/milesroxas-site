@@ -66,7 +66,11 @@ Do not create `.env.local` or `.env.production`: Next.js loads them over `.env`,
 | `NEXT_PUBLIC_SERVER_URL` | Canonical site URL |
 | `PREVIEW_SECRET` | Draft preview token |
 | `CRON_SECRET` | Jobs endpoint auth token |
-| `BLOB_READ_WRITE_TOKEN` | Vercel Blob token |
+| `R2_ACCOUNT_ID` | Cloudflare account id that owns the R2 bucket |
+| `R2_ACCESS_KEY_ID` | R2 API token access key |
+| `R2_SECRET_ACCESS_KEY` | R2 API token secret |
+| `R2_BUCKET` | R2 bucket name (the media origin) |
+| `R2_PUBLIC_URL` | The bucket's public r2.dev URL, no trailing slash |
 | `RESEND_API_KEY` | Resend email provider key |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API token |
