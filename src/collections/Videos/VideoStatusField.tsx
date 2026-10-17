@@ -134,7 +134,7 @@ export function VideoStatusField({ path }: { path: string }) {
   } = useConfig()
   const { collectionSlug, id: documentId } = useDocumentInfo()
   const siblingPath = [...path.split('.').slice(0, -1), 'video'].join('.')
-  const siblingId = useFormFields(([fields]) => relationshipId(fields[siblingPath]?.value))
+  const siblingId = useFormFields(([fields]) => relationshipId(fields?.[siblingPath]?.value))
   const inDocument = collectionSlug === 'videos'
   const videoId = inDocument ? (documentId ?? null) : siblingId
   const { offline, over, restart, status } = useVideoStatus(api, videoId)

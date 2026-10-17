@@ -24,6 +24,30 @@ describe('optionalFields', () => {
     expect(read({})).toBe(false)
   })
 
+  it('reads back the tick a write sent, while that write answers', () => {
+    const context: Record<string, unknown> = {}
+    const path = ['layout', 3, 'showEyebrow']
+    run(toggle.hooks?.beforeChange?.[0], { context, path, value: true })
+    expect(run(toggle.hooks?.afterRead?.[0], { context, path, siblingData: {} })).toBe(true)
+    expect(
+      run(toggle.hooks?.afterRead?.[0], {
+        context,
+        path: ['layout', 4, 'showEyebrow'],
+        siblingData: {},
+      }),
+    ).toBe(false)
+    expect(run(toggle.hooks?.afterRead?.[0], { context: {}, path, siblingData: {} })).toBe(false)
+  })
+
+  it('does not let a sent false hide content that exists', () => {
+    const context: Record<string, unknown> = {}
+    const path = ['layout', 0, 'showEyebrow']
+    run(toggle.hooks?.beforeChange?.[0], { context, path, value: false })
+    expect(
+      run(toggle.hooks?.afterRead?.[0], { context, path, siblingData: { eyebrow: 'New' } }),
+    ).toBe(true)
+  })
+
   it('shows gated fields only while ticked', () => {
     const condition = eyebrow.admin?.condition
     expect(condition?.({}, { showEyebrow: true }, {} as never)).toBe(true)

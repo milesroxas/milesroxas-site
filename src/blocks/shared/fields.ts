@@ -31,9 +31,17 @@ const both =
     Boolean(first(data, siblingData, context)) &&
     (!second || Boolean(second(data, siblingData, context)))
 
+/** Per-request memory of the gate values a write sent, by field path (`optionalFields`). */
+const GATES_SENT = 'optionalGatesSent'
+
 /**
  * Virtual checkbox gating optional fields; reads back as "any gated field has content".
  * Unticking clears only stored content, so a stale `false` from an API write keeps new copy.
+ *
+ * Within one write the gate also reads back as the value that write sent: the admin
+ * rebuilds form state from the saved document after every autosave, and a gate just
+ * ticked over still-empty fields would otherwise read `false` there and hide the
+ * fields the editor is about to fill.
  */
 export const optionalFields = ({
   condition,
@@ -66,6 +74,12 @@ export const optionalFields = ({
       hooks: { ...field.hooks, beforeChange: [...(field.hooks?.beforeChange ?? []), clear] },
     } as Field
   }
+  const sent = (context: Record<string, unknown> | undefined): Record<string, boolean> => {
+    if (!context) return {}
+    if (!context[GATES_SENT]) context[GATES_SENT] = {}
+    return context[GATES_SENT] as Record<string, boolean>
+  }
+  const key = (path: (number | string)[] | undefined) => path?.join('.') ?? name
   return [
     {
       name,
@@ -75,7 +89,17 @@ export const optionalFields = ({
       // Virtual fields default to read-only.
       admin: { condition, description, readOnly: false },
       hooks: {
-        afterRead: [({ siblingData }) => watched.some((key) => hasContent(siblingData?.[key]))],
+        beforeChange: [
+          ({ context, path, value }) => {
+            if (typeof value === 'boolean') sent(context)[key(path)] = value
+            return value
+          },
+        ],
+        afterRead: [
+          ({ context, path, siblingData }) =>
+            sent(context)[key(path)] === true ||
+            watched.some((key) => hasContent(siblingData?.[key])),
+        ],
       },
     },
     ...fields.map(gate),
