@@ -35,8 +35,8 @@ export const resolveStreamUrls: CollectionAfterReadHook = ({ doc }) => {
  * the save's own transaction, with no hook in the loop and nothing left on
  * `req.context`, so a request that saves several files (the Studio publishes
  * two posters on one request) syncs every one. A failed upload is logged and
- * the save still succeeds: the site falls back to the origin URL and the daily
- * sweep (`jobs/cloudflareMediaSweep`) retries the document.
+ * the save still succeeds: the site falls back to the origin URL, and the
+ * resync script (`scripts/resync-cloudflare-media.ts`) retries the document.
  */
 export const syncCloudflareUpload: CollectionAfterChangeHook = async ({
   doc,

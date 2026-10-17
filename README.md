@@ -90,7 +90,6 @@ Do not create `.env.local` or `.env.production`: Next.js loads them over `.env`,
 | `PRODUCTION_DB_ENDPOINT` | Production Neon endpoint id (`ep-...`), Vercel only; `scripts/guard-preview-db.ts` refuses to migrate it from a preview build |
 | `PAYLOAD_SECRET` | Encrypts JWT tokens (Payload auth) |
 | `NEXT_PUBLIC_SERVER_URL` | Public site URL for absolute links, no trailing slash; the canonical domain in production |
-| `CRON_SECRET` | Authenticates cron jobs |
 | `PREVIEW_SECRET` | Validates draft preview requests |
 | `R2_ACCOUNT_ID` | Cloudflare account that owns the R2 media bucket ([docs/media.md](docs/media.md)) |
 | `R2_ACCESS_KEY_ID` | R2 API token access key (Object Read & Write on the bucket) |

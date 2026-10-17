@@ -13,7 +13,6 @@ declare global {
       R2_BUCKET: string
       /** The bucket's public custom domain, no trailing slash. */
       R2_PUBLIC_URL: string
-      CRON_SECRET: string
       PREVIEW_SECRET: string
       VERCEL_URL: string
       CLOUDFLARE_ACCOUNT_ID: string

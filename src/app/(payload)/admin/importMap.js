@@ -43,6 +43,7 @@ import { InboxFilters as InboxFilters_aaad21e601cb033ff32297ebb9c0eb64 } from '@
 import { InboxNavBadge as InboxNavBadge_26f5323f2ed216f767c955478f81a680 } from '@/collections/Inquiries/components/InboxNavBadge'
 import { InquiriesDashboard as InquiriesDashboard_ef92ef0a0367c0619848229c330ca202 } from '@/collections/Inquiries/components/InquiriesDashboard'
 import { InquiryActions as InquiryActions_b2c2cebae1858c3ee8d4e6a6dd6abc0c } from '@/collections/Inquiries/components/InquiryActions'
+import { VideoStatusField as VideoStatusField_6391ee55d91a6a82708c5d51185c0c0c } from '@/collections/Videos/VideoStatusField'
 import { BlocksDrawerTabs as BlocksDrawerTabs_382fdb41e52232ddd723ecac128689ab } from '@/components/admin/BlocksDrawerTabs'
 import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
 import {
@@ -88,6 +89,8 @@ export const importMap = {
     LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   '@/plugins/streak-studio/components/FieldPicker#FieldPicker':
     FieldPicker_bbf69067745f974cd567c72741674b77,
+  '@/collections/Videos/VideoStatusField#VideoStatusField':
+    VideoStatusField_6391ee55d91a6a82708c5d51185c0c0c,
   '@payloadcms/richtext-lexical/client#BlocksFeatureClient':
     BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   '@/fields/lexical/textStyle/feature.client#TextStyleFeatureClient':

@@ -72,6 +72,7 @@ export interface Config {
     posts: Post;
     works: Work;
     media: Media;
+    videos: Video;
     capabilities: Capability;
     categories: Category;
     clients: Client;
@@ -85,7 +86,6 @@ export interface Config {
     search: Search;
     'payload-mcp-api-keys': PayloadMcpApiKey;
     'payload-kv': PayloadKv;
-    'payload-jobs': PayloadJob;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -101,6 +101,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     works: WorksSelect<false> | WorksSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    videos: VideosSelect<false> | VideosSelect<true>;
     capabilities: CapabilitiesSelect<false> | CapabilitiesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     clients: ClientsSelect<false> | ClientsSelect<true>;
@@ -114,7 +115,6 @@ export interface Config {
     search: SearchSelect<false> | SearchSelect<true>;
     'payload-mcp-api-keys': PayloadMcpApiKeysSelect<false> | PayloadMcpApiKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
-    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -129,14 +129,12 @@ export interface Config {
     'site-info': SiteInfo;
     'contact-page': ContactPage;
     'works-index': WorksIndex;
-    'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     'site-info': SiteInfoSelect<false> | SiteInfoSelect<true>;
     'contact-page': ContactPageSelect<false> | ContactPageSelect<true>;
     'works-index': WorksIndexSelect<false> | WorksIndexSelect<true>;
-    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -144,15 +142,7 @@ export interface Config {
   };
   user: User | PayloadMcpApiKey;
   jobs: {
-    tasks: {
-      askQuestionRetention: TaskAskQuestionRetention;
-      cloudflareMediaSweep: TaskCloudflareMediaSweep;
-      schedulePublish: TaskSchedulePublish;
-      inline: {
-        input: unknown;
-        output: unknown;
-      };
-    };
+    tasks: unknown;
     workflows: unknown;
   };
 }
@@ -914,6 +904,11 @@ export interface FullMediaBlock {
     [k: string]: unknown;
   } | null;
   /**
+   * A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.
+   */
+  playVideo?: boolean | null;
+  video?: (number | null) | Video;
+  /**
    * Contained uses the aspect ratio below. Full width crops to 16:9 on small screens and 21:9 from md up.
    */
   media?: (number | null) | Media;
@@ -947,6 +942,53 @@ export interface FullMediaBlock {
   blockType: 'fullMedia';
 }
 /**
+ * Full-length videos that play on click. A few seconds loop muted until then. An image or a short loop that plays whole goes in Media.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos".
+ */
+export interface Video {
+  id: number;
+  /**
+   * Names the video for the visitor: the play button reads it out. Blank takes the filename.
+   */
+  title: string;
+  status?: ('pending' | 'encoding' | 'cutting' | 'encodingLoop' | 'ready' | 'failed') | null;
+  /**
+   * The seconds that loop, muted, until a visitor presses play. Blank loops the first 8 seconds. Changing these recuts the loop on save.
+   */
+  loop?: {
+    /**
+     * Moved back when the loop would run past the end.
+     */
+    start?: number | null;
+    /**
+     * 3 to 30. A video no longer than this loops whole.
+     */
+    length?: number | null;
+  };
+  duration?: number | null;
+  cloudflareStreamUid?: string | null;
+  cloudflareStreamReady?: boolean | null;
+  cloudflareStreamPlaybackUrl?: string | null;
+  cloudflareStreamThumbnailUrl?: string | null;
+  loopUid?: string | null;
+  loopReady?: boolean | null;
+  loopPlaybackUrl?: string | null;
+  loopThumbnailUrl?: string | null;
+  streamError?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "MediaContentSplitBlock".
  */
@@ -975,6 +1017,11 @@ export interface MediaContentSplitBlock {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.
+   */
+  playVideo?: boolean | null;
+  video?: (number | null) | Video;
   media?: (number | null) | Media;
   /**
    * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
@@ -1030,6 +1077,11 @@ export interface SplitContentNarrowBlock {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.
+   */
+  playVideo?: boolean | null;
+  video?: (number | null) | Video;
   media?: (number | null) | Media;
   /**
    * Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.
@@ -1266,7 +1318,12 @@ export interface FeatureImageStatementBlock {
  * via the `definition` "CaptionBlock".
  */
 export interface CaptionBlock {
-  media: number | Media;
+  /**
+   * A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.
+   */
+  playVideo?: boolean | null;
+  video?: (number | null) | Video;
+  media?: (number | null) | Media;
   showCaptionOverride?: boolean | null;
   /**
    * Replaces the media document's canonical caption for this placement only.
@@ -5335,7 +5392,7 @@ export interface Inquiry {
   createdAt: string;
 }
 /**
- * Every question asked in Ask, with emails, phone numbers and keys removed, and the answer the visitor got. "No sources" is the content-gap list. Rows delete themselves after 90 days.
+ * Every question asked in Ask, with emails, phone numbers and keys removed, and the answer the visitor got. "No sources" is the content-gap list. Rows are deleted after 90 days, on the next question asked.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ask-questions".
@@ -5587,6 +5644,9 @@ export interface PayloadMcpApiKey {
   media?: {
     find?: boolean | null;
   };
+  videos?: {
+    find?: boolean | null;
+  };
   contactPage?: {
     find?: boolean | null;
     update?: boolean | null;
@@ -5688,107 +5748,6 @@ export interface PayloadKv {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-jobs".
- */
-export interface PayloadJob {
-  id: number;
-  /**
-   * Input data provided to the job
-   */
-  input?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  taskStatus?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  completedAt?: string | null;
-  totalTried?: number | null;
-  /**
-   * If hasError is true this job will not be retried
-   */
-  hasError?: boolean | null;
-  /**
-   * If hasError is true, this is the error that caused it
-   */
-  error?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Task execution log
-   */
-  log?:
-    | {
-        executedAt: string;
-        completedAt: string;
-        taskSlug: 'inline' | 'askQuestionRetention' | 'cloudflareMediaSweep' | 'schedulePublish';
-        taskID: string;
-        input?:
-          | {
-              [k: string]: unknown;
-            }
-          | unknown[]
-          | string
-          | number
-          | boolean
-          | null;
-        output?:
-          | {
-              [k: string]: unknown;
-            }
-          | unknown[]
-          | string
-          | number
-          | boolean
-          | null;
-        state: 'failed' | 'succeeded';
-        error?:
-          | {
-              [k: string]: unknown;
-            }
-          | unknown[]
-          | string
-          | number
-          | boolean
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  taskSlug?: ('inline' | 'askQuestionRetention' | 'cloudflareMediaSweep' | 'schedulePublish') | null;
-  queue?: string | null;
-  waitUntil?: string | null;
-  processing?: boolean | null;
-  meta?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -5809,6 +5768,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'videos';
+        value: number | Video;
       } | null)
     | ({
         relationTo: 'capabilities';
@@ -6092,6 +6055,8 @@ export interface FullMediaBlockSelect<T extends boolean = true> {
   eyebrow?: T;
   heading?: T;
   body?: T;
+  playVideo?: T;
+  video?: T;
   media?: T;
   visualType?: T;
   shader?: T | PlacedVisualConfigSelect<T>;
@@ -6112,6 +6077,8 @@ export interface MediaContentSplitBlockSelect<T extends boolean = true> {
   eyebrow?: T;
   heading?: T;
   body?: T;
+  playVideo?: T;
+  video?: T;
   media?: T;
   visualType?: T;
   shader?: T | PlacedVisualConfigSelect<T>;
@@ -6131,6 +6098,8 @@ export interface SplitContentNarrowBlockSelect<T extends boolean = true> {
   eyebrow?: T;
   heading?: T;
   body?: T;
+  playVideo?: T;
+  video?: T;
   media?: T;
   visualType?: T;
   shader?: T | PlacedVisualConfigSelect<T>;
@@ -6215,6 +6184,8 @@ export interface FeatureImageStatementBlockSelect<T extends boolean = true> {
  * via the `definition` "CaptionBlock_select".
  */
 export interface CaptionBlockSelect<T extends boolean = true> {
+  playVideo?: T;
+  video?: T;
   media?: T;
   showCaptionOverride?: T;
   captionOverride?: T;
@@ -7036,6 +7007,40 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos_select".
+ */
+export interface VideosSelect<T extends boolean = true> {
+  title?: T;
+  status?: T;
+  loop?:
+    | T
+    | {
+        start?: T;
+        length?: T;
+      };
+  duration?: T;
+  cloudflareStreamUid?: T;
+  cloudflareStreamReady?: T;
+  cloudflareStreamPlaybackUrl?: T;
+  cloudflareStreamThumbnailUrl?: T;
+  loopUid?: T;
+  loopReady?: T;
+  loopPlaybackUrl?: T;
+  loopThumbnailUrl?: T;
+  streamError?: T;
+  _objectKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "capabilities_select".
  */
 export interface CapabilitiesSelect<T extends boolean = true> {
@@ -7487,6 +7492,11 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
     | {
         find?: T;
       };
+  videos?:
+    | T
+    | {
+        find?: T;
+      };
   contactPage?:
     | T
     | {
@@ -7543,38 +7553,6 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-jobs_select".
- */
-export interface PayloadJobsSelect<T extends boolean = true> {
-  input?: T;
-  taskStatus?: T;
-  completedAt?: T;
-  totalTried?: T;
-  hasError?: T;
-  error?: T;
-  log?:
-    | T
-    | {
-        executedAt?: T;
-        completedAt?: T;
-        taskSlug?: T;
-        taskID?: T;
-        input?: T;
-        output?: T;
-        state?: T;
-        error?: T;
-        id?: T;
-      };
-  taskSlug?: T;
-  queue?: T;
-  waitUntil?: T;
-  processing?: T;
-  meta?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -7868,24 +7846,6 @@ export interface WorksIndex {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-jobs-stats".
- */
-export interface PayloadJobsStat {
-  id: number;
-  stats?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -8017,16 +7977,6 @@ export interface WorksIndexSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-jobs-stats_select".
- */
-export interface PayloadJobsStatsSelect<T extends boolean = true> {
-  stats?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -8034,62 +7984,6 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskAskQuestionRetention".
- */
-export interface TaskAskQuestionRetention {
-  input?: unknown;
-  output: {
-    deleted?: number | null;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskCloudflareMediaSweep".
- */
-export interface TaskCloudflareMediaSweep {
-  input?: unknown;
-  output: {
-    synced?: number | null;
-    ready?: number | null;
-    failed?: number | null;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskSchedulePublish".
- */
-export interface TaskSchedulePublish {
-  input: {
-    type?: ('publish' | 'unpublish') | null;
-    locale?: string | null;
-    doc?:
-      | ({
-          relationTo: 'pages';
-          value: number | Page;
-        } | null)
-      | ({
-          relationTo: 'posts';
-          value: number | Post;
-        } | null)
-      | ({
-          relationTo: 'works';
-          value: number | Work;
-        } | null);
-    global?: 'works-index' | null;
-    user?:
-      | ({
-          relationTo: 'users';
-          value: number | User;
-        } | null)
-      | ({
-          relationTo: 'payload-mcp-api-keys';
-          value: number | PayloadMcpApiKey;
-        } | null);
-  };
-  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

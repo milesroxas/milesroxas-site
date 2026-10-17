@@ -38,6 +38,7 @@ import * as migration_20261015_010159_site_info_affiliations from './20261015_01
 import * as migration_20261015_011036_mcp_site_tools from './20261015_011036_mcp_site_tools';
 import * as migration_20261015_150822_contact_page_cv from './20261015_150822_contact_page_cv';
 import * as migration_20261015_163350_contact_page_recommended from './20261015_163350_contact_page_recommended';
+import * as migration_20261017_211828_videos from './20261017_211828_videos';
 
 export const migrations = [
   {
@@ -238,6 +239,11 @@ export const migrations = [
   {
     up: migration_20261015_163350_contact_page_recommended.up,
     down: migration_20261015_163350_contact_page_recommended.down,
-    name: '20261015_163350_contact_page_recommended'
+    name: '20261015_163350_contact_page_recommended',
+  },
+  {
+    up: migration_20261017_211828_videos.up,
+    down: migration_20261017_211828_videos.down,
+    name: '20261017_211828_videos'
   },
 ];

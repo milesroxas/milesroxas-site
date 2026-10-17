@@ -5,6 +5,12 @@
  */
 export const ASK_QUESTION_RETENTION_DAYS = 90
 
+const DAY_MS = 86_400_000
+
+/** The moment before which a stored question has outlived the window. */
+export const askRetentionCutoff = (now = Date.now()): string =>
+  new Date(now - ASK_QUESTION_RETENTION_DAYS * DAY_MS).toISOString()
+
 /**
  * The first line of every Ask transcript. Covers the EU AI Act transparency
  * duty (visitors are told they are chatting with an AI) and says chats are

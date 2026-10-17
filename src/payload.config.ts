@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
 import { resendAdapter } from '@payloadcms/email-resend'
 import { s3Storage } from '@payloadcms/storage-s3'
-import { buildConfig, type PayloadRequest } from 'payload'
+import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { askEmbeddingsTable } from '@/features/ask/schema'
 import { defaultLexical } from '@/fields/defaultLexical'
@@ -20,6 +20,8 @@ import { cloudflareMediaSync } from './collections/Media/hooks/syncCloudflare'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
+import { Videos } from './collections/Videos'
+import { videoStreamSync } from './collections/Videos/hooks'
 import { Works } from './collections/Works'
 import { agentMediaEndpoint } from './endpoints/agentMedia'
 import { askEndpoints } from './endpoints/ask'
@@ -27,8 +29,6 @@ import { ContactPage } from './globals/ContactPage'
 import { SiteInfo } from './globals/SiteInfo'
 import { WorksIndex } from './globals/WorksIndex'
 import { Header } from './Header/config'
-import { askQuestionRetentionTask } from './jobs/askQuestionRetention'
-import { cloudflareMediaSweepTask } from './jobs/cloudflareMediaSweep'
 import { plugins } from './plugins'
 import { getServerSideURL } from './utilities/getURL'
 
@@ -120,6 +120,7 @@ export default buildConfig({
     Posts,
     Works,
     Media,
+    Videos,
     Capabilities,
     Categories,
     Clients,
@@ -145,6 +146,7 @@ export default buildConfig({
       clientUploads: true,
       collections: {
         media: { disablePayloadAccessControl: true, generateFileURL: r2FileUrl },
+        videos: { disablePayloadAccessControl: true, generateFileURL: r2FileUrl },
       },
       config: {
         endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
@@ -156,25 +158,13 @@ export default buildConfig({
       },
     }),
     cloudflareMediaSync(),
+    videoStreamSync(),
   ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  jobs: {
-    access: {
-      run: ({ req }: { req: PayloadRequest }): boolean => {
-        // Team members only: an MCP API key authenticates as `req.user` too.
-        if (req.user?.collection === 'users') return true
-
-        // Vercel Cron (vercel.json) sends the secret; without one set, nothing
-        // anonymous may run jobs.
-        const secret = process.env.CRON_SECRET
-        if (!secret) return false
-        return req.headers.get('authorization') === `Bearer ${secret}`
-      },
-    },
-    tasks: [askQuestionRetentionTask, cloudflareMediaSweepTask],
-  },
+  // No `jobs`: nothing on this site runs on a schedule. Background work rides
+  // on the request that needs it, or on a script run by hand (CLAUDE.md).
 })

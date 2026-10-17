@@ -4,9 +4,10 @@ import * as cf from '@/utilities/cloudflare'
 
 /**
  * The Cloudflare side of a Media document, shared by the upload hook, the
- * Stream webhook, the daily sweep job and the resync script (docs/media.md).
- * The hook syncs a file in the request that saved it; the sweep catches
- * whatever that missed and marks the videos Stream has finished encoding.
+ * Stream webhook and the resync script (docs/media.md). The hook syncs a
+ * file in the request that saved it; the sweep, run by hand from the script,
+ * catches whatever that missed and marks the videos Stream has finished
+ * encoding. Nothing runs on a schedule.
  */
 
 /** A Media document as the hooks and the Local API hand it over. */
@@ -220,7 +221,7 @@ async function markReady(
       continue
     }
     try {
-      if (!(await cf.getStreamVideoReady(doc.cloudflareStreamUid))) continue
+      if (!(await cf.getStreamVideoStatus(doc.cloudflareStreamUid)).ready) continue
       await writeCloudflareFields(payload, doc.id, { cloudflareStreamReady: true })
       result.ready += 1
       logger.info({ msg: `[Cloudflare] Stream ready for ${label(doc)}` })

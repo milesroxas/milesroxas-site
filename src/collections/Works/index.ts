@@ -261,7 +261,6 @@ export const Works: CollectionConfig<'works'> = {
       autosave: {
         interval: 2000, // Industry standard: autosave every 2 seconds
       },
-      schedulePublish: true,
     },
     maxPerDoc: 50,
   },

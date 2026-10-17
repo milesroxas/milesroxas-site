@@ -131,8 +131,28 @@
     "label": "Caption",
     "fields": [
       {
+        "name": "playVideo",
+        "label": "Play a video",
+        "description": "A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.",
+        "control": "boolean",
+        "defaultValue": false
+      },
+      {
+        "name": "video",
+        "label": "Video",
+        "if": {
+          "arg": "playVideo",
+          "truthy": true
+        },
+        "control": "none"
+      },
+      {
         "name": "media",
         "label": "Media",
+        "if": {
+          "arg": "playVideo",
+          "truthy": false
+        },
         "control": "none"
       },
       {
@@ -1259,6 +1279,22 @@
         "control": "none"
       },
       {
+        "name": "playVideo",
+        "label": "Play a video",
+        "description": "A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.",
+        "control": "boolean",
+        "defaultValue": false
+      },
+      {
+        "name": "video",
+        "label": "Video",
+        "if": {
+          "arg": "playVideo",
+          "truthy": true
+        },
+        "control": "none"
+      },
+      {
         "name": "media",
         "label": "Media",
         "description": "Contained uses the aspect ratio below. Full width crops to 16:9 on small screens and 21:9 from md up.",
@@ -1268,6 +1304,10 @@
         "name": "visualType",
         "label": "Visual",
         "description": "Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.",
+        "if": {
+          "arg": "playVideo",
+          "truthy": false
+        },
         "control": "select",
         "options": [
           {
@@ -1803,6 +1843,22 @@
         "control": "none"
       },
       {
+        "name": "playVideo",
+        "label": "Play a video",
+        "description": "A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.",
+        "control": "boolean",
+        "defaultValue": false
+      },
+      {
+        "name": "video",
+        "label": "Video",
+        "if": {
+          "arg": "playVideo",
+          "truthy": true
+        },
+        "control": "none"
+      },
+      {
         "name": "media",
         "label": "Media",
         "control": "none"
@@ -1811,6 +1867,10 @@
         "name": "visualType",
         "label": "Visual",
         "description": "Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.",
+        "if": {
+          "arg": "playVideo",
+          "truthy": false
+        },
         "control": "select",
         "options": [
           {
@@ -2292,6 +2352,22 @@
         "control": "none"
       },
       {
+        "name": "playVideo",
+        "label": "Play a video",
+        "description": "A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.",
+        "control": "boolean",
+        "defaultValue": false
+      },
+      {
+        "name": "video",
+        "label": "Video",
+        "if": {
+          "arg": "playVideo",
+          "truthy": true
+        },
+        "control": "none"
+      },
+      {
         "name": "media",
         "label": "Media",
         "control": "none"
@@ -2300,6 +2376,10 @@
         "name": "visualType",
         "label": "Visual",
         "description": "Leave empty to use the media upload. An effect renders a code-defined look with its own poster; a media upload left in place is kept but not shown unless the effect offers to show it.",
+        "if": {
+          "arg": "playVideo",
+          "truthy": false
+        },
         "control": "select",
         "options": [
           {

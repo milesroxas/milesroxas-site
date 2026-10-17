@@ -19,6 +19,9 @@ describe('r2FileUrl', () => {
   it('answers the proxied file route when no public base is set, and never throws', () => {
     process.env = { ...env, R2_PUBLIC_URL: '' }
     expect(r2FileUrl({ filename: 'a b.jpg', prefix: 'key' })).toBe('/api/media/file/a%20b.jpg')
+    expect(r2FileUrl({ collection: { slug: 'videos' }, filename: 'v.mp4' })).toBe(
+      '/api/videos/file/v.mp4',
+    )
     expect(() => r2PublicBase()).toThrow('R2_PUBLIC_URL')
   })
 })

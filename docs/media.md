@@ -9,11 +9,12 @@ export for each block: [media-dimensions.md](media-dimensions.md).
 | Storage adapter (Cloudflare R2, browser uploads, direct URLs) | `s3Storage` in [`src/payload.config.ts`](../src/payload.config.ts), URL in [`src/utilities/r2.ts`](../src/utilities/r2.ts) |
 | Cloudflare sync, shared by hook, job and script | [`src/collections/Media/cloudflare.ts`](../src/collections/Media/cloudflare.ts) |
 | Hooks: in-request sync, delete, Stream URLs | [`src/collections/Media/hooks/syncCloudflare.ts`](../src/collections/Media/hooks/syncCloudflare.ts) |
-| Daily sweep for anything the hook missed | [`src/jobs/cloudflareMediaSweep.ts`](../src/jobs/cloudflareMediaSweep.ts) |
+| Sweep for anything the hook missed, run by hand | [`scripts/resync-cloudflare-media.ts`](../scripts/resync-cloudflare-media.ts) |
 | Cloudflare API client with retries | [`src/utilities/cloudflare.ts`](../src/utilities/cloudflare.ts) |
 | Stream "ready" webhook | [`src/app/(payload)/api/cloudflare-stream-webhook/route.ts`](<../src/app/(payload)/api/cloudflare-stream-webhook/route.ts>) |
 | Agent upload | [`src/endpoints/agentMedia.ts`](../src/endpoints/agentMedia.ts), `pnpm cms:upload` ([mcp.md](mcp.md)) |
 | Rendering | [`src/components/Media`](../src/components/Media) |
+| Full-length videos: collection, Stream pipeline, admin panel | [`src/collections/Videos`](../src/collections/Videos), player in [`src/components/VideoPlayer`](../src/components/VideoPlayer) |
 
 ## The pipeline
 
@@ -43,15 +44,16 @@ export for each block: [media-dimensions.md](media-dimensions.md).
    URL once the video is marked ready, and falls back to the bucket URL.
 4. **A failed sync never blocks a save.** It is logged as `[Cloudflare] Upload failed` after three
    attempts on rate limits, 5xx and network errors. The document is on the site from the bucket meanwhile.
-   `cloudflareMediaSweep` runs at 05:00 UTC (the daily cron in `vercel.json` executes it; it needs
-   `CRON_SECRET` on the deployment or the run endpoint answers 401 and nothing runs). It syncs every
-   image or video still without its asset and marks every video Stream has finished encoding.
+   `scripts/resync-cloudflare-media.ts`, run by hand, syncs every image or video still without
+   its asset and marks every video Stream has finished encoding. Nothing runs on a schedule: there
+   is no Payload job and no cron (the daily sweep and its `CRON_SECRET` went on 2026-10-17; they
+   had never run).
 5. **A video is marked ready two ways.** The Stream webhook sets `cloudflareStreamReady` as soon
-   as encoding finishes; the sweep asks Stream for every video still unmarked. The webhook is a
-   plain server-to-server POST, so Vercel's Bot Protection (managed ruleset, action `challenge`)
-   answers it with a 429 challenge page unless a WAF rule bypasses
-   `/api/cloudflare-stream-webhook` the way `Agent API bypass` does for `/api/mcp`. Until that rule
-   exists, readiness arrives with the next sweep instead of within minutes.
+   as encoding finishes; the resync script asks Stream for every video still unmarked. The webhook
+   is a plain server-to-server POST, which Vercel's Bot Protection (managed ruleset, action
+   `challenge`) would answer with a 429 challenge page; the WAF rule `Stream webhook bypass` lets a
+   POST to `/api/cloudflare-stream-webhook` that carries a `webhook-signature` header through, the
+   way `Agent API bypass` does for `/api/mcp`, and the route verifies that signature itself.
    The poster is Stream's thumbnail sized by `streamPosterUrl` (`src/utilities/streamPoster.ts`):
    Stream's default `thumbnail.jpg` is 640 px wide, a 4× upscale in a retina hero, so a priority
    video asks for 1920, any other frame 1280, and the carousel's poster overlay carries a
@@ -104,10 +106,57 @@ Media collection's `mimeTypes` stop an AVIF at the admin. One that got in before
 on the bucket, served through Vercel's optimizer; `scripts/replace-avif-media.ts` re-encodes each
 as WebP and replaces the file, which runs the normal sync.
 
+## Videos
+
+Every Media video loops muted and whole, which is right for a ten-second loop and wrong for a
+three-minute walkthrough: the visitor would stream the whole file to watch a frame of it. A long
+video is a different thing, so it has its own collection, **Videos** (`src/collections/Videos`):
+a full-length video that plays on click, with a few seconds that loop muted until then.
+
+1. **The block switch.** Caption, Stacked, Split and Split narrow carry **Play a video**
+   (`fields/video`). On, the media upload (and the effect choice, on a visual slot) hides and a
+   Videos upload takes its place, with the encoding panel under it. The editor uploads from the
+   page through the upload drawer, or picks a video already in the library. `resolveVisual`
+   answers `{ kind: 'video' }` for such a slot and the `Visual` adapter mounts the player.
+2. **The Video document.** A `title` (the play button's accessible name; blank takes the
+   filename) and a **Loop** group: `start` and `length` in seconds, both optional. Blank loops
+   the first 8 seconds (`LOOP` in `stage.ts`: 3 to 30; the source's own length caps it). A video
+   no longer than the loop loops whole and gets no clip. The file lives on R2 like every upload,
+   on the same presigned PUT; `width` and `height` are written from Stream once it has inspected
+   the file, so the player's frame has the video's own aspect ratio before anything loads.
+3. **One pass, many callers** (`stream.ts`, `advanceVideo`). A pass takes the document as far
+   as Stream lets it: a new or replaced file is copied to Stream (`POST /stream/copy` from the R2
+   URL), Stream is asked whether the source is encoded (and its duration and size stored), the
+   loop is cut once it is (`POST /stream/clip`), and the loop is asked after in turn. The save
+   hook runs a pass in the request that saved the document (`videoStreamSync`, registered after
+   the storage adapter), and recuts the loop when the editor moved it. Every other caller runs
+   the same pass: `GET /api/videos/:id/status`, the Stream webhook, and the resync script run by
+   hand. Nothing runs on a schedule.
+   A failed request is recorded as `streamError` instead of blocking the save; the next pass that
+   gets through clears it. Replacing or deleting the file deletes the source and the loop on Stream.
+4. **The admin watches, and by watching, pumps.** The encoding panel (`VideoStatusField`, on the
+   document and under the block's upload) polls `GET /api/videos/:id/status` while the tab is
+   visible and the stage is not settled: every 4 s for the first two minutes, every 15 s after
+   that, and it stops after 20 minutes behind a *Check again* button (`poll.ts`, one place for the
+   cadence). Every answer is a fresh pass, so a video reaches *Ready* while the editor looks at it,
+   and the cost of a forgotten tab is bounded. The Stream webhook (item 5) finishes a video nobody
+   is watching; one it never reached finishes on the next open of its document or block, or when
+   `scripts/resync-cloudflare-media.ts` is run. The stages are `pending` (not on Stream yet), `encoding`, `cutting`,
+   `encodingLoop`, `ready` and `failed` (with Stream's reason and a retry); the `status` column on
+   the Videos list shows the same value, computed on read.
+5. **The player** (`components/VideoPlayer`). Until the stage is `ready` it paints the source's
+   Stream thumbnail with the play button and loads no video. Ready, `VideoMedia` plays the loop's
+   manifest (the clip's own first frame as its poster) under the button and the length badge. A
+   click swaps in the whole video in the same frame: the source manifest, sound on, the native
+   controls, focus moved to the element; when it ends, the loop returns. In a block that owns the
+   frame (`fill`), the loop covers it and the full video letterboxes inside it so the controls stay
+   in view. A publish bakes the fields into the cached page, so publish once the panel says
+   *Ready*; a page published earlier shows the poster until its next revalidation.
+
 ## Scripts
 
 ```bash
-pnpm exec tsx --env-file=.env scripts/resync-cloudflare-media.ts [--dry-run]   # sync + mark ready now
+pnpm exec tsx --env-file=.env scripts/resync-cloudflare-media.ts [--dry-run]   # sync, mark ready, advance videos now
 pnpm exec tsx --env-file=.env scripts/migrate-blob-to-r2.ts [--dry-run]       # copy the old Blob store into R2, same keys
 ```
 
@@ -157,6 +206,6 @@ Done once on 2026-10-11; recorded so it can be repeated for another account.
 `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL`,
 `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`,
 `CLOUDFLARE_IMAGES_ACCOUNT_HASH`, `CLOUDFLARE_STREAM_CUSTOMER_SUBDOMAIN`,
-`CLOUDFLARE_STREAM_WEBHOOK_SECRET`, and `CRON_SECRET` for the sweep. Local dev shares the
+`CLOUDFLARE_STREAM_WEBHOOK_SECRET`. Local dev shares the
 production bucket and Cloudflare account: a local upload is a real asset, and deleting the
 document removes it.

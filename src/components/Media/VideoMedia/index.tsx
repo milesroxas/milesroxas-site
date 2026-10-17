@@ -2,13 +2,12 @@
 
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
-import type { Media as MediaType } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaURL'
 import { streamPosterUrl } from '@/utilities/streamPoster'
 import { cn } from '@/utilities/ui'
 import { getVideoLoadingStrategy } from '@/utilities/videoOptimization'
 
-import type { Props as MediaProps } from '../types'
+import type { VideoProps, VideoResource } from '../types'
 
 type VideoStrategy = ReturnType<typeof getVideoLoadingStrategy>
 
@@ -19,7 +18,7 @@ function supportsNativeHls(): boolean {
 }
 
 /** The Cloudflare Stream HLS URL, once the stream is ready to play. */
-function readyStreamUrl(resource: MediaType): string | undefined {
+function readyStreamUrl(resource: VideoResource): string | undefined {
   const hlsUrl = resource.cloudflareStreamPlaybackUrl as string | undefined
   const isReady = resource.cloudflareStreamReady as boolean | undefined
   return hlsUrl && isReady ? hlsUrl : undefined
@@ -103,7 +102,7 @@ export function capLevelToFrame(hls: HlsLevels, video: HTMLVideoElement): void {
   hls.autoLevelCapping = index === -1 ? hls.levels.length - 1 : index
 }
 
-function fallbackSrcFor({ url }: MediaType): string {
+function fallbackSrcFor({ url }: VideoResource): string {
   return getMediaUrl(url)
 }
 
@@ -124,7 +123,7 @@ export const warmVideo = (video: HTMLVideoElement): void => {
  * hero asks for 1920 and any other frame 1280 (`poster` takes one URL); a
  * caller that knows its frame is narrower says so with `posterWidth`.
  */
-function posterUrlFor(resource: MediaType, priority: boolean, posterWidth?: number) {
+function posterUrlFor(resource: VideoResource, priority: boolean, posterWidth?: number) {
   const streamThumbnail = resource.cloudflareStreamThumbnailUrl
   if (streamThumbnail) {
     return streamPosterUrl(streamThumbnail, posterWidth ?? (priority ? 1920 : 1280))
@@ -154,7 +153,7 @@ async function retryOnce(video: HTMLVideoElement | null, hasRetriedRef: React.Re
 }
 
 /** Priority videos start with their final strategy; the rest decide on mount (needs navigator). */
-function useVideoStrategy(priority: boolean, resource: MediaProps['resource']) {
+function useVideoStrategy(priority: boolean, resource: VideoProps['resource']) {
   const [strategy, setStrategy] = useState<VideoStrategy>(() => ({
     preload: priority ? 'auto' : 'metadata',
     shouldAutoplay: priority,
@@ -182,7 +181,7 @@ function useVideoStrategy(priority: boolean, resource: MediaProps['resource']) {
  */
 function useHlsStream(
   videoRef: React.RefObject<HTMLVideoElement | null>,
-  resource: MediaProps['resource'],
+  resource: VideoProps['resource'],
   eager: boolean,
 ) {
   useEffect(() => {
@@ -295,14 +294,19 @@ function usePlayWhenVisible(
   }, [autoPlay, priority, shouldAutoplay, videoRef])
 }
 
-export const VideoMedia: React.FC<MediaProps> = (props) => {
+export const VideoMedia: React.FC<VideoProps> = (props) => {
   const {
     autoPlay = true,
+    controls = false,
     crossOrigin,
     fill,
+    loop = true,
+    muted = true,
     onClick,
+    onEnded,
     onLoad,
     posterWidth,
+    ref,
     resource,
     videoClassName,
     priority = false,
@@ -324,13 +328,18 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
       autoPlay={eager}
       // `fill` covers the caller's aspect frame, as ImageMedia's fill image does.
       className={cn(fill && 'absolute inset-0 size-full object-cover', videoClassName)}
-      controls={false}
+      controls={controls}
       crossOrigin={crossOrigin}
-      loop
-      muted
+      loop={loop}
+      muted={muted}
       onClick={onClick}
+      onEnded={onEnded}
       playsInline
-      ref={videoRef}
+      ref={(element) => {
+        videoRef.current = element
+        if (typeof ref === 'function') ref(element)
+        else if (ref) ref.current = element
+      }}
       // Safari's native HLS treats `metadata` as the first segment of every
       // video on the page, all competing with the images; nothing loads until
       // a slide or the visibility observer asks to play.

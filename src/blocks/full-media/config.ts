@@ -51,16 +51,19 @@ export const FullMedia: Block = {
       type: 'richText',
       admin: { condition: showContent },
     },
-    ...blockVisualSlotFields({
-      name: 'media',
-      type: 'upload',
-      relationTo: 'media',
-      required: true,
-      admin: {
-        description:
-          'Contained uses the aspect ratio below. Full width crops to 16:9 on small screens and 21:9 from md up.',
+    ...blockVisualSlotFields(
+      {
+        name: 'media',
+        type: 'upload',
+        relationTo: 'media',
+        required: true,
+        admin: {
+          description:
+            'Contained uses the aspect ratio below. Full width crops to 16:9 on small screens and 21:9 from md up.',
+        },
       },
-    }),
+      { video: true },
+    ),
     designFields([
       textSizeField({ condition: showContent }),
       {

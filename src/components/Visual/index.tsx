@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Media } from '@/components/Media'
 import type { Props as MediaProps } from '@/components/Media/types'
+import { VideoPlayer } from '@/components/VideoPlayer'
 import {
   LeakVisual,
   StreakVisual,
@@ -36,7 +37,7 @@ export type VisualProps = {
 
 /**
  * Renders a resolved `Visual`: the existing `Media` element for uploads, the
- * effect's own poster-first slot otherwise. Media branches keep their loading
+ * player for a full-length video, the effect's own poster-first slot otherwise. Media branches keep their loading
  * contract untouched (priority heroes, viewport-gated loops); an effect never
  * mounts a retained upload behind its poster, except a light leak whose editor
  * asked for the media under it.
@@ -51,6 +52,16 @@ export const Visual: React.FC<VisualProps> = ({
   ...media
 }) => {
   if (visual.kind === 'media') return <Media {...media} resource={visual.media} />
+  if (visual.kind === 'video')
+    return (
+      <VideoPlayer
+        className={media.className}
+        fill={media.fill}
+        priority={media.priority}
+        video={visual.video}
+        videoClassName={media.videoClassName}
+      />
+    )
   const slot = {
     active,
     className: frameClassName,

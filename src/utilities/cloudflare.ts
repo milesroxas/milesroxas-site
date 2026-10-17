@@ -177,11 +177,29 @@ export async function uploadVideoToStream(
   }
 }
 
+export interface CloudflareStreamStatus {
+  /** Stream has finished encoding and the manifest plays. */
+  ready: boolean
+  /** Seconds, known once the upload is inspected; `null` while Stream reports -1. */
+  duration: number | null
+  /** The source's pixel size, known with the duration. */
+  width: number | null
+  height: number | null
+  /** Stream gave up on the file: its own reason, or `null` while it is still working or done. */
+  error: string | null
+}
+
+/** A Stream `duration`: seconds once known, `-1` or absent before that. */
+export function streamDuration(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null
+}
+
 /**
- * Whether Stream has finished encoding a video. Throws when the lookup
- * fails; callers decide whether that is fatal.
+ * Whether Stream has finished encoding a video, how long it runs and how big
+ * it is, or why Stream gave up on it. Throws when the lookup fails; callers
+ * decide whether that is fatal.
  */
-export async function getStreamVideoReady(uid: string): Promise<boolean> {
+export async function getStreamVideoStatus(uid: string): Promise<CloudflareStreamStatus> {
   const res = await cloudflareFetch(
     `${CLOUDFLARE_API_BASE}/${getAccountId()}/stream/${uid}`,
     () => ({
@@ -193,7 +211,56 @@ export async function getStreamVideoReady(uid: string): Promise<boolean> {
   if (!json.success) {
     throw new Error(`Cloudflare Stream lookup failed for ${uid}: ${JSON.stringify(json.errors)}`)
   }
-  return json.result?.readyToStream === true
+  const result = json.result ?? {}
+  const pixels = (value: unknown) =>
+    typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null
+  return {
+    ready: result.readyToStream === true,
+    duration: streamDuration(result.duration),
+    width: pixels(result.input?.width),
+    height: pixels(result.input?.height),
+    error:
+      result.status?.state === 'error'
+        ? String(result.status.errorReasonText || result.status.errorReasonCode || 'Stream error')
+        : null,
+  }
+}
+
+/**
+ * Cut a new Stream video out of an encoded one, from `startTimeSeconds` to
+ * `endTimeSeconds` of the source. Stream encodes the clip like an upload and
+ * answers its uid at once; it is ready when the webhook or a status lookup
+ * says so. The source has to be ready first.
+ */
+export async function clipStreamVideo(
+  sourceUid: string,
+  startTimeSeconds: number,
+  endTimeSeconds: number,
+  meta?: Record<string, string>,
+): Promise<{ uid: string }> {
+  const body: Record<string, unknown> = {
+    clippedFromVideoUID: sourceUid,
+    startTimeSeconds,
+    endTimeSeconds,
+  }
+  if (meta) body.meta = meta
+
+  const res = await cloudflareFetch(`${CLOUDFLARE_API_BASE}/${getAccountId()}/stream/clip`, () => ({
+    method: 'POST',
+    headers: {
+      ...authHeaders(),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  }))
+
+  const json = await res.json()
+  if (!json.success) {
+    throw new Error(
+      `Cloudflare Stream clip failed for ${sourceUid}: ${JSON.stringify(json.errors)}`,
+    )
+  }
+  return { uid: json.result.uid as string }
 }
 
 /**

@@ -36,6 +36,18 @@ describe('resolveVisual', () => {
     expect(resolveVisual(undefined)).toBeNull()
   })
 
+  it('plays a video when the switch is on and the video is populated', () => {
+    const media = image(2)
+    const video = { id: 9, title: 'Walkthrough' } as never
+    expect(resolveVisual({ media, playVideo: true, video })).toEqual({ kind: 'video', video })
+    // A bare id (depth too low) and a switch left off both fall back to the slot.
+    expect(resolveVisual({ media, playVideo: true, video: 9 })).toEqual({ kind: 'media', media })
+    expect(resolveVisual({ media, playVideo: false, video })).toEqual({ kind: 'media', media })
+    expect(
+      resolveVisual({ media, playVideo: true, video, visualType: 'streakField' }),
+    ).toMatchObject({ kind: 'video' })
+  })
+
   it('treats an explicit media choice like the legacy branch', () => {
     const media = image(2)
     expect(resolveVisual({ media, visualType: 'media' })).toEqual({ kind: 'media', media })

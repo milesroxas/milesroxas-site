@@ -34,12 +34,15 @@ export const SplitContentNarrow: Block = {
           'Shown when source is "Custom", or as a Work or Lab Page override for canonical content.',
       },
     },
-    ...blockVisualSlotFields({
-      name: 'media',
-      type: 'upload',
-      relationTo: 'media',
-      required: true,
-    }),
+    ...blockVisualSlotFields(
+      {
+        name: 'media',
+        type: 'upload',
+        relationTo: 'media',
+        required: true,
+      },
+      { video: true },
+    ),
     designFields([
       textSizeField(),
       {

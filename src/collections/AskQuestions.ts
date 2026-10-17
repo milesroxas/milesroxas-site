@@ -24,7 +24,8 @@ const readOnly = <T extends Field>(field: T): T =>
  * topic, a note, and the content that closes a gap.
  *
  * Text is redacted before it lands, rows carry no IP or analytics id, and the
- * `askQuestionRetention` job deletes them after the retention window.
+ * `pruneExpiredAskQuestions` deletes them after the retention window, on the
+ * next question stored.
  * Team-only, and deliberately outside the RAG corpus (`CONTENT_SURFACES`)
  * and every public surface. Only the triage fields are writable.
  */
@@ -43,7 +44,7 @@ export const AskQuestions: CollectionConfig<'ask-questions'> = {
     useAsTitle: 'question',
     defaultColumns: ['question', 'outcome', 'status', 'rating', 'pagePath', 'createdAt'],
     listSearchableFields: ['question', 'pagePath'],
-    description: `Every question asked in Ask, with emails, phone numbers and keys removed, and the answer the visitor got. "No sources" is the content-gap list. Rows delete themselves after ${ASK_QUESTION_RETENTION_DAYS} days.`,
+    description: `Every question asked in Ask, with emails, phone numbers and keys removed, and the answer the visitor got. "No sources" is the content-gap list. Rows are deleted after ${ASK_QUESTION_RETENTION_DAYS} days, on the next question asked.`,
     components: {
       beforeListTable: ['@/collections/AskQuestions/components/AskFilters#AskFilters'],
     },

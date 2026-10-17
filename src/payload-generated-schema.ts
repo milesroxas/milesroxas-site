@@ -3430,18 +3430,6 @@ export const enum_forms_confirmation_type = pgEnum(
   "enum_forms_confirmation_type",
   ["message", "redirect"],
 );
-export const enum_payload_jobs_log_task_slug = pgEnum(
-  "enum_payload_jobs_log_task_slug",
-  ["inline", "askQuestionRetention", "cloudflareMediaSweep", "schedulePublish"],
-);
-export const enum_payload_jobs_log_state = pgEnum(
-  "enum_payload_jobs_log_state",
-  ["failed", "succeeded"],
-);
-export const enum_payload_jobs_task_slug = pgEnum(
-  "enum_payload_jobs_task_slug",
-  ["inline", "askQuestionRetention", "cloudflareMediaSweep", "schedulePublish"],
-);
 export const enum_payload_folders_folder_type = pgEnum(
   "enum_payload_folders_folder_type",
   ["media", "streak-looks"],
@@ -3565,6 +3553,10 @@ export const pages_full_media = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -3610,6 +3602,7 @@ export const pages_full_media = pgTable(
     index("pages_full_media_order_idx").on(columns._order),
     index("pages_full_media_parent_id_idx").on(columns._parentID),
     index("pages_full_media_path_idx").on(columns._path),
+    index("pages_full_media_video_idx").on(columns.video),
     index("pages_full_media_media_idx").on(columns.media),
     index("pages_full_media_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -3635,6 +3628,10 @@ export const pages_media_split = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -3678,6 +3675,7 @@ export const pages_media_split = pgTable(
     index("pages_media_split_order_idx").on(columns._order),
     index("pages_media_split_parent_id_idx").on(columns._parentID),
     index("pages_media_split_path_idx").on(columns._path),
+    index("pages_media_split_video_idx").on(columns.video),
     index("pages_media_split_media_idx").on(columns.media),
     index("pages_media_split_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -3703,6 +3701,10 @@ export const pages_split_narrow = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -3745,6 +3747,7 @@ export const pages_split_narrow = pgTable(
     index("pages_split_narrow_order_idx").on(columns._order),
     index("pages_split_narrow_parent_id_idx").on(columns._parentID),
     index("pages_split_narrow_path_idx").on(columns._path),
+    index("pages_split_narrow_video_idx").on(columns.video),
     index("pages_split_narrow_media_idx").on(columns.media),
     index("pages_split_narrow_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -3943,6 +3946,10 @@ export const pages_caption = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -3955,6 +3962,7 @@ export const pages_caption = pgTable(
     index("pages_caption_order_idx").on(columns._order),
     index("pages_caption_parent_id_idx").on(columns._parentID),
     index("pages_caption_path_idx").on(columns._path),
+    index("pages_caption_video_idx").on(columns.video),
     index("pages_caption_media_idx").on(columns.media),
     foreignKey({
       columns: [columns["_parentID"]],
@@ -5165,6 +5173,10 @@ export const __pages_v_full_media_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -5214,6 +5226,7 @@ export const __pages_v_full_media_v = pgTable(
     index("__pages_v_full_media_v_order_idx").on(columns._order),
     index("__pages_v_full_media_v_parent_id_idx").on(columns._parentID),
     index("__pages_v_full_media_v_path_idx").on(columns._path),
+    index("__pages_v_full_media_v_video_idx").on(columns.video),
     index("__pages_v_full_media_v_media_idx").on(columns.media),
     index("__pages_v_full_media_v_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -5239,6 +5252,10 @@ export const __pages_v_media_split_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -5284,6 +5301,7 @@ export const __pages_v_media_split_v = pgTable(
     index("__pages_v_media_split_v_order_idx").on(columns._order),
     index("__pages_v_media_split_v_parent_id_idx").on(columns._parentID),
     index("__pages_v_media_split_v_path_idx").on(columns._path),
+    index("__pages_v_media_split_v_video_idx").on(columns.video),
     index("__pages_v_media_split_v_media_idx").on(columns.media),
     index("__pages_v_media_split_v_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -5309,6 +5327,10 @@ export const __pages_v_split_narrow_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -5355,6 +5377,7 @@ export const __pages_v_split_narrow_v = pgTable(
     index("__pages_v_split_narrow_v_order_idx").on(columns._order),
     index("__pages_v_split_narrow_v_parent_id_idx").on(columns._parentID),
     index("__pages_v_split_narrow_v_path_idx").on(columns._path),
+    index("__pages_v_split_narrow_v_video_idx").on(columns.video),
     index("__pages_v_split_narrow_v_media_idx").on(columns.media),
     index("__pages_v_split_narrow_v_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -5571,6 +5594,10 @@ export const __pages_v_caption_v = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -5584,6 +5611,7 @@ export const __pages_v_caption_v = pgTable(
     index("__pages_v_caption_v_order_idx").on(columns._order),
     index("__pages_v_caption_v_parent_id_idx").on(columns._parentID),
     index("__pages_v_caption_v_path_idx").on(columns._path),
+    index("__pages_v_caption_v_video_idx").on(columns.video),
     index("__pages_v_caption_v_media_idx").on(columns.media),
     foreignKey({
       columns: [columns["_parentID"]],
@@ -6897,6 +6925,10 @@ export const posts_full_media = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -6942,6 +6974,7 @@ export const posts_full_media = pgTable(
     index("posts_full_media_order_idx").on(columns._order),
     index("posts_full_media_parent_id_idx").on(columns._parentID),
     index("posts_full_media_path_idx").on(columns._path),
+    index("posts_full_media_video_idx").on(columns.video),
     index("posts_full_media_media_idx").on(columns.media),
     index("posts_full_media_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -6967,6 +7000,10 @@ export const posts_media_split = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -7010,6 +7047,7 @@ export const posts_media_split = pgTable(
     index("posts_media_split_order_idx").on(columns._order),
     index("posts_media_split_parent_id_idx").on(columns._parentID),
     index("posts_media_split_path_idx").on(columns._path),
+    index("posts_media_split_video_idx").on(columns.video),
     index("posts_media_split_media_idx").on(columns.media),
     index("posts_media_split_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -7035,6 +7073,10 @@ export const posts_split_narrow = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -7077,6 +7119,7 @@ export const posts_split_narrow = pgTable(
     index("posts_split_narrow_order_idx").on(columns._order),
     index("posts_split_narrow_parent_id_idx").on(columns._parentID),
     index("posts_split_narrow_path_idx").on(columns._path),
+    index("posts_split_narrow_video_idx").on(columns.video),
     index("posts_split_narrow_media_idx").on(columns.media),
     index("posts_split_narrow_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -7275,6 +7318,10 @@ export const posts_caption = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -7287,6 +7334,7 @@ export const posts_caption = pgTable(
     index("posts_caption_order_idx").on(columns._order),
     index("posts_caption_parent_id_idx").on(columns._parentID),
     index("posts_caption_path_idx").on(columns._path),
+    index("posts_caption_video_idx").on(columns.video),
     index("posts_caption_media_idx").on(columns.media),
     foreignKey({
       columns: [columns["_parentID"]],
@@ -8286,6 +8334,10 @@ export const __posts_v_full_media_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -8335,6 +8387,7 @@ export const __posts_v_full_media_v = pgTable(
     index("__posts_v_full_media_v_order_idx").on(columns._order),
     index("__posts_v_full_media_v_parent_id_idx").on(columns._parentID),
     index("__posts_v_full_media_v_path_idx").on(columns._path),
+    index("__posts_v_full_media_v_video_idx").on(columns.video),
     index("__posts_v_full_media_v_media_idx").on(columns.media),
     index("__posts_v_full_media_v_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -8360,6 +8413,10 @@ export const __posts_v_media_split_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -8405,6 +8462,7 @@ export const __posts_v_media_split_v = pgTable(
     index("__posts_v_media_split_v_order_idx").on(columns._order),
     index("__posts_v_media_split_v_parent_id_idx").on(columns._parentID),
     index("__posts_v_media_split_v_path_idx").on(columns._path),
+    index("__posts_v_media_split_v_video_idx").on(columns.video),
     index("__posts_v_media_split_v_media_idx").on(columns.media),
     index("__posts_v_media_split_v_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -8430,6 +8488,10 @@ export const __posts_v_split_narrow_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -8476,6 +8538,7 @@ export const __posts_v_split_narrow_v = pgTable(
     index("__posts_v_split_narrow_v_order_idx").on(columns._order),
     index("__posts_v_split_narrow_v_parent_id_idx").on(columns._parentID),
     index("__posts_v_split_narrow_v_path_idx").on(columns._path),
+    index("__posts_v_split_narrow_v_video_idx").on(columns.video),
     index("__posts_v_split_narrow_v_media_idx").on(columns.media),
     index("__posts_v_split_narrow_v_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -8692,6 +8755,10 @@ export const __posts_v_caption_v = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -8705,6 +8772,7 @@ export const __posts_v_caption_v = pgTable(
     index("__posts_v_caption_v_order_idx").on(columns._order),
     index("__posts_v_caption_v_parent_id_idx").on(columns._parentID),
     index("__posts_v_caption_v_path_idx").on(columns._path),
+    index("__posts_v_caption_v_video_idx").on(columns.video),
     index("__posts_v_caption_v_media_idx").on(columns.media),
     foreignKey({
       columns: [columns["_parentID"]],
@@ -9768,6 +9836,10 @@ export const works_full_media = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -9813,6 +9885,7 @@ export const works_full_media = pgTable(
     index("works_full_media_order_idx").on(columns._order),
     index("works_full_media_parent_id_idx").on(columns._parentID),
     index("works_full_media_path_idx").on(columns._path),
+    index("works_full_media_video_idx").on(columns.video),
     index("works_full_media_media_idx").on(columns.media),
     index("works_full_media_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -9838,6 +9911,10 @@ export const works_media_split = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -9881,6 +9958,7 @@ export const works_media_split = pgTable(
     index("works_media_split_order_idx").on(columns._order),
     index("works_media_split_parent_id_idx").on(columns._parentID),
     index("works_media_split_path_idx").on(columns._path),
+    index("works_media_split_video_idx").on(columns.video),
     index("works_media_split_media_idx").on(columns.media),
     index("works_media_split_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -9906,6 +9984,10 @@ export const works_split_narrow = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -9948,6 +10030,7 @@ export const works_split_narrow = pgTable(
     index("works_split_narrow_order_idx").on(columns._order),
     index("works_split_narrow_parent_id_idx").on(columns._parentID),
     index("works_split_narrow_path_idx").on(columns._path),
+    index("works_split_narrow_video_idx").on(columns.video),
     index("works_split_narrow_media_idx").on(columns.media),
     index("works_split_narrow_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -10146,6 +10229,10 @@ export const works_caption = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: varchar("id").primaryKey(),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -10158,6 +10245,7 @@ export const works_caption = pgTable(
     index("works_caption_order_idx").on(columns._order),
     index("works_caption_parent_id_idx").on(columns._parentID),
     index("works_caption_path_idx").on(columns._path),
+    index("works_caption_video_idx").on(columns.video),
     index("works_caption_media_idx").on(columns.media),
     foreignKey({
       columns: [columns["_parentID"]],
@@ -11392,6 +11480,10 @@ export const __works_v_full_media_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -11441,6 +11533,7 @@ export const __works_v_full_media_v = pgTable(
     index("__works_v_full_media_v_order_idx").on(columns._order),
     index("__works_v_full_media_v_parent_id_idx").on(columns._parentID),
     index("__works_v_full_media_v_path_idx").on(columns._path),
+    index("__works_v_full_media_v_video_idx").on(columns.video),
     index("__works_v_full_media_v_media_idx").on(columns.media),
     index("__works_v_full_media_v_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -11466,6 +11559,10 @@ export const __works_v_media_split_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -11511,6 +11608,7 @@ export const __works_v_media_split_v = pgTable(
     index("__works_v_media_split_v_order_idx").on(columns._order),
     index("__works_v_media_split_v_parent_id_idx").on(columns._parentID),
     index("__works_v_media_split_v_path_idx").on(columns._path),
+    index("__works_v_media_split_v_video_idx").on(columns.video),
     index("__works_v_media_split_v_media_idx").on(columns.media),
     index("__works_v_media_split_v_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -11536,6 +11634,10 @@ export const __works_v_split_narrow_v = pgTable(
     eyebrow: varchar("eyebrow"),
     heading: varchar("heading"),
     body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -11582,6 +11684,7 @@ export const __works_v_split_narrow_v = pgTable(
     index("__works_v_split_narrow_v_order_idx").on(columns._order),
     index("__works_v_split_narrow_v_parent_id_idx").on(columns._parentID),
     index("__works_v_split_narrow_v_path_idx").on(columns._path),
+    index("__works_v_split_narrow_v_video_idx").on(columns.video),
     index("__works_v_split_narrow_v_media_idx").on(columns.media),
     index("__works_v_split_narrow_v_shader_shader_studio_idx").on(
       columns.shader_studio,
@@ -11798,6 +11901,10 @@ export const __works_v_caption_v = pgTable(
     _parentID: integer("_parent_id").notNull(),
     _path: text("_path").notNull(),
     id: serial("id").primaryKey(),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
     media: integer("media_id").references(() => media.id, {
       onDelete: "set null",
     }),
@@ -11811,6 +11918,7 @@ export const __works_v_caption_v = pgTable(
     index("__works_v_caption_v_order_idx").on(columns._order),
     index("__works_v_caption_v_parent_id_idx").on(columns._parentID),
     index("__works_v_caption_v_path_idx").on(columns._path),
+    index("__works_v_caption_v_video_idx").on(columns.video),
     index("__works_v_caption_v_media_idx").on(columns.media),
     foreignKey({
       columns: [columns["_parentID"]],
@@ -13131,6 +13239,49 @@ export const media = pgTable(
   ],
 );
 
+export const videos = pgTable(
+  "videos",
+  {
+    id: serial("id").primaryKey(),
+    title: varchar("title").notNull(),
+    loop_start: numeric("loop_start", { mode: "number" }),
+    loop_length: numeric("loop_length", { mode: "number" }),
+    duration: numeric("duration", { mode: "number" }),
+    cloudflareStreamUid: varchar("cloudflare_stream_uid"),
+    cloudflareStreamReady: boolean("cloudflare_stream_ready").default(false),
+    loopUid: varchar("loop_uid"),
+    loopReady: boolean("loop_ready").default(false),
+    streamError: varchar("stream_error"),
+    _objectKey: varchar("_objectkey"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    url: varchar("url"),
+    thumbnailURL: varchar("thumbnail_u_r_l"),
+    filename: varchar("filename"),
+    mimeType: varchar("mime_type"),
+    filesize: numeric("filesize", { mode: "number" }),
+    width: numeric("width", { mode: "number" }),
+    height: numeric("height", { mode: "number" }),
+  },
+  (columns) => [
+    index("videos_updated_at_idx").on(columns.updatedAt),
+    index("videos_created_at_idx").on(columns.createdAt),
+    uniqueIndex("videos_filename_idx").on(columns.filename),
+  ],
+);
+
 export const capabilities = pgTable(
   "capabilities",
   {
@@ -14314,6 +14465,7 @@ export const payload_mcp_api_keys = pgTable(
     streakLooks_update: boolean("streak_looks_update").default(false),
     streakLooks_delete: boolean("streak_looks_delete").default(false),
     media_find: boolean("media_find").default(false),
+    videos_find: boolean("videos_find").default(false),
     contactPage_find: boolean("contact_page_find").default(false),
     contactPage_update: boolean("contact_page_update").default(false),
     header_find: boolean("header_find").default(false),
@@ -14395,90 +14547,6 @@ export const payload_kv = pgTable(
     data: jsonb("data").notNull(),
   },
   (columns) => [uniqueIndex("payload_kv_key_idx").on(columns.key)],
-);
-
-export const payload_jobs_log = pgTable(
-  "payload_jobs_log",
-  {
-    _order: integer("_order").notNull(),
-    _parentID: integer("_parent_id").notNull(),
-    id: varchar("id").primaryKey(),
-    executedAt: timestamp("executed_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }).notNull(),
-    completedAt: timestamp("completed_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }).notNull(),
-    taskSlug: enum_payload_jobs_log_task_slug("task_slug").notNull(),
-    taskID: varchar("task_i_d").notNull(),
-    input: jsonb("input"),
-    output: jsonb("output"),
-    state: enum_payload_jobs_log_state("state").notNull(),
-    error: jsonb("error"),
-  },
-  (columns) => [
-    index("payload_jobs_log_order_idx").on(columns._order),
-    index("payload_jobs_log_parent_id_idx").on(columns._parentID),
-    foreignKey({
-      columns: [columns["_parentID"]],
-      foreignColumns: [payload_jobs.id],
-      name: "payload_jobs_log_parent_id_fk",
-    }).onDelete("cascade"),
-  ],
-);
-
-export const payload_jobs = pgTable(
-  "payload_jobs",
-  {
-    id: serial("id").primaryKey(),
-    input: jsonb("input"),
-    completedAt: timestamp("completed_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }),
-    totalTried: numeric("total_tried", { mode: "number" }).default(0),
-    hasError: boolean("has_error").default(false),
-    error: jsonb("error"),
-    taskSlug: enum_payload_jobs_task_slug("task_slug"),
-    queue: varchar("queue").default("default"),
-    waitUntil: timestamp("wait_until", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }),
-    processing: boolean("processing").default(false),
-    meta: jsonb("meta"),
-    updatedAt: timestamp("updated_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    createdAt: timestamp("created_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-  },
-  (columns) => [
-    index("payload_jobs_completed_at_idx").on(columns.completedAt),
-    index("payload_jobs_total_tried_idx").on(columns.totalTried),
-    index("payload_jobs_has_error_idx").on(columns.hasError),
-    index("payload_jobs_task_slug_idx").on(columns.taskSlug),
-    index("payload_jobs_queue_idx").on(columns.queue),
-    index("payload_jobs_wait_until_idx").on(columns.waitUntil),
-    index("payload_jobs_processing_idx").on(columns.processing),
-    index("payload_jobs_updated_at_idx").on(columns.updatedAt),
-    index("payload_jobs_created_at_idx").on(columns.createdAt),
-  ],
 );
 
 export const payload_folders_folder_type = pgTable(
@@ -14572,6 +14640,7 @@ export const payload_locked_documents_rels = pgTable(
     postsID: integer("posts_id"),
     worksID: integer("works_id"),
     mediaID: integer("media_id"),
+    videosID: integer("videos_id"),
     capabilitiesID: integer("capabilities_id"),
     categoriesID: integer("categories_id"),
     clientsID: integer("clients_id"),
@@ -14594,6 +14663,7 @@ export const payload_locked_documents_rels = pgTable(
     index("payload_locked_documents_rels_posts_id_idx").on(columns.postsID),
     index("payload_locked_documents_rels_works_id_idx").on(columns.worksID),
     index("payload_locked_documents_rels_media_id_idx").on(columns.mediaID),
+    index("payload_locked_documents_rels_videos_id_idx").on(columns.videosID),
     index("payload_locked_documents_rels_capabilities_id_idx").on(
       columns.capabilitiesID,
     ),
@@ -14649,6 +14719,11 @@ export const payload_locked_documents_rels = pgTable(
       columns: [columns["mediaID"]],
       foreignColumns: [media.id],
       name: "payload_locked_documents_rels_media_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["videosID"]],
+      foreignColumns: [videos.id],
+      name: "payload_locked_documents_rels_videos_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["capabilitiesID"]],
@@ -15155,21 +15230,6 @@ export const _works_index_v = pgTable(
   ],
 );
 
-export const payload_jobs_stats = pgTable("payload_jobs_stats", {
-  id: serial("id").primaryKey(),
-  stats: jsonb("stats"),
-  updatedAt: timestamp("updated_at", {
-    mode: "string",
-    withTimezone: true,
-    precision: 3,
-  }),
-  createdAt: timestamp("created_at", {
-    mode: "string",
-    withTimezone: true,
-    precision: 3,
-  }),
-});
-
 export const relations_pages_hero_links = relations(
   pages_hero_links,
   ({ one }) => ({
@@ -15208,6 +15268,11 @@ export const relations_pages_full_media = relations(
       references: [pages.id],
       relationName: "_blocks_fullMedia",
     }),
+    video: one(videos, {
+      fields: [pages_full_media.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [pages_full_media.media],
       references: [media.id],
@@ -15233,6 +15298,11 @@ export const relations_pages_media_split = relations(
       references: [pages.id],
       relationName: "_blocks_mediaContentSplit",
     }),
+    video: one(videos, {
+      fields: [pages_media_split.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [pages_media_split.media],
       references: [media.id],
@@ -15257,6 +15327,11 @@ export const relations_pages_split_narrow = relations(
       fields: [pages_split_narrow._parentID],
       references: [pages.id],
       relationName: "_blocks_splitContentNarrow",
+    }),
+    video: one(videos, {
+      fields: [pages_split_narrow.video],
+      references: [videos.id],
+      relationName: "video",
     }),
     media: one(media, {
       fields: [pages_split_narrow.media],
@@ -15363,6 +15438,11 @@ export const relations_pages_caption = relations(pages_caption, ({ one }) => ({
     fields: [pages_caption._parentID],
     references: [pages.id],
     relationName: "_blocks_caption",
+  }),
+  video: one(videos, {
+    fields: [pages_caption.video],
+    references: [videos.id],
+    relationName: "video",
   }),
   media: one(media, {
     fields: [pages_caption.media],
@@ -15917,6 +15997,11 @@ export const relations___pages_v_full_media_v = relations(
       references: [_pages_v.id],
       relationName: "_blocks_fullMedia",
     }),
+    video: one(videos, {
+      fields: [__pages_v_full_media_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [__pages_v_full_media_v.media],
       references: [media.id],
@@ -15942,6 +16027,11 @@ export const relations___pages_v_media_split_v = relations(
       references: [_pages_v.id],
       relationName: "_blocks_mediaContentSplit",
     }),
+    video: one(videos, {
+      fields: [__pages_v_media_split_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [__pages_v_media_split_v.media],
       references: [media.id],
@@ -15966,6 +16056,11 @@ export const relations___pages_v_split_narrow_v = relations(
       fields: [__pages_v_split_narrow_v._parentID],
       references: [_pages_v.id],
       relationName: "_blocks_splitContentNarrow",
+    }),
+    video: one(videos, {
+      fields: [__pages_v_split_narrow_v.video],
+      references: [videos.id],
+      relationName: "video",
     }),
     media: one(media, {
       fields: [__pages_v_split_narrow_v.media],
@@ -16074,6 +16169,11 @@ export const relations___pages_v_caption_v = relations(
       fields: [__pages_v_caption_v._parentID],
       references: [_pages_v.id],
       relationName: "_blocks_caption",
+    }),
+    video: one(videos, {
+      fields: [__pages_v_caption_v.video],
+      references: [videos.id],
+      relationName: "video",
     }),
     media: one(media, {
       fields: [__pages_v_caption_v.media],
@@ -16650,6 +16750,11 @@ export const relations_posts_full_media = relations(
       references: [posts.id],
       relationName: "_blocks_fullMedia",
     }),
+    video: one(videos, {
+      fields: [posts_full_media.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [posts_full_media.media],
       references: [media.id],
@@ -16675,6 +16780,11 @@ export const relations_posts_media_split = relations(
       references: [posts.id],
       relationName: "_blocks_mediaContentSplit",
     }),
+    video: one(videos, {
+      fields: [posts_media_split.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [posts_media_split.media],
       references: [media.id],
@@ -16699,6 +16809,11 @@ export const relations_posts_split_narrow = relations(
       fields: [posts_split_narrow._parentID],
       references: [posts.id],
       relationName: "_blocks_splitContentNarrow",
+    }),
+    video: one(videos, {
+      fields: [posts_split_narrow.video],
+      references: [videos.id],
+      relationName: "video",
     }),
     media: one(media, {
       fields: [posts_split_narrow.media],
@@ -16805,6 +16920,11 @@ export const relations_posts_caption = relations(posts_caption, ({ one }) => ({
     fields: [posts_caption._parentID],
     references: [posts.id],
     relationName: "_blocks_caption",
+  }),
+  video: one(videos, {
+    fields: [posts_caption.video],
+    references: [videos.id],
+    relationName: "video",
   }),
   media: one(media, {
     fields: [posts_caption.media],
@@ -17258,6 +17378,11 @@ export const relations___posts_v_full_media_v = relations(
       references: [_posts_v.id],
       relationName: "_blocks_fullMedia",
     }),
+    video: one(videos, {
+      fields: [__posts_v_full_media_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [__posts_v_full_media_v.media],
       references: [media.id],
@@ -17283,6 +17408,11 @@ export const relations___posts_v_media_split_v = relations(
       references: [_posts_v.id],
       relationName: "_blocks_mediaContentSplit",
     }),
+    video: one(videos, {
+      fields: [__posts_v_media_split_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [__posts_v_media_split_v.media],
       references: [media.id],
@@ -17307,6 +17437,11 @@ export const relations___posts_v_split_narrow_v = relations(
       fields: [__posts_v_split_narrow_v._parentID],
       references: [_posts_v.id],
       relationName: "_blocks_splitContentNarrow",
+    }),
+    video: one(videos, {
+      fields: [__posts_v_split_narrow_v.video],
+      references: [videos.id],
+      relationName: "video",
     }),
     media: one(media, {
       fields: [__posts_v_split_narrow_v.media],
@@ -17415,6 +17550,11 @@ export const relations___posts_v_caption_v = relations(
       fields: [__posts_v_caption_v._parentID],
       references: [_posts_v.id],
       relationName: "_blocks_caption",
+    }),
+    video: one(videos, {
+      fields: [__posts_v_caption_v.video],
+      references: [videos.id],
+      relationName: "video",
     }),
     media: one(media, {
       fields: [__posts_v_caption_v.media],
@@ -17880,6 +18020,11 @@ export const relations_works_full_media = relations(
       references: [works.id],
       relationName: "_blocks_fullMedia",
     }),
+    video: one(videos, {
+      fields: [works_full_media.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [works_full_media.media],
       references: [media.id],
@@ -17905,6 +18050,11 @@ export const relations_works_media_split = relations(
       references: [works.id],
       relationName: "_blocks_mediaContentSplit",
     }),
+    video: one(videos, {
+      fields: [works_media_split.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [works_media_split.media],
       references: [media.id],
@@ -17929,6 +18079,11 @@ export const relations_works_split_narrow = relations(
       fields: [works_split_narrow._parentID],
       references: [works.id],
       relationName: "_blocks_splitContentNarrow",
+    }),
+    video: one(videos, {
+      fields: [works_split_narrow.video],
+      references: [videos.id],
+      relationName: "video",
     }),
     media: one(media, {
       fields: [works_split_narrow.media],
@@ -18035,6 +18190,11 @@ export const relations_works_caption = relations(works_caption, ({ one }) => ({
     fields: [works_caption._parentID],
     references: [works.id],
     relationName: "_blocks_caption",
+  }),
+  video: one(videos, {
+    fields: [works_caption.video],
+    references: [videos.id],
+    relationName: "video",
   }),
   media: one(media, {
     fields: [works_caption.media],
@@ -18612,6 +18772,11 @@ export const relations___works_v_full_media_v = relations(
       references: [_works_v.id],
       relationName: "_blocks_fullMedia",
     }),
+    video: one(videos, {
+      fields: [__works_v_full_media_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [__works_v_full_media_v.media],
       references: [media.id],
@@ -18637,6 +18802,11 @@ export const relations___works_v_media_split_v = relations(
       references: [_works_v.id],
       relationName: "_blocks_mediaContentSplit",
     }),
+    video: one(videos, {
+      fields: [__works_v_media_split_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
     media: one(media, {
       fields: [__works_v_media_split_v.media],
       references: [media.id],
@@ -18661,6 +18831,11 @@ export const relations___works_v_split_narrow_v = relations(
       fields: [__works_v_split_narrow_v._parentID],
       references: [_works_v.id],
       relationName: "_blocks_splitContentNarrow",
+    }),
+    video: one(videos, {
+      fields: [__works_v_split_narrow_v.video],
+      references: [videos.id],
+      relationName: "video",
     }),
     media: one(media, {
       fields: [__works_v_split_narrow_v.media],
@@ -18769,6 +18944,11 @@ export const relations___works_v_caption_v = relations(
       fields: [__works_v_caption_v._parentID],
       references: [_works_v.id],
       relationName: "_blocks_caption",
+    }),
+    video: one(videos, {
+      fields: [__works_v_caption_v.video],
+      references: [videos.id],
+      relationName: "video",
     }),
     media: one(media, {
       fields: [__works_v_caption_v.media],
@@ -19347,6 +19527,7 @@ export const relations_media = relations(media, ({ one }) => ({
     relationName: "folder",
   }),
 }));
+export const relations_videos = relations(videos, () => ({}));
 export const relations_capabilities = relations(capabilities, () => ({}));
 export const relations_categories_breadcrumbs = relations(
   categories_breadcrumbs,
@@ -19797,21 +19978,6 @@ export const relations_payload_mcp_api_keys = relations(
   }),
 );
 export const relations_payload_kv = relations(payload_kv, () => ({}));
-export const relations_payload_jobs_log = relations(
-  payload_jobs_log,
-  ({ one }) => ({
-    _parentID: one(payload_jobs, {
-      fields: [payload_jobs_log._parentID],
-      references: [payload_jobs.id],
-      relationName: "log",
-    }),
-  }),
-);
-export const relations_payload_jobs = relations(payload_jobs, ({ many }) => ({
-  log: many(payload_jobs_log, {
-    relationName: "log",
-  }),
-}));
 export const relations_payload_folders_folder_type = relations(
   payload_folders_folder_type,
   ({ one }) => ({
@@ -19862,6 +20028,11 @@ export const relations_payload_locked_documents_rels = relations(
       fields: [payload_locked_documents_rels.mediaID],
       references: [media.id],
       relationName: "media",
+    }),
+    videosID: one(videos, {
+      fields: [payload_locked_documents_rels.videosID],
+      references: [videos.id],
+      relationName: "videos",
     }),
     capabilitiesID: one(capabilities, {
       fields: [payload_locked_documents_rels.capabilitiesID],
@@ -20105,10 +20276,6 @@ export const relations__works_index_v = relations(
       relationName: "version_meta_image",
     }),
   }),
-);
-export const relations_payload_jobs_stats = relations(
-  payload_jobs_stats,
-  () => ({}),
 );
 
 type DatabaseSchema = {
@@ -20924,9 +21091,6 @@ type DatabaseSchema = {
   enum__streak_looks_v_version_status: typeof enum__streak_looks_v_version_status;
   enum_redirects_to_type: typeof enum_redirects_to_type;
   enum_forms_confirmation_type: typeof enum_forms_confirmation_type;
-  enum_payload_jobs_log_task_slug: typeof enum_payload_jobs_log_task_slug;
-  enum_payload_jobs_log_state: typeof enum_payload_jobs_log_state;
-  enum_payload_jobs_task_slug: typeof enum_payload_jobs_task_slug;
   enum_payload_folders_folder_type: typeof enum_payload_folders_folder_type;
   enum_header_nav_items_link_type: typeof enum_header_nav_items_link_type;
   enum_header_nav_items_link_index_page: typeof enum_header_nav_items_link_index_page;
@@ -21179,6 +21343,7 @@ type DatabaseSchema = {
   _works_v: typeof _works_v;
   _works_v_rels: typeof _works_v_rels;
   media: typeof media;
+  videos: typeof videos;
   capabilities: typeof capabilities;
   categories_breadcrumbs: typeof categories_breadcrumbs;
   categories: typeof categories;
@@ -21215,8 +21380,6 @@ type DatabaseSchema = {
   search_rels: typeof search_rels;
   payload_mcp_api_keys: typeof payload_mcp_api_keys;
   payload_kv: typeof payload_kv;
-  payload_jobs_log: typeof payload_jobs_log;
-  payload_jobs: typeof payload_jobs;
   payload_folders_folder_type: typeof payload_folders_folder_type;
   payload_folders: typeof payload_folders;
   payload_locked_documents: typeof payload_locked_documents;
@@ -21235,7 +21398,6 @@ type DatabaseSchema = {
   contact_page_rels: typeof contact_page_rels;
   works_index: typeof works_index;
   _works_index_v: typeof _works_index_v;
-  payload_jobs_stats: typeof payload_jobs_stats;
   relations_pages_hero_links: typeof relations_pages_hero_links;
   relations_pages_transition: typeof relations_pages_transition;
   relations_pages_blocks_feature_heading_offset: typeof relations_pages_blocks_feature_heading_offset;
@@ -21483,6 +21645,7 @@ type DatabaseSchema = {
   relations__works_v_rels: typeof relations__works_v_rels;
   relations__works_v: typeof relations__works_v;
   relations_media: typeof relations_media;
+  relations_videos: typeof relations_videos;
   relations_capabilities: typeof relations_capabilities;
   relations_categories_breadcrumbs: typeof relations_categories_breadcrumbs;
   relations_categories: typeof relations_categories;
@@ -21519,8 +21682,6 @@ type DatabaseSchema = {
   relations_search: typeof relations_search;
   relations_payload_mcp_api_keys: typeof relations_payload_mcp_api_keys;
   relations_payload_kv: typeof relations_payload_kv;
-  relations_payload_jobs_log: typeof relations_payload_jobs_log;
-  relations_payload_jobs: typeof relations_payload_jobs;
   relations_payload_folders_folder_type: typeof relations_payload_folders_folder_type;
   relations_payload_folders: typeof relations_payload_folders;
   relations_payload_locked_documents_rels: typeof relations_payload_locked_documents_rels;
@@ -21539,7 +21700,6 @@ type DatabaseSchema = {
   relations_contact_page: typeof relations_contact_page;
   relations_works_index: typeof relations_works_index;
   relations__works_index_v: typeof relations__works_index_v;
-  relations_payload_jobs_stats: typeof relations_payload_jobs_stats;
 };
 
 declare module "@payloadcms/db-vercel-postgres" {

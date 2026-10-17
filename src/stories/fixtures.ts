@@ -9,7 +9,7 @@ import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { CardPostData } from '@/components/Card/Posts/Component'
 import type { CardWorkData } from '@/components/Card/Works/Component'
 import { TEXT_STYLE_STATE_KEY, type TextStyle } from '@/components/RichText/text-styles'
-import type { Media, Page, RichTextActionsBlock } from '@/payload-types'
+import type { Media, Page, RichTextActionsBlock, Video } from '@/payload-types'
 import type { MoreWorkItem } from '@/sections/MoreWork/query'
 
 const textNode = (text: string, format = 0) => ({
@@ -410,6 +410,50 @@ export const streamVideoFixture: Media = {
   filesize: 2_347_059,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
+}
+
+/**
+ * A full-length Video document as production stores it (docs/media.md,
+ * "Videos"): the file on R2, Stream's manifest for the whole thing, and the
+ * loop cut from it. The loop is the same asset here, so a story needs one
+ * upload. Stream reports the size; the status is computed on read.
+ */
+export const videoDocFixture: Video = {
+  id: 7,
+  title: 'Content page scroll',
+  status: 'ready',
+  loop: { start: 0, length: 8 },
+  duration: 90,
+  cloudflareStreamUid: 'b3c84f331eeec8a44065b52601096f02',
+  cloudflareStreamReady: true,
+  cloudflareStreamPlaybackUrl: streamVideoFixture.cloudflareStreamPlaybackUrl,
+  cloudflareStreamThumbnailUrl: streamVideoFixture.cloudflareStreamThumbnailUrl,
+  loopUid: 'b3c84f331eeec8a44065b52601096f02',
+  loopReady: true,
+  loopPlaybackUrl: streamVideoFixture.cloudflareStreamPlaybackUrl,
+  loopThumbnailUrl: streamVideoFixture.cloudflareStreamThumbnailUrl,
+  url: streamVideoFixture.url,
+  filename: 'content-page-scroll.mp4',
+  mimeType: 'video/mp4',
+  filesize: 2_347_059,
+  width: 1920,
+  height: 1080,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+}
+
+/** `videoDocFixture` while Stream is still encoding the source: a poster, no loop, no length yet. */
+export const encodingVideoFixture: Video = {
+  ...videoDocFixture,
+  status: 'encoding',
+  duration: null,
+  width: null,
+  height: null,
+  cloudflareStreamReady: false,
+  loopUid: null,
+  loopReady: false,
+  loopPlaybackUrl: null,
+  loopThumbnailUrl: null,
 }
 
 /**

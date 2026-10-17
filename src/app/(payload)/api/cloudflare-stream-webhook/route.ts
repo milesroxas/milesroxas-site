@@ -3,14 +3,20 @@ import configPromise from '@payload-config'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import { writeCloudflareFields } from '@/collections/Media/cloudflare'
+import { stageOf } from '@/collections/Videos/stage'
+import { advanceAndStore } from '@/collections/Videos/stream'
 
 // Reject webhooks whose signature timestamp is older than this (replay protection)
 const SIGNATURE_TOLERANCE_SECONDS = 5 * 60
 
 /**
- * Marks a video ready to play from Stream the moment Cloudflare says so. The
- * daily sweep (`jobs/cloudflareMediaSweep`) reaches the same state by asking
- * Stream, so a webhook that never arrives only delays HLS playback.
+ * Marks a Media video ready to play from Stream the moment Cloudflare says
+ * so, and takes a Video (a full-length one, or its loop) its next step. The
+ * resync script reaches the Media state by asking Stream; the admin's status
+ * poll and the same script reach the Video states. A webhook that never
+ * arrives only delays them. In production the WAF rule `Stream webhook
+ * bypass` lets this POST through Bot Protection when it carries a
+ * `webhook-signature` header, which is then verified here.
  *
  * Verify the Cloudflare Stream webhook signature.
  * See: https://developers.cloudflare.com/stream/manage-video-library/using-webhooks/
@@ -68,24 +74,38 @@ export async function POST(request: Request) {
 
   const payload = await getPayload({ config: configPromise })
 
-  // Find the media document by cloudflareStreamUid
   const { docs } = await payload.find({
     collection: 'media',
     where: { cloudflareStreamUid: { equals: uid } },
     limit: 1,
   })
 
-  if (docs.length === 0) {
-    payload.logger.warn(`[Cloudflare Webhook] No media found for Stream UID: ${uid}`)
+  if (docs.length > 0) {
+    const mediaDoc = docs[0]
+    if (readyToStream) {
+      await writeCloudflareFields(payload, mediaDoc.id, { cloudflareStreamReady: true })
+      payload.logger.info(`[Cloudflare Webhook] Video ready: ${uid} (media ID: ${mediaDoc.id})`)
+    }
     return NextResponse.json({ ok: true })
   }
 
-  const mediaDoc = docs[0]
-
+  // Not a Media video: a Video's own file, or the loop cut from it.
+  const videos = await payload.find({
+    collection: 'videos',
+    depth: 0,
+    limit: 1,
+    where: { or: [{ cloudflareStreamUid: { equals: uid } }, { loopUid: { equals: uid } }] },
+  })
+  const videoDoc = videos.docs[0]
+  if (!videoDoc) {
+    payload.logger.warn(`[Cloudflare Webhook] No media found for Stream UID: ${uid}`)
+    return NextResponse.json({ ok: true })
+  }
   if (readyToStream) {
-    await writeCloudflareFields(payload, mediaDoc.id, { cloudflareStreamReady: true })
-
-    payload.logger.info(`[Cloudflare Webhook] Video ready: ${uid} (media ID: ${mediaDoc.id})`)
+    const next = await advanceAndStore(payload, videoDoc)
+    payload.logger.info(
+      `[Cloudflare Webhook] Stream ready: ${uid} (video ID: ${videoDoc.id}, now ${stageOf(next)})`,
+    )
   }
 
   return NextResponse.json({ ok: true })

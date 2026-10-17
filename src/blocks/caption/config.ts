@@ -2,6 +2,7 @@ import type { Block } from 'payload'
 import { designFields, mediaSizeField, optionalFields, themeField } from '@/blocks/shared/fields'
 
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
+import { noVideo, requiredUnlessVideo, videoFields } from '@/fields/video'
 
 /**
  * sas-site's Caption block (its `mediaBlock`), under its own slug here: this
@@ -17,11 +18,13 @@ export const Caption: Block = {
   interfaceName: 'CaptionBlock',
   labels: { singular: 'Caption', plural: 'Captions' },
   fields: [
+    ...videoFields(),
     {
       name: 'media',
       type: 'upload',
       relationTo: 'media',
-      required: true,
+      validate: requiredUnlessVideo,
+      admin: { condition: noVideo },
     },
     ...optionalFields({
       name: 'showCaptionOverride',

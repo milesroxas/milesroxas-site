@@ -25,6 +25,7 @@ import {
   VISUAL_SURFACES,
   type VisualSurface,
 } from '@/features/immersive/visual'
+import { noVideo, requiredUnlessVideo, videoFields } from './video'
 import {
   randomStreakSeed,
   shaderSlotOf,
@@ -99,6 +100,10 @@ const requiredUnlessEffect: Validate = (value, args) => {
   const siblingData = (args as { siblingData?: { visualType?: unknown } }).siblingData
   return isEffectId(siblingData?.visualType) ? true : 'This field is required.'
 }
+
+/** The same, in a slot that may play a video instead. */
+const requiredUnlessEffectOrVideo: Validate = (value, args) =>
+  requiredUnlessEffect(value, args) === true ? true : requiredUnlessVideo(value, args)
 
 /**
  * What the choice means in an ambient slot: the effect is the band's ground,
@@ -449,14 +454,17 @@ export type VisualSlotArgs = Pick<
 > & {
   /** Extra condition on the whole slot (a hero `type` gate). */
   condition?: Condition
+  /** Offer the "Play a video" switch above the upload (`fields/video`). */
+  video?: boolean
   visualTypeDescription?: string
 }
 
 /**
- * Wrap an existing upload into a visual slot: the upload (hidden once an
- * effect is chosen, unless it shows under the effect), the choice, and the
- * shader group. A `required` upload becomes required-unless-effect, since
- * hiding does not relax `required`.
+ * Wrap an existing upload into a visual slot: the video switch when the slot
+ * offers one (on, it replaces the whole slot with a Videos upload), the
+ * upload (hidden once an effect is chosen, unless it shows under the
+ * effect), the choice, and the shader group. A `required` upload becomes
+ * required-unless-effect-or-video, since hiding does not relax `required`.
  */
 const visualSlotFields = (
   media: UploadField,
@@ -466,24 +474,27 @@ const visualSlotFields = (
     effects = [DEFAULT_EFFECT],
     hosted,
     themed,
+    video = false,
     visualTypeDescription,
     posterFilterOptions,
   }: VisualSlotArgs = {},
 ): Field[] => {
   const { required, ...rest } = media
+  const slotCondition = video ? and(condition, noVideo) : condition
   const upload = {
     ...rest,
-    ...(required ? { validate: requiredUnlessEffect } : {}),
+    ...(required ? { validate: video ? requiredUnlessEffectOrVideo : requiredUnlessEffect } : {}),
     admin: {
       ...media.admin,
-      condition: and(media.admin?.condition, condition, uploadShown(ambient)),
+      condition: and(media.admin?.condition, slotCondition, uploadShown(ambient)),
     },
   } as UploadField
   return [
+    ...(video ? videoFields({ condition }) : []),
     upload,
     visualTypeField({
       effects,
-      condition,
+      condition: slotCondition,
       description: visualTypeDescription ?? (ambient ? AMBIENT_VISUAL_DESCRIPTION : undefined),
     }),
     shaderField({
@@ -491,7 +502,7 @@ const visualSlotFields = (
       effects,
       hosted,
       themed,
-      condition: and(condition, effectChosen),
+      condition: and(slotCondition, effectChosen),
       posterFilterOptions,
     }),
   ]

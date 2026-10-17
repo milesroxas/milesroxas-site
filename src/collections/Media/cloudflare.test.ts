@@ -4,7 +4,7 @@ vi.mock('@/utilities/cloudflare', () => ({
   deleteCloudflareImage: vi.fn(async () => {}),
   deleteStreamVideo: vi.fn(async () => {}),
   getImageDeliveryUrl: (id: string) => `https://imagedelivery.net/hash/${id}/public`,
-  getStreamVideoReady: vi.fn(async () => true),
+  getStreamVideoStatus: vi.fn(async () => ({ ready: true })),
   uploadImageToCloudflare: vi.fn(async () => ({ id: 'img-1', variants: [] })),
   uploadVideoToStream: vi.fn(async () => ({ uid: 'vid-1', playbackUrl: 'https://stream/vid-1' })),
 }))
@@ -164,8 +164,8 @@ describe('sweepMedia', () => {
 
   it('syncs the unsynced, marks the encoded videos ready, and counts failures', async () => {
     const { payload, updateOne } = fakePayload([image], [video, { ...video, id: 3 }])
-    vi.mocked(cf.getStreamVideoReady)
-      .mockResolvedValueOnce(true)
+    vi.mocked(cf.getStreamVideoStatus)
+      .mockResolvedValueOnce({ ready: true } as never)
       .mockRejectedValueOnce(new Error('x'))
     const result = await sweepMedia(payload)
     expect(result).toEqual({ failed: 1, ready: 1, synced: 1 })
@@ -183,7 +183,7 @@ describe('sweepMedia', () => {
 
   it('leaves a video Stream is still encoding alone', async () => {
     const { payload, updateOne } = fakePayload([], [video])
-    vi.mocked(cf.getStreamVideoReady).mockResolvedValueOnce(false)
+    vi.mocked(cf.getStreamVideoStatus).mockResolvedValueOnce({ ready: false } as never)
     expect(await sweepMedia(payload)).toEqual({ failed: 0, ready: 0, synced: 0 })
     expect(updateOne).not.toHaveBeenCalled()
   })
@@ -193,6 +193,6 @@ describe('sweepMedia', () => {
     await sweepMedia(payload, { dryRun: true })
     expect(updateOne).not.toHaveBeenCalled()
     expect(cf.uploadImageToCloudflare).not.toHaveBeenCalled()
-    expect(cf.getStreamVideoReady).not.toHaveBeenCalled()
+    expect(cf.getStreamVideoStatus).not.toHaveBeenCalled()
   })
 })

@@ -79,7 +79,6 @@ export const WorksIndex: GlobalConfig = {
       autosave: {
         interval: 2000,
       },
-      schedulePublish: true,
     },
     max: 50,
   },

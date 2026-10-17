@@ -1,4 +1,4 @@
-import type { Media } from '@/payload-types'
+import type { Media, Video } from '@/payload-types'
 import { populatedDoc } from '@/utilities/relationshipId'
 import {
   type EffectContract,
@@ -94,6 +94,9 @@ export type StoredVisualSlot = {
   media?: unknown
   visualType?: VisualType | string | null
   shader?: StoredStreakVisual | null
+  /** The block plays a full-length video in place of the slot (`fields/video`). */
+  playVideo?: boolean | null
+  video?: unknown
 }
 
 /**
@@ -157,10 +160,12 @@ export type LeakVisualDescriptor = EffectDescriptor<LeakLookId, LightLeakTuning>
 }
 
 export type MediaVisual = { kind: 'media'; media: Media }
+/** A full-length video: a loop until a click, then the whole thing (`components/VideoPlayer`). */
+export type VideoVisual = { kind: 'video'; video: Video }
 export type StreakFieldVisual = { kind: 'streakField'; descriptor: StreakVisualDescriptor }
 export type LightLeakVisual = { kind: 'lightLeak'; descriptor: LeakVisualDescriptor }
 export type EffectVisual = StreakFieldVisual | LightLeakVisual
-export type Visual = MediaVisual | EffectVisual
+export type Visual = MediaVisual | VideoVisual | EffectVisual
 
 const isFiniteNumber = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value)
@@ -259,6 +264,8 @@ export const resolveLeakDescriptor = (
 /**
  * Resolve a visual slot once, at the server boundary.
  *
+ * - A slot with "Play a video" on and a populated video is that video,
+ *   whatever else it still stores; the admin hides the rest.
  * - Missing or `media` visual type keeps the legacy behavior: the slot's own
  *   upload, then `fallbackMedia`, then nothing.
  * - An effect wins over a retained upload: that upload is neither fetched nor
@@ -269,6 +276,10 @@ export const resolveVisual = (
   slot: StoredVisualSlot | null | undefined,
   options: ResolveVisualOptions = {},
 ): Visual | null => {
+  if (slot?.playVideo === true) {
+    const video = populatedDoc<Video>(slot.video)
+    if (video) return { kind: 'video', video }
+  }
   if (slot?.visualType === 'streakField') {
     return { kind: 'streakField', descriptor: resolveStreakDescriptor(slot.shader, options) }
   }
@@ -376,7 +387,7 @@ export const parseStreakDescriptor = (
 
 /** The face an effect's editor pinned it to. Media, and an effect that follows its ground, are `null`. */
 const visualSurface = (visual: Visual | null | undefined): Surface | null =>
-  visual && visual.kind !== 'media' ? visual.descriptor.surface : null
+  visual && 'descriptor' in visual ? visual.descriptor.surface : null
 
 /** A menu preview slot as Payload stores it, beside the destination's own visual. */
 export type StoredMenuPreviewSlot = {

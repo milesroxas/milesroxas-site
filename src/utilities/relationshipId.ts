@@ -2,7 +2,7 @@
  * The id behind a Payload relationship value, whether the query populated it
  * into a document or left it as a bare id. Returns null for an empty field.
  */
-const relationshipId = (value: unknown): number | string | null => {
+export const relationshipId = (value: unknown): number | string | null => {
   if (typeof value === 'number' || typeof value === 'string') return value
   if (value && typeof value === 'object' && 'id' in value)
     return (value as { id: number | string }).id

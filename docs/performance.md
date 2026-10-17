@@ -113,9 +113,9 @@ PostHog, the AI SDK, zod, Prism and the Ask panel are async chunks.
 
 Noted and left alone:
 
-- The production `payload_jobs` table was empty: the daily sweep (`cloudflareMediaSweep`) has
-  never queued, so a sync the upload hook misses is never retried. `/api/payload-jobs/run`
-  answers 429 from outside, which is the WAF; whether Vercel's own cron reaches it is unverified.
+- Nothing runs on a schedule (since 2026-10-17, after the daily cron was found never to have run):
+  the Cloudflare sweep is `scripts/resync-cloudflare-media.ts` by hand, Ask retention runs after
+  each stored question, scheduled publish is off, and the `payload_jobs` tables are gone with them.
 - The `dark` variant's polarity selector (`src/styles/shadcn-theme.css`, about 940 bytes) is
   repeated on each of the 57 rules that use it, mostly the ported shadcn `dark:` utilities: about
   54 KB of the 333 KB raw stylesheet. Production serves it brotli, which costs about 250 bytes

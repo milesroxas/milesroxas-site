@@ -3,8 +3,14 @@ import type React from 'react'
 import { MEDIA_SIZE_CLASS, type MediaSize } from '@/blocks/shared/media-size'
 import { Section } from '@/blocks/shared/section'
 import RichText from '@/components/RichText'
-import type { CaptionBlock as CaptionBlockProps, Media as MediaDoc } from '@/payload-types'
+import { VideoPlayer } from '@/components/VideoPlayer'
+import type {
+  CaptionBlock as CaptionBlockProps,
+  Media as MediaDoc,
+  Video as VideoDoc,
+} from '@/payload-types'
 import { hasRichTextContent } from '@/utilities/hasRichTextContent'
+import { populatedDoc } from '@/utilities/relationshipId'
 import { cn } from '@/utilities/ui'
 
 import { Media } from '../../components/Media'
@@ -62,17 +68,23 @@ export const CaptionBlock: React.FC<Props> = (props) => {
     enableGutter = true,
     imgClassName,
     media,
+    playVideo,
     size,
     staticImage,
     theme,
+    video,
     disableInnerContainer,
   } = props
 
-  const { caption, hasRenderableMedia, mediaDoc } = resolveCaptionMedia({
-    captionOverride,
-    media,
-    staticImage,
-  })
+  // A video in place of the media: its loop, a play button, the whole thing on click.
+  const videoDoc = playVideo === true ? populatedDoc<VideoDoc>(video) : null
+
+  const resolved = resolveCaptionMedia({ captionOverride, media, staticImage })
+  const { hasRenderableMedia, mediaDoc } = resolved
+  const caption =
+    videoDoc && !(captionOverride && hasRichTextContent(captionOverride))
+      ? undefined
+      : resolved.caption
 
   const sizeKey = size ?? 'contained'
   // Full width: media leaves the column and drops its radius; the caption text stays in it.
@@ -83,22 +95,28 @@ export const CaptionBlock: React.FC<Props> = (props) => {
     <Section bare={bare} spacing="loose" theme={theme}>
       <div className={cn({ container: enableGutter && !bleed }, className)}>
         <div className={MEDIA_SIZE_CLASS[sizeKey]}>
-          {hasRenderableMedia && (
-            // No border on the media itself: `border` takes its colour from the
-            // base `* { @apply border-border }` reset, and --border is a light
-            // value in both themes (light oklch(0.922), dark white at 10%), so
-            // it drew a thin white line around every rich-text image. This is
-            // the only media call site in the app that framed the asset — the
-            // radius alone matches the rest.
+          {videoDoc ? (
             <div data-reveal="media">
-              <Media
-                imgClassName={mediaClassName}
-                resource={mediaDoc}
-                size={sizeHints[sizeKey]}
-                src={staticImage}
-                videoClassName={mediaClassName}
-              />
+              <VideoPlayer className={cn(!bleed && 'rounded-lg', imgClassName)} video={videoDoc} />
             </div>
+          ) : (
+            hasRenderableMedia && (
+              // No border on the media itself: `border` takes its colour from the
+              // base `* { @apply border-border }` reset, and --border is a light
+              // value in both themes (light oklch(0.922), dark white at 10%), so
+              // it drew a thin white line around every rich-text image. This is
+              // the only media call site in the app that framed the asset — the
+              // radius alone matches the rest.
+              <div data-reveal="media">
+                <Media
+                  imgClassName={mediaClassName}
+                  resource={mediaDoc}
+                  size={sizeHints[sizeKey]}
+                  src={staticImage}
+                  videoClassName={mediaClassName}
+                />
+              </div>
+            )
           )}
           {caption && (
             <div

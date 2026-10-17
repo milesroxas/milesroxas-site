@@ -2,6 +2,7 @@ import type { Payload, PayloadRequest } from 'payload'
 import { afterResponse } from '@/utilities/afterResponse'
 import type { AskHandoffReason } from './handoff'
 import { redactFreeText } from './redact'
+import { askRetentionCutoff } from './retention'
 import type { RetrievedSource } from './retrieve'
 import type {
   AskHandoffSignal,
@@ -48,7 +49,25 @@ export type AskTurnRecord = {
 }
 
 /**
- * Store one Ask turn for the team (the `ask-questions` collection).
+ * Deletes the questions past the retention window (`ASK_NOTICE` promises it).
+ * Runs after each new question is stored, so the traffic that fills the
+ * window is what keeps it; nothing is scheduled. On a normal day the indexed
+ * delete finds nothing. Answers how many rows went.
+ */
+export async function pruneExpiredAskQuestions(payload: Payload): Promise<number> {
+  const { docs, errors } = await payload.delete({
+    collection: 'ask-questions',
+    where: { createdAt: { less_than: askRetentionCutoff() } },
+    depth: 0,
+    overrideAccess: true,
+  })
+  if (errors.length > 0) throw new Error(`Could not delete ${errors.length} expired Ask questions`)
+  return docs.length
+}
+
+/**
+ * Store one Ask turn for the team (the `ask-questions` collection), then
+ * prune the rows that have outlived the retention window.
  *
  * Runs after the response, so it never adds to the answer's latency. The
  * question and the answer are redacted first (the model may echo a detail),
@@ -85,6 +104,11 @@ export function recordAskQuestion(req: PayloadRequest, record: AskTurnRecord): v
       })
     } catch (err) {
       req.payload.logger.error({ msg: 'Failed to store Ask question', err })
+    }
+    try {
+      await pruneExpiredAskQuestions(req.payload)
+    } catch (err) {
+      req.payload.logger.error({ msg: 'Failed to prune expired Ask questions', err })
     }
   })
 }

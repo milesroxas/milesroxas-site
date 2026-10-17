@@ -13,11 +13,5 @@
     "src/app/**/*": {
       "maxDuration": 60
     }
-  },
-  "crons": [
-    {
-      "path": "/api/payload-jobs/run",
-      "schedule": "10 5 * * *"
-    }
-  ]
+  }
 }

@@ -83,9 +83,9 @@ POST /api/ask
 | [`journeyPages.ts`](./journeyPages.ts) | Server half: `resolveJourney()` matches each path to a document in the Ask index, so every title a model sees is one the site published. `subject` marks pages about one thing: works and posts. |
 | [`storyBrief.ts`](./storyBrief.ts) | A stub. sas-site briefs a thin case study from its Content Hub record; this site has no hub, so `resolveStoryBrief()` is always null and the endpoint's thin-story branch never runs. Kept so the endpoint needs no change if a hub arrives. |
 | [`vocabulary.ts`](./vocabulary.ts) | The words Ask and the team agree on, client-safe: question length (3 to 500), the message cap (30), outcomes (`askOutcome()`), retrieval paths, ratings and reasons, handoff signals, triage statuses. Tested in `vocabulary.test.ts`. |
-| [`questions.ts`](./questions.ts) | `recordAskQuestion()`: one redacted row per turn after the response, no IP, no analytics id. `markAskTurn()`: the rating and handoff signal onto that row, first rating wins. |
+| [`questions.ts`](./questions.ts) | `recordAskQuestion()`: one redacted row per turn after the response, no IP, no analytics id, then `pruneExpiredAskQuestions()` deletes the rows past the window (nothing is scheduled). `markAskTurn()`: the rating and handoff signal onto that row, first rating wins. |
 | [`redact.ts`](./redact.ts) | `redactFreeText()`: strips emails, phone and card numbers, URL query strings and key-shaped strings. `hasIdentifyingNumber()` is the contact-details check. Tested in `redact.test.ts`. |
-| [`retention.ts`](./retention.ts) | `ASK_QUESTION_RETENTION_DAYS` (90), `ASK_NOTICE` (the transcript's first line) and `ASK_NOTICE_SHORT` (the sheet's foot). Client-safe. |
+| [`retention.ts`](./retention.ts) | `ASK_QUESTION_RETENTION_DAYS` (90), `askRetentionCutoff()`, `ASK_NOTICE` (the transcript's first line) and `ASK_NOTICE_SHORT` (the sheet's foot). Client-safe. |
 | [`copy.ts`](./copy.ts) | The panel's strings: scope line, intro, placeholders, thinking and retry lines. |
 | [`motion.ts`](./motion.ts) | The transcript's entrance classes. |
 | [`model.ts`](./model.ts) | Provider seam: `gpt-5-mini` and `text-embedding-3-small` via the Vercel AI SDK, `ASK_MODEL_API_KEY_VAR`. |
@@ -95,7 +95,6 @@ POST /api/ask
 | [`usage.ts`](./usage.ts) | OpenAI spend and tokens over the last 30 days (Costs and Usage APIs). Needs `OPENAI_ADMIN_API_KEY`; `OPENAI_PROJECT_ID` optionally scopes it. Called only on an explicit refresh; report in KV (`ask:usage-report`). |
 | [`admin/RebuildIndexPanel.tsx`](./admin/RebuildIndexPanel.tsx), [`admin/UsagePanel.tsx`](./admin/UsagePanel.tsx), [`admin/formatWhen.ts`](./admin/formatWhen.ts) | Site Info › Ask panels: Rebuild index, Usage, and the "last refreshed" date format. |
 | [`../../collections/AskQuestions.ts`](../../collections/AskQuestions.ts), [`../../collections/AskQuestions/components/`](../../collections/AskQuestions/components/) | Admin › Ask questions: team-only rows, triage fields, `AskFilters`, `AskConversation`, `AskDashboard` and their queries. |
-| [`../../jobs/askQuestionRetention.ts`](../../jobs/askQuestionRetention.ts) | Daily task deleting rows past the window, scheduled 05:00 UTC and run by the 05:10 cron in `vercel.json`. |
 | [`fixtures.ts`](./fixtures.ts), [`storyPlays.ts`](./storyPlays.ts), `*.stories.tsx` | Story fixtures (also used by unit tests, so free of Storybook's runtime), shared play steps, and the stories for the widget, rating, sources and submit button. |
 
 ## The corpus
@@ -136,7 +135,7 @@ The journey is not stored on the `ask-questions` row; PostHog gets `journey_page
 - **The visitor's word.** Thumbs and a reason per settled reply; `clicked` when the contact-page fallback was taken, `inquiry_sent` when the intake filed an inquiry from that chat (the inquiry carries `askConversation`).
 - **Triage.** Status, topic, note and the draft that closes the gap; `AskDashboard` counts the week.
 - **Redacted before it lands.** `redactFreeText()` is one layer, not a guarantee. `ASK_NOTICE` tells people they are chatting with an AI and that chats are kept anonymously for 90 days.
-- **Deleted on schedule.** `askQuestionRetention` runs daily; a row can outlive the window by up to two days.
+- **Deleted on activity.** `pruneExpiredAskQuestions` runs after every stored question; a row past the window goes the next time anyone asks.
 - **Nothing at OpenAI.** `store: false` on every call; `sendReasoning: false` keeps the reasoning blob out of the browser.
 - **Metadata only in PostHog.** `ask_questioned` carries lengths, counts, durations, the outcome and the judge's facts (`judge_mode`, `judge_ms`, `judge_failed`, `fell_back`, `chunks_kept`, `first_output_ms`, `page_leaned`, `page_attached` and the rest in `turnFacts()`), never the question; `ask_rated` and `ask_handoff_clicked` the visitor's signals.
 

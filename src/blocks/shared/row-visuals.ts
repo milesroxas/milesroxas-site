@@ -15,6 +15,13 @@ export const resolveRowVisuals = <Row extends StoredVisualSlot & { id?: string |
   rows: Row[] | null | undefined,
 ): RowWithVisual<Row>[] =>
   (rows ?? []).map((row) => {
-    const { media: _media, visualType: _visualType, shader: _shader, ...rest } = row
+    const {
+      media: _media,
+      visualType: _visualType,
+      shader: _shader,
+      playVideo: _playVideo,
+      video: _video,
+      ...rest
+    } = row
     return { ...rest, visual: resolveVisual(row, { seedKey: row.id ?? undefined }) }
   })

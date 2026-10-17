@@ -131,6 +131,8 @@ const collections: MCPPluginConfig['collections'] = Object.fromEntries([
     {
       media:
         'Uploaded images and videos. Reference existing documents by id. Set alt text and captions with updateMedia; new images go through `pnpm cms:upload`',
+      videos:
+        'Full-length videos that play on click, each with a short muted loop. A Caption, Stacked, Split or Split narrow block plays one with `playVideo: true` and `video: <id>`. Uploaded and configured in the admin only',
     },
     READ_ONLY,
   ),

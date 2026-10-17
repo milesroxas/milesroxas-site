@@ -19,8 +19,17 @@ const encodePath = (path: string) =>
  * base (a cloud session's `.env`, a preview missing the variable) it answers
  * Payload's own file route, which the adapter serves from the bucket.
  */
-export function r2FileUrl({ filename, prefix }: { filename: string; prefix?: string }): string {
-  if (!process.env.R2_PUBLIC_URL) return `/api/media/file/${encodeURIComponent(filename)}`
+export function r2FileUrl({
+  collection,
+  filename,
+  prefix,
+}: {
+  collection?: { slug: string }
+  filename: string
+  prefix?: string
+}): string {
+  if (!process.env.R2_PUBLIC_URL)
+    return `/api/${collection?.slug ?? 'media'}/file/${encodeURIComponent(filename)}`
   const key = [prefix ?? '', filename].map(encodePath).filter(Boolean).join('/')
   return `${r2PublicBase()}/${key}`
 }
