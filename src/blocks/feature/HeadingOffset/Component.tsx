@@ -1,7 +1,7 @@
 import type React from 'react'
 import { BlockGrid } from '@/blocks/shared/grid'
 import { Section } from '@/blocks/shared/section'
-import { typeScale } from '@/blocks/shared/typography'
+import { eyebrowClassName, typeScale } from '@/blocks/shared/typography'
 import RichText from '@/components/RichText'
 import type { FeatureHeadingOffsetBlock as FeatureHeadingOffsetBlockData } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -33,11 +33,11 @@ export const FeatureHeadingOffsetBlock: React.FC<FeatureHeadingOffsetBlockProps>
         <BlockGrid>
           <div className="text-stack md:col-span-4">
             {eyebrow ? (
-              <p className="text-sm uppercase tracking-widest" data-reveal>
+              <p className={eyebrowClassName} data-reveal data-reveal-group="heading">
                 {eyebrow}
               </p>
             ) : null}
-            <h2 className={type.title} data-reveal>
+            <h2 className={cn(type.title, 'text-balance')} data-reveal data-reveal-group="heading">
               {heading}
             </h2>
           </div>

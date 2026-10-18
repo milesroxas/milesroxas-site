@@ -18,7 +18,8 @@ import { Section } from '../shared/section'
  * Stacked below `md` (media always first regardless of `layout`). Both cells
  * pin `md:row-start-1`: in the mirrored layout the media cell precedes the
  * content cell in source order but sits in later columns, and auto-placement
- * would push the content to the next row.
+ * would push the content to the next row. Both cells sit at the top of the
+ * row: whatever copy is authored lines up with the media's top edge.
  *
  * `bare` skips the `Section` wrapper for callers that supply their own shell
  * (the work-page renderer and the Section block both paint the band).
@@ -42,7 +43,7 @@ export const MediaContentSplit = ({
   return (
     <Section bare={bare} spacing="loose" theme={block.theme}>
       <Container>
-        <BlockGrid className="items-center">
+        <BlockGrid>
           <VisualCell
             className={cn(
               'relative w-full self-start overflow-hidden rounded-lg bg-muted md:col-span-4 md:row-start-1',

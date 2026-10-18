@@ -715,25 +715,28 @@
      default weight; call sites own layout (max-w, alignment, spacing, color)
      and may override weight/leading for art direction. Weight companions read
      the base ink weight (`--font-weight-normal`, 400 here). Headings climb
-     ~1.2 steps over the lead; display stands apart as the statement voice. */
+     ~1.2 steps over the lead; display stands apart as the statement voice.
+     Leading tightens and tracking closes as the size climbs, one step per
+     rung, so no two rungs read as the same voice and no rung inverts. */
   --text-display: clamp(3rem, 1.95rem + 4.51vw, 6rem); /* route/hero statements */
   --text-display--line-height: 1.05;
   --text-display--letter-spacing: -0.025em;
   --text-display--font-weight: var(--font-weight-normal);
   --text-title: clamp(2.25rem, 1.722rem + 2.254vw, 3.75rem); /* case study title, 36px → 60px */
-  --text-title--line-height: 1.2;
-  --text-title--letter-spacing: -0.025em;
+  --text-title--line-height: 1.1;
+  --text-title--letter-spacing: -0.02em;
   --text-title--font-weight: var(--font-weight-normal);
   --text-heading-1: clamp(2.125rem, 1.905rem + 0.94vw, 2.75rem); /* page/hero h1 */
   --text-heading-1--line-height: 1.1;
-  --text-heading-1--letter-spacing: -0.025em;
+  --text-heading-1--letter-spacing: -0.02em;
   --text-heading-1--font-weight: var(--font-weight-normal);
   --text-heading-2: clamp(1.75rem, 1.574rem + 0.75vw, 2.25rem); /* section h2 */
   --text-heading-2--line-height: 1.15;
-  --text-heading-2--letter-spacing: -0.025em;
+  --text-heading-2--letter-spacing: -0.015em;
   --text-heading-2--font-weight: var(--font-weight-normal);
   --text-heading-3: clamp(1.5rem, 1.37rem + 0.56vw, 1.875rem); /* subsection/card */
   --text-heading-3--line-height: 1.3;
+  --text-heading-3--letter-spacing: -0.01em;
   --text-heading-3--font-weight: var(--font-weight-normal);
   --text-lead: clamp(1.25rem, 1.16rem + 0.38vw, 1.5rem); /* intro/standfirst body */
   --text-lead--line-height: 1.5;
@@ -817,6 +820,7 @@
 
      eyebrow → heading   0.5em of the heading
      heading → body      1em of the heading
+     eyebrow → body      1em of the body (no heading authored)
 
    Children are text-box trimmed so the margins are honest. */
 @utility text-stack {
@@ -831,6 +835,10 @@
 
   > :where(h1, h2, h3, h4, h5, h6):not(:last-child) {
     margin-bottom: 1em;
+  }
+
+  > :where(p, span) + :where(div, p) {
+    margin-top: 1em;
   }
 }
 

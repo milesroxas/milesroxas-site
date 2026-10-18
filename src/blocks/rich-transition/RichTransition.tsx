@@ -54,7 +54,7 @@ const gridLayout =
         <BlockGrid>
           <div className={cn('text-stack', headingColumns)}>
             <Eyebrow text={eyebrow} />
-            <h2 className={type.title} data-reveal data-reveal-group="heading">
+            <h2 className={cn(type.title, 'text-balance')} data-reveal data-reveal-group="heading">
               {heading}
             </h2>
           </div>
@@ -88,7 +88,11 @@ const Centered = ({ body, eyebrow, heading, textSize }: LayoutProps) => {
     <Container>
       <div className="mx-auto max-w-5xl text-center text-stack">
         <Eyebrow text={eyebrow} />
-        <h2 className={cn(type.title, 'mx-auto max-w-3xl')} data-reveal data-reveal-group="heading">
+        <h2
+          className={cn(type.title, 'mx-auto max-w-3xl text-balance')}
+          data-reveal
+          data-reveal-group="heading"
+        >
           {heading}
         </h2>
         {body ? <Body className={cn(type.lead, 'mx-auto max-w-160')} data={body} /> : null}
@@ -102,7 +106,7 @@ const Statement = ({ body, eyebrow, heading }: LayoutProps) => (
   <Container>
     <div className="mx-auto max-w-5xl text-center text-stack">
       <Eyebrow text={eyebrow} />
-      <h2 className="text-display" data-reveal data-reveal-group="heading">
+      <h2 className="text-balance text-display" data-reveal data-reveal-group="heading">
         {heading}
       </h2>
       {body ? <Body className="mx-auto max-w-xl text-lg" data={body} /> : null}
@@ -145,7 +149,7 @@ const Prose = ({ body, eyebrow, heading, headingLevel }: LayoutProps) => {
         <div className="text-stack md:col-span-4 md:col-start-3">
           <Eyebrow text={eyebrow} />
           <Heading
-            className={proseHeadingClassNames[level]}
+            className={cn(proseHeadingClassNames[level], 'text-balance')}
             data-reveal
             data-reveal-group="heading"
           >

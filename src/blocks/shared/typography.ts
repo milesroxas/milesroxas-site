@@ -37,7 +37,7 @@ const TYPE_SCALE: Record<TextSize, TypeScale> = {
     lead: 'text-lead',
     statement: 'text-heading-3',
     heading: 'text-heading-3',
-    title: 'text-heading-1',
+    title: 'text-heading-2',
   },
 }
 
