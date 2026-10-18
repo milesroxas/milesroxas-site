@@ -86,21 +86,26 @@ export function Cursor() {
       root.dataset.visible = ''
       show(variantAt(e.target))
     }
-    // Content scrolls under a still pointer without a mousemove.
-    const onScroll = () => show(variantAt(document.elementFromPoint(x, y)))
+    // The target can change under a still pointer: content scrolls, or a
+    // click swaps it out (a video's loop for its player). Re-read after the
+    // click's commit so the label leaves with the thing it named.
+    const recheck = () => show(variantAt(document.elementFromPoint(x, y)))
+    const onClick = () => requestAnimationFrame(recheck)
     const onLeave = () => delete root.dataset.visible
 
     const html = document.documentElement
     // Hides the native cursor (globals.css) only while this one is mounted.
     html.dataset.customCursor = ''
     document.addEventListener('mousemove', onMove, { passive: true })
-    window.addEventListener('scroll', onScroll, { passive: true })
+    document.addEventListener('click', onClick, { passive: true })
+    window.addEventListener('scroll', recheck, { passive: true })
     html.addEventListener('mouseleave', onLeave)
 
     return () => {
       delete html.dataset.customCursor
       document.removeEventListener('mousemove', onMove)
-      window.removeEventListener('scroll', onScroll)
+      document.removeEventListener('click', onClick)
+      window.removeEventListener('scroll', recheck)
       html.removeEventListener('mouseleave', onLeave)
       window.clearTimeout(leaveTimer)
       gsap.killTweensOf(ring)

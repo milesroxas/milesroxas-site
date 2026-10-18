@@ -46,6 +46,7 @@ describe('VideoPlayer', () => {
     const { container } = render(<VideoPlayer video={videoDocFixture} />)
     const button = screen.getByRole('button', { name: 'Play Content page scroll' })
     expect(button.textContent).toContain('1:30')
+    expect(button.dataset.cursor).toBe('play')
     const video = container.querySelector('video') as HTMLVideoElement
     expect(video.muted).toBe(true)
     expect(video.loop).toBe(true)

@@ -146,7 +146,8 @@ a full-length video that plays on click, with a few seconds that loop muted unti
    the Videos list shows the same value, computed on read.
 5. **The player** (`components/VideoPlayer`). Until the stage is `ready` it paints the source's
    Stream thumbnail with the play button and loads no video. Ready, `VideoMedia` plays the loop's
-   manifest (the clip's own first frame as its poster) under the button and the length badge. A
+   manifest (the clip's own first frame as its poster) under the button and the length badge; the
+   site cursor reads *Play* over it (`cursorTarget('play')`, as the carousel's reads *Drag*). A
    click swaps in the whole video in the same frame: the source manifest, sound on, the native
    controls, focus moved to the element; when it ends, the loop returns. In a block that owns the
    frame (`fill`), the loop covers it and the full video letterboxes inside it so the controls stay

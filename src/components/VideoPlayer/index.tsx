@@ -7,6 +7,7 @@ import { formatSeconds, stageOf } from '@/collections/Videos/stage'
 import type { VideoResource } from '@/components/Media/types'
 import { VideoMedia } from '@/components/Media/VideoMedia'
 import type { Video } from '@/payload-types'
+import { cursorTarget } from '@/providers/Cursor/variants'
 import { streamPosterSrcSet, streamPosterUrl } from '@/utilities/streamPoster'
 import { cn } from '@/utilities/ui'
 
@@ -104,6 +105,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   return (
     <button
+      {...cursorTarget('play')}
       aria-label={`Play ${video.title}`}
       className={cn(
         frameClassName,

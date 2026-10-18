@@ -3,6 +3,7 @@ export const CURSOR_LABELS = {
   view: 'View',
   read: 'Read',
   drag: 'Drag',
+  play: 'Play',
 } as const
 
 export type CursorVariant = keyof typeof CURSOR_LABELS
