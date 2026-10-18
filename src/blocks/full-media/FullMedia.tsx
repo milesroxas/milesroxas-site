@@ -23,10 +23,10 @@ import { Section } from '../shared/section'
  * with the content row re-entering the page column. Contained media shares the
  * grid and spans all eight columns at the editor-chosen aspect ratio.
  *
- * Content row placement: heading cluster in columns 1-3 and body in columns
- * 4-6; columns 4-5 and 6-8 when `contentPosition` is `right`. With no eyebrow or
- * heading the body sits on the outer edge: columns 1-3 left, 6-8 right. Below
- * `md` the cells stack in one column.
+ * Content placement: on the left, one narrow column with the heading cluster
+ * over the body, both in columns 1-3. On the right, heading cluster in columns
+ * 4-5 beside the body in 6-8; with no eyebrow or heading the body keeps 6-8.
+ * Below `md` the cells stack in one column.
  *
  * `bare` skips the `Section` wrapper for callers that supply their own shell
  * (the work-page renderer wraps blocks in a full-viewport reveal section).
@@ -70,10 +70,7 @@ const FullMediaContent = ({
       )}
       {content && (
         <div
-          className={cn(
-            'md:col-span-3',
-            contentRight ? 'md:col-start-6' : hasTitle ? 'md:col-start-4' : 'md:col-start-1',
-          )}
+          className={cn('md:col-span-3', contentRight ? 'md:col-start-6' : 'md:col-start-1')}
           data-reveal
         >
           <RichText className={type.body} data={content} enableGutter={false} enableProse={false} />

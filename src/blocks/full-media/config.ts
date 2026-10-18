@@ -6,8 +6,8 @@ import { blockVisualSlotFields } from '@/fields/visual'
 const showContent: Condition = (_, siblingData) => Boolean(siblingData?.showContent)
 
 /**
- * Media, optionally over a two-column content row (eyebrow + heading beside the
- * body). Media is the only requirement — with `showContent` off (or its fields
+ * Media, optionally over a content row (eyebrow + heading over the body on the
+ * left, beside it on the right). Media is the only requirement — with `showContent` off (or its fields
  * left empty) the block renders the media alone.
  *
  * `width` is contained in the page column at an editor-chosen aspect ratio by
