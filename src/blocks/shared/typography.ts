@@ -19,7 +19,8 @@ export type TypeScale = Record<TextRole, string>
 
 // One ~1.2 ladder for every block; Large moves every role up one rung. A block heading sits a
 // rung over the copy it opens, not two: a 30px heading over 16px body out-shouts the block. The
-// Section heading blocks' title stands two rungs over that heading, so a section reads as a section.
+// Section heading blocks' title stands a rung over that heading, under a work's intro statement
+// (`text-heading-2`), so a section reads as a section without matching the page's opening copy.
 const TYPE_SCALE: Record<TextSize, TypeScale> = {
   small: {
     body: 'text-base',
@@ -29,7 +30,7 @@ const TYPE_SCALE: Record<TextSize, TypeScale> = {
     // `text-lead` carries body leading; a heading sets snug, as the prose h2 does.
     heading: 'text-lead leading-snug',
     /** Section heading h2 (Standard, Offset). */
-    title: 'text-heading-2',
+    title: 'text-heading-3',
   },
   large: {
     body: 'text-lg',

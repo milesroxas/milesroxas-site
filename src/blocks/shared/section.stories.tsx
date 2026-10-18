@@ -14,7 +14,7 @@ import { eyebrowClassName, typeScale } from './typography'
  * The composition band (`Section`) with the two site reveals inside it, as
  * the run blocks compose them. Placeholder children stand in for the blocks
  * (the Section block's story nests real ones), on the blocks' type scale:
- * the section heading two rungs over a block heading, a block heading one
+ * the section heading one rung over a block heading, a block heading one
  * over its copy.
  */
 
