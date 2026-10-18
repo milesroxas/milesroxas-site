@@ -72,7 +72,7 @@ const gridLayout =
 const Offset = gridLayout('md:col-span-4 md:col-start-2', 'md:col-span-3 md:col-start-2')
 
 /** Left: Offset flush with the page column (1-4, body 1-3). */
-const Left = gridLayout('md:col-span-4', 'md:col-span-3')
+const Left = gridLayout('md:col-span-4', 'md:col-span-3 md:col-start-1')
 
 /** Split: cluster in columns 1-4, body across the gap in columns 6-8. */
 const Split = gridLayout('md:col-span-4', 'md:col-span-3 md:col-start-6')
