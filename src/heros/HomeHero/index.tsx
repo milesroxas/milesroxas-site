@@ -106,14 +106,15 @@ export const HomeHero: React.FC<HeroProps> = ({ media, heading }) => (
     </div>
 
     <div className="relative z-10 flex h-[90vh] items-center justify-center md:h-screen">
+      {/* The frame sets the size: a stream is only as wide as its current rendition. */}
       <div
-        className="w-[30vh] overflow-hidden rounded-sm motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
+        className="relative aspect-[9/16] w-[30vh] overflow-hidden rounded-sm motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
         style={enterAt(BEAT.portrait)}
       >
         <Media
+          fill
           htmlElement={null}
-          className="h-full w-full object-cover"
-          imgClassName="motion-safe:animate-hero-settle"
+          imgClassName="object-cover motion-safe:animate-hero-settle"
           // The frame is 30vh wide: 640 covers it at 2x on any screen.
           posterWidth={640}
           priority
