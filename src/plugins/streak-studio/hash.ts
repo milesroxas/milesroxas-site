@@ -15,6 +15,9 @@ export function recipeHash(effect: unknown, recipe: unknown): string {
   return createHash('sha256').update(canonicalJSON(snapshot)).digest('hex')
 }
 
+/** The identity of a rendered still: the SHA-256 of its canonical key (`stillKey`). */
+export const stillHash = (key: string) => createHash('sha256').update(key).digest('hex')
+
 /** The hash of a stored recipe, or `null` when today's validation no longer accepts it. */
 export function storedRecipeHash(effect: unknown, recipe: unknown): string | null {
   try {

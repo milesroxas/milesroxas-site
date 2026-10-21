@@ -14,6 +14,7 @@ import { Slider } from '@/components/ui/slider'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Parameter, RangeParameter, VectorParameter } from '@/features/immersive/studio/effect'
+import { cn } from '@/utilities/ui'
 import {
   type Dependency,
   decimals,
@@ -27,8 +28,18 @@ import {
 /** A toggle is a two-option control like any other; these are its options. */
 const TOGGLE = ['off', 'on'] as const
 
-/** What a row is about: the parameter's name, its contract, its copy and its default. */
-export type RowParameter = { name: string; spec: Parameter; copy: ParameterCopy; fallback: unknown }
+/**
+ * What a row is about: the parameter's name, its contract, its copy and the
+ * value it departs from. Editing the look, that is the effect's default;
+ * editing a still, it is the look's own value, and `base` says which.
+ */
+export type RowParameter = {
+  name: string
+  spec: Parameter
+  copy: ParameterCopy
+  fallback: unknown
+  base?: 'default' | 'look'
+}
 
 const controlId = (name: string) => `studio-${name}`
 
@@ -126,7 +137,7 @@ function ValueField({
 }
 
 function ParameterTooltip({
-  parameter: { name, spec, copy, fallback },
+  parameter: { name, spec, copy, fallback, base = 'default' },
   changed,
   children,
 }: {
@@ -164,7 +175,9 @@ function ParameterTooltip({
                 <span>step {spec.step ?? 0.01}</span>
               </>
             )}
-            <span>default {defaultText}</span>
+            <span>
+              {base} {defaultText}
+            </span>
           </p>
           {changed && (
             <p className="flex items-center gap-1.5 text-[11px]/3.5 text-primary">
@@ -541,15 +554,18 @@ function RangeControl({
   )
 }
 
-function HexField({
+/** A hex colour typed in: commits a valid `#rrggbb` on Enter or blur, reverts otherwise. */
+export function HexField({
   value,
   disabled,
   label,
+  className,
   onCommit,
 }: {
   value: string
   disabled?: boolean
   label: string
+  className?: string
   onCommit: (next: [number, number, number]) => void
 }) {
   const { draft, setDraft, setEditing } = useFieldDraft(value)
@@ -562,7 +578,7 @@ function HexField({
   return (
     <Input
       variant="value"
-      className="w-20 text-left"
+      className={cn('w-20 text-left', className)}
       aria-label={`${label} hex`}
       spellCheck={false}
       disabled={disabled}

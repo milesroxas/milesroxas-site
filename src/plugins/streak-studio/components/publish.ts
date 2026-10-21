@@ -3,41 +3,93 @@ import { SURFACES } from '@/features/immersive/studio/effect'
 import { type EffectId, effectOf } from '@/features/immersive/studio/effects'
 import type { LookGround } from '@/features/immersive/studio/ground'
 import {
-  type CaptureOptions,
   POSTER_CAPTURE,
   type Recipe,
   STILL_UPLOAD_BUDGET,
   snapshotRecipe,
   validateRecipe,
 } from '@/features/immersive/studio/recipe'
+import { type Still, stillLabel, validateStills } from '@/features/immersive/studio/stills'
 import type { Media, StreakLook } from '@/payload-types'
+import type { PublishedState } from './look-store'
 import { LOOKS_SLUG } from './paths'
+import { stillShot } from './shot'
+import { draftState } from './status'
 import { sessionKey, studioStore } from './store'
 
 type Submit = ReturnType<typeof useForm>['submit']
 
 /** The saved look a still is rendered from, and the ground a filled still is laid over. */
-export type Draft = { id: number | string; effect: EffectId; recipe: Recipe; ground: LookGround }
+export type Draft = {
+  id: number | string
+  effect: EffectId
+  recipe: Recipe
+  ground: LookGround
+  stills: Still[]
+}
+
+type CaptureCall = Parameters<typeof import('@/features/immersive').captureStills>[0]
+
+let chain: Promise<unknown> = Promise.resolve()
 
 /**
- * The stills of a recipe, rendered in this browser one after another (one
- * extra WebGL context at a time) with the live preview paused for the moment
- * it takes, so the capture has the GPU to itself.
+ * Captures run one after another, one extra WebGL context at a time: the
+ * still preview, the contact sheet and a publish all render through here, so
+ * none of them contends with another for the GPU. A call aborted while it
+ * waits never renders.
  */
-async function stills({ id, effect, recipe, ground }: Draft, captures: CaptureOptions[]) {
+export function captureSerial(input: CaptureCall): Promise<Blob[]> {
+  const run = chain.then(async () => {
+    if (input.signal?.aborted) throw new DOMException('The capture was cancelled.', 'AbortError')
+    const { captureStills } = await import('@/features/immersive')
+    return captureStills(input)
+  })
+  chain = run.catch(() => {})
+  return run
+}
+
+/** Whether an error is a capture that was cancelled, which no one needs to hear about. */
+export const isAbort = (error: unknown) =>
+  error instanceof DOMException && error.name === 'AbortError'
+
+/**
+ * The posters of a recipe, rendered in this browser with the live preview
+ * paused for the moment it takes, so the capture has the GPU to itself.
+ */
+async function posters({ id, effect, recipe, ground }: Draft) {
   const key = sessionKey(id)
-  const { captureStill } = await import('@/features/immersive')
   const snapshot = snapshotRecipe(effectOf(effect), recipe)
   const wasPaused = studioStore.read(key).paused
   studioStore.patch(key, { paused: true })
   try {
     const images: Blob[] = []
-    for (const capture of captures)
-      images.push(await captureStill({ effect, snapshot, capture, ground }))
+    for (const surface of SURFACES)
+      images.push(
+        ...(await captureSerial({
+          effect,
+          tuning: snapshot[surface],
+          frames: [snapshot.frame],
+          capture: { ...POSTER_CAPTURE, surface },
+          ground,
+        })),
+      )
     return images
   } finally {
     studioStore.patch(key, { paused: wasPaused })
   }
+}
+
+/** One still of the draft, rendered here. */
+async function still({ effect, recipe, ground }: Draft, target: Still) {
+  const shot = stillShot(effectOf(effect), recipe, target)
+  const [image] = await captureSerial({
+    effect,
+    tuning: shot.tuning(shot.seed),
+    frames: [shot.frame],
+    capture: shot.capture,
+    ground,
+  })
+  return image
 }
 
 /**
@@ -68,9 +120,10 @@ async function send<T>(
   return result.doc
 }
 
-/** The server publishes the saved draft, so the draft is saved before anything is rendered from it. */
-async function saveDraft(submit: Submit, { id, effect, recipe }: Draft) {
+/** The server renders nothing and publishes the saved draft, so the draft is saved before anything is rendered from it. */
+async function saveDraft(submit: Submit, { id, effect, recipe, stills }: Draft) {
   validateRecipe(effectOf(effect), recipe)
+  validateStills(effectOf(effect), recipe, stills)
   const saved = await submit({
     action: `/api/${LOOKS_SLUG}/${id}?draft=true`,
     method: 'PATCH',
@@ -80,24 +133,54 @@ async function saveDraft(submit: Submit, { id, effect, recipe }: Draft) {
   if (!saved?.res.ok) throw new Error('The draft could not be saved, so nothing was published.')
 }
 
-/** Publish: save, render the dark and light posters here, and publish the look with them in one request. */
-export async function publishLook(submit: Submit, draft: Draft) {
+/** One still of the saved draft, rendered and filed in Media. */
+async function fileStill(draft: Draft, target: Still): Promise<Media> {
+  const image = await still(draft, target)
+  return send<Media>(draft.id, 'stills', { recipe: draft.recipe, still: target }, { image })
+}
+
+/** Render: one still, filed in Media so it can be opened, downloaded and published. */
+export async function renderStill(submit: Submit, draft: Draft, target: Still): Promise<Media> {
   await saveDraft(submit, draft)
-  const images = await stills(
-    draft,
-    SURFACES.map((surface) => ({ ...POSTER_CAPTURE, surface })),
+  return fileStill(draft, target)
+}
+
+export type PublishProgress = (step: string) => void
+
+/**
+ * Publish: save, render here what the site needs that is not already
+ * published as the draft has it (the two posters always, each still whose
+ * pixels moved), file each still, and publish the look with everything in one
+ * request. Every place that uses the look shows the result.
+ */
+export async function publishLook(
+  submit: Submit,
+  draft: Draft,
+  live: PublishedState | null,
+  onProgress: PublishProgress = () => {},
+) {
+  await saveDraft(submit, draft)
+  const { status } = draftState(
+    effectOf(draft.effect),
+    draft.recipe,
+    draft.ground,
+    draft.stills,
+    live,
   )
+  const renders: Record<string, number> = {}
+  const pending = draft.stills.filter((target) => status(target) !== 'live')
+  for (const [index, target] of pending.entries()) {
+    onProgress(`Rendering ${stillLabel(target)} (${index + 1} of ${pending.length})…`)
+    const media = await fileStill(draft, target)
+    renders[target.id] = media.id
+  }
+  onProgress('Rendering posters…')
+  const images = await posters(draft)
+  onProgress('Publishing…')
   return send<StreakLook>(
     draft.id,
     'publish',
-    { recipe: draft.recipe },
+    { recipe: draft.recipe, renders },
     Object.fromEntries(SURFACES.map((surface, index) => [surface, images[index]])),
   )
-}
-
-/** Export: one still at the chosen size, filed in Media. */
-export async function exportStill(submit: Submit, draft: Draft, capture: CaptureOptions) {
-  await saveDraft(submit, draft)
-  const [image] = await stills(draft, [capture])
-  return send<Media>(draft.id, 'export', { recipe: draft.recipe, capture }, { image })
 }

@@ -55,7 +55,9 @@ Every effect has two faces (`face(tuning, surface)`), and a slot draws the one f
 
 The takeover menu previews a pinned effect on the pinned ground (`menuVisual`), and the docked window reads it off the slot's own `data-theme`.
 
-**A look may bring its own ground.** A Studio look's `ground.dark` and `ground.light` (the Inspector's Ground section, `studio/ground.ts`) name the colour under the effect on each face. It is effect-blind and sits beside the recipe, not in the snapshot, so the posters stay transparent and nothing is re-rendered: the frame that honors a pin above paints it instead of `bg-background` (`[data-visual-ground]` in globals.css, with the pair as custom properties and the `dark` variant choosing the face). A bleeding leak never paints it, for the same reason it is never pinned. A face left empty keeps the ground the slot lands on. An export is flattened onto the same colour.
+**A look may bring its own ground.** A Studio look's `ground.dark` and `ground.light` (the Ground control beside the stage's face toggle, `studio/ground.ts`) name the colour under the effect on each face. It is effect-blind and sits beside the recipe, not in the snapshot, so the posters stay transparent and nothing is re-rendered: the frame that honors a pin above paints it instead of `bg-background` (`[data-visual-ground]` in globals.css, with the pair as custom properties and the `dark` variant choosing the face). A bleeding leak never paints it, for the same reason it is never pinned. A face left empty keeps the ground the slot lands on. A filled still is flattened onto the same colour, so the ground is part of a still's identity (`stillKey`).
+
+**Stills are effect-blind too.** A look's stills (`studio/stills.ts`) overlay the recipe with their own deltas and resolve through the same `face` and `limit`, so a still of either effect is the effect's own scene at the hero caps, on the face the still is of; the capture composites an opaque effect through its `blend` exactly as a poster is.
 
 ## Light leak
 

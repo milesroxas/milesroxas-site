@@ -3,7 +3,7 @@ import type { SiteInfo } from '@/payload-types'
 import { getCachedGlobal } from './getGlobals'
 import { getServerSideURL } from './getURL'
 import { articleAuthors, resolveTitle } from './pageTitle'
-import { type ShareImage, shareImage } from './shareImage'
+import { documentShareImage, type ShareDoc, type ShareImage, shareImage } from './shareImage'
 
 /**
  * Page metadata for every public route (docs/aeo.md). The root layout sets the
@@ -22,7 +22,7 @@ const DEFAULT_DESCRIPTION =
   'Miles Roxas is a designer and builder with 16 years across brand, product and technology. He designs experiences and builds the systems behind them.'
 
 /** The fields a routed document carries that metadata reads. */
-export type MetaDoc = {
+export type MetaDoc = ShareDoc & {
   title?: string | null
   meta?: {
     title?: string | null
@@ -114,7 +114,7 @@ export const generateMeta = async (args: GenerateMetaArgs): Promise<Metadata> =>
   const name = siteName(siteInfo)
   const { title, text } = resolveTitle(doc, pathname, name)
   const description = doc?.meta?.description || siteDescription(siteInfo)
-  const image = shareImage(doc?.meta?.image) ?? shareImage(siteInfo?.ogImage)
+  const image = documentShareImage(doc) ?? shareImage(siteInfo?.ogImage)
 
   return {
     title,

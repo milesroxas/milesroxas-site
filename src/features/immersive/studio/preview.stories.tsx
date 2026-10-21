@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { LIGHT_LEAK_EFFECT, STREAK_FIELD_EFFECT } from './effects'
 import { StudioPreview } from './preview'
-import { EXPORT_CAPTURE, emptyRecipe, starterRecipe } from './recipe'
+import { emptyRecipe, starterRecipe } from './recipe'
+import { STILL_USES } from './stills'
 
 /**
  * The Studio's stage (Payload admin, Studio looks): a look's draft, live, on a
@@ -42,23 +43,24 @@ export const LeakAmber: Story = {
   args: { ...leak, recipe: starterRecipe(LIGHT_LEAK_EFFECT, 'amber-v1') },
 }
 
-const exportFrame: Story['decorators'] = [
+const { width, height } = STILL_USES.preview
+const previewFrame: Story['decorators'] = [
   (Story) => (
-    <div style={{ aspectRatio: `${EXPORT_CAPTURE.width} / ${EXPORT_CAPTURE.height}`, width: 720 }}>
+    <div style={{ aspectRatio: `${width} / ${height}`, width: 720 }}>
       <Story />
     </div>
   ),
 ]
 
 /**
- * "Render and save to Media" frames a filled 3:2 still by default
- * (`EXPORT_CAPTURE`, 1800 × 1200: a post card's picture at 2x), on the ground
- * the stage paints. The Inspector opens the filed still in a new tab.
+ * A Preview card still (`STILL_USES.preview`, 1200 × 630: the share image of
+ * a page that opens on the look) is framed at its own aspect on the ground the
+ * stage paints. The Studio renders it on Publish with the posters.
  */
-export const ExportFrame: Story = { decorators: exportFrame }
+export const PreviewStillFrame: Story = { decorators: previewFrame }
 
-/** A leak's filled export is drawn onto the ground through its blend, as the page composites it. */
-export const ExportFrameLeakLight: Story = {
+/** A leak's filled still is drawn onto the ground through its blend, as the page composites it. */
+export const PreviewStillFrameLeakLight: Story = {
   args: { ...leak, recipe: emptyRecipe(LIGHT_LEAK_EFFECT), surface: 'light' },
-  decorators: exportFrame,
+  decorators: previewFrame,
 }

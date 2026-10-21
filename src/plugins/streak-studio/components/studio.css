@@ -36,7 +36,13 @@
    primitives assume, scoped to the Studio's roots and its portaled
    surfaces, and wrapped in `:where()` so it has no specificity: every
    utility class outranks it, exactly as it outranks preflight on the site. */
-:where([data-streak-studio], [data-slot="tooltip-content"], [data-slot="select-content"]) {
+:where(
+  [data-streak-studio],
+  [data-slot="tooltip-content"],
+  [data-slot="select-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="dialog-content"]
+) {
   *,
   ::before,
   ::after {
@@ -115,7 +121,9 @@
    read a variable, so the Stage states its own breakpoint in px. */
 [data-streak-studio],
 [data-slot="tooltip-content"],
-[data-slot="select-content"] {
+[data-slot="select-content"],
+[data-slot="dropdown-menu-content"],
+[data-slot="dialog-content"] {
   --spacing: 4px;
   --text-xs: 12px;
   --text-sm: 14px;
@@ -201,7 +209,8 @@
    classic scrollbar there takes its width out of a panel whose control column
    is already the narrowest thing on the page, and the polarity above is what
    made that scrollbar wrong in the first place. */
-[data-slot="select-content"] {
+[data-slot="select-content"],
+[data-slot="dialog-content"] {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in oklab, var(--muted-foreground) 45%, transparent) transparent;
 }

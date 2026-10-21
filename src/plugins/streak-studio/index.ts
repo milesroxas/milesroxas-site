@@ -9,9 +9,10 @@ import {
   type Plugin,
 } from 'payload'
 import { lookGround } from '@/features/immersive/studio/ground'
+import { publishedStills, SITE_STILL_USES } from '@/features/immersive/studio/stills'
 import type { Media, StreakLook } from '@/payload-types'
 import { StreakLooks } from './collections'
-import { LOOKS_SLUG } from './components/paths'
+import { LOOKS_SLUG, STILL_MEDIA_FIELD, STILLS_FIELD } from './components/paths'
 
 /** The relationship a visual slot's shader group stores its Studio look in. */
 const SLOT_FIELD = 'studio'
@@ -52,24 +53,32 @@ const posterSource = (media: Media) => ({
   cloudflareImageUrl: media.cloudflareImageUrl,
 })
 
-type LookPosters = Pick<StreakLook, 'id' | 'thumbnail' | 'lightPoster' | 'posters'>
+type LookPosters = Pick<StreakLook, 'id' | 'thumbnail' | 'lightPoster' | 'posters' | 'stills'>
 
 const mediaId = (value: StreakLook['thumbnail']): number | null =>
   typeof value === 'number' ? value : value && typeof value === 'object' ? value.id : null
 
+/** The stills of a published look the site serves, by use, with the media each was rendered to. */
+const siteStills = (look: LookPosters) =>
+  publishedStills(look[STILLS_FIELD]).filter((still) =>
+    (SITE_STILL_USES as readonly string[]).includes(still.use),
+  )
+
 /**
- * The posters a look publishes with. The pair stored on the look froze each
- * still's URL at publish time, and a still's address follows the media origin
- * (the bucket moved from Vercel Blob to R2): the rows the look points at
- * answer today's URL and the Cloudflare Images copy, so they win, and the
- * stored pair stands in only where a row is gone.
+ * The files a look publishes with: the poster pair and its stills. The pair
+ * stored on the look froze each still's URL at publish time, and a still's
+ * address follows the media origin (the bucket moved from Vercel Blob to R2):
+ * the rows the look points at answer today's URL and the Cloudflare Images
+ * copy, so they win, and the stored pair stands in only where a row is gone.
+ * A still is read from its row alone: one that is gone is left out.
  */
-async function livePosters(req: PayloadRequest, looks: LookPosters[]) {
+async function liveRenders(req: PayloadRequest, looks: LookPosters[]) {
   const ids = [
     ...new Set(
-      looks.flatMap((look) =>
-        [mediaId(look.thumbnail), mediaId(look.lightPoster)].filter((id) => id !== null),
-      ),
+      looks.flatMap((look) => [
+        ...[mediaId(look.thumbnail), mediaId(look.lightPoster)].filter((id) => id !== null),
+        ...siteStills(look).map((still) => still.media),
+      ]),
     ),
   ]
   const rows = new Map<number, Media>()
@@ -87,7 +96,16 @@ async function livePosters(req: PayloadRequest, looks: LookPosters[]) {
   return (look: LookPosters) => {
     const dark = rows.get(mediaId(look.thumbnail) ?? -1)
     const light = rows.get(mediaId(look.lightPoster) ?? -1)
-    return dark && light ? { dark: posterSource(dark), light: posterSource(light) } : look.posters
+    const stills: Record<string, ReturnType<typeof posterSource>> = {}
+    for (const still of siteStills(look)) {
+      const row = rows.get(still.media)
+      if (row) stills[still.use] = posterSource(row)
+    }
+    return {
+      posters:
+        dark && light ? { dark: posterSource(dark), light: posterSource(light) } : look.posters,
+      ...(Object.keys(stills).length ? { stills } : {}),
+    }
   }
 }
 
@@ -143,10 +161,11 @@ const hydrateStudioFields =
           thumbnail: true,
           lightPoster: true,
           ground: true,
+          [STILLS_FIELD]: true,
         },
         req,
       })
-      const posters = await livePosters(req, result.docs)
+      const renders = await liveRenders(req, result.docs)
       for (const id of missing) cache.set(id, null)
       for (const look of result.docs)
         if (look.snapshot)
@@ -154,8 +173,8 @@ const hydrateStudioFields =
             id: look.id,
             sourceHash: look.sourceHash,
             snapshot: look.snapshot,
-            posters: posters(look),
             ground: lookGround(look.ground),
+            ...renders(look),
           })
     }
     for (const slot of slots)
@@ -236,18 +255,25 @@ const withStudio: Plugin = (config) => ({
   })),
 })
 
+/** A poster or a still a published look serves is replaced by publishing the look, never edited in Media. */
 async function protectPoster(
   id: string | number,
   req: Parameters<CollectionAfterReadHook>[0]['req'],
 ) {
   const used = await req.payload.count({
     collection: LOOKS_SLUG,
-    where: { or: [{ thumbnail: { equals: id } }, { lightPoster: { equals: id } }] },
+    where: {
+      or: [
+        { thumbnail: { equals: id } },
+        { lightPoster: { equals: id } },
+        { [STILL_MEDIA_FIELD]: { equals: id } },
+      ],
+    },
     req,
   })
   if (used.totalDocs)
     throw new APIError(
-      'This is the poster of a published Studio look. Publish the look again to replace it.',
+      'This is a render of a published Studio look. Publish the look again to replace it.',
       400,
     )
 }

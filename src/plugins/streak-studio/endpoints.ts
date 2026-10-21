@@ -11,11 +11,20 @@ import {
   STILL_QUALITY,
   STILL_UPLOAD_BUDGET,
   snapshotRecipe,
-  validateCapture,
 } from '@/features/immersive/studio/recipe'
+import {
+  type PublishedStill,
+  publishedStills,
+  type Still,
+  sameStill,
+  stillCapture,
+  stillKey,
+  stillLabel,
+  validateStills,
+} from '@/features/immersive/studio/stills'
 import type { Media, StreakLook } from '@/payload-types'
-import { LOOKS_SLUG } from './components/paths'
-import { recipeHash, studioInput } from './hash'
+import { LOOKS_SLUG, STILL_MEDIA_FIELD, STILLS_FIELD } from './components/paths'
+import { recipeHash, stillHash, studioInput } from './hash'
 import { inTransaction, lockLook, PUBLISH } from './transaction'
 import { lookUsage } from './usage'
 
@@ -23,7 +32,7 @@ function team(req: PayloadRequest) {
   if (!authenticated({ req }) || !req.user) throw new APIError('Team sign-in required.', 401)
   return req.user
 }
-/** The multipart body of Publish and Export: JSON fields beside the stills as files. */
+/** The multipart body of Publish and Render: JSON fields beside the stills as files. */
 const form = (req: PayloadRequest) =>
   studioInput(async () => {
     if (!req.formData) throw new Error('Form data required.')
@@ -52,6 +61,90 @@ async function savedDraft(req: PayloadRequest, recipe: unknown): Promise<StreakL
   return look
 }
 
+/** The saved draft's stills, as the editor stored them. */
+const draftStills = (look: StreakLook): Still[] =>
+  validateStills(effectOf(look.effect), look.recipe, look[STILLS_FIELD]) as Still[]
+
+/** The still the request renders, as the saved draft holds it. */
+function savedStill(look: StreakLook, sent: unknown): Still {
+  const id = String((sent as Partial<Still> | null)?.id ?? '')
+  const still = draftStills(look).find((candidate) => candidate.id === id)
+  if (!still) throw new APIError('This still is no longer on the look.', 404)
+  if (!sameStill(still, sent as Still))
+    throw new APIError('The still changed while it rendered. Try again.', 409)
+  return still
+}
+
+/** The published look, with its stills' outputs, or nothing for a look never published. */
+async function liveLook(req: PayloadRequest, id: number) {
+  const live = await req.payload.findByID({
+    collection: LOOKS_SLUG,
+    id,
+    draft: false,
+    depth: 0,
+    disableErrors: true,
+    req,
+  })
+  return live?._status === 'published' ? live : null
+}
+
+/** The look's own ground, as the saved draft holds it. */
+const groundOf = (look: StreakLook) => lookGround(look.ground)
+
+/**
+ * Each still of the draft with its output: the render this publish carries
+ * (`renders`, still id to the media filed by Render), else the live look's
+ * output when the still is unchanged since it was rendered. A still with
+ * neither cannot be published: the site would serve a stale or missing file.
+ */
+async function resolveStills(
+  req: PayloadRequest,
+  look: StreakLook,
+  renders: Record<string, unknown>,
+): Promise<PublishedStill[]> {
+  const effect = effectOf(look.effect)
+  const stills = draftStills(look)
+  if (!stills.length) return []
+  const live = await liveLook(req, look.id)
+  const published = new Map(publishedStills(live?.[STILLS_FIELD]).map((still) => [still.id, still]))
+  const ground = groundOf(look)
+  const output: PublishedStill[] = []
+  for (const still of stills) {
+    const hash = stillHash(stillKey(effect, look.recipe, still, ground))
+    const rendered = renders[still.id]
+    if (Number.isInteger(rendered)) {
+      await verifyRender(req, Number(rendered), still)
+      output.push({ ...still, media: Number(rendered), hash })
+      continue
+    }
+    const reuse = published.get(still.id)
+    if (reuse && reuse.hash === hash) {
+      output.push({ ...still, media: reuse.media, hash })
+      continue
+    }
+    throw new APIError(`The ${stillLabel(still)} still was not rendered. Try again.`, 409)
+  }
+  return output
+}
+
+/** A media document Render filed for this still: an image at the still's exact size. */
+async function verifyRender(req: PayloadRequest, id: number, still: Still) {
+  const media = await req.payload.findByID({
+    collection: 'media',
+    id,
+    depth: 0,
+    disableErrors: true,
+    req,
+  })
+  const capture = stillCapture(still)
+  if (
+    !media?.mimeType?.startsWith('image/') ||
+    media.width !== capture.width * capture.scale ||
+    media.height !== capture.height * capture.scale
+  )
+    throw new APIError(`The ${stillLabel(still)} still's render does not match it. Try again.`, 409)
+}
+
 export const lookEndpoints: Endpoint[] = [
   {
     path: '/:id/publish',
@@ -63,15 +156,19 @@ export const lookEndpoints: Endpoint[] = [
         await lockLook(req, Number(req.routeParams?.id))
         const look = await savedDraft(req, field(data, 'recipe'))
         if (look.archived) throw new APIError('Unarchive this look before publishing.', 400)
+        const renders = data.has('renders') ? field(data, 'renders') : {}
+        if (!renders || typeof renders !== 'object' || Array.isArray(renders))
+          throw new APIError('Invalid renders.', 400)
+        const stills = await resolveStills(req, look, renders as Record<string, unknown>)
         // One at a time: each is a storage write inside the look's row lock.
-        const stills = {} as Record<(typeof SURFACES)[number], Media>
+        const posters = {} as Record<(typeof SURFACES)[number], Media>
         for (const surface of SURFACES)
-          stills[surface] = await upload(
+          posters[surface] = await upload(
             req,
             data.get(surface),
             { ...POSTER_CAPTURE, surface },
             `${look.title} ${surface} poster`,
-            lookGround(look.ground),
+            groundOf(look),
           )
         // Payload merges an operation's context into the request and leaves it
         // there, so the pass is handed over for this one write and taken back.
@@ -82,10 +179,12 @@ export const lookEndpoints: Endpoint[] = [
             data: {
               ...look,
               snapshot: snapshotRecipe(effectOf(look.effect), look.recipe),
-              posters: { dark: poster(stills.dark), light: poster(stills.light) },
+              posters: { dark: poster(posters.dark), light: poster(posters.light) },
               sourceHash: recipeHash(look.effect, look.recipe),
-              thumbnail: stills.dark.id,
-              lightPoster: stills.light.id,
+              thumbnail: posters.dark.id,
+              lightPoster: posters.light.id,
+              [STILLS_FIELD]: stills,
+              [STILL_MEDIA_FIELD]: stills.map((still) => still.media),
               _status: 'published',
             },
             context: { [PUBLISH]: true },
@@ -100,21 +199,24 @@ export const lookEndpoints: Endpoint[] = [
     },
   },
   {
-    path: '/:id/export',
+    // Render: one still of the saved draft, filed in Media. Publish references
+    // the file by id; a still rendered to be opened or downloaded is filed the
+    // same way, so nothing is encoded or stored twice.
+    path: '/:id/stills',
     method: 'post',
     handler: async (req) => {
       team(req)
       const data = await form(req)
-      const capture = studioInput(() => validateCapture(field(data, 'capture')))
       const look = await savedDraft(req, field(data, 'recipe'))
-      const output = await upload(
+      const still = savedStill(look, field(data, 'still'))
+      const media = await upload(
         req,
         data.get('image'),
-        capture,
-        `${look.title} artwork`,
-        lookGround(look.ground),
+        stillCapture(still),
+        `${look.title} · ${stillLabel(still)}`,
+        groundOf(look),
       )
-      return Response.json({ doc: output })
+      return Response.json({ doc: media })
     },
   },
   {

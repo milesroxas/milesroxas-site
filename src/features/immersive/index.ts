@@ -7,5 +7,5 @@
  * refraction, dispersion, floating cards, scroll gallery, backdrop) left
  * behind.
  */
-export { captureStill } from './studio/capture'
+export { captureStill, captureStills } from './studio/capture'
 export { StudioPreview } from './studio/preview'

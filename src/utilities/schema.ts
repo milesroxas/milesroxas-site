@@ -27,7 +27,7 @@ import { lexicalToMarkdownString } from '@/shared/content/lexicalToMarkdown'
 import { externalArticle } from './externalArticle'
 import { getServerSideURL } from './getURL'
 import { populatedDoc } from './relationshipId'
-import { shareImage } from './shareImage'
+import { documentShareImage, shareImage } from './shareImage'
 
 /**
  * schema.org builders for every public route (docs/aeo.md). The site is one
@@ -255,7 +255,7 @@ export const blogPostingSchema = (
   siteInfo: Partial<SiteInfo>,
 ): WithContext<BlogPosting> => {
   const url = absolute(`/posts/${post.slug}`)
-  const image = shareImage(post.meta?.image) ?? shareImage(post.hero?.media)
+  const image = documentShareImage(post)
   const external = externalArticle(post)
   const owner = siteName(siteInfo)
   const authors = (post.populatedAuthors ?? []).flatMap((author) =>
@@ -291,7 +291,7 @@ export const blogPostingSchema = (
  */
 export const creativeWorkSchema = (work: Work): WithContext<CreativeWork> => {
   const url = absolute(`/works/${work.slug}`)
-  const image = shareImage(work.meta?.image) ?? shareImage(work.hero?.media)
+  const image = documentShareImage(work)
   const client = populatedDoc<Client>(work.client)?.title
   const clientUrl = work.link?.url?.trim()
   const keywords = termNames(work.capabilities)

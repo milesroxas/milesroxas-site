@@ -61,18 +61,17 @@ export const EFFECT_COPY: Record<EffectId, EffectCopy> = {
   lightLeak: LIGHT_LEAK_COPY,
 }
 
-/** The Inspector's Ground section: the look's own colour under each face, effect-blind. */
-export const GROUND_GROUP = 'Ground'
+/** The stage's Ground control: the look's own colour under each face, effect-blind. */
 export const GROUND_COPY: Record<Surface, ParameterCopy> = {
   dark: {
-    label: 'Dark',
+    label: 'Dark ground',
     description:
-      'The colour behind the effect wherever this look sits on a dark ground: cards, previews, block frames. The default is the site background.',
+      'The colour under the look on its dark face: on the stage, under a filled still, and on the site wherever the look sits in a frame of its own (cards, previews, block frames). The default is the site background.',
   },
   light: {
-    label: 'Light',
+    label: 'Light ground',
     description:
-      'The colour behind the effect wherever this look sits on a light ground: cards, previews, block frames. The default is the site background.',
+      'The colour under the look on its light face: on the stage, under a filled still, and on the site wherever the look sits in a frame of its own (cards, previews, block frames). The default is the site background.',
   },
 }
 

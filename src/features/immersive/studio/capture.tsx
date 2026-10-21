@@ -1,31 +1,42 @@
 'use client'
 
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, type RootState, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
-import type { BlendMode } from './effect'
+import type { BlendMode, Tuning } from './effect'
 import { type EffectId, effectOf } from './effects'
 import { type LookGround, studioGround } from './ground'
-import { type CaptureOptions, type Snapshot, STILL_QUALITY } from './recipe'
+import { type CaptureOptions, STILL_QUALITY } from './recipe'
 import { EFFECT_SCENES } from './scenes'
 
 export type CaptureInput = {
   effect: EffectId
-  snapshot: Snapshot
+  /** The resolved tuning for the face the still is of; the scene caps it at the hero placement. */
+  tuning: Tuning
+  /** The frames to read back, ascending, from one run stepped at 1/60 s. */
+  frames: readonly number[]
   capture: CaptureOptions
   /** The look's own ground, which a filled still is laid over; absent, the site's background. */
   ground?: LookGround
+  /** Aborting takes the canvas down and rejects with `AbortError`. */
+  signal?: AbortSignal
 }
 
+const abortError = () => new DOMException('The capture was cancelled.', 'AbortError')
+
 /**
- * One exact still, rendered in this browser: the effect's own scene stepped a
- * fixed number of 1/60 s frames with neutral input, then encoded as the
- * capture's own file. It mounts its own offscreen canvas and takes it down
- * again, so the caller needs no element and the website has no readback path.
- * Studio calls it on Publish (the two posters) and on Export.
+ * Exact stills, rendered in this browser: the effect's own scene stepped a
+ * fixed number of 1/60 s frames with neutral input, read back at each frame
+ * asked for and encoded as the capture's own file. It mounts its own offscreen
+ * canvas and takes it down again, so the caller needs no element and the
+ * website has no readback path. Studio calls it on Publish (the posters and
+ * the stills), for the stage's still preview and for the contact sheet; one
+ * run yields every moment of a sheet, so a strip of frames costs one
+ * simulation, not one per frame.
  */
-export function captureStill(input: CaptureInput): Promise<Blob> {
+export function captureStills(input: CaptureInput): Promise<Blob[]> {
   return new Promise((resolve, reject) => {
+    if (input.signal?.aborted) return reject(abortError())
     const host = document.createElement('div')
     // Offscreen, not `display: none`: the canvas sizes itself from layout.
     host.style.cssText =
@@ -39,6 +50,7 @@ export function captureStill(input: CaptureInput): Promise<Blob> {
       (value: T) => {
         if (settled) return
         settled = true
+        input.signal?.removeEventListener('abort', abort)
         // An error can arrive from inside a React effect, where a root cannot
         // be unmounted synchronously.
         setTimeout(() => {
@@ -47,6 +59,8 @@ export function captureStill(input: CaptureInput): Promise<Blob> {
         })
         finish(value)
       }
+    const abort = () => settle(reject)(abortError())
+    input.signal?.addEventListener('abort', abort, { once: true })
     root.render(
       <CaptureScene
         input={input}
@@ -57,20 +71,24 @@ export function captureStill(input: CaptureInput): Promise<Blob> {
   })
 }
 
+/** One still, at one frame. */
+export const captureStill = (input: Omit<CaptureInput, 'frames'> & { frame: number }) =>
+  captureStills({ ...input, frames: [input.frame] }).then(([image]) => image)
+
 function CaptureScene({
-  input: { effect, capture, snapshot, ground },
+  input: { effect, capture, tuning, frames, ground },
   onResult,
   onError,
 }: {
   input: CaptureInput
-  onResult: (image: Blob) => void
+  onResult: (images: Blob[]) => void
   onError: (message: string) => void
 }) {
   const rootRef = useRef<HTMLDivElement>(null)
   const Scene = EFFECT_SCENES[effect].Capture
   const contract = effectOf(effect)
-  const tuning = contract.limit(snapshot[capture.surface], 'hero')
-  const blend = contract.blend?.(tuning)
+  const limited = contract.limit(tuning, 'hero')
+  const blend = contract.blend?.(limited)
   return (
     <div ref={rootRef} style={{ width: capture.width, height: capture.height }}>
       <Canvas
@@ -88,9 +106,9 @@ function CaptureScene({
           gl.debug.onShaderError = () => onError('Shader compilation failed.')
         }}
       >
-        <Scene rootRef={rootRef} tuning={tuning} onError={onError} />
+        <Scene rootRef={rootRef} tuning={limited} onError={onError} />
         <CaptureFrames
-          frames={snapshot.frame}
+          frames={frames}
           capture={capture}
           blend={blend}
           ground={ground}
@@ -144,6 +162,46 @@ function encodeStill(
   )
 }
 
+/**
+ * The run: every frame stepped in order, the ones asked for drawn and read
+ * back before the next step, since the drawing buffer is a frame's only until
+ * something else is drawn into it. Now and then the thread is handed back on
+ * a timer, not a frame callback: frame callbacks stop in a tab that loses the
+ * screen mid-capture.
+ */
+async function readFrames(
+  { advance, gl, scene }: Pick<RootState, 'advance' | 'gl' | 'scene'>,
+  frames: readonly number[],
+  encode: () => Promise<Blob>,
+  cancelled: () => boolean,
+): Promise<Blob[] | null> {
+  const render = gl.render.bind(gl)
+  // Only the frames read back are drawn; the simulation steps run regardless.
+  let draw = false
+  gl.render = (target, camera) => {
+    if (target !== scene || draw) render(target, camera)
+  }
+  try {
+    const wanted = [...new Set(frames)].sort((a, b) => a - b)
+    const last = wanted.at(-1) ?? 1
+    const images: Blob[] = []
+    for (let frame = 0; frame < last; frame++) {
+      if (cancelled()) return null
+      draw = wanted.includes(frame + 1)
+      advance(frame / 60)
+      if (draw) {
+        gl.getContext().finish()
+        images.push(await encode())
+      } else if (frame % 20 === 19) {
+        await new Promise<void>((resolve) => setTimeout(resolve))
+      }
+    }
+    return images
+  } finally {
+    gl.render = render
+  }
+}
+
 function CaptureFrames({
   frames,
   capture,
@@ -152,11 +210,11 @@ function CaptureFrames({
   onResult,
   onError,
 }: {
-  frames: number
+  frames: readonly number[]
   capture: CaptureOptions
   blend: BlendMode | undefined
   ground: LookGround | undefined
-  onResult: (image: Blob) => void
+  onResult: (images: Blob[]) => void
   onError: (message: string) => void
 }) {
   const advance = useThree((state) => state.advance)
@@ -168,27 +226,16 @@ function CaptureFrames({
     let cancelled = false
     // Effects, material attachment and canvas size settle before the first fixed step.
     const raf = requestAnimationFrame(async () => {
-      const render = gl.render.bind(gl)
-      let finalFrame = false
-      gl.render = (target, camera) => {
-        if (target !== scene || finalFrame) render(target, camera)
-      }
       try {
-        for (let frame = 0; frame < frames; frame++) {
-          if (cancelled) return
-          finalFrame = frame === frames - 1
-          advance(frame / 60)
-          // Hand the thread back now and then. A timer, not a frame callback:
-          // frame callbacks stop in a tab that loses the screen mid-capture.
-          if (frame % 20 === 19) await new Promise<void>((resolve) => setTimeout(resolve))
-        }
-        gl.getContext().finish()
-        const image = await encodeStill(gl.domElement, capture, blend, ground)
-        if (!cancelled) callbacks.current.onResult(image)
+        const images = await readFrames(
+          { advance, gl, scene },
+          frames,
+          () => encodeStill(gl.domElement, capture, blend, ground),
+          () => cancelled,
+        )
+        if (images && !cancelled) callbacks.current.onResult(images)
       } catch (error) {
         if (!cancelled) callbacks.current.onError(String(error))
-      } finally {
-        gl.render = render
       }
     })
     return () => {

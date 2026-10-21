@@ -5,10 +5,11 @@ import './studio.css'
 import { toast } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 import { Button } from '@/components/ui/button'
-import { sameGround, studioGround } from '@/features/immersive/studio/ground'
-import { canonicalJSON, snapshotRecipe } from '@/features/immersive/studio/recipe'
+import { studioGround } from '@/features/immersive/studio/ground'
+import { stillInputs } from '@/features/immersive/studio/stills'
 import { useDraft, useGround } from './draft'
 import { type PublishedState, useLook } from './look-store'
+import { draftState } from './status'
 import { studioStore } from './store'
 
 export const when = (iso: string) =>
@@ -25,22 +26,16 @@ export const when = (iso: string) =>
  * shows it on the stage beside the draft. Neither changes the site.
  */
 export const History: UIFieldClientComponent = () => {
-  const { id, key, effect, recipe, restore } = useDraft()
+  const { id, key, effect, recipe, stills, restore } = useDraft()
   const ground = useGround()
   const { history, loaded } = useLook(id)
-  let draftKey = ''
-  try {
-    draftKey = canonicalJSON(snapshotRecipe(effect, recipe))
-  } catch {
-    // An invalid draft matches nothing.
-  }
-  // A published state is its recipe and its ground: both are compared, both come back.
+  // A published state is its recipe, its ground and its stills: all are compared, all come back.
   const matchesDraft = (state: PublishedState) =>
-    state.key === draftKey && sameGround(state.ground, ground.ground)
+    draftState(effect, recipe, ground.ground, stills, state).unchanged
 
   const restoreState = (state: PublishedState) => {
     try {
-      restore(state.recipe)
+      restore(state.recipe, state.stills.map(stillInputs))
       ground.replace(state.ground)
       toast.success(`The draft is back at ${when(state.at)}. Undo in Studio reverses the recipe.`)
     } catch {

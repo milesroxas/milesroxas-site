@@ -3,7 +3,18 @@
 import { useSyncExternalStore } from 'react'
 import type { LookGround } from '@/features/immersive/studio/ground'
 import type { Recipe } from '@/features/immersive/studio/recipe'
+import type { Still } from '@/features/immersive/studio/stills'
 import type { VisualPlacement } from '@/features/immersive/visual/placement'
+
+/**
+ * What the stage shows and the Inspector edits: the live look (`null`), the
+ * poster pair (`'poster'`, the look exactly as it runs, at its capture frame)
+ * or one of the look's stills, by id.
+ */
+export type StillSelection = null | 'poster' | string
+
+/** One undo step: everything of the look an edit in the Studio can change together. */
+export type LookEdit = { recipe: Recipe; stills: Still[] }
 
 /**
  * Studio session state that is not part of the document: how the stage is
@@ -19,14 +30,15 @@ export type StudioSession = {
   paused: boolean
   /** Bumped to restart the preview from frame zero. */
   generation: number
+  still: StillSelection
   comparison: Recipe | null
   /** The ground the comparison was kept or published with; the stage paints it under the comparison. */
   comparisonGround: LookGround
   comparisonLabel: string
   comparisonAt: number | null
   showComparison: boolean
-  history: Recipe[]
-  future: Recipe[]
+  history: LookEdit[]
+  future: LookEdit[]
 }
 
 const HISTORY_LIMIT = 50
@@ -36,6 +48,7 @@ const initial = (): StudioSession => ({
   placement: 'hero',
   paused: false,
   generation: 0,
+  still: null,
   comparison: null,
   comparisonGround: {},
   comparisonLabel: '',
@@ -67,10 +80,18 @@ export const studioStore = {
     sessions.set(key, { ...read(key), ...next })
     emit()
   },
-  /** Forget everything that was made of recipes: the undo stack and the kept comparison. */
+  /** Forget everything that was made of recipes: the undo stack, the kept comparison and the selection. */
   clear(key: string) {
-    const { history, future, comparison, comparisonGround, showComparison, generation, ...kept } =
-      read(key)
+    const {
+      history,
+      future,
+      comparison,
+      comparisonGround,
+      showComparison,
+      still,
+      generation,
+      ...kept
+    } = read(key)
     sessions.set(key, { ...initial(), ...kept, generation: generation + 1 })
     emit()
   },
@@ -80,12 +101,12 @@ export const studioStore = {
     emit()
   },
   /**
-   * Call with the recipe about to be replaced, before the change. Every change
+   * Call with the state about to be replaced, before the change. Every change
    * to the draft, undo and redo included, puts the draft back on the stage:
    * an edit made while a comparison is showing would otherwise change nothing
    * the author can see.
    */
-  record(key: string, previous: Recipe) {
+  record(key: string, previous: LookEdit) {
     const session = read(key)
     sessions.set(key, {
       ...session,
@@ -95,7 +116,7 @@ export const studioStore = {
     })
     emit()
   },
-  undo(key: string, current: Recipe): Recipe | null {
+  undo(key: string, current: LookEdit): LookEdit | null {
     const session = read(key)
     const previous = session.history.at(-1)
     if (!previous) return null
@@ -108,7 +129,7 @@ export const studioStore = {
     emit()
     return previous
   },
-  redo(key: string, current: Recipe): Recipe | null {
+  redo(key: string, current: LookEdit): LookEdit | null {
     const session = read(key)
     const next = session.future.at(-1)
     if (!next) return null

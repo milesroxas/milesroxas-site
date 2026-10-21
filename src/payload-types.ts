@@ -539,7 +539,7 @@ export interface FolderInterface {
   createdAt: string;
 }
 /**
- * Tune the recipe in the Inspector, watch it on the stage, then publish. Every place that uses the look shows what is published.
+ * Tune the look in the Inspector, watch it on the stage, add the stills it should ship as, then publish. Every place that uses the look shows what is published.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "streak-looks".
@@ -597,6 +597,49 @@ export interface StreakLook {
       [k: string]: unknown;
     };
   };
+  /**
+   * Static renders of the look, one per use: the share image of a page that opens on the look (preview), social sizes and custom sizes. Each is the live recipe plus its own overrides, rendered in the admin Studio when the look is published; the published look serves the preview still wherever the look is used. Up to 12; one preview.
+   */
+  stills?: {
+    /**
+     * Stable within the look; 6 to 12 lowercase letters and digits.
+     */
+    id: string;
+    /**
+     * One of "preview" (Preview card, 1200 × 630), "social" (Social post, 1080 × 1350), "square" (Square post, 1080 × 1080), "story" (Story, 1080 × 1920), "custom" (Custom size, 1800 × 1200).
+     */
+    use: 'preview' | 'social' | 'square' | 'story' | 'custom';
+    /**
+     * A name for a custom still.
+     */
+    label?: string;
+    /**
+     * The face the still is of.
+     */
+    surface: 'dark' | 'light';
+    /**
+     * Logical pixels. Fixed by the use; free for "custom".
+     */
+    width: number;
+    height: number;
+    /**
+     * Pixel density: 2 renders twice the size.
+     */
+    scale: 1 | 2;
+    format: 'webp' | 'jpeg';
+    /**
+     * Keep alpha instead of flattening onto the face's ground. Custom WebP only.
+     */
+    transparent: boolean;
+    seed: number;
+    frame: number;
+    /**
+     * Overrides on the live recipe for this still only, by parameter name; `{}` is the look as it runs. Only the parameters that leave their default, by name. `{}` is the effect as it ships, and the `snapshot.dark` of any published look of the same effect shows every resolved value to start from. An unknown name or a value out of range is refused on save with the reason. When `effect` is "streakField" (Streak Field): Composition: layout: "rows" | "grid"; shape: "dash" | "dot"; count: 100 to 8000; columnPitch: 4 to 100; rowPitch: 4 to 100; rowJitter: 0 to 1; thickness: 0.2 to 4; minLength: 1 to 80; maxLength: 1 to 80; lengthBias: 1 to 10. Motion: motion: "drift" | "flow"; flowSpeed: 0 to 100; drift: -50 to 50; driftSpread: 0 to 1; timeScale: 0 to 1.5. Flow: noise: "none" | "value" | "simplex" | "fbm" | "ridged" | "curl" | "gradient"; noiseScale: 100 to 2000; noiseStrength: 0 to 200; noiseSpeed: 0 to 0.5; noiseGain: 0 to 0.6; noiseAxis: 0 to 1; orient: 0 to 1. Relief: relief: 0 to 1; reliefFloor: 0 to 1; reliefContrast: 0.5 to 5; reliefLength: 0 to 1. Color: ink: [r, g, b], each 0 to 1; paperInk: [r, g, b], each 0 to 1; brightness: 0 to 1.5; brightnessSpread: 0 to 1; flicker: 0 to 1; flickerRate: 0 to 2; tail: 0 to 1; cap: 0 to 8. Life: lifetime: 2 to 30; lifeSpread: 0 to 0.9; fadeIn: 0 to 0.4; fadeOut: 0 to 0.4. Interaction: pointerRadius: 0 to 500; pointerPush: -100 to 100; pointerSwirl: -100 to 100; pointerWake: 0 to 0.2; pointerAgitate: 0 to 4.2; pointerGlow: 0 to 3; pointerLift: -1 to 1; pointerEase: 1 to 20. When `effect` is "lightLeak" (Light leak): Light: blendMode: "plus-lighter" | "screen" | "lighten"; gain: 0 to 3; gainEnergy: 0 to 2; saturation: 0 to 3; vignette: 0 to 2; grain: 0 to 0.2; grainLuminance: 0 to 0.3. Field: blobWarm: 0 to 3; blobCool: 0 to 3; streak: 0 to 3; streakAngle: -3.14 to 3.14; streakSpread: 0.005 to 0.5; slats: 0 to 3; slatAngle: -3.14 to 3.14; slatTopSpread: 0.01 to 1.2; slatBottomSpread: 0.01 to 1.2; slatFrequency: 1 to 60; slatSharpness: 0.5 to 8. Color: coolTint: 3 numbers, each 0 to 2; warmTint: 3 numbers, each 0 to 2; amber: 3 numbers, each 0 to 1. Dispersion: dispersion: 0 to 0.08; dispersionEnergy: 0 to 0.2; dispersionDirection: 2 numbers, each -3 to 3. Motion: timeScale: 0 to 2; warpAmount: 0 to 1.5; warpScale: 0.1 to 8. Scroll: scrollSpeed: 100 to 3000; scrollCurve: 0.3 to 3; scrollDecay: 0.1 to 12; scrollIntensity: 0 to 1; scrollSmooth: 0.1 to 12; scrollDrift: 0 to 2; morph: 0 to 2; morphScale: 0.1 to 12. Paper: inkChroma: 0 to 3; inkDensity: 0 to 1.5. Interaction: excite: true | false; exciteTargets: "marked" | "interactive"; sectionExcite: 0 to 1; hoverBloom: 0 to 4; exciteEase: 0.5 to 12; pointerEase: 0.5 to 12; gainExcite: 0 to 2; saturationExcite: 0 to 2; dispersionExcite: 0 to 0.2; slatFrequencyExcite: 0 to 20.
+     */
+    deltas: {
+      [k: string]: unknown;
+    };
+  }[];
   snapshot?:
     | {
         [k: string]: unknown;
@@ -616,6 +659,7 @@ export interface StreakLook {
     | boolean
     | null;
   sourceHash?: string | null;
+  stillMedia?: (number | Media)[] | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -7193,9 +7237,11 @@ export interface StreakLooksSelect<T extends boolean = true> {
   createdBy?: T;
   updatedBy?: T;
   recipe?: T;
+  stills?: T;
   snapshot?: T;
   posters?: T;
   sourceHash?: T;
+  stillMedia?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;

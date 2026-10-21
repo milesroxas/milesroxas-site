@@ -79,7 +79,7 @@ The source of truth is `mcp.ts`; this table mirrors it.
 | --- | --- | --- |
 | Public surfaces | Every `CONTENT_SURFACES` collection: `pages`, `works`, `posts` | Full authoring |
 | Operations | `capabilities`, `categories`, `clients`, `forms`, `redirects` | Full authoring |
-| Assets | `streak-looks` | Full authoring, **drafts only**: a look is published from the Studio |
+| Assets | `streak-looks` | Full authoring, **drafts only**: a look and its stills are published from the Studio, where they are rendered |
 | Assets | `media` | **Read-only**. New images go through `pnpm cms:upload` |
 | Full-length videos | `videos` | **Read-only**. Uploaded and configured in the admin ([media.md](media.md), Videos); a block plays one with `playVideo: true` and `video: <id>` |
 | Visitor records | `inquiries`, `form-submissions`, `ask-questions` | **Read-only** |

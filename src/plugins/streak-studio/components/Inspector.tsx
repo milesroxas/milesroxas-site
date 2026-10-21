@@ -2,49 +2,34 @@
 
 import './studio.css'
 
-import { Button, toast, useDocumentInfo, useForm } from '@payloadcms/ui'
 import { IconChevronsDown, IconChevronsUp } from '@tabler/icons-react'
 import type { JSONFieldClientComponent } from 'payload'
 import { useState } from 'react'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { type Effect, STUDIO_GROUND, SURFACES } from '@/features/immersive/studio/effect'
-import type { EffectId } from '@/features/immersive/studio/effects'
-import { type LookGround, studioGround } from '@/features/immersive/studio/ground'
+import { resolveTuning } from '@/features/immersive/resolve-tuning'
+import type { Effect, Tuning } from '@/features/immersive/studio/effect'
 import {
-  type CaptureOptions,
-  EXPORT_CAPTURE,
   type Recipe,
   resolveRecipeTuning,
   validateRecipe,
 } from '@/features/immersive/studio/recipe'
+import { type Still, stillLabel, validateStills } from '@/features/immersive/studio/stills'
 import { cn } from '@/utilities/ui'
-import { useDraft, useGround } from './draft'
+import { type Stills, useGround, useStills } from './draft'
+import { useLook } from './look-store'
 import { ParameterRow, RangePairRow, type RowParameter } from './ParameterRow'
 import {
   EFFECT_COPY,
   type EffectCopy,
-  fromHex,
-  GROUND_COPY,
-  GROUND_GROUP,
   type GroupSummary,
   lookGroups,
   parameterKeys,
   toHex,
 } from './parameters'
-import { exportStill } from './publish'
+import { StillsPanel } from './StillsPanel'
+import { draftState } from './status'
 
 const sameValue = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 
@@ -65,40 +50,75 @@ const summaryNode = (summary: GroupSummary) =>
     </span>
   )
 
-type Update = ReturnType<typeof useDraft>['update']
-
-/** The message the draft is refused with, or nothing. */
-function validationOf(effect: Effect, recipe: Recipe) {
+/** The message a draft is refused with, or nothing. */
+function validationOf(read: () => unknown) {
   try {
-    validateRecipe(effect, recipe)
+    read()
     return ''
   } catch (error) {
     return (error as Error).message
   }
 }
 
-/** The draft as the panel edits it: what each parameter is set to, and the edits that change it. */
-function recipePanel(effect: Effect, copy: EffectCopy, recipe: Recipe, update: Update) {
-  const tuning = resolveRecipeTuning(effect, recipe)
-  const validation = validationOf(effect, recipe)
+/**
+ * What the rows edit: the look, whose values depart from the effect's
+ * defaults, or one still, whose overrides depart from the look. The rows,
+ * the dots and the summaries read the same way for both; only what counts as
+ * the base changes, and `base` names it in each tooltip.
+ */
+type Target = {
+  base: 'default' | 'look'
+  defaults: Tuning
+  tuning: Tuning
+  overrides: Tuning
+  validation: string
+  set: (overrides: Tuning) => void
+}
+
+function lookTarget(effect: Effect, recipe: Recipe, update: Stills['update']): Target {
+  return {
+    base: 'default',
+    defaults: effect.defaults,
+    tuning: resolveRecipeTuning(effect, recipe),
+    overrides: recipe.deltas,
+    validation: validationOf(() => validateRecipe(effect, recipe)),
+    set: (deltas) => update({ ...recipe, deltas }),
+  }
+}
+
+function stillTarget(effect: Effect, recipe: Recipe, still: Still, patch: Stills['patch']): Target {
+  const defaults = resolveRecipeTuning(effect, recipe)
+  return {
+    base: 'look',
+    defaults,
+    tuning: resolveTuning(defaults, still.deltas),
+    overrides: still.deltas,
+    validation: validationOf(() => validateStills(effect, recipe, [still])),
+    set: (deltas) => patch(still.id, { deltas }),
+  }
+}
+
+/** The target as the panel edits it: what each parameter is set to, and the edits that change it. */
+function recipePanel(effect: Effect, copy: EffectCopy, target: Target) {
+  const { tuning, validation, defaults, overrides, base } = target
   const change = (patch: Record<string, unknown>) => {
-    const deltas = { ...recipe.deltas }
-    for (const [name, next] of Object.entries(patch)) {
-      if (next === undefined || sameValue(next, effect.defaults[name])) delete deltas[name]
-      else deltas[name] = next
+    const next = { ...overrides }
+    for (const [name, value] of Object.entries(patch)) {
+      if (value === undefined || sameValue(value, defaults[name])) delete next[name]
+      else next[name] = value
     }
-    update({ ...recipe, deltas })
+    target.set(next)
   }
   const reset = (keys: readonly string[]) => {
-    const deltas = { ...recipe.deltas }
-    for (const name of keys) delete deltas[name]
-    update({ ...recipe, deltas })
+    const next = { ...overrides }
+    for (const name of keys) delete next[name]
+    target.set(next)
   }
-  const changedKeys = Object.keys(recipe.deltas)
+  const changedKeys = Object.keys(overrides)
   // A pair out of order is the one rule the effect checks across parameters,
   // so its message belongs under the pair rather than under the panel.
   const crossed = copy.ranges?.find(({ keys }) => Number(tuning[keys[0]]) > Number(tuning[keys[1]]))
-  return { effect, copy, tuning, validation, change, reset, changedKeys, crossed }
+  return { effect, copy, tuning, defaults, base, validation, change, reset, changedKeys, crossed }
 }
 
 type Panel = ReturnType<typeof recipePanel>
@@ -109,13 +129,14 @@ type Panel = ReturnType<typeof recipePanel>
  */
 function rowsOf(
   keys: string[],
-  { effect, copy, tuning, validation, change, reset, changedKeys, crossed }: Panel,
+  { effect, copy, tuning, defaults, base, validation, change, reset, changedKeys, crossed }: Panel,
 ) {
   const parameter = (name: string): RowParameter => ({
     name,
     spec: effect.parameters[name],
     copy: copy.parameters[name],
-    fallback: effect.defaults[name],
+    fallback: defaults[name],
+    base,
   })
   return keys.map((name) => {
     const pair = copy.ranges?.find(({ keys: bounds }) => bounds.includes(name))
@@ -171,23 +192,31 @@ function useOpenSections(groups: string[]) {
 
 /**
  * The Inspector: every authorable parameter of the look's effect as a row,
- * grouped into sections on the Look tab and flat on the Pointer tab, in the
- * document sidebar so it stays beside the stage on every tab. It reads the
- * rows off the effect's contract and their wording off its copy, so it holds
- * no parameter by name. It is the recipe field's own component: the value it
- * edits is the field's value, so Payload's autosave, versions and validation
- * see every change as they would any other field's.
+ * grouped into sections on the Look tab and flat on the Pointer tab, and the
+ * look's stills on the Stills tab, in the document sidebar so it stays beside
+ * the stage on every tab. It reads the rows off the effect's contract and
+ * their wording off its copy, so it holds no parameter by name. It is the
+ * recipe field's own component: the value it edits is the field's value, so
+ * Payload's autosave, versions and validation see every change as they would
+ * any other field's. With a still chosen on the Stills tab, the Look and
+ * Pointer rows edit that still's overrides instead, and the bar under the
+ * tabs says so.
  */
 export const Inspector: JSONFieldClientComponent = ({ path }) => {
-  const { effect, effectId, recipe, update, errorMessage } = useDraft(path)
+  const stills = useStills(path)
+  const { id, effect, effectId, recipe, update, patch, selected, select, errorMessage } = stills
   const copy = EFFECT_COPY[effectId]
-  const panel = recipePanel(effect, copy, recipe, update)
+  const { ground } = useGround()
+  const look = useLook(id)
+  const state = draftState(effect, recipe, ground, stills.stills, look.live)
+  const target = selected
+    ? stillTarget(effect, recipe, selected, patch)
+    : lookTarget(effect, recipe, update)
+  const panel = recipePanel(effect, copy, target)
   const { validation, changedKeys } = panel
   const [tab, setTab] = useState('look')
-  const sections = useOpenSections([GROUND_GROUP, ...lookGroups(effect, copy)])
+  const sections = useOpenSections(lookGroups(effect, copy))
   const pointerKeys = parameterKeys(effect, copy.pointerGroup)
-  const { ground } = useGround()
-  const groundChanges = SURFACES.filter((surface) => ground[surface]).length
 
   return (
     <TooltipProvider delayDuration={400} skipDelayDuration={600}>
@@ -199,11 +228,19 @@ export const Inspector: JSONFieldClientComponent = ({ path }) => {
       <div data-streak-studio="inspector" className="flex flex-col gap-3 px-(--row-gutter) pb-16">
         <Tabs value={tab} onValueChange={setTab} className="gap-0">
           <TabStrip
-            changed={changedKeys.length + groundChanges}
+            changed={changedKeys.length}
+            stillsApart={state.stillsApart}
             showToggle={tab === 'look'}
             allOpen={sections.allOpen}
             onToggleAll={sections.toggleAll}
           />
+          {selected && (
+            <SelectionBar
+              label={stillLabel(selected)}
+              editing={tab !== 'stills'}
+              onDone={() => select(null)}
+            />
+          )}
           <LookTab panel={panel} sections={sections} />
           <PointerTab
             note={copy.pointerNote}
@@ -212,13 +249,13 @@ export const Inspector: JSONFieldClientComponent = ({ path }) => {
           >
             {rowsOf(pointerKeys, panel)}
           </PointerTab>
-          <TabsContent value="export" className="pt-5">
-            <ExportPanel
-              effect={effect}
-              effectId={effectId}
-              recipe={recipe}
+          <TabsContent value="stills" className="pt-5">
+            <StillsPanel
+              stills={stills}
+              look={look}
               ground={ground}
-              validation={validation}
+              unchangedLook={state.unchangedLook}
+              status={state.status}
             />
           </TabsContent>
         </Tabs>
@@ -241,11 +278,13 @@ export const Inspector: JSONFieldClientComponent = ({ path }) => {
  */
 function TabStrip({
   changed,
+  stillsApart,
   showToggle,
   allOpen,
   onToggleAll,
 }: {
   changed: number
+  stillsApart: number
   showToggle: boolean
   allOpen: boolean
   onToggleAll: () => void
@@ -255,7 +294,15 @@ function TabStrip({
       <TabsList variant="line" className="h-full gap-5 border-b-0">
         <TabsTrigger value="look">Look</TabsTrigger>
         <TabsTrigger value="pointer">Pointer</TabsTrigger>
-        <TabsTrigger value="export">Export</TabsTrigger>
+        <TabsTrigger value="stills" className="gap-1.5">
+          Stills
+          {/* A still that will render on publish is marked where the tab is,
+              so the count of edits on the strip stays the count of rows. */}
+          {stillsApart > 0 && <span aria-hidden className="size-1.5 rounded-full bg-warning" />}
+          {stillsApart > 0 && (
+            <span className="sr-only">{stillsApart} stills render on publish</span>
+          )}
+        </TabsTrigger>
       </TabsList>
       {/* The count and the section control are the strip's right end:
           what has changed, and how much of the panel is open. The
@@ -274,6 +321,43 @@ function TabStrip({
           {showToggle && <ToggleAllButton allOpen={allOpen} onClick={onToggleAll} />}
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * The one line that says what the rows are editing while a still is chosen:
+ * a still's overrides, not the look. It parks under the tab strip on every
+ * tab, and Done puts the look back under the rows and on the stage.
+ */
+function SelectionBar({
+  label,
+  editing,
+  onDone,
+}: {
+  label: string
+  editing: boolean
+  onDone: () => void
+}) {
+  return (
+    <div
+      role="status"
+      className="sticky top-(--inspector-tabs) z-20 -mx-(--row-gutter) flex min-h-8 items-center gap-2.5 border-border border-b bg-muted/60 px-(--row-gutter) text-[11px]/4 backdrop-blur-xs"
+    >
+      <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-primary" />
+      <span className="min-w-0 flex-1 truncate text-foreground">
+        <span className="font-medium">{label}</span>
+        <span className="text-muted-foreground">
+          {editing ? ' · the rows override the look for this still' : ' · on the stage'}
+        </span>
+      </span>
+      <button
+        type="button"
+        className="pressable shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
+        onClick={onDone}
+      >
+        Done
+      </button>
     </div>
   )
 }
@@ -313,14 +397,6 @@ function LookTab({
   return (
     <TabsContent value="look" className="flex flex-col pt-5">
       {groups.map((name) => {
-        if (name === GROUND_GROUP)
-          return (
-            <GroundGroup
-              key={name}
-              open={openGroups[name] ?? false}
-              onOpenChange={(next) => setOpenGroups((state) => ({ ...state, [name]: next }))}
-            />
-          )
         const keys = parameterKeys(effect, name)
         return (
           <Group
@@ -337,58 +413,6 @@ function LookTab({
         )
       })}
     </TabsContent>
-  )
-}
-
-/**
- * The look's own ground, one colour row per face, on the same rows the
- * parameters use: the swatch, the hex field, the dot and option-click reset.
- * It is the look's field beside the recipe (`useGround`), so a change here is
- * saved with the draft, shown on the stage at once, and published with the
- * look; it is not an undo step. The default of each face is the site's
- * background, which is what a face left empty paints.
- */
-function GroundGroup({
-  open,
-  onOpenChange,
-}: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}) {
-  const { ground, set } = useGround()
-  const faces = SURFACES.map((surface) => ({
-    surface,
-    hex: studioGround(ground, surface),
-    changed: Boolean(ground[surface]),
-  }))
-  return (
-    <Group
-      name={GROUND_GROUP}
-      summary={summaryNode({ swatches: faces.map(({ hex }) => fromHex(hex) ?? [0, 0, 0]) })}
-      changed={faces.filter(({ changed }) => changed).length}
-      open={open}
-      onOpenChange={onOpenChange}
-      onReset={() => {
-        for (const surface of SURFACES) set(surface, null)
-      }}
-    >
-      {faces.map(({ surface, hex, changed }) => (
-        <ParameterRow
-          key={surface}
-          parameter={{
-            name: `ground.${surface}`,
-            spec: { group: GROUND_GROUP, color: true },
-            copy: GROUND_COPY[surface],
-            fallback: fromHex(STUDIO_GROUND[surface]),
-          }}
-          value={fromHex(hex)}
-          changed={changed}
-          onChange={(next) => set(surface, toHex(next as readonly number[]))}
-          onReset={() => set(surface, null)}
-          onFix={() => {}}
-        />
-      ))}
-    </Group>
   )
 }
 
@@ -495,264 +519,5 @@ function Group({
         <div className="flex flex-col gap-0.5 pb-3">{children}</div>
       </CollapsibleContent>
     </Collapsible>
-  )
-}
-
-/**
- * A row of the Export panel on the Inspector's own grid: the same label,
- * control and value columns the parameter rows use, so a capture setting and
- * a parameter read as one panel rather than two forms that happen to share a
- * sidebar. The caller places what follows the label: a control in the middle
- * column, optionally a readout in the value column, or one element spanning
- * both.
- */
-function ExportRow({
-  label,
-  htmlFor,
-  children,
-}: {
-  label: string
-  htmlFor?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="grid grid-cols-[var(--row-label)_minmax(0,1fr)_var(--row-value)] items-center gap-x-2.5">
-      <Label htmlFor={htmlFor} className="min-h-9 cursor-default text-foreground/80 text-xs/4">
-        {label}
-      </Label>
-      {children}
-    </div>
-  )
-}
-
-type SetCapture = (patch: Partial<CaptureOptions>) => void
-
-const SCALES = [
-  ['1', '1×'],
-  ['2', '2×'],
-] as const
-const GROUNDS = [
-  ['dark', 'Dark'],
-  ['light', 'Light'],
-] as const
-
-/**
- * A tab opened on the click, while the browser still counts it as the
- * editor's; the still loads in it once it is filed, and the Studio stays put.
- */
-function openTab() {
-  const tab = window.open('', '_blank')
-  if (tab) tab.opener = null
-  return tab
-}
-
-type ExportPanelProps = {
-  effect: Effect
-  effectId: EffectId
-  recipe: Recipe
-  ground: LookGround
-  validation: string
-}
-
-/**
- * A still of this recipe at its capture frame, rendered in this browser and
- * filed in Media. The seed and the frame come from the recipe; scale raises
- * resolution without changing the composition.
- */
-function ExportPanel({ effect, effectId, recipe, ground, validation }: ExportPanelProps) {
-  const { id } = useDocumentInfo()
-  const { submit } = useForm()
-  const [capture, setCapture] = useState<CaptureOptions>(EXPORT_CAPTURE)
-  const [busy, setBusy] = useState(false)
-  const set: SetCapture = (patch) => setCapture((v) => ({ ...v, ...patch }))
-
-  const render = async () => {
-    const tab = openTab()
-    setBusy(true)
-    try {
-      if (!id) throw new Error('Save this look first.')
-      const { url } = await exportStill(submit, { id, effect: effectId, recipe, ground }, capture)
-      if (tab && url) tab.location.href = url
-      else tab?.close()
-      toast.success('Saved to Media, in the Streak Field Studio folder.')
-    } catch (error) {
-      tab?.close()
-      toast.error((error as Error).message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  return (
-    <div className="flex flex-col">
-      <p className="max-w-[58ch] pb-3 text-muted-foreground text-xs/5">
-        The seed and capture frame come from the recipe. Scale raises resolution without changing
-        the composition.
-      </p>
-      <SizeRow capture={capture} set={set} />
-      <ExportToggle
-        label="Scale"
-        value={String(capture.scale)}
-        options={SCALES}
-        onChange={(next) => set({ scale: Number(next) })}
-      />
-      <ExportToggle
-        label="Ground"
-        value={capture.surface}
-        options={GROUNDS}
-        onChange={(next) => set({ surface: next as CaptureOptions['surface'] })}
-      />
-      <FormatRow capture={capture} set={set} />
-      {/* An effect that draws an opaque frame has no alpha to keep: its ground
-          drops out in the blend, not in the file. */}
-      {!effect.blend && <AlphaRow capture={capture} set={set} />}
-      <RenderFooter
-        saved={Boolean(id)}
-        busy={busy}
-        invalid={Boolean(validation)}
-        onRender={render}
-      />
-    </div>
-  )
-}
-
-function RenderFooter({
-  saved,
-  busy,
-  invalid,
-  onRender,
-}: {
-  saved: boolean
-  busy: boolean
-  invalid: boolean
-  onRender: () => void
-}) {
-  return (
-    <div className="mt-4 border-border border-t pt-4">
-      <Button
-        buttonStyle="secondary"
-        size="small"
-        margin={false}
-        disabled={!saved || busy || invalid}
-        onClick={onRender}
-      >
-        {busy ? 'Rendering…' : 'Render and save to Media'}
-      </Button>
-      {!saved && (
-        <p className="mt-2 text-[11px]/4 text-muted-foreground">Save this look once to render.</p>
-      )}
-    </div>
-  )
-}
-
-function SizeRow({ capture, set }: { capture: CaptureOptions; set: SetCapture }) {
-  const megapixels = (capture.width * capture.height * capture.scale ** 2) / 1_000_000
-  return (
-    <ExportRow label="Size" htmlFor="streak-capture-width">
-      <div className="flex items-center gap-1.5">
-        <Input
-          id="streak-capture-width"
-          variant="value"
-          className="min-w-0 flex-1"
-          type="number"
-          aria-label="Width"
-          min={320}
-          max={1920}
-          value={capture.width}
-          onChange={(event) => set({ width: Number(event.target.value) })}
-        />
-        <span className="shrink-0 text-[11px] text-muted-foreground">×</span>
-        <Input
-          variant="value"
-          className="min-w-0 flex-1"
-          type="number"
-          aria-label="Height"
-          min={320}
-          max={1920}
-          value={capture.height}
-          onChange={(event) => set({ height: Number(event.target.value) })}
-        />
-      </div>
-      <span className="text-right font-mono text-[11px]/3.5 text-muted-foreground tabular-nums">
-        {megapixels.toFixed(1)} MP
-      </span>
-    </ExportRow>
-  )
-}
-
-function ExportToggle({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: string
-  options: readonly (readonly [value: string, label: string])[]
-  onChange: (next: string) => void
-}) {
-  return (
-    <ExportRow label={label}>
-      <ToggleGroup
-        type="single"
-        variant="segmented"
-        size="sm"
-        value={value}
-        onValueChange={(next) => next && onChange(next)}
-      >
-        {options.map(([option, text]) => (
-          <ToggleGroupItem key={option} value={option}>
-            {text}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
-    </ExportRow>
-  )
-}
-
-function FormatRow({ capture, set }: { capture: CaptureOptions; set: SetCapture }) {
-  return (
-    <ExportRow label="Format" htmlFor="streak-capture-format">
-      <Select
-        value={capture.format}
-        onValueChange={(next) =>
-          set({
-            format: next as CaptureOptions['format'],
-            transparent: next === 'jpeg' ? false : capture.transparent,
-          })
-        }
-      >
-        <SelectTrigger size="field" id="streak-capture-format" className="w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent align="end">
-          <SelectItem value="webp">WebP</SelectItem>
-          <SelectItem value="jpeg">JPEG</SelectItem>
-        </SelectContent>
-      </Select>
-    </ExportRow>
-  )
-}
-
-/**
- * The checkbox carries its own sentence, so it takes the control and value
- * columns together rather than leaving a number's worth of space beside a
- * 16px box.
- */
-function AlphaRow({ capture, set }: { capture: CaptureOptions; set: SetCapture }) {
-  return (
-    <ExportRow label="Alpha" htmlFor="streak-capture-transparent">
-      <div className="col-span-2 flex items-center gap-2">
-        <Checkbox
-          id="streak-capture-transparent"
-          checked={capture.transparent}
-          disabled={capture.format === 'jpeg'}
-          onCheckedChange={(checked) => set({ transparent: checked === true })}
-        />
-        <span className="text-[11px]/4 text-muted-foreground">
-          {capture.format === 'jpeg' ? 'JPEG is always filled.' : 'Transparent ground.'}
-        </span>
-      </div>
-    </ExportRow>
   )
 }

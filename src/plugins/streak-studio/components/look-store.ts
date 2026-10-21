@@ -9,8 +9,9 @@ import {
   type Snapshot,
   snapshotRecipe,
 } from '@/features/immersive/studio/recipe'
+import { type PublishedStill, publishedStills } from '@/features/immersive/studio/stills'
 import type { Media } from '@/payload-types'
-import { LOOKS_SLUG } from './paths'
+import { LOOKS_SLUG, STILL_MEDIA_FIELD, STILLS_FIELD } from './paths'
 
 /** One published state of a look, newest first in `history`. */
 export type PublishedState = {
@@ -22,8 +23,14 @@ export type PublishedState = {
   key: string
   /** The ground the state was published with; not part of the key. */
   ground: LookGround
+  /** The stills the state was published with, each with its render. */
+  stills: PublishedStill[]
   poster: string | null
+  /** Each still's render, by media id: the file and its admin thumbnail. */
+  renders: Map<number, Render>
 }
+
+export type Render = { url: string; thumbnail: string }
 
 export type LookUse = {
   content: string
@@ -51,6 +58,18 @@ const posterOf = (media: unknown) =>
     ? ((media as Media).sizes?.thumbnail?.url ?? (media as Media).url ?? null)
     : null
 
+/** A state's rendered stills, from the relationship the state populates. */
+const rendersOf = (media: unknown) => {
+  const renders = new Map<number, Render>()
+  if (!Array.isArray(media)) return renders
+  for (const row of media) {
+    const doc = row && typeof row === 'object' ? (row as Media) : null
+    const thumbnail = posterOf(doc)
+    if (doc?.url && thumbnail) renders.set(doc.id, { url: doc.url, thumbnail })
+  }
+  return renders
+}
+
 /** A stored state as the Studio reads it; `null` when today's ranges no longer accept the recipe. */
 function stateOf(
   id: string,
@@ -61,6 +80,8 @@ function stateOf(
     snapshot?: unknown
     thumbnail?: unknown
     ground?: unknown
+    [STILLS_FIELD]?: unknown
+    [STILL_MEDIA_FIELD]?: unknown
   },
 ): PublishedState | null {
   try {
@@ -75,7 +96,9 @@ function stateOf(
       recipe: doc.recipe as Recipe,
       key: canonicalJSON(snapshot),
       ground: lookGround(doc.ground),
+      stills: publishedStills(doc[STILLS_FIELD]),
       poster: posterOf(doc.thumbnail),
+      renders: rendersOf(doc[STILL_MEDIA_FIELD]),
     }
   } catch {
     return null

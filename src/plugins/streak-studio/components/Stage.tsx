@@ -7,6 +7,7 @@ import {
   IconArrowBackUp,
   IconArrowForwardUp,
   IconDice5,
+  IconLayoutGrid,
   IconMinus,
   IconPlayerPause,
   IconPlayerPlay,
@@ -26,11 +27,11 @@ import {
   lookOptions,
   lookPosterSrc,
   STUDIO_GROUND,
+  type Surface,
 } from '@/features/immersive/studio/effect'
 import { EFFECT_OPTIONS, type EffectId } from '@/features/immersive/studio/effects'
 import { type LookGround, sameGround, studioGround } from '@/features/immersive/studio/ground'
 import {
-  canonicalJSON,
   FRAME_MAX,
   type Recipe,
   resolveRecipeTuning,
@@ -40,19 +41,25 @@ import {
   snapshotRecipe,
   starterRecipe,
 } from '@/features/immersive/studio/recipe'
+import { type Still, stillInputs } from '@/features/immersive/studio/stills'
 import { VISUAL_PLACEMENTS, type VisualPlacement } from '@/features/immersive/visual/placement'
 import { cn } from '@/utilities/ui'
-import { useDraft, useGround } from './draft'
+import { type Stills, useGround, useStills } from './draft'
+import { GroundControl } from './Ground'
 import { when } from './History'
 import { type LookState, type LookUse, type PublishedState, useLook } from './look-store'
 import { EFFECT_COPY } from './parameters'
+import { StillViewport } from './StillViewport'
+import { type Shot, shotOf } from './shot'
+import { draftState } from './status'
 import { type StudioSession, studioStore, useStudioSession } from './store'
+import { Variations } from './Variations'
 
 const Preview = lazy(() =>
   import('@/features/immersive').then((module) => ({ default: module.StudioPreview })),
 )
 
-type Draft = ReturnType<typeof useDraft>
+type Draft = Stills
 type Ground = ReturnType<typeof useGround>
 type Patch = (next: Partial<StudioSession>) => void
 type Update = Draft['update']
@@ -71,6 +78,7 @@ function compareDraft(
   effect: Effect,
   recipe: Recipe,
   ground: LookGround,
+  stills: Still[],
   session: StudioSession,
   { live: published, history }: LookState,
 ) {
@@ -81,21 +89,23 @@ function compareDraft(
   } catch (error) {
     validation = (error as Error).message
   }
-  const draftKey = snapshot ? canonicalJSON(snapshot) : ''
-  // The ground rides beside the snapshot, so it is read beside the key.
-  const same = (state: PublishedState) => state.key === draftKey && sameGround(state.ground, ground)
+  const state = draftState(effect, recipe, ground, stills, published)
+  // The ground and the stills ride beside the snapshot, so they are read beside the key.
+  const same = (candidate: PublishedState) =>
+    draftState(effect, recipe, ground, stills, candidate).unchanged
   return {
     validation,
-    /** Whether a published state is the draft, ground included. */
+    /** Whether a published state is the draft, ground and stills included. */
     matches: same,
-    unchanged: Boolean(published && same(published)),
+    unchanged: state.unchanged,
     // The published state the draft is identical to, whichever one it is: a
     // restored state matches itself, not "12 changes since published".
     matched: history.find(same),
     sincePublished:
       snapshot && published
         ? snapshotChanges(snapshot, JSON.parse(published.key)) +
-          Number(!sameGround(published.ground, ground))
+          Number(!sameGround(published.ground, ground)) +
+          state.stillsApart
         : null,
     budget: snapshot
       ? effect.budget(
@@ -119,7 +129,7 @@ function statusText(id: Draft['id'], published: PublishedState | null, state: Dr
 }
 
 function stageActions(
-  { key, effect, effectId, recipe, setValue, update, restore, changeEffect }: Draft,
+  { key, effect, effectId, recipe, stills, update, undo, redo, restore, changeEffect }: Draft,
   ground: Ground,
 ) {
   return {
@@ -127,20 +137,14 @@ function stageActions(
     chooseEffect: (next: EffectId) => {
       if (next === effectId) return
       if (
-        Object.keys(recipe.deltas).length &&
+        (Object.keys(recipe.deltas).length || stills.length) &&
         !window.confirm('Changing the effect starts this draft over. Continue?')
       )
         return
       changeEffect(next)
     },
-    undo: () => {
-      const previous = studioStore.undo(key, recipe)
-      if (previous) setValue(previous)
-    },
-    redo: () => {
-      const next = studioStore.redo(key, recipe)
-      if (next) setValue(next)
-    },
+    undo,
+    redo,
     keep: () => {
       studioStore.patch(key, {
         comparison: recipe,
@@ -150,11 +154,11 @@ function stageActions(
         showComparison: false,
       })
     },
-    // A published state is its recipe and its ground, so both come back; only
-    // the recipe is an undo step.
+    // A published state is its recipe, its stills and its ground, so all come
+    // back; the ground is not an undo step.
     restoreState: (state: PublishedState, label: string) => {
       try {
-        restore(state.recipe)
+        restore(state.recipe, state.stills.map(stillInputs))
         ground.replace(state.ground)
         toast.success(`The draft is back at ${label}. Undo brings your recipe changes back.`)
       } catch {
@@ -192,7 +196,8 @@ function useUndoShortcut(undo: () => void, redo: () => void) {
 }
 
 const stageKeys =
-  (session: StudioSession, patch: Patch, randomize: () => void) => (event: React.KeyboardEvent) => {
+  (session: StudioSession, patch: Patch, randomize: () => void, leave: () => void) =>
+  (event: React.KeyboardEvent) => {
     if (isEditing(event.target) || event.metaKey || event.ctrlKey || event.altKey) return
     switch (event.key) {
       case ' ':
@@ -204,6 +209,9 @@ const stageKeys =
         break
       case 'c':
         if (session.comparison) patch({ showComparison: !session.showComparison })
+        break
+      case 'Escape':
+        leave()
         break
     }
   }
@@ -247,29 +255,57 @@ function IconAction({
 /**
  * The stage: the Studio tab of a look, for whichever effect it is filed under.
  * Starters and published history on the left, the live effect in the middle at
- * the chosen placement and ground, and
- * the session controls. Edits happen in the Inspector (the recipe field, in
- * the sidebar); the stage reads the same field and shows the result, or a
- * comparison when asked.
+ * the chosen placement and ground, and the session controls. Edits happen in
+ * the Inspector (the recipe field, in the sidebar); the stage reads the same
+ * field and shows the result, or a comparison when asked. With a still chosen
+ * on the Inspector's Stills tab, the stage shows that still instead, rendered
+ * exactly, and its seed and moment are set here.
  *
  * A look has a draft and what is published. Publish puts the draft on the
  * site, everywhere the look is used; Reset to published and Restore copy a
  * published state back into the draft.
  */
 export const Stage: UIFieldClientComponent = () => {
-  const draft = useDraft()
-  const { id, key, effect, effectId, recipe, update } = draft
+  const draft = useStills()
+  const {
+    id,
+    key,
+    effect,
+    effectId,
+    recipe,
+    stills,
+    update,
+    patch: patchStill,
+    selection,
+    selected,
+    select,
+  } = draft
   const session = useStudioSession(key)
   const look = useLook(id)
   const groundField = useGround()
   const { ground } = groundField
   const [live, setLive] = useState(true)
-  const state = compareDraft(effect, recipe, ground, session, look)
+  const [sheet, setSheet] = useState(false)
+  const state = compareDraft(effect, recipe, ground, stills, session, look)
   const actions = stageActions(draft, groundField)
   const patch: Patch = (next) => studioStore.patch(key, next)
+  // What the stage shows: the live look, or a shot of it. A still is of one
+  // face, so the face toggle sets the still's face while it is up.
+  const surface: Surface = selected ? selected.surface : session.surface
+  const shot = selection ? shotOf(effect, recipe, selected ?? 'poster', surface) : null
+  const setSurface = (next: Surface) =>
+    selected ? patchStill(selected.id, { surface: next }) : patch({ surface: next })
+  // The seed and the moment belong to what the stage shows: the recipe's for
+  // the look and its poster, the still's own for a still.
+  const setShot = (next: { seed?: number; frame?: number }) =>
+    selected ? patchStill(selected.id, next) : update({ ...recipe, ...next }, 'seed' in next)
+  const randomize = () => {
+    if (!effect.seeded) return
+    setShot({ seed: crypto.getRandomValues(new Uint32Array(1))[0] & SEED_MAX })
+  }
   // The stage paints the ground of what it shows: the comparison's while one is up.
-  const comparing = session.showComparison && Boolean(session.comparison)
-  const shownGround = studioGround(comparing ? session.comparisonGround : ground, session.surface)
+  const comparing = !shot && session.showComparison && Boolean(session.comparison)
+  const shownGround = studioGround(comparing ? session.comparisonGround : ground, surface)
 
   useUndoShortcut(actions.undo, actions.redo)
 
@@ -279,12 +315,20 @@ export const Stage: UIFieldClientComponent = () => {
         data-streak-studio
         aria-label={EFFECT_COPY[effectId].title}
         className="@container flex flex-col overflow-hidden rounded-lg border border-input bg-background"
-        onKeyDown={stageKeys(session, patch, actions.randomize)}
+        onKeyDown={stageKeys(session, patch, randomize, () => select(null))}
       >
-        <StageHeader draft={draft} look={look} state={state} session={session} actions={actions} />
+        <StageHeader
+          draft={draft}
+          look={look}
+          state={state}
+          session={session}
+          shot={shot}
+          actions={actions}
+          onLeave={() => select(null)}
+        />
         <div className="grid @[768px]:grid-cols-[240px_minmax(0,1fr)] grid-cols-1">
           <aside className="flex flex-col border-border @[768px]:border-r border-b @[768px]:border-b-0 bg-card">
-            <StarterList effect={effect} surface={session.surface} update={update} />
+            <StarterList effect={effect} surface={surface} update={update} />
             <PublishedList
               session={session}
               history={look.history}
@@ -297,8 +341,11 @@ export const Stage: UIFieldClientComponent = () => {
             <Viewport
               live={live}
               session={session}
+              surface={surface}
               effectId={effectId}
               recipe={recipe}
+              shot={shot}
+              lookGround={ground}
               ground={shownGround}
               state={state}
               onTurnOn={() => setLive(true)}
@@ -306,17 +353,41 @@ export const Stage: UIFieldClientComponent = () => {
             <Transport
               live={live}
               session={session}
+              surface={surface}
+              still={Boolean(shot)}
               patch={patch}
+              setSurface={setSurface}
               restart={() => studioStore.restart(key)}
               onToggleLive={() => setLive((v) => !v)}
             >
               {effect.seeded && (
-                <SeedField recipe={recipe} update={update} onRandomize={actions.randomize} />
+                <SeedField
+                  seed={shot?.seed ?? recipe.seed}
+                  onChange={(seed) => setShot({ seed })}
+                  onRandomize={randomize}
+                />
               )}
-              <FrameField recipe={recipe} update={update} />
+              <FrameField
+                frame={shot?.frame ?? recipe.frame}
+                onChange={(frame) => setShot({ frame })}
+              />
+              <span className="flex h-[30px] items-center overflow-hidden rounded-md border border-input">
+                <IconAction label="Variations" onClick={() => setSheet(true)}>
+                  <IconLayoutGrid />
+                </IconAction>
+              </span>
             </Transport>
           </div>
         </div>
+        <Variations
+          open={sheet}
+          onOpenChange={setSheet}
+          effectId={effectId}
+          shot={shot ?? shotOf(effect, recipe, 'poster', surface)}
+          ground={ground}
+          seeded={effect.seeded}
+          onPick={setShot}
+        />
       </section>
     </TooltipProvider>
   )
@@ -327,18 +398,24 @@ function StageHeader({
   look: { loaded, live: published, uses },
   state,
   session,
+  shot,
   actions,
+  onLeave,
 }: {
   draft: Draft
   look: LookState
   state: DraftState
   session: StudioSession
+  shot: Shot | null
   actions: StageActions
+  onLeave: () => void
 }) {
   return (
     <header className="flex min-h-14 flex-wrap items-center gap-x-3 gap-y-2 border-border border-b py-2 pr-4 pl-5">
       <DraftStatus
-        title={EFFECT_COPY[effectId].title}
+        title={
+          shot ? `${EFFECT_COPY[effectId].title} · ${shot.label}` : EFFECT_COPY[effectId].title
+        }
         id={id}
         published={published}
         state={state}
@@ -350,21 +427,37 @@ function StageHeader({
           <ResetToPublished onClick={() => actions.restoreState(published, 'what is published')} />
         )}
         <UndoRedo session={session} onUndo={actions.undo} onRedo={actions.redo} />
-        <ToggleGroup
-          type="single"
-          variant="segmented"
-          size="lg"
-          className="w-auto"
-          value={session.showComparison ? 'compare' : 'draft'}
-          onValueChange={(next) =>
-            next && studioStore.patch(key, { showComparison: next === 'compare' })
-          }
-        >
-          <ToggleGroupItem value="draft">Draft</ToggleGroupItem>
-          <ToggleGroupItem value="compare" disabled={!session.comparison}>
-            Compare
-          </ToggleGroupItem>
-        </ToggleGroup>
+        {shot ? (
+          // A still is one exact render; there is nothing live to compare it
+          // with, so the comparison's place goes to the way back to the look.
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button type="button" variant="outline" size="sm" onClick={onLeave}>
+                Back to the look
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={6}>
+              Show the live look
+              <Kbd>Esc</Kbd>
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <ToggleGroup
+            type="single"
+            variant="segmented"
+            size="lg"
+            className="w-auto"
+            value={session.showComparison ? 'compare' : 'draft'}
+            onValueChange={(next) =>
+              next && studioStore.patch(key, { showComparison: next === 'compare' })
+            }
+          >
+            <ToggleGroupItem value="draft">Draft</ToggleGroupItem>
+            <ToggleGroupItem value="compare" disabled={!session.comparison}>
+              Compare
+            </ToggleGroupItem>
+          </ToggleGroup>
+        )}
       </div>
     </header>
   )
@@ -679,16 +772,23 @@ function PublishedRow({
 function Viewport({
   live,
   session,
+  surface,
   effectId,
   recipe,
+  shot,
+  lookGround,
   ground,
   state: { validation, budget },
   onTurnOn,
 }: {
   live: boolean
   session: StudioSession
+  surface: Surface
   effectId: EffectId
   recipe: Recipe
+  /** The still on the stage, or nothing for the live look. */
+  shot: Shot | null
+  lookGround: LookGround
   /** The colour under what is shown, for the stage's face: the draft's or the comparison's own ground, else the site's. */
   ground: string
   state: DraftState
@@ -699,12 +799,18 @@ function Viewport({
     <div
       className="relative"
       style={{
-        height: session.placement === 'menu' ? 300 : 495,
+        height: session.placement === 'menu' && !shot ? 300 : 495,
         backgroundColor: ground,
       }}
     >
-      <PreviewBadge live={live} session={session} />
-      {live && !validation ? (
+      <PreviewBadge live={live} session={session} surface={surface} shot={shot} />
+      {shot ? (
+        validation ? (
+          <PreviewOff validation={validation} onTurnOn={onTurnOn} />
+        ) : (
+          <StillViewport effectId={effectId} shot={shot} ground={lookGround} />
+        )
+      ) : live && !validation ? (
         <Suspense
           fallback={
             <p className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">
@@ -717,7 +823,7 @@ function Viewport({
             effect={effectId}
             recipe={shown}
             placement={session.placement}
-            surface={session.surface}
+            surface={surface}
             ground={ground}
             paused={session.paused}
             generation={session.generation}
@@ -729,24 +835,35 @@ function Viewport({
       {/* The readout sits over the effect it describes, so it takes the
           same plate as the placement badge: over a live effect, bare
           text is not readable at any ink. */}
-      {budget && <BudgetReadout budget={budget} />}
+      {budget && !shot && <BudgetReadout budget={budget} />}
     </div>
   )
 }
 
-function PreviewBadge({ live, session }: { live: boolean; session: StudioSession }) {
+function PreviewBadge({
+  live,
+  session,
+  surface,
+  shot,
+}: {
+  live: boolean
+  session: StudioSession
+  surface: Surface
+  shot: Shot | null
+}) {
   return (
     <span className="pointer-events-none absolute top-3 left-3 z-10 flex h-6 items-center gap-1.5 rounded-full bg-background/70 pr-2.5 pl-2 font-mono text-[11px]/3.5 text-foreground uppercase tracking-[0.04em] backdrop-blur-xs">
       <span
         aria-hidden
         className={cn(
           'size-1.5 rounded-full',
-          live && !session.paused ? 'bg-primary' : 'bg-muted-foreground',
+          !shot && live && !session.paused ? 'bg-primary' : 'bg-muted-foreground',
         )}
       />
-      {live ? (session.paused ? 'Paused' : 'Live') : 'Off'} · {session.placement} ·{' '}
-      {session.surface}
-      {session.showComparison && ' · comparison'}
+      {shot
+        ? `Still · ${shot.label} · ${shot.capture.width}×${shot.capture.height} · ${surface}`
+        : `${live ? (session.paused ? 'Paused' : 'Live') : 'Off'} · ${session.placement} · ${surface}`}
+      {!shot && session.showComparison && ' · comparison'}
     </span>
   )
 }
@@ -782,58 +899,78 @@ function BudgetReadout({ budget }: { budget: EffectBudget }) {
   )
 }
 
-/** Surface, placement and playback; `children` are the recipe's own seed and frame fields. */
+/**
+ * Face and its ground, then placement and playback for the live look;
+ * `children` are the seed and frame of what the stage shows, and the way to
+ * its variations. A still has no placement and nothing to play: the controls
+ * that only mean something live leave while it is up, rather than sit dimmed.
+ */
 function Transport({
   live,
   session,
+  surface,
+  still,
   patch,
+  setSurface,
   restart,
   onToggleLive,
   children,
 }: {
   live: boolean
   session: StudioSession
+  surface: Surface
+  still: boolean
   patch: Patch
+  setSurface: (next: Surface) => void
   restart: () => void
   onToggleLive: () => void
   children: React.ReactNode
 }) {
   return (
     <div className="flex min-h-14 flex-wrap items-center gap-4 border-border border-t px-4 py-3">
-      <ToggleGroup
-        type="single"
-        variant="segmented"
-        className="w-auto"
-        value={session.surface}
-        onValueChange={(next) => next && patch({ surface: next as 'dark' | 'light' })}
-      >
-        <ToggleGroupItem value="dark">Dark</ToggleGroupItem>
-        <ToggleGroupItem value="light">Light</ToggleGroupItem>
-      </ToggleGroup>
-      <ToggleGroup
-        type="single"
-        variant="segmented"
-        className="w-auto"
-        value={session.placement}
-        onValueChange={(next) => {
-          if (!next) return
-          patch({ placement: next as VisualPlacement })
-          restart()
-        }}
-      >
-        {VISUAL_PLACEMENTS.map((placement) => (
-          <ToggleGroupItem key={placement} value={placement} className="capitalize">
-            {placement}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
-      <Playback
-        live={live}
-        paused={session.paused}
-        patch={patch}
-        restart={restart}
-        onToggleLive={onToggleLive}
-      />
+      <div className="flex items-center gap-2">
+        <ToggleGroup
+          type="single"
+          variant="segmented"
+          className="w-auto"
+          aria-label="Face"
+          value={surface}
+          onValueChange={(next) => next && setSurface(next as Surface)}
+        >
+          <ToggleGroupItem value="dark">Dark</ToggleGroupItem>
+          <ToggleGroupItem value="light">Light</ToggleGroupItem>
+        </ToggleGroup>
+        <GroundControl surface={surface} />
+      </div>
+      {!still && (
+        <ToggleGroup
+          type="single"
+          variant="segmented"
+          className="w-auto"
+          aria-label="Placement"
+          value={session.placement}
+          onValueChange={(next) => {
+            if (!next) return
+            patch({ placement: next as VisualPlacement })
+            restart()
+          }}
+        >
+          {VISUAL_PLACEMENTS.map((placement) => (
+            <ToggleGroupItem key={placement} value={placement} className="capitalize">
+              {placement}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      )}
+      {!still && (
+        <Playback
+          live={live}
+          paused={session.paused}
+          patch={patch}
+          restart={restart}
+          onToggleLive={onToggleLive}
+        />
+      )}
       <div className="ml-auto flex flex-wrap items-center gap-4">{children}</div>
     </div>
   )
@@ -878,12 +1015,12 @@ function Playback({
 }
 
 function SeedField({
-  recipe,
-  update,
+  seed,
+  onChange,
   onRandomize,
 }: {
-  recipe: Recipe
-  update: Update
+  seed: number
+  onChange: (seed: number) => void
   onRandomize: () => void
 }) {
   return (
@@ -900,11 +1037,10 @@ function SeedField({
           className="h-full w-23 rounded-none border-0 px-2.5 text-left"
           min={0}
           max={SEED_MAX}
-          value={recipe.seed}
-          onChange={(event) => {
-            const seed = Math.min(SEED_MAX, Math.max(0, Number(event.target.value) || 0))
-            update({ ...recipe, seed }, true)
-          }}
+          value={seed}
+          onChange={(event) =>
+            onChange(Math.min(SEED_MAX, Math.max(0, Number(event.target.value) || 0)))
+          }
         />
         <IconAction label="Randomize seed" shortcut="R" onClick={onRandomize}>
           <IconDice5 />
@@ -914,7 +1050,8 @@ function SeedField({
   )
 }
 
-function FrameField({ recipe, update }: { recipe: Recipe; update: Update }) {
+function FrameField({ frame, onChange }: { frame: number; onChange: (frame: number) => void }) {
+  const set = (next: number) => onChange(Math.min(FRAME_MAX, Math.max(1, next || 1)))
   return (
     <label
       htmlFor="streak-frame"
@@ -928,8 +1065,8 @@ function FrameField({ recipe, update }: { recipe: Recipe; update: Update }) {
           size="icon"
           aria-label="Earlier frame"
           className="h-full w-6.5 rounded-none"
-          disabled={recipe.frame <= 1}
-          onClick={() => update({ ...recipe, frame: Math.max(1, recipe.frame - 10) })}
+          disabled={frame <= 1}
+          onClick={() => set(frame - 10)}
         >
           <IconMinus />
         </Button>
@@ -940,13 +1077,8 @@ function FrameField({ recipe, update }: { recipe: Recipe; update: Update }) {
           className="h-full w-12 rounded-none border-0 text-center"
           min={1}
           max={FRAME_MAX}
-          value={recipe.frame}
-          onChange={(event) =>
-            update({
-              ...recipe,
-              frame: Math.min(FRAME_MAX, Math.max(1, Number(event.target.value) || 1)),
-            })
-          }
+          value={frame}
+          onChange={(event) => set(Number(event.target.value))}
         />
         <Button
           type="button"
@@ -954,8 +1086,8 @@ function FrameField({ recipe, update }: { recipe: Recipe; update: Update }) {
           size="icon"
           aria-label="Later frame"
           className="h-full w-6.5 rounded-none"
-          disabled={recipe.frame >= FRAME_MAX}
-          onClick={() => update({ ...recipe, frame: Math.min(FRAME_MAX, recipe.frame + 10) })}
+          disabled={frame >= FRAME_MAX}
+          onClick={() => set(frame + 10)}
         >
           <IconPlus />
         </Button>

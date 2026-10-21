@@ -62,7 +62,8 @@ under `/posts`):
   sets the defaults from Site Info: the title template (`<page> | <name>`), the description, the
   default share card, the Twitter card (with the `@handle` found among the social profiles) and
   the robots directives (`max-image-preview: large`, no snippet limits). The page adds its
-  title, description, canonical URL, share image (its SEO image, else the hero, else the default)
+  title, description, canonical URL, share image (`documentShareImage`: its SEO image, else the
+  hero's upload, else the preview still of the Studio look grounding the hero, else the default)
   and, for a post, the `article` Open Graph fields with its dates and authors. A page marked
   **No Index** in its SEO tab is `noindex, nofollow` and leaves the sitemap and llms.txt.
 - **JSON-LD.** The root layout renders the Person and WebSite once; every page's schema points

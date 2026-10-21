@@ -9,9 +9,17 @@ import { authenticated } from '@/access/authenticated'
 import { type Effect, STUDIO_GROUND, SURFACES } from '@/features/immersive/studio/effect'
 import { DEFAULT_EFFECT, EFFECT_OPTIONS, effectOf } from '@/features/immersive/studio/effects'
 import { GROUND_HEX_MESSAGE, isGroundHex } from '@/features/immersive/studio/ground'
-import { emptyRecipe, validateRecipe } from '@/features/immersive/studio/recipe'
-import { recipeJsonSchema } from '@/features/immersive/studio/recipe-schema'
-import { EFFECT_FIELD, GROUND_FIELD, LOOKS_SLUG, RECIPE_FIELD } from './components/paths'
+import { canonicalJSON, emptyRecipe, validateRecipe } from '@/features/immersive/studio/recipe'
+import { recipeJsonSchema, stillsJsonSchema } from '@/features/immersive/studio/recipe-schema'
+import { stillInputs, validateStills } from '@/features/immersive/studio/stills'
+import {
+  EFFECT_FIELD,
+  GROUND_FIELD,
+  LOOKS_SLUG,
+  RECIPE_FIELD,
+  STILL_MEDIA_FIELD,
+  STILLS_FIELD,
+} from './components/paths'
 import { lookEndpoints } from './endpoints'
 import { recipeHash, storedRecipeHash, studioInput } from './hash'
 import { revalidateLookPublish, revalidateLookUnpublish } from './revalidate'
@@ -45,10 +53,15 @@ async function lockForChange({ data, req, originalDoc }: ChangeArgs) {
   )
 }
 
+/** The stills a write carries, as inputs only: outputs are Publish's to write. */
+const inputStills = (raw: unknown) =>
+  Array.isArray(raw) ? raw.map((still) => stillInputs(still)) : []
+
 /**
- * A published look always has its posters: Publish in Studio is the one way
- * to publish new output. Publishing what is already published (Payload's
- * Revert to published) changes nothing the site shows.
+ * A published look always has its posters and its stills' renders: Publish in
+ * Studio is the one way to publish new output. Publishing what is already
+ * published (Payload's Revert to published) changes nothing the site shows,
+ * so it goes through with the live outputs.
  */
 async function requireStudioPublish({ data, req, originalDoc }: ChangeArgs, effect: Effect) {
   const id: number | undefined = originalDoc?.id
@@ -65,9 +78,13 @@ async function requireStudioPublish({ data, req, originalDoc }: ChangeArgs, effe
   const unchanged =
     live?._status === 'published' &&
     storedRecipeHash(effect.id, live.recipe) ===
-      recipeHash(effect.id, data.recipe ?? originalDoc?.recipe)
+      recipeHash(effect.id, data.recipe ?? originalDoc?.recipe) &&
+    canonicalJSON(inputStills(data[STILLS_FIELD] ?? originalDoc?.[STILLS_FIELD])) ===
+      canonicalJSON(inputStills(live[STILLS_FIELD]))
   if (!unchanged)
     throw new APIError('Use Publish in Studio: it renders the posters the site needs.', 400)
+  data[STILLS_FIELD] = live[STILLS_FIELD]
+  data[STILL_MEDIA_FIELD] = live[STILL_MEDIA_FIELD]
 }
 
 /**
@@ -92,7 +109,7 @@ export const StreakLooks: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'thumbnail', EFFECT_FIELD, 'tags', '_status', 'updatedAt'],
     description:
-      'Tune the recipe in the Inspector, watch it on the stage, then publish. Every place that uses the look shows what is published.',
+      'Tune the look in the Inspector, watch it on the stage, add the stills it should ship as, then publish. Every place that uses the look shows what is published.',
   },
   access: {
     create: authenticated,
@@ -114,6 +131,12 @@ export const StreakLooks: CollectionConfig = {
         if (originalDoc?.snapshot) data[EFFECT_FIELD] = originalDoc[EFFECT_FIELD]
         const effect = effectOf(data[EFFECT_FIELD] ?? originalDoc?.[EFFECT_FIELD])
         if (data.recipe) studioInput(() => validateRecipe(effect, data.recipe))
+        if (data[STILLS_FIELD] !== undefined) {
+          const recipe = data.recipe ?? originalDoc?.recipe
+          studioInput(() => validateStills(effect, recipe, data[STILLS_FIELD]))
+          // A draft stores what the editor set; the render is Publish's to add.
+          if (data._status !== 'published') data[STILLS_FIELD] = inputStills(data[STILLS_FIELD])
+        }
         if (operation === 'create') data.createdBy = req.user?.id
         data.updatedBy = req.user?.id ?? originalDoc?.updatedBy
         if (data._status === 'published' && !context[PUBLISH])
@@ -287,8 +310,33 @@ export const StreakLooks: CollectionConfig = {
         }
       },
     },
+    {
+      // Edited on the Inspector's Stills tab and the stage; the admin form
+      // carries it like the recipe, so autosave, versions and validation see
+      // every change.
+      name: STILLS_FIELD,
+      type: 'json',
+      defaultValue: [],
+      jsonSchema: stillsJsonSchema,
+      admin: { hidden: true },
+      validate: (value, { siblingData }) => {
+        try {
+          const data = siblingData as Record<string, unknown>
+          validateStills(effectOf(data[EFFECT_FIELD]), data[RECIPE_FIELD] as never, value)
+          return true
+        } catch (error) {
+          return (error as Error).message
+        }
+      },
+    },
     published({ name: 'snapshot', type: 'json' }),
     published({ name: 'posters', type: 'json' }),
     published({ name: 'sourceHash', type: 'text' }),
+    published({
+      name: STILL_MEDIA_FIELD,
+      type: 'relationship',
+      relationTo: 'media',
+      hasMany: true,
+    }),
   ],
 }
