@@ -4,7 +4,6 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GeistMono } from 'geist/font/mono'
 import type { Metadata, Viewport } from 'next'
 import { unstable_cache } from 'next/cache'
-import { IBM_Plex_Sans } from 'next/font/google'
 import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 
@@ -14,6 +13,7 @@ import { AdminBar } from '@/components/AdminBar'
 import { JsonLd } from '@/components/JsonLd'
 import { SiteChrome } from '@/components/SiteChrome/SiteChrome'
 import { Footer } from '@/Footer/Component'
+import { ibmPlexSans } from '@/fonts/ibm-plex-sans'
 import type { SiteInfo } from '@/payload-types'
 import { Providers } from '@/providers'
 import { PostHogProvider } from '@/providers/PostHog'
@@ -23,12 +23,6 @@ import { getCachedGlobal } from '@/utilities/getGlobals'
 import { personSchema, webSiteSchema } from '@/utilities/schema'
 import { cn } from '@/utilities/ui'
 import './globals.css'
-
-const ibmPlexSans = IBM_Plex_Sans({
-  weight: ['300', '400', '500', '600', '700'],
-  subsets: ['latin'],
-  variable: '--font-ibm-plex-sans',
-})
 
 /**
  * The Capabilities taxonomy, in its authored order, as the Person's

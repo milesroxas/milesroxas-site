@@ -1,18 +1,12 @@
 import { withThemeByDataAttribute } from '@storybook/addon-themes'
 import type { Preview } from '@storybook/nextjs-vite'
-import { IBM_Plex_Sans } from 'next/font/google'
 
 import '../src/app/(frontend)/globals.css'
+import { ibmPlexSans } from '../src/fonts/ibm-plex-sans'
 import { cursorGlobalTypes, withCursor } from './cursor'
 import { motionSpeedGlobalTypes, withMotionSpeed } from './motion-speed'
 // Provides the Geist Mono variable that RootLayout normally sets via next/font.
 import './fonts.css'
-
-const ibmPlexSans = IBM_Plex_Sans({
-  weight: ['300', '400', '500', '600', '700'],
-  subsets: ['latin'],
-  variable: '--font-ibm-plex-sans',
-})
 
 const preview: Preview = {
   globalTypes: { ...cursorGlobalTypes, ...motionSpeedGlobalTypes },
