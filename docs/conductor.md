@@ -10,9 +10,11 @@ Same setup as sas-site. [Conductor](https://www.conductor.build/docs) runs sever
 4. In Conductor, set the repository's base branch and each workspace's target branch to `dev` (Repository Settings; target branch: top of the workspace page). `settings.toml` has no key for it; Conductor keeps it in its own database, and a workspace records the base at creation, so changing it later does not move existing workspaces. Verify it rather than trust that the step was done: on 2026-10-23 it was still `main`, and every workspace since 2026-10-03 had been cut from `origin/main` (production), not `origin/dev`.
 
    ```bash
-   sqlite3 "file:$HOME/Library/Application Support/com.conductor.app/conductor.db?mode=ro&immutable=1" \
+   sqlite3 -cmd '.timeout 3000' "file:$HOME/Library/Application Support/com.conductor.app/conductor.db?mode=ro" \
      "select name, default_branch from repos where name = 'milesroxas-site'"   # expect dev
    ```
+
+   Do not add `immutable=1`: it skips the write-ahead log and shows the old value while Conductor is open.
 
 ## Branch flow
 
