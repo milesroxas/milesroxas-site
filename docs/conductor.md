@@ -7,7 +7,12 @@ Same setup as sas-site. [Conductor](https://www.conductor.build/docs) runs sever
 1. Conductor's root for this repo is the main checkout, `~/SITES/milesroxas-site` (added with Open project on 2026-10-03); every workspace is a worktree of it. `setup.sh` runs `git pull --ff-only` in the root on every new workspace, so keep the main checkout on `dev`. (`~/conductor/repos/milesroxas-site` is an older clone Conductor does not use.)
 2. The root's `.env` is your main `.env`, so workspaces copy it directly.
 3. Make sure the main dev DB `payload` has content (dev TUI → Pull production content). New workspaces clone it.
-4. In Conductor, set the repository's base branch and each workspace's target branch to `dev` (target branch: top of the workspace page).
+4. In Conductor, set the repository's base branch and each workspace's target branch to `dev` (Repository Settings; target branch: top of the workspace page). `settings.toml` has no key for it; Conductor keeps it in its own database, and a workspace records the base at creation, so changing it later does not move existing workspaces. Verify it rather than trust that the step was done: on 2026-10-23 it was still `main`, and every workspace since 2026-10-03 had been cut from `origin/main` (production), not `origin/dev`.
+
+   ```bash
+   sqlite3 "file:$HOME/Library/Application Support/com.conductor.app/conductor.db?mode=ro&immutable=1" \
+     "select name, default_branch from repos where name = 'milesroxas-site'"   # expect dev
+   ```
 
 ## Branch flow
 
