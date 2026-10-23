@@ -1,0 +1,777 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/chrome.elyx" as chrome
+import "blocks/opening.elyx" as opening
+import "blocks/section-heading.elyx" as headings
+import "blocks/media.elyx" as media
+import "blocks/media-content.elyx" as mc
+import "blocks/interactive.elyx" as interactive
+import "blocks/figures.elyx" as figures
+import "blocks/more-work.elyx" as more
+import "resources/images/Pasted image-4.png" as Pastedimage-4
+import "resources/images/sas-hero-poster.jpg" as sasHeroPoster
+import "resources/images/content-jump-poster.jpg" as contentJumpPoster
+import "resources/images/industry-tabs-poster.jpg" as industryTabsPoster
+import "resources/images/sas-desktop-cms-dashboard.jpg" as cmsDashboard
+import "resources/images/sas-cms-story-beat.jpg" as cmsStoryBeat
+import "resources/images/sas-works-tablet.jpg" as worksTablet
+import "resources/images/Screenshot 2026-10-09 at 6.27.46 PM.png" as Screenshot2026-10-09at62746PM
+import "resources/images/Screenshot 2026-10-09 at 6.38.45 PM.png" as Screenshot2026-10-09at63845PM
+
+@with-context()
+__file__
+
+// The work page for "Craft and Code for an Evolving Agency" (Suits & Sandals)
+// at 1440px, top to bottom, with its draft content (works id 14): the Work
+// hero, the intro statement, four Section blocks, then More work. Every
+// Section has Customize off: a 96px band on the page ground, its blocks bare
+// and 192px apart. The first three open on a Section heading (Center, heading
+// only), grouped with the block after it in an `...Opening` frame drawn 89px
+// apart (`STACK_OPENER`, less the heading's untrimmed line box). Videos show
+// their Cloudflare Stream posters. The chrome sits as it does on load, over
+// the page ground, with Work outlined for a page under it.
+CraftandCodeforanEvolvingAgency = frame {
+  top: -6034px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  children: [
+    hero,
+    intro,
+    roomSection,
+    toolsSection,
+    platformSection,
+    impactSection,
+    moreWork,
+    topBar,
+    dockRail
+  ],
+
+  hero = frame : opening.workHero {
+    padding-left: 96px,
+    padding-right: 96px,
+
+    stage {
+      heroMedia {
+        fill[0].image.ref: sasHeroPoster,
+        fill[0].image.sizing: .fill,
+
+        mediaLabel {
+          display: .none
+        }
+      }
+    }
+
+    capabilities {
+      capabilityRow {
+        capabilityTwo {
+          contents: "Engineering"
+        }
+
+        capabilityOne {
+          contents: "Web Design"
+        }
+      }
+    }
+
+    head {
+      facts {
+        factRole {
+          factValue {
+            contents: "Design & Build"
+          }
+        }
+
+        factIndustry {
+          factValue {
+            contents: "Creative Services"
+          }
+        }
+      }
+
+      lockup {
+        workTitle {
+          contents: "Craft and Code for an Evolving Agency"
+        }
+
+        eyebrow {
+          eyebrowText {
+            contents: "Suits & Sandals"
+          }
+        }
+      }
+    }
+  }
+
+  intro = frame : opening.workIntro {
+    introStatement {
+      contents: "As co-founder of Suits & Sandals, I needed our site to reflect an evolving agency without waiting for a full rebrand. The opportunity went beyond launch: connect design, content, and development on a platform the team could keep building on."
+    }
+  }
+
+  // Section "Give content room to travel": Section heading over Caption
+  // (Contained, no caption), then Split image offset (caption left) and Full
+  // media (Contained, 16:9, content left, no eyebrow).
+  roomSection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-normal, 0px],
+    children: [roomOpening, roomSplit, roomFilm],
+
+    roomOpening = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 89px},
+      children: [roomHeading, roomDashboard],
+
+      roomHeading = frame : headings.richTransitionCentered {
+        padding-top: 0px,
+
+        grid {
+          opener {
+            eyebrow {
+              display: .none
+            }
+
+            heading {
+              contents: "Give content room to travel"
+            }
+          }
+
+          deck {
+            display: .none
+          }
+        }
+      }
+
+      roomDashboard = frame : media.caption {
+        padding-top: 0px,
+        padding-bottom: 0px,
+
+        visual {
+          fill[0].image.ref: cmsDashboard,
+          fill[0].image.sizing: .fill,
+
+          mediaLabel {
+            display: .none
+          }
+        }
+
+        captionText {
+          display: .none
+        }
+      }
+    }
+
+    roomSplit = frame : mc.splitImageOffset {
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      large {
+        fill[0].image.ref: Screenshot2026-10-09at63845PM,
+        fill[0].image.sizing: .fill,
+
+        mediaLabel {
+          display: .none
+        }
+      }
+
+      side {
+        caption {
+          copy {
+            contents: "I chose Payload and a headless architecture so content could serve the website, custom tools, and AI features. The tradeoff was more setup upfront for greater flexibility over time."
+          }
+
+          heading {
+            contents: "Separate content from presentation"
+          }
+        }
+
+        smallMedia {
+          overrides: [remove(interactive.m.media.mediaLabel)],
+          fill[0].image.ref: cmsStoryBeat,
+          fill[0].image.sizing: {scale: 0.3073, offset: [1.54px, 18.51px]}
+        }
+      }
+    }
+
+    roomFilm = frame : mc.fullMedia {
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      visual {
+        fill[0].image.ref: Screenshot2026-10-09at62746PM,
+        fill[0].image.sizing: .fill,
+        left: 96px,
+        top: 0px,
+        width: 1248px,
+        height: 454px,
+
+        mediaLabel {
+          display: .none
+        }
+      }
+
+      cells {
+        opener {
+          eyebrow {
+            display: .none
+          }
+
+          heading {
+            contents: "Build in parallel"
+          }
+        }
+
+        copy {
+          contents: "With content independent of the interface, new initiatives could move forward before the full site was finished."
+        }
+      }
+    }
+  }
+
+  // Section "Turn visual details into reusable tools": Section heading over
+  // Split content (Narrow, image left, no eyebrow), then Image pair (portrait
+  // left, text under the landscape).
+  toolsSection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-normal, 0px],
+    children: [toolsOpening, toolsPair_2],
+
+    toolsOpening = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 89px},
+      children: [toolsHeading, toolsSplit],
+
+      toolsHeading = frame : headings.richTransitionCentered {
+        padding-top: 0px,
+
+        grid {
+          opener {
+            eyebrow {
+              display: .none
+            }
+
+            heading {
+              contents: "Turn visual details into reusable tools"
+            }
+          }
+
+          deck {
+            display: .none
+          }
+        }
+      }
+
+      toolsSplit = frame : mc.splitContentNarrow {
+        padding-top: 0px,
+        padding-bottom: 0px,
+
+        grid {
+          visual {
+            fill[0].image.ref: industryTabsPoster,
+            fill[0].image.sizing: .fill,
+
+            mediaLabel {
+              display: .none
+            }
+          }
+
+          copyStack {
+            heading {
+              headingText {
+                width: 100%,
+                contents: "Consistent motion, considered interactions"
+              }
+
+              padding-top: 0px
+            }
+
+            eyebrow {
+              display: .none
+            }
+
+            copy {
+              contents: "A reusable animation system kept motion consistent as the identity evolved.\nMobile interactions received the same attention, with a focus on making the site feel native."
+            }
+          }
+        }
+      }
+    }
+
+    // Text under the landscape: it starts on column 4, three columns plus a
+    // gap in.
+    toolsPair_2 = frame : mc.imagePair {
+      left: 20px,
+      top: 1996px,
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      figures {
+        landscape {
+          fill[0].image.ref: contentJumpPoster,
+          fill[0].image.sizing: .fill,
+
+          mediaLabel {
+            display: .none
+          }
+        }
+
+        portrait {
+          fill[0].image.ref: sasHeroPoster,
+          fill[0].image.sizing: .fill,
+
+          mediaLabel {
+            display: .none
+          }
+        }
+      }
+
+      copyStack {
+        width: l.lengths.span-6,
+
+        copy {
+          contents: "A custom shader plugin made abstract textures quick to apply across long-form content, turning a visual treatment into a repeatable part of production."
+        }
+
+        heading {
+          contents: "Texture built for reuse"
+        }
+
+        padding-left: 480px
+      }
+    }
+  }
+
+  // Section "Put the platform to work": Section heading over Carousel (Full
+  // width, Half slides, no arrows, three uncaptioned videos), then Image pair
+  // (portrait left, text under the portrait) and Full media (Contained, 16:9,
+  // content left, no eyebrow).
+  platformSection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-normal, 0px],
+    children: [platformOpening, platformPair, platformAi],
+
+    platformOpening = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 89px},
+      children: [platformHeading, platformCarousel],
+
+      platformHeading = frame : headings.richTransitionCentered {
+        padding-top: 0px,
+
+        grid {
+          opener {
+            eyebrow {
+              display: .none
+            }
+
+            heading {
+              contents: "Put the platform to work"
+            }
+          }
+
+          deck {
+            display: .none
+          }
+        }
+      }
+
+      // Slide 1 active; the loop puts slide 3 before it and slide 2 after.
+      // No slide has a caption, so the deck has no caption line.
+      platformCarousel = frame : interactive.carouselFullWidthHalf {
+        padding-top: 0px,
+        padding-bottom: 0px,
+
+        track {
+          after {
+            afterMedia {
+              fill[0].image.ref: industryTabsPoster,
+              fill[0].image.sizing: .fill
+            }
+          }
+
+          active {
+            activeMedia {
+              fill[0].image.ref: contentJumpPoster,
+              fill[0].image.sizing: .fill,
+
+              mediaLabel {
+                display: .none
+              }
+            }
+          }
+
+          before {
+            beforeMedia {
+              fill[0].image.ref: sasHeroPoster,
+              fill[0].image.sizing: .fill
+            }
+          }
+        }
+
+        caption {
+          display: .none
+        }
+      }
+    }
+
+    platformPair = frame : mc.imagePair {
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      figures {
+        landscape {
+          fill[0].image.ref: contentJumpPoster,
+          fill[0].image.sizing: .fill,
+
+          mediaLabel {
+            display: .none
+          }
+        }
+
+        portrait {
+          fill[0].image.ref: worksTablet,
+          fill[0].image.sizing: .fill,
+
+          mediaLabel {
+            display: .none
+          }
+        }
+      }
+
+      copyStack {
+        copy {
+          contents: "A Markdown design guide and tailored Impeccable and Animate skills carried design decisions into production. A terminal interface made common tasks faster and helped nontechnical teammates use the tools."
+        }
+
+        heading {
+          contents: "Design guidance in the workflow"
+        }
+      }
+    }
+
+    platformAi = frame : mc.fullMedia {
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      visual {
+        fill[0].image.ref: industryTabsPoster,
+        fill[0].image.sizing: .fill,
+
+        mediaLabel {
+          display: .none
+        }
+      }
+
+      cells {
+        opener {
+          eyebrow {
+            display: .none
+          }
+
+          heading {
+            contents: "A practical use case for AI"
+          }
+        }
+
+        copy {
+          contents: "I built a retrieval-augmented generation (RAG) system and connected it to a Payload plugin to help the team identify content gaps. The work also deepened my understanding of embeddings through a practical application."
+        }
+      }
+    }
+  }
+
+  // Section "Impact": one Chart (lying bars, Wide, no data source), as
+  // published: days per task, Before (a reference series, so neutral ink and
+  // no categorical slot) against After (the first categorical colour). Both
+  // series carry tip values and the key sits at the end of the title line.
+  impactSection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-normal, 0px],
+    children: impactChart,
+
+    impactChart = frame : figures.chartHorizontalGrouped {
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      figure {
+        lyingPlot {
+          rows {
+            rowThree {
+              bars {
+                second {
+                  mark {
+                    fill[0].color: c.colors.figure-1
+                  }
+                }
+
+                first {
+                  mark {
+                    fill[0].color: c.colors.muted-foreground
+                  }
+                }
+              }
+            }
+
+            rowTwo {
+              bars {
+                second {
+                  mark {
+                    fill[0].color: c.colors.figure-1
+                  }
+                }
+
+                first {
+                  mark {
+                    fill[0].color: c.colors.muted-foreground
+                  }
+                }
+              }
+            }
+
+            rowOne {
+              bars {
+                second {
+                  mark {
+                    fill[0].color: c.colors.figure-1
+                  }
+                }
+
+                first {
+                  mark {
+                    fill[0].color: c.colors.muted-foreground
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        figureHeader {
+          legend {
+            keyTwo {
+              keyTwoMark {
+                fill[0].color: c.colors.figure-1
+              }
+            }
+
+            keyOne {
+              keyOneMark {
+                fill[0].color: c.colors.muted-foreground
+              }
+            }
+          }
+        }
+
+        figureCaption {
+          figureCaptionText {
+            contents: "Days per task before and after. Content went from eight sources (Google Drive, Figma, local files and more) to one, and the MCP server lets the team write to that one source directly. That is why the site now changes weekly instead of a few times a year."
+          }
+        }
+      }
+    }
+  }
+
+  // No related works, so the first four published works in the Works
+  // collection order. Services are each work's capabilities.
+  moreWork = frame : more.moreWork {
+    inner {
+      grid {
+        plateColumn {
+          plate {
+            mediaLabel {
+              contents: "HERO 1.6:1, DESIGN SYSTEMS FOR ORGANIZATIONAL SCALE"
+            }
+          }
+
+          plateCaption {
+            plateClient {
+              contents: "NextStreet"
+            }
+          }
+        }
+
+        index {
+          rowOne {
+            rowText {
+              rowTitle {
+                contents: "Design Systems for Organizational Scale"
+              }
+
+              rowMeta {
+                rowIndustry {
+                  contents: "Business Consulting"
+                }
+
+                rowServices {
+                  contents: "Design System, Product Design"
+                }
+              }
+            }
+          }
+
+          rowTwo {
+            rowText {
+              rowTitle {
+                contents: "Brand Expansion Through Narrative"
+              }
+
+              rowMeta {
+                rowIndustry {
+                  contents: "Insurance Tech"
+                }
+
+                rowServices {
+                  contents: "Brand Expansion, Website"
+                }
+              }
+            }
+          }
+
+          rowThree {
+            rowText {
+              rowTitle {
+                contents: "Brand Development at the Executive Level"
+              }
+
+              rowMeta {
+                rowIndustry {
+                  contents: "Healthcare"
+                }
+
+                rowServices {
+                  contents: "Brand Identity & Collateral"
+                }
+              }
+            }
+          }
+
+          rowFour {
+            rowText {
+              rowTitle {
+                contents: "Identity for Higher-Stakes Work"
+              }
+
+              rowMeta {
+                rowIndustry {
+                  contents: "Human Resources Services"
+                }
+
+                rowServices {
+                  contents: "Full Corporate Identity, Web Design"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  topBar = frame : chrome.topBarOnPage {
+    left: 0px,
+    top: 0px,
+    ignore-stack: .true,
+    padding-left: 96px,
+    padding-right: 96px
+  }
+
+  // Fixed 24px above the first viewport's bottom edge.
+  dockRail = frame {
+    left: 0px,
+    top: 836px,
+    width: 100%,
+    ignore-stack: .true,
+    layout: {justify-content: .center},
+    children: dock,
+
+    dock = frame : chrome.dockOnPageSection {}
+  }
+}
+
+Pastedimagepng = shape {
+  fill: {image: {ref: Pastedimage-4}},
+  type: .rect
+}
+
+note = frame {
+  left: 803px,
+  top: -5727px,
+  width: 670px,
+  height: 338px,
+  fill: .white,
+  children: text1,
+
+  text1 = text {
+    left: 106px,
+    top: 79px,
+    fill: .black,
+    contents: "Home background shader -> scroll revea -> page transition "
+  }
+}
+
+note_2 = frame {
+  left: 803px,
+  top: -4109px,
+  width: 670px,
+  height: 338px,
+  fill: .white,
+  children: text1,
+
+  text1 = text {
+    left: 106px,
+    top: 79px,
+    fill: .black,
+    contents: "keep for now"
+  }
+}
+
+note_3 = frame {
+  left: 803px,
+  top: -3314.1799px,
+  width: 670px,
+  height: 338px,
+  fill: .white,
+  children: [text1, text4, text2, text3],
+
+  text1 = text {
+    left: 35px,
+    top: 222px,
+    width: 375px,
+    height: .auto,
+    fill: .black,
+    contents: "camera over the shoulder coding -> fade to scrolling through story beats on Adacore -> fade to AI re-index -> chat prompt to show Adacore as a reference",
+    line-height: 1.5
+  }
+
+  text2 = text {
+    left: 35px,
+    top: 194px,
+    fill: .black,
+    contents: "Large"
+  }
+
+  text3 = text {
+    left: 35.7565px,
+    top: 33.9478px,
+    fill: .black,
+    contents: "Small"
+  }
+
+  text4 = text {
+    left: 35px,
+    top: 62.18px,
+    width: 242px,
+    height: .auto,
+    fill: .black,
+    contents: "minimal ui comp of field storyblock arrows to website and proposal",
+    line-height: 1.5
+  }
+}

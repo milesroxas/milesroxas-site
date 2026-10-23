@@ -1,0 +1,36 @@
+// Desktop (1440px) layout lengths. The composition grid is 8 columns of 128px
+// with a 32px gap inside a 1248px page column (src/blocks/shared/grid.tsx).
+export lengths = tokens {
+  page: 1440,
+  gutter: 96,
+  column: 1248,
+  grid-gap: 32,
+  span-1: 128,
+  span-2: 288,
+  span-3: 448,
+  span-4: 608,
+  span-5: 768,
+  span-6: 928,
+  span-8: 1248,
+  // Band rhythm (SPACING_SCALE in src/blocks/shared/section.tsx), md and up.
+  band-tight: 48,
+  band-normal: 96,
+  band-loose: 192,
+  // The legacy blocks' `space: md` (Slider, Tabs, Form, Media, Columns, Archive).
+  band-md: 128,
+  radius: 8,
+  radius-md: 6,
+  radius-sm: 4,
+  radius-xs: 2,
+  // Desktop viewport height the opening is drawn against, and the hero's 82vh.
+  viewport: 900,
+  hero: 738,
+  // The intro sits on a 12-column grid in the 1248px column, 32px gap.
+  twelfths-5: 501,
+  twelfths-6: 608,
+  // Columns (`content`) keeps the legacy 12-column grid with a 40px gap.
+  columns-gap: 40,
+  columns-4: 389,
+  columns-6: 604,
+  columns-8: 819
+}

@@ -1,0 +1,132 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+
+// Work dial, the /works index: every published work as a row on a drum that
+// turns past one centred plate. Drawn at rest in the 1440 by 900 viewport: the
+// heading and its lead held mid-left, the plate and its caption sticky in the
+// middle, the active title right of the plate on the 458px focus line. Rows
+// below it dim,
+// blur and shrink with distance; the second row is the only other one in ink
+// at rest. The drum's tilt is left out (under 10 degrees at that row).
+// src/sections/WorkDial/WorkDial.client.tsx, globals.css `.work-dial`
+export workDial = frame {
+  width: l.lengths.page,
+  height: l.lengths.viewport,
+  fill: c.colors.background,
+  children: [heading, plate, plateCaption, rowActive, rowNext],
+
+  // The heading box is centred in the 423px column left of the plate and
+  // level with the focus line, its lead 12px under the title on 30ch.
+  heading = frame {
+    left: 0px,
+    top: 0px,
+    width: 423px,
+    height: l.lengths.viewport,
+    layout: {direction: .column, justify-content: .center, align-items: .center},
+    padding-top: 16px,
+    children: headingBox,
+
+    headingBox = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [headingRow, headingLead],
+
+      headingRow = frame {
+        layout: {item-gap: 10px},
+        children: [headingText, headingCount],
+
+        headingText = text : t.headingOne {
+          contents: "Work"
+        }
+
+        headingCount = frame {
+          layout: {direction: .row},
+          padding-top: 4px,
+          children: headingCountText,
+
+          headingCountText = text : t.eyebrow {
+            contents: "07"
+          }
+        }
+      }
+
+      // `.work-dial-lead`: the Works index lead, 16px muted on 30ch.
+      headingLead = text : t.body {
+        width: 288px,
+        contents: "Case studies in brand strategy, identity, design systems and the digital experiences built on them, for startups and enterprises.",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+  }
+
+  // The hero's frame: 41.25vw at a 1.6 aspect, centred on the focus line.
+  plate = frame : m.media {
+    left: 423px,
+    top: 272px,
+    width: 594px,
+    height: 371px,
+    corner-radius: 0px,
+
+    mediaLabel {
+      contents: "PLATE 1.6:1"
+    }
+  }
+
+  plateCaption = frame {
+    left: 423px,
+    top: 656px,
+    width: 594px,
+    layout: {justify-content: .space-between, align-items: .center},
+    children: [plateLabel, plateCount],
+
+    // Client and industry on one line, the industry in the count's muted mono.
+    plateLabel = frame {
+      layout: {align-items: .center, item-gap: 12px},
+      children: [plateClient, plateIndustry],
+
+      plateClient = text : t.eyebrow {
+        contents: "Client"
+      }
+
+      plateIndustry = text : t.mono {
+        contents: "Industry",
+        line-height: 1,
+        letter-spacing: 0
+      }
+    }
+
+    plateCount = text : t.mono {
+      contents: "01 / 07",
+      line-height: 1,
+      letter-spacing: 0
+    }
+  }
+
+  // Title column: min(26.5rem, the margin less 96px) wide, from x 1065.
+  rowActive = text : t.heading {
+    left: 1065px,
+    top: 421px,
+    width: 327px,
+    contents: "Work title on two lines",
+    font-size: 32,
+    font-style: "Light",
+    line-height: 1.15,
+    letter-spacing: -2%
+  }
+
+  // One row below: 38.5% ink, 4px blur, scaled to 0.68 from its left edge.
+  rowNext = text : t.heading {
+    left: 1065px,
+    top: 676px,
+    width: 223px,
+    opacity: 0.38,
+    contents: "Next work title",
+    font-size: 21.65,
+    font-style: "Light",
+    line-height: 1.15,
+    letter-spacing: -2%,
+    filter[0].radius: 4px,
+    filter[0].type: .gaussian-blur
+  }
+}

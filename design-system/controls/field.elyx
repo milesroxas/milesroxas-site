@@ -1,0 +1,36 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+
+// Form field: a label over an outlined input. Override `fieldLabel`, `fieldValue`
+// and the control height (a textarea is the same field, taller).
+// src/components/ui/legacy-input.tsx, legacy-label.tsx
+export field = frame {
+  width: 224px,
+  layout: {direction: .column},
+  children: [fieldLabel, fieldControl],
+
+  // The inline label sits on its block's 24px line.
+  fieldLabel = text : t.small {
+    contents: "Label",
+    font-style: "Medium",
+    line-height: 1.71
+  }
+
+  fieldControl = frame {
+    width: 100%,
+    height: 40px,
+    layout: {align-items: .center},
+    fill: c.colors.background,
+    border: c.colors.border,
+    corner-radius: l.lengths.radius,
+    padding: [8px, 12px],
+    children: fieldValue,
+
+    fieldValue = text : t.small {
+      contents: "Placeholder",
+      font-style: "Light",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "git": {
+    "flow": "relaxed"
+  },
+  "files": {
+    "exclude": [
+      ".pnpm-store"
+    ]
+  },
+  "assets": {
+    "images": {
+      "writePath": "resources/images",
+      "additionalSourcePaths": [
+        "resources/icons"
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+
+// Stand-in for a block's media or Studio visual. Instances set width and height
+// to the block's aspect ratio and relabel `mediaLabel` with the slot name.
+export media = frame {
+  width: 608px,
+  height: 342px,
+  layout: {justify-content: .center, align-items: .center},
+  fill: c.colors.media,
+  corner-radius: l.lengths.radius,
+  children: mediaLabel,
+
+  mediaLabel = text : t.mono {
+    contents: "MEDIA 16:9",
+    fill[0].color: c.colors.media-ink
+  }
+}

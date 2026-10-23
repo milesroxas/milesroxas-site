@@ -1,0 +1,940 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "resources/icons/chevron-right.svg" as chevronRight
+import "resources/icons/arrowhead.svg" as arrowhead
+
+// Figures group: spec-driven chart and diagram (docs/figures.md), Wide width.
+// The drawing and its header span grid columns 2 to 7: the title (`text-lead
+// leading-snug`) names the drawing, so it sits over the drawing's left edge,
+// 20px above it. Caption and the data disclosure stay on the reading column
+// (3 to 6), with the prose they belong to.
+// src/features/figures/ui/figure-frame.tsx
+// Chart, `chart`: a bar chart, one series standing. One series needs no key,
+// so the legend is hidden. Category ticks read in ink, measure ticks muted.
+export chart = frame {
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: figure,
+
+  figure = frame {
+    width: 100%,
+    layout: {direction: .column},
+    padding-left: 160px,
+    children: [
+      figureHeader,
+      plot,
+      lyingPlot,
+      bottomAxis,
+      figureCaption,
+      disclosure
+    ],
+
+    // The title line, and at its end, flush right on the title's baseline,
+    // the chart's legend (a figure kind's `aside`). Keys mirror the marks: a
+    // 12px block with 3px corners for bars. Labels in ink, `text-sm`.
+    // src/features/figures/ui/chart/chart-legend.tsx
+    figureHeader = frame {
+      width: l.lengths.span-6,
+      layout: {justify-content: .space-between, item-gap: 32px},
+      padding-bottom: 20px,
+      children: [figureTitleText, legend],
+
+      figureTitleText = text : t.blockHeading {
+        contents: "Checkout completion by quarter"
+      }
+
+      legend = frame {
+        display: .none,
+        layout: {item-gap: 20px},
+        padding-top: 9px,
+        children: [keyOne, keyTwo],
+
+        keyOne = frame {
+          layout: {align-items: .center, item-gap: 8px},
+          children: [keyOneMark, keyOneLabel],
+
+          keyOneMark = frame {
+            width: 12px,
+            height: 12px,
+            fill: c.colors.figure-1,
+            corner-radius: 3px
+          }
+
+          keyOneLabel = text : t.small {
+            contents: "Before"
+          }
+        }
+
+        keyTwo = frame {
+          layout: {align-items: .center, item-gap: 8px},
+          children: [keyTwoMark, keyTwoLabel],
+
+          keyTwoMark = frame {
+            width: 12px,
+            height: 12px,
+            fill: c.colors.figure-2,
+            corner-radius: 3px
+          }
+
+          keyTwoLabel = text : t.small {
+            contents: "After"
+          }
+        }
+      }
+    }
+
+    // The Recharts canvas, 16:9 on columns 2 to 7, margins [12, 12, 4, 4].
+    // The y axis takes 32px; the plot runs from x 36 to 916 and y 12 to 488.
+    // src/features/figures/ui/chart/chart-canvas.tsx, lazy-chart.tsx
+    plot = frame {
+      width: l.lengths.span-6,
+      height: 522px,
+      border: {color: c.colors.border, sides: .bottom},
+      children: [gridLines, yAxis, bars, xAxis],
+
+      gridLines = frame {
+        left: 36px,
+        top: 12px,
+        width: 880px,
+        height: 477px,
+        layout: {direction: .column, item-gap: 118px},
+        children: [gridEighty, gridSixty, gridForty, gridTwenty, gridZero],
+
+        gridEighty = frame {
+          width: 100%,
+          height: 1px,
+          fill: c.colors.border
+        }
+
+        gridSixty = frame {
+          width: 100%,
+          height: 1px,
+          fill: c.colors.border
+        }
+
+        gridForty = frame {
+          width: 100%,
+          height: 1px,
+          fill: c.colors.border
+        }
+
+        gridTwenty = frame {
+          width: 100%,
+          height: 1px,
+          fill: c.colors.border
+        }
+
+        gridZero = frame {
+          width: 100%,
+          height: 1px,
+          fill: c.colors.border
+        }
+      }
+
+      // Tick labels centred on their gridlines, right-aligned 8px off the plot.
+      yAxis = frame {
+        left: 0px,
+        top: 4px,
+        width: 28px,
+        layout: {direction: .column, align-items: .end, item-gap: 103px},
+        children: [yEighty, ySixty, yForty, yTwenty, yZero],
+
+        yEighty = text : t.small {
+          contents: "80%",
+          font-size: 12,
+          line-height: 1.33,
+          fill[0].color: c.colors.muted-foreground
+        }
+
+        ySixty = text : t.small {
+          contents: "60%",
+          font-size: 12,
+          line-height: 1.33,
+          fill[0].color: c.colors.muted-foreground
+        }
+
+        yForty = text : t.small {
+          contents: "40%",
+          font-size: 12,
+          line-height: 1.33,
+          fill[0].color: c.colors.muted-foreground
+        }
+
+        yTwenty = text : t.small {
+          contents: "20%",
+          font-size: 12,
+          line-height: 1.33,
+          fill[0].color: c.colors.muted-foreground
+        }
+
+        yZero = text : t.small {
+          contents: "0%",
+          font-size: 12,
+          line-height: 1.33,
+          fill[0].color: c.colors.muted-foreground
+        }
+      }
+
+      // 24px bars centred in each quarter, value labels (500, 8px off) over
+      // their tips.
+      bars = frame {
+        left: 36px,
+        top: 12px,
+        width: 880px,
+        height: 476px,
+        layout: {align-items: .end},
+        overflow: .visible,
+        children: [barOne, barTwo, barThree, barFour],
+
+        barOne = frame {
+          width: 25%,
+          layout: {direction: .column, align-items: .center, item-gap: 4px},
+          children: [barOneValue, barOneMark],
+
+          barOneValue = text : t.small {
+            contents: "52%",
+            font-size: 12,
+            line-height: 1.33,
+            fill[0].color: c.colors.foreground
+          }
+
+          barOneMark = frame {
+            width: 24px,
+            height: 309px,
+            fill: c.colors.figure-1,
+            corner-radius: [4px, 4px, 0px, 0px]
+          }
+        }
+
+        barTwo = frame {
+          width: 25%,
+          layout: {direction: .column, align-items: .center, item-gap: 4px},
+          children: [barTwoValue, barTwoMark],
+
+          barTwoValue = text : t.small {
+            contents: "58%",
+            font-size: 12,
+            line-height: 1.33,
+            fill[0].color: c.colors.foreground
+          }
+
+          barTwoMark = frame {
+            width: 24px,
+            height: 345px,
+            fill: c.colors.figure-1,
+            corner-radius: [4px, 4px, 0px, 0px]
+          }
+        }
+
+        barThree = frame {
+          width: 25%,
+          layout: {direction: .column, align-items: .center, item-gap: 4px},
+          children: [barThreeValue, barThreeMark],
+
+          barThreeValue = text : t.small {
+            contents: "71%",
+            font-size: 12,
+            line-height: 1.33,
+            fill[0].color: c.colors.foreground
+          }
+
+          barThreeMark = frame {
+            width: 24px,
+            height: 422px,
+            fill: c.colors.figure-1,
+            corner-radius: [4px, 4px, 0px, 0px]
+          }
+        }
+
+        barFour = frame {
+          width: 25%,
+          layout: {direction: .column, align-items: .center, item-gap: 4px},
+          children: [barFourValue, barFourMark],
+
+          barFourValue = text : t.small {
+            contents: "78%",
+            font-size: 12,
+            line-height: 1.33,
+            fill[0].color: c.colors.foreground
+          }
+
+          barFourMark = frame {
+            width: 24px,
+            height: 464px,
+            fill: c.colors.figure-1,
+            corner-radius: [4px, 4px, 0px, 0px]
+          }
+        }
+      }
+
+      xAxis = frame {
+        left: 36px,
+        top: 498px,
+        width: 880px,
+        layout: {direction: .row},
+        children: [tickOne, tickTwo, tickThree, tickFour],
+
+        tickOne = text : t.small {
+          width: 220px,
+          contents: "Q1",
+          font-size: 12,
+          line-height: 1.33,
+          align: .center,
+          fill[0].color: c.colors.foreground
+        }
+
+        tickTwo = text : t.small {
+          width: 220px,
+          contents: "Q2",
+          font-size: 12,
+          line-height: 1.33,
+          align: .center,
+          fill[0].color: c.colors.foreground
+        }
+
+        tickThree = text : t.small {
+          width: 220px,
+          contents: "Q3",
+          font-size: 12,
+          line-height: 1.33,
+          align: .center,
+          fill[0].color: c.colors.foreground
+        }
+
+        tickFour = text : t.small {
+          width: 220px,
+          contents: "Q4",
+          font-size: 12,
+          line-height: 1.33,
+          align: .center,
+          fill[0].color: c.colors.foreground
+        }
+      }
+    }
+
+    // Lying bars, hidden on the standing base (`chartHorizontalGrouped`).
+    // A horizontal chart grows with its rows: 26px per series plus 18 per
+    // row, plus 56 (265px for three rows of two). Categories run down the
+    // left in ink on one line, right-aligned 14px off the plot (a long name
+    // runs past the drawing's edge, and the site clips it there); the measure runs along
+    // the bottom, muted, under vertical gridlines. Bars are 18px, 2px apart,
+    // rounded at the data end only. With up to two series and 16 bars, every
+    // tip carries its value (500, 8px off). The plot runs from x 140 to 880,
+    // y 12 to 231; 48px on the right is room for the tip labels.
+    // src/features/figures/ui/chart/chart-canvas.tsx, model.ts (chartBox)
+    lyingPlot = frame {
+      width: l.lengths.span-6,
+      height: 265px,
+      display: .none,
+      border: {color: c.colors.border, sides: .bottom},
+      children: [lyingGrid, rows, measureTicks],
+
+      lyingGrid = frame {
+        left: 140px,
+        top: 12px,
+        width: 741px,
+        height: 219px,
+        layout: {justify-content: .space-between},
+        children: [
+          gridZero,
+          gridTwentyFive,
+          gridFifty,
+          gridSeventyFive,
+          gridHundred
+        ],
+
+        gridZero = frame {
+          width: 1px,
+          height: 100%,
+          fill: c.colors.border
+        }
+
+        gridTwentyFive = frame {
+          width: 1px,
+          height: 100%,
+          fill: c.colors.border
+        }
+
+        gridFifty = frame {
+          width: 1px,
+          height: 100%,
+          fill: c.colors.border
+        }
+
+        gridSeventyFive = frame {
+          width: 1px,
+          height: 100%,
+          fill: c.colors.border
+        }
+
+        gridHundred = frame {
+          width: 1px,
+          height: 100%,
+          fill: c.colors.border
+        }
+      }
+
+      // One 73px band per category; 7.4px per day on a 0 to 100 measure.
+      rows = frame {
+        left: 0px,
+        top: 12px,
+        width: 100%,
+        layout: {direction: .column},
+        overflow: .visible,
+        children: [rowOne, rowTwo, rowThree],
+
+        rowOne = frame {
+          width: 100%,
+          height: 73px,
+          layout: {align-items: .center, item-gap: 14px},
+          overflow: .visible,
+          children: [labelSlot, bars],
+
+          labelSlot = frame {
+            width: 126px,
+            layout: {justify-content: .end},
+            overflow: .visible,
+            children: label,
+
+            label = text : t.small {
+              contents: "Gap between site updates",
+              font-size: 12,
+              line-height: 1.33
+            }
+          }
+
+          bars = frame {
+            layout: {direction: .column, item-gap: 2px},
+            children: [first, second],
+
+            first = frame {
+              layout: {align-items: .center, item-gap: 8px},
+              children: [mark, value],
+
+              mark = frame {
+                width: 666px,
+                height: 18px,
+                fill: c.colors.figure-1,
+                corner-radius: [0px, 4px, 4px, 0px]
+              }
+
+              value = text : t.small {
+                contents: "90",
+                font-size: 12,
+                line-height: 1.33
+              }
+            }
+
+            second = frame {
+              layout: {align-items: .center, item-gap: 8px},
+              children: [mark, value],
+
+              mark = frame {
+                width: 51.8px,
+                height: 18px,
+                fill: c.colors.figure-2,
+                corner-radius: [0px, 4px, 4px, 0px]
+              }
+
+              value = text : t.small {
+                contents: "7",
+                font-size: 12,
+                line-height: 1.33
+              }
+            }
+          }
+        }
+
+        rowTwo = frame {
+          width: 100%,
+          height: 73px,
+          layout: {align-items: .center, item-gap: 14px},
+          overflow: .visible,
+          children: [labelSlot, bars],
+
+          labelSlot = frame {
+            width: 126px,
+            layout: {justify-content: .end},
+            overflow: .visible,
+            children: label,
+
+            label = text : t.small {
+              contents: "Produce a case study",
+              font-size: 12,
+              line-height: 1.33
+            }
+          }
+
+          bars = frame {
+            layout: {direction: .column, item-gap: 2px},
+            children: [first, second],
+
+            first = frame {
+              layout: {align-items: .center, item-gap: 8px},
+              children: [mark, value],
+
+              mark = frame {
+                width: 333px,
+                height: 18px,
+                fill: c.colors.figure-1,
+                corner-radius: [0px, 4px, 4px, 0px]
+              }
+
+              value = text : t.small {
+                contents: "45",
+                font-size: 12,
+                line-height: 1.33
+              }
+            }
+
+            second = frame {
+              layout: {align-items: .center, item-gap: 8px},
+              children: [mark, value],
+
+              mark = frame {
+                width: 103.6px,
+                height: 18px,
+                fill: c.colors.figure-2,
+                corner-radius: [0px, 4px, 4px, 0px]
+              }
+
+              value = text : t.small {
+                contents: "14",
+                font-size: 12,
+                line-height: 1.33
+              }
+            }
+          }
+        }
+
+        rowThree = frame {
+          width: 100%,
+          height: 73px,
+          layout: {align-items: .center, item-gap: 14px},
+          overflow: .visible,
+          children: [labelSlot, bars],
+
+          labelSlot = frame {
+            width: 126px,
+            layout: {justify-content: .end},
+            overflow: .visible,
+            children: label,
+
+            label = text : t.small {
+              contents: "Publish new content",
+              font-size: 12,
+              line-height: 1.33
+            }
+          }
+
+          bars = frame {
+            layout: {direction: .column, item-gap: 2px},
+            children: [first, second],
+
+            first = frame {
+              layout: {align-items: .center, item-gap: 8px},
+              children: [mark, value],
+
+              mark = frame {
+                width: 103.6px,
+                height: 18px,
+                fill: c.colors.figure-1,
+                corner-radius: [0px, 4px, 4px, 0px]
+              }
+
+              value = text : t.small {
+                contents: "14",
+                font-size: 12,
+                line-height: 1.33
+              }
+            }
+
+            second = frame {
+              layout: {align-items: .center, item-gap: 8px},
+              children: [mark, value],
+
+              mark = frame {
+                width: 11.1px,
+                height: 18px,
+                fill: c.colors.figure-2,
+                corner-radius: [0px, 4px, 4px, 0px]
+              }
+
+              value = text : t.small {
+                contents: "1.5",
+                font-size: 12,
+                line-height: 1.33
+              }
+            }
+          }
+        }
+      }
+
+      // Ticks centred on their gridlines, 8px under the plot.
+      measureTicks = frame {
+        left: 120px,
+        top: 235px,
+        width: 780px,
+        layout: {justify-content: .space-between},
+        children: [
+          tickZero,
+          tickTwentyFive,
+          tickFifty,
+          tickSeventyFive,
+          tickHundred
+        ],
+
+        tickZero = text : t.small {
+          width: 40px,
+          contents: "0",
+          font-size: 12,
+          line-height: 1.33,
+          align: .center,
+          fill[0].color: c.colors.muted-foreground
+        }
+
+        tickTwentyFive = text : t.small {
+          width: 40px,
+          contents: "25",
+          font-size: 12,
+          line-height: 1.33,
+          align: .center,
+          fill[0].color: c.colors.muted-foreground
+        }
+
+        tickFifty = text : t.small {
+          width: 40px,
+          contents: "50",
+          font-size: 12,
+          line-height: 1.33,
+          align: .center,
+          fill[0].color: c.colors.muted-foreground
+        }
+
+        tickSeventyFive = text : t.small {
+          width: 40px,
+          contents: "75",
+          font-size: 12,
+          line-height: 1.33,
+          align: .center,
+          fill[0].color: c.colors.muted-foreground
+        }
+
+        tickHundred = text : t.small {
+          width: 40px,
+          contents: "100",
+          font-size: 12,
+          line-height: 1.33,
+          align: .center,
+          fill[0].color: c.colors.muted-foreground
+        }
+      }
+    }
+
+    // The bottom axis is named under the end of its run, upright, 8px down.
+    bottomAxis = frame {
+      width: l.lengths.span-6,
+      display: .none,
+      layout: {direction: .column, align-items: .end},
+      padding-top: 8px,
+      children: bottomAxisLabel,
+
+      bottomAxisLabel = text : t.small {
+        contents: "Days",
+        font-size: 12,
+        line-height: 1.33,
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+
+    figureCaption = frame {
+      layout: {direction: .column},
+      padding: [16px, 0px, 0px, 160px],
+      children: figureCaptionText,
+
+      figureCaptionText = text : t.small {
+        width: l.lengths.span-4,
+        contents: "Share of started checkouts that reached payment. The single-screen checkout shipped in Q3.",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+
+    disclosure = frame {
+      layout: {align-items: .center, item-gap: 4px},
+      padding: [16px, 0px, 0px, 160px],
+      children: [disclosureChevron, disclosureLabel],
+
+      disclosureChevron = asset {
+        width: 16px,
+        height: 16px,
+        fill: c.colors.muted-foreground,
+        contents: chevronRight
+      }
+
+      disclosureLabel = text : t.small {
+        contents: "Description and data table",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+  }
+}
+
+// Diagram, `diagram`: a left-to-right flow of nodes.
+export diagram = frame {
+  left: 1600px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: figure,
+
+  figure = frame {
+    width: 100%,
+    layout: {direction: .column},
+    padding-left: 160px,
+    children: [figureHeader, flow, figureCaption, disclosure],
+
+    figureHeader = frame {
+      width: l.lengths.span-6,
+      layout: {justify-content: .space-between, item-gap: 32px},
+      padding-bottom: 20px,
+      children: figureTitleText,
+
+      figureTitleText = text : t.blockHeading {
+        contents: "How a token reaches production"
+      }
+    }
+
+    // The graph at its natural size, ELK's 8px padding around it. Nodes hold
+    // one 14px line: width is max(96, characters x 7.4 + 32), height 44.
+    // src/features/figures/ui/diagram/graph-svg.tsx, layout/graph.ts
+    flow = frame {
+      width: l.lengths.span-6,
+      layout: {justify-content: .center},
+      children: graph,
+
+      graph = frame {
+        layout: {align-items: .center},
+        padding: 8px,
+        children: [
+          nodeOne,
+          edgeOne,
+          nodeTwo,
+          edgeTwo,
+          nodeThree,
+          edgeThree,
+          nodeFour
+        ],
+
+        nodeOne = frame {
+          width: 114px,
+          height: 44px,
+          layout: {justify-content: .center, align-items: .center},
+          fill: c.colors.background,
+          border: {
+            color: c.colors.muted-foreground,
+            width: 1.5px,
+            position: .center
+          },
+          corner-radius: l.lengths.radius,
+          padding: [12px, 16px],
+          children: nodeOneLabel,
+
+          nodeOneLabel = text : t.small {
+            contents: "Design file",
+            align: .center,
+            fill[0].color: c.colors.foreground
+          }
+        }
+
+        edgeOne = frame {
+          width: 64px,
+          layout: {align-items: .center},
+          children: [edgeOneLine, edgeOneHead],
+
+          edgeOneLine = frame {
+            width: 55px,
+            height: 1.5px,
+            fill: c.colors.muted-foreground
+          }
+
+          edgeOneHead = asset {
+            width: 9px,
+            height: 7px,
+            fill: c.colors.muted-foreground,
+            contents: arrowhead
+          }
+        }
+
+        nodeTwo = frame {
+          width: 114px,
+          height: 44px,
+          layout: {justify-content: .center, align-items: .center},
+          fill: c.colors.background,
+          border: {
+            color: c.colors.muted-foreground,
+            width: 1.5px,
+            position: .center
+          },
+          corner-radius: l.lengths.radius,
+          padding: [12px, 16px],
+          children: nodeTwoLabel,
+
+          nodeTwoLabel = text : t.small {
+            contents: "Token build",
+            align: .center,
+            fill[0].color: c.colors.foreground
+          }
+        }
+
+        edgeTwo = frame {
+          width: 64px,
+          layout: {align-items: .center},
+          children: [edgeTwoLine, edgeTwoHead],
+
+          edgeTwoLine = frame {
+            width: 55px,
+            height: 1.5px,
+            fill: c.colors.muted-foreground
+          }
+
+          edgeTwoHead = asset {
+            width: 9px,
+            height: 7px,
+            fill: c.colors.muted-foreground,
+            contents: arrowhead
+          }
+        }
+
+        nodeThree = frame {
+          width: 106px,
+          height: 44px,
+          layout: {justify-content: .center, align-items: .center},
+          fill: c.colors.background,
+          border: {
+            color: c.colors.muted-foreground,
+            width: 1.5px,
+            position: .center
+          },
+          corner-radius: l.lengths.radius,
+          padding: [12px, 16px],
+          children: nodeThreeLabel,
+
+          nodeThreeLabel = text : t.small {
+            contents: "Components",
+            align: .center,
+            fill[0].color: c.colors.foreground
+          }
+        }
+
+        edgeThree = frame {
+          width: 64px,
+          layout: {align-items: .center},
+          children: [edgeThreeLine, edgeThreeHead],
+
+          edgeThreeLine = frame {
+            width: 55px,
+            height: 1.5px,
+            fill: c.colors.muted-foreground
+          }
+
+          edgeThreeHead = asset {
+            width: 9px,
+            height: 7px,
+            fill: c.colors.muted-foreground,
+            contents: arrowhead
+          }
+        }
+
+        // Emphasis: filled in the ink colour.
+        nodeFour = frame {
+          width: 96px,
+          height: 44px,
+          layout: {justify-content: .center, align-items: .center},
+          fill: c.colors.foreground,
+          border: {color: c.colors.foreground, width: 1.5px, position: .center},
+          corner-radius: l.lengths.radius,
+          padding: [12px, 16px],
+          children: nodeFourLabel,
+
+          nodeFourLabel = text : t.small {
+            contents: "Release",
+            align: .center,
+            fill[0].color: c.colors.background
+          }
+        }
+      }
+    }
+
+    figureCaption = frame {
+      layout: {direction: .column},
+      padding: [16px, 0px, 0px, 160px],
+      children: figureCaptionText,
+
+      figureCaptionText = text : t.small {
+        width: l.lengths.span-4,
+        contents: "One change in the design file moves through the same four steps every time.",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+
+    disclosure = frame {
+      layout: {align-items: .center, item-gap: 4px},
+      padding: [16px, 0px, 0px, 160px],
+      children: [disclosureChevron, disclosureLabel],
+
+      disclosureChevron = asset {
+        width: 16px,
+        height: 16px,
+        fill: c.colors.muted-foreground,
+        contents: chevronRight
+      }
+
+      disclosureLabel = text : t.small {
+        contents: "Description and steps",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+  }
+}
+
+// Chart, lying bars with two series: the key sits at the end of the title
+// line, every tip carries its value, and the measure is named under the end
+// of its run. Storybook's Bar Horizontal Grouped.
+@variant
+export chartHorizontalGrouped = frame : chart {
+  top: 1000px,
+
+  figure {
+    plot {
+      display: .none
+    }
+
+    figureHeader {
+      figureTitleText {
+        contents: "Before and after the platform"
+      }
+
+      legend {
+        display: .visible
+      }
+    }
+
+    figureCaption {
+      figureCaptionText {
+        contents: "Days per task before and after. Content went from eight sources (Google Drive, Figma, local files and more) to one, and the MCP server lets the team write to that one source directly."
+      }
+    }
+
+    lyingPlot {
+      display: .visible
+    }
+
+    bottomAxis {
+      display: .visible
+    }
+  }
+}

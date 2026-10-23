@@ -1,0 +1,201 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+
+// Home hero, `hero.type: home`: a full-viewport page-ground band with a 9:16
+// video at 30vh wide, between two mono marquees that drift in opposite
+// directions, 20% of the strip's width over 40s, each away from the edge it
+// is anchored to. Drawn at the drift's midpoint (10%, 144px), after the intro
+// reveal.
+// src/heros/HomeHero/index.tsx
+export homeHero = frame {
+  width: l.lengths.page,
+  height: l.lengths.viewport,
+  fill: c.colors.background,
+  children: [skillsMarquee, heroVideo, roleMarquee],
+
+  // Behind the video, at 40vh. Skills, listed twice so the loop has no gap.
+  // Anchored left, drifting left.
+  skillsMarquee = frame {
+    left: -144px,
+    top: 360px,
+    layout: {item-gap: 48px},
+    children: [
+      skillOne,
+      skillTwo,
+      skillThree,
+      skillFour,
+      skillFive,
+      skillSix,
+      skillSeven,
+      skillEight,
+      skillOneRepeat,
+      skillTwoRepeat,
+      skillThreeRepeat,
+      skillFourRepeat,
+      skillFiveRepeat,
+      skillSixRepeat,
+      skillSevenRepeat,
+      skillEightRepeat
+    ],
+
+    skillOne = text : marqueeItem {
+      contents: "Brand Identity Development"
+    }
+
+    skillTwo = text : marqueeItem {
+      contents: "Visual Identity Design"
+    }
+
+    skillThree = text : marqueeItem {
+      contents: "Web Design"
+    }
+
+    skillFour = text : marqueeItem {
+      contents: "Web Development"
+    }
+
+    skillFive = text : marqueeItem {
+      contents: "Product Strategy"
+    }
+
+    skillSix = text : marqueeItem {
+      contents: "Product Design"
+    }
+
+    skillSeven = text : marqueeItem {
+      contents: "Design Engineer"
+    }
+
+    skillEight = text : marqueeItem {
+      contents: "3D Modeling & Rendering"
+    }
+
+    skillOneRepeat = text : marqueeItem {
+      contents: "Brand Identity Development"
+    }
+
+    skillTwoRepeat = text : marqueeItem {
+      contents: "Visual Identity Design"
+    }
+
+    skillThreeRepeat = text : marqueeItem {
+      contents: "Web Design"
+    }
+
+    skillFourRepeat = text : marqueeItem {
+      contents: "Web Development"
+    }
+
+    skillFiveRepeat = text : marqueeItem {
+      contents: "Product Strategy"
+    }
+
+    skillSixRepeat = text : marqueeItem {
+      contents: "Product Design"
+    }
+
+    skillSevenRepeat = text : marqueeItem {
+      contents: "Design Engineer"
+    }
+
+    skillEightRepeat = text : marqueeItem {
+      contents: "3D Modeling & Rendering"
+    }
+  }
+
+  // 30vh wide, vertically centred. The source video is 1080 by 1920.
+  heroVideo = frame : m.media {
+    left: 585px,
+    top: 210px,
+    width: 270px,
+    height: 480px,
+    corner-radius: 4px,
+
+    mediaLabel {
+      contents: "VIDEO 9:16"
+    }
+  }
+
+  // Over the video, at 50vh. Roles, listed twice. Anchored right
+  // (`flex-row-reverse`), so Co-Founder is at the right edge and the list
+  // reads leftward; drifts right.
+  roleMarquee = frame {
+    top: 450px,
+    right: -144px,
+    layout: {item-gap: 48px},
+    children: [
+      roleSixRepeat,
+      roleFiveRepeat,
+      roleFourRepeat,
+      roleThreeRepeat,
+      roleTwoRepeat,
+      roleOneRepeat,
+      roleSix,
+      roleFive,
+      roleFour,
+      roleThree,
+      roleTwo,
+      roleOne
+    ],
+
+    roleOne = text : marqueeItem {
+      contents: "Co-Founder"
+    }
+
+    roleTwo = text : marqueeItem {
+      contents: "Creative Director"
+    }
+
+    roleThree = text : marqueeItem {
+      contents: "Web Designer"
+    }
+
+    roleFour = text : marqueeItem {
+      contents: "Brand Designer"
+    }
+
+    roleFive = text : marqueeItem {
+      contents: "Product Design"
+    }
+
+    roleSix = text : marqueeItem {
+      contents: "Design Engineer"
+    }
+
+    roleOneRepeat = text : marqueeItem {
+      contents: "Co-Founder"
+    }
+
+    roleTwoRepeat = text : marqueeItem {
+      contents: "Creative Director"
+    }
+
+    roleThreeRepeat = text : marqueeItem {
+      contents: "Web Designer"
+    }
+
+    roleFourRepeat = text : marqueeItem {
+      contents: "Brand Designer"
+    }
+
+    roleFiveRepeat = text : marqueeItem {
+      contents: "Product Design"
+    }
+
+    roleSixRepeat = text : marqueeItem {
+      contents: "Design Engineer"
+    }
+  }
+}
+
+// Marquee entry: `font-mono` at the base size, foreground ink.
+export marqueeItem = text : t.mono {
+  left: 1600px,
+  contents: "Marquee item",
+  font-size: 16,
+  line-height: 1.5,
+  letter-spacing: 0,
+  fill[0].color: c.colors.foreground
+}

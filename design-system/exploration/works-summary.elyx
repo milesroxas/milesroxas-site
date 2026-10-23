@@ -1,0 +1,194 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/chrome.elyx" as chrome
+import "blocks/works-index.elyx" as index
+
+// Proposal: where a work's summary (hero.richText, one or two sentences) lives
+// on the /works dial. Two homes, each drawn as /works at 1440 by 900 on load
+// with production content, the NextStreet work on the plate.
+// A: the summary hangs under the active title, so the right column reads as the
+// work's label beside the picture. B: it joins the caption under the plate, so
+// the plate reads as the card. Both set it in the lead's voice: 16px, muted.
+worksSummary = frame {
+  width: 1632px,
+  layout: {direction: .column, item-gap: 96px},
+  fill: c.colors.neutral,
+  padding: 96px,
+  children: [intro, optionA, optionB],
+
+  intro = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 24px},
+    children: [introTitle, introNote],
+
+    introTitle = text : t.display {
+      contents: "Work summaries on the dial",
+      font-size: 72
+    }
+
+    introNote = text : t.statement {
+      width: 768px,
+      contents: "Each work has a one or two sentence summary that cards and search show. Two places it can live on the /works dial, drawn with the first work on the plate. Only the work on the centre line shows its summary; the other rows stay titles, so the drum keeps its shape.",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+
+  optionA = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 32px},
+    children: [labelA, noteA, boardA],
+
+    labelA = text : t.blockHeading {
+      contents: "A. Under the title, recommended"
+    }
+
+    noteA = text : t.body {
+      width: 768px,
+      contents: "The active row carries its summary under the title, in the title's column. The title keeps its place on the centre line and the summary hangs from it, so the eye reads title, then summary, then the picture it already saw. It opens line by line once the dial locks on a row and leaves with the row as it turns away.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    boardA = frame {
+      width: l.lengths.page,
+      height: l.lengths.viewport,
+      layout: {direction: .column},
+      fill: c.colors.background,
+      children: [dial, summary, topBar, dockRail],
+
+      dial = frame : index.workDial {
+        plate {
+          mediaLabel {
+            contents: "IMAGE 1.6:1, NXST-HERO"
+          }
+        }
+
+        plateCaption {
+          plateLabel {
+            plateClient {
+              contents: "NextStreet"
+            }
+
+            plateIndustry {
+              contents: "Business Consulting"
+            }
+          }
+        }
+
+        rowActive {
+          contents: "Design Systems for Organizational Scale"
+        }
+
+        rowNext {
+          contents: "Brand Expansion Through Narrative"
+        }
+      }
+
+      // 16px under the title's last line, on the title column's left edge.
+      summary = text : t.body {
+        left: 1065px,
+        top: 511px,
+        width: 327px,
+        ignore-stack: .true,
+        contents: "A high-velocity organization required a unified design system to support multiple products and teams at scale.",
+        fill[0].color: c.colors.muted-foreground
+      }
+
+      topBar = frame : chrome.topBarOnPage {
+        left: 0px,
+        top: 0px,
+        ignore-stack: .true
+      }
+
+      dockRail = frame {
+        left: 0px,
+        bottom: 24px,
+        width: 100%,
+        ignore-stack: .true,
+        layout: {justify-content: .center},
+        children: dock,
+
+        dock = frame : chrome.dockOnPage {}
+      }
+    }
+  }
+
+  optionB = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 32px},
+    children: [labelB, noteB, boardB],
+
+    labelB = text : t.blockHeading {
+      contents: "B. Under the plate"
+    }
+
+    noteB = text : t.body {
+      width: 768px,
+      contents: "The summary joins the caption under the plate, so the plate reads as the card: picture, client, position, summary. It crossfades with the picture when the dial commits to a row, and the rows stay exactly as they are. One home on every screen size, at the cost of parting the summary from its title.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    boardB = frame {
+      width: l.lengths.page,
+      height: l.lengths.viewport,
+      layout: {direction: .column},
+      fill: c.colors.background,
+      children: [dial, summary, topBar, dockRail],
+
+      dial = frame : index.workDial {
+        plate {
+          mediaLabel {
+            contents: "IMAGE 1.6:1, NXST-HERO"
+          }
+        }
+
+        plateCaption {
+          plateLabel {
+            plateClient {
+              contents: "NextStreet"
+            }
+
+            plateIndustry {
+              contents: "Business Consulting"
+            }
+          }
+        }
+
+        rowActive {
+          contents: "Design Systems for Organizational Scale"
+        }
+
+        rowNext {
+          contents: "Brand Expansion Through Narrative"
+        }
+      }
+
+      // 16px under the caption line, on three composition columns.
+      summary = text : t.body {
+        left: 423px,
+        top: 684px,
+        width: l.lengths.span-3,
+        ignore-stack: .true,
+        contents: "A high-velocity organization required a unified design system to support multiple products and teams at scale.",
+        fill[0].color: c.colors.muted-foreground
+      }
+
+      topBar = frame : chrome.topBarOnPage {
+        left: 0px,
+        top: 0px,
+        ignore-stack: .true
+      }
+
+      dockRail = frame {
+        left: 0px,
+        bottom: 24px,
+        width: 100%,
+        ignore-stack: .true,
+        layout: {justify-content: .center},
+        children: dock,
+
+        dock = frame : chrome.dockOnPage {}
+      }
+    }
+  }
+}

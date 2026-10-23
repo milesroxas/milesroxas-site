@@ -1,0 +1,988 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+import "controls/button.elyx" as b
+import "resources/icons/arrow-up-right.svg" as arrowUpRight
+import "resources/icons/plus.svg" as plusGlyph
+import "resources/icons/minus.svg" as minusGlyph
+import "resources/icons/chevron-left-step.svg" as stepLeft
+import "resources/icons/chevron-right-step.svg" as stepRight
+
+// Interactive group: accordion, carousels and tabbed panels, drawn in their
+// resting state (first item open, first tab active).
+// FAQ, `faq`: a heading row over a two-column accordion.
+// src/blocks/faq/Component.tsx, Component.client.tsx
+export faq = frame {
+  width: l.lengths.page,
+  layout: {direction: .column, item-gap: 48px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: [header, columns],
+
+  header = frame {
+    width: 100%,
+    layout: {justify-content: .space-between, align-items: .end},
+    children: [opener, contact],
+
+    opener = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column, item-gap: 13px},
+      children: [kicker, heading],
+
+      kicker = frame {
+        layout: {align-items: .center, item-gap: 8px},
+        children: [kickerRule, kickerText],
+
+        kickerRule = frame {
+          width: 16px,
+          height: 1px,
+          fill: c.colors.border
+        }
+
+        kickerText = text : t.eyebrow {
+          contents: "Questions"
+        }
+      }
+
+      heading = text : t.blockHeading {
+        width: 100%,
+        contents: "What clients ask before a project like this"
+      }
+    }
+
+    // Baseline-aligned on the site; bottom-aligned here, within a pixel.
+    contact = frame {
+      layout: {align-items: .end, item-gap: 16px},
+      children: [prompt, contactLink],
+
+      prompt = text : t.body {
+        contents: "Something else?",
+        line-height: 1.62,
+        fill[0].color: c.colors.muted-foreground
+      }
+
+      contactLink = frame {
+        layout: {align-items: .center, item-gap: 12px},
+        children: [contactLinkText, contactLinkArrow],
+
+        contactLinkText = text : t.lead {
+          contents: "Get in touch",
+          line-height: 1.5
+        }
+
+        contactLinkArrow = asset {
+          width: 24px,
+          height: 24px,
+          fill: c.colors.foreground,
+          contents: arrowUpRight
+        }
+      }
+    }
+  }
+
+  columns = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [leadColumn, trailColumn],
+
+    leadColumn = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column},
+      border: {color: c.colors.foreground, sides: .top},
+      children: [rowOne, rowOneAnswer, rowTwo],
+
+      rowOne = frame {
+        width: 100%,
+        layout: {item-gap: 24px},
+        padding: [20px, 0px],
+        children: [rowOneOrdinal, rowOneQuestion, rowOneToggle],
+
+        rowOneOrdinal = frame {
+          width: 32px,
+          layout: {direction: .column},
+          padding-top: 8px,
+          children: rowOneOrdinalText,
+
+          rowOneOrdinalText = text : t.mono {
+            letter-spacing: 0
+          }
+        }
+
+        rowOneQuestion = text : t.lead {
+          width: 508px,
+          contents: "How long does a design system take?",
+          line-height: 1.62
+        }
+
+        // The open row's plus has turned onto its horizontal bar.
+        rowOneToggle = frame {
+          width: 20px,
+          layout: {direction: .column, align-items: .center},
+          padding-top: 8px,
+          children: rowOneToggleGlyph,
+
+          rowOneToggleGlyph = asset {
+            width: 12px,
+            height: 12px,
+            fill: c.colors.foreground,
+            contents: minusGlyph
+          }
+        }
+      }
+
+      rowOneAnswer = frame {
+        width: 100%,
+        layout: {direction: .column},
+        border: {color: c.colors.border, sides: .bottom},
+        padding: [12px, 44px, 28px, 56px],
+        children: rowOneAnswerText,
+
+        rowOneAnswerText = text : t.body {
+          width: 100%,
+          contents: "This one took fourteen weeks from audit to first release. The audit and the token layer are the fixed cost. The component count sets the rest.",
+          line-height: 1.62,
+          fill[0].color: c.colors.muted-foreground
+        }
+      }
+
+      rowTwo = frame {
+        width: 100%,
+        layout: {item-gap: 24px},
+        border: {color: c.colors.border, sides: .bottom},
+        padding: [20px, 0px],
+        children: [rowTwoOrdinal, rowTwoQuestion, rowTwoToggle],
+
+        rowTwoOrdinal = frame {
+          width: 32px,
+          layout: {direction: .column},
+          padding-top: 8px,
+          children: rowTwoOrdinalText,
+
+          rowTwoOrdinalText = text : t.mono {
+            contents: "02",
+            letter-spacing: 0
+          }
+        }
+
+        rowTwoQuestion = text : t.lead {
+          width: 508px,
+          contents: "Can the team keep shipping during the work?",
+          line-height: 1.62
+        }
+
+        rowTwoToggle = frame {
+          width: 20px,
+          layout: {direction: .column, align-items: .center},
+          padding-top: 8px,
+          children: rowTwoToggleGlyph,
+
+          rowTwoToggleGlyph = asset {
+            width: 12px,
+            height: 12px,
+            fill: c.colors.foreground,
+            contents: plusGlyph
+          }
+        }
+      }
+    }
+
+    trailColumn = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column},
+      border: {color: c.colors.foreground, sides: .top},
+      children: [rowThree, rowFour],
+
+      rowThree = frame {
+        width: 100%,
+        layout: {item-gap: 24px},
+        border: {color: c.colors.border, sides: .bottom},
+        padding: [20px, 0px],
+        children: [rowThreeOrdinal, rowThreeQuestion, rowThreeToggle],
+
+        rowThreeOrdinal = frame {
+          width: 32px,
+          layout: {direction: .column},
+          padding-top: 8px,
+          children: rowThreeOrdinalText,
+
+          rowThreeOrdinalText = text : t.mono {
+            contents: "03",
+            letter-spacing: 0
+          }
+        }
+
+        rowThreeQuestion = text : t.lead {
+          width: 508px,
+          contents: "Who maintains it after handover?",
+          line-height: 1.62
+        }
+
+        rowThreeToggle = frame {
+          width: 20px,
+          layout: {direction: .column, align-items: .center},
+          padding-top: 8px,
+          children: rowThreeToggleGlyph,
+
+          rowThreeToggleGlyph = asset {
+            width: 12px,
+            height: 12px,
+            fill: c.colors.foreground,
+            contents: plusGlyph
+          }
+        }
+      }
+
+      rowFour = frame {
+        width: 100%,
+        layout: {item-gap: 24px},
+        border: {color: c.colors.border, sides: .bottom},
+        padding: [20px, 0px],
+        children: [rowFourOrdinal, rowFourQuestion, rowFourToggle],
+
+        rowFourOrdinal = frame {
+          width: 32px,
+          layout: {direction: .column},
+          padding-top: 8px,
+          children: rowFourOrdinalText,
+
+          rowFourOrdinalText = text : t.mono {
+            contents: "04",
+            letter-spacing: 0
+          }
+        }
+
+        rowFourQuestion = text : t.lead {
+          width: 508px,
+          contents: "Does it work with an existing codebase?",
+          line-height: 1.62
+        }
+
+        rowFourToggle = frame {
+          width: 20px,
+          layout: {direction: .column, align-items: .center},
+          padding-top: 8px,
+          children: rowFourToggleGlyph,
+
+          rowFourToggleGlyph = asset {
+            width: 12px,
+            height: 12px,
+            fill: c.colors.foreground,
+            contents: plusGlyph
+          }
+        }
+      }
+    }
+  }
+}
+
+// Carousel, `carousel`, contained width, Full slide size, arrows off. The
+// slide is capped at 70svh by its 16:10 media (1008px with its 8px gutters),
+// and a neighbour shows each side, recessed to 0.744, greyed and blurred, and
+// clipped at the column edge. Their 7deg turn is not drawn. The deck has one
+// caption line under it (`DeckCaption`), outside the slides, on the deck's
+// column; it shows the active slide's caption.
+// src/blocks/Carousel/Component.tsx, visual-state.ts
+export carousel = frame {
+  left: 1600px,
+  width: l.lengths.page,
+  layout: {
+    justify-content: .space-between,
+    align-items: .center,
+    wrap: .true,
+    line-gap: 16px
+  },
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: [previous, track, next, caption],
+
+  previous = frame : b.arrowPrevious {
+    display: .none
+  }
+
+  // The deck's viewport. A neighbour is its slide scaled about its centre,
+  // so its media is centred on the active slide's.
+  track = frame {
+    width: l.lengths.column,
+    layout: {justify-content: .center, align-items: .center, item-gap: 16px},
+    children: [before, active, after],
+
+    before = frame {
+      width: 112px,
+      opacity: 0.5,
+      layout: {direction: .column},
+      filter: [
+        {type: .color-controls, saturation: -1},
+        {type: .gaussian-blur, radius: 2px}
+      ],
+      children: beforeMedia,
+
+      beforeMedia = frame : m.media {
+        width: 100%,
+        height: 461px,
+        corner-radius: [0px, 6px, 6px, 0px],
+
+        mediaLabel {
+          contents: ""
+        }
+      }
+    }
+
+    active = frame {
+      width: 992px,
+      layout: {direction: .column},
+      children: activeMedia,
+
+      activeMedia = frame : m.media {
+        width: 100%,
+        height: 620px,
+
+        mediaLabel {
+          contents: "SLIDE 1 OF 5"
+        }
+      }
+    }
+
+    after = frame {
+      width: 112px,
+      opacity: 0.5,
+      layout: {direction: .column},
+      filter: [
+        {type: .color-controls, saturation: -1},
+        {type: .gaussian-blur, radius: 2px}
+      ],
+      children: afterMedia,
+
+      afterMedia = frame : m.media {
+        width: 100%,
+        height: 461px,
+        corner-radius: [6px, 0px, 0px, 6px],
+
+        mediaLabel {
+          contents: ""
+        }
+      }
+    }
+  }
+
+  next = frame : b.arrow {
+    display: .none
+  }
+
+  // One line tall, `text-sm`, 16px under the deck.
+  caption = text : t.small {
+    width: l.lengths.column,
+    contents: "Product page: gallery, size picker and delivery estimate above the fold.",
+    fill[0].color: c.colors.muted-foreground
+  }
+}
+
+// Carousel, Half slide size: four fifths of the track, which the 70svh cap
+// holds to the same 1008px slide, with 6px gutters.
+@variant
+export carouselHalf = frame : carousel {
+  left: 1600px,
+  top: 1200px,
+
+  track {
+    before {
+      width: 114px,
+
+      beforeMedia {
+        height: 463.3px
+      }
+    }
+
+    active {
+      width: 996px,
+
+      activeMedia {
+        height: 622.5px
+      }
+    }
+
+    after {
+      width: 114px,
+
+      afterMedia {
+        height: 463.3px
+      }
+    }
+
+    layout.item-gap: 12px
+  }
+}
+
+// Carousel, arrows on: the deck takes `md:mx-12` and the arrows sit in the
+// 48px it frees, 24px off the slides.
+@variant
+export carouselArrows = frame : carousel {
+  left: 1600px,
+  top: 2400px,
+
+  track {
+    width: 1152px,
+
+    before {
+      width: 64px
+    }
+
+    after {
+      width: 64px
+    }
+  }
+
+  previous {
+    display: .visible
+  }
+
+  next {
+    display: .visible
+  }
+}
+
+// Carousel, Half slide size with arrows: four fifths of the narrower track.
+@variant
+export carouselHalfArrows = frame : carouselArrows {
+  left: 1600px,
+  top: 3600px,
+
+  track {
+    before {
+      width: 104.4px,
+
+      beforeMedia {
+        height: 427.5px
+      }
+    }
+
+    active {
+      width: 919.2px,
+
+      activeMedia {
+        height: 574.5px
+      }
+    }
+
+    after {
+      width: 104.4px,
+
+      afterMedia {
+        height: 427.5px
+      }
+    }
+
+    layout.item-gap: 12px
+  }
+}
+
+// Carousel, Full width with Half slide size: the window is the column, so the
+// slide is five eighths of 1440px (888px of media in its 6px gutters) and the
+// neighbours run off the window edges. The 70svh cap holds only for media with
+// dimensions; this draws a 16:9 deck without them. Only a Full slide puts the
+// caption back on the page column (`md:container`), so at Half it starts at
+// the window edge.
+@variant
+export carouselFullWidthHalf = frame : carousel {
+  left: 1600px,
+  top: 4800px,
+  padding-left: 0px,
+  padding-right: 0px,
+
+  caption {
+    width: l.lengths.page
+  }
+
+  track {
+    width: l.lengths.page,
+
+    before {
+      width: 264px,
+
+      beforeMedia {
+        height: 372px
+      }
+    }
+
+    active {
+      width: 888px,
+
+      activeMedia {
+        height: 499.5px
+      }
+    }
+
+    after {
+      width: 264px,
+
+      afterMedia {
+        height: 372px
+      }
+    }
+
+    layout.item-gap: 12px
+  }
+}
+
+// Carousel tabs, `carouselTabs`, Coverflow deck: the copy column stretched to
+// the deck's height, copy pinned to its top and the deck controls (tab index,
+// then readout) to its bottom, so they end on the caption's bottom edge.
+// src/blocks/carousel-tabs/CarouselTabs.tsx, DeckControls.tsx
+export carouselTabs = frame {
+  left: 3200px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: grid,
+
+  grid = frame {
+    width: 100%,
+    layout: {align-items: .stretch, item-gap: l.lengths.grid-gap},
+    children: [copyStack, panels],
+
+    copyStack = frame {
+      width: l.lengths.span-3,
+      layout: {direction: .column, justify-content: .space-between},
+      children: [intro, deckControls],
+
+      intro = frame {
+        width: 100%,
+        layout: {direction: .column},
+        children: [eyebrow, heading, copy],
+
+        eyebrow = text : t.eyebrow {
+          contents: "Platforms"
+        }
+
+        heading = frame {
+          width: 100%,
+          layout: {direction: .column},
+          padding: [13px, 0px, 25px],
+          children: headingText,
+
+          headingText = text : t.blockHeading {
+            width: 100%,
+            contents: "One system on three platforms"
+          }
+        }
+
+        copy = text : t.body {
+          width: 100%,
+          contents: "The same components ship to web, iOS and Android. Pick a platform to see its screens."
+        }
+      }
+
+      deckControls = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 24px},
+        children: [deckIndex, deckReadout],
+
+        // One row per tab between hairlines. The active row's thumb is the
+        // deck's progress, one slide's share of the row.
+        deckIndex = frame {
+          width: 100%,
+          layout: {direction: .column},
+          border: {color: c.colors.hairline, sides: .top},
+          padding-top: 1px,
+          children: [indexWeb, indexIos, indexAndroid],
+
+          indexWeb = frame {
+            width: 100%,
+            height: 48px,
+            layout: {align-items: .center},
+            border: {color: c.colors.hairline, sides: .bottom},
+            overflow: .visible,
+            children: [indexWebLabel, indexWebThumb],
+
+            indexWebLabel = text : t.lead {
+              contents: "Web"
+            }
+
+            indexWebThumb = frame {
+              left: 0px,
+              top: 47px,
+              width: 149.33px,
+              height: 2px,
+              ignore-stack: .true,
+              fill: c.colors.foreground,
+              corner-radius: 1px
+            }
+          }
+
+          indexIos = frame {
+            width: 100%,
+            height: 48px,
+            layout: {align-items: .center},
+            border: {color: c.colors.hairline, sides: .bottom},
+            children: indexIosLabel,
+
+            indexIosLabel = text : t.lead {
+              contents: "iOS",
+              fill[0].color: c.colors.muted-foreground
+            }
+          }
+
+          indexAndroid = frame {
+            width: 100%,
+            height: 48px,
+            layout: {align-items: .center},
+            border: {color: c.colors.hairline, sides: .bottom},
+            children: indexAndroidLabel,
+
+            indexAndroidLabel = text : t.lead {
+              contents: "Android",
+              fill[0].color: c.colors.muted-foreground
+            }
+          }
+        }
+
+        // Only renders when the tab has more than one slide.
+        deckReadout = frame {
+          width: 100%,
+          layout: {justify-content: .space-between, align-items: .center},
+          children: [readoutCount, readoutSteps],
+
+          // Plain text: the muted total needs `subrange`, which instances drop.
+          readoutCount = text {
+            fill: c.colors.foreground,
+            subrange: {range: [2, 7], fill: c.colors.muted-foreground},
+            contents: "01 / 03",
+            font-size: 12,
+            font-family: "Geist Mono",
+            font-style: "Medium",
+            line-height: 1
+          }
+
+          readoutSteps = frame {
+            layout: {align-items: .center, item-gap: 8px},
+            children: [stepPrevious, stepNext],
+
+            stepPrevious = frame {
+              width: 36px,
+              height: 36px,
+              layout: {justify-content: .center, align-items: .center},
+              border: c.colors.hairline,
+              corner-radius: 18px,
+              children: stepPreviousGlyph,
+
+              stepPreviousGlyph = asset {
+                width: 16px,
+                height: 16px,
+                fill: c.colors.foreground,
+                contents: stepLeft
+              }
+            }
+
+            stepNext = frame {
+              width: 36px,
+              height: 36px,
+              layout: {justify-content: .center, align-items: .center},
+              border: c.colors.hairline,
+              corner-radius: 18px,
+              children: stepNextGlyph,
+
+              stepNextGlyph = asset {
+                width: 16px,
+                height: 16px,
+                fill: c.colors.foreground,
+                contents: stepRight
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Columns 4 to 8 hold only the deck. A Full slide is the whole column, so
+    // no neighbour shows.
+    panels = frame {
+      width: l.lengths.span-5,
+      layout: {direction: .column, justify-content: .end},
+      children: deck,
+
+      deck = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 16px},
+        children: [backBoard, slideMedia, slideCaption],
+
+        // Stack only: the next board, scaled to 0.94 from its left centre and
+        // fanned so its right edge meets the column end, under a 22% veil.
+        backBoard = frame : m.media {
+          left: 83.7px,
+          top: 14.7px,
+          width: 684.3px,
+          height: 427.7px,
+          display: .none,
+          ignore-stack: .true,
+          corner-radius: 7.5px,
+          border[0].color: c.colors.board-ring,
+          border[0].position: .outside,
+          fill[1].color: c.colors.background,
+          fill[1].opacity: 0.22,
+          shadow[0].drop-shadow.blur-radius: 2px,
+          shadow[0].drop-shadow.color: rgb(0%, 0%, 0%, 6%),
+          shadow[0].drop-shadow.offset: [0px, 1px],
+          shadow[1].drop-shadow.blur-radius: 16px,
+          shadow[1].drop-shadow.color: rgb(0%, 0%, 0%, 8%),
+          shadow[1].drop-shadow.offset: [0px, 8px],
+          shadow[1].drop-shadow.spread: -6px,
+          shadow[2].drop-shadow.blur-radius: 56px,
+          shadow[2].drop-shadow.color: rgb(0%, 0%, 0%, 22%),
+          shadow[2].drop-shadow.offset: [0px, 28px],
+          shadow[2].drop-shadow.spread: -20px,
+
+          mediaLabel {
+            contents: ""
+          }
+        }
+
+        slideMedia = frame : m.media {
+          width: 100%,
+          height: 480px,
+
+          mediaLabel {
+            contents: "SLIDE 1 OF 3"
+          }
+        }
+
+        slideCaption = text : t.small {
+          width: 100%,
+          contents: "Web: the account area at the desktop breakpoint.",
+          fill[0].color: c.colors.muted-foreground
+        }
+      }
+    }
+  }
+}
+
+// Carousel tabs, Stack deck: the top board is the card (768 / 1.055) on the
+// column start, with a ring and a layered shadow, and the next board fans out
+// 40px past its right edge.
+@variant
+export carouselTabsStack = frame : carouselTabs {
+  left: 3200px,
+  top: 1200px,
+
+  grid {
+    panels {
+      deck {
+        slideMedia {
+          shadow[0].drop-shadow.color: rgb(0%, 0%, 0%, 6%),
+          shadow[2].drop-shadow.color: rgb(0%, 0%, 0%, 22%),
+          border[0].color: c.colors.board-ring,
+          shadow[1].drop-shadow.color: rgb(0%, 0%, 0%, 8%),
+          shadow[0].drop-shadow.offset: [0px, 1px],
+          shadow[2].drop-shadow.offset: [0px, 28px],
+          shadow[1].drop-shadow.offset: [0px, 8px],
+          shadow[0].drop-shadow.blur-radius: 2px,
+          shadow[2].drop-shadow.blur-radius: 56px,
+          shadow[1].drop-shadow.blur-radius: 16px,
+          shadow[2].drop-shadow.spread: -20px,
+          shadow[1].drop-shadow.spread: -6px,
+          border[0].position: .outside,
+          width: 728px,
+          height: 455px
+        }
+
+        overflow: .visible,
+
+        backBoard {
+          display: .visible
+        }
+      }
+
+      overflow: .visible
+    }
+
+    overflow: .visible
+  }
+}
+
+// Carousel tabs, Small tab size: 40px index rows in body type.
+@variant
+export carouselTabsSmall = frame : carouselTabs {
+  left: 3200px,
+  top: 2400px,
+
+  grid {
+    copyStack {
+      deckControls {
+        deckIndex {
+          indexWeb {
+            indexWebThumb {
+              top: 39px
+            }
+
+            height: 40px,
+
+            indexWebLabel {
+              font-size: 16,
+              line-height: 1.5
+            }
+          }
+
+          indexIos {
+            height: 40px,
+
+            indexIosLabel {
+              font-size: 16,
+              line-height: 1.5
+            }
+          }
+
+          indexAndroid {
+            height: 40px,
+
+            indexAndroidLabel {
+              font-size: 16,
+              line-height: 1.5
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Feature tabs, `featureTabs`: a centred tab strip over a copy and media panel.
+// src/blocks/feature/Tabs/FeatureTabs.tsx
+export featureTabs = frame {
+  left: 4800px,
+  width: l.lengths.page,
+  layout: {direction: .column, align-items: .center, item-gap: 64px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: [tabStrip, panel],
+
+  tabStrip = frame {
+    layout: {align-items: .center, item-gap: 96px},
+    children: [tabOne, tabTwo, tabThree],
+
+    tabOne = text : t.heading {
+      contents: "Tokens",
+      fill[0].color: c.colors.primary
+    }
+
+    tabTwo = text : t.heading {
+      contents: "Components",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    tabThree = text : t.heading {
+      contents: "Templates",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+
+  panel = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [panelCopy, panelMedia],
+
+    panelCopy = frame {
+      width: l.lengths.span-3,
+      height: 432px,
+      layout: {direction: .column, justify-content: .space-between},
+      children: [panelOpener, panelList],
+
+      panelOpener = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 25px},
+        children: [panelHeading, panelBody],
+
+        panelHeading = text : t.blockHeading {
+          width: 100%,
+          contents: "Decisions made once"
+        }
+
+        panelBody = text : t.body {
+          width: 100%,
+          contents: "Colour, type, space and radius live in one file. Everything else reads from it."
+        }
+      }
+
+      panelList = frame {
+        width: 100%,
+        layout: {direction: .column},
+        children: [listLabel, listOne, listTwo, listThree],
+
+        listLabel = frame {
+          width: 100%,
+          layout: {direction: .column},
+          padding-bottom: 12px,
+          children: listLabelText,
+
+          listLabelText = text : t.small {
+            contents: "Included",
+            font-family: "Geist Mono",
+            fill[0].color: c.colors.muted-foreground
+          }
+        }
+
+        listOne = frame {
+          width: 100%,
+          layout: {direction: .column},
+          border: {color: c.colors.border, sides: .bottom},
+          padding: [4px, 0px],
+          children: listOneText,
+
+          listOneText = text : t.small {
+            contents: "64 colour tokens across two themes"
+          }
+        }
+
+        listTwo = frame {
+          width: 100%,
+          layout: {direction: .column},
+          border: {color: c.colors.border, sides: .bottom},
+          padding: [4px, 0px],
+          children: listTwoText,
+
+          listTwoText = text : t.small {
+            contents: "A six-step fluid type scale"
+          }
+        }
+
+        listThree = frame {
+          width: 100%,
+          layout: {direction: .column},
+          padding-top: 4px,
+          children: listThreeText,
+
+          listThreeText = text : t.small {
+            contents: "Spacing and radius scales"
+          }
+        }
+      }
+    }
+
+    panelMedia = frame : m.media {
+      width: l.lengths.span-5,
+      height: 432px,
+      overrides: [insert(captionCard, after = m.media.mediaLabel)],
+
+      mediaLabel {
+        contents: "VISUAL 16:9"
+      }
+
+      captionCard = frame {
+        right: 32px,
+        bottom: 36px,
+        width: 288px,
+        ignore-stack: .true,
+        layout: {direction: .column},
+        fill: c.colors.card,
+        corner-radius: l.lengths.radius-md,
+        padding: 16px,
+        children: captionCardText,
+
+        captionCardText = text : t.small {
+          width: 100%,
+          contents: "The token file, open beside the components that read from it.",
+          fill[0].color: c.colors.muted-foreground
+        }
+      }
+    }
+  }
+}

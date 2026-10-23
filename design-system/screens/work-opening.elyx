@@ -1,0 +1,34 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/chrome.elyx" as chrome
+import "blocks/opening.elyx" as opening
+
+// What a visitor sees when a work page loads at 1440 by 900: the Work hero on
+// the page ground, at least the viewport tall, with the site chrome (top bar
+// and dock) fixed over it in its on-page colours.
+workOpening = frame {
+  width: l.lengths.page,
+  height: l.lengths.viewport,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  children: [hero, topBar, dockRail],
+
+  hero = frame : opening.workHero {}
+
+  topBar = frame : chrome.topBarOnPage {
+    left: 0px,
+    top: 0px,
+    ignore-stack: .true
+  }
+
+  dockRail = frame {
+    left: 0px,
+    bottom: 24px,
+    width: 100%,
+    ignore-stack: .true,
+    layout: {justify-content: .center},
+    children: dock,
+
+    dock = frame : chrome.dockOnPageSection {}
+  }
+}

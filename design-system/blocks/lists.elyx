@@ -1,0 +1,499 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+
+// Lists group: a run of insights, and the archive of other work.
+// Insight card for the Side layout, compact (no marks). Override `ordinal`,
+// `insightTitle` and `insightBody`. src/blocks/insight-list/Insight.tsx
+export insight = frame {
+  top: 1400px,
+  width: l.lengths.span-3,
+  layout: {direction: .column, item-gap: 4px},
+  border: {color: c.colors.border, sides: .top},
+  padding-top: 16px,
+  children: [insightHead, insightBody],
+
+  insightHead = frame {
+    width: 100%,
+    layout: {align-items: .center, item-gap: 12px},
+    children: [ordinal, insightTitle],
+
+    // Baseline-aligned in code, about 2px below the centre: a taller box, set low.
+    ordinal = text : t.mono {
+      height: 20px,
+      contents: "01",
+      vertical-align: .bottom
+    }
+
+    insightTitle = text : t.lead {
+      contents: "Insight title",
+      font-style: "Medium"
+    }
+  }
+
+  insightBody = text : t.body {
+    width: 100%,
+    contents: "Insight description.",
+    fill[0].color: c.colors.muted-foreground
+  }
+}
+
+// Insight list, `insightList`, Side layout: heading on two columns, items in
+// two lanes on columns 3 to 8. src/blocks/insight-list/Component.tsx
+export insightList = frame {
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: grid,
+
+  grid = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [opener, items],
+
+    opener = frame {
+      width: l.lengths.span-2,
+      layout: {direction: .column},
+      children: [eyebrow, heading, summary],
+
+      eyebrow = text : t.eyebrow {
+        display: .none,
+        contents: "OUTCOMES",
+        letter-spacing: 10%
+      }
+
+      heading = frame {
+        width: 100%,
+        layout: {direction: .column},
+        padding: [0px, 0px, 10px],
+        children: headingText,
+
+        headingText = text : t.blockHeading {
+          width: 100%,
+          contents: "What changed"
+        }
+      }
+
+      summary = text : t.body {
+        width: 100%,
+        display: .none,
+        contents: "Measured over the first quarter after release.",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+
+    items = frame {
+      width: l.lengths.span-6,
+      layout: {
+        item-gap: l.lengths.grid-gap,
+        wrap: .true,
+        line-gap: l.lengths.grid-gap
+      },
+      children: [itemOne, itemTwo, itemThree, itemFour],
+
+      itemOne = frame : insight {
+        insightHead {
+          insightTitle {
+            contents: "Faster to design"
+          }
+        }
+
+        insightBody {
+          contents: "New screens are assembled from existing parts. Design time for a typical feature fell by about a third."
+        }
+      }
+
+      itemTwo = frame : insight {
+        insightHead {
+          ordinal {
+            contents: "02"
+          }
+
+          insightTitle {
+            contents: "Fewer regressions"
+          }
+        }
+
+        insightBody {
+          contents: "One button, one input, one price. Visual bugs reported after release dropped in the first two months."
+        }
+      }
+
+      itemThree = frame : insight {
+        insightHead {
+          ordinal {
+            contents: "03"
+          }
+
+          insightTitle {
+            contents: "Higher completion"
+          }
+        }
+
+        insightBody {
+          contents: "The single-screen checkout lifted completion from 58 to 78 percent of started checkouts."
+        }
+      }
+
+      itemFour = frame : insight {
+        insightHead {
+          ordinal {
+            contents: "04"
+          }
+
+          insightTitle {
+            contents: "A shared language"
+          }
+        }
+
+        insightBody {
+          contents: "Design and engineering now name things the same way, in the file and in the code."
+        }
+      }
+    }
+  }
+}
+
+// Insight list with Show eyebrow and Show summary on.
+@variant
+export insightListEyebrowSummary = frame : insightList {
+  top: 700px,
+
+  grid {
+    opener {
+      eyebrow {
+        display: .visible
+      }
+
+      summary {
+        display: .visible
+      }
+    }
+  }
+}
+
+// Work card as the archive renders it, with the `text-lg xl:text-xl` title.
+// Override `cardTitle`. src/components/Card/Works/Component.tsx
+export workCard = frame {
+  left: 600px,
+  top: 1400px,
+  width: 405.33px,
+  layout: {direction: .column, item-gap: 24px},
+  children: [cardVisual, cardHeader],
+
+  cardVisual = frame : m.media {
+    width: 100%,
+    height: 228px,
+    corner-radius: l.lengths.radius-sm,
+
+    mediaLabel {
+      contents: "WORK 16:9"
+    }
+  }
+
+  cardHeader = frame {
+    width: 100%,
+    layout: {justify-content: .space-between, item-gap: 8px},
+    children: [cardTitle, cardBadge],
+
+    cardTitle = text : t.lead {
+      width: 350px,
+      contents: "Project title",
+      font-size: 20,
+      line-height: 1.4
+    }
+
+    // The badge's `mt-1`.
+    cardBadge = frame {
+      layout: {direction: .column},
+      padding-top: 4px,
+      children: badge,
+
+      badge = frame {
+        height: 20px,
+        layout: {align-items: .center},
+        fill: c.colors.accent-tint,
+        corner-radius: l.lengths.radius-xs,
+        padding: [0px, 9px],
+        children: badgeLabel,
+
+        badgeLabel = text : t.small {
+          contents: "Work",
+          font-size: 12,
+          font-style: "Medium",
+          line-height: 1.33,
+          fill[0].color: c.colors.accent
+        }
+      }
+    }
+  }
+}
+
+// Post card as the archive renders it. Override `cardTitle` and
+// `cardDescription`. src/components/Card/Posts/Component.tsx
+export postCard = frame {
+  left: 1100px,
+  top: 1400px,
+  width: 405.33px,
+  layout: {direction: .column},
+  children: [cardVisual, cardHeader, cardDescription],
+
+  cardVisual = frame : m.media {
+    width: 100%,
+    height: 228px,
+    corner-radius: l.lengths.radius-sm,
+
+    mediaLabel {
+      contents: "POST 16:9"
+    }
+  }
+
+  // 24px under the image (`mb-6`), 8px over the description (`mt-2`).
+  cardHeader = frame {
+    width: 100%,
+    layout: {justify-content: .space-between, item-gap: 8px},
+    padding: [24px, 0px, 8px],
+    children: [cardTitle, cardBadge],
+
+    cardTitle = text : t.lead {
+      width: 354px,
+      contents: "Post title",
+      font-style: "Light"
+    }
+
+    // The badge's `mt-1`.
+    cardBadge = frame {
+      layout: {direction: .column},
+      padding-top: 4px,
+      children: badge,
+
+      badge = frame {
+        height: 20px,
+        layout: {align-items: .center},
+        fill: rgb(0%, 0%, 0%, 10%),
+        corner-radius: l.lengths.radius-xs,
+        padding: [0px, 9px],
+        children: badgeLabel,
+
+        badgeLabel = text : t.small {
+          contents: "Post",
+          font-size: 12,
+          font-style: "Medium",
+          line-height: 1.33,
+          fill[0].color: c.colors.accent-foreground
+        }
+      }
+    }
+  }
+
+  cardDescription = text : t.body {
+    width: 100%,
+    contents: "Post meta description."
+  }
+}
+
+// Archive, `archive`: an intro over a three-up grid. Defaults to ten posts.
+// src/blocks/ArchiveBlock, src/components/CollectionArchive
+export archive = frame {
+  left: 1600px,
+  width: l.lengths.page,
+  layout: {direction: .column, item-gap: 64px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-md, 80px, 144px],
+  children: [intro, posts, works],
+
+  intro = text : t.statement {
+    width: 768px,
+    contents: "More work",
+    line-height: 1.375,
+    fill[0].color: c.colors.muted-foreground
+  }
+
+  posts = frame {
+    width: 100%,
+    layout: {
+      item-gap: l.lengths.grid-gap,
+      wrap: .true,
+      line-gap: l.lengths.grid-gap
+    },
+    children: [
+      postOne,
+      postTwo,
+      postThree,
+      postFour,
+      postFive,
+      postSix,
+      postSeven,
+      postEight,
+      postNine,
+      postTen
+    ],
+
+    postOne = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "One name in design and in code"
+        }
+      }
+
+      cardDescription {
+        contents: "Why the component library uses one vocabulary in Figma and in the codebase, and how we got there."
+      }
+    }
+
+    postTwo = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "What a design system costs in year one"
+        }
+      }
+
+      cardDescription {
+        contents: "The real hours behind tokens, components and documentation, and where they paid back."
+      }
+    }
+
+    postThree = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "Writing case studies people finish"
+        }
+      }
+
+      cardDescription {
+        contents: "A structure for case studies that leads with the problem and keeps the process short."
+      }
+    }
+
+    postFour = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "Fluid type without breakpoints"
+        }
+      }
+
+      cardDescription {
+        contents: "How the site scales its type between two viewport widths with clamp and a small scale."
+      }
+    }
+
+    postFive = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "Reviewing designs in code"
+        }
+      }
+
+      cardDescription {
+        contents: "Moving design review into preview deployments, and what the team stopped arguing about."
+      }
+    }
+
+    postSix = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "A checkout on one screen"
+        }
+      }
+
+      cardDescription {
+        contents: "Notes from collapsing a four-step checkout into a single screen without losing clarity."
+      }
+    }
+
+    postSeven = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "Motion that waits for the reader"
+        }
+      }
+
+      cardDescription {
+        contents: "Slower transitions, hover intent and why the site lets content settle before it moves."
+      }
+    }
+
+    postEight = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "Tokens before components"
+        }
+      }
+
+      cardDescription {
+        contents: "Starting a system with colour, spacing and type tokens, and leaving components for later."
+      }
+    }
+
+    postNine = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "Content models for portfolio sites"
+        }
+      }
+
+      cardDescription {
+        contents: "How the CMS splits works, posts and pages, and which fields earn their place."
+      }
+    }
+
+    postTen = frame : postCard {
+      cardHeader {
+        cardTitle {
+          contents: "Accessibility as a review step"
+        }
+      }
+
+      cardDescription {
+        contents: "The checks that run on every pull request, and the ones that still need a person."
+      }
+    }
+  }
+
+  works = frame {
+    width: 100%,
+    display: .none,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [cardOne, cardTwo, cardThree],
+
+    cardOne = frame : workCard {
+      cardHeader {
+        cardTitle {
+          contents: "A booking platform for independent clinics"
+        }
+      }
+    }
+
+    cardTwo = frame : workCard {
+      cardHeader {
+        cardTitle {
+          contents: "Editorial site for an architecture studio"
+        }
+      }
+    }
+
+    cardThree = frame : workCard {
+      cardHeader {
+        cardTitle {
+          contents: "Dashboard for a logistics start-up"
+        }
+      }
+    }
+  }
+}
+
+// Archive set to Works.
+@variant
+export archiveWorks = frame : archive {
+  left: 3200px,
+
+  posts {
+    display: .none
+  }
+
+  works {
+    display: .visible
+  }
+}

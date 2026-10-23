@@ -1,0 +1,302 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "resources/icons/logo.svg" as logoGlyph
+import "resources/icons/moon.svg" as moonGlyph
+import "resources/icons/ask.svg" as askMark
+
+// Site chrome as it sits over a dark hero: the top bar and the dock.
+// src/components/SiteChrome/TopBar.tsx, Dock.tsx, PageTabs.tsx, Clock.tsx
+// Top bar: 80px tall (`--chrome-top`), the wordmark centred, the Brooklyn
+// clock and then the theme toggle right. The section breadcrumb on the left
+// only appears once a page's heading scrolls under the bar, so it is not drawn.
+export topBar = frame {
+  width: l.lengths.page,
+  height: 80px,
+  layout: {justify-content: .end, align-items: .center},
+  padding: [0px, 32px],
+  children: [wordmark, tools],
+
+  // The Logo SVG at `w-40`, centred on the bar.
+  wordmark = asset {
+    left: 640px,
+    top: 34px,
+    width: 160px,
+    height: 12.67px,
+    ignore-stack: .true,
+    fill: c.colors.hero-ink,
+    contents: logoGlyph
+  }
+
+  tools = frame {
+    layout: {align-items: .center, item-gap: 20px},
+    children: [clock, themeToggle],
+
+    clock = frame {
+      layout: {align-items: .center, item-gap: 6px},
+      children: [clockCity, clockTime],
+
+      clockCity = text : t.small {
+        contents: "Brooklyn, NY",
+        font-size: 13,
+        line-height: 1.38,
+        fill[0].color: c.colors.hero-ink-quiet
+      }
+
+      clockTime = text : t.mono {
+        contents: "10:42 AM",
+        font-size: 13,
+        line-height: 1.38,
+        letter-spacing: 0,
+        fill[0].color: c.colors.hero-ink
+      }
+    }
+
+    // Moon in the light theme, sun in the dark. The button's 8px padding is
+    // cancelled by a negative margin, so only the glyph takes room in the row.
+    themeToggle = frame {
+      width: 16px,
+      height: 16px,
+      layout: {justify-content: .center, align-items: .center},
+      children: themeGlyph,
+
+      themeGlyph = asset {
+        width: 16px,
+        height: 16px,
+        fill: c.colors.hero-ink,
+        contents: moonGlyph
+      }
+    }
+  }
+}
+
+// Dock tab. Every label reserves its SemiBold width so the tabs never shift,
+// so instances set `width` to the SemiBold label plus 24px. Override `tabLabel`.
+export dockTab = frame {
+  top: 180px,
+  height: 100%,
+  layout: {justify-content: .center, align-items: .center},
+  corner-radius: 4px,
+  padding: [0px, 12px],
+  children: tabLabel,
+
+  tabLabel = text : t.small {
+    contents: "Tab",
+    font-size: 13,
+    font-style: "Medium",
+    line-height: 1.23,
+    fill[0].color: c.colors.hero-ink
+  }
+}
+
+// Dock: the page tabs (Home, then the Header's items) and the Ask button on
+// glass with a hairline and a soft lift, centred 24px above the viewport's
+// bottom edge. The Work tab is current.
+export dock = frame {
+  top: 240px,
+  layout: {align-items: .center, item-gap: 8px},
+  children: [dockTabs, ask],
+
+  dockTabs = frame {
+    height: 40px,
+    layout: {item-gap: 2px},
+    fill: {color: c.colors.chrome-glass, blur-radius: 20px},
+    border: {color: c.colors.chrome-hairline, position: .outside},
+    shadow: {
+      drop-shadow: {
+        color: c.colors.chrome-lift,
+        offset: point(0px, 4px),
+        blur-radius: 16px,
+        spread: -6px
+      }
+    },
+    corner-radius: l.lengths.radius,
+    padding: 4px,
+    children: [tabHome, tabWork, tabPosts, tabContact],
+
+    tabHome = frame : dockTab {
+      width: 59.5px,
+
+      tabLabel {
+        contents: "Home"
+      }
+    }
+
+    tabWork = frame : dockTab {
+      width: 56px,
+      fill[0].color: c.colors.chrome-selected,
+
+      tabLabel {
+        contents: "Work",
+        font-style: "SemiBold"
+      }
+    }
+
+    tabPosts = frame : dockTab {
+      width: 57px,
+
+      tabLabel {
+        contents: "Posts"
+      }
+    }
+
+    tabContact = frame : dockTab {
+      width: 71px,
+
+      tabLabel {
+        contents: "Contact"
+      }
+    }
+  }
+
+  ask = frame {
+    height: 40px,
+    layout: {align-items: .center, item-gap: 6px},
+    fill: {color: c.colors.chrome-glass, blur-radius: 20px},
+    border: {color: c.colors.chrome-hairline, position: .outside},
+    shadow: {
+      drop-shadow: {
+        color: c.colors.chrome-lift,
+        offset: point(0px, 4px),
+        blur-radius: 16px,
+        spread: -6px
+      }
+    },
+    corner-radius: l.lengths.radius,
+    padding: [0px, 14px, 0px, 12px],
+    children: [askGlyph, askLabel],
+
+    askGlyph = asset {
+      width: 16px,
+      height: 16px,
+      fill: c.colors.chrome-glyph,
+      contents: askMark
+    }
+
+    askLabel = text : t.small {
+      contents: "Ask",
+      font-size: 13,
+      font-style: "Medium",
+      fill[0].color: c.colors.hero-ink
+    }
+  }
+}
+
+// Top bar over the page's own ground (Home, works): ink follows the theme.
+@variant
+export topBarOnPage = frame : topBar {
+  top: 80px,
+
+  wordmark {
+    fill[0].color: c.colors.foreground
+  }
+
+  tools {
+    themeToggle {
+      themeGlyph {
+        fill[0].color: c.colors.foreground
+      }
+    }
+
+    clock {
+      clockCity {
+        fill[0].color: c.colors.page-ink-quiet
+      }
+
+      clockTime {
+        fill[0].color: c.colors.foreground
+      }
+    }
+  }
+}
+
+// Dock over the page's own ground: light glass in the light theme, dark glass
+// in the dark. The Work tab is current (/works).
+@variant
+export dockOnPage = frame : dock {
+  top: 320px,
+
+  dockTabs {
+    fill[0].color: c.colors.page-glass,
+    border[0].color: c.colors.page-glass-hairline,
+    shadow[0].drop-shadow.color: c.colors.page-glass-lift,
+
+    tabHome {
+      tabLabel {
+        fill[0].color: c.colors.foreground
+      }
+    }
+
+    tabWork {
+      fill[0].color: c.colors.page-glass-selected,
+
+      tabLabel {
+        fill[0].color: c.colors.foreground
+      }
+    }
+
+    tabPosts {
+      tabLabel {
+        fill[0].color: c.colors.foreground
+      }
+    }
+
+    tabContact {
+      tabLabel {
+        fill[0].color: c.colors.foreground
+      }
+    }
+  }
+
+  ask {
+    fill[0].color: c.colors.page-glass,
+    border[0].color: c.colors.page-glass-hairline,
+    shadow[0].drop-shadow.color: c.colors.page-glass-lift,
+
+    askGlyph {
+      fill[0].color: c.colors.page-glyph
+    }
+
+    askLabel {
+      fill[0].color: c.colors.foreground
+    }
+  }
+}
+
+// On-page dock with Home current (/).
+@variant
+export dockOnPageHome = frame : dockOnPage {
+  top: 400px,
+
+  dockTabs {
+    tabWork {
+      fill[0].color: .transparent,
+
+      tabLabel {
+        font-style: "Medium"
+      }
+    }
+
+    tabHome {
+      fill[0].color: c.colors.page-glass-selected,
+
+      tabLabel {
+        font-style: "SemiBold"
+      }
+    }
+  }
+}
+
+// On-page dock on a page under the Work tab (a case study): the tab is
+// outlined, not filled, so it reads as the section rather than the page.
+@variant
+export dockOnPageSection = frame : dockOnPage {
+  top: 480px,
+
+  dockTabs {
+    tabWork {
+      border[0].color: c.colors.page-ring,
+      fill[0].color: .transparent
+    }
+  }
+}

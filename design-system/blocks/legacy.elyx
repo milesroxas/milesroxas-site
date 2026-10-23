@@ -1,0 +1,671 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+import "controls/button.elyx" as b
+import "controls/field.elyx" as f
+
+// The site's own blocks, offered at the top level of a work page only. They
+// predate the composition grid and keep their own container and spacing
+// (128px band, the `space` field's medium step).
+// Slider, `slider`: an intro over a full-bleed loop carousel, the active 4:3
+// slide scaled up between dimmed neighbours. src/blocks/Slider/Component.tsx
+export slider = frame {
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-md, 0px],
+  children: [intro, stage],
+
+  intro = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 8px},
+    padding: [0px, l.lengths.gutter, 48px],
+    children: [introHeading, subheadingIndent],
+
+    introHeading = text : t.lead {
+      width: 100%,
+      contents: "Screens from the release",
+      font-size: 20,
+      font-style: "Medium",
+      line-height: 1.4
+    }
+
+    subheadingIndent = frame {
+      width: 100%,
+      layout: {direction: .column},
+      padding: [0px, 56px],
+      children: introSubheading,
+
+      introSubheading = text : t.body {
+        width: 100%,
+        contents: "Five screens, in the order a shopper meets them.",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+  }
+
+  // Slides are 955px wide in layout; the active one scales 1.1 and is clipped
+  // to the track's 716px, the neighbours scale 0.9 at 30%.
+  stage = frame {
+    width: 100%,
+    height: 716px,
+    children: [prevSlide, activeSlide, nextSlide],
+
+    prevSlide = frame : m.media {
+      left: -696px,
+      top: 36px,
+      width: 859px,
+      height: 644px,
+      opacity: 0.3,
+      corner-radius: l.lengths.radius-md,
+
+      mediaLabel {
+        contents: "SLIDE 4:3"
+      }
+    }
+
+    activeSlide = frame : m.media {
+      left: 187px,
+      top: -36px,
+      width: 1050px,
+      height: 788px,
+      corner-radius: l.lengths.radius-md,
+
+      mediaLabel {
+        contents: "SLIDE 4:3"
+      }
+    }
+
+    nextSlide = frame : m.media {
+      left: 1261px,
+      top: 36px,
+      width: 859px,
+      height: 644px,
+      opacity: 0.3,
+      corner-radius: l.lengths.radius-md,
+
+      mediaLabel {
+        contents: "SLIDE 4:3"
+      }
+    }
+  }
+}
+
+// Tabs (legacy tab slider), `tabs`: heading and tab list on four twelfths,
+// the active panel on eight, its default content rich text.
+// src/blocks/Tabs/Component.tsx
+export tabs = frame {
+  left: 1600px,
+  width: l.lengths.page,
+  layout: {item-gap: l.lengths.grid-gap},
+  fill: c.colors.background,
+  padding: [l.lengths.band-md, 64px],
+  children: [aside, panel],
+
+  aside = frame {
+    width: 427px,
+    layout: {direction: .column},
+    children: [eyebrow, heading, subheading, tabList],
+
+    eyebrow = text : t.small {
+      contents: "Process",
+      font-family: "Geist Mono",
+      line-height: 1.25,
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    heading = frame {
+      width: 100%,
+      layout: {direction: .column},
+      padding: [16px, 0px],
+      children: headingText,
+
+      headingText = text : t.title {
+        width: 100%,
+        contents: "Four phases, one team",
+        line-height: 1.25,
+        letter-spacing: 0
+      }
+    }
+
+    subheading = frame {
+      width: 100%,
+      layout: {direction: .column},
+      padding-bottom: 48px,
+      children: subheadingText,
+
+      subheadingText = text : t.lead {
+        width: 100%,
+        contents: "Each phase ended with something the team could use the next day."
+      }
+    }
+
+    // `bg-muted/30`, which reads as the page ground.
+    tabList = frame {
+      width: 100%,
+      height: 36px,
+      layout: {align-items: .center},
+      fill: c.colors.background,
+      corner-radius: l.lengths.radius-sm,
+      padding: 3px,
+      children: [tabOne, tabTwo, tabThree],
+
+      tabOne = frame {
+        width: 140.2px,
+        height: 29px,
+        layout: {justify-content: .center, align-items: .center},
+        fill: c.colors.accent,
+        shadow: [
+          {
+            drop-shadow: {
+              color: rgb(0%, 0%, 0%, 10%),
+              offset: point(0px, 10px),
+              blur-radius: 15px,
+              spread: -3px
+            }
+          },
+          {
+            drop-shadow: {
+              color: rgb(0%, 0%, 0%, 10%),
+              offset: point(0px, 4px),
+              blur-radius: 6px,
+              spread: -4px
+            }
+          }
+        ],
+        corner-radius: l.lengths.radius-xs,
+        padding: [6px, 12px],
+        children: tabOneLabel,
+
+        tabOneLabel = text : t.small {
+          contents: "Audit",
+          font-style: "Medium",
+          line-height: 1.5,
+          fill[0].color: c.colors.accent-foreground
+        }
+      }
+
+      tabTwo = frame {
+        width: 140.2px,
+        height: 29px,
+        layout: {justify-content: .center, align-items: .center},
+        corner-radius: l.lengths.radius-xs,
+        padding: [6px, 12px],
+        children: tabTwoLabel,
+
+        tabTwoLabel = text : t.small {
+          contents: "Tokens",
+          font-style: "Medium",
+          line-height: 1.5
+        }
+      }
+
+      tabThree = frame {
+        width: 140.2px,
+        height: 29px,
+        layout: {justify-content: .center, align-items: .center},
+        corner-radius: l.lengths.radius-xs,
+        padding: [6px, 12px],
+        children: tabThreeLabel,
+
+        tabThreeLabel = text : t.small {
+          contents: "Components",
+          font-style: "Medium",
+          line-height: 1.5
+        }
+      }
+    }
+  }
+
+  panel = frame {
+    width: 853px,
+    layout: {direction: .column},
+    children: [panelParagraphOne, panelParagraphTwo],
+
+    panelParagraphOne = text : t.lead {
+      width: 100%,
+      contents: "Two weeks with the product, the code and the people who ship it. Every screen was captured and every component counted.",
+      font-size: 20,
+      font-style: "ExtraLight",
+      line-height: 1.25
+    }
+
+    panelParagraphTwo = text : t.lead {
+      width: 100%,
+      contents: "The audit ended with a list of what to keep, what to merge and what to retire, ranked by how often each part appears.",
+      font-size: 20,
+      font-style: "ExtraLight",
+      line-height: 1.25
+    }
+  }
+}
+
+// Call to action, `cta`: a card with copy and a link, no band of its own.
+// src/blocks/CallToAction/Component.tsx
+export cta = frame {
+  left: 3200px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [0px, 64px],
+  children: card,
+
+  card = frame {
+    width: 100%,
+    layout: {
+      justify-content: .space-between,
+      align-items: .center,
+      item-gap: 32px
+    },
+    fill: c.colors.card,
+    border: c.colors.border,
+    corner-radius: l.lengths.radius,
+    padding: 16px,
+    children: [cardCopy, cardAction],
+
+    cardCopy = frame {
+      width: 768px,
+      layout: {direction: .column, item-gap: 8px},
+      children: [cardHeading, cardBody],
+
+      cardHeading = text : t.statement {
+        width: 100%,
+        contents: "Planning a design system?",
+        font-style: "Light",
+        line-height: 1.33,
+        fill[0].color: c.colors.card-foreground
+      }
+
+      cardBody = text : t.lead {
+        width: 100%,
+        contents: "Tell me where the product is today and what the team needs to ship next.",
+        font-size: 20,
+        font-style: "Light",
+        line-height: 1.25,
+        fill[0].color: c.colors.card-foreground
+      }
+    }
+
+    // Default appearance at `lg`: `primary`, which is black on the black card.
+    cardAction = frame : b.button {
+      height: 44px,
+      corner-radius: l.lengths.radius,
+      padding-top: 0px,
+      padding-left: 32px,
+      padding-bottom: 0px,
+      padding-right: 32px,
+      fill[0].color: c.colors.primary,
+
+      buttonLabel {
+        fill[0].color: c.colors.primary-foreground,
+        contents: "Start a project",
+        font-style: "Medium"
+      }
+    }
+  }
+}
+
+// Form, `formBlock`: an optional intro over a bordered form card. Fields show
+// their label as the placeholder. src/blocks/Form/Component.tsx
+export formBlock = frame {
+  left: 4800px,
+  width: l.lengths.page,
+  layout: {direction: .column, align-items: .center, item-gap: 48px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-md, 64px],
+  children: [intro, card],
+
+  // `enableIntro` is off by default.
+  intro = text : t.statement {
+    width: 100%,
+    display: .none,
+    contents: "Ask about this project"
+  }
+
+  card = frame {
+    width: 512px,
+    layout: {direction: .column, item-gap: 16px},
+    border: c.colors.border,
+    corner-radius: l.lengths.radius-md,
+    padding: 24px,
+    children: [fields, submit],
+
+    fields = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 24px},
+      children: [names, email, message],
+
+      names = frame {
+        width: 100%,
+        layout: {item-gap: 16px},
+        children: [firstName, lastName],
+
+        firstName = frame : f.field {
+          fieldLabel {
+            contents: "First name"
+          }
+
+          fieldControl {
+            fieldValue {
+              contents: "First name"
+            }
+          }
+        }
+
+        lastName = frame : f.field {
+          fieldLabel {
+            contents: "Last name"
+          }
+
+          fieldControl {
+            fieldValue {
+              contents: "Last name"
+            }
+          }
+        }
+      }
+
+      email = frame : f.field {
+        width: 100%,
+
+        fieldLabel {
+          contents: "Email"
+        }
+
+        fieldControl {
+          fieldValue {
+            contents: "Email"
+          }
+        }
+      }
+
+      message = frame : f.field {
+        width: 100%,
+
+        fieldControl {
+          height: 80px,
+
+          fieldValue {
+            contents: "Message"
+          }
+
+          layout.direction: .row,
+          layout.align-items: .start
+        }
+
+        fieldLabel {
+          contents: "Message"
+        }
+      }
+    }
+
+    submit = frame : b.button {
+      width: 100%,
+      height: 40px,
+      corner-radius: l.lengths.radius,
+      padding-top: 8px,
+      padding-left: 16px,
+      padding-bottom: 8px,
+      padding-right: 16px,
+
+      buttonLabel {
+        contents: "Submit",
+        font-style: "Medium"
+      }
+    }
+  }
+}
+
+// Media (legacy), `mediaBlock`: landscape media with a centred caption below.
+// src/blocks/MediaBlock/Component.tsx
+export mediaBlock = frame {
+  left: 6400px,
+  width: l.lengths.page,
+  layout: {direction: .column, align-items: .center, item-gap: 24px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-md, l.lengths.gutter],
+  children: [visual, captionText],
+
+  visual = frame : m.media {
+    width: 100%,
+    height: 702px,
+    corner-radius: l.lengths.radius-md,
+
+    mediaLabel {
+      contents: "MEDIA 16:9"
+    }
+  }
+
+  captionText = text : t.body {
+    width: 512px,
+    contents: "The home page at launch, light theme.",
+    font-style: "ExtraLight",
+    align: .center
+  }
+}
+
+// Columns, `content`: rich text columns on the legacy 12-column grid, by
+// default two one-third columns. src/blocks/Content/Component.tsx
+export content = frame {
+  left: 8000px,
+  width: l.lengths.page,
+  layout: {item-gap: l.lengths.columns-gap},
+  fill: c.colors.background,
+  padding: [l.lengths.band-md, l.lengths.gutter],
+  children: [columnOne, columnTwo],
+
+  columnOne = frame {
+    width: l.lengths.columns-4,
+    layout: {direction: .column, item-gap: 16px},
+    children: [columnOneHeading, columnOneBody],
+
+    columnOneHeading = text : t.lead {
+      width: 100%,
+      contents: "Role and scope",
+      font-size: 20,
+      font-style: "Medium",
+      line-height: 1.62
+    }
+
+    columnOneBody = text : t.lead {
+      width: 100%,
+      contents: "Fourteen weeks, from the first audit to the third template.",
+      font-style: "Light",
+      line-height: 1.5
+    }
+  }
+
+  columnTwo = frame {
+    width: l.lengths.columns-4,
+    layout: {direction: .column},
+    children: [passageOne, passageTwo],
+
+    passageOne = text : t.lead {
+      width: 100%,
+      contents: "I led design and front-end build, working with two engineers and the head of product over fourteen weeks.",
+      font-style: "Light",
+      line-height: 1.5
+    }
+
+    passageTwo = text : t.lead {
+      width: 100%,
+      contents: "Scope covered the audit, the token layer, forty components, documentation and the first three templates rebuilt on the system.",
+      font-style: "Light",
+      line-height: 1.5
+    }
+  }
+}
+
+// Work card in a Columns column: 16:9 media, then a light title beside the
+// Work badge. Override `cardTitle` and the width. src/components/Card/Works
+export columnsWorkCard = frame {
+  left: 9600px,
+  width: l.lengths.columns-8,
+  layout: {direction: .column, item-gap: 24px},
+  children: [cardMedia, cardHeader],
+
+  cardMedia = frame : m.media {
+    width: 100%,
+    height: 461px,
+    corner-radius: 4px,
+
+    mediaLabel {
+      contents: "WORK 16:9"
+    }
+  }
+
+  // The title takes what the badge leaves: 47px of badge plus the 8px gap.
+  cardHeader = frame {
+    width: 100%,
+    layout: {direction: .row},
+    padding-right: 55px,
+    children: [cardTitle, badgeSlot],
+
+    cardTitle = text : t.heading {
+      width: 100%,
+      contents: "Project title",
+      font-style: "Light",
+      line-height: 1.2
+    }
+
+    // The badge's `mt-1`.
+    badgeSlot = frame {
+      top: 0px,
+      right: 0px,
+      ignore-stack: .true,
+      layout: {direction: .row},
+      padding-top: 4px,
+      children: cardBadge,
+
+      // 1px transparent border plus [1, 8] padding.
+      cardBadge = frame {
+        layout: {align-items: .center},
+        fill: c.colors.accent-tint,
+        corner-radius: l.lengths.radius-xs,
+        padding: [2px, 9px],
+        children: cardBadgeLabel,
+
+        cardBadgeLabel = text : t.small {
+          contents: "Work",
+          font-size: 12,
+          font-style: "Medium",
+          line-height: 1.33,
+          fill[0].color: c.colors.accent
+        }
+      }
+    }
+  }
+}
+
+// Columns, `content`, as Home uses it: a half-width section heading (Large)
+// over a two-thirds and a one-third work card. Default theme, medium space
+// above and below. src/blocks/Content/ColumnRenderer.tsx
+export contentWorks = frame {
+  left: 11200px,
+  width: l.lengths.page,
+  layout: {direction: .column, item-gap: 48px},
+  fill: c.colors.background,
+  padding: [128px, l.lengths.gutter],
+  children: [heading, cards],
+
+  heading = frame {
+    width: l.lengths.columns-6,
+    layout: {direction: .column, item-gap: 16px},
+    children: [eyebrow, headingText],
+
+    eyebrow = text : t.body {
+      contents: "Eyebrow",
+      fill[0].color: c.colors.accent
+    }
+
+    headingText = text : t.statement {
+      width: 100%,
+      contents: "What this practice covers, in a sentence or two.",
+      font-style: "ExtraLight"
+    }
+  }
+
+  cards = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.columns-gap},
+    children: [cardOne, cardTwo],
+
+    cardOne = frame : columnsWorkCard {
+      cardHeader {
+        cardTitle {
+          contents: "First work"
+        }
+      }
+    }
+
+    cardTwo = frame : columnsWorkCard {
+      width: l.lengths.columns-4,
+
+      cardMedia {
+        height: 219px
+      }
+
+      cardHeader {
+        cardTitle {
+          contents: "Second work"
+        }
+      }
+    }
+  }
+}
+
+// Columns as Home uses it, Inverted theme: the dark palette, accent green.
+@variant
+export contentWorksInverted = frame : contentWorks {
+  left: 12800px,
+  fill[0].color: c.colors.inverted-background,
+
+  heading {
+    eyebrow {
+      fill[0].color: c.colors.inverted-accent
+    }
+
+    headingText {
+      fill[0].color: c.colors.inverted-foreground
+    }
+  }
+
+  cards {
+    cardOne {
+      cardHeader {
+        cardTitle {
+          fill[0].color: c.colors.inverted-foreground
+        }
+
+        badgeSlot {
+          cardBadge {
+            fill[0].color: c.colors.inverted-accent-tint,
+
+            cardBadgeLabel {
+              fill[0].color: c.colors.inverted-accent
+            }
+          }
+        }
+      }
+    }
+
+    cardTwo {
+      cardHeader {
+        cardTitle {
+          fill[0].color: c.colors.inverted-foreground
+        }
+
+        badgeSlot {
+          cardBadge {
+            fill[0].color: c.colors.inverted-accent-tint,
+
+            cardBadgeLabel {
+              fill[0].color: c.colors.inverted-accent
+            }
+          }
+        }
+      }
+    }
+  }
+}

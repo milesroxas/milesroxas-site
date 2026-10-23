@@ -1,0 +1,44 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+
+// Callout, `callout`: one centred statement in light 36px type, half a
+// viewport tall. Pages only. Drawn after its scroll reveal has run. A 144px
+// veil, solid ground for its lower 65%, fades the words out through the
+// dock's band so they don't show through the glass.
+// src/blocks/CallOut/Component.tsx
+export callout = frame {
+  width: l.lengths.page,
+  height: 450px,
+  layout: {justify-content: .center, align-items: .center},
+  fill: c.colors.background,
+  children: [statement, veil],
+
+  // The container at 3/4 of the page, less its 96px padding.
+  statement = text : t.title {
+    width: 888px,
+    contents: "16 years leading design teams and partnering with companies to launch brand identities and ship digital experiences",
+    font-style: "Light",
+    line-height: 2,
+    letter-spacing: 0,
+    align: .center
+  }
+
+  veil = frame {
+    left: 0px,
+    top: 306px,
+    width: 100%,
+    height: 144px,
+    ignore-stack: .true,
+    fill: {
+      linear-gradient: {
+        angle: 0deg,
+        stops: [
+          stop(0%, c.colors.background),
+          stop(65%, c.colors.background),
+          stop(100%, opacity(c.colors.background, 0%))
+        ]
+      }
+    }
+  }
+}

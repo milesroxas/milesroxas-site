@@ -1,0 +1,73 @@
+// Site palette, light. Mirrors `palette-light` in src/app/(frontend)/globals.css.
+// The dark palette derives from this group in colors-dark.elyx (theme=dark).
+export colors = tokens {
+  background: rgb(96.2%, 96.2%, 95.8%),
+  foreground: rgb(4.7%, 4.7%, 5.3%),
+  muted: rgb(95.8%, 95.8%, 96.2%),
+  muted-foreground: rgb(44.16%, 44.16%, 47.84%),
+  border: rgb(89.4%, 89.4%, 90.6%),
+  card: .black,
+  card-foreground: rgb(98%, 98%, 98%),
+  primary: .black,
+  primary-foreground: rgb(98%, 98%, 98%),
+  neutral: rgb(92.4%, 92.4%, 91.6%),
+  neutral-foreground: rgb(4.7%, 4.7%, 5.3%),
+  brand: rgb(91.2%, 35.04%, 4.8%),
+  brand-foreground: rgb(4.7%, 4.7%, 5.3%),
+  accent: rgb(91.2%, 35.04%, 4.8%),
+  accent-foreground: rgb(9.4%, 9.4%, 10.6%),
+  // Design-only: stands in for photography, which paints over `muted` on the site.
+  media: rgb(86.56%, 86.56%, 85.44%),
+  media-ink: rgb(44.16%, 44.16%, 47.84%),
+  // The always-dark code panel (`data-band="dark"`), same in both themes.
+  panel: rgb(3.6%, 3.6%, 4.4%),
+  panel-foreground: rgb(98%, 98%, 98%),
+  panel-muted-foreground: rgb(57.7%, 57.7%, 58.2%),
+  panel-border: rgb(100%, 100%, 100%, 12%),
+  syntax-keyword: rgb(43.6388%, 64.3762%, 98.6393%),
+  syntax-entity: rgb(42.11%, 84.64%, 86.89%),
+  syntax-string: rgb(33.27%, 79.01%, 46.0361%),
+  syntax-number: rgb(99.74%, 80.2053%, 36.2%),
+  syntax-property: rgb(55.7%, 77.3%, 100%),
+  syntax-operator: rgb(74.3%, 74.3%, 74.3%),
+  // Prose ink: Tailwind Typography's gray-700 body and gray-900 headings, which
+  // the rich text and caption blocks render instead of `foreground`.
+  prose-body: rgb(21.2%, 25.5%, 32.5%),
+  prose-heading: rgb(6.3%, 9.4%, 15.7%),
+  figure-1: rgb(16.47%, 47.0588%, 83.92%),
+  figure-2: rgb(85.098%, 34.9%, 14.9%),
+  figure-3: rgb(8.2353%, 57.6471%, 41.5686%),
+  figure-4: rgb(70.98%, 47.84%, 0%),
+  // Hero and chrome over it. The High Impact hero is always a dark surface, so
+  // the site chrome above it uses its dark-ground values in both themes.
+  hero-ground: rgb(11.28%, 11.28%, 12.72%),
+  hero-ink: rgb(98%, 98%, 98%),
+  hero-ink-quiet: rgb(63.1373%, 63.1373%, 66.6667%),
+  chrome-glass: rgb(12.549%, 12.549%, 14.1176%, 72%),
+  chrome-selected: rgb(100%, 100%, 100%, 9%),
+  chrome-glyph: rgb(95.6863%, 47.84%, 21.1765%),
+  chrome-hairline: rgb(100%, 100%, 100%, 8%),
+  chrome-lift: rgb(0%, 0%, 0%, 40%),
+  // Chrome over the page's own ground (Home, works): glass that follows the theme.
+  page-glass: rgb(100%, 100%, 100%, 78%),
+  page-glass-selected: rgb(4.7%, 4.7%, 5.5%, 7%),
+  page-glass-hairline: rgb(4.7%, 4.7%, 5.5%, 8%),
+  page-glass-lift: rgb(4.7%, 4.7%, 5.5%, 14%),
+  // `--chrome-ink-quiet` (the clock's city), `--chrome-ring` (the outlined
+  // section tab) and `--chrome-glyph` (the Ask mark) over the page ground.
+  page-ink-quiet: rgb(37.25%, 37.25%, 40%),
+  page-ring: rgb(4.7%, 4.7%, 5.5%, 16%),
+  page-glyph: rgb(91.2%, 35.04%, 4.8%),
+  // `foreground/10` hairlines (Carousel tabs' deck index and step buttons) and
+  // the `foreground/6` ring around a stacked deck board.
+  hairline: rgb(4.7%, 4.7%, 5.3%, 10%),
+  board-ring: rgb(4.7%, 4.7%, 5.3%, 6%),
+  // `bg-accent/10`, the Work badge behind its accent label.
+  accent-tint: rgb(91.2%, 35.04%, 4.8%, 10%),
+  // The Inverted band theme paints the opposite palette to the visitor's.
+  inverted-background: rgb(3.6%, 3.6%, 4.4%),
+  inverted-foreground: rgb(98%, 98%, 98%),
+  inverted-muted-foreground: rgb(63.25%, 63.25%, 66.75%),
+  inverted-accent: rgb(13.05%, 76.95%, 36.48%),
+  inverted-accent-tint: rgb(13.05%, 76.95%, 36.48%, 10%)
+}

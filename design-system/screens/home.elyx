@@ -1,0 +1,153 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/chrome.elyx" as chrome
+import "blocks/home.elyx" as opening
+import "blocks/statements.elyx" as statements
+import "blocks/legacy.elyx" as legacy
+
+// The home page at 1440px, top to bottom, with the published Home content:
+// the Home hero, a Callout, then three Columns bands (Strategy, Design,
+// Development) of section heading and work cards. The chrome sits as it does
+// on load, the hero filling the first 900px viewport, with the Home tab
+// current. src/templates/Homepage/HomeTemplate.tsx
+home = frame {
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding-bottom: 96px,
+  children: [hero, callout, strategy, design, development, topBar, dockRail],
+
+  hero = frame : opening.homeHero {}
+
+  callout = frame : statements.callout {}
+
+  strategy = frame : legacy.contentWorks {
+    padding-bottom: l.lengths.band-loose,
+
+    heading {
+      eyebrow {
+        contents: "Strategy"
+      }
+
+      headingText {
+        contents: "I partner with startups and enterprises to mine deep market insights, develop customer segments and personas, and chart growth roadmaps, from persuasive pitch decks to MVP definitions."
+      }
+
+      padding-bottom: 72px
+    }
+
+    cards {
+      cardOne {
+        cardHeader {
+          cardTitle {
+            contents: "Design Systems for Organizational Scale"
+          }
+        }
+      }
+
+      cardTwo {
+        cardHeader {
+          cardTitle {
+            contents: "Identity for Higher-Stakes Work"
+          }
+        }
+      }
+    }
+  }
+
+  // One third, then two thirds.
+  design = frame : legacy.contentWorksInverted {
+    padding-top: l.lengths.band-loose,
+    padding-bottom: l.lengths.band-loose,
+
+    cards {
+      cardOne {
+        width: l.lengths.columns-4,
+
+        cardMedia {
+          height: 219px
+        }
+
+        cardHeader {
+          cardTitle {
+            contents: "Brand Development at the Executive Level"
+          }
+        }
+      }
+
+      cardTwo {
+        width: l.lengths.columns-8,
+
+        cardMedia {
+          height: 461px
+        }
+
+        cardHeader {
+          cardTitle {
+            contents: "Brand Expansion Through Narrative"
+          }
+        }
+      }
+    }
+
+    heading {
+      eyebrow {
+        contents: "Design"
+      }
+
+      headingText {
+        contents: "I leverage my expertise in creative direction, branding, graphics, and interactive design to craft cohesive visual narratives and guide teams in executing them."
+      }
+
+      padding-bottom: 72px
+    }
+  }
+
+  development = frame : legacy.contentWorks {
+    heading {
+      eyebrow {
+        contents: "Development"
+      }
+
+      headingText {
+        contents: "I deliver robust digital products, from immersive web experiences to enterprise platforms, through scalable engineering, performance optimizations, and thorough technical audits."
+      }
+    }
+
+    cards {
+      cardOne {
+        cardHeader {
+          cardTitle {
+            contents: "Enforcing Quality in Low-Code Systems"
+          }
+        }
+      }
+
+      cardTwo {
+        cardHeader {
+          cardTitle {
+            contents: "Information-Driven Digital Experience"
+          }
+        }
+      }
+    }
+  }
+
+  topBar = frame : chrome.topBarOnPage {
+    left: 0px,
+    top: 0px,
+    ignore-stack: .true
+  }
+
+  // Fixed 24px above the first viewport's bottom edge.
+  dockRail = frame {
+    left: 0px,
+    top: 836px,
+    width: 100%,
+    ignore-stack: .true,
+    layout: {justify-content: .center},
+    children: dock,
+
+    dock = frame : chrome.dockOnPageHome {}
+  }
+}

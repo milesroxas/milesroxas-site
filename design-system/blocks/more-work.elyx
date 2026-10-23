@@ -1,0 +1,233 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+
+// More work: the close of every case study, a page section after the layout.
+// Drawn in the plate layout (from 1024px with a fine pointer): one plate
+// beside an index of up to four other works. The plate shows the active row's
+// picture and the caption names its client. At rest the first row is active.
+// src/sections/MoreWork/MoreWork.client.tsx, query.ts
+// Index row at rest: title in muted ink, industry and services under it.
+// Override `rowTitle`, `rowIndustry` and `rowServices`; hide `rowRule` and
+// `rowServices` when a work has no services, `rowMeta` when it has neither.
+export moreWorkRow = frame {
+  top: 1200px,
+  width: 636px,
+  layout: {item-gap: 32px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [28px, 0px],
+  children: [rowText, rowArrow],
+
+  rowText = frame {
+    width: 588px,
+    layout: {direction: .column, item-gap: 10px},
+    children: [rowTitle, rowMeta],
+
+    rowTitle = text : t.heading {
+      width: 100%,
+      contents: "Work title",
+      letter-spacing: -2%,
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    rowMeta = frame {
+      width: 100%,
+      layout: {align-items: .center, item-gap: 10px, wrap: .true, line-gap: 4px},
+      children: [rowIndustry, rowRule, rowServices],
+
+      rowIndustry = text : t.body {
+        contents: "Industry",
+        fill[0].color: c.colors.muted-foreground
+      }
+
+      rowRule = frame {
+        width: 24px,
+        height: 1px,
+        fill: c.colors.border
+      }
+
+      rowServices = text : t.body {
+        contents: "Services",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+  }
+
+  rowArrow = frame {
+    opacity: 0,
+    layout: {direction: .row},
+    padding-top: 10px,
+    children: arrowGlyph,
+
+    arrowGlyph = text : t.body {
+      contents: "→",
+      line-height: 1
+    }
+  }
+}
+
+// Active row: the one the plate shows. Ink, a foreground rule and the arrow.
+@variant
+export moreWorkRowActive = frame : moreWorkRow {
+  top: 1400px,
+  border[0].color: c.colors.foreground,
+
+  rowText {
+    rowTitle {
+      fill[0].color: c.colors.foreground
+    }
+  }
+
+  rowArrow {
+    opacity: 1
+  }
+}
+
+export moreWork = frame {
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [0px, 48px, 160px],
+  children: inner,
+
+  inner = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 64px},
+    border: {color: c.colors.border, sides: .top},
+    padding-top: 160px,
+    children: [header, grid],
+
+    header = frame {
+      width: 100%,
+      layout: {
+        justify-content: .space-between,
+        align-items: .end,
+        item-gap: 24px
+      },
+      children: [heading, allWork],
+
+      heading = frame {
+        layout: {item-gap: 12px},
+        children: [headingText, headingCount],
+
+        headingText = text : t.caseTitle {
+          contents: "More work",
+          line-height: 1
+        }
+
+        headingCount = frame {
+          layout: {direction: .row},
+          padding-top: 4px,
+          children: headingCountText,
+
+          headingCountText = text : t.eyebrow {
+            contents: "04",
+            font-size: 14,
+            line-height: 1
+          }
+        }
+      }
+
+      allWork = frame {
+        layout: {align-items: .center, item-gap: 10px},
+        padding-bottom: 4px,
+        children: [allWorkLabel, allWorkArrow],
+
+        allWorkLabel = text : t.body {
+          contents: "All work",
+          font-style: "Medium",
+          line-height: 1
+        }
+
+        allWorkArrow = text : t.body {
+          contents: "→",
+          line-height: 1
+        }
+      }
+    }
+
+    // 55fr to 53fr with a 48px gap. The plate column sticks while the index scrolls.
+    grid = frame {
+      width: 100%,
+      layout: {item-gap: 48px},
+      children: [plateColumn, index],
+
+      plateColumn = frame {
+        width: 660px,
+        layout: {direction: .column, item-gap: 16px},
+        children: [plate, plateCaption],
+
+        plate = frame : m.media {
+          width: 100%,
+          height: 413px,
+          corner-radius: 0px,
+
+          mediaLabel {
+            contents: "PLATE 1.6:1"
+          }
+        }
+
+        plateCaption = frame {
+          width: 100%,
+          layout: {
+            justify-content: .space-between,
+            align-items: .center,
+            item-gap: 16px
+          },
+          children: [plateClient, plateCount],
+
+          plateClient = text : t.eyebrow {
+            contents: "Client",
+            line-height: 1
+          }
+
+          plateCount = text : t.mono {
+            contents: "1 of 4",
+            line-height: 1,
+            letter-spacing: 0
+          }
+        }
+      }
+
+      index = frame {
+        width: 636px,
+        layout: {direction: .column},
+        border: {color: c.colors.foreground, sides: .top},
+        children: [rowOne, rowTwo, rowThree, rowFour],
+
+        rowOne = frame : moreWorkRowActive {
+          rowText {
+            rowTitle {
+              contents: "A design system for a retail brand"
+            }
+          }
+        }
+
+        rowTwo = frame : moreWorkRow {
+          rowText {
+            rowTitle {
+              contents: "A booking flow for a regional airline"
+            }
+          }
+        }
+
+        rowThree = frame : moreWorkRow {
+          rowText {
+            rowTitle {
+              contents: "An identity for a public research lab"
+            }
+          }
+        }
+
+        rowFour = frame : moreWorkRow {
+          rowText {
+            rowTitle {
+              contents: "A reporting tool for a logistics team"
+            }
+          }
+        }
+      }
+    }
+  }
+}

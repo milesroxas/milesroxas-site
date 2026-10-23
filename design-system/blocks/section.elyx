@@ -1,0 +1,60 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "blocks/section-heading.elyx" as headings
+import "blocks/media.elyx" as media
+
+// Structure group.
+// Section, `section`: one band that groups a run of blocks under a single
+// surface. Customize is off, so it paints the page ground with normal spacing;
+// nested blocks render bare (no band of their own) and sit 192px apart. A
+// section heading sits half that step (96px) above the block after it, so it
+// titles the whole run (`STACK_OPENER`); `opening` pairs the two, drawn 89px
+// because Elyx can't trim the deck's line box to its baseline.
+// src/blocks/section/SectionBand.tsx, src/blocks/shared/section.tsx
+export section = frame {
+  width: l.lengths.page,
+  layout: {direction: .column, item-gap: l.lengths.band-loose},
+  fill: c.colors.background,
+  slot: .true,
+  padding: [l.lengths.band-normal, 0px],
+  children: opening,
+
+  opening = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 89px},
+    children: [opener, statement],
+
+    opener = frame : headings.featureHeadingOffset {
+      padding-top: 0px,
+      fill[0].color: c.colors.background
+    }
+
+    statement = frame : media.featureImageStatement {
+      padding-top: 0px,
+      padding-bottom: 0px,
+      fill[0].color: c.colors.background
+    }
+  }
+}
+
+// Customised to the Neutral theme. A painted band shows its edge, so where the
+// surface changes it adds one normal step (96px) inside itself (`band-painted`).
+@variant
+export sectionNeutral = frame : section {
+  left: 1600px,
+  padding-top: 192px,
+  padding-left: 0px,
+  padding-bottom: 192px,
+  padding-right: 0px,
+  fill[0].color: c.colors.neutral,
+
+  opening {
+    opener {
+      fill[0].color: c.colors.neutral
+    }
+
+    statement {
+      fill[0].color: c.colors.neutral
+    }
+  }
+}

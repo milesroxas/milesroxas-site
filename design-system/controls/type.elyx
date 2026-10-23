@@ -1,0 +1,135 @@
+use "resources/fonts/IBMPlexSans-Variable.ttf"
+use "resources/fonts/GeistMono-Regular.ttf"
+use "resources/fonts/GeistMono-Medium.ttf"
+
+import "tokens/colors.elyx" as c
+
+// Text styles at the 1440px end of the fluid type scale (globals.css `@theme`).
+// Blocks instance these and override `contents`, `width` and colour only.
+// `text-display`: the Statement layout.
+export display = text {
+  fill: c.colors.foreground,
+  contents: "Display",
+  font-size: 96,
+  font-family: "IBM Plex Sans",
+  line-height: 1.05,
+  letter-spacing: -2.5%
+}
+
+// `text-heading-1`: the `title` role at the Large text size, and the /works heading.
+export headingOne = text {
+  left: 2900px,
+  fill: c.colors.foreground,
+  contents: "Heading one",
+  font-size: 44,
+  font-family: "IBM Plex Sans",
+  line-height: 1.1,
+  letter-spacing: -2.5%
+}
+
+// `text-heading-2`: the `title` role, a section opener.
+export title = text {
+  left: 700px,
+  fill: c.colors.foreground,
+  contents: "Title",
+  font-size: 36,
+  font-family: "IBM Plex Sans",
+  line-height: 1.15,
+  letter-spacing: -2.5%
+}
+
+// `text-title`: the case study title (Work hero, More work).
+export caseTitle = text {
+  left: 2600px,
+  fill: c.colors.foreground,
+  contents: "Case title",
+  font-size: 60,
+  font-family: "IBM Plex Sans",
+  line-height: 1.2,
+  letter-spacing: -2.5%
+}
+
+// `text-lead leading-snug`: the `heading` role inside a block at Small text,
+// one rung over its copy (typeScale in src/blocks/shared/typography.ts), and
+// figure titles (src/features/figures/ui/figure-frame.tsx).
+export blockHeading = text {
+  left: 3200px,
+  fill: c.colors.foreground,
+  contents: "Block heading",
+  font-size: 24,
+  font-family: "IBM Plex Sans",
+  line-height: 1.375
+}
+
+// `text-heading-3`: the `heading` role at Large text, More work rows and tab
+// labels.
+export heading = text {
+  left: 1000px,
+  fill: c.colors.foreground,
+  contents: "Heading",
+  font-size: 30,
+  font-family: "IBM Plex Sans",
+  line-height: 1.3
+}
+
+// `text-lead`: the `statement` role.
+export statement = text {
+  left: 1300px,
+  fill: c.colors.foreground,
+  contents: "Statement",
+  font-size: 24,
+  font-family: "IBM Plex Sans",
+  line-height: 1.5
+}
+
+// `text-lg`: the `lead` role, an opener deck or an item title.
+export lead = text {
+  left: 1600px,
+  fill: c.colors.foreground,
+  contents: "Lead",
+  font-size: 18,
+  font-family: "IBM Plex Sans",
+  line-height: 1.556
+}
+
+// `text-base`: the `body` role.
+export body = text {
+  left: 1800px,
+  fill: c.colors.foreground,
+  contents: "Body",
+  font-size: 16,
+  font-family: "IBM Plex Sans",
+  line-height: 1.5
+}
+
+// `text-sm`: captions and list rows.
+export small = text {
+  left: 2000px,
+  fill: c.colors.foreground,
+  contents: "Small",
+  font-size: 14,
+  font-family: "IBM Plex Sans",
+  line-height: 1.43
+}
+
+// `eyebrowClassName`: Geist Mono 12px medium, the kicker above a heading.
+export eyebrow = text {
+  left: 2200px,
+  fill: c.colors.foreground,
+  contents: "Eyebrow",
+  font-size: 12,
+  font-family: "Geist Mono",
+  font-style: "Medium",
+  line-height: 1
+}
+
+// Mono label: ordinals, pills, code chrome.
+export mono = text {
+  left: 2400px,
+  fill: c.colors.muted-foreground,
+  contents: "01",
+  font-size: 12,
+  font-family: "Geist Mono",
+  font-style: "Regular",
+  letter-spacing: 10%
+}

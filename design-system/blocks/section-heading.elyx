@@ -1,0 +1,578 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+
+// Section heading group: the openers a work page uses to start a section.
+// Each base is the block with its CMS defaults; every other setting is a
+// variant of it. Settings combine freely in the CMS: layout or size, the
+// optional eyebrow and supporting copy, and the band theme are independent.
+// Section heading (Standard), `richTransition`. Base: Offset layout, Small
+// text, eyebrow and supporting copy shown, Default theme. A section heading
+// titles the section after it, so its band has no bottom padding: the next
+// band's top step (96px) is the gap, half the gap above it. Inside a Section
+// it sits half the stack step above the next block (`STACK_OPENER`).
+// src/blocks/rich-transition/RichTransition.tsx
+export richTransition = frame {
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter, 0px],
+  children: grid,
+
+  grid = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 25px},
+    padding-left: 160px,
+    children: [opener, deck],
+
+    opener = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column, item-gap: 5px},
+      children: [eyebrow, heading],
+
+      eyebrow = text : t.eyebrow {
+        contents: "02 / Approach"
+      }
+
+      heading = text : t.title {
+        width: 100%,
+        contents: "One design system, built to hold up across product, marketing and print"
+      }
+    }
+
+    deck = text : t.lead {
+      width: l.lengths.span-3,
+      contents: "The work started with an audit of every surface the brand appears on, then narrowed to the handful of decisions that shape all of them."
+    }
+  }
+}
+
+// Standard: Offset layout, Large text.
+@variant
+export richTransitionOffsetLarge = frame : richTransition {
+  left: 1600px,
+
+  grid {
+    layout.item-gap: 24px,
+
+    opener {
+      layout.item-gap: 8px,
+
+      heading {
+        font-size: 44,
+        line-height: 1.1
+      }
+    }
+
+    deck {
+      font-size: 24,
+      line-height: 1.5
+    }
+  }
+}
+
+// Standard: Left layout. Heading on columns 1 to 4, copy beside it on 5 to 7.
+@variant
+export richTransitionLeft = frame : richTransition {
+  left: 3200px,
+
+  grid {
+    layout.direction: .row,
+    layout.item-gap: l.lengths.grid-gap,
+    padding-left: 0px
+  }
+}
+
+// Standard: Left layout, Large text.
+@variant
+export richTransitionLeftLarge = frame : richTransitionLeft {
+  left: 4800px,
+
+  grid {
+    opener {
+      layout.item-gap: 8px,
+
+      heading {
+        font-size: 44,
+        line-height: 1.1
+      }
+    }
+
+    deck {
+      font-size: 24,
+      line-height: 1.5
+    }
+  }
+}
+
+// Standard: Center layout.
+@variant
+export richTransitionCentered = frame : richTransition {
+  left: 6400px,
+
+  grid {
+    opener {
+      width: 768px,
+      layout.align-items: .center,
+
+      heading {
+        align: .center
+      }
+    }
+
+    deck {
+      width: 640px,
+      align: .center
+    }
+
+    layout.align-items: .center,
+    layout.item-gap: 21px,
+    padding-left: 0px
+  }
+}
+
+// Standard: Center layout, Large text.
+@variant
+export richTransitionCenteredLarge = frame : richTransitionCentered {
+  left: 8000px,
+
+  grid {
+    layout.item-gap: 26px,
+
+    opener {
+      layout.item-gap: 8px,
+
+      heading {
+        font-size: 44,
+        line-height: 1.1
+      }
+    }
+
+    deck {
+      font-size: 24,
+      line-height: 1.5
+    }
+  }
+}
+
+// Standard: Split layout. Heading on columns 1 to 4, copy on 6 to 8.
+@variant
+export richTransitionSplit = frame : richTransition {
+  left: 9600px,
+
+  grid {
+    layout.direction: .row,
+    layout.justify-content: .space-between,
+    padding-left: 0px
+  }
+}
+
+// Standard: Split layout, Large text.
+@variant
+export richTransitionSplitLarge = frame : richTransitionSplit {
+  left: 11200px,
+
+  grid {
+    opener {
+      layout.item-gap: 8px,
+
+      heading {
+        font-size: 44,
+        line-height: 1.1
+      }
+    }
+
+    deck {
+      font-size: 24,
+      line-height: 1.5
+    }
+  }
+}
+
+// Standard: Statement layout. Display type, centred; text size does not apply.
+@variant
+export richTransitionStatement = frame : richTransition {
+  left: 12800px,
+
+  grid {
+    opener {
+      width: 1024px,
+      layout.align-items: .center,
+      layout.item-gap: 25px,
+
+      heading {
+        contents: "One system, every surface",
+        font-size: 96,
+        line-height: 1.05,
+        align: .center
+      }
+    }
+
+    deck {
+      width: 576px,
+      align: .center
+    }
+
+    layout.align-items: .center,
+    layout.item-gap: 73px,
+    padding-left: 0px
+  }
+}
+
+// Standard: Prose layout, heading level H2. On the reading column (3 to 6); sized against the article body, so text size does not apply.
+@variant
+export richTransitionProse = frame : richTransition {
+  left: 14400px,
+  padding-top: l.lengths.band-normal,
+  padding-left: l.lengths.gutter,
+  padding-right: l.lengths.gutter,
+
+  grid {
+    deck {
+      width: l.lengths.span-4,
+      contents: "Nine button styles, four type scales and three ways to show a price. None of it was wrong on its own. Together it made every new screen slower to design and harder to build."
+    }
+
+    layout.item-gap: 8px,
+
+    opener {
+      heading {
+        contents: "What the audit found",
+        font-size: 24,
+        line-height: 1.375,
+        letter-spacing: 0
+      }
+
+      layout.item-gap: 0
+    }
+
+    padding-left: 320px
+  }
+}
+
+// Standard: Prose layout, heading level H3.
+@variant
+export richTransitionProseH3 = frame : richTransitionProse {
+  left: 16000px,
+
+  grid {
+    layout.item-gap: 5px,
+
+    opener {
+      heading {
+        font-size: 20,
+        font-style: "Medium",
+        line-height: 1.4
+      }
+
+      layout.item-gap: 0
+    }
+
+    deck {
+      font-size: 16,
+      line-height: 1.75
+    }
+  }
+}
+
+// Standard: Prose layout, heading level H4.
+@variant
+export richTransitionProseH4 = frame : richTransitionProse {
+  left: 17600px,
+
+  grid {
+    layout.item-gap: 2px,
+
+    opener {
+      heading {
+        font-size: 18,
+        font-style: "Medium",
+        line-height: 1.556
+      }
+
+      layout.item-gap: 0
+    }
+
+    deck {
+      font-size: 16,
+      line-height: 1.75
+    }
+  }
+}
+
+// Standard: Show eyebrow off.
+@variant
+export richTransitionNoEyebrow = frame : richTransition {
+  left: 19200px,
+
+  grid {
+    opener {
+      eyebrow {
+        display: .none
+      }
+    }
+  }
+}
+
+// Standard: Show supporting copy off.
+@variant
+export richTransitionNoBody = frame : richTransition {
+  left: 20800px,
+
+  grid {
+    deck {
+      display: .none
+    }
+  }
+}
+
+// Standard: eyebrow and supporting copy both off.
+@variant
+export richTransitionHeadingOnly = frame : richTransition {
+  left: 22400px,
+
+  grid {
+    opener {
+      eyebrow {
+        display: .none
+      }
+    }
+
+    deck {
+      display: .none
+    }
+  }
+}
+
+// Standard: Inverted theme. The opposite palette to the visitor's.
+@variant
+export richTransitionInverted = frame : richTransition {
+  left: 24000px,
+  fill[0].color: c.colors.inverted-background,
+
+  grid {
+    opener {
+      eyebrow {
+        fill[0].color: c.colors.inverted-foreground
+      }
+
+      heading {
+        fill[0].color: c.colors.inverted-foreground
+      }
+    }
+
+    deck {
+      fill[0].color: c.colors.inverted-foreground
+    }
+  }
+}
+
+// Standard: Neutral theme. A quiet stripe inside the visitor's palette.
+@variant
+export richTransitionNeutral = frame : richTransition {
+  left: 25600px,
+  fill[0].color: c.colors.neutral
+}
+
+// Standard: Brand theme.
+@variant
+export richTransitionBrand = frame : richTransition {
+  left: 27200px,
+  fill[0].color: c.colors.brand,
+
+  grid {
+    opener {
+      eyebrow {
+        fill[0].color: c.colors.brand-foreground
+      }
+
+      heading {
+        fill[0].color: c.colors.brand-foreground
+      }
+    }
+
+    deck {
+      fill[0].color: c.colors.brand-foreground
+    }
+  }
+}
+
+// Section heading (Offset), `featureHeadingOffset`. Base: Small text, eyebrow
+// and supporting copy shown, Default theme. It has no layout setting. A
+// section heading like the Standard block, so its band has no bottom padding.
+// src/blocks/feature/HeadingOffset/Component.tsx
+export featureHeadingOffset = frame {
+  top: 1400px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter, 0px],
+  children: grid,
+
+  grid = frame {
+    width: 100%,
+    layout: {justify-content: .space-between},
+    children: [opener, deckCell],
+
+    opener = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column, item-gap: 4px},
+      children: [eyebrow, heading],
+
+      eyebrow = text : t.small {
+        contents: "THE BRIEF",
+        letter-spacing: 10%
+      }
+
+      heading = text : t.title {
+        width: 100%,
+        contents: "A retail brand that had outgrown the tools it launched with"
+      }
+    }
+
+    deckCell = frame {
+      width: l.lengths.span-3,
+      layout: {direction: .column},
+      padding-top: 96px,
+      children: deck,
+
+      deck = text : t.lead {
+        width: 100%,
+        contents: "Five years of fast growth left three codebases, two design files and no shared language between them. The goal was one source of truth the whole team could ship from.",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+  }
+}
+
+// Offset: Large text.
+@variant
+export featureHeadingOffsetLarge = frame : featureHeadingOffset {
+  left: 1600px,
+  top: 1400px,
+
+  grid {
+    opener {
+      layout.item-gap: 7px,
+
+      heading {
+        font-size: 44,
+        line-height: 1.1
+      }
+    }
+
+    deckCell {
+      deck {
+        font-size: 24,
+        line-height: 1.5
+      }
+    }
+  }
+}
+
+// Offset: Show eyebrow off.
+@variant
+export featureHeadingOffsetNoEyebrow = frame : featureHeadingOffset {
+  left: 3200px,
+  top: 1400px,
+
+  grid {
+    opener {
+      eyebrow {
+        display: .none
+      }
+    }
+  }
+}
+
+// Offset: Show supporting copy off.
+@variant
+export featureHeadingOffsetNoBody = frame : featureHeadingOffset {
+  left: 4800px,
+  top: 1400px,
+
+  grid {
+    deckCell {
+      display: .none
+    }
+  }
+}
+
+// Offset: eyebrow and supporting copy both off.
+@variant
+export featureHeadingOffsetHeadingOnly = frame : featureHeadingOffset {
+  left: 6400px,
+  top: 1400px,
+
+  grid {
+    opener {
+      eyebrow {
+        display: .none
+      }
+    }
+
+    deckCell {
+      display: .none
+    }
+  }
+}
+
+// Offset: Inverted theme.
+@variant
+export featureHeadingOffsetInverted = frame : featureHeadingOffset {
+  left: 8000px,
+  top: 1400px,
+  fill[0].color: c.colors.inverted-background,
+
+  grid {
+    opener {
+      eyebrow {
+        fill[0].color: c.colors.inverted-foreground
+      }
+
+      heading {
+        fill[0].color: c.colors.inverted-foreground
+      }
+    }
+
+    deckCell {
+      deck {
+        fill[0].color: c.colors.inverted-muted-foreground
+      }
+    }
+  }
+}
+
+// Offset: Neutral theme.
+@variant
+export featureHeadingOffsetNeutral = frame : featureHeadingOffset {
+  left: 9600px,
+  top: 1400px,
+  fill[0].color: c.colors.neutral
+}
+
+// Offset: Brand theme. The supporting copy keeps the muted ink.
+@variant
+export featureHeadingOffsetBrand = frame : featureHeadingOffset {
+  left: 11200px,
+  top: 1400px,
+  fill[0].color: c.colors.brand,
+
+  grid {
+    opener {
+      eyebrow {
+        fill[0].color: c.colors.brand-foreground
+      }
+
+      heading {
+        fill[0].color: c.colors.brand-foreground
+      }
+    }
+
+    deckCell {
+      deck {
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+  }
+}

@@ -1,0 +1,176 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+
+// The opening of a work page, in render order: hero, then intro.
+// src/app/(frontend)/works/[slug]/page.tsx
+// Work hero: the one hero every work has, on the page's own ground. The client
+// and title on the left, industry and role opposite, the picture centred in
+// the height left over, the capabilities along the foot. With a picture it
+// is at least the 900px viewport tall; the chrome over it follows the theme.
+// src/heros/WorkHero/index.tsx, parts.tsx
+export workHero = frame {
+  width: l.lengths.page,
+  min-height: l.lengths.viewport,
+  layout: {direction: .column, justify-content: .space-between, item-gap: 32px},
+  fill: c.colors.background,
+  padding: [88px, 48px, 96px],
+  children: [head, stage, capabilities],
+
+  head = frame {
+    width: 100%,
+    layout: {
+      justify-content: .space-between,
+      align-items: .center,
+      item-gap: 48px
+    },
+    children: [lockup, facts],
+
+    lockup = frame {
+      width: 580px,
+      layout: {direction: .column, item-gap: 32px},
+      children: [eyebrow, workTitle],
+
+      eyebrow = frame {
+        layout: {align-items: .center, item-gap: 18px},
+        children: [eyebrowRule, eyebrowText],
+
+        eyebrowRule = frame {
+          width: 24px,
+          height: 1px,
+          fill: c.colors.foreground
+        }
+
+        eyebrowText = text : t.eyebrow {
+          contents: "Client Case Study",
+          font-size: 16,
+          line-height: 1
+        }
+      }
+
+      workTitle = text : t.caseTitle {
+        width: 100%,
+        contents: "A design system for a retail brand that had outgrown its tools"
+      }
+    }
+
+    facts = frame {
+      layout: {direction: .column, align-items: .end, item-gap: 24px},
+      children: [factIndustry, factRole],
+
+      factIndustry = frame : workHeroFact {
+        factLabel {
+          contents: "Industry"
+        }
+
+        factValue {
+          contents: "Retail and e-commerce"
+        }
+      }
+
+      factRole = frame : workHeroFact {
+        factLabel {
+          contents: "Role"
+        }
+
+        factValue {
+          contents: "Design lead and front-end build"
+        }
+      }
+    }
+  }
+
+  // 41.25vw at a 1.6 aspect, square cornered.
+  stage = frame {
+    width: 100%,
+    layout: {justify-content: .center},
+    children: heroMedia,
+
+    heroMedia = frame : m.media {
+      width: 594px,
+      height: 371px,
+      corner-radius: 0px,
+
+      mediaLabel {
+        contents: "HERO MEDIA 1.6:1"
+      }
+    }
+  }
+
+  capabilities = frame {
+    layout: {direction: .column, item-gap: 16px},
+    padding-top: 32px,
+    children: [capabilitiesLabel, capabilityRow],
+
+    capabilitiesLabel = text : t.eyebrow {
+      contents: "Capabilities",
+      line-height: 1
+    }
+
+    capabilityRow = frame {
+      layout: {align-items: .center, item-gap: 8px},
+      children: [capabilityOne, capabilityRule, capabilityTwo],
+
+      capabilityOne = text : t.body {
+        contents: "Design system",
+        font-size: 20,
+        line-height: 1
+      }
+
+      capabilityRule = frame {
+        width: 40px,
+        height: 1px,
+        fill: c.colors.foreground
+      }
+
+      capabilityTwo = text : t.body {
+        contents: "Web app",
+        font-size: 20,
+        line-height: 1
+      }
+    }
+  }
+}
+
+// Work hero fact: a mono label over its value, right aligned. Override
+// `factLabel` and `factValue`.
+export workHeroFact = frame {
+  top: 1000px,
+  layout: {direction: .column, align-items: .end, item-gap: 8px},
+  children: [factLabel, factValue],
+
+  factLabel = text : t.eyebrow {
+    contents: "Label",
+    line-height: 1
+  }
+
+  factValue = text : t.body {
+    contents: "Value",
+    align: .right
+  }
+}
+
+// Work intro: one statement on five composition columns, in `text-heading-2`
+// at a snug 1.375 leading with normal tracking. The eyebrow is hidden and the
+// title is for screen readers only. The band is one viewport less the 192px of
+// outer gaps (708px), with the statement centred in it. Its 96px top sits under
+// the hero's own 96px foot, so the statement is as far from the hero as from
+// the first section. Shown when the intro has a body.
+// src/sections/WorkIntro/index.tsx, Statement.client.tsx
+export workIntro = frame {
+  left: 1600px,
+  width: l.lengths.page,
+  min-height: 708px,
+  layout: {direction: .column, justify-content: .center},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: introStatement,
+
+  introStatement = text : t.title {
+    width: l.lengths.span-5,
+    contents: "Five years of fast growth left the product with nine button styles, four type scales and no shared language between design and engineering.",
+    line-height: 1.375,
+    letter-spacing: 0
+  }
+}

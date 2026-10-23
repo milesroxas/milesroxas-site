@@ -1,0 +1,719 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/chrome.elyx" as chrome
+import "blocks/opening.elyx" as opening
+import "blocks/section-heading.elyx" as headings
+import "blocks/media.elyx" as media
+import "blocks/media-content.elyx" as mc
+import "blocks/text.elyx" as prose
+import "blocks/more-work.elyx" as more
+
+// The work page for "Design Systems for Organizational Scale" (NextStreet) at
+// 1440px, top to bottom, with its published production content: the Work
+// hero, the intro statement, six Section blocks, then More work. A Section
+// with Customize off paints the page ground with a 96px band and its blocks
+// bare, 192px apart. A section heading sits half the stack step above the
+// block after it (`STACK_OPENER`), so each heading is grouped with that block
+// in an `...Opening` frame, drawn 7px tighter because Elyx can't trim the
+// heading's line box to its baseline. Clarity is customised to Neutral with
+// loose stacking; its painted edges add 96px inside the band. Foundation is
+// customised to loose spacing. The chrome sits as it does on load, over the
+// page ground, with the Work tab current.
+designSystemsForOrganizationalScale = frame {
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  children: [
+    hero,
+    intro,
+    introSection,
+    visionSection,
+    claritySection,
+    foundationSection,
+    strategySection,
+    resultsSection,
+    moreWork,
+    topBar,
+    dockRail
+  ],
+
+  hero = frame : opening.workHero {
+    padding-left: 96px,
+    padding-right: 96px,
+
+    capabilities {
+      capabilityRow {
+        capabilityTwo {
+          contents: "Product Design"
+        }
+
+        capabilityOne {
+          contents: "Design System"
+        }
+      }
+    }
+
+    stage {
+      heroMedia {
+        mediaLabel {
+          contents: "IMAGE 1.6:1, NXST-HERO"
+        }
+      }
+    }
+
+    head {
+      facts {
+        factRole {
+          factValue {
+            contents: "Product Design Lead"
+          }
+        }
+
+        factIndustry {
+          factValue {
+            contents: "Business Consulting"
+          }
+        }
+      }
+
+      lockup {
+        workTitle {
+          contents: "Design Systems for Organizational Scale"
+        }
+
+        eyebrow {
+          eyebrowText {
+            contents: "NextStreet Case Study"
+          }
+        }
+      }
+    }
+  }
+
+  intro = frame : opening.workIntro {
+    left: 0px,
+
+    introStatement {
+      contents: "NextStreet is a platform that enables organizations and municipalities to support small business growth through advising, capital access, and structured programs."
+    }
+  }
+
+  // Section "Intro": Image statement (16:9, statement left), Split content
+  // (Narrow) with the image left, then Full media (Contained, 16:9, untitled).
+  introSection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-normal, 0px],
+    children: [introStatement, introSplit, introFilm],
+
+    introStatement = frame : media.featureImageStatement {
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      visual {
+        height: 702px,
+
+        mediaLabel {
+          contents: "VIDEO 16:9, NXST-INTRO-01"
+        }
+      }
+
+      statementRow {
+        statement {
+          contents: "NextStreet engaged my agency as a long-term partner, where I serve as the lead designer and hands-on collaborator, developing the design system and organizing core platform infrastructure to support multi-tenant initiatives and internal teams operating at scale."
+        }
+      }
+    }
+
+    introSplit = frame : mc.splitContentNarrow {
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      grid {
+        copyStack {
+          layout.item-gap: 20px,
+          overrides: [
+            insert(copyTwo, after = mc.splitContentNarrow.grid.copyStack.copy)
+          ],
+
+          eyebrow {
+            display: .none
+          }
+
+          heading {
+            display: .none
+          }
+
+          copy {
+            contents: "The existing design environment supported early momentum across active customers and initiatives."
+          }
+        }
+
+        visual {
+          mediaLabel {
+            contents: "IMAGE 3:2, NXST-STRUCTURE-EARLY-SHARED_01A-1"
+          }
+        }
+      }
+
+      copyTwo = text : t.body {
+        width: 100%,
+        contents: "A single shared workspace enabled speed, even as the platform expanded to serve tenants with distinct branding and content needs."
+      }
+    }
+
+    introFilm = frame : mc.fullMediaUntitled {
+      left: 0px,
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      visual {
+        mediaLabel {
+          contents: "VIDEO 16:9, NXST-CLARITY-PRODUCTION-UNCERTAINTY-2"
+        }
+      }
+
+      cells {
+        copy {
+          contents: "Designers carried disproportionate responsibility, while engineers, content, and sales teams lacked confidence to move independently"
+        }
+      }
+    }
+  }
+
+  // Section "Vision": Section heading (Center), then Caption (Contained).
+  visionSection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-normal, 0px],
+    children: visionOpening,
+
+    visionOpening = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 89px},
+      children: [visionHeading, visionFilm],
+
+      visionHeading = frame : headings.richTransitionCentered {
+        padding-top: 0px,
+
+        grid {
+          opener {
+            eyebrow {
+              display: .none
+            }
+
+            heading {
+              contents: "The Vision"
+            }
+          }
+
+          deck {
+            contents: "Transform NextStreet’s design foundation into a scalable, multi-tenant system that enables consistent expansion and autonomous teams."
+          }
+        }
+      }
+
+      visionFilm = frame : media.caption {
+        padding-top: 0px,
+        padding-bottom: 0px,
+
+        captionText {
+          display: .none
+        }
+
+        visual {
+          mediaLabel {
+            contents: "VIDEO 16:9, NXST-VISION-OVERVIEW"
+          }
+        }
+      }
+    }
+  }
+
+  // Section "Clarity", customised: Neutral theme, Default spacing, Loose
+  // stacking (384px between blocks, 192px under a heading). Two Section
+  // headings (Center, heading only), each over a Full media (Contained, 16:9;
+  // the first with Show content off, the second untitled), then an Image
+  // statement (16:9, statement right).
+  claritySection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 384px},
+    fill: c.colors.neutral,
+    padding: [192px, 0px],
+    children: [clarityOpening, tenantOpening, clarityStatement],
+
+    clarityOpening = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 185px},
+      children: [clarityHeading, clarityFilm],
+
+      clarityHeading = frame : headings.richTransitionCentered {
+        padding-top: 0px,
+        fill[0].color: c.colors.neutral,
+
+        grid {
+          opener {
+            eyebrow {
+              display: .none
+            }
+
+            heading {
+              contents: "Clarity was not about reducing complexity, but about enabling each role to operate within clear boundaries without introducing risk."
+            }
+          }
+
+          deck {
+            display: .none
+          }
+        }
+      }
+
+      clarityFilm = frame : mc.fullMediaNoContent {
+        left: 0px,
+        padding-top: 0px,
+        padding-bottom: 0px,
+        fill[0].color: c.colors.neutral,
+
+        visual {
+          mediaLabel {
+            contents: "VIDEO 16:9, NXST-PROJECT-STRUCTURE"
+          }
+        }
+      }
+    }
+
+    tenantOpening = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 185px},
+      children: [tenantHeading, tenantFilm],
+
+      tenantHeading = frame : headings.richTransitionCentered {
+        padding-top: 0px,
+        fill[0].color: c.colors.neutral,
+
+        grid {
+          opener {
+            eyebrow {
+              display: .none
+            }
+
+            heading {
+              contents: "Designing for Multi-Tenant Initiatives"
+            }
+          }
+
+          deck {
+            display: .none
+          }
+        }
+      }
+
+      tenantFilm = frame : mc.fullMediaUntitled {
+        left: 0px,
+        padding-top: 0px,
+        padding-bottom: 0px,
+        fill[0].color: c.colors.neutral,
+
+        visual {
+          mediaLabel {
+            contents: "VIDEO 16:9, NXST-MULTITENANT-COMPONENT-SWAP"
+          }
+        }
+
+        cells {
+          copy {
+            contents: "NextStreet’s customers operate at the level of initiatives, not individual features. Each tenant brings distinct branding, content, and administrative needs, often under time-sensitive conditions."
+          }
+        }
+      }
+    }
+
+    clarityStatement = frame : media.featureImageStatementRight {
+      left: 0px,
+      padding-top: 0px,
+      padding-bottom: 0px,
+      fill[0].color: c.colors.neutral,
+
+      visual {
+        height: 702px,
+
+        mediaLabel {
+          contents: "VIDEO 16:9, NXST-MULTITENANT-INITIATIVE-VARIATION"
+        }
+      }
+
+      statementRow {
+        statement {
+          contents: "Supporting this required a platform that could adapt without fragmentation, allowing multiple initiatives to evolve in parallel while maintaining confidence across both tenant administrators and small business users."
+        }
+      }
+    }
+  }
+
+  // Section 4, customised: Default theme, Loose spacing (a 192px band),
+  // Default stacking. Section heading (Center) over a Full media (Contained,
+  // 16:9, untitled), then Split content (Narrow) with the image right.
+  foundationSection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-loose, 0px],
+    children: [foundationOpening, foundationSplit],
+
+    foundationOpening = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 89px},
+      children: [foundationHeading, foundationFilm],
+
+      foundationHeading = frame : headings.richTransitionCentered {
+        padding-top: 0px,
+
+        grid {
+          opener {
+            eyebrow {
+              display: .none
+            }
+
+            heading {
+              contents: "Design Foundation"
+            }
+          }
+
+          deck {
+            contents: "To support this scale, a shared design foundation was established to separate structure from expression."
+          }
+        }
+      }
+
+      foundationFilm = frame : mc.fullMediaUntitled {
+        left: 0px,
+        padding-top: 0px,
+        padding-bottom: 0px,
+
+        visual {
+          mediaLabel {
+            contents: "VIDEO 16:9, NXST-TENANT-COMPONENT"
+          }
+        }
+
+        cells {
+          copy {
+            contents: "The system replaced one-off adaptations with durable patterns that could flex across tenants while remaining production-aligned."
+          }
+        }
+      }
+    }
+
+    foundationSplit = frame : mc.splitContentNarrow {
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      grid {
+        overrides: [move(mc.splitContentNarrow.grid.copyStack, after = .nil)],
+
+        copyStack {
+          eyebrow {
+            display: .none
+          }
+
+          heading {
+            display: .none
+          }
+
+          copy {
+            contents: "Rather than prescribing outcomes, it provided a stable infrastructure that allowed teams to build, test, and evolve with consistency."
+          }
+        }
+
+        visual {
+          mediaLabel {
+            contents: "VIDEO 3:2, NXST-SHEET-CONTENT"
+          }
+        }
+      }
+    }
+  }
+
+  // Section 5: Section heading (Center) over a Full media (Contained, 16:9,
+  // with no copy, so the content row drops out), then Split content (Narrow)
+  // with the image right.
+  strategySection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-normal, 0px],
+    children: [strategyOpening, strategySplit],
+
+    strategyOpening = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 89px},
+      children: [strategyHeading, strategyFilm],
+
+      strategyHeading = frame : headings.richTransitionCentered {
+        padding-top: 0px,
+
+        grid {
+          opener {
+            eyebrow {
+              display: .none
+            }
+
+            heading {
+              contents: "Strategy Embedded in the System"
+            }
+          }
+
+          deck {
+            contents: "Strategic decisions were encoded into structure rather than documentation. Patterns reinforced alignment by default, allowing teams to move independently while maintaining parity."
+          }
+        }
+      }
+
+      strategyFilm = frame : mc.fullMediaNoContent {
+        left: 0px,
+        padding-top: 0px,
+        padding-bottom: 0px,
+
+        visual {
+          mediaLabel {
+            contents: "VIDEO 16:9, NXST-LANDING-PAGE-EDIT_1"
+          }
+        }
+      }
+    }
+
+    strategySplit = frame : mc.splitContentNarrow {
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      grid {
+        overrides: [move(mc.splitContentNarrow.grid.copyStack, after = .nil)],
+
+        copyStack {
+          eyebrow {
+            display: .none
+          }
+
+          heading {
+            display: .none
+          }
+
+          copy {
+            contents: "Over time, autonomy became a property of the system itself, not a dependency on individual expertise."
+          }
+        }
+
+        visual {
+          mediaLabel {
+            contents: "VIDEO 3:2, NXST-SHEET-CONTENT-EDIT"
+          }
+        }
+      }
+    }
+  }
+
+  // Section 6: Section heading (Prose, H2, heading only) over Rich text.
+  resultsSection = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-normal, 0px],
+    children: resultsOpening,
+
+    resultsOpening = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 89px},
+      children: [resultsHeading, resultsText],
+
+      resultsHeading = frame : headings.richTransitionProse {
+        padding-top: 0px,
+
+        grid {
+          opener {
+            eyebrow {
+              display: .none
+            }
+
+            heading {
+              contents: "Results"
+            }
+          }
+
+          deck {
+            display: .none
+          }
+        }
+      }
+
+      resultsText = frame : prose.richText {
+        padding-top: 0px,
+        padding-bottom: 0px,
+
+        column {
+          layout.item-gap: 22.5px,
+          overrides: [
+            insert(benchmark, after = prose.richText.column.detail),
+            insert(prototyping, after = benchmark),
+            insert(positioning, after = prototyping)
+          ],
+
+          subheading {
+            display: .none
+          }
+
+          pills {
+            display: .none
+          }
+
+          intro {
+            contents: "Over a two-year partnership, NextStreet’s platform has been transformed into a cohesive, scalable system supporting live users while continuing to evolve."
+          }
+
+          detail {
+            contents: "This work helped establish a durable foundation for NextStreet’s mission to expand opportunity for small businesses at scale."
+          }
+        }
+
+        // Plain text: the bold run needs `subrange`, which instances drop.
+        benchmark = text {
+          width: l.lengths.span-4,
+          fill: c.colors.prose-body,
+          subrange: {
+            range: [56, 69],
+            font-style: "SemiBold",
+            fill: c.colors.prose-heading
+          },
+          contents: "Engagement across key tenants moved toward and beyond a 40% benchmark",
+          font-size: 18,
+          font-family: "IBM Plex Sans",
+          line-height: 1.556
+        }
+
+        prototyping = text : t.lead {
+          width: l.lengths.span-4,
+          contents: "Internal teams gained the ability to prototype, test, and demo complex scenarios with ease",
+          fill[0].color: c.colors.prose-body
+        }
+
+        positioning = text : t.lead {
+          width: l.lengths.span-4,
+          contents: "The platform is now positioned to scale confidently across new partners, programs, and product surfaces",
+          fill[0].color: c.colors.prose-body
+        }
+      }
+    }
+  }
+
+  // Related works first, in the order the work names them, then the rest in
+  // the Works collection order. Services are the work's capabilities.
+  moreWork = frame : more.moreWork {
+    inner {
+      grid {
+        index {
+          rowFour {
+            rowText {
+              rowMeta {
+                display: .none
+              }
+
+              rowTitle {
+                contents: "Brand Expression Through Digital Experience"
+              }
+            }
+          }
+
+          rowThree {
+            rowText {
+              rowTitle {
+                contents: "Brand Development at the Executive Level"
+              }
+
+              rowMeta {
+                rowIndustry {
+                  contents: "Healthcare"
+                }
+
+                rowServices {
+                  contents: "Brand Identity & Collateral"
+                }
+              }
+            }
+          }
+
+          rowOne {
+            rowText {
+              rowTitle {
+                contents: "Brand Expansion Through Narrative"
+              }
+
+              rowMeta {
+                rowIndustry {
+                  contents: "Insurance Tech"
+                }
+
+                rowServices {
+                  contents: "Brand Expansion, Website"
+                }
+              }
+            }
+          }
+
+          rowTwo {
+            rowText {
+              rowTitle {
+                contents: "Identity for Higher-Stakes Work"
+              }
+
+              rowMeta {
+                rowIndustry {
+                  contents: "Human Resources Services"
+                }
+
+                rowServices {
+                  contents: "Full Corporate Identity, Web Design"
+                }
+              }
+            }
+          }
+        }
+
+        plateColumn {
+          plate {
+            mediaLabel {
+              contents: "VIDEO 1.6:1, ARTURO-HERO-2"
+            }
+          }
+
+          plateCaption {
+            plateClient {
+              contents: "Arturo"
+            }
+          }
+        }
+      }
+    }
+  }
+
+  topBar = frame : chrome.topBarOnPage {
+    left: 0px,
+    top: 0px,
+    ignore-stack: .true,
+    padding-left: 96px,
+    padding-right: 96px
+  }
+
+  // Fixed 24px above the first viewport's bottom edge.
+  dockRail = frame {
+    left: 0px,
+    top: 836px,
+    width: 100%,
+    ignore-stack: .true,
+    layout: {justify-content: .center},
+    children: dock,
+
+    dock = frame : chrome.dockOnPageSection {}
+  }
+}

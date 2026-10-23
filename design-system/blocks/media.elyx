@@ -1,0 +1,158 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+import "resources/icons/play.svg" as playGlyph
+
+// Media group: a single visual with a short line of text, or none.
+// Image statement, `featureImageStatement`, contained image, statement on
+// columns 1 to 4 (`textPosition: left`).
+// src/blocks/feature/ImageStatement/Component.tsx
+export featureImageStatement = frame {
+  width: l.lengths.page,
+  layout: {direction: .column, item-gap: l.lengths.grid-gap},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: [visual, statementRow],
+
+  visual = frame : m.media {
+    width: 100%,
+    height: 535px,
+
+    mediaLabel {
+      contents: "IMAGE 21:9"
+    }
+  }
+
+  statementRow = frame {
+    width: 100%,
+    layout: {direction: .row},
+    children: statement,
+
+    statement = text : t.statement {
+      width: l.lengths.span-4,
+      contents: "The grid is the brand. Every layout, from the home page to the shipping label, is cut from the same eight columns."
+    }
+  }
+}
+
+// Caption, `caption`, contained size: media with its caption underneath. The
+// caption sits in a second container, inset another gutter, and renders as prose.
+// src/blocks/caption/Component.tsx
+export caption = frame {
+  left: 1600px,
+  width: l.lengths.page,
+  layout: {direction: .column, align-items: .center, item-gap: 24px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: [visual, captionText],
+
+  visual = frame : m.media {
+    width: 100%,
+    height: 702px,
+
+    mediaLabel {
+      contents: "MEDIA 16:9"
+    }
+  }
+
+  // The column less a gutter each side.
+  captionText = text : t.body {
+    width: 1056px,
+    contents: "The product page on desktop, with the size guide open.",
+    line-height: 1.75,
+    fill[0].color: c.colors.prose-body
+  }
+}
+
+// YouTube, `youtube`, contained size: a poster that loads the player on click.
+// The title is off by default.
+// src/blocks/youtube/Component.tsx
+export youtube = frame {
+  left: 3200px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: poster,
+
+  poster = frame {
+    width: 100%,
+    height: 702px,
+    layout: {justify-content: .center, align-items: .center},
+    fill: c.colors.panel,
+    corner-radius: l.lengths.radius,
+    children: [videoTitle, playButton],
+
+    // The library's `::before`: a gradient strip that carries the title.
+    videoTitle = frame {
+      left: 0px,
+      top: 0px,
+      width: 100%,
+      height: 99px,
+      display: .none,
+      ignore-stack: .true,
+      layout: {direction: .column},
+      fill: {
+        linear-gradient: {
+          angle: 180deg,
+          stops: [
+            stop(0%, rgb(0%, 0%, 0%, 67%)),
+            stop(14%, rgb(0%, 0%, 0%, 54%)),
+            stop(54%, rgb(0%, 0%, 0%, 15%)),
+            stop(72%, rgb(0%, 0%, 0%, 5%)),
+            stop(94%, .transparent)
+          ]
+        }
+      },
+      padding: [25px, 20px],
+      children: videoTitleText,
+
+      videoTitleText = text : t.lead {
+        width: 100%,
+        contents: "Design system walkthrough",
+        fill[0].color: rgb(93.33%, 93.33%, 93.33%)
+      }
+    }
+
+    // Grayscale at rest; YouTube red on hover.
+    playButton = frame {
+      width: 68px,
+      height: 48px,
+      layout: {justify-content: .center, align-items: .center},
+      fill: rgb(21.1765%, 21.1765%, 21.1765%),
+      corner-radius: 12px,
+      padding-left: 4px,
+      children: playIcon,
+
+      playIcon = icon {
+        width: 18px,
+        height: 20px,
+        fill: .white,
+        contents: playGlyph
+      }
+    }
+  }
+}
+
+// Image statement, statement on columns 5 to 8 (`textPosition: right`).
+@variant
+export featureImageStatementRight = frame : featureImageStatement {
+  left: 4800px,
+
+  statementRow {
+    layout.justify-content: .end
+  }
+}
+
+// YouTube with Show title on.
+@variant
+export youtubeTitle = frame : youtube {
+  left: 6400px,
+
+  poster {
+    videoTitle {
+      display: .visible
+    }
+  }
+}

@@ -1,0 +1,50 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "resources/icons/chevron-right.svg" as chevronRight
+import "resources/icons/chevron-left.svg" as chevronLeft
+
+// Page action button, the `xl` size (44px tall) from src/components/ui/button.tsx.
+// The 25px side padding is the 24px plus the transparent 1px border.
+export button = frame {
+  height: 44px,
+  layout: {justify-content: .center, align-items: .center},
+  fill: c.colors.primary,
+  corner-radius: l.lengths.radius-md,
+  padding: [0px, 25px],
+  children: buttonLabel,
+
+  buttonLabel = text : t.small {
+    contents: "Button",
+    font-style: "Medium",
+    fill[0].color: c.colors.primary-foreground
+  }
+}
+
+// Carousel arrow: the `icon-sm` outline button (24px, round) with a 12px
+// chevron, src/components/ui/carousel.tsx. Points next; `arrowPrevious` points back.
+export arrow = frame {
+  left: 200px,
+  width: 24px,
+  height: 24px,
+  layout: {justify-content: .center, align-items: .center},
+  border: c.colors.border,
+  corner-radius: 12px,
+  children: arrowGlyph,
+
+  arrowGlyph = icon {
+    width: 12px,
+    height: 12px,
+    fill: c.colors.foreground,
+    contents: chevronRight
+  }
+}
+
+@variant
+export arrowPrevious = frame : arrow {
+  left: 240px,
+
+  arrowGlyph {
+    contents: chevronLeft
+  }
+}

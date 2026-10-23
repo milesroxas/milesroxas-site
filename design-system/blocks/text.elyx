@@ -1,0 +1,306 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/pill.elyx" as p
+import "resources/icons/copy.svg" as copyGlyph
+
+// Text group: the reading column, four grid columns wide starting at column 3.
+// Rich text, `richText`: prose with an inline pill list.
+// src/blocks/rich-text/Component.tsx
+export richText = frame {
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: column,
+
+  column = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 24px},
+    padding-left: 320px,
+    children: [intro, subheading, detail, pills],
+
+    intro = text : t.lead {
+      width: l.lengths.span-4,
+      contents: "The first month was spent reading. Support tickets, store visits and a full inventory of the interface showed where the product had drifted, and which patterns people already trusted.",
+      fill[0].color: c.colors.prose-body
+    }
+
+    // An h2 takes 2em above and 1em below; the frame adds the extra 24 above.
+    subheading = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column},
+      padding-top: 24px,
+      children: subheadingText,
+
+      subheadingText = text : t.statement {
+        width: 100%,
+        contents: "What the audit found",
+        line-height: 1.375,
+        fill[0].color: c.colors.prose-heading
+      }
+    }
+
+    detail = text : t.lead {
+      width: l.lengths.span-4,
+      contents: "Nine button styles, four type scales and three ways to show a price. None of it was wrong on its own. Together it made every new screen slower to design and harder to build.",
+      fill[0].color: c.colors.prose-body
+    }
+
+    // The pill list is its own grid cell, a 32px row gap under the copy.
+    pills = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column, item-gap: 24px},
+      padding-top: 8px,
+      children: [pillsLabel, pillRow],
+
+      pillsLabel = text : t.mono {
+        contents: "SCOPE"
+      }
+
+      pillRow = frame {
+        width: 100%,
+        layout: {item-gap: 8px, wrap: .true, line-gap: 8px},
+        children: [pillOne, pillTwo, pillThree, pillFour],
+
+        pillOne = frame : p.pill {
+          pillLabel {
+            contents: "Design system"
+          }
+        }
+
+        pillTwo = frame : p.pill {
+          pillLabel {
+            contents: "Web app"
+          }
+        }
+
+        pillThree = frame : p.pill {
+          pillLabel {
+            contents: "Front-end build"
+          }
+        }
+
+        pillFour = frame : p.pill {
+          pillLabel {
+            contents: "Documentation"
+          }
+        }
+      }
+    }
+  }
+}
+
+// Code, `code`: the always-dark code surface in the reading column.
+// src/blocks/Code/Section.tsx, src/components/ui/code-block.tsx
+export code = frame {
+  left: 1600px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: column,
+
+  column = frame {
+    width: 100%,
+    layout: {direction: .column},
+    padding-left: 320px,
+    children: surface,
+
+    surface = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column},
+      fill: c.colors.panel,
+      border: c.colors.panel-border,
+      corner-radius: l.lengths.radius,
+      children: [chrome, listing],
+
+      chrome = frame {
+        width: 100%,
+        layout: {justify-content: .space-between, align-items: .center},
+        // The extra 1px under the button is the rule, which draws inside.
+        border: {color: c.colors.panel-border, sides: .bottom},
+        padding: [8px, 8px, 9px, 16px],
+        children: [language, copyAction],
+
+        language = text : t.mono {
+          contents: "typescript",
+          fill[0].color: c.colors.panel-muted-foreground
+        }
+
+        // Ghost Button, size `sm`.
+        copyAction = frame {
+          height: 24px,
+          layout: {align-items: .center, item-gap: 4px},
+          corner-radius: l.lengths.radius-md,
+          padding: [0px, 6px, 0px, 8px],
+          children: [copyLabel, copyIcon],
+
+          copyLabel = text : t.eyebrow {
+            contents: "Copy",
+            letter-spacing: 10%,
+            fill[0].color: c.colors.panel-muted-foreground
+          }
+
+          copyIcon = icon {
+            width: 12px,
+            height: 12px,
+            fill: c.colors.panel-muted-foreground,
+            contents: copyGlyph
+          }
+        }
+      }
+
+      listing = frame {
+        width: 100%,
+        layout: {direction: .column},
+        padding: [16px, 16px, 16px, 0px],
+        children: [lineOne, lineTwo, lineThree, lineFour, lineFive],
+
+        lineOne = frame {
+          height: 24px,
+          layout: {align-items: .center, item-gap: 16px},
+          children: [lineOneNumber, lineOneCode],
+
+          lineOneNumber = text : t.mono {
+            width: 40px,
+            contents: "1",
+            font-size: 13,
+            letter-spacing: 0,
+            align: .right,
+            fill[0].color: c.colors.panel-muted-foreground
+          }
+
+          lineOneCode = text {
+            fill: c.colors.panel-foreground,
+            subrange: [
+              {range: [0, 6], fill: c.colors.syntax-keyword},
+              {range: [7, 12], fill: c.colors.syntax-keyword},
+              {range: [19, 20], fill: c.colors.syntax-operator},
+              {range: [21, 22], fill: c.colors.panel-muted-foreground}
+            ],
+            contents: "export const space = {",
+            font-size: 13,
+            font-family: "Geist Mono",
+            font-style: "Regular"
+          }
+        }
+
+        lineTwo = frame {
+          height: 24px,
+          layout: {align-items: .center, item-gap: 16px},
+          children: [lineTwoNumber, lineTwoCode],
+
+          lineTwoNumber = text : t.mono {
+            width: 40px,
+            contents: "2",
+            font-size: 13,
+            letter-spacing: 0,
+            align: .right,
+            fill[0].color: c.colors.panel-muted-foreground
+          }
+
+          lineTwoCode = text {
+            fill: c.colors.panel-foreground,
+            subrange: [
+              {range: [2, 7], fill: c.colors.syntax-property},
+              {range: [7, 8], fill: c.colors.panel-muted-foreground},
+              {range: [9, 15], fill: c.colors.syntax-string},
+              {range: [15, 16], fill: c.colors.panel-muted-foreground}
+            ],
+            contents: "  tight: '3rem',",
+            font-size: 13,
+            font-family: "Geist Mono",
+            font-style: "Regular"
+          }
+        }
+
+        lineThree = frame {
+          height: 24px,
+          layout: {align-items: .center, item-gap: 16px},
+          children: [lineThreeNumber, lineThreeCode],
+
+          lineThreeNumber = text : t.mono {
+            width: 40px,
+            contents: "3",
+            font-size: 13,
+            letter-spacing: 0,
+            align: .right,
+            fill[0].color: c.colors.panel-muted-foreground
+          }
+
+          lineThreeCode = text {
+            fill: c.colors.panel-foreground,
+            subrange: [
+              {range: [2, 8], fill: c.colors.syntax-property},
+              {range: [8, 9], fill: c.colors.panel-muted-foreground},
+              {range: [10, 16], fill: c.colors.syntax-string},
+              {range: [16, 17], fill: c.colors.panel-muted-foreground}
+            ],
+            contents: "  normal: '6rem',",
+            font-size: 13,
+            font-family: "Geist Mono",
+            font-style: "Regular"
+          }
+        }
+
+        lineFour = frame {
+          height: 24px,
+          layout: {align-items: .center, item-gap: 16px},
+          children: [lineFourNumber, lineFourCode],
+
+          lineFourNumber = text : t.mono {
+            width: 40px,
+            contents: "4",
+            font-size: 13,
+            letter-spacing: 0,
+            align: .right,
+            fill[0].color: c.colors.panel-muted-foreground
+          }
+
+          lineFourCode = text {
+            fill: c.colors.panel-foreground,
+            subrange: [
+              {range: [2, 7], fill: c.colors.syntax-property},
+              {range: [7, 8], fill: c.colors.panel-muted-foreground},
+              {range: [9, 16], fill: c.colors.syntax-string},
+              {range: [16, 17], fill: c.colors.panel-muted-foreground}
+            ],
+            contents: "  loose: '12rem',",
+            font-size: 13,
+            font-family: "Geist Mono",
+            font-style: "Regular"
+          }
+        }
+
+        lineFive = frame {
+          height: 24px,
+          layout: {align-items: .center, item-gap: 16px},
+          children: [lineFiveNumber, lineFiveCode],
+
+          lineFiveNumber = text : t.mono {
+            width: 40px,
+            contents: "5",
+            font-size: 13,
+            letter-spacing: 0,
+            align: .right,
+            fill[0].color: c.colors.panel-muted-foreground
+          }
+
+          lineFiveCode = text {
+            fill: c.colors.panel-foreground,
+            subrange: [
+              {range: [0, 1], fill: c.colors.panel-muted-foreground},
+              {range: [2, 4], fill: c.colors.syntax-keyword},
+              {range: [5, 10], fill: c.colors.syntax-keyword}
+            ],
+            contents: "} as const",
+            font-size: 13,
+            font-family: "Geist Mono",
+            font-style: "Regular"
+          }
+        }
+      }
+    }
+  }
+}

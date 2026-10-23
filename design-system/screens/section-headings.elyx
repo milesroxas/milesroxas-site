@@ -1,0 +1,647 @@
+import "tokens/colors.elyx" as c
+import "controls/type.elyx" as t
+import "blocks/section-heading.elyx" as headings
+
+// Every Section heading block and every variant its Payload settings produce.
+// Two blocks: Standard (`richTransition`) and Offset (`featureHeadingOffset`).
+// Each specimen is labelled with the setting it changes from the defaults.
+// Settings are independent in the CMS, so each group varies one of them.
+sectionHeadings = frame {
+  width: 1634px,
+  layout: {direction: .column, item-gap: 160px},
+  fill: c.colors.background,
+  padding: 96px,
+  children: [
+    intro,
+    standardLayouts,
+    standardOptional,
+    standardThemes,
+    offsetSizes,
+    offsetOptional,
+    offsetThemes
+  ],
+
+  intro = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 24px},
+    children: [introTitle, introNote],
+
+    introTitle = text : t.display {
+      contents: "Section headings",
+      font-size: 72
+    }
+
+    introNote = text : t.statement {
+      width: 768px,
+      contents: "Two blocks open a section: Standard and Offset. Below is every arrangement their settings produce, drawn at 1440px in the light theme.",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+
+  standardLayouts = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 48px},
+    children: [
+      standardLayoutsTitle,
+      standardLayoutsNote,
+      standardOffset,
+      standardOffsetLarge,
+      standardLeft,
+      standardLeftLarge,
+      standardCentered,
+      standardCenteredLarge,
+      standardSplit,
+      standardSplitLarge,
+      standardStatement,
+      standardProse,
+      standardProseH3,
+      standardProseH4
+    ],
+
+    standardLayoutsTitle = text : t.title {
+      contents: "Standard: layout and text size"
+    }
+
+    standardLayoutsNote = text : t.body {
+      width: 768px,
+      contents: "Layout has six options. Text size (Small or Large) applies to Offset, Left, Center and Split. Statement is fixed at display size. Prose is sized by its heading level instead.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    standardOffset = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardOffsetLabel, standardOffsetFrame],
+
+      standardOffsetLabel = text : t.mono {
+        contents: "LAYOUT OFFSET (DEFAULT)  /  TEXT SIZE SMALL (DEFAULT)"
+      }
+
+      standardOffsetFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardOffsetBlock,
+
+        standardOffsetBlock = frame : headings.richTransition {}
+      }
+    }
+
+    standardOffsetLarge = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardOffsetLargeLabel, standardOffsetLargeFrame],
+
+      standardOffsetLargeLabel = text : t.mono {
+        contents: "LAYOUT OFFSET  /  TEXT SIZE LARGE"
+      }
+
+      standardOffsetLargeFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardOffsetLargeBlock,
+
+        standardOffsetLargeBlock = frame : headings.richTransitionOffsetLarge {}
+      }
+    }
+
+    standardLeft = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardLeftLabel, standardLeftFrame],
+
+      standardLeftLabel = text : t.mono {
+        contents: "LAYOUT LEFT  /  TEXT SIZE SMALL"
+      }
+
+      standardLeftFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardLeftBlock,
+
+        standardLeftBlock = frame : headings.richTransitionLeft {}
+      }
+    }
+
+    standardLeftLarge = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardLeftLargeLabel, standardLeftLargeFrame],
+
+      standardLeftLargeLabel = text : t.mono {
+        contents: "LAYOUT LEFT  /  TEXT SIZE LARGE"
+      }
+
+      standardLeftLargeFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardLeftLargeBlock,
+
+        standardLeftLargeBlock = frame : headings.richTransitionLeftLarge {}
+      }
+    }
+
+    standardCentered = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardCenteredLabel, standardCenteredFrame],
+
+      standardCenteredLabel = text : t.mono {
+        contents: "LAYOUT CENTER  /  TEXT SIZE SMALL"
+      }
+
+      standardCenteredFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardCenteredBlock,
+
+        standardCenteredBlock = frame : headings.richTransitionCentered {}
+      }
+    }
+
+    standardCenteredLarge = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardCenteredLargeLabel, standardCenteredLargeFrame],
+
+      standardCenteredLargeLabel = text : t.mono {
+        contents: "LAYOUT CENTER  /  TEXT SIZE LARGE"
+      }
+
+      standardCenteredLargeFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardCenteredLargeBlock,
+
+        standardCenteredLargeBlock = frame : headings.richTransitionCenteredLarge {
+          
+        }
+      }
+    }
+
+    standardSplit = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardSplitLabel, standardSplitFrame],
+
+      standardSplitLabel = text : t.mono {
+        contents: "LAYOUT SPLIT  /  TEXT SIZE SMALL"
+      }
+
+      standardSplitFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardSplitBlock,
+
+        standardSplitBlock = frame : headings.richTransitionSplit {}
+      }
+    }
+
+    standardSplitLarge = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardSplitLargeLabel, standardSplitLargeFrame],
+
+      standardSplitLargeLabel = text : t.mono {
+        contents: "LAYOUT SPLIT  /  TEXT SIZE LARGE"
+      }
+
+      standardSplitLargeFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardSplitLargeBlock,
+
+        standardSplitLargeBlock = frame : headings.richTransitionSplitLarge {}
+      }
+    }
+
+    standardStatement = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardStatementLabel, standardStatementFrame],
+
+      standardStatementLabel = text : t.mono {
+        contents: "LAYOUT STATEMENT"
+      }
+
+      standardStatementFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardStatementBlock,
+
+        standardStatementBlock = frame : headings.richTransitionStatement {}
+      }
+    }
+
+    standardProse = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardProseLabel, standardProseFrame],
+
+      standardProseLabel = text : t.mono {
+        contents: "LAYOUT PROSE  /  HEADING LEVEL H2 (DEFAULT)"
+      }
+
+      standardProseFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardProseBlock,
+
+        standardProseBlock = frame : headings.richTransitionProse {}
+      }
+    }
+
+    standardProseH3 = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardProseH3Label, standardProseH3Frame],
+
+      standardProseH3Label = text : t.mono {
+        contents: "LAYOUT PROSE  /  HEADING LEVEL H3"
+      }
+
+      standardProseH3Frame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardProseH3Block,
+
+        standardProseH3Block = frame : headings.richTransitionProseH3 {}
+      }
+    }
+
+    standardProseH4 = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardProseH4Label, standardProseH4Frame],
+
+      standardProseH4Label = text : t.mono {
+        contents: "LAYOUT PROSE  /  HEADING LEVEL H4"
+      }
+
+      standardProseH4Frame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardProseH4Block,
+
+        standardProseH4Block = frame : headings.richTransitionProseH4 {}
+      }
+    }
+  }
+
+  standardOptional = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 48px},
+    children: [
+      standardOptionalTitle,
+      standardOptionalNote,
+      standardNoEyebrow,
+      standardNoBody,
+      standardHeadingOnly
+    ],
+
+    standardOptionalTitle = text : t.title {
+      contents: "Standard: optional fields"
+    }
+
+    standardOptionalNote = text : t.body {
+      width: 768px,
+      contents: "Show eyebrow and Show supporting copy are independent toggles. Shown on the Offset layout; they behave the same in every layout.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    standardNoEyebrow = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardNoEyebrowLabel, standardNoEyebrowFrame],
+
+      standardNoEyebrowLabel = text : t.mono {
+        contents: "SHOW EYEBROW OFF"
+      }
+
+      standardNoEyebrowFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardNoEyebrowBlock,
+
+        standardNoEyebrowBlock = frame : headings.richTransitionNoEyebrow {}
+      }
+    }
+
+    standardNoBody = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardNoBodyLabel, standardNoBodyFrame],
+
+      standardNoBodyLabel = text : t.mono {
+        contents: "SHOW SUPPORTING COPY OFF"
+      }
+
+      standardNoBodyFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardNoBodyBlock,
+
+        standardNoBodyBlock = frame : headings.richTransitionNoBody {}
+      }
+    }
+
+    standardHeadingOnly = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardHeadingOnlyLabel, standardHeadingOnlyFrame],
+
+      standardHeadingOnlyLabel = text : t.mono {
+        contents: "SHOW EYEBROW OFF  /  SHOW SUPPORTING COPY OFF"
+      }
+
+      standardHeadingOnlyFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardHeadingOnlyBlock,
+
+        standardHeadingOnlyBlock = frame : headings.richTransitionHeadingOnly {}
+      }
+    }
+  }
+
+  standardThemes = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 48px},
+    children: [
+      standardThemesTitle,
+      standardThemesNote,
+      standardInverted,
+      standardNeutral,
+      standardBrand
+    ],
+
+    standardThemesTitle = text : t.title {
+      contents: "Standard: theme"
+    }
+
+    standardThemesNote = text : t.body {
+      width: 768px,
+      contents: "Default is the first specimen on this screen. The theme select is hidden when the block sits inside a Section, which owns the band.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    standardInverted = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardInvertedLabel, standardInvertedFrame],
+
+      standardInvertedLabel = text : t.mono {
+        contents: "THEME INVERTED"
+      }
+
+      standardInvertedFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardInvertedBlock,
+
+        standardInvertedBlock = frame : headings.richTransitionInverted {}
+      }
+    }
+
+    standardNeutral = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardNeutralLabel, standardNeutralFrame],
+
+      standardNeutralLabel = text : t.mono {
+        contents: "THEME NEUTRAL"
+      }
+
+      standardNeutralFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardNeutralBlock,
+
+        standardNeutralBlock = frame : headings.richTransitionNeutral {}
+      }
+    }
+
+    standardBrand = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [standardBrandLabel, standardBrandFrame],
+
+      standardBrandLabel = text : t.mono {
+        contents: "THEME BRAND"
+      }
+
+      standardBrandFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: standardBrandBlock,
+
+        standardBrandBlock = frame : headings.richTransitionBrand {}
+      }
+    }
+  }
+
+  offsetSizes = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 48px},
+    children: [offsetSizesTitle, offsetSizesNote, offsetSmall, offsetLarge],
+
+    offsetSizesTitle = text : t.title {
+      contents: "Offset: text size"
+    }
+
+    offsetSizesNote = text : t.body {
+      width: 768px,
+      contents: "The Offset block has one arrangement: heading on columns 1 to 4, supporting copy on 6 to 8, set 96px lower.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    offsetSmall = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [offsetSmallLabel, offsetSmallFrame],
+
+      offsetSmallLabel = text : t.mono {
+        contents: "TEXT SIZE SMALL (DEFAULT)"
+      }
+
+      offsetSmallFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: offsetSmallBlock,
+
+        offsetSmallBlock = frame : headings.featureHeadingOffset {}
+      }
+    }
+
+    offsetLarge = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [offsetLargeLabel, offsetLargeFrame],
+
+      offsetLargeLabel = text : t.mono {
+        contents: "TEXT SIZE LARGE"
+      }
+
+      offsetLargeFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: offsetLargeBlock,
+
+        offsetLargeBlock = frame : headings.featureHeadingOffsetLarge {}
+      }
+    }
+  }
+
+  offsetOptional = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 48px},
+    children: [
+      offsetOptionalTitle,
+      offsetOptionalNote,
+      offsetNoEyebrow,
+      offsetNoBody,
+      offsetHeadingOnly
+    ],
+
+    offsetOptionalTitle = text : t.title {
+      contents: "Offset: optional fields"
+    }
+
+    offsetOptionalNote = text : t.body {
+      width: 768px,
+      contents: "Show eyebrow and Show supporting copy are independent toggles.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    offsetNoEyebrow = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [offsetNoEyebrowLabel, offsetNoEyebrowFrame],
+
+      offsetNoEyebrowLabel = text : t.mono {
+        contents: "SHOW EYEBROW OFF"
+      }
+
+      offsetNoEyebrowFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: offsetNoEyebrowBlock,
+
+        offsetNoEyebrowBlock = frame : headings.featureHeadingOffsetNoEyebrow {}
+      }
+    }
+
+    offsetNoBody = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [offsetNoBodyLabel, offsetNoBodyFrame],
+
+      offsetNoBodyLabel = text : t.mono {
+        contents: "SHOW SUPPORTING COPY OFF"
+      }
+
+      offsetNoBodyFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: offsetNoBodyBlock,
+
+        offsetNoBodyBlock = frame : headings.featureHeadingOffsetNoBody {}
+      }
+    }
+
+    offsetHeadingOnly = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [offsetHeadingOnlyLabel, offsetHeadingOnlyFrame],
+
+      offsetHeadingOnlyLabel = text : t.mono {
+        contents: "SHOW EYEBROW OFF  /  SHOW SUPPORTING COPY OFF"
+      }
+
+      offsetHeadingOnlyFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: offsetHeadingOnlyBlock,
+
+        offsetHeadingOnlyBlock = frame : headings.featureHeadingOffsetHeadingOnly {
+          
+        }
+      }
+    }
+  }
+
+  offsetThemes = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 48px},
+    children: [
+      offsetThemesTitle,
+      offsetThemesNote,
+      offsetInverted,
+      offsetNeutral,
+      offsetBrand
+    ],
+
+    offsetThemesTitle = text : t.title {
+      contents: "Offset: theme"
+    }
+
+    offsetThemesNote = text : t.body {
+      width: 768px,
+      contents: "Default is the first Offset specimen above.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    offsetInverted = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [offsetInvertedLabel, offsetInvertedFrame],
+
+      offsetInvertedLabel = text : t.mono {
+        contents: "THEME INVERTED"
+      }
+
+      offsetInvertedFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: offsetInvertedBlock,
+
+        offsetInvertedBlock = frame : headings.featureHeadingOffsetInverted {}
+      }
+    }
+
+    offsetNeutral = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [offsetNeutralLabel, offsetNeutralFrame],
+
+      offsetNeutralLabel = text : t.mono {
+        contents: "THEME NEUTRAL"
+      }
+
+      offsetNeutralFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: offsetNeutralBlock,
+
+        offsetNeutralBlock = frame : headings.featureHeadingOffsetNeutral {}
+      }
+    }
+
+    offsetBrand = frame {
+      layout: {direction: .column, item-gap: 12px},
+      children: [offsetBrandLabel, offsetBrandFrame],
+
+      offsetBrandLabel = text : t.mono {
+        contents: "THEME BRAND"
+      }
+
+      offsetBrandFrame = frame {
+        layout: {direction: .column},
+        fill: c.colors.border,
+        padding: 1px,
+        children: offsetBrandBlock,
+
+        offsetBrandBlock = frame : headings.featureHeadingOffsetBrand {}
+      }
+    }
+  }
+}

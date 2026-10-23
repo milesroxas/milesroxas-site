@@ -1,0 +1,79 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/chrome.elyx" as chrome
+import "blocks/works-index.elyx" as index
+
+// /works at 1440 by 900 on load, with production content: the seven published
+// works in CMS order, the first on the plate. The Works index global gives the
+// heading its lead. The active work's summary (hero.richText) joins the caption
+// under the plate, so the plate reads as the card: picture, client, position,
+// summary. It crossfades with the picture when the dial commits to a row
+// (exploration/works-summary.elyx, B). The chrome sits over the page ground
+// with the Work tab current.
+// src/app/(frontend)/works/page.tsx
+works = frame {
+  left: -723px,
+  width: l.lengths.page,
+  height: l.lengths.viewport,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  children: [dial, summary, topBar, dockRail],
+
+  dial = frame : index.workDial {
+    plate {
+      mediaLabel {
+        contents: "IMAGE 1.6:1, NXST-HERO"
+      }
+    }
+
+    plateCaption {
+      plateLabel {
+        plateClient {
+          contents: "NextStreet"
+        }
+
+        plateIndustry {
+          contents: "Business Consulting"
+        }
+      }
+    }
+
+    rowActive {
+      contents: "Design Systems for Organizational Scale"
+    }
+
+    rowNext {
+      contents: "Brand Expansion Through Narrative"
+    }
+  }
+
+  // 16px under the caption line, on three composition columns, one rung over
+  // the index lead: 18px, muted. Only the work on the centre line shows its
+  // summary.
+  summary = text : t.lead {
+    left: 423px,
+    top: 684px,
+    width: l.lengths.span-3,
+    ignore-stack: .true,
+    contents: "A high-velocity organization required a unified design system to support multiple products and teams at scale.",
+    fill[0].color: c.colors.muted-foreground
+  }
+
+  topBar = frame : chrome.topBarOnPage {
+    left: 0px,
+    top: 0px,
+    ignore-stack: .true
+  }
+
+  dockRail = frame {
+    left: 0px,
+    bottom: 24px,
+    width: 100%,
+    ignore-stack: .true,
+    layout: {justify-content: .center},
+    children: dock,
+
+    dock = frame : chrome.dockOnPage {}
+  }
+}

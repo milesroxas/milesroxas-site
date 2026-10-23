@@ -50,6 +50,8 @@ INERT_RES=(
   '^\.cursor/'
   '^\.conductor/'
   '^\.vscode/'
+  # Design source (Elyx). Nothing in the app imports it.
+  '^design-system/'
   # Repo plumbing that Vercel does not run.
   '^\.github/'
   '^\.githooks/'

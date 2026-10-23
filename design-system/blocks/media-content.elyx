@@ -1,0 +1,440 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+import "controls/button.elyx" as b
+
+// Media and content group: one or two visuals with a copy stack on the
+// 8-column composition grid. Every block here uses the loose band.
+// Full media, `fullMedia`, contained width at 16:9 with content cells. Visual
+// and cells share one grid, so the row gap is the grid gap. The heading cluster
+// is on columns 1 to 3 and the body on 4 to 6.
+// src/blocks/full-media/FullMedia.tsx
+export fullMedia = frame {
+  width: l.lengths.page,
+  layout: {direction: .column, item-gap: l.lengths.grid-gap},
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: [visual, cells],
+
+  visual = frame : m.media {
+    width: 100%,
+    height: 702px,
+
+    mediaLabel {
+      contents: "VISUAL 16:9"
+    }
+  }
+
+  cells = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [opener, copy],
+
+    // Gaps are tighter than the em values: the site trims text to cap height.
+    opener = frame {
+      width: l.lengths.span-3,
+      layout: {direction: .column},
+      children: [eyebrow, heading],
+
+      eyebrow = text : t.eyebrow {
+        contents: "Launch film"
+      }
+
+      heading = text : t.blockHeading {
+        width: 100%,
+        contents: "The identity in motion"
+      }
+    }
+
+    copy = text : t.body {
+      width: l.lengths.span-3,
+      contents: "A thirty second film introduced the new mark. Each frame was composed from the same grid the product uses, so the film and the interface read as one piece of work."
+    }
+  }
+}
+
+// Media and content split, `mediaContentSplit`, media left.
+// src/blocks/media-content-split/MediaContentSplit.tsx
+export mediaContentSplit = frame {
+  left: 1600px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: grid,
+
+  grid = frame {
+    width: 100%,
+    layout: {align-items: .center, item-gap: l.lengths.grid-gap},
+    children: [visual, copyStack],
+
+    visual = frame : m.media {
+      width: l.lengths.span-4,
+      height: 342px,
+
+      mediaLabel {
+        contents: "VISUAL 16:9"
+      }
+    }
+
+    copyStack = frame {
+      width: l.lengths.span-3,
+      layout: {direction: .column},
+      children: [eyebrow, heading, copy],
+
+      eyebrow = text : t.eyebrow {
+        contents: "Component library"
+      }
+
+      heading = frame {
+        width: 100%,
+        layout: {direction: .column},
+        padding: [0px, 0px, 10px],
+        children: headingText,
+
+        headingText = text : t.blockHeading {
+          width: 100%,
+          contents: "Forty components, one set of rules"
+        }
+      }
+
+      copy = text : t.body {
+        width: 100%,
+        contents: "Every component takes its spacing, colour and type from tokens. A change to the scale reaches the app, the site and the email templates in the same release."
+      }
+    }
+  }
+}
+
+// Split content (Narrow), `splitContentNarrow`, image left.
+// src/blocks/split-content/SplitContentNarrow.tsx
+export splitContentNarrow = frame {
+  left: 3200px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: grid,
+
+  grid = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [visual, copyStack],
+
+    visual = frame : m.media {
+      width: l.lengths.span-6,
+      height: 619px,
+
+      mediaLabel {
+        contents: "VISUAL 3:2"
+      }
+    }
+
+    copyStack = frame {
+      width: l.lengths.span-2,
+      layout: {direction: .column},
+      children: [eyebrow, heading, copy],
+
+      eyebrow = text : t.eyebrow {
+        contents: "Checkout"
+      }
+
+      heading = frame {
+        width: 100%,
+        layout: {direction: .column},
+        padding: [0px, 0px, 10px],
+        children: headingText,
+
+        headingText = text : t.blockHeading {
+          width: 100%,
+          contents: "Three steps became one"
+        }
+      }
+
+      copy = text : t.body {
+        width: 100%,
+        contents: "Address, delivery and payment now sit on a single screen. Completion rose in the first month after release."
+      }
+    }
+  }
+}
+
+// Carousel split, `carouselSplit`, deck right, one slide at a time, no arrows.
+// The caption is the deck's one line under it, across the deck column.
+// src/blocks/carousel-split/CarouselSplit.tsx
+export carouselSplit = frame {
+  left: 4800px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: grid,
+
+  grid = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [copyStack, deck],
+
+    copyStack = frame {
+      width: l.lengths.span-2,
+      layout: {direction: .column},
+      children: [eyebrow, heading, copy],
+
+      eyebrow = text : t.eyebrow {
+        contents: "Screens"
+      }
+
+      heading = frame {
+        width: 100%,
+        layout: {direction: .column},
+        padding: [0px, 0px, 10px],
+        children: headingText,
+
+        headingText = text : t.blockHeading {
+          width: 100%,
+          contents: "The app, screen by screen"
+        }
+      }
+
+      copy = text : t.body {
+        width: 100%,
+        contents: "Browse, product, bag and account, shown in the order a shopper meets them."
+      }
+    }
+
+    deck = frame {
+      width: l.lengths.span-6,
+      layout: {
+        align-items: .center,
+        item-gap: 24px,
+        wrap: .true,
+        line-gap: 16px
+      },
+      children: [previous, slides, next, caption],
+
+      previous = frame : b.arrowPrevious {
+        display: .none
+      }
+
+      slides = frame {
+        width: l.lengths.span-6,
+        layout: {direction: .column},
+        children: slide,
+
+        slide = frame {
+          width: 100%,
+          layout: {direction: .column},
+          children: slideMedia,
+
+          slideMedia = frame : m.media {
+            width: 100%,
+            height: 619px,
+
+            mediaLabel {
+              contents: "SLIDE 1 OF 4"
+            }
+          }
+        }
+      }
+
+      next = frame : b.arrow {
+        display: .none
+      }
+
+      caption = text : t.small {
+        width: 100%,
+        contents: "Browse: the product grid with filters pinned to the top bar.",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+  }
+}
+
+// Image pair, `imagePair`, portrait left with text under the portrait. From
+// `md` the landscape drops its 16:10 and stretches to the 4:5 portrait's
+// height (about 1.37:1 beside it), so both figures always share a height.
+// src/blocks/image-pair/ImagePair.tsx
+export imagePair = frame {
+  left: 6400px,
+  width: l.lengths.page,
+  layout: {direction: .column, item-gap: 22px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: [figures, copyStack],
+
+  figures = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [portrait, landscape],
+
+    portrait = frame : m.media {
+      width: l.lengths.span-3,
+      height: 560px,
+
+      mediaLabel {
+        contents: "PORTRAIT 4:5"
+      }
+    }
+
+    landscape = frame : m.media {
+      width: l.lengths.span-5,
+      height: 560px,
+
+      mediaLabel {
+        contents: "LANDSCAPE 1.37:1"
+      }
+    }
+  }
+
+  copyStack = frame {
+    width: l.lengths.span-3,
+    layout: {direction: .column, item-gap: 10px},
+    children: [heading, copy],
+
+    heading = text : t.blockHeading {
+      width: 100%,
+      contents: "Packaging that carries the system"
+    }
+
+    copy = text : t.body {
+      width: 100%,
+      contents: "The box uses the same type scale and colour pairs as the product pages, so the unboxing picks up where the site left off."
+    }
+  }
+}
+
+// Split image offset, `splitImageOffset`, caption left. On the composition
+// grid, the same 5:3 split as Image pair: the side (3:2 figure over the
+// caption, a grid gap apart) on columns 1 to 3, the 5:4 figure on 4 to 8.
+// src/blocks/split-image-offset/SplitImageOffset.tsx
+export splitImageOffset = frame {
+  left: 8000px,
+  width: l.lengths.page,
+  layout: {item-gap: l.lengths.grid-gap},
+  fill: c.colors.background,
+  padding: [l.lengths.band-loose, l.lengths.gutter],
+  children: [side, large],
+
+  side = frame {
+    width: l.lengths.span-3,
+    layout: {direction: .column, item-gap: l.lengths.grid-gap},
+    children: [smallMedia, caption],
+
+    smallMedia = frame : m.media {
+      width: 100%,
+      height: 299px,
+
+      mediaLabel {
+        contents: "SMALL 3:2"
+      }
+    }
+
+    // `text-stack`: the heading's gap drawn tighter, as in Image pair.
+    caption = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 10px},
+      children: [heading, copy],
+
+      heading = text : t.blockHeading {
+        width: 100%,
+        contents: "In store"
+      }
+
+      copy = text : t.body {
+        width: 100%,
+        contents: "Shelf signage and receipts were redrawn from the same components as the app."
+      }
+    }
+  }
+
+  large = frame : m.media {
+    width: l.lengths.span-5,
+    height: 614px,
+
+    mediaLabel {
+      contents: "LARGE 5:4"
+    }
+  }
+}
+
+// Full media, Full width: edge to edge at 21:9, cells back in the page column.
+@variant
+export fullMediaFull = frame : fullMedia {
+  left: 9600px,
+  padding-left: 0px,
+  padding-right: 0px,
+
+  visual {
+    height: 617px,
+    corner-radius: 0px,
+
+    mediaLabel {
+      contents: "VISUAL 21:9"
+    }
+  }
+
+  cells {
+    padding-left: l.lengths.gutter,
+    padding-right: l.lengths.gutter
+  }
+}
+
+// Carousel split with Show arrows on: they take a gutter from the deck column.
+@variant
+export carouselSplitArrows = frame : carouselSplit {
+  left: 11200px,
+
+  grid {
+    deck {
+      slides {
+        width: 832px,
+
+        slide {
+          slideMedia {
+            height: 555px
+          }
+        }
+      }
+
+      previous {
+        display: .visible
+      }
+
+      next {
+        display: .visible
+      }
+    }
+  }
+}
+
+// Split image offset, caption right: the 5:4 figure on columns 1 to 5, the
+// side on 6 to 8.
+@variant
+export splitImageOffsetRight = frame : splitImageOffset {
+  left: 12800px,
+  overrides: [move(splitImageOffset.large, after = .nil)]
+}
+
+// Full media with no eyebrow or heading: the body sits on the outer edge,
+// columns 1 to 3, instead of leaving an empty title cell.
+@variant
+export fullMediaUntitled = frame : fullMedia {
+  left: 14400px,
+
+  cells {
+    opener {
+      display: .none
+    }
+  }
+}
+
+// Full media with Show content off, or nothing to show: the visual alone.
+@variant
+export fullMediaNoContent = frame : fullMedia {
+  left: 16000px,
+
+  cells {
+    display: .none
+  }
+}

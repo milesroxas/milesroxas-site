@@ -1,0 +1,17 @@
+import "tokens/colors.elyx" as c
+import "controls/type.elyx" as t
+
+// Pill: an outlined mono label (rich text pill list), 34px tall. Override `pillLabel`.
+export pill = frame {
+  layout: {align-items: .center},
+  border: c.colors.border,
+  corner-radius: 999px,
+  padding: [9px, 15px],
+  children: pillLabel,
+
+  pillLabel = text : t.mono {
+    contents: "Label",
+    letter-spacing: 2.5%,
+    fill[0].color: c.colors.foreground
+  }
+}
