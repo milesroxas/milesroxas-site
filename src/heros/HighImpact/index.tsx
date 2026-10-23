@@ -24,7 +24,7 @@ export const HighImpactHero: React.FC<Page['hero']> = (hero) => {
         'relative min-h-[65vh] w-full overflow-hidden md:min-h-[82vh]',
         // A ground needs a stacking context with a real ground of its own:
         // its layers sit at negative z, and the media blends over them.
-        ground && 'isolate bg-background',
+        ground && 'bg-background isolate',
       )}
       data-theme={surface ?? 'dark'}
     >

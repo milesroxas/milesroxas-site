@@ -134,7 +134,7 @@ function CodeBlockCopyButton({ code }: { code: string }) {
 
   return (
     <Button
-      className="font-mono tracking-widest text-muted-foreground hover:text-foreground"
+      className="text-muted-foreground hover:text-foreground font-mono tracking-widest"
       data-slot="code-block-copy"
       onClick={copy}
       size="sm"
@@ -170,18 +170,18 @@ function CodeBlock({
       className={cn(
         // The hairline is what keeps the panel a surface when the page around
         // it is already a dark band and the two plates land on the same value.
-        'not-prose overflow-hidden rounded-lg border border-border bg-background text-foreground',
+        'not-prose border-border bg-background text-foreground overflow-hidden rounded-lg border',
         className,
       )}
       {...props}
     >
       <div
         data-slot="code-block-bar"
-        className="flex items-center justify-between gap-4 border-b border-border py-2 pr-2 pl-4"
+        className="border-border flex items-center justify-between gap-4 border-b py-2 pr-2 pl-4"
       >
         <span
           data-slot="code-block-language"
-          className="font-mono text-xs/4 tracking-widest text-muted-foreground"
+          className="text-muted-foreground font-mono text-xs/4 tracking-widest"
         >
           {language}
         </span>
@@ -205,7 +205,7 @@ function CodeBlock({
                 that scrolls nothing. */}
             <pre
               data-slot="code-block-body"
-              className="w-max min-w-full py-4 pr-4 font-mono text-code"
+              className="text-code w-max min-w-full py-4 pr-4 font-mono"
             >
               {tokens.map((line, index) => (
                 <div
@@ -217,7 +217,7 @@ function CodeBlock({
                     <span
                       aria-hidden
                       data-slot="code-block-gutter"
-                      className="w-14 shrink-0 pr-4 text-right text-muted-foreground select-none"
+                      className="text-muted-foreground w-14 shrink-0 pr-4 text-right select-none"
                     >
                       {index + 1}
                     </span>

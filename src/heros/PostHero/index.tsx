@@ -72,7 +72,7 @@ export function PostHero({ post }: Props) {
   return (
     <header
       className={cn(
-        'grid gap-10 bg-background px-gutter pt-[calc(var(--chrome-top)+--spacing(10))] pb-16 text-foreground md:items-end md:gap-x-16 md:pt-[calc(var(--chrome-top)+--spacing(20))] md:pb-24 md:has-data-[slot=post-hero-media]:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]',
+        'bg-background px-gutter text-foreground grid gap-10 pt-[calc(var(--chrome-top)+--spacing(10))] pb-16 md:items-end md:gap-x-16 md:pt-[calc(var(--chrome-top)+--spacing(20))] md:pb-24 md:has-data-[slot=post-hero-media]:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]',
         ground && 'relative isolate overflow-clip',
       )}
       data-slot="post-hero"
@@ -90,7 +90,7 @@ export function PostHero({ post }: Props) {
           <div className="flex flex-col gap-5 md:gap-6">
             <span
               aria-hidden
-              className="block h-px origin-left bg-border motion-safe:animate-hero-draw motion-reduce:animate-hero-fade"
+              className="bg-border motion-safe:animate-hero-draw motion-reduce:animate-hero-fade block h-px origin-left"
               style={enterAt(BEAT.rule)}
             />
             <dl className="flex flex-wrap gap-x-12 gap-y-5">
@@ -100,7 +100,7 @@ export function PostHero({ post }: Props) {
                   key={label}
                   style={enterAt(BEAT.byline + i * BEAT.bylineItem)}
                 >
-                  <dt className="font-medium font-mono text-muted-foreground text-trim text-xs/none">
+                  <dt className="text-muted-foreground text-trim text-xs/none font-mono font-medium">
                     {label}
                   </dt>
                   <dd className="text-base">{value}</dd>
@@ -130,7 +130,7 @@ function FeaturedImage({ media }: { media: MediaType }) {
       style={{ width: `min(100%, min(60svh, 34rem) * ${ratio})` }}
     >
       <div
-        className="relative w-full overflow-clip bg-muted motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
+        className="bg-muted motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade relative w-full overflow-clip"
         data-hero-media=""
         data-slot="post-hero-media"
         style={{ ...enterAt(BEAT.media), aspectRatio: ratio }}

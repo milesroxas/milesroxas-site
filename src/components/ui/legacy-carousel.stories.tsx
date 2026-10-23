@@ -29,7 +29,7 @@ export const Default: Story = {
             <CarouselItem key={slide}>
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="font-semibold text-3xl">{slide}</span>
+                  <span className="text-3xl font-semibold">{slide}</span>
                 </CardContent>
               </Card>
             </CarouselItem>
@@ -51,7 +51,7 @@ export const MultipleSlides: Story = {
             <CarouselItem className="basis-1/3" key={slide}>
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-4">
-                  <span className="font-semibold text-xl">{slide}</span>
+                  <span className="text-xl font-semibold">{slide}</span>
                 </CardContent>
               </Card>
             </CarouselItem>

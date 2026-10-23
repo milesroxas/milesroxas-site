@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { type RefObject, useLayoutEffect, useRef } from 'react'
+import { type RefObject, useEffectEvent, useLayoutEffect, useRef } from 'react'
 import { usePresence } from '@/hooks/use-presence'
 import { cn } from '@/utilities/ui'
 import { CloseGlyph, glyphForPath } from './glyphs'
@@ -40,7 +40,10 @@ function useFollowClose(
   closeShown: boolean,
 ) {
   const seen = useRef(false)
-  // biome-ignore lint/correctness/useExhaustiveDependencies(active): the current tab is read, not watched
+  // The current tab is read as the fill rides, not watched: a change of tab has its own effect.
+  const placeOnActive = useEffectEvent((indicator: HTMLSpanElement) =>
+    placeIndicator(indicator, tabRefs.current[active]),
+  )
   useLayoutEffect(() => {
     const indicator = indicatorRef.current
     // Nothing to follow on the first render: the fill is placed by its own effect.
@@ -48,7 +51,7 @@ function useFollowClose(
       seen.current = true
       return
     }
-    const place = () => placeIndicator(indicator, tabRefs.current[active])
+    const place = () => placeOnActive(indicator)
     indicator.setAttribute('data-following', '')
     place()
     let frame = 0

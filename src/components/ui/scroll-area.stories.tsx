@@ -20,7 +20,7 @@ export const Default: Story = {
   render: () => (
     <ScrollArea className="h-72 w-48 rounded-md border">
       <div className="p-4">
-        <h4 className="mb-4 font-medium text-sm leading-none">Tags</h4>
+        <h4 className="mb-4 text-sm leading-none font-medium">Tags</h4>
         {tags.map((tag) => (
           <div key={tag}>
             <div className="text-sm">{tag}</div>
@@ -35,11 +35,11 @@ export const Default: Story = {
 /** `orientation` picks the scrollbars the area carries; the bar is not a child. */
 export const Horizontal: Story = {
   render: () => (
-    <ScrollArea className="w-96 whitespace-nowrap rounded-md border" orientation="horizontal">
+    <ScrollArea className="w-96 rounded-md border whitespace-nowrap" orientation="horizontal">
       <div className="flex w-max gap-4 p-4">
         {Array.from({ length: 12 }, (_, i) => (
           <div
-            className="flex h-32 w-40 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground text-sm"
+            className="bg-muted text-muted-foreground flex h-32 w-40 shrink-0 items-center justify-center rounded-md text-sm"
             key={i}
           >
             Panel {i + 1}

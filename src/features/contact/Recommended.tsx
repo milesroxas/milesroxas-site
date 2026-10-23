@@ -36,11 +36,11 @@ function Frame({ at, item }: { at: number; item: ContactRecommendation }) {
   })
   return (
     <div
-      className="relative aspect-[3/2] w-28 shrink-0 overflow-clip bg-muted motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade sm:w-40 lg:w-full"
+      className="bg-muted motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade relative aspect-[3/2] w-28 shrink-0 overflow-clip sm:w-40 lg:w-full"
       style={enterAt(at)}
     >
-      <div className="absolute inset-0 motion-safe:animate-hero-settle" style={enterAt(at)}>
-        <div className="relative size-full transition-[scale] duration-1200 ease-(--ease-out-quint) pointer-fine:group-hover/rec:scale-[1.035] group-focus-visible/rec:scale-[1.035] motion-reduce:transition-none">
+      <div className="motion-safe:animate-hero-settle absolute inset-0" style={enterAt(at)}>
+        <div className="relative size-full transition-[scale] duration-1200 ease-(--ease-out-quint) group-focus-visible/rec:scale-[1.035] motion-reduce:transition-none pointer-fine:group-hover/rec:scale-[1.035]">
           {media ? (
             <Media
               fill
@@ -65,7 +65,7 @@ function Frame({ at, item }: { at: number; item: ContactRecommendation }) {
               />
             </div>
           ) : (
-            <div className="size-full bg-foreground/5 ring-1 ring-border ring-inset" />
+            <div className="bg-foreground/5 ring-border size-full ring-1 ring-inset" />
           )}
         </div>
       </div>
@@ -86,11 +86,11 @@ function Byline({ item }: { item: ContactRecommendation }) {
       <span>Post</span>
     )
   return (
-    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-muted-foreground text-xs/none">
+    <p className="text-muted-foreground text-xs/none flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono">
       {lead}
       {item.context ? (
         <>
-          <span aria-hidden className="h-px w-5 bg-border" />
+          <span aria-hidden className="bg-border h-px w-5" />
           <span>{item.context}</span>
         </>
       ) : null}
@@ -105,17 +105,17 @@ function Card({ at, item }: { at: number; item: ContactRecommendation }) {
     <li className={CARD_ITEM}>
       <Link
         {...cursorTarget('view')}
-        className="group/rec flex items-start gap-4 rounded-sm outline-offset-8 focus-visible:outline-2 focus-visible:outline-ring sm:gap-6 lg:flex-col lg:gap-5"
+        className="group/rec focus-visible:outline-ring flex items-start gap-4 rounded-sm outline-offset-8 focus-visible:outline-2 sm:gap-6 lg:flex-col lg:gap-5"
         href={item.href}
         onClick={open}
       >
         <Frame at={at} item={item} />
         <div
-          className="flex min-w-0 flex-col gap-2.5 motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
+          className="motion-safe:animate-hero-in motion-reduce:animate-hero-fade flex min-w-0 flex-col gap-2.5"
           style={enterAt(at + BEAT.copy)}
         >
-          <h3 className="text-pretty text-lg/snug lg:text-xl/snug">
-            <span className="bg-[linear-gradient(currentColor,currentColor)] box-decoration-clone bg-no-repeat transition-[background-size] duration-700 ease-(--ease-out-quint) [background-position:0_100%] [background-size:0%_1px] motion-reduce:transition-none pointer-fine:group-hover/rec:[background-size:100%_1px] group-focus-visible/rec:[background-size:100%_1px]">
+          <h3 className="text-lg/snug text-pretty lg:text-xl/snug">
+            <span className="bg-[linear-gradient(currentColor,currentColor)] box-decoration-clone [background-size:0%_1px] [background-position:0_100%] bg-no-repeat transition-[background-size] duration-700 ease-(--ease-out-quint) group-focus-visible/rec:[background-size:100%_1px] motion-reduce:transition-none pointer-fine:group-hover/rec:[background-size:100%_1px]">
               {item.title}
             </span>
           </h3>
@@ -152,7 +152,7 @@ export function Recommended({
         <h2 className="text-heading-3 motion-reduce:animate-hero-fade" id={headingId}>
           <span className="-my-[0.15em] inline-block overflow-clip py-[0.15em] align-top">
             <span
-              className="inline-block motion-safe:animate-hero-rise"
+              className="motion-safe:animate-hero-rise inline-block"
               style={enterAt(at + BEAT.heading)}
             >
               {heading}
@@ -161,7 +161,7 @@ export function Recommended({
         </h2>
         <span
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-px origin-left bg-border motion-safe:animate-hero-draw motion-reduce:animate-hero-fade"
+          className="bg-border motion-safe:animate-hero-draw motion-reduce:animate-hero-fade absolute inset-x-0 bottom-0 h-px origin-left"
           style={enterAt(at)}
         />
       </div>

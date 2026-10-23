@@ -21,6 +21,6 @@ export const WithRichText: Story = {
 
 export const WithChildren: Story = {
   args: {
-    children: <h1 className="font-light text-4xl">A hero title passed as children</h1>,
+    children: <h1 className="text-4xl font-light">A hero title passed as children</h1>,
   },
 }

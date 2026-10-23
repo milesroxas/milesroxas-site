@@ -72,23 +72,23 @@ export const Panel: Story = {
   render: (args) => (
     <Tooltip {...args}>
       <TooltipTrigger asChild>
-        <Label className="min-h-9 cursor-default text-foreground/80 text-xs/4">Speed</Label>
+        <Label className="text-foreground/80 min-h-9 cursor-default text-xs/4">Speed</Label>
       </TooltipTrigger>
       <TooltipContent collisionPadding={12} side="left" sideOffset={12} variant="panel">
         <div className="flex flex-col gap-2">
           <div className="flex items-baseline gap-2">
-            <span className="flex-1 font-semibold text-[13px]/4 text-foreground">Speed</span>
-            <span className="font-mono text-[11px]/3.5 text-muted-foreground">speed</span>
+            <span className="text-foreground flex-1 text-[13px]/4 font-semibold">Speed</span>
+            <span className="text-muted-foreground font-mono text-[11px]/3.5">speed</span>
           </div>
-          <p className="text-pretty text-foreground/80">
+          <p className="text-foreground/80 text-pretty">
             How fast the dashes stream along the axis.
           </p>
-          <p className="flex gap-3 whitespace-nowrap font-mono text-[11px]/3.5 text-muted-foreground">
+          <p className="text-muted-foreground flex gap-3 font-mono text-[11px]/3.5 whitespace-nowrap">
             <span>0–1</span>
             <span>step 0.01</span>
             <span>default 0.35</span>
           </p>
-          <p className="border-muted border-t pt-2 font-mono text-[10px]/3.5 text-muted-foreground uppercase tracking-[0.02em]">
+          <p className="border-muted text-muted-foreground border-t pt-2 font-mono text-[10px]/3.5 tracking-[0.02em] uppercase">
             ↑↓ step · ⇧ ×10 · ⏎ type
           </p>
         </div>

@@ -69,7 +69,6 @@ function usePlateVideos(
       videos.current = null
     }
   }, [ref, near, count])
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `near` and `count` remount the driver above, which must then hear the row again
   useEffect(() => {
     videos.current?.show(index)
   }, [index, near, count])

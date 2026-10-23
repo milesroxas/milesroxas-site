@@ -314,7 +314,7 @@ export const Stage: UIFieldClientComponent = () => {
       <section
         data-streak-studio
         aria-label={EFFECT_COPY[effectId].title}
-        className="@container flex flex-col overflow-hidden rounded-lg border border-input bg-background"
+        className="border-input bg-background @container flex flex-col overflow-hidden rounded-lg border"
         onKeyDown={stageKeys(session, patch, randomize, () => select(null))}
       >
         <StageHeader
@@ -326,8 +326,8 @@ export const Stage: UIFieldClientComponent = () => {
           actions={actions}
           onLeave={() => select(null)}
         />
-        <div className="grid @[768px]:grid-cols-[240px_minmax(0,1fr)] grid-cols-1">
-          <aside className="flex flex-col border-border @[768px]:border-r border-b @[768px]:border-b-0 bg-card">
+        <div className="grid grid-cols-1 @[768px]:grid-cols-[240px_minmax(0,1fr)]">
+          <aside className="border-border bg-card flex flex-col border-b @[768px]:border-r @[768px]:border-b-0">
             <StarterList effect={effect} surface={surface} update={update} />
             <PublishedList
               session={session}
@@ -371,7 +371,7 @@ export const Stage: UIFieldClientComponent = () => {
                 frame={shot?.frame ?? recipe.frame}
                 onChange={(frame) => setShot({ frame })}
               />
-              <span className="flex h-[30px] items-center overflow-hidden rounded-md border border-input">
+              <span className="border-input flex h-[30px] items-center overflow-hidden rounded-md border">
                 <IconAction label="Variations" onClick={() => setSheet(true)}>
                   <IconLayoutGrid />
                 </IconAction>
@@ -411,7 +411,7 @@ function StageHeader({
   onLeave: () => void
 }) {
   return (
-    <header className="flex min-h-14 flex-wrap items-center gap-x-3 gap-y-2 border-border border-b py-2 pr-4 pl-5">
+    <header className="border-border flex min-h-14 flex-wrap items-center gap-x-3 gap-y-2 border-b py-2 pr-4 pl-5">
       <DraftStatus
         title={
           shot ? `${EFFECT_COPY[effectId].title} · ${shot.label}` : EFFECT_COPY[effectId].title
@@ -478,7 +478,7 @@ function DraftStatus({
 }) {
   return (
     <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-2.5">
-      <h2 className="font-semibold text-[15px]/5">{title}</h2>
+      <h2 className="text-[15px]/5 font-semibold">{title}</h2>
       {/* The status sets on the title's baseline, so the dot rides in
           the text rather than leading a flex row: a flex container takes
           its baseline from its first item, and an empty 6px span has
@@ -560,7 +560,7 @@ function UndoRedo({
   onRedo: () => void
 }) {
   return (
-    <div className="flex h-[34px] items-center divide-x divide-input overflow-hidden rounded-md border border-input">
+    <div className="divide-input border-input flex h-[34px] items-center divide-x overflow-hidden rounded-md border">
       <IconAction label="Undo" shortcut="⌘Z" disabled={!session.history.length} onClick={onUndo}>
         <IconArrowBackUp />
       </IconAction>
@@ -583,9 +583,9 @@ function StarterList({
   const starters = lookOptions(effect)
   return (
     <>
-      <div className="flex h-10 items-center border-border border-b px-3.5">
-        <h3 className="flex-1 font-semibold text-xs/4 tracking-[0.02em]">Starters</h3>
-        <span className="text-[11px]/3.5 text-muted-foreground tabular-nums">
+      <div className="border-border flex h-10 items-center border-b px-3.5">
+        <h3 className="flex-1 text-xs/4 font-semibold tracking-[0.02em]">Starters</h3>
+        <span className="text-muted-foreground text-[11px]/3.5 tabular-nums">
           {starters.length}
         </span>
       </div>
@@ -596,21 +596,20 @@ function StarterList({
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  className="flex h-11 w-full cursor-pointer items-center gap-2.5 px-3.5 text-left text-[13px]/4 text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+                  className="text-foreground/80 hover:bg-muted hover:text-foreground flex h-11 w-full cursor-pointer items-center gap-2.5 px-3.5 text-left text-[13px]/4 transition-colors"
                   onClick={() => update(starterRecipe(effect, look.value), true)}
                 >
-                  {/* biome-ignore lint/performance/noImgElement: admin-only poster thumb; next/image is not loaded in the Payload admin */}
                   <img
                     src={lookPosterSrc(effect, look.value, surface)}
                     alt=""
                     width={44}
                     height={26}
                     loading="lazy"
-                    className="h-6.5 w-11 shrink-0 rounded-[3px] border border-input object-cover"
+                    className="border-input h-6.5 w-11 shrink-0 rounded-[3px] border object-cover"
                     style={{ backgroundColor: STUDIO_GROUND[surface] }}
                   />
                   <span className="min-w-0 flex-1 truncate">{look.label}</span>
-                  <span className="font-mono text-[10px]/3 text-muted-foreground uppercase tracking-[0.04em]">
+                  <span className="text-muted-foreground font-mono text-[10px]/3 tracking-[0.04em] uppercase">
                     {effect.lookTag?.(effect.looks[look.value])}
                   </span>
                 </button>
@@ -641,13 +640,13 @@ function PublishedList({
 }) {
   return (
     <>
-      <div className="flex h-10 items-center border-border border-y px-3.5">
-        <h3 className="flex-1 font-semibold text-xs/4 tracking-[0.02em]">Published</h3>
+      <div className="border-border flex h-10 items-center border-y px-3.5">
+        <h3 className="flex-1 text-xs/4 font-semibold tracking-[0.02em]">Published</h3>
         <Tooltip>
           <TooltipTrigger asChild>
             <button
               type="button"
-              className="pressable cursor-pointer text-[11px]/3.5 text-muted-foreground hover:text-foreground"
+              className="pressable text-muted-foreground hover:text-foreground cursor-pointer text-[11px]/3.5"
               onClick={actions.keep}
             >
               Keep
@@ -685,29 +684,29 @@ function SessionRows({ session, patch }: { session: StudioSession; patch: Patch 
       <li>
         <button
           type="button"
-          className="flex h-10 w-full cursor-pointer items-center gap-2.5 px-3.5 text-left text-[13px]/4 text-foreground/80 transition-colors hover:bg-muted aria-[current]:text-foreground"
+          className="text-foreground/80 hover:bg-muted aria-[current]:text-foreground flex h-10 w-full cursor-pointer items-center gap-2.5 px-3.5 text-left text-[13px]/4 transition-colors"
           aria-current={!session.showComparison || undefined}
           onClick={() => patch({ showComparison: false })}
         >
-          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-warning" />
+          <span aria-hidden className="bg-warning size-1.5 shrink-0 rounded-full" />
           <span className="flex-1">Draft</span>
-          <span className="text-[11px]/3.5 text-muted-foreground">now</span>
+          <span className="text-muted-foreground text-[11px]/3.5">now</span>
         </button>
       </li>
       {session.comparison && (
         <li>
           <button
             type="button"
-            className="flex h-10 w-full cursor-pointer items-center gap-2.5 px-3.5 text-left text-[13px]/4 text-foreground/80 transition-colors hover:bg-muted aria-[current]:text-foreground"
+            className="text-foreground/80 hover:bg-muted aria-[current]:text-foreground flex h-10 w-full cursor-pointer items-center gap-2.5 px-3.5 text-left text-[13px]/4 transition-colors"
             aria-current={session.showComparison || undefined}
             onClick={() => patch({ showComparison: true })}
           >
             <span
               aria-hidden
-              className="size-1.5 shrink-0 rounded-full border border-muted-foreground"
+              className="border-muted-foreground size-1.5 shrink-0 rounded-full border"
             />
             <span className="flex-1 truncate">{session.comparisonLabel}</span>
-            <span className="text-[11px]/3.5 text-muted-foreground tabular-nums">
+            <span className="text-muted-foreground text-[11px]/3.5 tabular-nums">
               {session.comparisonAt ? clock(session.comparisonAt) : ''}
             </span>
           </button>
@@ -729,24 +728,24 @@ function PublishedRow({
   actions: StageActions
 }) {
   return (
-    <li className="flex items-center gap-2 pr-3.5 transition-colors hover:bg-muted">
+    <li className="hover:bg-muted flex items-center gap-2 pr-3.5 transition-colors">
       <button
         type="button"
-        className="flex h-10 min-w-0 flex-1 cursor-pointer items-center gap-2.5 pl-3.5 text-left text-[13px]/4 text-foreground/80"
+        className="text-foreground/80 flex h-10 min-w-0 flex-1 cursor-pointer items-center gap-2.5 pl-3.5 text-left text-[13px]/4"
         onClick={() => actions.compareState(state)}
       >
         <span
           aria-hidden
           className={cn(
             'size-1.5 shrink-0 rounded-full',
-            onSite ? 'bg-success' : 'border border-muted-foreground',
+            onSite ? 'bg-success' : 'border-muted-foreground border',
           )}
         />
         <span className="min-w-0 flex-1 truncate tabular-nums">{when(state.at)}</span>
         {/* The filled dot is what is on the site; the column is too
             narrow to say so in words beside a date and Restore. */}
         {matchesDraft && (
-          <span className="shrink-0 text-[11px]/3.5 text-muted-foreground">matches draft</span>
+          <span className="text-muted-foreground shrink-0 text-[11px]/3.5">matches draft</span>
         )}
       </button>
       {!matchesDraft && (
@@ -754,7 +753,7 @@ function PublishedRow({
           <TooltipTrigger asChild>
             <button
               type="button"
-              className="pressable shrink-0 cursor-pointer text-[11px]/3.5 text-muted-foreground hover:text-foreground"
+              className="pressable text-muted-foreground hover:text-foreground shrink-0 cursor-pointer text-[11px]/3.5"
               onClick={() => actions.restoreState(state, when(state.at))}
             >
               Restore
@@ -813,7 +812,7 @@ function Viewport({
       ) : live && !validation ? (
         <Suspense
           fallback={
-            <p className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">
+            <p className="text-muted-foreground absolute inset-0 flex items-center justify-center text-xs">
               Loading preview…
             </p>
           }
@@ -852,7 +851,7 @@ function PreviewBadge({
   shot: Shot | null
 }) {
   return (
-    <span className="pointer-events-none absolute top-3 left-3 z-10 flex h-6 items-center gap-1.5 rounded-full bg-background/70 pr-2.5 pl-2 font-mono text-[11px]/3.5 text-foreground uppercase tracking-[0.04em] backdrop-blur-xs">
+    <span className="bg-background/70 text-foreground pointer-events-none absolute top-3 left-3 z-10 flex h-6 items-center gap-1.5 rounded-full pr-2.5 pl-2 font-mono text-[11px]/3.5 tracking-[0.04em] uppercase backdrop-blur-xs">
       <span
         aria-hidden
         className={cn(
@@ -870,8 +869,8 @@ function PreviewBadge({
 
 function PreviewOff({ validation, onTurnOn }: { validation: string; onTurnOn: () => void }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground text-xs">
-      <p className="max-w-xs text-pretty text-center">
+    <div className="text-muted-foreground absolute inset-0 flex flex-col items-center justify-center gap-3 text-xs">
+      <p className="max-w-xs text-center text-pretty">
         {validation ? validation : 'The live preview is off. Turn it on to see the recipe move.'}
       </p>
       {!validation && (
@@ -887,12 +886,12 @@ function BudgetReadout({ budget }: { budget: EffectBudget }) {
   return (
     <p
       className={cn(
-        'pointer-events-none absolute bottom-3 left-3 z-10 flex max-w-[calc(100%-24px)] items-start gap-1.5 rounded-full bg-background/70 py-1 pr-2.5 pl-2 font-mono text-[11px]/3.5 tabular-nums tracking-[0.02em] backdrop-blur-xs',
+        'bg-background/70 pointer-events-none absolute bottom-3 left-3 z-10 flex max-w-[calc(100%-24px)] items-start gap-1.5 rounded-full py-1 pr-2.5 pl-2 font-mono text-[11px]/3.5 tracking-[0.02em] tabular-nums backdrop-blur-xs',
         budget.capped ? 'text-warning' : 'text-muted-foreground',
       )}
     >
       {budget.capped && (
-        <span aria-hidden className="mt-1 size-1.5 shrink-0 rounded-full bg-warning" />
+        <span aria-hidden className="bg-warning mt-1 size-1.5 shrink-0 rounded-full" />
       )}
       <span>{budget.text}</span>
     </p>
@@ -927,7 +926,7 @@ function Transport({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex min-h-14 flex-wrap items-center gap-4 border-border border-t px-4 py-3">
+    <div className="border-border flex min-h-14 flex-wrap items-center gap-4 border-t px-4 py-3">
       <div className="flex items-center gap-2">
         <ToggleGroup
           type="single"
@@ -990,7 +989,7 @@ function Playback({
   onToggleLive: () => void
 }) {
   return (
-    <div className="flex h-[30px] items-center divide-x divide-input overflow-hidden rounded-md border border-input">
+    <div className="divide-input border-input flex h-[30px] items-center divide-x overflow-hidden rounded-md border">
       <IconAction
         label={paused ? 'Play' : 'Pause'}
         shortcut="Space"
@@ -1026,10 +1025,10 @@ function SeedField({
   return (
     <label
       htmlFor="streak-seed"
-      className="flex items-center gap-2 text-muted-foreground text-xs/4"
+      className="text-muted-foreground flex items-center gap-2 text-xs/4"
     >
       Seed
-      <span className="flex h-[30px] items-center divide-x divide-input overflow-hidden rounded-md border border-input">
+      <span className="divide-input border-input flex h-[30px] items-center divide-x overflow-hidden rounded-md border">
         <Input
           id="streak-seed"
           variant="value"
@@ -1055,10 +1054,10 @@ function FrameField({ frame, onChange }: { frame: number; onChange: (frame: numb
   return (
     <label
       htmlFor="streak-frame"
-      className="flex items-center gap-2 text-muted-foreground text-xs/4"
+      className="text-muted-foreground flex items-center gap-2 text-xs/4"
     >
       Frame
-      <span className="flex h-[30px] items-center divide-x divide-input overflow-hidden rounded-md border border-input">
+      <span className="divide-input border-input flex h-[30px] items-center divide-x overflow-hidden rounded-md border">
         <Button
           type="button"
           variant="ghost"

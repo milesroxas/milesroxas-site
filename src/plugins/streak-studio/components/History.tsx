@@ -61,7 +61,7 @@ export const History: UIFieldClientComponent = () => {
     )
 
   return (
-    <ul data-streak-studio="panel" className="flex flex-col divide-y divide-border">
+    <ul data-streak-studio="panel" className="divide-border flex flex-col divide-y">
       {history.map((state, index) => (
         <HistoryRow
           key={state.id}
@@ -92,17 +92,16 @@ function HistoryRow({
   return (
     <li className="flex flex-wrap items-center gap-4 py-3">
       <span
-        className="block h-9 w-16 shrink-0 overflow-hidden rounded-sm border border-border"
+        className="border-border block h-9 w-16 shrink-0 overflow-hidden rounded-sm border"
         style={{ backgroundColor: studioGround(state.ground, 'dark') }}
       >
         {state.poster && (
-          // biome-ignore lint/performance/noImgElement: admin-only poster thumb; next/image is not loaded in the Payload admin
           <img src={state.poster} alt="" className="size-full object-cover" loading="lazy" />
         )}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="font-medium text-xs">{when(state.at)}</span>
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-xs font-medium">{when(state.at)}</span>
+        <span className="text-muted-foreground text-[11px]">
           {[onSite && 'On the site now', matchesDraft && 'matches the draft']
             .filter(Boolean)
             .join(' · ')}

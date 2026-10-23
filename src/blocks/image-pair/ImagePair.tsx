@@ -42,7 +42,7 @@ export const ImagePair = ({
   const portraitFigure = (
     <MediaCell
       className={cn(
-        'relative aspect-4/5 w-full overflow-hidden rounded-lg bg-muted md:col-span-3 md:row-start-1',
+        'bg-muted relative aspect-4/5 w-full overflow-hidden rounded-lg md:col-span-3 md:row-start-1',
         portraitStart,
       )}
       resource={portrait}
@@ -52,7 +52,7 @@ export const ImagePair = ({
   const landscapeFigure = (
     <MediaCell
       className={cn(
-        'relative aspect-16/10 w-full overflow-hidden rounded-lg bg-muted md:col-span-5 md:row-start-1 md:aspect-auto',
+        'bg-muted relative aspect-16/10 w-full overflow-hidden rounded-lg md:col-span-5 md:row-start-1 md:aspect-auto',
         landscapeStart,
       )}
       resource={landscape}

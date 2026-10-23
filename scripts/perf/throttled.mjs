@@ -49,7 +49,7 @@ await page.addInitScript(() => {
   new PerformanceObserver((l) => {
     for (const e of l.getEntries()) {
       window.__perf.lcp = e.startTime
-      window.__perf.lcpEl = (e.element?.tagName || '') + ' ' + (e.url || '')
+      window.__perf.lcpEl = `${e.element?.tagName || ''} ${e.url || ''}`
     }
   }).observe({ type: 'largest-contentful-paint', buffered: true })
   new PerformanceObserver((l) => {
@@ -82,7 +82,7 @@ console.log(
     longTasks: perf.longTasks.length,
     requests: reqs.length,
     bytes: reqs.reduce((a, r) => a + r.size, 0),
-    failed: reqs.filter((r) => r.failed).map((r) => r.url.slice(0, 100) + ' ' + r.failed),
+    failed: reqs.filter((r) => r.failed).map((r) => `${r.url.slice(0, 100)} ${r.failed}`),
   }),
 )
 console.log('--- timeline (start→end ms from first request), top 30 by end')

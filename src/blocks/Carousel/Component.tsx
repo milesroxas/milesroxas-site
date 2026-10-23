@@ -1,5 +1,6 @@
 'use client'
 
+import NextImage from 'next/image'
 import type React from 'react'
 import {
   type CSSProperties,
@@ -12,6 +13,7 @@ import {
 } from 'react'
 import { Section } from '@/blocks/shared/section'
 import { Media } from '@/components/Media'
+import { CloudflareImage } from '@/components/Media/CloudflareImage'
 import {
   Carousel,
   type CarouselApi,
@@ -23,8 +25,8 @@ import {
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import type { CarouselBlock as CarouselBlockProps } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
-import { cloudflareImageLoader, isCloudflareImageUrl } from '@/utilities/cloudflareImageLoader'
-import { streamPosterSrcSet, streamPosterUrl } from '@/utilities/streamPoster'
+import { isCloudflareImageUrl } from '@/utilities/cloudflareImageLoader'
+import { streamPosterLoader } from '@/utilities/streamPoster'
 import { cn } from '@/utilities/ui'
 import { CarouselFilters } from './filters'
 import { useCarouselEffects } from './use-carousel-effects'
@@ -315,7 +317,7 @@ const stackCardStyle = (count: number): CSSProperties => ({
  * the card rather than fighting it.
  */
 const STACK_MEDIA_CLASS = cn(
-  'rounded-lg ring-1 ring-foreground/[0.06]',
+  'ring-foreground/[0.06] rounded-lg ring-1',
   'shadow-[0_1px_2px_rgb(0_0_0/0.06),0_8px_16px_-6px_rgb(0_0_0/0.08),0_28px_56px_-20px_rgb(0_0_0/0.22)]',
   'transition-[translate,scale] duration-300 ease-(--ease-out-quint) motion-reduce:transition-none',
   'group-hover/deck:translate-x-[calc(var(--stack-depth,0)*0.75rem)]',
@@ -454,9 +456,7 @@ const PLATE_CLEAR = 'transition-opacity duration-300 ease-out'
 
 const placeholderOf = (media: PopulatedMedia) => {
   const src = media.cloudflareImageUrl
-  return src && isCloudflareImageUrl(src)
-    ? cloudflareImageLoader({ src, width: 32, quality: 40 })
-    : undefined
+  return src && isCloudflareImageUrl(src) ? src : undefined
 }
 
 const PicturePlate: React.FC<{ cornerClass: string; loaded: boolean; src?: string }> = ({
@@ -467,15 +467,23 @@ const PicturePlate: React.FC<{ cornerClass: string; loaded: boolean; src?: strin
   <div
     aria-hidden="true"
     className={cn(
-      'absolute inset-0 overflow-clip bg-foreground/[0.06]',
+      'bg-foreground/[0.06] absolute inset-0 overflow-clip',
       cornerClass,
       PLATE_CLEAR,
       loaded && 'opacity-0',
     )}
   >
     {src && (
-      // biome-ignore lint/performance/noImgElement: a 32px Cloudflare copy, blurred up to the frame
-      <img alt="" className="size-full scale-110 object-cover blur-xl" decoding="async" src={src} />
+      // A 32px Cloudflare copy, blurred up to the frame.
+      <CloudflareImage
+        alt=""
+        className="size-full scale-110 object-cover blur-xl"
+        height={32}
+        loading="eager"
+        quality={40}
+        src={src}
+        width={32}
+      />
     )}
   </div>
 )
@@ -597,13 +605,14 @@ const CarouselSlide: React.FC<{
               className="pointer-events-none absolute inset-0"
               data-carousel-poster
             >
-              {/* biome-ignore lint/performance/noImgElement: a Stream thumbnail, sized by Cloudflare per the slide's share */}
-              <img
+              <NextImage
                 alt=""
-                className={cn(cornerClass, 'size-full object-cover')}
+                className={cn(cornerClass, 'object-cover')}
+                fill
+                loader={streamPosterLoader}
+                loading="eager"
                 sizes={imageSizes}
-                src={streamPosterUrl(posterSrc, 1280)}
-                srcSet={streamPosterSrcSet(posterSrc)}
+                src={posterSrc}
               />
             </div>
           )}
@@ -661,7 +670,7 @@ const DeckCaption: React.FC<{
         style={isStack ? { maxWidth: stackCardStyle(count).width } : undefined}
       >
         <p
-          className={cn('min-h-5 text-muted-foreground text-sm', className)}
+          className={cn('text-muted-foreground min-h-5 text-sm', className)}
           data-carousel-caption
           ref={captionRef}
         >

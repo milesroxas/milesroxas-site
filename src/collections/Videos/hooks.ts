@@ -29,12 +29,7 @@ export const defaultTitle: CollectionBeforeValidateHook = ({ data }) => {
  * transaction, with no hook in the loop. A failed request is recorded on the
  * row and the save still succeeds; the admin's status poll retries.
  */
-export const syncVideoStream: CollectionAfterChangeHook = async ({
-  context,
-  doc,
-  previousDoc,
-  req,
-}) => {
+const syncVideoStream: CollectionAfterChangeHook = async ({ context, doc, previousDoc, req }) => {
   // The storage plugin's nested metadata update: the outer save syncs once
   // the file is in the bucket.
   if (context?.skipCloudStorage) return doc

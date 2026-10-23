@@ -56,7 +56,7 @@ export function LazyChart({
       aria-describedby={describedBy}
       aria-label={labelledBy ? undefined : label}
       aria-labelledby={labelledBy}
-      className={cn('relative w-full border-border border-b', box.className)}
+      className={cn('border-border relative w-full border-b', box.className)}
       ref={ref}
       role="group"
       style={box.height ? { height: box.height } : undefined}

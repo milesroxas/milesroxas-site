@@ -56,7 +56,7 @@ function AlphaRow() {
           onCheckedChange={(checked) => setTransparent(checked === true)}
         />
         <Label htmlFor="checkbox-alpha">Alpha</Label>
-        <span className="text-[11px]/4 text-muted-foreground">
+        <span className="text-muted-foreground text-[11px]/4">
           {jpeg ? 'JPEG is always filled.' : 'Transparent ground.'}
         </span>
       </div>

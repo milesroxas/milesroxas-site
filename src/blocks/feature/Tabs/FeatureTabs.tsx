@@ -54,11 +54,11 @@ const TabPanel: React.FC<{ tab: FeatureTab; type: TypeScale }> = ({ tab, type })
       {tab.items?.length ? (
         <div className="flex flex-col gap-3">
           {tab.subheading ? (
-            <h4 className="font-mono font-normal text-muted-foreground text-sm">
+            <h4 className="text-muted-foreground font-mono text-sm font-normal">
               {tab.subheading}
             </h4>
           ) : null}
-          <ul className="flex flex-col divide-y divide-border text-sm">
+          <ul className="divide-border flex flex-col divide-y text-sm">
             {tab.items.map((item, itemIndex) => (
               <li key={item.id ?? itemIndex} className="py-1 last:pb-0">
                 {item.text}
@@ -80,7 +80,7 @@ const TabPanel: React.FC<{ tab: FeatureTab; type: TypeScale }> = ({ tab, type })
         />
       ) : null}
       {tab.caption ? (
-        <div className="absolute right-4 bottom-4 max-w-72 rounded-md bg-card p-4 text-card-foreground md:right-8 md:bottom-9">
+        <div className="bg-card text-card-foreground absolute right-4 bottom-4 max-w-72 rounded-md p-4 md:right-8 md:bottom-9">
           <p className="text-muted-foreground text-sm">{tab.caption}</p>
         </div>
       ) : null}

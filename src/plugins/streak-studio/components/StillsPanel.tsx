@@ -80,11 +80,11 @@ export function StillsPanel({ stills, look, ground, unchangedLook, status }: Pan
   const { selection, selected, select, add } = stills
   return (
     <div className="flex flex-col gap-4">
-      <p className="max-w-[58ch] text-muted-foreground text-xs/5">
+      <p className="text-muted-foreground max-w-[58ch] text-xs/5">
         Stills are shots of this look for one use each. The site serves the preview card wherever
         the look opens a page; the rest are yours to download. Publish renders what changed.
       </p>
-      <ul className="flex flex-col divide-y divide-border border-border border-y">
+      <ul className="divide-border border-border flex flex-col divide-y border-y">
         <PosterRow
           selected={selection === 'poster'}
           poster={look.live?.poster ?? null}
@@ -152,14 +152,14 @@ function Row({
         type="button"
         aria-pressed={selected}
         className={cn(
-          'flex w-full cursor-pointer items-center gap-3 py-2 text-left transition-colors hover:bg-muted',
+          'hover:bg-muted flex w-full cursor-pointer items-center gap-3 py-2 text-left transition-colors',
           '-mx-(--row-gutter) w-[calc(100%+2*var(--row-gutter))] px-(--row-gutter)',
           selected && 'bg-muted',
         )}
         onClick={onSelect}
       >
         <span
-          className="flex h-9 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[3px] border border-input"
+          className="border-input flex h-9 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[3px] border"
           style={{ backgroundColor: ground }}
         >
           <span
@@ -167,7 +167,6 @@ function Row({
             style={{ aspectRatio: aspect, height: '100%' }}
           >
             {thumbnail && (
-              // biome-ignore lint/performance/noImgElement: admin-only render thumb; next/image is not loaded in the Payload admin
               <img src={thumbnail} alt="" loading="lazy" className="size-full object-cover" />
             )}
           </span>
@@ -181,11 +180,11 @@ function Row({
           >
             {title}
           </span>
-          <span className="truncate font-mono text-[11px]/3.5 text-muted-foreground tabular-nums">
+          <span className="text-muted-foreground truncate font-mono text-[11px]/3.5 tabular-nums">
             {meta}
           </span>
         </span>
-        <span className="flex shrink-0 items-center gap-1.5 text-[11px]/3.5 text-muted-foreground">
+        <span className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-[11px]/3.5">
           <span aria-hidden className={cn('size-1.5 rounded-full', tone)} />
           {text}
         </span>
@@ -274,11 +273,11 @@ function AddStill({ stills, onAdd }: { stills: Still[]; onAdd: (use: StillUse) =
             >
               <span className="flex w-full items-baseline gap-2">
                 <span className="flex-1">{label}</span>
-                <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
+                <span className="text-muted-foreground font-mono text-[11px] tabular-nums">
                   {width} × {height}
                 </span>
               </span>
-              <span className="text-[11px]/4 text-muted-foreground">
+              <span className="text-muted-foreground text-[11px]/4">
                 {taken ? 'This look has one.' : description}
               </span>
             </DropdownMenuItem>
@@ -365,10 +364,10 @@ function StillSettings({
 
   return (
     <section
-      className="flex flex-col border-border border-t pt-3"
+      className="border-border flex flex-col border-t pt-3"
       aria-label={`${stillLabel(still)} settings`}
     >
-      <p className="pb-2 text-[11px]/4 text-muted-foreground">
+      <p className="text-muted-foreground pb-2 text-[11px]/4">
         On the stage. Seed, moment and face are set there; the Look and Pointer tabs now edit this
         still's own overrides.
       </p>
@@ -456,14 +455,14 @@ function StillSettings({
               disabled={still.format === 'jpeg'}
               onCheckedChange={(checked) => set({ transparent: checked === true })}
             />
-            <span className="text-[11px]/4 text-muted-foreground">
+            <span className="text-muted-foreground text-[11px]/4">
               {still.format === 'jpeg' ? 'JPEG is always filled.' : 'Transparent ground.'}
             </span>
           </div>
         </SettingRow>
       )}
       <SettingRow label="Overrides">
-        <span className="col-span-2 flex items-center gap-3 text-[11px]/4 text-muted-foreground">
+        <span className="text-muted-foreground col-span-2 flex items-center gap-3 text-[11px]/4">
           <span className="flex-1">
             {overrides
               ? `${overrides} ${overrides === 1 ? 'setting departs' : 'settings depart'} from the look.`
@@ -472,7 +471,7 @@ function StillSettings({
           {overrides > 0 && (
             <button
               type="button"
-              className="pressable cursor-pointer hover:text-foreground"
+              className="pressable hover:text-foreground cursor-pointer"
               onClick={() => set({ deltas: {} })}
             >
               Reset
@@ -480,7 +479,7 @@ function StillSettings({
           )}
         </span>
       </SettingRow>
-      <div className="mt-3 flex flex-wrap items-center gap-1 border-border border-t pt-3">
+      <div className="border-border mt-3 flex flex-wrap items-center gap-1 border-t pt-3">
         <Button type="button" variant="outline" size="sm" disabled={busy !== null} onClick={open}>
           <IconExternalLink aria-hidden />
           {busy === 'open' ? 'Rendering…' : state === 'live' ? 'Open' : 'Render and open'}
@@ -493,7 +492,7 @@ function StillSettings({
           type="button"
           variant="ghost"
           size="sm"
-          className="ml-auto text-muted-foreground"
+          className="text-muted-foreground ml-auto"
           disabled={busy !== null}
           onClick={() => {
             remove(still.id)
@@ -567,10 +566,10 @@ function SizeRow({ still, set }: { still: Still; set: (next: Partial<Still>) => 
           value={still.width}
           onCommit={(width) => set({ width })}
         />
-        <span className="shrink-0 text-[11px] text-muted-foreground">×</span>
+        <span className="text-muted-foreground shrink-0 text-[11px]">×</span>
         <SideField label="Height" value={still.height} onCommit={(height) => set({ height })} />
       </div>
-      <span className="text-right font-mono text-[11px]/3.5 text-muted-foreground tabular-nums">
+      <span className="text-muted-foreground text-right font-mono text-[11px]/3.5 tabular-nums">
         {megapixels.toFixed(1)} MP
       </span>
     </SettingRow>

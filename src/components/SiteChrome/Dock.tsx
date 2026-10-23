@@ -53,7 +53,6 @@ function useDockFold(enabled: boolean, beforeChange: () => void) {
     [beforeChange],
   )
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies(pathname): a new page unfolds the bar
   useEffect(() => {
     setFoldState('open')
     if (!enabled) return
@@ -274,7 +273,6 @@ export function Dock({ tabs, active, current, onSelect, ask }: DockProps) {
   // small element, the label centred throughout), so a fold reversed
   // mid-flight turns back without a jump. Reduced motion: it fades into the
   // new home instead.
-  // biome-ignore lint/correctness/useExhaustiveDependencies(fold): runs after every fold change
   useLayoutEffect(() => {
     const from = linkFrom.current
     linkFrom.current = null

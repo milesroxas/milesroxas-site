@@ -97,7 +97,7 @@ export const FullMedia = ({
   const mediaFrame = (
     <VisualCell
       className={cn(
-        'relative w-full overflow-hidden bg-muted',
+        'bg-muted relative w-full overflow-hidden',
         contained ? ASPECT_RATIO_CLASS[block.aspectRatio ?? '16-9'] : 'aspect-16/9 md:aspect-21/9',
         contained && 'rounded-lg md:col-span-8',
       )}
@@ -116,7 +116,7 @@ export const FullMedia = ({
           </BlockGrid>
         </Container>
       ) : (
-        <div className="flex flex-col gap-grid">
+        <div className="gap-grid flex flex-col">
           {mediaFrame}
           {contentCells && (
             <Container>

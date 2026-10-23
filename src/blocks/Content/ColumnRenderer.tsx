@@ -57,7 +57,7 @@ const renderSectionHeading = (sectionHeading: Column['sectionHeading']) => {
   return (
     <div className={getSectionHeadingAlignClasses(align)}>
       {eyebrow && (
-        <p className={cn('mb-4 text-accent', getSectionHeadingSizeClasses(size, align))}>
+        <p className={cn('text-accent mb-4', getSectionHeadingSizeClasses(size, align))}>
           {eyebrow}
         </p>
       )}

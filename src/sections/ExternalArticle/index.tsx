@@ -34,15 +34,15 @@ export function ExternalArticle({
       theme="neutral"
     >
       <ExternalArticleReveal>
-        <h2 className="text-balance text-display">
+        <h2 className="text-display text-balance">
           <a
             {...cursorTarget('read')}
-            className="after:absolute after:inset-0 after:rounded-sm focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-ring focus-visible:after:outline-offset-8"
+            className="focus-visible:after:outline-ring after:absolute after:inset-0 after:rounded-sm focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-8"
             href={url}
             rel="noopener"
             target="_blank"
           >
-            <span className="block text-muted-foreground transition-colors duration-400 ease-(--ease-out-quint) group-hover/out:text-foreground group-has-focus-visible/out:text-foreground">
+            <span className="text-muted-foreground group-hover/out:text-foreground group-has-focus-visible/out:text-foreground block transition-colors duration-400 ease-(--ease-out-quint)">
               Read the full article on
             </span>{' '}
             <span>
@@ -59,7 +59,7 @@ export function ExternalArticle({
                 strokeWidth={1.25}
                 viewBox="0 0 24 24"
               >
-                <g className="transition-[translate] duration-500 ease-(--ease-out-quint) pointer-fine:group-hover/out:translate-x-full pointer-fine:group-hover/out:-translate-y-full group-has-focus-visible/out:translate-x-full group-has-focus-visible/out:-translate-y-full group-data-[arrival=pending]/out:-translate-x-full group-data-[arrival=pending]/out:translate-y-full group-data-[arrival=pending]/out:transition-none motion-reduce:transition-none">
+                <g className="transition-[translate] duration-500 ease-(--ease-out-quint) group-has-focus-visible/out:translate-x-full group-has-focus-visible/out:-translate-y-full group-data-[arrival=pending]/out:-translate-x-full group-data-[arrival=pending]/out:translate-y-full group-data-[arrival=pending]/out:transition-none motion-reduce:transition-none pointer-fine:group-hover/out:translate-x-full pointer-fine:group-hover/out:-translate-y-full">
                   <path d={ARROW} />
                   <path d={ARROW} transform="translate(-24 24)" />
                 </g>
@@ -71,11 +71,11 @@ export function ExternalArticle({
 
         <div className="flex flex-col gap-4">
           <div aria-hidden className="relative h-px">
-            <span className="absolute inset-0 origin-left bg-foreground/15 transition-transform duration-1000 ease-(--ease-out-quint) group-data-[arrival=pending]/out:scale-x-0 group-data-[arrival=pending]/out:transition-none motion-reduce:transition-none" />
-            <span className="absolute inset-0 origin-left scale-x-0 bg-foreground transition-transform duration-1000 ease-(--ease-out-quint) group-hover/out:scale-x-100 group-has-focus-visible/out:scale-x-100 motion-reduce:transition-none" />
+            <span className="bg-foreground/15 absolute inset-0 origin-left transition-transform duration-1000 ease-(--ease-out-quint) group-data-[arrival=pending]/out:scale-x-0 group-data-[arrival=pending]/out:transition-none motion-reduce:transition-none" />
+            <span className="bg-foreground absolute inset-0 origin-left scale-x-0 transition-transform duration-1000 ease-(--ease-out-quint) group-hover/out:scale-x-100 group-has-focus-visible/out:scale-x-100 motion-reduce:transition-none" />
           </div>
-          <p className="flex flex-col gap-1 text-muted-foreground text-sm md:flex-row md:items-baseline md:justify-between md:gap-6">
-            <span className="break-all font-mono text-foreground">{address}</span>
+          <p className="text-muted-foreground flex flex-col gap-1 text-sm md:flex-row md:items-baseline md:justify-between md:gap-6">
+            <span className="text-foreground font-mono break-all">{address}</span>
             <span aria-hidden>Opens in a new tab</span>
           </p>
         </div>

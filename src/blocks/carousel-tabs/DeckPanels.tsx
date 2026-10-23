@@ -3,7 +3,7 @@
 import gsap from 'gsap'
 import { Tabs as TabsPrimitive } from 'radix-ui'
 import type React from 'react'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { type TabbedRow, useActiveValue, valueFor } from '@/blocks/shared/tabs'
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import { cn } from '@/utilities/ui'
@@ -106,7 +106,7 @@ export const DeckPanels = <Row extends TabbedRow>({
   const live = useRef({ onPendingChange, reduced, shown, swap })
   live.current = { onPendingChange, reduced, shown, swap }
 
-  const paint = () => {
+  const paint = useCallback(() => {
     const current = live.current.swap
     if (!current) return
     const { p } = progress.current
@@ -115,9 +115,9 @@ export const DeckPanels = <Row extends TabbedRow>({
     const incoming = nodes.current.get(current.incoming)
     if (outgoing) Object.assign(outgoing.style, styles.outgoing)
     if (incoming) Object.assign(incoming.style, styles.incoming)
-  }
+  }, [])
 
-  const settle = () => {
+  const settle = useCallback(() => {
     const current = live.current.swap
     if (!current) return
     const next = progress.current.p >= 1 ? current.incoming : current.outgoing
@@ -127,28 +127,31 @@ export const DeckPanels = <Row extends TabbedRow>({
     tween.current = null
     setShown(next)
     setSwap(null)
-  }
+  }, [])
 
-  const drive = (target: 0 | 1) => {
-    if (tween.current?.target === target && tween.current.tween.isActive()) return
-    tween.current?.tween.kill()
-    const { dissolve, fade } = DECK_SWAP_MOTION
-    const distance = Math.abs(target - progress.current.p)
-    if (distance === 0) {
-      settle()
-      return
-    }
-    tween.current = {
-      target,
-      tween: gsap.to(progress.current, {
-        p: target,
-        duration: (live.current.reduced ? fade : dissolve.duration) * distance,
-        ease: 'none',
-        onUpdate: paint,
-        onComplete: settle,
-      }),
-    }
-  }
+  const drive = useCallback(
+    (target: 0 | 1) => {
+      if (tween.current?.target === target && tween.current.tween.isActive()) return
+      tween.current?.tween.kill()
+      const { dissolve, fade } = DECK_SWAP_MOTION
+      const distance = Math.abs(target - progress.current.p)
+      if (distance === 0) {
+        settle()
+        return
+      }
+      tween.current = {
+        target,
+        tween: gsap.to(progress.current, {
+          p: target,
+          duration: (live.current.reduced ? fade : dissolve.duration) * distance,
+          ease: 'none',
+          onUpdate: paint,
+          onComplete: settle,
+        }),
+      }
+    },
+    [paint, settle],
+  )
 
   useLayoutEffect(() => {
     setSwap((current) => {
@@ -162,7 +165,6 @@ export const DeckPanels = <Row extends TabbedRow>({
     })
   }, [value])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: paint and drive read live refs
   useLayoutEffect(() => {
     if (!swap) return
     paint()
@@ -184,7 +186,7 @@ export const DeckPanels = <Row extends TabbedRow>({
     return () => {
       if (run.current === token) live.current.onPendingChange(false)
     }
-  }, [swap])
+  }, [swap, paint, drive])
 
   useEffect(
     () => () => {

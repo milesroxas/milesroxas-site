@@ -55,7 +55,7 @@ function FieldGroup({
       data-variant={variant}
       className={cn(
         'group/field-group @container/field-group flex w-full flex-col gap-4 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4',
-        'data-[variant=inset]:gap-0 data-[variant=inset]:overflow-hidden data-[variant=inset]:rounded-md data-[variant=inset]:bg-background data-[variant=inset]:shadow-xs data-[variant=inset]:ring-1 data-[variant=inset]:ring-foreground/10 dark:data-[variant=inset]:bg-input/30',
+        'data-[variant=inset]:bg-background data-[variant=inset]:ring-foreground/10 dark:data-[variant=inset]:bg-input/30 data-[variant=inset]:gap-0 data-[variant=inset]:overflow-hidden data-[variant=inset]:rounded-md data-[variant=inset]:shadow-xs data-[variant=inset]:ring-1',
         className,
       )}
       {...props}
@@ -82,7 +82,7 @@ const insetRow = [
 ]
 
 const fieldVariants = cva(
-  ['group/field flex w-full gap-2 data-[invalid=true]:text-destructive', ...insetRow],
+  ['group/field data-[invalid=true]:text-destructive flex w-full gap-2', ...insetRow],
   {
     variants: {
       orientation: {
@@ -90,7 +90,7 @@ const fieldVariants = cva(
         // An action row (a button beside its note) wraps the note under the
         // button once the two no longer fit side by side.
         horizontal:
-          'flex-row items-center has-[>[data-slot=field-content]]:items-start *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px has-[>[data-slot=button]]:flex-wrap',
+          'flex-row items-center has-[>[data-slot=button]]:flex-wrap has-[>[data-slot=field-content]]:items-start *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
         responsive:
           'flex-col *:w-full @md/field-group:flex-row @md/field-group:items-center @md/field-group:*:w-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:*:data-[slot=field-label]:flex-auto [&>.sr-only]:w-auto @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px',
       },
@@ -107,7 +107,6 @@ function Field({
   ...props
 }: React.ComponentProps<'div'> & VariantProps<typeof fieldVariants>) {
   return (
-    // biome-ignore lint/a11y/useSemanticElements: upstream shadcn uses a div with role="group"; <fieldset> carries different default rendering and would diverge from the registry component
     <div
       role="group"
       data-slot="field"
@@ -136,7 +135,7 @@ function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
  */
 const fieldLabelVariants = cva(
   [
-    'group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:bg-primary/5 has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border *:data-[slot=field]:p-2 dark:has-data-checked:bg-primary/10',
+    'group/field-label peer/field-label has-data-checked:bg-primary/5 dark:has-data-checked:bg-primary/10 flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border *:data-[slot=field]:p-2',
     // The label lane of an `inset` row: fixed, so every control starts on one line.
     'group-data-[variant=inset]/field-group:w-11 group-data-[variant=inset]/field-group:max-w-11 group-data-[variant=inset]/field-group:shrink-0 group-data-[variant=inset]/field-group:text-base/5 group-data-[variant=inset]/field-group:font-normal md:group-data-[variant=inset]/field-group:text-sm/5',
   ],
@@ -144,7 +143,7 @@ const fieldLabelVariants = cva(
     variants: {
       variant: {
         default: '',
-        mono: 'font-mono text-xs/4 font-normal tracking-widest text-muted-foreground uppercase group-has-[:focus-visible]/field:text-primary group-data-[invalid=true]/field:text-destructive',
+        mono: 'text-muted-foreground group-has-[:focus-visible]/field:text-primary group-data-[invalid=true]/field:text-destructive font-mono text-xs/4 font-normal tracking-widest uppercase',
       },
     },
     defaultVariants: {
@@ -178,7 +177,7 @@ function FieldMeta({ className, ...props }: React.ComponentProps<'span'>) {
     <span
       data-slot="field-meta"
       className={cn(
-        'shrink-0 font-mono text-xs/4 tracking-widest text-muted-foreground uppercase tabular-nums',
+        'text-muted-foreground shrink-0 font-mono text-xs/4 tracking-widest uppercase tabular-nums',
         className,
       )}
       {...props}
@@ -196,7 +195,7 @@ function FieldPanel({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="field-panel"
       className={cn(
-        'flex w-full flex-col rounded-md border border-input bg-input/20 transition-colors focus-within:border-ring group-data-[invalid=true]/field:border-destructive dark:bg-input/30',
+        'border-input bg-input/20 focus-within:border-ring group-data-[invalid=true]/field:border-destructive dark:bg-input/30 flex w-full flex-col rounded-md border transition-colors',
         className,
       )}
       {...props}
@@ -209,7 +208,7 @@ function FieldPanelFooter({ className, ...props }: React.ComponentProps<'div'>) 
     <div
       data-slot="field-panel-footer"
       className={cn(
-        'flex items-center justify-between gap-4 border-t border-input px-5 py-3',
+        'border-input flex items-center justify-between gap-4 border-t px-5 py-3',
         className,
       )}
       {...props}
@@ -239,9 +238,9 @@ function FieldDescription({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       data-slot="field-description"
       className={cn(
-        'text-left text-xs/relaxed leading-normal font-normal text-muted-foreground group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5',
+        'text-muted-foreground text-left text-xs/relaxed leading-normal font-normal group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5',
         'last:mt-0 nth-last-2:-mt-1',
-        '[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary',
+        '[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4',
         statusGlyph,
         // Inside an `inset` row it is a trailing note on one line ("From your message").
         'group-data-[variant=inset]/field-group:shrink-0 group-data-[variant=inset]/field-group:whitespace-nowrap',
@@ -272,7 +271,7 @@ function FieldSeparator({
       <Separator className="absolute inset-0 top-1/2" />
       {children && (
         <span
-          className="relative mx-auto block w-fit bg-background px-2 text-muted-foreground"
+          className="bg-background text-muted-foreground relative mx-auto block w-fit px-2"
           data-slot="field-separator-content"
         >
           {children}
@@ -320,7 +319,7 @@ function FieldError({
     <div
       role="alert"
       data-slot="field-error"
-      className={cn('text-xs/relaxed font-normal text-destructive', statusGlyph, className)}
+      className={cn('text-destructive text-xs/relaxed font-normal', statusGlyph, className)}
       {...props}
     >
       {content}

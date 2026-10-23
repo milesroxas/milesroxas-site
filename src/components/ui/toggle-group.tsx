@@ -21,7 +21,7 @@ const toggleGroupVariants = cva('group/toggle-group inline-flex items-center', {
   variants: {
     variant: {
       default: 'gap-1',
-      segmented: 'relative w-full rounded-md bg-muted/70 p-px ring-1 ring-input ring-inset',
+      segmented: 'bg-muted/70 ring-input relative w-full rounded-md p-px ring-1 ring-inset',
     },
     /** Control height: inspector row (26), toolbar (30), header (34). */
     size: {
@@ -37,20 +37,20 @@ const toggleGroupVariants = cva('group/toggle-group inline-flex items-center', {
 })
 
 const toggleGroupItemVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-1 rounded-sm text-xs/relaxed font-medium whitespace-nowrap transition-[color,background-color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+  "focus-visible:ring-ring/30 inline-flex shrink-0 items-center justify-center gap-1 rounded-sm text-xs/relaxed font-medium whitespace-nowrap transition-[color,background-color,box-shadow] outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
   {
     variants: {
       variant: {
         default:
-          'h-7 px-2 text-muted-foreground hover:bg-muted hover:text-foreground data-[state=on]:bg-muted data-[state=on]:text-foreground',
+          'text-muted-foreground hover:bg-muted hover:text-foreground data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2',
         // The hairline between two unselected options is what makes the track
         // read as one control; it goes quiet next to the plate, which already
         // draws that edge. `active` tints on pointer-down, so the press is
         // answered before the plate has finished travelling.
         segmented: [
-          'relative h-full flex-1 rounded-[3px] bg-transparent text-muted-foreground',
+          'text-muted-foreground relative h-full flex-1 rounded-[3px] bg-transparent',
           'hover:text-foreground active:bg-foreground/5 data-[state=on]:text-foreground data-[state=on]:active:bg-transparent',
-          'before:absolute before:inset-y-1 before:left-0 before:w-px before:bg-input before:transition-opacity before:duration-150',
+          'before:bg-input before:absolute before:inset-y-1 before:left-0 before:w-px before:transition-opacity before:duration-150',
           'first:before:hidden data-[state=on]:before:opacity-0 [[data-state=on]+&]:before:opacity-0',
           'motion-reduce:transition-none motion-reduce:before:transition-none',
         ],
@@ -138,9 +138,9 @@ function ToggleGroup({
           aria-hidden
           data-slot="toggle-group-indicator"
           className={cn(
-            'pointer-events-none absolute top-px bottom-px left-0 rounded-[3px] bg-background shadow-[0_1px_2px_rgb(0_0_0/0.14),0_0_0_0.5px_rgb(0_0_0/0.10)] dark:bg-input dark:shadow-[0_1px_2px_rgb(0_0_0/0.45)]',
+            'bg-background dark:bg-input pointer-events-none absolute top-px bottom-px left-0 rounded-[3px] shadow-[0_1px_2px_rgb(0_0_0/0.14),0_0_0_0.5px_rgb(0_0_0/0.10)] dark:shadow-[0_1px_2px_rgb(0_0_0/0.45)]',
             plate ? 'opacity-100' : 'opacity-0',
-            'transition-[translate,width,opacity] duration-300 ease-out-quint motion-reduce:transition-none',
+            'ease-out-quint transition-[translate,width,opacity] duration-300 motion-reduce:transition-none',
           )}
           // The first placement is written with motion switched off inline, so
           // the plate appears under the chosen segment instead of sliding in

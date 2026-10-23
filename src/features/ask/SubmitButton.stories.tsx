@@ -60,7 +60,7 @@ export const InDockField: Story = {
   args: { canSend: false },
   render: (args) => (
     <form className="w-sm" onSubmit={(event) => event.preventDefault()}>
-      <InputGroup className="border-transparent bg-foreground/6" variant="field">
+      <InputGroup className="bg-foreground/6 border-transparent" variant="field">
         <InputGroupInput aria-label="Your question" placeholder={ASK_PLACEHOLDER} />
         <AskSubmitButton {...args} className={askComposerButton} iconClassName={askComposerIcon} />
       </InputGroup>

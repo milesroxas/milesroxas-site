@@ -53,3 +53,20 @@ export function getSlugKey(
 export function getCompositeKey(...parts: (string | number | null | undefined)[]): string {
   return parts.filter(Boolean).join('-')
 }
+
+/**
+ * Keys a positional list by what each item says: a repeat is told apart by its
+ * occurrence (`word`, then `word~2`), never by its index.
+ */
+export function keyed<T>(
+  items: readonly T[],
+  label: (item: T) => string,
+): Array<{ key: string; item: T }> {
+  const seen = new Map<string, number>()
+  return items.map((item) => {
+    const base = label(item)
+    const count = (seen.get(base) ?? 0) + 1
+    seen.set(base, count)
+    return { key: count === 1 ? base : `${base}~${count}`, item }
+  })
+}

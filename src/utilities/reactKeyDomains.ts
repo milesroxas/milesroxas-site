@@ -2,7 +2,6 @@
  * Domain-specific key generators
  */
 
-import type { Post, Work } from '@/payload-types'
 import { getEntityKey, getSlugKey } from './reactKeys'
 
 /**
@@ -17,56 +16,6 @@ export const blockKeys = {
     index: number,
   ): string => {
     return getEntityKey(block, block.blockType || 'block', index)
-  },
-}
-
-/**
- * Post domain - keys for blog posts
- */
-export const postKeys = {
-  /**
-   * Generate key for a post card
-   */
-  fromPost: (
-    post: Post | { slug?: string | null; id?: string | number | null },
-    index?: number,
-  ): string => {
-    if (post.id) {
-      return `post-${post.id}`
-    }
-    return getSlugKey(post.slug || null, 'post', index)
-  },
-
-  /**
-   * Generate key for post cards in arrays
-   */
-  fromPostArray: (post: Post | { slug?: string | null }, index: number): string => {
-    return postKeys.fromPost(post, index)
-  },
-}
-
-/**
- * Work domain - keys for portfolio works
- */
-export const workKeys = {
-  /**
-   * Generate key for a work card
-   */
-  fromWork: (
-    work: Work | { slug?: string | null; id?: string | number | null },
-    index?: number,
-  ): string => {
-    if (work.id) {
-      return `work-${work.id}`
-    }
-    return getSlugKey(work.slug || null, 'work', index)
-  },
-
-  /**
-   * Generate key for work cards in arrays
-   */
-  fromWorkArray: (work: Work | { slug?: string | null }, index: number): string => {
-    return workKeys.fromWork(work, index)
   },
 }
 

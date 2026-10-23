@@ -80,7 +80,7 @@ const MarqueeItems = ({
       return (
         <div
           key={getCompositeKey(keyPrefix, text, copyIndex, itemIndex)}
-          className="whitespace-nowrap motion-safe:animate-marquee-rise"
+          className="motion-safe:animate-marquee-rise whitespace-nowrap"
           style={enterAt(at + idx * BEAT.word)}
         >
           {text}
@@ -95,12 +95,12 @@ const marqueeLine = 'absolute w-full overflow-hidden motion-reduce:animate-hero-
 
 export const HomeHero: React.FC<HeroProps> = ({ media, heading }) => (
   <div
-    className="relative flex h-[90vh] w-full flex-col items-center overflow-hidden bg-background md:h-screen"
+    className="bg-background relative flex h-[90vh] w-full flex-col items-center overflow-hidden md:h-screen"
     data-slot="home-hero"
   >
     {heading ? <h1 className="sr-only">{heading}</h1> : null}
     <div className={cn(marqueeLine, 'top-[40vh] z-0')} style={enterAt(BEAT.marqueeTop)}>
-      <div className={cn(styles['marquee-top'], 'flex flex-row gap-12 font-mono text-foreground')}>
+      <div className={cn(styles['marquee-top'], 'text-foreground flex flex-row gap-12 font-mono')}>
         <MarqueeItems at={BEAT.marqueeTop} items={SKILLS_TEXT} keyPrefix="skill" />
       </div>
     </div>
@@ -108,7 +108,7 @@ export const HomeHero: React.FC<HeroProps> = ({ media, heading }) => (
     <div className="relative z-10 flex h-[90vh] items-center justify-center md:h-screen">
       {/* The frame sets the size: a stream is only as wide as its current rendition. */}
       <div
-        className="relative aspect-[9/16] w-[30vh] overflow-hidden rounded-sm motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
+        className="motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade relative aspect-[9/16] w-[30vh] overflow-hidden rounded-sm"
         style={enterAt(BEAT.portrait)}
       >
         <Media
@@ -129,7 +129,7 @@ export const HomeHero: React.FC<HeroProps> = ({ media, heading }) => (
       <div
         className={cn(
           styles.marquee,
-          'flex flex-row-reverse items-center gap-12 font-mono text-foreground',
+          'text-foreground flex flex-row-reverse items-center gap-12 font-mono',
         )}
       >
         <MarqueeItems at={BEAT.marqueeBottom} items={EXPERIENCE_TEXT} keyPrefix="experience" />

@@ -24,7 +24,7 @@ export const Default: Story = {}
 export const WithControl: Story = {
   render: () => (
     <div className="grid w-72 grid-cols-[5rem_minmax(0,1fr)] items-center gap-x-2.5">
-      <Label className="min-h-9 cursor-default text-foreground/80 text-xs/4" htmlFor="label-width">
+      <Label className="text-foreground/80 min-h-9 cursor-default text-xs/4" htmlFor="label-width">
         Width
       </Label>
       <Input

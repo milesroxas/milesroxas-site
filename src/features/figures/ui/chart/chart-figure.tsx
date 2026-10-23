@@ -35,7 +35,7 @@ export const ChartFigure = ({ spec, ...frame }: ChartFigureProps) => {
           line above its ticks, the bottom axis under the end of its run. They
           fade in with the scaffold (`figure-step`, first beat of the stage). */}
       {leftAxisLabel ? (
-        <p className="figure-step mb-2 text-muted-foreground text-xs">{leftAxisLabel}</p>
+        <p className="figure-step text-muted-foreground mb-2 text-xs">{leftAxisLabel}</p>
       ) : null}
       <LazyChart
         describedBy={ids.description}
@@ -44,13 +44,13 @@ export const ChartFigure = ({ spec, ...frame }: ChartFigureProps) => {
         spec={spec}
       />
       {bottomAxisLabel ? (
-        <p className="figure-step mt-2 text-right text-muted-foreground text-xs">
+        <p className="figure-step text-muted-foreground mt-2 text-right text-xs">
           {bottomAxisLabel}
         </p>
       ) : null}
 
       <noscript>
-        <p className="mt-3 text-muted-foreground text-sm">
+        <p className="text-muted-foreground mt-3 text-sm">
           This chart needs JavaScript. Its values are in the data table below.
         </p>
       </noscript>

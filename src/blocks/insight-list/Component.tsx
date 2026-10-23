@@ -66,7 +66,7 @@ const InsightListHeading = ({
     <div className={cn('text-stack', className)}>
       {eyebrow ? (
         <p
-          className={cn(eyebrowClassName, 'uppercase tracking-widest')}
+          className={cn(eyebrowClassName, 'tracking-widest uppercase')}
           data-reveal
           data-reveal-group="heading"
         >

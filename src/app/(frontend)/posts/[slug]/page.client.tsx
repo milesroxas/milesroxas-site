@@ -18,15 +18,15 @@ const PageClient: React.FC<{ post: Post; header?: boolean }> = ({ post, header =
         <div className="flex max-w-2xl flex-col gap-4">
           {title && (
             <div className="">
-              <h1 className="mb-2 text-2xl text-tertiary-foreground leading-tight md:text-3xl lg:text-4xl">
+              <h1 className="text-tertiary-foreground mb-2 text-2xl leading-tight md:text-3xl lg:text-4xl">
                 {title}
               </h1>
             </div>
           )}
 
-          <div className="flex flex-col gap-2 align-middle text-tertiary-foreground/60 md:flex-row md:gap-4">
+          <div className="text-tertiary-foreground/60 flex flex-col gap-2 align-middle md:flex-row md:gap-4">
             {categories && categories.length > 0 && (
-              <div className="text-sm uppercase tracking-widest">
+              <div className="text-sm tracking-widest uppercase">
                 {categories?.map((category, index) => {
                   if (typeof category === 'object' && category !== null) {
                     const { title: categoryTitle, id } = category
@@ -47,7 +47,7 @@ const PageClient: React.FC<{ post: Post; header?: boolean }> = ({ post, header =
               </div>
             )}
 
-            <span className="text-sm text-tertiary-foreground/40 uppercase tracking-widest">–</span>
+            <span className="text-tertiary-foreground/40 text-sm tracking-widest uppercase">–</span>
 
             {publishedAt && (
               <time dateTime={publishedAt} className="text-light text-sm">

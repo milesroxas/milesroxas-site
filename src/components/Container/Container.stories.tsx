@@ -17,7 +17,7 @@ const meta = {
   },
   args: {
     children: (
-      <div className="rounded-sm bg-muted p-6 font-mono text-sm">The column content sits here.</div>
+      <div className="bg-muted rounded-sm p-6 font-mono text-sm">The column content sits here.</div>
     ),
   },
   argTypes: {

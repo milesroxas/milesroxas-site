@@ -45,7 +45,7 @@ export const SplitImageOffset = ({
         <BlockGrid>
           <MediaCell
             className={cn(
-              'relative aspect-5/4 w-full overflow-hidden rounded-lg bg-muted md:col-span-5 md:row-start-1 md:self-start',
+              'bg-muted relative aspect-5/4 w-full overflow-hidden rounded-lg md:col-span-5 md:row-start-1 md:self-start',
               captionLeft ? 'md:col-start-4' : 'md:col-start-1',
             )}
             resource={large}
@@ -53,16 +53,16 @@ export const SplitImageOffset = ({
           />
           <div
             className={cn(
-              'flex flex-col gap-grid md:col-span-3 md:row-start-1 md:self-start',
+              'gap-grid flex flex-col md:col-span-3 md:row-start-1 md:self-start',
               captionLeft ? 'md:col-start-1' : 'md:col-start-6',
             )}
           >
             <MediaCell
-              className="relative aspect-3/2 w-4/5 overflow-hidden rounded-lg bg-muted md:w-full"
+              className="bg-muted relative aspect-3/2 w-4/5 overflow-hidden rounded-lg md:w-full"
               resource={small}
               size="(max-width: 768px) 80vw, 37vw"
             />
-            <div className="w-4/5 max-w-80 text-stack md:w-full md:max-w-none" data-reveal>
+            <div className="text-stack w-4/5 max-w-80 md:w-full md:max-w-none" data-reveal>
               {block.heading && (
                 <h2 className={cn(type.heading, 'text-balance')}>{block.heading}</h2>
               )}

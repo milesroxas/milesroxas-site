@@ -10,7 +10,7 @@ This file documents the working conventions for AI assistants in this repository
 - Postgres via `@payloadcms/db-vercel-postgres`
 - Tailwind CSS 4 + Radix UI + shadcn/ui
 - GSAP + Three.js + React Three Fiber
-- Biome 2.5.14 for lint/format
+- Biome 2.6.2 for lint/format
 
 ## Development Commands
 

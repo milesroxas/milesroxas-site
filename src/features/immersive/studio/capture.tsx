@@ -72,8 +72,6 @@ export function captureStills(input: CaptureInput): Promise<Blob[]> {
 }
 
 /** One still, at one frame. */
-export const captureStill = (input: Omit<CaptureInput, 'frames'> & { frame: number }) =>
-  captureStills({ ...input, frames: [input.frame] }).then(([image]) => image)
 
 function CaptureScene({
   input: { effect, capture, tuning, frames, ground },

@@ -16,7 +16,7 @@ const SelectTrigger: React.FC<
 > = ({ children, className, ref, ...props }) => (
   <SelectPrimitive.Trigger
     className={cn(
-      'flex h-10 w-full items-center justify-between rounded border border-input bg-background px-3 py-2 text-foreground ring-offset-background focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&_[data-placeholder]]:text-muted-foreground',
+      'border-input bg-background text-foreground ring-offset-background focus:ring-ring [&_[data-placeholder]]:text-muted-foreground flex h-10 w-full items-center justify-between rounded border px-3 py-2 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
       className,
     )}
     ref={ref}
@@ -66,9 +66,9 @@ const SelectContent: React.FC<
         // The shadcn enter/exit classes this list shipped with were inert until the
         // site loaded `tw-animate-css` (composer Phase 4, for the Contents sheet);
         // they came off so the legacy form select opens exactly as it always has.
-        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-md',
+        'border-border bg-popover text-popover-foreground relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border shadow-md',
         position === 'popper' &&
-          'data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
+          'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
         className,
       )}
       position={position}
@@ -94,7 +94,7 @@ const SelectLabel: React.FC<
   { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<typeof SelectPrimitive.Label>
 > = ({ className, ref, ...props }) => (
   <SelectPrimitive.Label
-    className={cn('py-1.5 pr-2 pl-8 font-semibold text-sm', className)}
+    className={cn('py-1.5 pr-2 pl-8 text-sm font-semibold', className)}
     ref={ref}
     {...props}
   />
@@ -107,7 +107,7 @@ const SelectItem: React.FC<
 > = ({ children, className, ref, ...props }) => (
   <SelectPrimitive.Item
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pr-2 pl-8 text-popover-foreground text-sm outline-hidden data-disabled:pointer-events-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-disabled:opacity-50',
+      'text-popover-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground relative flex w-full cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50',
       className,
     )}
     ref={ref}
@@ -127,7 +127,7 @@ const SelectSeparator: React.FC<
   { ref?: React.Ref<HTMLDivElement> } & React.ComponentProps<typeof SelectPrimitive.Separator>
 > = ({ className, ref, ...props }) => (
   <SelectPrimitive.Separator
-    className={cn('-mx-1 my-1 h-px bg-muted', className)}
+    className={cn('bg-muted -mx-1 my-1 h-px', className)}
     ref={ref}
     {...props}
   />

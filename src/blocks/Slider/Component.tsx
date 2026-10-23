@@ -192,16 +192,16 @@ const SliderIntro: React.FC<{
         <h2
           className={cn('mb-2', {
             ...alignClasses,
-            'font-medium text-xl': introContent.size === 'base' || !introContent.size,
-            'font-medium text-2xl': introContent.size === 'lg',
-            'font-medium text-3xl': introContent.size === 'xl',
+            'text-xl font-medium': introContent.size === 'base' || !introContent.size,
+            'text-2xl font-medium': introContent.size === 'lg',
+            'text-3xl font-medium': introContent.size === 'xl',
           })}
         >
           {introContent.heading}
         </h2>
       )}
       {introContent.subheading && (
-        <p className={cn('px-8 text-muted-foreground md:px-14', alignClasses)}>
+        <p className={cn('text-muted-foreground px-8 md:px-14', alignClasses)}>
           {introContent.subheading}
         </p>
       )}

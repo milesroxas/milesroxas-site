@@ -23,7 +23,7 @@ type SurfaceDoc = { id: number | string; _status?: string | null; slug?: string 
 const isPublished = (doc: SurfaceDoc | undefined) => doc?._status === 'published'
 
 /** What a visible publish changes: the sitemap, and the two llms documents. */
-export const revalidatePublicListings = () => {
+const revalidatePublicListings = () => {
   revalidatePath(SITEMAP_PATH)
   revalidateTag(LLMS_CACHE_TAG, 'max')
 }

@@ -23,6 +23,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { keyed } from '@/utilities/reactKeys'
 import type { ChartKind, ChartSpec } from '../../spec/chart'
 import {
   type ChartModel,
@@ -163,7 +164,10 @@ const annotationX = ({ model, spec }: Drawing, x: number | string): number | str
 }
 
 const Annotations = (drawing: Drawing) =>
-  drawing.spec.annotations?.map((annotation, index) => {
+  keyed(
+    drawing.spec.annotations ?? [],
+    (annotation) => `${annotation.x ?? ''}|${annotation.y ?? ''}|${annotation.label ?? ''}`,
+  ).map(({ key, item: annotation }) => {
     const label = { ...PLOT_LABEL, value: annotation.label }
     // Recharts names axes by screen position, so a horizontal chart swaps them.
     const [position, measure] = drawing.model.horizontal
@@ -174,7 +178,7 @@ const Annotations = (drawing: Drawing) =>
       return (
         <ReferenceDot
           fill={INK}
-          key={index}
+          key={key}
           label={{ ...label, position: 'top' }}
           r={4}
           stroke={SURFACE}
@@ -185,7 +189,7 @@ const Annotations = (drawing: Drawing) =>
       )
     return (
       <ReferenceLine
-        key={index}
+        key={key}
         label={{ ...label, position: 'insideTopRight' }}
         stroke={MUTED}
         strokeDasharray="3 3"
@@ -432,7 +436,7 @@ export default function ChartCanvas({ animate, spec }: { animate: boolean; spec:
   return (
     // `data-enter` lets the stylesheet bring the annotations in after the marks (globals.css, "Figures").
     <ChartContainer
-      className="figure-chart-canvas aspect-auto size-full [&_.figure-axis-category_.recharts-cartesian-axis-tick_text]:fill-foreground [&_.recharts-cartesian-axis-tick_text]:tabular-nums [&_.recharts-label-list_text]:tabular-nums"
+      className="figure-chart-canvas [&_.figure-axis-category_.recharts-cartesian-axis-tick_text]:fill-foreground aspect-auto size-full [&_.recharts-cartesian-axis-tick_text]:tabular-nums [&_.recharts-label-list_text]:tabular-nums"
       config={config}
       data-enter={animate ? '' : undefined}
     >

@@ -1,3 +1,4 @@
+import { keyed } from '@/utilities/reactKeys'
 import { cn } from '@/utilities/ui'
 import { TEXT_METRICS } from '../layout/text'
 
@@ -53,8 +54,8 @@ export const TextLines = ({
       className={cn(className, halo && HALO.className)}
       textAnchor={anchor}
     >
-      {lines.map((line, index) => (
-        <tspan dy={CENTRE_DY} key={index} x={x} y={first + index * lineHeight}>
+      {keyed(lines, (line) => line).map(({ key, item: line }, index) => (
+        <tspan dy={CENTRE_DY} key={key} x={x} y={first + index * lineHeight}>
           {line}
         </tspan>
       ))}

@@ -38,7 +38,7 @@ export const BlockGrid = ({
 }) => (
   <Tag
     className={cn(
-      'grid grid-cols-1 gap-grid',
+      'gap-grid grid grid-cols-1',
       subgrid ? 'md:grid-cols-subgrid' : 'md:grid-cols-8',
       className,
     )}

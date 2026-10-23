@@ -51,10 +51,10 @@ export const Static: Story = {
 export const AsABackdrop: Story = {
   args: STREAK_FIELD_BACKDROP,
   render: (args) => (
-    <div data-theme="dark" className="relative isolate min-h-svh bg-black text-foreground">
+    <div data-theme="dark" className="text-foreground relative isolate min-h-svh bg-black">
       <StreakField {...args} />
       <div className="relative flex min-h-svh items-end p-10">
-        <h2 className="max-w-xl text-balance text-heading-2">Signal, seen from the side.</h2>
+        <h2 className="text-heading-2 max-w-xl text-balance">Signal, seen from the side.</h2>
       </div>
     </div>
   ),
@@ -110,10 +110,10 @@ export const OnPaper: Story = {
     noise: 'curl',
   },
   render: (args) => (
-    <div data-theme="light" className="relative isolate min-h-svh bg-background text-foreground">
+    <div data-theme="light" className="bg-background text-foreground relative isolate min-h-svh">
       <StreakField {...args} />
       <div className="relative flex min-h-svh items-end p-10">
-        <h2 className="max-w-xl text-balance text-heading-2">Signal, seen from the side.</h2>
+        <h2 className="text-heading-2 max-w-xl text-balance">Signal, seen from the side.</h2>
       </div>
     </div>
   ),

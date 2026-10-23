@@ -14,7 +14,7 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => (
   <ScrollReveal as="div" className="relative" enterOffset={ENTER_OFFSET} variant="intro">
     <div className="container flex min-h-[50dvh] items-center justify-center pt-16 pb-36">
       <div
-        className="w-full max-w-[46ch] text-balance text-center font-light text-heading-2/snug"
+        className="text-heading-2/snug w-full max-w-[46ch] text-center font-light text-balance"
         data-reveal
       >
         {richText && <RichText className="mb-0" data={richText} />}
@@ -22,7 +22,7 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => (
     </div>
     <div
       aria-hidden
-      className="pointer-events-none sticky bottom-0 z-10 -mt-36 h-36 bg-gradient-to-t from-65% from-background to-transparent"
+      className="from-background pointer-events-none sticky bottom-0 z-10 -mt-36 h-36 bg-gradient-to-t from-65% to-transparent"
     />
   </ScrollReveal>
 )

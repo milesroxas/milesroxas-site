@@ -114,8 +114,6 @@ export function useDraft(path: string = RECIPE_FIELD) {
   }
 }
 
-export type Draft = ReturnType<typeof useDraft>
-
 /**
  * The draft with what the stage shows and the Inspector edits: the live look,
  * the poster, or one still. A selection that names a still the draft no

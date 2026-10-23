@@ -23,7 +23,7 @@ const Key = ({ kind, slot }: { kind: ChartKind; slot: ChartSlot }) => {
     return (
       <span
         aria-hidden
-        className="size-2.5 rounded-full ring-2 ring-background"
+        className="ring-background size-2.5 rounded-full ring-2"
         style={{ background: slot.color }}
       />
     )

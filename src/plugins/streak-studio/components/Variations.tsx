@@ -141,7 +141,6 @@ function SeedStrip({
     setSeeds(open ? rollSeeds(latest.current.shot.seed) : [])
   }, [open])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the shot is read through a ref and the run is keyed by its identity, so a render that rebuilds the shot object does not render the sheet again
   useEffect(() => {
     if (!open || !seeds.length) return
     const controller = new AbortController()
@@ -218,7 +217,6 @@ function FrameStrip({
   const identity = JSON.stringify([shot.capture, shot.tuning(shot.seed), ground])
   const frames = [...new Set([...FRAME_LADDER, shot.frame])].sort((a, b) => a - b)
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the shot is read through a ref and the run is keyed by its identity, so a render that rebuilds the shot object does not render the strip again
   useEffect(() => {
     if (!open) return
     const controller = new AbortController()
@@ -286,9 +284,9 @@ function Strip({
   return (
     <section className="flex flex-col gap-2.5">
       <header className="flex items-baseline gap-3">
-        <h3 className="font-semibold text-xs/4 tracking-[0.02em]">{title}</h3>
-        <p className="min-w-0 flex-1 text-[11px]/4 text-muted-foreground">{note}</p>
-        <span className="font-mono text-[11px]/4 text-muted-foreground" aria-live="polite">
+        <h3 className="text-xs/4 font-semibold tracking-[0.02em]">{title}</h3>
+        <p className="text-muted-foreground min-w-0 flex-1 text-[11px]/4">{note}</p>
+        <span className="text-muted-foreground font-mono text-[11px]/4" aria-live="polite">
           {busy ? 'Rendering…' : ''}
         </span>
         {action}
@@ -302,21 +300,18 @@ function Strip({
               aria-label={label(thumb.key)}
               disabled={!thumb.url}
               className={cn(
-                'pressable flex w-full cursor-pointer flex-col gap-1 rounded-md border p-1 text-left transition-colors hover:bg-muted disabled:cursor-default',
+                'pressable hover:bg-muted flex w-full cursor-pointer flex-col gap-1 rounded-md border p-1 text-left transition-colors disabled:cursor-default',
                 thumb.key === current ? 'border-primary' : 'border-input',
               )}
               onClick={() => onPick(thumb.key)}
             >
               <span
-                className="block w-full overflow-hidden rounded-sm bg-muted"
+                className="bg-muted block w-full overflow-hidden rounded-sm"
                 style={{ aspectRatio: aspect }}
               >
-                {thumb.url && (
-                  // biome-ignore lint/performance/noImgElement: a render made in this browser, shown from a blob URL
-                  <img src={thumb.url} alt="" className="size-full object-cover" />
-                )}
+                {thumb.url && <img src={thumb.url} alt="" className="size-full object-cover" />}
               </span>
-              <span className="px-0.5 font-mono text-[11px]/4 text-muted-foreground tabular-nums">
+              <span className="text-muted-foreground px-0.5 font-mono text-[11px]/4 tabular-nums">
                 {label(thumb.key)}
               </span>
             </button>

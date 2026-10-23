@@ -97,7 +97,7 @@ export function AskWidget({
       </TranscriptTrack>
 
       {error && (
-        <p role="alert" className={`mb-4 text-destructive text-sm ${transcriptItemEnter}`}>
+        <p role="alert" className={`text-destructive mb-4 text-sm ${transcriptItemEnter}`}>
           {errorText(error)}
         </p>
       )}
@@ -136,7 +136,7 @@ function TranscriptTrack({
   return (
     <div
       className={cn(
-        'grid motion-safe:transition-[grid-template-rows] motion-safe:duration-300 motion-safe:ease-out-quint',
+        'motion-safe:ease-out-quint grid motion-safe:transition-[grid-template-rows] motion-safe:duration-300',
         open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
       )}
       onTransitionEnd={(event) => {
@@ -162,7 +162,7 @@ function TranscriptCard({
   return (
     <Card
       data-lenis-prevent
-      className="motion-safe:fade-in-0 mb-4 h-[min(60svh,32rem)] gap-0 py-0 motion-safe:animate-in motion-safe:duration-300"
+      className="motion-safe:fade-in-0 motion-safe:animate-in mb-4 h-[min(60svh,32rem)] gap-0 py-0 motion-safe:duration-300"
     >
       <CardContent className="min-h-0 flex-1 overflow-hidden p-0">
         <MessageScrollerProvider autoScroll>

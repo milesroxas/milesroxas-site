@@ -958,7 +958,6 @@ export function ScrollReveal({
   } = resolveTuning(variant, tuning)
 
   // Layout effect: targets must be hidden before the hydrated tree paints.
-  // biome-ignore lint/correctness/useExhaustiveDependencies(replayKey): a bump rebuilds the entrance
   useLayoutEffect(() => {
     const root = rootRef.current
     if (!root?.querySelector('[data-reveal]')) return

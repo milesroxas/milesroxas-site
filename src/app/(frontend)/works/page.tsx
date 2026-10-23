@@ -108,7 +108,7 @@ export default async function Page() {
         {jsonLd}
         {draft && <LivePreviewListener />}
         <h1 className="text-heading-1">{title}</h1>
-        <p className="mt-4 text-base text-muted-foreground">No work is published yet.</p>
+        <p className="text-muted-foreground mt-4 text-base">No work is published yet.</p>
       </section>
     )
   }

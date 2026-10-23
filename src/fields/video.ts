@@ -9,7 +9,7 @@ import type { Condition, Field, Validate } from 'payload'
  * the editor can watch it finish from the page.
  */
 
-export const showVideo: Condition = (_, siblingData) => siblingData?.playVideo === true
+const showVideo: Condition = (_, siblingData) => siblingData?.playVideo === true
 export const noVideo: Condition = (_, siblingData) => siblingData?.playVideo !== true
 
 /** `media` stays required unless the block plays a video instead. */

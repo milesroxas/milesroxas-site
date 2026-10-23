@@ -214,7 +214,7 @@ export const FormBlock: React.FC<PayloadFormBlock> = (props) => {
           {enableIntro && introContent && !hasSubmitted && (
             <FormIntro align={introAlign} content={introContent} />
           )}
-          <div className="mx-auto w-full max-w-lg rounded-md border border-border bg-background p-4 lg:p-6">
+          <div className="border-border bg-background mx-auto w-full max-w-lg rounded-md border p-4 lg:p-6">
             <FormProvider {...formMethods}>
               <FormStatus
                 confirmationMessage={form.confirmationMessage}

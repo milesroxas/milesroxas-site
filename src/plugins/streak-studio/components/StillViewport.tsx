@@ -79,7 +79,6 @@ export function StillViewport({
   return (
     <div className="absolute inset-0 flex items-center justify-center p-8">
       {rendered ? (
-        // biome-ignore lint/performance/noImgElement: a render made in this browser, shown from a blob URL
         <img
           src={rendered.url}
           alt=""
@@ -94,7 +93,7 @@ export function StillViewport({
       ) : (
         <div
           aria-hidden
-          className="max-h-full max-w-full rounded-sm border border-foreground/10 border-dashed"
+          className="border-foreground/10 max-h-full max-w-full rounded-sm border border-dashed"
           style={{ aspectRatio: `${width} / ${height}`, width: '100%' }}
         />
       )}
@@ -102,7 +101,7 @@ export function StillViewport({
         <p
           role="status"
           className={cn(
-            'pointer-events-none absolute right-3 bottom-3 z-10 rounded-full bg-background/70 px-2.5 py-1 font-mono text-[11px]/3.5 backdrop-blur-xs',
+            'bg-background/70 pointer-events-none absolute right-3 bottom-3 z-10 rounded-full px-2.5 py-1 font-mono text-[11px]/3.5 backdrop-blur-xs',
             error ? 'text-destructive' : 'text-muted-foreground',
           )}
         >

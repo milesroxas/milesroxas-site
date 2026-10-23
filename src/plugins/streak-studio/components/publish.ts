@@ -20,7 +20,7 @@ import { sessionKey, studioStore } from './store'
 type Submit = ReturnType<typeof useForm>['submit']
 
 /** The saved look a still is rendered from, and the ground a filled still is laid over. */
-export type Draft = {
+type StillSource = {
   id: number | string
   effect: EffectId
   recipe: Recipe
@@ -56,7 +56,7 @@ export const isAbort = (error: unknown) =>
  * The posters of a recipe, rendered in this browser with the live preview
  * paused for the moment it takes, so the capture has the GPU to itself.
  */
-async function posters({ id, effect, recipe, ground }: Draft) {
+async function posters({ id, effect, recipe, ground }: StillSource) {
   const key = sessionKey(id)
   const snapshot = snapshotRecipe(effectOf(effect), recipe)
   const wasPaused = studioStore.read(key).paused
@@ -80,7 +80,7 @@ async function posters({ id, effect, recipe, ground }: Draft) {
 }
 
 /** One still of the draft, rendered here. */
-async function still({ effect, recipe, ground }: Draft, target: Still) {
+async function still({ effect, recipe, ground }: StillSource, target: Still) {
   const shot = stillShot(effectOf(effect), recipe, target)
   const [image] = await captureSerial({
     effect,
@@ -121,7 +121,7 @@ async function send<T>(
 }
 
 /** The server renders nothing and publishes the saved draft, so the draft is saved before anything is rendered from it. */
-async function saveDraft(submit: Submit, { id, effect, recipe, stills }: Draft) {
+async function saveDraft(submit: Submit, { id, effect, recipe, stills }: StillSource) {
   validateRecipe(effectOf(effect), recipe)
   validateStills(effectOf(effect), recipe, stills)
   const saved = await submit({
@@ -134,13 +134,17 @@ async function saveDraft(submit: Submit, { id, effect, recipe, stills }: Draft) 
 }
 
 /** One still of the saved draft, rendered and filed in Media. */
-async function fileStill(draft: Draft, target: Still): Promise<Media> {
+async function fileStill(draft: StillSource, target: Still): Promise<Media> {
   const image = await still(draft, target)
   return send<Media>(draft.id, 'stills', { recipe: draft.recipe, still: target }, { image })
 }
 
 /** Render: one still, filed in Media so it can be opened, downloaded and published. */
-export async function renderStill(submit: Submit, draft: Draft, target: Still): Promise<Media> {
+export async function renderStill(
+  submit: Submit,
+  draft: StillSource,
+  target: Still,
+): Promise<Media> {
   await saveDraft(submit, draft)
   return fileStill(draft, target)
 }
@@ -155,7 +159,7 @@ export type PublishProgress = (step: string) => void
  */
 export async function publishLook(
   submit: Submit,
-  draft: Draft,
+  draft: StillSource,
   live: PublishedState | null,
   onProgress: PublishProgress = () => {},
 ) {

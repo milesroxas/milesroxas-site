@@ -38,7 +38,7 @@ export function TopBar({ section }: { section: string | null }) {
         {title && section && (
           <p
             aria-hidden={!title.shown}
-            className="chrome-title hidden min-w-0 max-w-[calc(50vw-8.5rem)] items-center gap-1.5 overflow-hidden font-medium text-sm/5 md:flex"
+            className="chrome-title hidden max-w-[calc(50vw-8.5rem)] min-w-0 items-center gap-1.5 overflow-hidden text-sm/5 font-medium md:flex"
             data-shown={title.shown}
           >
             <span className="shrink-0 text-(--chrome-ink-muted)">{section}</span>
@@ -50,7 +50,7 @@ export function TopBar({ section }: { section: string | null }) {
 
       <Link
         aria-label="Miles Roxas, home"
-        className="chrome-focus md:-translate-1/2 pointer-events-auto z-10 -ml-2 flex h-11 items-center rounded-md px-2 md:absolute md:top-1/2 md:left-1/2 md:ml-0 md:block md:h-auto md:p-2"
+        className="chrome-focus pointer-events-auto z-10 -ml-2 flex h-11 items-center rounded-md px-2 md:absolute md:top-1/2 md:left-1/2 md:ml-0 md:block md:h-auto md:-translate-1/2 md:p-2"
         href="/"
       >
         <Logo className="h-auto w-32 md:w-40" color="currentColor" />

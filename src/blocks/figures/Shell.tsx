@@ -38,7 +38,7 @@ export const FigureShell = ({
  */
 export const FigureUnavailable = (frame: Omit<FigureFrameProps, 'children'>) => (
   <FigureFrame {...frame}>
-    <p className="figure-step rounded-md border border-border border-dashed p-6 text-muted-foreground text-sm">
+    <p className="figure-step border-border text-muted-foreground rounded-md border border-dashed p-6 text-sm">
       This figure cannot be drawn from its current data. Its description is below.
     </p>
   </FigureFrame>

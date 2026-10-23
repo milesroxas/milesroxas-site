@@ -84,7 +84,7 @@ export const SequenceSvg = ({
         return (
           <g className="figure-step" key={message.index} style={stepStyle(message.index + 1)}>
             <polyline
-              className="fill-none stroke-muted-foreground"
+              className="stroke-muted-foreground fill-none"
               points={message.points.map((point) => point.join(',')).join(' ')}
               strokeDasharray={source.style === 'reply' ? '5 5' : undefined}
               strokeWidth={1.5}

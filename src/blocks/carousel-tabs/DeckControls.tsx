@@ -83,7 +83,7 @@ const DeckIndex = ({
   return (
     <TabsPrimitive.List
       aria-label="Carousel tabs"
-      className="flex flex-col border-foreground/10 border-t"
+      className="border-foreground/10 flex flex-col border-t"
     >
       {rows.map((row, rowIndex) => {
         const value = valueFor(rows, rowIndex)
@@ -91,9 +91,9 @@ const DeckIndex = ({
         return (
           <TabsPrimitive.Trigger
             className={cn(
-              'group relative flex w-full items-center justify-between gap-4 text-left text-muted-foreground',
-              'transition-colors duration-150 ease-(--ease-out-quint) hover:text-foreground data-[state=active]:text-foreground',
-              'focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2',
+              'group text-muted-foreground relative flex w-full items-center justify-between gap-4 text-left',
+              'hover:text-foreground data-[state=active]:text-foreground transition-colors duration-150 ease-(--ease-out-quint)',
+              'focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2',
               ROW[size],
             )}
             key={row.id ?? rowIndex}
@@ -109,14 +109,14 @@ const DeckIndex = ({
             />
             <span
               aria-hidden="true"
-              className="absolute inset-x-0 bottom-0 h-px bg-foreground/10 transition-colors duration-150 group-hover:bg-foreground/25 group-data-[state=active]:bg-foreground/10"
+              className="bg-foreground/10 group-hover:bg-foreground/25 group-data-[state=active]:bg-foreground/10 absolute inset-x-0 bottom-0 h-px transition-colors duration-150"
             />
             {loading && (
               <span
                 aria-hidden="true"
                 className="absolute inset-x-0 -bottom-px h-0.5 overflow-clip motion-reduce:hidden"
               >
-                <span className="absolute inset-y-0 left-0 w-1/4 animate-deck-pending rounded-full bg-foreground/60" />
+                <span className="animate-deck-pending bg-foreground/60 absolute inset-y-0 left-0 w-1/4 rounded-full" />
               </span>
             )}
             <span
@@ -127,7 +127,7 @@ const DeckIndex = ({
               )}
             >
               <span
-                className="absolute inset-y-0 left-0 rounded-full bg-foreground transition-transform duration-500 ease-(--ease-out-quint) motion-reduce:transition-none"
+                className="bg-foreground absolute inset-y-0 left-0 rounded-full transition-transform duration-500 ease-(--ease-out-quint) motion-reduce:transition-none"
                 style={{
                   width: `${100 / Math.max(total, 1)}%`,
                   transform: `translateX(${index * 100}%)`,
@@ -146,10 +146,10 @@ const DeckIndex = ({
  * action. The `::after` pads the 36px mark out to a 48px touch target.
  */
 const STEP_BUTTON = cn(
-  'relative inline-flex size-9 items-center justify-center rounded-full text-foreground ring-1 ring-foreground/10 ring-inset',
+  'text-foreground ring-foreground/10 relative inline-flex size-9 items-center justify-center rounded-full ring-1 ring-inset',
   'transition-[background-color,scale] duration-150 ease-(--ease-out-quint) motion-reduce:transition-none',
   'hover:bg-foreground/[0.06] active:scale-[0.94]',
-  'focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2',
+  'focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2',
   'after:absolute after:-inset-1.5',
 )
 
@@ -166,7 +166,7 @@ const DeckReadout = ({ api, index, total }: { api: CarouselApi; index: number; t
       aria-hidden={idle || undefined}
       className={cn('flex items-center justify-between gap-4', idle && 'invisible')}
     >
-      <p aria-live="polite" className="font-medium font-mono text-xs/none tabular-nums">
+      <p aria-live="polite" className="text-xs/none font-mono font-medium tabular-nums">
         <span aria-hidden="true">
           {pad(index + 1)}
           <span className="text-muted-foreground"> / {pad(total)}</span>

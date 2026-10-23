@@ -27,7 +27,7 @@ const POST_ITEM =
 /** The title's rule, drawn left to right along every line it wraps to. */
 function Ink({ children }: { children: string }) {
   return (
-    <span className="bg-[linear-gradient(currentColor,currentColor)] box-decoration-clone bg-no-repeat transition-[background-size] duration-700 ease-(--ease-out-quint) [background-position:0_100%] [background-size:0%_1px] motion-reduce:transition-none pointer-fine:group-hover/post:[background-size:100%_1px] group-focus-visible/post:[background-size:100%_1px]">
+    <span className="bg-[linear-gradient(currentColor,currentColor)] box-decoration-clone [background-size:0%_1px] [background-position:0_100%] bg-no-repeat transition-[background-size] duration-700 ease-(--ease-out-quint) group-focus-visible/post:[background-size:100%_1px] motion-reduce:transition-none pointer-fine:group-hover/post:[background-size:100%_1px]">
       {children}
     </span>
   )
@@ -37,13 +37,13 @@ export function Byline({ item }: { item: MorePostsItem }) {
   const { publishedAt, source } = item
   if (!publishedAt && !source) return null
   return (
-    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-muted-foreground text-xs/none">
+    <p className="text-muted-foreground text-xs/none flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono">
       {publishedAt && (
         <time className="tabular-nums" dateTime={publishedAt}>
           {monthFormat.format(new Date(publishedAt))}
         </time>
       )}
-      {publishedAt && source && <span aria-hidden className="h-px w-5 bg-border" />}
+      {publishedAt && source && <span aria-hidden className="bg-border h-px w-5" />}
       {source && <span>{source}</span>}
     </p>
   )
@@ -72,12 +72,12 @@ function Frame({ item }: { item: MorePostsItem }) {
   })
   return (
     <div
-      className="relative w-28 shrink-0 overflow-clip bg-muted sm:w-40 lg:w-full"
+      className="bg-muted relative w-28 shrink-0 overflow-clip sm:w-40 lg:w-full"
       data-reveal="media"
       style={{ aspectRatio: frameRatio(media) }}
     >
       <div className="absolute inset-0">
-        <div className="relative size-full transition-[scale] duration-1200 ease-(--ease-out-quint) pointer-fine:group-hover/post:scale-[1.035] group-focus-visible/post:scale-[1.035] motion-reduce:transition-none">
+        <div className="relative size-full transition-[scale] duration-1200 ease-(--ease-out-quint) group-focus-visible/post:scale-[1.035] motion-reduce:transition-none pointer-fine:group-hover/post:scale-[1.035]">
           {media ? (
             <Media
               fill
@@ -103,7 +103,7 @@ function Frame({ item }: { item: MorePostsItem }) {
               />
             </div>
           ) : (
-            <div className="size-full bg-foreground/5 ring-1 ring-border ring-inset" />
+            <div className="bg-foreground/5 ring-border size-full ring-1 ring-inset" />
           )}
         </div>
       </div>
@@ -126,13 +126,13 @@ function PostCard({ item }: { item: MorePostsItem }) {
         <ScrollReveal as="div" variant="underMedia">
           <Link
             {...cursorTarget('view')}
-            className="group/post flex items-start gap-4 rounded-sm outline-offset-8 focus-visible:outline-2 focus-visible:outline-ring sm:gap-6 lg:flex-col lg:gap-5"
+            className="group/post focus-visible:outline-ring flex items-start gap-4 rounded-sm outline-offset-8 focus-visible:outline-2 sm:gap-6 lg:flex-col lg:gap-5"
             href={href}
             onClick={open}
           >
             <Frame item={item} />
             <div className="flex min-w-0 flex-col gap-2.5" data-reveal>
-              <h3 className="text-pretty text-lg/snug lg:text-xl/snug">
+              <h3 className="text-lg/snug text-pretty lg:text-xl/snug">
                 <Ink>{item.title}</Ink>
               </h3>
               <Byline item={item} />
@@ -148,7 +148,7 @@ function AllPosts({ className }: { className?: string }) {
   return (
     <Link
       className={cn(
-        'group/all inline-flex shrink-0 items-center gap-2 rounded-sm font-medium text-sm outline-offset-4 transition-transform duration-150 ease-(--ease-out-quint) focus-visible:outline-2 focus-visible:outline-ring active:scale-[0.97] motion-reduce:transition-none',
+        'group/all focus-visible:outline-ring inline-flex shrink-0 items-center gap-2 rounded-sm text-sm font-medium outline-offset-4 transition-transform duration-150 ease-(--ease-out-quint) focus-visible:outline-2 active:scale-[0.97] motion-reduce:transition-none',
         className,
       )}
       href="/posts"
@@ -156,7 +156,7 @@ function AllPosts({ className }: { className?: string }) {
       All posts
       <IconArrowRight
         aria-hidden
-        className="size-4 transition-transform duration-400 ease-(--ease-out-quint) pointer-fine:group-hover/all:translate-x-0.5 group-focus-visible/all:translate-x-0.5 motion-reduce:transition-none"
+        className="size-4 transition-transform duration-400 ease-(--ease-out-quint) group-focus-visible/all:translate-x-0.5 motion-reduce:transition-none pointer-fine:group-hover/all:translate-x-0.5"
         stroke={1.5}
       />
     </Link>
@@ -169,12 +169,12 @@ export function MorePostsIndex({ items }: { items: MorePostsItem[] }) {
   return (
     <section
       aria-labelledby={headingId}
-      className="bg-background px-gutter pt-24 pb-16 text-foreground md:pt-32 md:pb-24"
+      className="bg-background px-gutter text-foreground pt-24 pb-16 md:pt-32 md:pb-24"
       data-slot="more-posts"
     >
       <ScrollReveal
         as="div"
-        className="flex items-baseline justify-between gap-6 border-border border-b pb-5"
+        className="border-border flex items-baseline justify-between gap-6 border-b pb-5"
         variant="intro"
       >
         <h2 className="text-heading-2" data-reveal id={headingId}>

@@ -85,12 +85,12 @@ function ContentsCard({
     >
       <div
         aria-hidden
-        className="contents-card-ambient pointer-events-none absolute inset-0 rounded-menu-card shadow-[0_24px_64px_rgb(0_0_0/0.16)]"
+        className="contents-card-ambient rounded-menu-card pointer-events-none absolute inset-0 shadow-[0_24px_64px_rgb(0_0_0/0.16)]"
       />
       <div className="contents-shape-shadow">
         <nav
           aria-label={CONTENTS_LIST_LABEL}
-          className="contents-card bg-popover p-2 text-popover-foreground"
+          className="contents-card bg-popover text-popover-foreground p-2"
           id={id}
         >
           <ContentsList
@@ -114,7 +114,7 @@ function ContentsCard({
 /** The sheet's surface; `dragged` drops the exit animation a drag has already played. */
 const sheetClassName = (dragged: boolean) =>
   cn(
-    'contents-sheet gap-0 rounded-sheet px-2 pb-3 shadow-[0_-8px_40px_rgb(0_0_0/0.2)]',
+    'contents-sheet rounded-sheet gap-0 px-2 pb-3 shadow-[0_-8px_40px_rgb(0_0_0/0.2)]',
     'data-[side=bottom]:inset-x-2 data-[side=bottom]:bottom-[max(0.5rem,env(safe-area-inset-bottom))] data-[side=bottom]:border-t-0',
     'duration-300 ease-(--ease-out-quint) data-closed:duration-200',
     'data-[side=bottom]:data-open:slide-in-from-bottom-full data-[side=bottom]:data-closed:slide-out-to-bottom-full',
@@ -130,7 +130,7 @@ function SheetHandle({ dragHandlers }: { dragHandlers: ReturnType<typeof useShee
       className="relative flex h-6 shrink-0 touch-none items-center justify-center before:absolute before:inset-x-0 before:top-0 before:h-15"
       {...dragHandlers}
     >
-      <span className="h-1.25 w-9 rounded-full bg-foreground/20" />
+      <span className="bg-foreground/20 h-1.25 w-9 rounded-full" />
     </div>
   )
 }

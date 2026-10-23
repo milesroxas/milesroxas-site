@@ -57,7 +57,7 @@ export const Encoding: Story = {
 export const Fill: Story = {
   args: { fill: true, video: videoDocFixture },
   render: (args) => (
-    <div className="relative aspect-21/9 w-xl overflow-hidden rounded-lg bg-muted">
+    <div className="bg-muted relative aspect-21/9 w-xl overflow-hidden rounded-lg">
       <VideoPlayer {...args} />
     </div>
   ),

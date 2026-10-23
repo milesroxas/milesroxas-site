@@ -65,7 +65,7 @@ export const Line: Story = {
       </TabsList>
       {panels.map((panel) => (
         <TabsContent
-          className="flex flex-col pt-5 text-muted-foreground text-xs/5"
+          className="text-muted-foreground flex flex-col pt-5 text-xs/5"
           key={panel.value}
           value={panel.value}
         >

@@ -20,7 +20,7 @@ type Tab = NonNullable<TabsBlockProps['tabs']>[number]
 const TabsHeading = ({ heading }: { heading: NonNullable<TabsBlockProps['heading']> }) => (
   <div className="mb-12">
     {heading.eyebrow && (
-      <p className={'mb-4 font-mono text-muted-foreground text-sm/tight'}>{heading.eyebrow}</p>
+      <p className={'text-muted-foreground mb-4 font-mono text-sm/tight'}>{heading.eyebrow}</p>
     )}
     <h3
       className={cn(

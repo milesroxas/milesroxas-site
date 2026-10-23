@@ -22,11 +22,11 @@ function Card({
       data-size={size}
       data-variant={variant}
       className={cn(
-        'group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-lg bg-card py-(--card-spacing) text-xs/relaxed text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] *:[img:first-child]:rounded-t-lg *:[img:last-child]:rounded-b-lg',
-        'data-[variant=inset]:gap-3 data-[variant=inset]:rounded-md data-[variant=inset]:bg-foreground/5 data-[variant=inset]:text-foreground data-[variant=inset]:ring-0 data-[variant=inset]:outline-none',
+        'group/card bg-card text-card-foreground ring-foreground/10 flex flex-col gap-(--card-spacing) overflow-hidden rounded-lg py-(--card-spacing) text-xs/relaxed ring-1 [--card-spacing:--spacing(4)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] *:[img:first-child]:rounded-t-lg *:[img:last-child]:rounded-b-lg',
+        'data-[variant=inset]:bg-foreground/5 data-[variant=inset]:text-foreground data-[variant=inset]:gap-3 data-[variant=inset]:rounded-md data-[variant=inset]:ring-0 data-[variant=inset]:outline-none',
         // A card that takes focus by script (a receipt that replaced the form
         // under the pointer) rings inside: the transcript clips what is outside.
-        'data-[variant=inset]:focus-visible:inset-ring-2 data-[variant=inset]:focus-visible:inset-ring-ring/50',
+        'data-[variant=inset]:focus-visible:inset-ring-ring/50 data-[variant=inset]:focus-visible:inset-ring-2',
         className,
       )}
       {...props}
@@ -66,7 +66,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-description"
       className={cn(
-        'text-xs/relaxed text-muted-foreground',
+        'text-muted-foreground text-xs/relaxed',
         // Chat body sizing: 16px on touch, 14px from md (see features/ask/messages).
         'group-data-[variant=inset]/card:text-base/relaxed md:group-data-[variant=inset]/card:text-sm/5',
         className,
@@ -93,7 +93,7 @@ function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
  * ever appears as a state change, such as a sent receipt).
  */
 const cardIconVariants = cva(
-  "row-span-3 -mt-1 flex size-7 shrink-0 items-center justify-center rounded-full [&_svg:not([class*='size-'])]:size-3.5 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-75 motion-safe:duration-300 motion-safe:ease-out-quint",
+  "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-75 motion-safe:ease-out-quint row-span-3 -mt-1 flex size-7 shrink-0 items-center justify-center rounded-full motion-safe:duration-300 [&_svg:not([class*='size-'])]:size-3.5",
   {
     variants: {
       variant: {
@@ -138,7 +138,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
       data-slot="card-footer"
       className={cn(
         'flex items-center rounded-b-lg px-(--card-spacing) [.border-t]:pt-(--card-spacing)',
-        'group-data-[variant=inset]/card:mx-(--card-spacing) group-data-[variant=inset]/card:gap-1.5 group-data-[variant=inset]/card:border-t group-data-[variant=inset]/card:border-border group-data-[variant=inset]/card:px-0 group-data-[variant=inset]/card:pt-3 group-data-[variant=inset]/card:text-xs/4 group-data-[variant=inset]/card:text-muted-foreground group-data-[variant=inset]/card:[&>span]:min-w-0 group-data-[variant=inset]/card:[&>span]:truncate group-data-[variant=inset]/card:[&>svg]:size-3.5 group-data-[variant=inset]/card:[&>svg]:shrink-0',
+        'group-data-[variant=inset]/card:border-border group-data-[variant=inset]/card:text-muted-foreground group-data-[variant=inset]/card:mx-(--card-spacing) group-data-[variant=inset]/card:gap-1.5 group-data-[variant=inset]/card:border-t group-data-[variant=inset]/card:px-0 group-data-[variant=inset]/card:pt-3 group-data-[variant=inset]/card:text-xs/4 group-data-[variant=inset]/card:[&>span]:min-w-0 group-data-[variant=inset]/card:[&>span]:truncate group-data-[variant=inset]/card:[&>svg]:size-3.5 group-data-[variant=inset]/card:[&>svg]:shrink-0',
         className,
       )}
       {...props}

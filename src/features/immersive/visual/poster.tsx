@@ -105,7 +105,7 @@ export function VisualPosterStack({
     >
       <Image
         alt=""
-        className={cn('select-none object-cover', imgClassName)}
+        className={cn('object-cover select-none', imgClassName)}
         data-visual-poster={face.ground}
         draggable={false}
         fill

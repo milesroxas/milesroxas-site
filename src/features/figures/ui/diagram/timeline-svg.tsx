@@ -129,7 +129,7 @@ const Narrow = ({ layout, spec }: { layout: TimelineLayout['narrow']; spec: Time
         if (row.kind === 'era')
           return (
             <text
-              className="figure-step fill-muted-foreground text-xs uppercase tracking-wide"
+              className="figure-step fill-muted-foreground text-xs tracking-wide uppercase"
               key={`era-${row.index}`}
               style={stepStyle(order)}
               x={rail + 18}

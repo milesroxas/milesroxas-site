@@ -23,16 +23,16 @@ import { cn } from '@/utilities/ui'
  * control is under 16px, and the zoom outlives the form.
  */
 const inputVariants = cva(
-  'w-full min-w-0 transition-colors outline-none placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+  'placeholder:text-muted-foreground w-full min-w-0 transition-colors outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       variant: {
         default:
-          'h-7 rounded-md border border-input bg-input/20 px-2 py-0.5 text-base file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-xs/relaxed file:font-medium file:text-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 md:text-xs/relaxed dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
-        line: 'h-auto rounded-none border-0 border-b border-input bg-transparent px-0 pb-3 text-base not-placeholder-shown:border-b-foreground focus-visible:border-b-primary aria-invalid:border-b-destructive md:text-lg/relaxed',
+          'border-input bg-input/20 file:text-foreground focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 h-7 rounded-md border px-2 py-0.5 text-base file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-xs/relaxed file:font-medium focus-visible:ring-2 aria-invalid:ring-2 md:text-xs/relaxed',
+        line: 'border-input not-placeholder-shown:border-b-foreground focus-visible:border-b-primary aria-invalid:border-b-destructive h-auto rounded-none border-0 border-b bg-transparent px-0 pb-3 text-base md:text-lg/relaxed',
         bare: 'h-auto rounded-none border-0 bg-transparent p-0 text-base/5 md:text-sm/5',
         value:
-          'h-6.5 rounded-md border border-input bg-input/20 px-2 text-right font-mono text-xs/4 tabular-nums disabled:border-transparent disabled:bg-transparent disabled:text-muted-foreground/60 disabled:opacity-100 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+          'border-input bg-input/20 disabled:text-muted-foreground/60 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 h-6.5 [appearance:textfield] rounded-md border px-2 text-right font-mono text-xs/4 tabular-nums focus-visible:ring-2 disabled:border-transparent disabled:bg-transparent disabled:opacity-100 aria-invalid:ring-2 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
       },
     },
     defaultVariants: {

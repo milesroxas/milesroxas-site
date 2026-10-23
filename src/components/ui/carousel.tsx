@@ -144,7 +144,6 @@ function Carousel({
         canScrollNext,
       }}
     >
-      {/* biome-ignore lint/a11y/useSemanticElements: upstream shadcn uses a div with role="region" per the WAI-ARIA carousel pattern; <section> would diverge from the registry component */}
       <div
         onKeyDownCapture={handleKeyDown}
         className={cn('relative', className)}
@@ -191,7 +190,6 @@ function CarouselItem({ className, ...props }: React.ComponentProps<'div'>) {
   const { orientation } = useCarousel()
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: upstream shadcn uses a div with role="group"; <fieldset> carries different default rendering and would diverge from the registry component
     <div
       role="group"
       aria-roledescription="slide"

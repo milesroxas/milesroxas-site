@@ -3,7 +3,7 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import gsap from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
-import { type RefObject, useEffect, useMemo, useRef, useState } from 'react'
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { type ShaderMaterial, Texture, Vector2, VideoTexture } from 'three'
 import { warmVideo } from '@/components/Media/VideoMedia'
 import { FailureBoundary, useCanvasFailure } from '@/features/immersive/ui/failure-boundary'
@@ -215,7 +215,7 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
   )
 
   /** The row the plate is heading for. */
-  const target = () => waves.current.at(-1)?.row ?? base.current
+  const target = useCallback(() => waves.current.at(-1)?.row ?? base.current, [])
 
   /** Writes each wave's progress; idle slots sit at 0, where a wave shows nothing. */
   const tick = () => {
@@ -258,15 +258,16 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
     }
     tick()
   }
+  const showRef = useRef(show)
+  showRef.current = show
 
   useEffect(() => () => stopVideos.current(), [])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `show` reads refs; a new size or material is the trigger
   useEffect(() => {
     const u = materialRef.current?.uniforms
     if (!u) return
     u.uAspect.value = size.width / Math.max(size.height, 1)
-    show()
+    showRef.current()
   }, [size.width, size.height, uniforms])
 
   /** How many waves may run at once. */
@@ -327,7 +328,6 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
 
   // A wave is never cut. A row that arrives while the plate has no room for
   // another wave waits, and the running waves quicken to make way for it.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `target` reads refs; the row is the trigger
   useEffect(() => {
     if (index === target()) {
       queued.current = null
@@ -339,7 +339,7 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
       return
     }
     startRef.current(index)
-  }, [index, room])
+  }, [index, room, target])
 
   // The plate bows with the scroll on a damped follow, so it leans into a
   // flick and eases back once the page rests.

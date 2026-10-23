@@ -437,15 +437,15 @@ function Dial({ items, title, lead }: WorkDialProps) {
       <header className="work-dial-header">
         <div className="work-dial-heading">
           {/* The count sits beside the heading, not in it: the h1 reads "Work", not "Work11". */}
-          <div className="flex items-start gap-2.5 text-heading-1">
+          <div className="text-heading-1 flex items-start gap-2.5">
             <h1 className="overflow-clip pb-[0.08em]" id="works-index-title">
-              <span className="inline-block motion-safe:animate-hero-rise motion-reduce:animate-hero-fade">
+              <span className="motion-safe:animate-hero-rise motion-reduce:animate-hero-fade inline-block">
                 {title}
               </span>
             </h1>
             <span
               aria-hidden
-              className="pt-1 font-medium font-mono text-xs/none tabular-nums tracking-normal motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
+              className="text-xs/none motion-safe:animate-hero-in motion-reduce:animate-hero-fade pt-1 font-mono font-medium tracking-normal tabular-nums"
               style={enterAt(160)}
             >
               {count}
@@ -468,13 +468,13 @@ function Dial({ items, title, lead }: WorkDialProps) {
         <div className="work-dial-frame">
           {/* Unclipped: the ripple bends the plate past its frame. The wipe clips it on the way in. */}
           <div
-            className="size-full motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
+            className="motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade size-full"
             style={enterAt(120)}
           >
             {/* The rows are the keyboard's way in; the picture is a pointer shortcut to the one shown. */}
             <a
               {...cursorTarget('view')}
-              className="block size-full motion-safe:animate-hero-settle"
+              className="motion-safe:animate-hero-settle block size-full"
               href={shown ? `/works/${shown.slug}` : '/works'}
               onClick={(event) => {
                 if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
@@ -517,12 +517,12 @@ function Dial({ items, title, lead }: WorkDialProps) {
                     <span aria-hidden className="work-dial-label-rule" />
                   )}
                   {item.industry && (
-                    <span className="truncate text-muted-foreground">{item.industry}</span>
+                    <span className="text-muted-foreground truncate">{item.industry}</span>
                   )}
                 </span>
               ))}
             </div>
-            <span className="shrink-0 text-muted-foreground tabular-nums">
+            <span className="text-muted-foreground shrink-0 tabular-nums">
               {String((opening ?? active) + 1).padStart(2, '0')} / {count}
             </span>
           </div>

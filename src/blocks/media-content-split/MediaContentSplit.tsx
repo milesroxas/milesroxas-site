@@ -46,7 +46,7 @@ export const MediaContentSplit = ({
         <BlockGrid>
           <VisualCell
             className={cn(
-              'relative w-full self-start overflow-hidden rounded-lg bg-muted md:col-span-4 md:row-start-1',
+              'bg-muted relative w-full self-start overflow-hidden rounded-lg md:col-span-4 md:row-start-1',
               ASPECT_RATIO_CLASS[block.aspectRatio ?? '16-9'],
               mediaRight && 'md:col-start-5',
             )}

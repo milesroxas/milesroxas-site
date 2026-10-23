@@ -116,7 +116,6 @@ export function useBandGround(
   const [ground, setGround] = useState<Theme | undefined>(undefined)
   const siteTheme = useSiteTheme()
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `siteTheme` is a re-read cue. An inverted band's ground flips with it, and `readGround` reads that from the stylesheet, not from this value.
   useEffect(() => {
     const element = ref.current
     if (!mounted || !element) return

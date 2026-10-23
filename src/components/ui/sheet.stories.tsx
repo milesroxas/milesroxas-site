@@ -93,7 +93,7 @@ export const BottomSheet: Story = {
         </SheetHeader>
         <ol className="flex flex-col text-sm">
           {['Context', 'Approach', 'Outcome'].map((entry) => (
-            <li className="rounded-md px-2 py-2.5 hover:bg-muted" key={entry}>
+            <li className="hover:bg-muted rounded-md px-2 py-2.5" key={entry}>
               {entry}
             </li>
           ))}

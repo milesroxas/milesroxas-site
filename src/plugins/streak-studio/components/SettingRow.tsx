@@ -21,7 +21,7 @@ export function SettingRow({
 }) {
   return (
     <div className="grid grid-cols-[var(--row-label)_minmax(0,1fr)_var(--row-value)] items-center gap-x-2.5">
-      <Label htmlFor={htmlFor} className="min-h-9 cursor-default text-foreground/80 text-xs/4">
+      <Label htmlFor={htmlFor} className="text-foreground/80 min-h-9 cursor-default text-xs/4">
         {label}
       </Label>
       {children}

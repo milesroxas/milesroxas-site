@@ -78,13 +78,13 @@ const Header = ({
   >
     {title ? (
       <div className="group/title flex min-w-0 items-baseline gap-2">
-        <h3 className="text-balance text-lead leading-snug" data-reveal id={ids.title}>
+        <h3 className="text-lead leading-snug text-balance" data-reveal id={ids.title}>
           {title}
         </h3>
         {/* Hidden until the title is hovered; always there on focus, and on touch, where nothing hovers. */}
         <a
           aria-label={`Link to this figure: ${title}`}
-          className="pressable-subtle rounded-sm text-muted-foreground opacity-0 pointer-coarse:opacity-60 transition-opacity duration-150 ease-out focus-visible:opacity-100 group-hover/title:opacity-100"
+          className="pressable-subtle text-muted-foreground rounded-sm opacity-0 transition-opacity duration-150 ease-out group-hover/title:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-60"
           href={`#${ids.anchor}`}
         >
           <IconLink aria-hidden className="size-4" />
@@ -131,7 +131,7 @@ const Disclosure = ({
 }) => (
   <details className={cn('figure-data mt-4 text-sm', className)}>
     <summary
-      className="inline-flex cursor-pointer list-none items-center gap-1 rounded-sm text-muted-foreground [&::-webkit-details-marker]:hidden"
+      className="text-muted-foreground inline-flex cursor-pointer list-none items-center gap-1 rounded-sm [&::-webkit-details-marker]:hidden"
       data-reveal
     >
       <IconChevronRight aria-hidden className="figure-data-chevron size-4" />
@@ -189,7 +189,7 @@ export const FigureFrame = ({
         {children}
       </div>
       {caption || source?.label ? (
-        <figcaption className={cn('mt-4 text-muted-foreground text-sm', place.text)} data-reveal>
+        <figcaption className={cn('text-muted-foreground mt-4 text-sm', place.text)} data-reveal>
           {caption ? <p>{caption}</p> : null}
           {source?.label ? <Source href={source.href} label={source.label} /> : null}
         </figcaption>

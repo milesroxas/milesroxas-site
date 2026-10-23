@@ -56,7 +56,7 @@ export const SplitContentNarrow = ({
         <BlockGrid>
           <VisualCell
             className={cn(
-              'relative aspect-5/4 w-full self-start overflow-hidden rounded-lg bg-muted md:aspect-3/2',
+              'bg-muted relative aspect-5/4 w-full self-start overflow-hidden rounded-lg md:aspect-3/2',
               'md:col-span-5 md:row-start-1 lg:col-span-6',
               !imageLeft && 'md:col-start-4 lg:col-start-3',
             )}

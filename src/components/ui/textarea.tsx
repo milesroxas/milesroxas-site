@@ -15,12 +15,12 @@ import { cn } from '@/utilities/ui'
  * zoom (see `Input`).
  */
 const textareaVariants = cva(
-  'flex field-sizing-content w-full resize-none transition-colors outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
+  'placeholder:text-muted-foreground flex field-sizing-content w-full resize-none transition-colors outline-none disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       variant: {
         default:
-          'min-h-16 rounded-md border border-input bg-input/20 px-2 py-2 text-base focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 md:text-xs/relaxed dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+          'border-input bg-input/20 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 min-h-16 rounded-md border px-2 py-2 text-base focus-visible:ring-2 aria-invalid:ring-2 md:text-xs/relaxed',
         bare: 'min-h-44 border-0 bg-transparent p-5 text-base focus-visible:ring-0 md:text-lg/relaxed',
       },
     },

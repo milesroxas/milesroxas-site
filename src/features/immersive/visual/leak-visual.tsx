@@ -214,7 +214,7 @@ export function LeakVisual({
       className={cn(
         'overflow-hidden',
         frameClass(fill),
-        !bleeding && 'isolate bg-background',
+        !bleeding && 'bg-background isolate',
         className,
       )}
       // Pinned, the frame's own ground (`bg-background`) is the pinned palette's.

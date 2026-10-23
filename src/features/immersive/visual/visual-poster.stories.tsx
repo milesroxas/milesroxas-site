@@ -96,7 +96,7 @@ export const ShippedPairs: Story = {
               {SURFACES.map((surface) => (
                 <div
                   key={surface}
-                  className="relative isolate aspect-video overflow-hidden bg-background"
+                  className="bg-background relative isolate aspect-video overflow-hidden"
                   data-theme={surface}
                 >
                   <VisualPosterStack

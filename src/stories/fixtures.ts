@@ -49,7 +49,7 @@ const headingNode = (text: string, tag: 'h1' | 'h2' | 'h3' = 'h2') => ({
 export type RichTextFixture = DefaultTypedEditorState & { [k: string]: unknown }
 
 /** Build a valid Lexical editor state from plain content nodes. */
-export const lexicalState = (nodes: Record<string, unknown>[]): RichTextFixture =>
+const lexicalState = (nodes: Record<string, unknown>[]): RichTextFixture =>
   ({
     root: {
       children: nodes,

@@ -63,7 +63,7 @@ const MediaUnderCopy = () => (
           <h3 className={type.heading}>Stacked media</h3>
         </div>
         <div
-          className="relative aspect-16/9 overflow-hidden bg-muted md:col-span-8"
+          className="bg-muted relative aspect-16/9 overflow-hidden md:col-span-8"
           data-reveal="media"
         >
           <Media

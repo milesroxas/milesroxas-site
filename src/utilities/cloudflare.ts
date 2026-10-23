@@ -190,7 +190,7 @@ export interface CloudflareStreamStatus {
 }
 
 /** A Stream `duration`: seconds once known, `-1` or absent before that. */
-export function streamDuration(value: unknown): number | null {
+function streamDuration(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null
 }
 

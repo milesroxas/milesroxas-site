@@ -62,7 +62,7 @@ const GraphEdge = ({ edge, source, step }: { edge: PlacedEdge; source: Edge; ste
   return (
     <g>
       <path
-        className="figure-step figure-edge fill-none stroke-muted-foreground"
+        className="figure-step figure-edge stroke-muted-foreground fill-none"
         d={roundedPath(edge.points)}
         strokeDasharray={dashed && !source.animated ? '5 5' : undefined}
         strokeWidth={NODE_STROKE}

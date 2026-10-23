@@ -57,7 +57,7 @@ const LABEL = 'Contents'
  */
 const SURFACE = {
   rest: cn(
-    'bg-popover shadow-[0_8px_24px_rgb(0_0_0/0.12),0_1px_2px_rgb(0_0_0/0.06)] ring-1 ring-foreground/10',
+    'bg-popover ring-foreground/10 shadow-[0_8px_24px_rgb(0_0_0/0.12),0_1px_2px_rgb(0_0_0/0.06)] ring-1',
     // The arrival pill sits over the circle and carries the lift for both.
     'group-hover/trigger:bg-muted group-data-[arrival=extended]:shadow-none',
   ),
@@ -89,7 +89,7 @@ function Arrival({ extended }: { extended: boolean }) {
     // The parent carries the edge: a clip cuts off the pill's own shadow.
     <span aria-hidden className="contents-shape-shadow absolute inset-y-0 right-0" data-lift>
       <span
-        className="contents-arrival flex h-full items-center gap-2.5 whitespace-nowrap bg-popover pr-6 pl-5 font-medium text-popover-foreground text-sm/5"
+        className="contents-arrival bg-popover text-popover-foreground flex h-full items-center gap-2.5 pr-6 pl-5 text-sm/5 font-medium whitespace-nowrap"
         data-animating={animating || undefined}
         data-open={extended}
         ref={ref}
@@ -335,7 +335,7 @@ function Trigger({
       aria-controls={panelId}
       aria-expanded={open}
       aria-label={label}
-      className="group/trigger pressable peer relative z-10 flex size-14 cursor-pointer items-center justify-center rounded-full text-popover-foreground outline-hidden"
+      className="group/trigger pressable peer text-popover-foreground relative z-10 flex size-14 cursor-pointer items-center justify-center rounded-full outline-hidden"
       onClick={onToggle}
       // Warm the index the moment a press is likely.
       onFocus={onWarm}
@@ -364,7 +364,7 @@ function TriggerFace({
         className={cn(
           'absolute inset-0 rounded-full transition-[scale,background-color,box-shadow] duration-200 ease-(--ease-out-quint) motion-reduce:transition-none',
           // Keyboard focus: the primary ring outside the progress ring, a gap between.
-          'group-focus-visible/trigger:ring-2 group-focus-visible/trigger:ring-primary group-focus-visible/trigger:ring-offset-2 group-focus-visible/trigger:ring-offset-background',
+          'group-focus-visible/trigger:ring-primary group-focus-visible/trigger:ring-offset-background group-focus-visible/trigger:ring-2 group-focus-visible/trigger:ring-offset-2',
           open ? SURFACE.open : SURFACE.rest,
         )}
       />
@@ -405,7 +405,7 @@ function SectionHint({ label, number }: { label: string; number: number }) {
   return (
     <span
       aria-hidden
-      className="pointer-events-none absolute top-1/2 right-full mr-2.5 flex h-7 -translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-lg bg-foreground px-2.5 font-medium text-background text-xs/4 opacity-0 transition-opacity duration-150 peer-hover:opacity-100 peer-hover:delay-300 peer-focus-visible:opacity-100 group-data-[arrival=extended]:hidden motion-reduce:transition-none"
+      className="bg-foreground text-background pointer-events-none absolute top-1/2 right-full mr-2.5 flex h-7 -translate-y-1/2 items-center gap-2 rounded-lg px-2.5 text-xs/4 font-medium whitespace-nowrap opacity-0 transition-opacity duration-150 group-data-[arrival=extended]:hidden peer-hover:opacity-100 peer-hover:delay-300 peer-focus-visible:opacity-100 motion-reduce:transition-none"
     >
       <span className="font-mono">{String(number).padStart(2, '0')}</span>
       {label}

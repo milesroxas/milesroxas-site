@@ -161,11 +161,11 @@ function ParameterTooltip({
       <TooltipContent variant="panel" side="left" sideOffset={12} collisionPadding={12}>
         <div className="flex flex-col gap-2">
           <div className="flex items-baseline gap-2">
-            <span className="flex-1 font-semibold text-[13px]/4 text-foreground">{copy.label}</span>
-            <span className="font-mono text-[11px]/3.5 text-muted-foreground">{name}</span>
+            <span className="text-foreground flex-1 text-[13px]/4 font-semibold">{copy.label}</span>
+            <span className="text-muted-foreground font-mono text-[11px]/3.5">{name}</span>
           </div>
-          <p className="text-pretty text-foreground/80">{copy.description}</p>
-          <p className="flex gap-3 whitespace-nowrap font-mono text-[11px]/3.5 text-muted-foreground">
+          <p className="text-foreground/80 text-pretty">{copy.description}</p>
+          <p className="text-muted-foreground flex gap-3 font-mono text-[11px]/3.5 whitespace-nowrap">
             {'min' in spec && (
               <>
                 <span>
@@ -180,13 +180,13 @@ function ParameterTooltip({
             </span>
           </p>
           {changed && (
-            <p className="flex items-center gap-1.5 text-[11px]/3.5 text-primary">
-              <span aria-hidden className="size-1.25 shrink-0 rounded-full bg-primary" />
+            <p className="text-primary flex items-center gap-1.5 text-[11px]/3.5">
+              <span aria-hidden className="bg-primary size-1.25 shrink-0 rounded-full" />
               Changed from {defaultText}. Option-click the label to reset.
             </p>
           )}
           {'min' in spec && (
-            <p className="border-muted border-t pt-2 font-mono text-[10px]/3.5 text-muted-foreground uppercase tracking-[0.02em]">
+            <p className="border-muted text-muted-foreground border-t pt-2 font-mono text-[10px]/3.5 tracking-[0.02em] uppercase">
               ↑↓ step · ⇧ ×10 · ⏎ type
             </p>
           )}
@@ -235,7 +235,7 @@ function RowShell({
       <ParameterTooltip parameter={parameter} changed={changed}>
         <Label
           htmlFor={controlId(parameter.name)}
-          className="min-h-9 cursor-default gap-1.5 text-foreground/80 text-xs/4 transition-colors group-hover/row:text-foreground group-data-[changed]/row:text-foreground group-data-[inactive]/row:text-muted-foreground/60"
+          className="text-foreground/80 group-hover/row:text-foreground group-data-[changed]/row:text-foreground group-data-[inactive]/row:text-muted-foreground/60 min-h-9 cursor-default gap-1.5 text-xs/4 transition-colors"
           onClick={(event) => {
             if (event.altKey) {
               event.preventDefault()
@@ -248,7 +248,7 @@ function RowShell({
               scannable while values are edited. */}
           <span
             aria-hidden
-            className="size-1.5 shrink-0 scale-50 rounded-full bg-primary opacity-0 transition-[opacity,scale] duration-200 ease-out-quint group-data-[changed]/row:scale-100 group-data-[changed]/row:opacity-100 motion-reduce:transition-none"
+            className="bg-primary ease-out-quint size-1.5 shrink-0 scale-50 rounded-full opacity-0 transition-[opacity,scale] duration-200 group-data-[changed]/row:scale-100 group-data-[changed]/row:opacity-100 motion-reduce:transition-none"
           />
           {label ?? parameter.copy.label}
         </Label>
@@ -270,12 +270,12 @@ function InactiveReason({
   onFix: (fix: Dependency['fix']) => void
 }) {
   return (
-    <p className="col-span-2 col-start-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 pb-1.5 text-[11px]/4 text-muted-foreground">
+    <p className="text-muted-foreground col-span-2 col-start-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 pb-1.5 text-[11px]/4">
       {inactive.reason}
       {inactive.fix && (
         <button
           type="button"
-          className="pressable cursor-pointer whitespace-nowrap text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          className="pressable text-muted-foreground hover:text-foreground cursor-pointer whitespace-nowrap underline underline-offset-2"
           onClick={() => onFix(inactive.fix)}
         >
           {inactive.fixLabel}
@@ -429,7 +429,7 @@ function ChoiceSelect({
       {/* A count the code owns, not a value the editor sets: it belongs in
           the value column with the numbers, not inside the trigger. */}
       {hint && (
-        <span className="text-right font-mono text-[11px]/3.5 text-muted-foreground tabular-nums">
+        <span className="text-muted-foreground text-right font-mono text-[11px]/3.5 tabular-nums">
           {hint}
         </span>
       )}
@@ -448,7 +448,7 @@ function ColorControl({
   return (
     <div className="flex items-center gap-2 justify-self-start">
       <label
-        className="relative size-6.5 shrink-0 cursor-pointer overflow-hidden rounded-md border border-input"
+        className="border-input relative size-6.5 shrink-0 cursor-pointer overflow-hidden rounded-md border"
         style={{ backgroundColor: hex }}
         aria-label={`${copy.label} swatch`}
       >
@@ -469,6 +469,9 @@ function ColorControl({
   )
 }
 
+/** A vector's components by name: the identity a key wants, not a slot number. */
+const VECTOR_AXES = ['x', 'y', 'z', 'w'] as const
+
 function VectorControl({
   copy,
   disabled,
@@ -477,15 +480,16 @@ function VectorControl({
   values,
 }: ControlProps & { spec: VectorParameter; values: readonly number[] }) {
   const places = decimals(spec)
+  const components = values.map((value, index) => ({ axis: VECTOR_AXES[index], index, value }))
   return (
     // A vector has no one slider to give: its numbers share the control
     // and value columns, and still end on the rule every row ends on.
     <div className="col-span-2 flex items-center gap-1">
-      {values.map((component, index) => (
+      {components.map(({ axis, index, value }) => (
         <ValueField
-          key={index}
+          key={axis}
           className="min-w-0 flex-1 px-1"
-          value={component}
+          value={value}
           min={spec.min}
           max={spec.max}
           step={spec.step}
@@ -676,7 +680,7 @@ export function RangePairRow({
 
 function RowError({ children }: { children: ReactNode }) {
   return (
-    <p role="alert" className="col-span-2 col-start-2 text-[11px]/3.5 text-destructive">
+    <p role="alert" className="text-destructive col-span-2 col-start-2 text-[11px]/3.5">
       {children}
     </p>
   )

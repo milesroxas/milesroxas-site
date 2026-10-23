@@ -1,3 +1,4 @@
+import { keyed } from '@/utilities/reactKeys'
 import { formatDate } from '../../layout/timeline'
 import type { DiagramSpec, GraphSpec, SequenceSpec, TimelineSpec } from '../../spec/diagram'
 
@@ -29,8 +30,8 @@ const GraphList = ({ spec }: { spec: GraphSpec }) => {
       </ol>
       <p className="font-medium">Connections</p>
       <ul className="list-disc space-y-1 pl-5">
-        {spec.edges.map((edge, index) => (
-          <li key={index}>
+        {keyed(spec.edges, (edge) => `${edge.from}-${edge.to}`).map(({ key, item: edge }) => (
+          <li key={key}>
             {labels.get(edge.from)} to {labels.get(edge.to)}
             {edge.label ? `: ${edge.label}` : ''}
             {edge.style === 'dashed' ? (
@@ -47,17 +48,19 @@ const SequenceList = ({ spec }: { spec: SequenceSpec }) => {
   const labels = new Map(spec.actors.map((actor) => [actor.id, actor.label]))
   return (
     <ol className="list-decimal space-y-1 pl-5">
-      {spec.messages.map((message, index) => (
-        <li key={index}>
-          {message.from === message.to
-            ? `${labels.get(message.from)}, to itself`
-            : `${labels.get(message.from)} to ${labels.get(message.to)}`}
-          : {message.label}
-          {message.style === 'reply' ? (
-            <span className="text-muted-foreground"> (reply)</span>
-          ) : null}
-        </li>
-      ))}
+      {keyed(spec.messages, (message) => `${message.from}-${message.to}`).map(
+        ({ key, item: message }) => (
+          <li key={key}>
+            {message.from === message.to
+              ? `${labels.get(message.from)}, to itself`
+              : `${labels.get(message.from)} to ${labels.get(message.to)}`}
+            : {message.label}
+            {message.style === 'reply' ? (
+              <span className="text-muted-foreground"> (reply)</span>
+            ) : null}
+          </li>
+        ),
+      )}
     </ol>
   )
 }
@@ -66,22 +69,23 @@ const TimelineList = ({ spec }: { spec: TimelineSpec }) => (
   <>
     {spec.eras?.length ? (
       <ul className="list-disc space-y-1 pl-5">
-        {spec.eras.map((era, index) => (
-          <li key={index}>
+        {keyed(spec.eras, (era) => era.label).map(({ key, item: era }) => (
+          <li key={key}>
             {era.label}: {formatDate(era.start)} to {formatDate(era.end)}
           </li>
         ))}
       </ul>
     ) : null}
     <ol className="list-decimal space-y-1 pl-5">
-      {[...spec.events]
-        .sort((a, b) => a.at.localeCompare(b.at))
-        .map((event, index) => (
-          <li key={index}>
-            {formatDate(event.at)}: {event.label}
-            {event.ref ? <span className="text-muted-foreground"> ({event.ref})</span> : null}
-          </li>
-        ))}
+      {keyed(
+        [...spec.events].sort((a, b) => a.at.localeCompare(b.at)),
+        (event) => `${event.at}-${event.label}`,
+      ).map(({ key, item: event }) => (
+        <li key={key}>
+          {formatDate(event.at)}: {event.label}
+          {event.ref ? <span className="text-muted-foreground"> ({event.ref})</span> : null}
+        </li>
+      ))}
     </ol>
   </>
 )

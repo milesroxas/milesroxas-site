@@ -19,7 +19,7 @@ export type SliderMark = {
 const sliderRangeVariants = cva(
   // A disabled slider dims its fill along with its track: a full-contrast
   // fill under a muted label reads as an active control that stopped working.
-  'absolute h-full rounded-full group-data-[disabled]/slider:bg-muted-foreground/30',
+  'group-data-[disabled]/slider:bg-muted-foreground/30 absolute h-full rounded-full',
   {
     variants: {
       variant: {
@@ -183,7 +183,7 @@ function Slider({
     >
       <SliderPrimitive.Track
         data-slot="slider-track"
-        className="relative h-1 w-full grow overflow-visible rounded-full bg-muted group-data-[disabled]/slider:bg-muted/60"
+        className="bg-muted group-data-[disabled]/slider:bg-muted/60 relative h-1 w-full grow overflow-visible rounded-full"
       >
         {origin === undefined || values.length !== 1 ? (
           <SliderPrimitive.Range
@@ -206,7 +206,7 @@ function Slider({
             data-slot="slider-mark"
             data-kind={mark.kind ?? 'default'}
             aria-hidden
-            className="pointer-events-none absolute -translate-x-1/2 rounded-full bg-muted-foreground/60 data-[kind=default]:top-full data-[kind=default]:mt-[3px] data-[kind=default]:h-[3px] data-[kind=default]:w-[3px] data-[kind=zero]:-top-[3px] data-[kind=zero]:h-2.5 data-[kind=zero]:w-0.5"
+            className="bg-muted-foreground/60 pointer-events-none absolute -translate-x-1/2 rounded-full data-[kind=default]:top-full data-[kind=default]:mt-[3px] data-[kind=default]:h-[3px] data-[kind=default]:w-[3px] data-[kind=zero]:-top-[3px] data-[kind=zero]:h-2.5 data-[kind=zero]:w-0.5"
             style={{ left: percent(mark.value, min, max) }}
           />
         ))}
@@ -217,18 +217,18 @@ function Slider({
           data-slot="slider-thumb"
           aria-label={thumbLabels?.[index]}
           className={cn(
-            'relative block size-3.5 shrink-0 rounded-full bg-foreground shadow-[0_1px_2px_rgb(0_0_0/0.4),0_0_0_1px_rgb(0_0_0/0.15)] outline-none',
+            'bg-foreground relative block size-3.5 shrink-0 rounded-full shadow-[0_1px_2px_rgb(0_0_0/0.4),0_0_0_1px_rgb(0_0_0/0.15)] outline-none',
             // Grow under the pointer, more in the hand; slide with the
             // rubber-band offset past a limit and spring back on release.
-            'translate-x-(--slider-overshoot) [transition:scale_150ms_var(--ease-out-quint),translate_250ms_var(--ease-out-quint)] group-hover/slider:scale-[1.29] group-data-[dragging]/slider:scale-[1.43] group-data-[dragging]/slider:[transition:scale_150ms_var(--ease-out-quint)] group-data-[disabled]/slider:scale-[0.71] group-data-[disabled]/slider:bg-input group-data-[disabled]/slider:shadow-none group-data-[invalid]/slider:bg-destructive motion-reduce:transition-none',
-            'focus-visible:ring-[3px] focus-visible:ring-ring/50',
+            'group-data-[disabled]/slider:bg-input group-data-[invalid]/slider:bg-destructive translate-x-(--slider-overshoot) [transition:scale_150ms_var(--ease-out-quint),translate_250ms_var(--ease-out-quint)] group-hover/slider:scale-[1.29] group-data-[disabled]/slider:scale-[0.71] group-data-[disabled]/slider:shadow-none group-data-[dragging]/slider:scale-[1.43] group-data-[dragging]/slider:[transition:scale_150ms_var(--ease-out-quint)] motion-reduce:transition-none',
+            'focus-visible:ring-ring/50 focus-visible:ring-[3px]',
           )}
         >
           {formatValue && (
             <span
               data-slot="slider-bubble"
               aria-hidden
-              className="pointer-events-none absolute bottom-full left-1/2 mb-2 origin-bottom -translate-x-1/2 scale-95 rounded-sm bg-foreground px-1.5 py-0.5 font-mono text-[11px] leading-4 whitespace-nowrap text-background opacity-0 transition-[opacity,scale] duration-150 ease-out-quint group-data-[dragging]/slider:scale-100 group-data-[dragging]/slider:opacity-100 motion-reduce:scale-100 motion-reduce:transition-none"
+              className="bg-foreground text-background ease-out-quint pointer-events-none absolute bottom-full left-1/2 mb-2 origin-bottom -translate-x-1/2 scale-95 rounded-sm px-1.5 py-0.5 font-mono text-[11px] leading-4 whitespace-nowrap opacity-0 transition-[opacity,scale] duration-150 group-data-[dragging]/slider:scale-100 group-data-[dragging]/slider:opacity-100 motion-reduce:scale-100 motion-reduce:transition-none"
             >
               {formatValue(thumbValue)}
             </span>

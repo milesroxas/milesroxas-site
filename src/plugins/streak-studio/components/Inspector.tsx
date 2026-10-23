@@ -1,5 +1,6 @@
 'use client'
 
+import { keyed } from '@/utilities/reactKeys'
 import './studio.css'
 
 import { IconChevronsDown, IconChevronsUp } from '@tabler/icons-react'
@@ -39,11 +40,11 @@ const summaryNode = (summary: GroupSummary) =>
     summary
   ) : (
     <span className="flex gap-1">
-      {summary.swatches.map((rgb, index) => (
+      {keyed(summary.swatches, (rgb) => toHex(rgb)).map(({ key, item: rgb }) => (
         <span
-          key={index}
+          key={key}
           aria-hidden
-          className="size-3 rounded-[3px] ring-1 ring-border ring-inset"
+          className="ring-border size-3 rounded-[3px] ring-1 ring-inset"
           style={{ backgroundColor: toHex(rgb) }}
         />
       ))}
@@ -290,7 +291,7 @@ function TabStrip({
   onToggleAll: () => void
 }) {
   return (
-    <div className="sticky top-0 z-20 -mx-(--row-gutter) flex h-(--inspector-tabs) items-center gap-5 border-border border-b bg-background px-(--row-gutter)">
+    <div className="border-border bg-background sticky top-0 z-20 -mx-(--row-gutter) flex h-(--inspector-tabs) items-center gap-5 border-b px-(--row-gutter)">
       <TabsList variant="line" className="h-full gap-5 border-b-0">
         <TabsTrigger value="look">Look</TabsTrigger>
         <TabsTrigger value="pointer">Pointer</TabsTrigger>
@@ -298,7 +299,7 @@ function TabStrip({
           Stills
           {/* A still that will render on publish is marked where the tab is,
               so the count of edits on the strip stays the count of rows. */}
-          {stillsApart > 0 && <span aria-hidden className="size-1.5 rounded-full bg-warning" />}
+          {stillsApart > 0 && <span aria-hidden className="bg-warning size-1.5 rounded-full" />}
           {stillsApart > 0 && (
             <span className="sr-only">{stillsApart} stills render on publish</span>
           )}
@@ -312,7 +313,7 @@ function TabStrip({
           does not move when the tab changes. */}
       <div className="ml-auto flex items-center gap-2.5">
         <span
-          className="font-mono text-[11px]/3.5 text-primary tabular-nums tracking-[0.02em]"
+          className="text-primary font-mono text-[11px]/3.5 tracking-[0.02em] tabular-nums"
           aria-live="polite"
         >
           {changed ? `${changed} changed` : ''}
@@ -342,10 +343,10 @@ function SelectionBar({
   return (
     <div
       role="status"
-      className="sticky top-(--inspector-tabs) z-20 -mx-(--row-gutter) flex min-h-8 items-center gap-2.5 border-border border-b bg-muted/60 px-(--row-gutter) text-[11px]/4 backdrop-blur-xs"
+      className="border-border bg-muted/60 sticky top-(--inspector-tabs) z-20 -mx-(--row-gutter) flex min-h-8 items-center gap-2.5 border-b px-(--row-gutter) text-[11px]/4 backdrop-blur-xs"
     >
-      <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-primary" />
-      <span className="min-w-0 flex-1 truncate text-foreground">
+      <span aria-hidden className="bg-primary size-1.5 shrink-0 rounded-full" />
+      <span className="text-foreground min-w-0 flex-1 truncate">
         <span className="font-medium">{label}</span>
         <span className="text-muted-foreground">
           {editing ? ' · the rows override the look for this still' : ' · on the stage'}
@@ -353,7 +354,7 @@ function SelectionBar({
       </span>
       <button
         type="button"
-        className="pressable shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
+        className="pressable text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
         onClick={onDone}
       >
         Done
@@ -369,7 +370,7 @@ function ToggleAllButton({ allOpen, onClick }: { allOpen: boolean; onClick: () =
         <button
           type="button"
           aria-label={allOpen ? 'Collapse all sections' : 'Expand all sections'}
-          className="pressable flex size-full cursor-pointer items-center justify-center rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/30"
+          className="pressable text-muted-foreground hover:text-foreground focus-visible:ring-ring/30 flex size-full cursor-pointer items-center justify-center rounded-sm outline-none focus-visible:ring-2"
           onClick={onClick}
         >
           {allOpen ? (
@@ -436,7 +437,7 @@ function PointerTab({
   return (
     <TabsContent value="pointer" className="flex flex-col pt-5">
       <div className="flex items-start gap-4">
-        <p className="min-w-0 flex-1 text-muted-foreground text-xs/5">{note}</p>
+        <p className="text-muted-foreground min-w-0 flex-1 text-xs/5">{note}</p>
         {/* Hidden rather than absent: the note beside it keeps one wrap
             whether or not anything has been changed, so a slider does
             not push every row down the moment it leaves its default. */}
@@ -444,7 +445,7 @@ function PointerTab({
           type="button"
           aria-label="Reset pointer terms"
           className={cn(
-            'pressable shrink-0 cursor-pointer text-[11px]/5 text-muted-foreground hover:text-foreground',
+            'pressable text-muted-foreground hover:text-foreground shrink-0 cursor-pointer text-[11px]/5',
             changed === 0 && 'invisible',
           )}
           onClick={onReset}
@@ -452,7 +453,7 @@ function PointerTab({
           Reset
         </button>
       </div>
-      <div className="mt-4 flex flex-col gap-0.5 border-border border-t pt-3">{children}</div>
+      <div className="border-border mt-4 flex flex-col gap-0.5 border-t pt-3">{children}</div>
     </TabsContent>
   )
 }
@@ -489,14 +490,14 @@ function Group({
       {/* The section header parks under the tab strip while its own rows
           scroll, and hands over when the next group reaches it — so the name
           of the thing being edited is never off screen. */}
-      <div className="sticky top-(--inspector-tabs) z-10 -mx-(--row-gutter) flex items-center gap-2.5 bg-background px-(--row-gutter)">
-        <CollapsibleTrigger className="w-auto min-w-0 flex-1 text-[11px]/4 text-muted-foreground uppercase tracking-[0.06em] hover:text-foreground data-[state=open]:text-foreground">
+      <div className="bg-background sticky top-(--inspector-tabs) z-10 -mx-(--row-gutter) flex items-center gap-2.5 px-(--row-gutter)">
+        <CollapsibleTrigger className="text-muted-foreground hover:text-foreground data-[state=open]:text-foreground w-auto min-w-0 flex-1 text-[11px]/4 tracking-[0.06em] uppercase">
           {name}
           {!open && (
-            <span className="ml-auto flex items-center gap-2 whitespace-nowrap font-mono font-normal text-[11px]/3.5 text-muted-foreground normal-case tabular-nums tracking-normal">
+            <span className="text-muted-foreground ml-auto flex items-center gap-2 font-mono text-[11px]/3.5 font-normal tracking-normal whitespace-nowrap normal-case tabular-nums">
               {changed > 0 && (
                 <>
-                  <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-primary" />
+                  <span aria-hidden className="bg-primary size-1.5 shrink-0 rounded-full" />
                   <span className="sr-only">{changed} changed</span>
                 </>
               )}
@@ -508,7 +509,7 @@ function Group({
           <button
             type="button"
             aria-label={`Reset ${name}`}
-            className="pressable shrink-0 cursor-pointer text-[11px]/3.5 text-muted-foreground hover:text-foreground"
+            className="pressable text-muted-foreground hover:text-foreground shrink-0 cursor-pointer text-[11px]/3.5"
             onClick={onReset}
           >
             Reset

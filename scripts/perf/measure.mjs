@@ -26,9 +26,9 @@ const page = await ctx.newPage()
 const reqs = []
 const errors = []
 page.on('console', (m) => {
-  if (['error', 'warning'].includes(m.type())) errors.push(m.type() + ': ' + m.text().slice(0, 200))
+  if (['error', 'warning'].includes(m.type())) errors.push(`${m.type()}: ${m.text().slice(0, 200)}`)
 })
-page.on('pageerror', (e) => errors.push('pageerror: ' + e.message.slice(0, 200)))
+page.on('pageerror', (e) => errors.push(`pageerror: ${e.message.slice(0, 200)}`))
 page.on('response', async (r) => {
   const req = r.request()
   let size = 0

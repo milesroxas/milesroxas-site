@@ -51,7 +51,7 @@ export const YouTubeColumn: React.FC<YouTubeColumnProps> = (props) => {
 
   if (!embedUrl) {
     return (
-      <div className="rounded-md border border-destructive bg-destructive/10 p-4 text-destructive">
+      <div className="border-destructive bg-destructive/10 text-destructive rounded-md border p-4">
         Invalid YouTube URL. Please provide a valid YouTube link.
       </div>
     )

@@ -15,7 +15,7 @@ import type { ScrollRevealVariant } from '@/shared/ui/scroll-reveal'
  * A block that gains markers moves from `'frame'` to a variant here, or its
  * lines would open inside a frame that is still opening.
  */
-export const blockRevealVariants = {
+const blockRevealVariants = {
   // Cards carry their own markers.
   archive: 'underMedia',
   // Its own intro shell, gated later than the shared line (its veil).

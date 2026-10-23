@@ -17,6 +17,7 @@ import {
   type RefObject,
   type SetStateAction,
   useEffect,
+  useEffectEvent,
   useId,
   useLayoutEffect,
   useRef,
@@ -49,6 +50,7 @@ import { type ContactPageCopy, fillContactTokens } from '@/shared/content/contac
 import { INQUIRY_EMAIL_INVALID, INQUIRY_MESSAGE_MAX_LENGTH } from '@/shared/content/inquiry'
 import { useRevealSwap } from '@/shared/ui/scroll-reveal'
 import { isValidEmailAddress, normalizeEmailAddress } from '@/utilities/emailAddress'
+import { keyed } from '@/utilities/reactKeys'
 import { Recommended } from './Recommended'
 import type { ContactRecommendation } from './recommendations'
 
@@ -251,7 +253,7 @@ function Intro({ copy, email }: { copy: ContactPageCopy; email: string | null })
       <RisingHeading>{copy.heading}</RisingHeading>
       {copy.lead ? (
         <p
-          className={`max-w-[34ch] text-pretty text-lead text-muted-foreground ${enterIn}`}
+          className={`text-lead text-muted-foreground max-w-[34ch] text-pretty ${enterIn}`}
           style={enterAt(BEAT.lead)}
         >
           {copy.lead}
@@ -259,12 +261,12 @@ function Intro({ copy, email }: { copy: ContactPageCopy; email: string | null })
       ) : null}
       {email ? (
         <p
-          className={`mt-2 text-base/relaxed text-muted-foreground ${enterIn}`}
+          className={`text-muted-foreground mt-2 text-base/relaxed ${enterIn}`}
           style={enterAt(BEAT.email)}
         >
           Prefer email?{' '}
           <a
-            className="text-foreground underline decoration-foreground/30 underline-offset-4 transition-[text-decoration-color] duration-300 hover:decoration-foreground"
+            className="text-foreground decoration-foreground/30 hover:decoration-foreground underline underline-offset-4 transition-[text-decoration-color] duration-300"
             href={`mailto:${email}`}
           >
             {email}
@@ -292,18 +294,17 @@ function RisingHeading({
   const words = children.split(/\s+/).filter(Boolean)
   return (
     <h1
-      className={`max-w-[16ch] text-balance text-heading-1 motion-reduce:animate-hero-fade ${className ?? ''}`}
+      className={`text-heading-1 motion-reduce:animate-hero-fade max-w-[16ch] text-balance ${className ?? ''}`}
       ref={ref}
       tabIndex={tabIndex}
     >
       {/* Read whole: split into inline-blocks, the words would be named with gaps. */}
       <span className="sr-only">{children}</span>
-      {words.map((word, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: a heading can repeat a word; position is its identity
-        <span aria-hidden key={i}>
+      {keyed(words, (word) => word).map(({ key, item: word }, i) => (
+        <span aria-hidden key={key}>
           <span className="-my-[0.15em] inline-block overflow-clip py-[0.15em] align-top">
             <span
-              className="inline-block motion-safe:animate-hero-rise"
+              className="motion-safe:animate-hero-rise inline-block"
               style={enterAt(at + i * BEAT.word)}
             >
               {word}
@@ -371,7 +372,7 @@ function Elsewhere({
                   style={enterAt(BEAT.elsewhere + i * BEAT.elsewhereStep)}
                 >
                   <a
-                    className="contact-profile inline-flex items-center gap-2 text-muted-foreground text-sm/5 transition-colors duration-300 hover:text-foreground"
+                    className="contact-profile text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm/5 transition-colors duration-300"
                     href={profile.url}
                     rel="noopener me"
                     target="_blank"
@@ -403,27 +404,27 @@ function CvCard({ copy, cv }: { copy: ContactPageCopy; cv: ContactCv }) {
 
   return (
     <a
-      className="contact-cv group flex w-full max-w-sm items-center gap-4 rounded-lg p-4 ring-1 ring-foreground/10 hover:bg-foreground/[0.03] hover:ring-foreground/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+      className="contact-cv group ring-foreground/10 hover:bg-foreground/[0.03] hover:ring-foreground/25 focus-visible:ring-ring/50 flex w-full max-w-sm items-center gap-4 rounded-lg p-4 ring-1 focus-visible:ring-2 focus-visible:outline-none"
       download
       href={cv.url}
       rel="noopener"
       target="_blank"
     >
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-foreground/5 text-muted-foreground transition-[color,background-color] duration-300 group-hover:bg-foreground/10 group-hover:text-foreground">
+      <span className="bg-foreground/5 text-muted-foreground group-hover:bg-foreground/10 group-hover:text-foreground flex size-10 shrink-0 items-center justify-center rounded-md transition-[color,background-color] duration-300">
         <IconFileCv aria-hidden className="size-5" stroke={1.5} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="font-medium text-foreground text-sm/5">{copy.cvHeading}</span>
+        <span className="text-foreground text-sm/5 font-medium">{copy.cvHeading}</span>
         {copy.cvNote ? (
           <span className="text-muted-foreground text-sm/5">{copy.cvNote}</span>
         ) : null}
-        <span className="font-mono text-muted-foreground text-xs/4 uppercase tracking-widest">
+        <span className="text-muted-foreground font-mono text-xs/4 tracking-widest uppercase">
           {meta}
         </span>
       </span>
       <IconDownload
         aria-hidden
-        className="size-4 shrink-0 text-muted-foreground transition-[color,translate] duration-300 ease-out-quint group-hover:translate-y-0.5 group-hover:text-foreground group-active:translate-y-1 group-active:duration-150"
+        className="text-muted-foreground ease-out-quint group-hover:text-foreground size-4 shrink-0 transition-[color,translate] duration-300 group-hover:translate-y-0.5 group-active:translate-y-1 group-active:duration-150"
         stroke={1.5}
       />
     </a>
@@ -870,8 +871,7 @@ function useSentArrival({
   const reducedMotion = usePrefersReducedMotion()
   const lenis = useLenis()
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the receipt arrives once, as it mounts
-  useLayoutEffect(() => {
+  const arrive = useEffectEvent(() => {
     const heading = headingRef.current
     if (!heading || heading.getBoundingClientRect().top >= 0) return
 
@@ -882,7 +882,9 @@ function useSentArrival({
     return () => {
       root?.style.removeProperty('--morph-hold')
     }
-  }, [])
+  })
+  // Once, as the receipt mounts; the event reads that moment's motion setting and scroller.
+  useLayoutEffect(() => arrive(), [])
 }
 
 function Sent({
@@ -906,12 +908,12 @@ function Sent({
   return (
     <>
       <div className="flex flex-col items-start gap-6 lg:col-span-5">
-        <SentMark className="size-10 text-foreground" />
+        <SentMark className="text-foreground size-10" />
         <RisingHeading at={SENT_BEAT.title} className="outline-none" ref={headingRef} tabIndex={-1}>
           {fillContactTokens(copy.sentHeading, tokens)}
         </RisingHeading>
         <p
-          className={`max-w-[34ch] text-pretty text-lead text-muted-foreground ${enterIn}`}
+          className={`text-lead text-muted-foreground max-w-[34ch] text-pretty ${enterIn}`}
           style={enterAt(SENT_BEAT.body)}
         >
           {fillContactTokens(copy.sentBody, tokens)}
@@ -924,14 +926,14 @@ function Sent({
       >
         <div className="relative flex items-baseline justify-between gap-6 pb-3">
           <p
-            className={`font-mono text-muted-foreground text-xs/4 uppercase tracking-widest ${enterIn}`}
+            className={`text-muted-foreground font-mono text-xs/4 tracking-widest uppercase ${enterIn}`}
             style={enterAt(SENT_BEAT.label)}
           >
             Your message
           </p>
           {receipt.reference ? (
             <p
-              className={`font-mono text-muted-foreground text-xs/4 uppercase tabular-nums tracking-widest ${enterIn}`}
+              className={`text-muted-foreground font-mono text-xs/4 tracking-widest uppercase tabular-nums ${enterIn}`}
               style={enterAt(SENT_BEAT.label + BEAT.word)}
             >
               Ref <span className="text-foreground">{receipt.reference}</span>
@@ -939,12 +941,12 @@ function Sent({
           ) : null}
           <span
             aria-hidden
-            className="absolute inset-x-0 bottom-0 h-px origin-left bg-foreground motion-safe:animate-hero-draw motion-reduce:animate-hero-fade"
+            className="bg-foreground motion-safe:animate-hero-draw motion-reduce:animate-hero-fade absolute inset-x-0 bottom-0 h-px origin-left"
             style={enterAt(SENT_BEAT.rule)}
           />
         </div>
         <p
-          className="max-w-[60ch] whitespace-pre-line text-base/relaxed text-foreground motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade md:text-lg/relaxed"
+          className="text-foreground motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade max-w-[60ch] text-base/relaxed whitespace-pre-line md:text-lg/relaxed"
           style={enterAt(SENT_BEAT.message)}
         >
           {receipt.message}

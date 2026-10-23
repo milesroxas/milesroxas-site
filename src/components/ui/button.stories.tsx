@@ -230,7 +230,7 @@ export const HeroActions: Story = {
     backgrounds: { default: 'dark' },
   },
   render: () => (
-    <div className="flex items-start gap-3 bg-tertiary p-12" data-theme="dark">
+    <div className="bg-tertiary flex items-start gap-3 p-12" data-theme="dark">
       <Button size="action" variant="glass">
         Primary Action
       </Button>

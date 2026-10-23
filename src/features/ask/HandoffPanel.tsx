@@ -163,7 +163,7 @@ const handoffCardClass = (prominent: boolean) =>
   cn(
     // The ground arrives on the swap's own beat, so the offer's transparent
     // row becomes the form's muted surface while the height morphs.
-    'motion-safe:transition-colors motion-safe:ease-out-quint',
+    'motion-safe:ease-out-quint motion-safe:transition-colors',
     // The offer is a row, not a card: no ground, no padding, and nothing
     // clipped (the chip's focus ring reaches past the row's box). `!` on
     // the two that the inset variant also sets through a data attribute

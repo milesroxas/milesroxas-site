@@ -66,11 +66,11 @@ function AskFieldDemo({ busy = false }: { busy?: boolean }) {
   return (
     <form onSubmit={(event) => event.preventDefault()}>
       <InputGroup
-        className="border-transparent bg-foreground/6 dark:bg-foreground/6"
+        className="bg-foreground/6 dark:bg-foreground/6 border-transparent"
         variant="field"
       >
         <InputGroupAddon className="p-0">
-          <IconSparkles className="size-4 text-brand" />
+          <IconSparkles className="text-brand size-4" />
         </InputGroupAddon>
         <InputGroupInput
           aria-label="Your question"

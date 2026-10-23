@@ -67,7 +67,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           data={[personSchema(siteInfo ?? {}, { knowsAbout }), webSiteSchema(siteInfo ?? {})]}
         />
       </head>
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className="bg-background text-foreground min-h-screen antialiased">
         <Providers>
           <SiteChrome />
           {/* One landmark for the page's content, so readers and extractors find it without the chrome. */}

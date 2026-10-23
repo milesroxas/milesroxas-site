@@ -49,14 +49,14 @@ export const PostCard: React.FC<PostCardProps> = ({
             data-reveal
             data-reveal-group={slug}
           >
-            <h3 className="font-light text-lg">{titleFromProps || title}</h3>
+            <h3 className="text-lg font-light">{titleFromProps || title}</h3>
             <Badge variant="post" className="mt-1">
               Post
             </Badge>
           </div>
         )}
         {publisher && (
-          <p className="mt-1 text-muted-foreground text-sm" data-reveal data-reveal-group={slug}>
+          <p className="text-muted-foreground mt-1 text-sm" data-reveal data-reveal-group={slug}>
             On {publisher}
           </p>
         )}

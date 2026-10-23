@@ -65,10 +65,10 @@ const FaqRow: React.FC<{ index: number; item: FaqItem; open: boolean; type: Type
 }) => (
   <AccordionPrimitive.Item className="border-border border-b" value={item.id}>
     <AccordionPrimitive.Header className={cn(type.lead, 'leading-relaxed')}>
-      <AccordionPrimitive.Trigger className="group pressable pressable-subtle flex w-full items-start gap-6 py-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/30">
+      <AccordionPrimitive.Trigger className="group pressable pressable-subtle focus-visible:ring-ring/30 flex w-full items-start gap-6 py-5 text-left outline-none focus-visible:ring-2">
         <span
           aria-hidden="true"
-          className="w-8 shrink-0 pt-2 font-mono text-muted-foreground text-xs/none transition-colors group-hover:text-foreground"
+          className="text-muted-foreground text-xs/none group-hover:text-foreground w-8 shrink-0 pt-2 font-mono transition-colors"
         >
           {ordinalLabel(index)}
         </span>
@@ -110,25 +110,28 @@ export const FaqAccordion: React.FC<{ items: FaqItem[]; textSize?: TextSize | nu
   const type = typeScale(textSize)
   const [open, setOpen] = useState(items[0]?.id ?? '')
   const [lead, trail] = splitColumns(items)
-  const columns = [lead, trail]
+  const columns = [
+    { side: 'lead', items: lead, offset: 0 },
+    { side: 'trail', items: trail, offset: lead.length },
+  ] as const
 
   return (
     <AccordionPrimitive.Root collapsible onValueChange={setOpen} type="single" value={open}>
       <BlockGrid className="gap-y-0">
-        {columns.map((column, columnIndex) =>
+        {columns.map(({ side, items: column, offset }) =>
           column.length ? (
             <div
               className={cn(
                 'border-foreground border-t md:col-span-4',
-                columnIndex > 0 && 'max-md:border-t-0',
+                side === 'trail' && 'max-md:border-t-0',
               )}
               data-reveal
               data-reveal-group="columns"
-              key={columnIndex}
+              key={side}
             >
               {column.map((item, index) => (
                 <FaqRow
-                  index={columnIndex === 0 ? index : lead.length + index}
+                  index={offset + index}
                   item={item}
                   key={item.id}
                   open={open === item.id}

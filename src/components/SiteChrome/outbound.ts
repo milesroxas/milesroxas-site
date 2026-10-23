@@ -16,7 +16,7 @@ export type OutboundLink = {
  */
 const HOST_LABEL_LIMIT = 16
 
-export const parseOutboundUrl = (value: unknown): URL | null => {
+const parseOutboundUrl = (value: unknown): URL | null => {
   if (typeof value !== 'string') return null
   try {
     const url = new URL(value.trim())

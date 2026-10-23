@@ -5,7 +5,7 @@ import type * as React from 'react'
 import { cn } from '@/utilities/ui'
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-xs/relaxed font-medium whitespace-nowrap pressable outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button pressable focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-xs/relaxed font-medium whitespace-nowrap outline-none select-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -13,7 +13,7 @@ const buttonVariants = cva(
         outline:
           'border-border hover:bg-input/50 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:bg-input/30',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
+          'bg-secondary text-secondary-foreground aria-expanded:bg-secondary aria-expanded:text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]',
         ghost:
           'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50',
         destructive:
@@ -22,16 +22,16 @@ const buttonVariants = cva(
         // Editorial nav link: a hairline rule above a full-width, left-set
         // label. Pair with `size="clear"` — the variant owns its own metrics.
         ruled:
-          'w-full justify-between rounded-none border-t-foreground py-2 text-base/none font-normal text-muted-foreground hover:text-foreground',
+          'border-t-foreground text-base/none text-muted-foreground hover:text-foreground w-full justify-between rounded-none py-2 font-normal',
         // Editorial text action in the field-label voice (Edit, Edit and
         // resend): mono small caps on an underline. Pair with `size="clear"`.
-        mono: 'font-mono text-xs/4 font-normal tracking-widest text-foreground uppercase underline underline-offset-4 hover:text-primary',
+        mono: 'text-foreground hover:text-primary font-mono text-xs/4 font-normal tracking-widest uppercase underline underline-offset-4',
         // Frosted chip for actions that sit over media (hero primary action):
         // a translucent tint of the band's foreground with a light backdrop
         // blur, so it reads on any photograph without a solid plate. The
         // hover deepens the tint on the `pressable` transition list. Pair
         // with `size="action"`, which sets the label's weight and tracking.
-        glass: 'bg-foreground/10 text-foreground backdrop-blur-xs hover:bg-foreground/15',
+        glass: 'bg-foreground/10 text-foreground hover:bg-foreground/15 backdrop-blur-xs',
         // Plain underlined label for the secondary action beside `glass`:
         // same metrics, no plate, so the pair aligns as one row. The hover
         // lifts the rule instead of changing color. Pair with `size="action"`.
@@ -41,7 +41,7 @@ const buttonVariants = cva(
         // underline, no plate and no side padding so alone it sits flush with
         // the copy. Owns the chip's 32px height so the pair rows up; pair with
         // `size="clear"`. `underline` is its foreground-ink twin over media.
-        text: 'h-8 text-sm/4 font-normal tracking-tight text-primary underline decoration-1 underline-offset-2 hover:underline-offset-4',
+        text: 'text-primary h-8 text-sm/4 font-normal tracking-tight underline decoration-1 underline-offset-2 hover:underline-offset-4',
         // Small print at the foot of a page (the closing band's legal row):
         // a quiet label that comes up to full ink and takes a rule as the
         // pointer reaches it, so the row reads as type at rest and as an
@@ -51,7 +51,7 @@ const buttonVariants = cva(
         // Owns the 44px touch row it needs while the links are stacked and
         // drops it once they sit inline. Pair with `size="clear"`.
         fineprint:
-          'min-h-11 text-sm/tight font-normal text-foreground/70 underline-offset-4 hover:text-foreground hover:underline sm:min-h-0',
+          'text-foreground/70 hover:text-foreground min-h-11 text-sm/tight font-normal underline-offset-4 hover:underline sm:min-h-0',
       },
       size: {
         default:
@@ -78,7 +78,7 @@ const buttonVariants = cva(
           "h-8 gap-1 rounded-sm px-3 text-sm/4 font-normal tracking-tight has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
         // Takeover-menu pill: letterspaced all-caps capsule (CLOSE / GET IN
         // TOUCH). Trailing letter-space is offset so the label reads centered.
-        pill: "h-8 gap-1 rounded-full px-6 text-sm/none font-semibold tracking-widest uppercase [&>span]:mr-[-0.1em] [&_svg:not([class*='size-'])]:size-4",
+        pill: "text-sm/none h-8 gap-1 rounded-full px-6 font-semibold tracking-widest uppercase [&_svg:not([class*='size-'])]:size-4 [&>span]:mr-[-0.1em]",
         // Action inside a conversation (Ask's rating and handoff): a
         // sentence-case button with the chrome's inner 8px corner, 32px from
         // `md` and 40px below it.

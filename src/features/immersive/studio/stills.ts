@@ -68,7 +68,7 @@ export const STILL_USES = {
 
 export type StillUse = keyof typeof STILL_USES
 export const STILL_USE_IDS = Object.keys(STILL_USES) as StillUse[]
-export const isStillUse = (value: unknown): value is StillUse =>
+const isStillUse = (value: unknown): value is StillUse =>
   typeof value === 'string' && Object.hasOwn(STILL_USES, value)
 
 /** The uses a visual slot receives from a published look, in the shape the slot reads. */

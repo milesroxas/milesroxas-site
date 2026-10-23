@@ -85,7 +85,7 @@ export const FaqBlock: React.FC<FaqBlockProps> = ({
                 data-reveal
                 data-reveal-group="heading"
               >
-                <span aria-hidden="true" className="h-px w-4 bg-border" />
+                <span aria-hidden="true" className="bg-border h-px w-4" />
                 {eyebrow}
               </p>
             ) : null}
@@ -98,7 +98,7 @@ export const FaqBlock: React.FC<FaqBlockProps> = ({
               className="flex flex-wrap items-baseline gap-x-4 gap-y-1 md:col-span-4 md:col-start-5 md:justify-self-end"
               data-reveal
             >
-              {prompt ? <p className="text-base/relaxed text-muted-foreground">{prompt}</p> : null}
+              {prompt ? <p className="text-muted-foreground text-base/relaxed">{prompt}</p> : null}
               <CMSLink {...link} className="group inline-flex items-center gap-3 text-lg/normal">
                 <ArrowIcon />
               </CMSLink>

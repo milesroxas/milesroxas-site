@@ -12,6 +12,7 @@ import type {
   RichTextPillListBlock as RichTextPillListBlockData,
   YouTubeBlock as YouTubeBlockData,
 } from '@/payload-types'
+import { keyed } from '@/utilities/reactKeys'
 import { RichTextInsights } from './insights/Component'
 import { RichTextPillList } from './pill-list/Component'
 
@@ -75,14 +76,13 @@ const proseState = (body: Body, nodes: RootNode[]): DefaultTypedEditorState =>
   ({ ...body, root: { ...body.root, children: nodes } }) as DefaultTypedEditorState
 
 /** One toolbar block as a grid cell. Insights place themselves by count. */
-const renderBlock = (fields: BodyBlock, index: number) => {
-  const key = fields.id ?? `${fields.blockType}-${index}`
+const renderBlock = (fields: BodyBlock, key: string) => {
   switch (fields.blockType) {
     case 'insights':
       return (
         <RichTextInsights
           className="md:col-start-3"
-          group={`insights-${index}`}
+          group={`insights-${key}`}
           items={fields.items}
           key={key}
         />
@@ -131,9 +131,11 @@ export const RichTextBlock: React.FC<RichTextBlockProps> = ({ bare, body, textSi
     <Container>
       <BlockGrid>
         {body
-          ? segmentBody(body.root.children).map((segment, index) =>
+          ? keyed(segmentBody(body.root.children), (segment) =>
+              segment.kind === 'prose' ? 'prose' : (segment.fields.id ?? segment.fields.blockType),
+            ).map(({ key, item: segment }) =>
               segment.kind === 'prose' ? (
-                <div className="md:col-span-4 md:col-start-3" data-reveal key={`prose-${index}`}>
+                <div className="md:col-span-4 md:col-start-3" data-reveal key={key}>
                   <RichText
                     className={proseBodyClassNames[textSize ?? 'small']}
                     data={proseState(body, segment.nodes)}
@@ -141,7 +143,7 @@ export const RichTextBlock: React.FC<RichTextBlockProps> = ({ bare, body, textSi
                   />
                 </div>
               ) : (
-                renderBlock(segment.fields, index)
+                renderBlock(segment.fields, key)
               ),
             )
           : null}

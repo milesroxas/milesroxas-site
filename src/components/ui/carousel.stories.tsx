@@ -25,7 +25,7 @@ export const Default: Story = {
           <CarouselItem key={slide}>
             <Card>
               <CardContent className="flex aspect-square items-center justify-center p-6">
-                <span className="font-semibold text-4xl">{slide}</span>
+                <span className="text-4xl font-semibold">{slide}</span>
               </CardContent>
             </Card>
           </CarouselItem>
@@ -45,7 +45,7 @@ export const MultipleSlides: Story = {
           <CarouselItem key={slide} className="basis-1/3">
             <Card>
               <CardContent className="flex aspect-square items-center justify-center p-6">
-                <span className="font-semibold text-2xl">{slide}</span>
+                <span className="text-2xl font-semibold">{slide}</span>
               </CardContent>
             </Card>
           </CarouselItem>
@@ -65,7 +65,7 @@ export const Vertical: Story = {
           <CarouselItem key={slide}>
             <Card>
               <CardContent className="flex h-40 items-center justify-center p-6">
-                <span className="font-semibold text-3xl">{slide}</span>
+                <span className="text-3xl font-semibold">{slide}</span>
               </CardContent>
             </Card>
           </CarouselItem>
@@ -90,7 +90,7 @@ export const VisibleOverflow: Story = {
           <CarouselItem key={slide} className="basis-4/5">
             <Card>
               <CardContent className="flex aspect-square items-center justify-center p-6">
-                <span className="font-semibold text-4xl">{slide}</span>
+                <span className="text-4xl font-semibold">{slide}</span>
               </CardContent>
             </Card>
           </CarouselItem>

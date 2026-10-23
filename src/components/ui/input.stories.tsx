@@ -65,7 +65,7 @@ export const Bare: Story = {
   args: { 'aria-label': 'Name', placeholder: 'Your name', variant: 'bare' },
   decorators: [
     (Story) => (
-      <div className="flex min-h-9 items-center rounded-md px-3 ring-1 ring-foreground/10">
+      <div className="ring-foreground/10 flex min-h-9 items-center rounded-md px-3 ring-1">
         <Story />
       </div>
     ),

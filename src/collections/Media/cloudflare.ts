@@ -143,7 +143,7 @@ export async function syncMediaToCloudflare(
 }
 
 /** Every image or video without its Cloudflare asset. */
-export async function findUnsynced(payload: Payload): Promise<Media[]> {
+async function findUnsynced(payload: Payload): Promise<Media[]> {
   const { docs } = await payload.find({
     collection: 'media',
     depth: 0,
@@ -160,7 +160,7 @@ export async function findUnsynced(payload: Payload): Promise<Media[]> {
 }
 
 /** Every video on Stream that the site still plays from the origin bucket. */
-export async function findUnready(payload: Payload): Promise<Media[]> {
+async function findUnready(payload: Payload): Promise<Media[]> {
   const { docs } = await payload.find({
     collection: 'media',
     depth: 0,

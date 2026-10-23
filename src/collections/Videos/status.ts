@@ -24,7 +24,7 @@ export type VideoStatus = {
   error: string | null
 }
 
-export function videoStatus(doc: VideoDoc): VideoStatus {
+function videoStatus(doc: VideoDoc): VideoStatus {
   const stage = stageOf(doc)
   const duration = typeof doc.duration === 'number' ? doc.duration : null
   return {

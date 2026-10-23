@@ -11,7 +11,7 @@ import type { PublishedState } from './look-store'
  */
 
 /** The draft's snapshot key, or nothing while the recipe is refused. */
-export function draftKey(effect: Effect, recipe: Recipe): string | null {
+function draftKey(effect: Effect, recipe: Recipe): string | null {
   try {
     return canonicalJSON(snapshotRecipe(effect, recipe))
   } catch {
@@ -20,7 +20,7 @@ export function draftKey(effect: Effect, recipe: Recipe): string | null {
 }
 
 /** Whether the look's pixels, posters included, are what is published: the recipe and the ground. */
-export const lookMatches = (
+const lookMatches = (
   key: string | null,
   ground: LookGround,
   state: PublishedState | null | undefined,
@@ -34,7 +34,7 @@ export const lookMatches = (
  */
 export type StillStatus = 'live' | 'changed' | 'new'
 
-export function stillStatus(
+function stillStatus(
   still: Still,
   live: PublishedState | null,
   unchangedLook: boolean,

@@ -45,7 +45,7 @@ export const FeatureImageStatementBlock: React.FC<FeatureImageStatementBlockProp
   const mediaFigure = (
     <MediaCell
       className={cn(
-        'relative w-full bg-muted',
+        'bg-muted relative w-full',
         aspectClass,
         !fullBleed && 'overflow-hidden rounded-lg md:col-span-8',
       )}
@@ -69,7 +69,7 @@ export const FeatureImageStatementBlock: React.FC<FeatureImageStatementBlockProp
   return (
     <Section bare={bare} spacing={fullBleed ? 'loose' : 'normal'} theme={theme}>
       {fullBleed ? (
-        <div className="flex flex-col gap-grid">
+        <div className="gap-grid flex flex-col">
           {mediaFigure}
           {captionCell && (
             <Container>

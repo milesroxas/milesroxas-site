@@ -99,7 +99,7 @@ export const StreamPoster: Story = {
     resource: streamVideoFixture,
   },
   render: (args) => (
-    <div className="relative aspect-video w-xl overflow-hidden rounded-md bg-muted">
+    <div className="bg-muted relative aspect-video w-xl overflow-hidden rounded-md">
       <Media {...args} />
     </div>
   ),

@@ -410,7 +410,7 @@ function AskDialog({
       {mounted && (
         <>
           <DialogPrimitive.Overlay
-            className="fixed inset-0 z-50 bg-foreground/20 dark:bg-black/50"
+            className="bg-foreground/20 fixed inset-0 z-50 dark:bg-black/50"
             forceMount
             ref={refs.scrim}
           />
@@ -473,7 +473,7 @@ function DialogPanel({
   return (
     <section className="ask-panel chrome-panel" ref={panelRef}>
       <header className="ask-panel-header">
-        <DialogPrimitive.Title className="font-semibold text-[0.9375rem]/5">
+        <DialogPrimitive.Title className="text-[0.9375rem]/5 font-semibold">
           Ask
         </DialogPrimitive.Title>
         <DialogPrimitive.Description className="text-muted-foreground text-xs/4">
@@ -544,7 +544,7 @@ function AskSheet({
     <Sheet onOpenChange={onOpenChange} open={open}>
       <SheetContent
         className={cn(
-          'ask-sheet chrome-panel gap-0 rounded-lg border-t-0 p-0 text-foreground',
+          'ask-sheet chrome-panel text-foreground gap-0 rounded-lg border-t-0 p-0',
           'data-[side=bottom]:inset-x-2 data-[side=bottom]:bottom-[max(0.5rem,env(safe-area-inset-bottom))]',
           'duration-300 ease-(--ease-out-quint) data-closed:duration-200',
           'data-[side=bottom]:data-open:slide-in-from-bottom-full data-[side=bottom]:data-closed:slide-out-to-bottom-full',
@@ -592,7 +592,7 @@ function SheetField({
         fieldClassName="border-transparent bg-foreground/6 dark:bg-foreground/6"
         inputRef={inputRef}
       />
-      <p className="text-center text-muted-foreground text-xs/4">{ASK_NOTICE_SHORT}</p>
+      <p className="text-muted-foreground text-center text-xs/4">{ASK_NOTICE_SHORT}</p>
     </div>
   )
 }
@@ -613,16 +613,16 @@ function SheetHeader({
         className="relative flex h-2.75 shrink-0 touch-none items-end justify-center before:absolute before:inset-x-0 before:top-0 before:h-14"
         {...dragHandlers}
       >
-        <span className="h-1.25 w-9 rounded-full bg-foreground/25" />
+        <span className="bg-foreground/25 h-1.25 w-9 rounded-full" />
       </div>
       <div className="flex h-11 shrink-0 items-center justify-between pr-3 pl-5">
-        <SheetTitle className="flex items-center gap-1.5 font-semibold text-base/5">
-          <AskGlyph className="size-4 text-brand" />
+        <SheetTitle className="flex items-center gap-1.5 text-base/5 font-semibold">
+          <AskGlyph className="text-brand size-4" />
           Ask
         </SheetTitle>
         <SheetDescription className="sr-only">{ASK_SCOPE}</SheetDescription>
         <button
-          className="pressable relative flex size-7 items-center justify-center rounded-md bg-foreground/8 text-foreground/75 after:absolute after:size-11"
+          className="pressable bg-foreground/8 text-foreground/75 relative flex size-7 items-center justify-center rounded-md after:absolute after:size-11"
           onClick={onClose}
           type="button"
         >
@@ -661,7 +661,7 @@ function AskField({
     <form className={cn('min-w-0', className)} onSubmit={submit}>
       <InputGroup className={fieldClassName} ref={fieldRef} variant="field">
         <InputGroupAddon className="p-0 max-md:hidden">
-          <AskGlyph className="size-4 text-brand" />
+          <AskGlyph className="text-brand size-4" />
         </InputGroupAddon>
         <InputGroupInput
           aria-label="Your question"
@@ -713,7 +713,7 @@ function AskBody({
 
   if (messages.length === 0) {
     const intro = sheet ? (
-      <p className="font-light text-xl/7 tracking-[-0.01em]">{ASK_INTRO}</p>
+      <p className="text-xl/7 font-light tracking-[-0.01em]">{ASK_INTRO}</p>
     ) : null
     // A failed first question stands alone: the error, and the question back in the field.
     const list =
@@ -748,16 +748,16 @@ function failureNotice(error: Error, question: string) {
   return (
     <div
       className={cn(
-        'mx-5 mb-4 flex items-start gap-2 rounded-md bg-destructive/6 px-3 py-2.5 md:mx-4.5',
+        'bg-destructive/6 mx-5 mb-4 flex items-start gap-2 rounded-md px-3 py-2.5 md:mx-4.5',
         transcriptItemEnter,
       )}
       role="alert"
     >
-      <IconAlertCircle aria-hidden className="mt-px size-4.5 shrink-0 text-destructive" />
+      <IconAlertCircle aria-hidden className="text-destructive mt-px size-4.5 shrink-0" />
       <div className="flex flex-col gap-0.5">
-        <p className="font-medium text-destructive text-sm/5">{errorText(error)}</p>
+        <p className="text-destructive text-sm/5 font-medium">{errorText(error)}</p>
         {question && (
-          <p className="text-[0.8125rem]/[1.125rem] text-muted-foreground">{ASK_RETRY}</p>
+          <p className="text-muted-foreground text-[0.8125rem]/[1.125rem]">{ASK_RETRY}</p>
         )}
       </div>
     </div>
@@ -783,7 +783,7 @@ function AskSuggestions({
             <span className="min-w-0 flex-1">{suggestion}</span>
             <IconArrowUpLeft
               aria-hidden
-              className="size-4 shrink-0 text-muted-foreground"
+              className="text-muted-foreground size-4 shrink-0"
               stroke={1.75}
             />
           </button>

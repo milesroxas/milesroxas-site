@@ -90,24 +90,23 @@ function Card({
       aria-pressed={selected}
       onClick={onClick}
       className={cn(
-        'pressable flex cursor-pointer flex-col gap-1.5 rounded-md border p-1.5 text-left transition-colors hover:bg-muted disabled:cursor-default disabled:opacity-60',
+        'pressable hover:bg-muted flex cursor-pointer flex-col gap-1.5 rounded-md border p-1.5 text-left transition-colors disabled:cursor-default disabled:opacity-60',
         selected ? 'border-primary' : 'border-input',
       )}
     >
       <span
-        className="flex aspect-video w-full items-center justify-center overflow-hidden rounded-sm text-muted-foreground"
+        className="text-muted-foreground flex aspect-video w-full items-center justify-center overflow-hidden rounded-sm"
         style={{ backgroundColor: ground }}
       >
         {src ? (
-          // biome-ignore lint/performance/noImgElement: admin-only poster thumb; next/image is not loaded in the Payload admin
           <img src={src} alt="" loading="lazy" className="size-full object-cover" />
         ) : (
           children
         )}
       </span>
       <span className="flex min-w-0 flex-col px-0.5 pb-0.5">
-        <span className="truncate font-medium text-xs/4">{title}</span>
-        {caption && <span className="truncate text-[11px]/4 text-muted-foreground">{caption}</span>}
+        <span className="truncate text-xs/4 font-medium">{title}</span>
+        {caption && <span className="text-muted-foreground truncate text-[11px]/4">{caption}</span>}
       </span>
     </button>
   )
@@ -273,7 +272,7 @@ export const FieldPicker: RelationshipFieldClientComponent = ({ path, readOnly }
 
   return (
     <div data-streak-studio="picker" className="mb-6 flex flex-col gap-3">
-      <span className="text-[13px]/5 text-foreground">{slot.effect.label}</span>
+      <span className="text-foreground text-[13px]/5">{slot.effect.label}</span>
 
       {id && !choosing ? (
         <ChosenLook
@@ -335,18 +334,17 @@ function ChosenLook({
   }
   const live = Boolean(selected?.snapshot)
   return (
-    <div className="flex flex-wrap items-center gap-4 rounded-md border border-input p-2">
+    <div className="border-input flex flex-wrap items-center gap-4 rounded-md border p-2">
       <span
         className="block aspect-video w-36 shrink-0 overflow-hidden rounded-sm"
         style={{ backgroundColor: groundOf(selected) }}
       >
         {selected && posterOf(selected) && (
-          // biome-ignore lint/performance/noImgElement: admin-only poster thumb; next/image is not loaded in the Payload admin
           <img src={posterOf(selected) ?? ''} alt="" className="size-full object-cover" />
         )}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate font-medium text-[13px]/5">
+        <span className="truncate text-[13px]/5 font-medium">
           {selected?.title ?? `Look #${id}`}
         </span>
         <span className="text-muted-foreground text-xs/4">
@@ -478,7 +476,7 @@ function BrowseOrSearch({
   return (
     <button
       type="button"
-      className="pressable w-fit cursor-pointer text-muted-foreground text-xs/4 underline hover:text-foreground"
+      className="pressable text-muted-foreground hover:text-foreground w-fit cursor-pointer text-xs/4 underline"
       onClick={onBrowse}
     >
       Use a {noun} made in Studio

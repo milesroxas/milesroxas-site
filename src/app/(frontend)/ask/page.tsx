@@ -15,7 +15,7 @@ export default async function Page() {
   return (
     <div className="pt-24 pb-24">
       <div className="container">
-        <h1 className="mb-8 text-center text-heading-1 lg:mb-16">Ask</h1>
+        <h1 className="text-heading-1 mb-8 text-center lg:mb-16">Ask</h1>
         <div className="mx-auto max-w-[50rem]">
           <AskWidget terms={resolveAskHandoffTerms(siteInfo)} />
         </div>

@@ -42,7 +42,7 @@ const CARDS = ['Half-open blinds', 'Stained glass, nave', 'Prism on the desk', '
 function Page() {
   return (
     <div className="space-y-8 px-10 py-16">
-      <h2 className="max-w-xl text-balance text-heading-2">
+      <h2 className="text-heading-2 max-w-xl text-balance">
         Every leak is the camera failing beautifully.
       </h2>
       {/* No marker: a link in the leak's own band is a target by default. */}
@@ -54,10 +54,10 @@ function Page() {
           <div
             key={title}
             {...leakExcite()}
-            className="rounded-md border border-border bg-card/60 p-6"
+            className="border-border bg-card/60 rounded-md border p-6"
           >
             <p className="text-card-foreground text-sm">{title}</p>
-            <div className="mt-4 h-24 rounded-sm bg-linear-to-br from-muted to-accent" />
+            <div className="from-muted to-accent mt-4 h-24 rounded-sm bg-linear-to-br" />
           </div>
         ))}
       </div>
@@ -72,7 +72,7 @@ function Page() {
 export const OverAPage: Story = {
   render: (args) => (
     // isolate: the blend must reach this surface and stop there.
-    <div data-theme="dark" className="relative isolate min-h-svh bg-background text-foreground">
+    <div data-theme="dark" className="bg-background text-foreground relative isolate min-h-svh">
       <Page />
       <LightLeak {...args} />
     </div>
@@ -86,13 +86,13 @@ export const OverAPage: Story = {
  */
 export const OverASection: Story = {
   render: (args) => (
-    <div data-theme="dark" className="min-h-svh bg-background text-foreground">
-      <div className="px-10 py-24 text-muted-foreground text-sm">Plain section — no leak here.</div>
-      <section className="relative isolate border-border border-y">
+    <div data-theme="dark" className="bg-background text-foreground min-h-svh">
+      <div className="text-muted-foreground px-10 py-24 text-sm">Plain section — no leak here.</div>
+      <section className="border-border relative isolate border-y">
         <Page />
         <LightLeak {...args} />
       </section>
-      <div className="px-10 py-24 text-muted-foreground text-sm">Plain section — no leak here.</div>
+      <div className="text-muted-foreground px-10 py-24 text-sm">Plain section — no leak here.</div>
     </div>
   ),
 }
@@ -108,13 +108,13 @@ export const AcrossTheSection: Story = {
     sectionExcite: 0.45,
   },
   render: (args) => (
-    <div data-theme="dark" className="min-h-svh bg-background text-foreground">
-      <div className="px-10 py-24 text-muted-foreground text-sm">Plain section — no leak here.</div>
-      <section className="relative isolate border-border border-y">
+    <div data-theme="dark" className="bg-background text-foreground min-h-svh">
+      <div className="text-muted-foreground px-10 py-24 text-sm">Plain section — no leak here.</div>
+      <section className="border-border relative isolate border-y">
         <Page />
         <LightLeak {...args} />
       </section>
-      <div className="px-10 py-24 text-muted-foreground text-sm">Plain section — no leak here.</div>
+      <div className="text-muted-foreground px-10 py-24 text-sm">Plain section — no leak here.</div>
     </div>
   ),
 }
@@ -125,7 +125,7 @@ export const LowerSampleTier: Story = {
     samples: 3,
   },
   render: (args) => (
-    <div data-theme="dark" className="relative isolate min-h-svh bg-background text-foreground">
+    <div data-theme="dark" className="bg-background text-foreground relative isolate min-h-svh">
       <Page />
       <LightLeak {...args} />
     </div>
@@ -140,7 +140,7 @@ export const LowerSampleTier: Story = {
 export const Amber: Story = {
   args: LIGHT_LEAK_AMBER,
   render: (args) => (
-    <div data-theme="dark" className="relative isolate min-h-svh bg-background text-foreground">
+    <div data-theme="dark" className="bg-background text-foreground relative isolate min-h-svh">
       <Page />
       <LightLeak {...args} />
     </div>
@@ -160,7 +160,7 @@ export const Amber: Story = {
 export const OverPaper: Story = {
   args: LIGHT_LEAK_PAPER,
   render: (args) => (
-    <div data-theme="light" className="relative isolate min-h-svh bg-background text-foreground">
+    <div data-theme="light" className="bg-background text-foreground relative isolate min-h-svh">
       <Page />
       <LightLeak {...args} />
     </div>

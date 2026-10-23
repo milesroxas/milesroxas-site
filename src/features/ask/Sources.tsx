@@ -39,7 +39,7 @@ export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
   const listId = useId()
 
   return (
-    <div className="rounded-md bg-foreground/5">
+    <div className="bg-foreground/5 rounded-md">
       <button
         aria-controls={listId}
         aria-expanded={open}
@@ -52,17 +52,17 @@ export function AskSources({ sources }: { sources: SourceUrlUIPart[] }) {
         type="button"
       >
         <span aria-hidden className="flex size-7 shrink-0 items-center justify-center">
-          <IconChevronRight className="size-3.5 text-muted-foreground transition-[rotate,color] duration-200 ease-out-quint group-hover/disclosure:text-foreground group-aria-expanded/disclosure:rotate-90 motion-reduce:transition-none" />
+          <IconChevronRight className="text-muted-foreground ease-out-quint group-hover/disclosure:text-foreground size-3.5 transition-[rotate,color] duration-200 group-aria-expanded/disclosure:rotate-90 motion-reduce:transition-none" />
         </span>
-        <span className="min-w-0 flex-1 font-medium text-xs/4">Sources</span>
-        <span className="min-w-4 text-right text-muted-foreground text-xs/4 tabular-nums transition-colors group-hover/disclosure:text-foreground">
+        <span className="min-w-0 flex-1 text-xs/4 font-medium">Sources</span>
+        <span className="text-muted-foreground group-hover/disclosure:text-foreground min-w-4 text-right text-xs/4 tabular-nums transition-colors">
           {sources.length}
         </span>
       </button>
 
       <div className="disclosure-body" data-open={open || undefined} id={listId} inert={!open}>
         <div>
-          <ul className="mx-1 mb-1 overflow-hidden rounded-sm bg-popover shadow-xs ring-1 ring-foreground/6">
+          <ul className="bg-popover ring-foreground/6 mx-1 mb-1 overflow-hidden rounded-sm shadow-xs ring-1">
             {sources.map((source) => (
               <SourceRow key={source.sourceId} source={source} />
             ))}
@@ -89,7 +89,7 @@ function SourceRow({ source }: { source: SourceUrlUIPart }) {
           // The inset hairline between rows (none above the first, which the
           // group's own edge closes), hidden beside a tinted neighbor: this
           // row or the row above it.
-          'before:absolute before:top-0 before:right-0 before:left-12 before:h-px before:bg-border group-first/row:before:hidden',
+          'before:bg-border before:absolute before:top-0 before:right-0 before:left-12 before:h-px group-first/row:before:hidden',
           'hover:before:opacity-0 focus-visible:before:opacity-0',
           '[li:has(:focus-visible)+li>&]:before:opacity-0 [li:hover+li>&]:before:opacity-0',
         )}
@@ -97,20 +97,20 @@ function SourceRow({ source }: { source: SourceUrlUIPart }) {
       >
         <span
           aria-hidden
-          className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted ring-1 ring-foreground/6"
+          className="bg-muted ring-foreground/6 flex size-7 shrink-0 items-center justify-center rounded-md ring-1"
         >
-          <Glyph className="size-3.5 text-primary" />
+          <Glyph className="text-primary size-3.5" />
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="line-clamp-2 text-[0.9375rem]/5 md:text-[0.8125rem]/4.5">
             {source.title ?? source.url}
           </span>
           {surface ? (
-            <span className="truncate text-muted-foreground text-xs/4">{surface.title}</span>
+            <span className="text-muted-foreground truncate text-xs/4">{surface.title}</span>
           ) : null}
         </span>
         <span aria-hidden className="flex size-4 shrink-0 items-center justify-center">
-          <IconArrowRight className="size-3.5 text-muted-foreground pointer-fine:group-hover/source:translate-x-px group-hover/source:text-foreground motion-safe:transition-[translate,color] motion-safe:duration-150 motion-safe:ease-out" />
+          <IconArrowRight className="text-muted-foreground group-hover/source:text-foreground size-3.5 motion-safe:transition-[translate,color] motion-safe:duration-150 motion-safe:ease-out pointer-fine:group-hover/source:translate-x-px" />
         </span>
       </Link>
     </li>

@@ -320,15 +320,15 @@ export function PostsIndex({ items, title, total = items.length, children }: Pos
         <div aria-hidden className="posts-index-veil" />
         <div className="posts-index-column">
           <header className="posts-index-header">
-            <h1 className="flex items-start gap-2.5 text-heading-1" id="posts-index-title">
+            <h1 className="text-heading-1 flex items-start gap-2.5" id="posts-index-title">
               <span className="overflow-clip pb-[0.08em]">
-                <span className="inline-block motion-safe:animate-hero-rise motion-reduce:animate-hero-fade">
+                <span className="motion-safe:animate-hero-rise motion-reduce:animate-hero-fade inline-block">
                   {title}
                 </span>
               </span>
               <span
                 aria-hidden
-                className="pt-1 font-medium font-mono text-xs/none tabular-nums tracking-normal motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
+                className="text-xs/none motion-safe:animate-hero-in motion-reduce:animate-hero-fade pt-1 font-mono font-medium tracking-normal tabular-nums"
                 style={enterAt(160)}
               >
                 {count}

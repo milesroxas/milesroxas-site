@@ -1,7 +1,7 @@
 import type { Condition, Field, GroupField, TextFieldSingleValidation } from 'payload'
 import { DEFAULT_PUBLISHER, isExternalPost, parseArticleUrl } from '@/utilities/externalArticle'
 
-export const showsExternal: Condition = (data) => isExternalPost(data)
+const showsExternal: Condition = (data) => isExternalPost(data)
 
 /** The body tabs: an external post's article lives at its original URL. */
 export const showsBody: Condition = (data) => !isExternalPost(data)

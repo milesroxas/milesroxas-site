@@ -18,12 +18,12 @@ function WorkCard({ item, index }: { item: MoreWorkItem; index: number }) {
   const step = Math.min(index, 3) * 80
 
   return (
-    <li className="group relative rounded-[2px] has-focus-visible:outline-2 has-focus-visible:outline-foreground has-focus-visible:outline-offset-4">
+    <li className="group has-focus-visible:outline-foreground relative rounded-[2px] has-focus-visible:outline-2 has-focus-visible:outline-offset-4">
       <ViewTransition default="none" name={morph.name} onShare={morph.onShare} share="work-morph">
         {/* Press: held back a beat, so a finger that starts a scroll never dents the card. */}
         <div
           ref={pictureRef}
-          className="relative aspect-[1.6] w-full overflow-clip bg-muted transition-transform duration-300 ease-(--ease-out-quint) group-has-[a:active]:scale-[0.98] group-has-[a:active]:delay-75 group-has-[a:active]:duration-150 motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade"
+          className="bg-muted motion-safe:animate-hero-wipe motion-reduce:animate-hero-fade relative aspect-[1.6] w-full overflow-clip transition-transform duration-300 ease-(--ease-out-quint) group-has-[a:active]:scale-[0.98] group-has-[a:active]:delay-75 group-has-[a:active]:duration-150"
           style={enterAt(200 + step)}
         >
           {media && (
@@ -39,15 +39,15 @@ function WorkCard({ item, index }: { item: MoreWorkItem; index: number }) {
         </div>
       </ViewTransition>
       <div
-        className="mt-4 motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
+        className="motion-safe:animate-hero-in motion-reduce:animate-hero-fade mt-4"
         style={enterAt(360 + step)}
       >
         <p className="flex min-w-0 items-center gap-2.5 font-mono text-xs/tight">
           {client && <span className="truncate font-medium">{client}</span>}
-          {client && industry && <span aria-hidden className="h-px w-4 shrink-0 bg-border" />}
-          {industry && <span className="truncate text-muted-foreground">{industry}</span>}
+          {client && industry && <span aria-hidden className="bg-border h-px w-4 shrink-0" />}
+          {industry && <span className="text-muted-foreground truncate">{industry}</span>}
         </p>
-        <h2 className="mt-2 text-balance font-light text-2xl/[1.2] tracking-[-0.015em]">
+        <h2 className="mt-2 text-2xl/[1.2] font-light tracking-[-0.015em] text-balance">
           {/* The whole card is the target; the title names it. */}
           <Link
             {...cursorTarget('view')}
@@ -60,7 +60,7 @@ function WorkCard({ item, index }: { item: MoreWorkItem; index: number }) {
           </Link>
         </h2>
         {summary && (
-          <p className="mt-2 line-clamp-2 text-pretty text-base text-muted-foreground">{summary}</p>
+          <p className="text-muted-foreground mt-2 line-clamp-2 text-base text-pretty">{summary}</p>
         )}
       </div>
     </li>
@@ -86,15 +86,15 @@ export function WorkList({ items, title, lead }: WorkListProps) {
   return (
     <div className="px-gutter pt-[calc(var(--chrome-top)+--spacing(8))] pb-[calc(var(--dock-clearance)+--spacing(16))]">
       <header className="mb-10 sm:mb-14">
-        <h1 className="flex items-start gap-2.5 text-heading-1" id="works-list-title">
+        <h1 className="text-heading-1 flex items-start gap-2.5" id="works-list-title">
           <span className="overflow-clip pb-[0.08em]">
-            <span className="inline-block motion-safe:animate-hero-rise motion-reduce:animate-hero-fade">
+            <span className="motion-safe:animate-hero-rise motion-reduce:animate-hero-fade inline-block">
               {title}
             </span>
           </span>
           <span
             aria-hidden
-            className="pt-1 font-medium font-mono text-xs/none tabular-nums tracking-normal motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
+            className="text-xs/none motion-safe:animate-hero-in motion-reduce:animate-hero-fade pt-1 font-mono font-medium tracking-normal tabular-nums"
             style={enterAt(160)}
           >
             {count}
@@ -102,7 +102,7 @@ export function WorkList({ items, title, lead }: WorkListProps) {
         </h1>
         {lead && (
           <p
-            className="mt-3 max-w-[34ch] text-pretty text-base text-muted-foreground motion-safe:animate-hero-in motion-reduce:animate-hero-fade"
+            className="text-muted-foreground motion-safe:animate-hero-in motion-reduce:animate-hero-fade mt-3 max-w-[34ch] text-base text-pretty"
             style={enterAt(240)}
           >
             {lead}
@@ -111,7 +111,7 @@ export function WorkList({ items, title, lead }: WorkListProps) {
       </header>
       <ol
         aria-labelledby="works-list-title"
-        className="grid grid-cols-[minmax(0,1fr)] gap-y-14 sm:grid-cols-2 sm:gap-x-gutter sm:gap-y-16"
+        className="sm:gap-x-gutter grid grid-cols-[minmax(0,1fr)] gap-y-14 sm:grid-cols-2 sm:gap-y-16"
       >
         {items.map((item, index) => (
           <WorkCard index={index} item={item} key={item.id} />

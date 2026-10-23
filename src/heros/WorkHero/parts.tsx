@@ -1,4 +1,5 @@
 import type * as React from 'react'
+import { keyed } from '@/utilities/reactKeys'
 import { cn } from '@/utilities/ui'
 
 /**
@@ -29,7 +30,7 @@ function Rule({ className, ...props }: React.ComponentProps<'span'>) {
     <span
       aria-hidden
       className={cn(
-        'block h-px shrink-0 origin-left bg-foreground motion-safe:animate-hero-draw motion-reduce:animate-hero-fade',
+        'bg-foreground motion-safe:animate-hero-draw motion-reduce:animate-hero-fade block h-px shrink-0 origin-left',
         className,
       )}
       data-slot="work-hero-rule"
@@ -42,7 +43,7 @@ function WorkHeroRoot({ className, ...props }: React.ComponentProps<'header'>) {
   return (
     <header
       className={cn(
-        'grid grid-rows-[auto_1fr_auto] gap-y-10 bg-background px-gutter pt-[calc(var(--chrome-top)+--spacing(6))] pb-[calc(var(--dock-clearance)+--spacing(8))] text-foreground md:gap-y-8 md:pt-[calc(var(--chrome-top)+--spacing(2))] md:has-data-[slot=work-hero-media]:min-h-svh',
+        'bg-background px-gutter text-foreground grid grid-rows-[auto_1fr_auto] gap-y-10 pt-[calc(var(--chrome-top)+--spacing(6))] pb-[calc(var(--dock-clearance)+--spacing(8))] md:gap-y-8 md:pt-[calc(var(--chrome-top)+--spacing(2))] md:has-data-[slot=work-hero-media]:min-h-svh',
         className,
       )}
       data-slot="work-hero"
@@ -79,7 +80,7 @@ function WorkHeroEyebrow({ children, className, ...props }: React.ComponentProps
   return (
     <p
       className={cn(
-        'flex items-center gap-4.5 font-medium font-mono text-sm/none md:text-base/none',
+        'text-sm/none md:text-base/none flex items-center gap-4.5 font-mono font-medium',
         className,
       )}
       data-slot="work-hero-eyebrow"
@@ -105,16 +106,15 @@ function WorkHeroTitle({
   const words = children.split(/\s+/).filter(Boolean)
   return (
     <h1
-      className={cn('text-pretty text-title motion-reduce:animate-hero-fade', className)}
+      className={cn('text-title motion-reduce:animate-hero-fade text-pretty', className)}
       data-slot="work-hero-title"
       {...props}
     >
-      {words.map((word, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: a title can repeat a word; position is its identity
-        <span key={i}>
+      {keyed(words, (word) => word).map(({ key, item: word }, i) => (
+        <span key={key}>
           <span className="-my-[0.15em] inline-block overflow-clip py-[0.15em] align-top">
             <span
-              className="inline-block motion-safe:animate-hero-rise"
+              className="motion-safe:animate-hero-rise inline-block"
               style={enterAt(BEAT.title + i * BEAT.word)}
             >
               {word}
@@ -154,7 +154,7 @@ function WorkHeroFact({
       style={enterAt(BEAT.facts + index * BEAT.fact)}
       {...props}
     >
-      <dt className="font-medium font-mono text-trim text-xs/none">{label}</dt>
+      <dt className="text-trim text-xs/none font-mono font-medium">{label}</dt>
       <dd className="text-base">{children}</dd>
     </div>
   )
@@ -183,7 +183,7 @@ function WorkHeroCapabilities({
       {...props}
     >
       <p
-        className={cn('font-medium font-mono text-trim text-xs/none', enterIn)}
+        className={cn('text-trim text-xs/none font-mono font-medium', enterIn)}
         style={enterAt(BEAT.capabilities)}
       >
         Capabilities

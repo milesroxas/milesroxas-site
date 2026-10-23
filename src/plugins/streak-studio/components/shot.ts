@@ -29,7 +29,7 @@ export type Shot = {
   tuning: (seed: number) => Tuning
 }
 
-export function posterShot(effect: Effect, recipe: Recipe, surface: Surface): Shot {
+function posterShot(effect: Effect, recipe: Recipe, surface: Surface): Shot {
   return {
     label: 'Poster',
     capture: { ...POSTER_CAPTURE, surface },

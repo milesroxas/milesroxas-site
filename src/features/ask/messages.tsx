@@ -187,7 +187,7 @@ function PendingItem({ opening, writing }: { opening: number; writing: boolean }
   return (
     <MessageScrollerItem messageId="pending">
       <p
-        className={`flex items-center gap-2.5 text-muted-foreground text-sm/5 ${transcriptItemEnter}`}
+        className={`text-muted-foreground flex items-center gap-2.5 text-sm/5 ${transcriptItemEnter}`}
         role="status"
       >
         <span aria-hidden className="ask-reading">

@@ -5,6 +5,7 @@ import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import type { WorkIntro as WorkIntroData } from '@/payload-types'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
+import { keyed } from '@/utilities/reactKeys'
 
 type Props = {
   /** Names the band for assistive tech; not shown (Paper, "Work Intro"). */
@@ -38,9 +39,9 @@ export const WorkIntro: React.FC<Props> = ({ title, body, summary }) => (
             {body ? (
               <RichText data={body} enableGutter={false} enableProse={false} />
             ) : (
-              summary
-                ?.split(/\n\s*\n/)
-                .map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)
+              keyed(summary?.split(/\n\s*\n/) ?? [], (paragraph) => paragraph).map(
+                ({ key, item: paragraph }) => <p key={key}>{paragraph}</p>,
+              )
             )}
           </div>
         </ScrollReveal>

@@ -110,27 +110,28 @@ const TextStylePlugin: PluginComponent = () => {
 }
 
 /** A glyph for the dropdown row: the style's initial in the registry's face. */
-const styleIcon = (style: TextStyle): React.FC => {
-  const Icon: React.FC = () => (
-    <svg aria-hidden="true" height="20" viewBox="0 0 20 20" width="20">
-      <title>{TEXT_STYLES[style].label}</title>
-      <text
-        fill="currentColor"
-        fontSize={style === 'small' ? 10 : 12}
-        style={TEXT_STYLES[style].adminCss}
-        textAnchor="middle"
-        x="10"
-        y="14"
-      >
-        Aa
-      </text>
-    </svg>
-  )
-  return Icon
-}
+const StyleGlyph: React.FC<{ style: TextStyle }> = ({ style }) => (
+  <svg aria-hidden="true" height="20" viewBox="0 0 20 20" width="20">
+    <title>{TEXT_STYLES[style].label}</title>
+    <text
+      fill="currentColor"
+      fontSize={style === 'small' ? 10 : 12}
+      style={TEXT_STYLES[style].adminCss}
+      textAnchor="middle"
+      x="10"
+      y="14"
+    >
+      Aa
+    </text>
+  </svg>
+)
+
+const EyebrowIcon: React.FC = () => <StyleGlyph style="eyebrow" />
+const SmallIcon: React.FC = () => <StyleGlyph style="small" />
+const STYLE_ICONS: Record<TextStyle, React.FC> = { eyebrow: EyebrowIcon, small: SmallIcon }
 
 const items: ToolbarGroupItem[] = (Object.keys(TEXT_STYLES) as TextStyle[]).map((style, index) => ({
-  ChildComponent: styleIcon(style),
+  ChildComponent: STYLE_ICONS[style],
   isActive: ({ selection }) => $isStyleActive(style, selection),
   key: `textStyle-${style}`,
   label: TEXT_STYLES[style].label,

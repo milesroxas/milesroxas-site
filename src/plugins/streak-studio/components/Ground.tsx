@@ -29,7 +29,7 @@ export function GroundControl({ surface }: { surface: Surface }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <label
-            className="relative size-[30px] shrink-0 cursor-pointer overflow-hidden rounded-md border border-input"
+            className="border-input relative size-[30px] shrink-0 cursor-pointer overflow-hidden rounded-md border"
             style={{ backgroundColor: hex }}
             aria-label={copy.label}
           >
@@ -45,16 +45,16 @@ export function GroundControl({ surface }: { surface: Surface }) {
             {changed && (
               <span
                 aria-hidden
-                className="absolute top-1 right-1 size-1.5 rounded-full bg-primary ring-2 ring-background"
+                className="bg-primary ring-background absolute top-1 right-1 size-1.5 rounded-full ring-2"
               />
             )}
           </label>
         </TooltipTrigger>
         <TooltipContent variant="panel" side="top" sideOffset={8} collisionPadding={12}>
           <div className="flex flex-col gap-2">
-            <span className="font-semibold text-[13px]/4 text-foreground">{copy.label}</span>
-            <p className="text-pretty text-foreground/80">{copy.description}</p>
-            <p className="font-mono text-[11px]/3.5 text-muted-foreground">
+            <span className="text-foreground text-[13px]/4 font-semibold">{copy.label}</span>
+            <p className="text-foreground/80 text-pretty">{copy.description}</p>
+            <p className="text-muted-foreground font-mono text-[11px]/3.5">
               default {STUDIO_GROUND[surface]}
             </p>
           </div>

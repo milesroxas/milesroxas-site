@@ -31,13 +31,13 @@ function SelectValue({ ...props }: React.ComponentProps<typeof SelectPrimitive.V
  * label so a select reads as part of the same form as the text fields.
  */
 const selectTriggerVariants = cva(
-  "flex items-center justify-between gap-1.5 whitespace-nowrap transition-colors outline-none disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+  "data-placeholder:text-muted-foreground flex items-center justify-between gap-1.5 whitespace-nowrap transition-colors outline-none disabled:cursor-not-allowed disabled:opacity-50 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
   {
     variants: {
       variant: {
         default:
-          'w-fit rounded-md border border-input bg-input/20 px-2 py-1.5 text-xs/relaxed focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 data-[size=default]:h-7 data-[size=sm]:h-6 data-[size=field]:h-6.5 data-[size=field]:px-2.5 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
-        line: 'h-auto w-full rounded-none border-0 border-b border-input bg-transparent px-0 pb-3 text-base data-[placeholder]:border-b-input focus-visible:border-b-primary aria-invalid:border-b-destructive md:text-lg/relaxed',
+          'border-input bg-input/20 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 w-fit rounded-md border px-2 py-1.5 text-xs/relaxed focus-visible:ring-2 aria-invalid:ring-2 data-[size=default]:h-7 data-[size=field]:h-6.5 data-[size=field]:px-2.5 data-[size=sm]:h-6',
+        line: 'border-input data-[placeholder]:border-b-input focus-visible:border-b-primary aria-invalid:border-b-destructive h-auto w-full rounded-none border-0 border-b bg-transparent px-0 pb-3 text-base md:text-lg/relaxed',
       },
     },
     defaultVariants: {
@@ -69,7 +69,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        {icon ?? <IconSelector className="pointer-events-none size-3.5 text-muted-foreground" />}
+        {icon ?? <IconSelector className="text-muted-foreground pointer-events-none size-3.5" />}
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
@@ -88,14 +88,14 @@ function SelectContent({
         data-slot="select-content"
         data-align-trigger={position === 'item-aligned'}
         className={cn(
-          'relative z-50 max-h-(--radix-select-content-available-height) min-w-32 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-lg bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/10',
+          'bg-popover text-popover-foreground ring-foreground/10 relative z-50 max-h-(--radix-select-content-available-height) min-w-32 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-lg shadow-lg ring-1',
           // A picker aligned to its trigger already sits where the value was,
           // so it materialises in place: sliding or scaling it would fight the
           // alignment that put it there. A popper menu comes from its trigger,
           // so it scales out of that corner and leaves the same way.
           position === 'item-aligned'
-            ? 'duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0'
-            : 'duration-150 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+            ? 'data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 duration-100'
+            : 'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 duration-150',
           'motion-reduce:animate-none',
           position === 'popper' &&
             'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
@@ -127,7 +127,7 @@ function SelectLabel({ className, ...props }: React.ComponentProps<typeof Select
   return (
     <SelectPrimitive.Label
       data-slot="select-label"
-      className={cn('px-2 py-1.5 text-xs text-muted-foreground', className)}
+      className={cn('text-muted-foreground px-2 py-1.5 text-xs', className)}
       {...props}
     />
   )
@@ -148,7 +148,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-md py-1.5 pr-7 pl-2 text-xs/relaxed outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-md py-1.5 pr-7 pl-2 text-xs/relaxed outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}
@@ -168,7 +168,7 @@ function SelectItem({
       <div className="flex min-w-0 flex-col items-start gap-0.5 *:first:flex *:first:items-center *:first:gap-2">
         <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
         {description && (
-          <span className="max-w-56 text-[11px]/4 text-pretty text-muted-foreground">
+          <span className="text-muted-foreground max-w-56 text-[11px]/4 text-pretty">
             {description}
           </span>
         )}
@@ -184,7 +184,7 @@ function SelectSeparator({
   return (
     <SelectPrimitive.Separator
       data-slot="select-separator"
-      className={cn('pointer-events-none -mx-1 my-1 h-px bg-border/50', className)}
+      className={cn('bg-border/50 pointer-events-none -mx-1 my-1 h-px', className)}
       {...props}
     />
   )
@@ -198,7 +198,7 @@ function SelectScrollUpButton({
     <SelectPrimitive.ScrollUpButton
       data-slot="select-scroll-up-button"
       className={cn(
-        "z-10 flex h-7 cursor-default items-start justify-center rounded-t-lg bg-gradient-to-b from-popover from-65% to-transparent pt-1 text-muted-foreground [&_svg:not([class*='size-'])]:size-3.5",
+        "from-popover text-muted-foreground z-10 flex h-7 cursor-default items-start justify-center rounded-t-lg bg-gradient-to-b from-65% to-transparent pt-1 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}
@@ -216,7 +216,7 @@ function SelectScrollDownButton({
     <SelectPrimitive.ScrollDownButton
       data-slot="select-scroll-down-button"
       className={cn(
-        "z-10 flex h-7 cursor-default items-end justify-center rounded-b-lg bg-gradient-to-t from-popover from-65% to-transparent pb-1 text-muted-foreground [&_svg:not([class*='size-'])]:size-3.5",
+        "from-popover text-muted-foreground z-10 flex h-7 cursor-default items-end justify-center rounded-b-lg bg-gradient-to-t from-65% to-transparent pb-1 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}

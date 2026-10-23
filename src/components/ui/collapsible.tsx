@@ -25,14 +25,14 @@ function CollapsibleTrigger({
     <CollapsiblePrimitive.Trigger
       data-slot="collapsible-trigger"
       className={cn(
-        'group/collapsible flex h-10 w-full cursor-pointer items-center gap-2 text-left text-xs/4 font-semibold text-foreground outline-none select-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/30 [&_svg]:size-2.5 [&_svg]:shrink-0 [&_svg]:text-muted-foreground',
+        'group/collapsible text-foreground hover:text-foreground focus-visible:ring-ring/30 [&_svg]:text-muted-foreground flex h-10 w-full cursor-pointer items-center gap-2 text-left text-xs/4 font-semibold outline-none select-none focus-visible:ring-2 [&_svg]:size-2.5 [&_svg]:shrink-0',
         className,
       )}
       {...props}
     >
       <IconChevronRight
         aria-hidden
-        className="transition-transform duration-200 ease-out-quint group-data-[state=open]/collapsible:rotate-90 motion-reduce:transition-none"
+        className="ease-out-quint transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 motion-reduce:transition-none"
       />
       {children}
     </CollapsiblePrimitive.Trigger>
@@ -47,7 +47,7 @@ function CollapsibleContent({
     <CollapsiblePrimitive.Content
       data-slot="collapsible-content"
       className={cn(
-        'overflow-hidden data-open:animate-collapsible-down data-closed:animate-collapsible-up motion-reduce:animate-none',
+        'data-open:animate-collapsible-down data-closed:animate-collapsible-up overflow-hidden motion-reduce:animate-none',
         className,
       )}
       {...props}

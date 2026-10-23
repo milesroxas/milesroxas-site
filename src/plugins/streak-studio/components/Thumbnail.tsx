@@ -25,7 +25,6 @@ export function Thumbnail({
   const media = cellData as Media | null
   const url = media && typeof media === 'object' ? (media.sizes?.thumbnail?.url ?? media.url) : null
   const content = url ? (
-    // biome-ignore lint/performance/noImgElement: admin-only list cell; next/image is not loaded in the Payload admin
     <img
       src={url}
       alt=""

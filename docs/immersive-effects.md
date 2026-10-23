@@ -17,7 +17,7 @@ How the WebGL effects are organized, tuned and reused across the site, and the s
 
 Current effects: `StreakField` and `LightLeak`, the two files in `src/features/immersive/ui`. sas-site's others (text load-ins, refraction, dispersion, floating cards, scroll gallery, backdrop) were not ported.
 
-Two entries are public. `@/features/immersive` is the heavy one and exports only the Studio's `captureStill` and `StudioPreview`, which the plugin loads on demand. `@/features/immersive/visual` is the light one: Payload config, server resolvers and validation import it, and a slot reaches an effect's runtime through it, lazily. Nothing outside the feature imports `@/features/immersive/ui/…` except the Three-free tuning modules (the Studio copy files read them) and the shared `failure-boundary` and `overlay` helpers (the More work plate reads those).
+Two entries are public. `@/features/immersive` is the heavy one and exports only the Studio's `captureStills` and `StudioPreview`, which the plugin loads on demand. `@/features/immersive/visual` is the light one: Payload config, server resolvers and validation import it, and a slot reaches an effect's runtime through it, lazily. Nothing outside the feature imports `@/features/immersive/ui/…` except the Three-free tuning modules (the Studio copy files read them) and the shared `failure-boundary` and `overlay` helpers (the More work plate reads those).
 
 ## The single-source-of-truth contract
 

@@ -66,14 +66,14 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
 
   return (
     <li
-      className="group border-border border-b transition-colors duration-(--more-work-ink) ease-[ease] plate:data-active:border-foreground"
+      className="group border-border plate:data-active:border-foreground border-b transition-colors duration-(--more-work-ink) ease-[ease]"
       data-active={active || undefined}
     >
       {/* Each row is its own shell, so rows enter as they reach the line. */}
       <ScrollReveal as="div" variant="underMedia">
         <Link
           {...cursorTarget('view')}
-          className="flex flex-col gap-5 plate:gap-6 py-7 md:flex-row md:items-start md:gap-8"
+          className="plate:gap-6 flex flex-col gap-5 py-7 md:flex-row md:items-start md:gap-8"
           href={href}
           onClick={handleClick}
           onFocus={() => onActivate(index)}
@@ -89,7 +89,7 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
             >
               <div
                 ref={thumbRef}
-                className="relative plate:hidden aspect-[1.6] w-full shrink-0 overflow-clip bg-muted md:w-2/5"
+                className="plate:hidden bg-muted relative aspect-[1.6] w-full shrink-0 overflow-clip md:w-2/5"
                 data-reveal="media"
               >
                 <Media
@@ -104,14 +104,14 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
             </ViewTransition>
           )}
           <div className="flex min-w-0 flex-1 flex-col gap-2.5" data-reveal>
-            <h3 className="text-pretty plate:text-muted-foreground text-heading-3 tracking-[-0.02em] transition-colors duration-(--more-work-ink) ease-[ease] plate:group-data-active:text-foreground">
+            <h3 className="plate:text-muted-foreground text-heading-3 plate:group-data-active:text-foreground tracking-[-0.02em] text-pretty transition-colors duration-(--more-work-ink) ease-[ease]">
               {title}
             </h3>
             {(industry || services) && (
-              <p className="flex plate:flex-row flex-col plate:flex-wrap plate:items-center gap-1 plate:gap-x-2.5 text-base text-muted-foreground">
+              <p className="plate:flex-row plate:flex-wrap plate:items-center plate:gap-x-2.5 text-muted-foreground flex flex-col gap-1 text-base">
                 {industry && <span>{industry}</span>}
                 {industry && services && (
-                  <span aria-hidden className="plate:block hidden h-px w-6 bg-border" />
+                  <span aria-hidden className="plate:block bg-border hidden h-px w-6" />
                 )}
                 {services && <span>{services}</span>}
               </p>
@@ -119,7 +119,7 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
           </div>
           <IconArrowRight
             aria-hidden
-            className="mt-2.5 plate:block hidden size-4 shrink-0 -translate-x-1.5 opacity-0 transition-[opacity,translate] duration-(--more-work-ink) ease-(--ease-out-quint) plate:group-data-active:translate-x-0 plate:group-data-active:opacity-100"
+            className="plate:block plate:group-data-active:translate-x-0 plate:group-data-active:opacity-100 mt-2.5 hidden size-4 shrink-0 -translate-x-1.5 opacity-0 transition-[opacity,translate] duration-(--more-work-ink) ease-(--ease-out-quint)"
             stroke={1.5}
           />
         </Link>
@@ -191,21 +191,21 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
       data-slot="more-work"
       style={moreWorkMotionStyle}
     >
-      <div className="flex flex-col gap-12 border-border border-t pt-20 md:gap-16 md:pt-40">
+      <div className="border-border flex flex-col gap-12 border-t pt-20 md:gap-16 md:pt-40">
         <ScrollReveal as="div" className="flex items-end justify-between gap-6" variant="intro">
           <h2
-            className="flex items-start gap-3 text-title leading-none"
+            className="text-title flex items-start gap-3 leading-none"
             data-reveal
             data-reveal-group="more-work-intro"
             id={headingId}
           >
             More work
-            <span aria-hidden className="pt-1 font-medium font-mono text-sm/none tabular-nums">
+            <span aria-hidden className="text-sm/none pt-1 font-mono font-medium tabular-nums">
               {String(items.length).padStart(2, '0')}
             </span>
           </h2>
           <Link
-            className="group/all flex shrink-0 items-center gap-2.5 pb-1 font-medium text-base"
+            className="group/all flex shrink-0 items-center gap-2.5 pb-1 text-base font-medium"
             data-reveal
             data-reveal-group="more-work-intro"
             href="/works"
@@ -218,7 +218,7 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
             />
           </Link>
         </ScrollReveal>
-        <div className="grid plate:grid-cols-[minmax(0,55fr)_minmax(0,53fr)] plate:items-start plate:gap-12">
+        <div className="plate:grid-cols-[minmax(0,55fr)_minmax(0,53fr)] plate:items-start plate:gap-12 grid">
           <div
             aria-hidden
             className="plate:sticky plate:top-[calc(var(--chrome-top)+--spacing(6))] plate:block hidden"
@@ -240,9 +240,9 @@ export function MoreWorkIndex({ items }: { items: MoreWorkItem[] }) {
                     ref={plateRef}
                   />
                 </ViewTransition>
-                <div className="flex items-center justify-between gap-4 font-mono text-xs/none">
+                <div className="text-xs/none flex items-center justify-between gap-4 font-mono">
                   <span className="truncate font-medium">{shown?.client ?? shown?.title}</span>
-                  <span className="shrink-0 text-muted-foreground tabular-nums">
+                  <span className="text-muted-foreground shrink-0 tabular-nums">
                     {shownIndex + 1} of {items.length}
                   </span>
                 </div>

@@ -17,7 +17,7 @@ export function WorkHeroMedia({ media, slug }: { media: MediaType; slug: string 
   return (
     <ViewTransition default="none" name={workMorphName(slug)} share="work-morph">
       <div
-        className="relative aspect-[1.6] w-full overflow-clip bg-muted [--enter-at:360ms] data-[arrival=load]:motion-safe:animate-hero-wipe data-[arrival=load]:motion-reduce:animate-hero-fade md:w-[41.25vw]"
+        className="bg-muted data-[arrival=load]:motion-safe:animate-hero-wipe data-[arrival=load]:motion-reduce:animate-hero-fade relative aspect-[1.6] w-full overflow-clip [--enter-at:360ms] md:w-[41.25vw]"
         data-arrival={arrival}
         data-hero-media=""
         data-slot="work-hero-media"

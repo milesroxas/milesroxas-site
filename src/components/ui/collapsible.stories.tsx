@@ -19,7 +19,7 @@ const meta = {
     <Collapsible {...args} className="border-border border-b">
       <CollapsibleTrigger>Motion</CollapsibleTrigger>
       <CollapsibleContent>
-        <ul className="flex flex-col gap-0.5 pb-3 text-muted-foreground text-xs/4">
+        <ul className="text-muted-foreground flex flex-col gap-0.5 pb-3 text-xs/4">
           {rows.map((row) => (
             <li className="flex h-8 items-center" key={row}>
               {row}
@@ -57,15 +57,15 @@ export const InspectorSection: Story = {
     <div className="flex flex-col">
       {['Shape', 'Motion', 'Color'].map((name, index) => (
         <Collapsible className="border-border border-b" defaultOpen={index === 1} key={name}>
-          <CollapsibleTrigger className="text-[11px]/4 text-muted-foreground uppercase tracking-[0.06em] hover:text-foreground data-[state=open]:text-foreground">
+          <CollapsibleTrigger className="text-muted-foreground hover:text-foreground data-[state=open]:text-foreground text-[11px]/4 tracking-[0.06em] uppercase">
             {name}
-            <span className="ml-auto flex items-center gap-2 whitespace-nowrap font-mono font-normal text-[11px]/3.5 text-muted-foreground normal-case tabular-nums tracking-normal group-data-[state=open]/collapsible:hidden">
-              {index === 0 && <span aria-hidden className="size-1.5 rounded-full bg-primary" />}
+            <span className="text-muted-foreground ml-auto flex items-center gap-2 font-mono text-[11px]/3.5 font-normal tracking-normal whitespace-nowrap normal-case tabular-nums group-data-[state=open]/collapsible:hidden">
+              {index === 0 && <span aria-hidden className="bg-primary size-1.5 rounded-full" />}
               {index === 0 ? '2 changed' : '4'}
             </span>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <ul className="flex flex-col gap-0.5 pb-3 text-foreground/80 text-xs/4">
+            <ul className="text-foreground/80 flex flex-col gap-0.5 pb-3 text-xs/4">
               {rows.map((row) => (
                 <li className="flex h-8 items-center" key={row}>
                   {row}

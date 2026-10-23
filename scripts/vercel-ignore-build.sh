@@ -62,9 +62,8 @@ INERT_RES=(
   '^docker-compose\.yml$'
   '^scripts/dev-tui/'
   # Lint, test and Storybook tooling.
-  '^biome\.json$'
-  '^\.biomeignore$'
-  '^\.prettierignore$'
+  '^biome\.jsonc?$'
+  '^\.fallowrc\.jsonc?$'
   '^\.storybook/'
   '^vitest\.config\.ts$'
   # Inside src: stories, tests and READMEs. Nothing in the app imports them.

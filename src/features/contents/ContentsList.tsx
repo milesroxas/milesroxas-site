@@ -36,10 +36,10 @@ const rowClassName = (density: ContentsDensity, current = false) =>
   cn(
     'flex w-full shrink-0 cursor-pointer items-center px-3 text-left text-(--chrome-ink)',
     'pressable pressable-subtle origin-left outline-hidden',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset active:bg-(--chrome-press)',
+    'focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-inset active:bg-(--chrome-press)',
     DENSITY[density],
     current
-      ? 'bg-(--chrome-selected) font-medium contrast-more:ring-(--chrome-ink) contrast-more:ring-1 contrast-more:ring-inset'
+      ? 'bg-(--chrome-selected) font-medium contrast-more:ring-1 contrast-more:ring-(--chrome-ink) contrast-more:ring-inset'
       : 'hover:bg-(--chrome-hover) focus-visible:bg-(--chrome-hover)',
   )
 
@@ -77,7 +77,7 @@ function useCurrentRowInView() {
 /** The label over the list, and where the reader is in it. */
 function ListHeader({ current, total }: { current: number; total: number }) {
   return (
-    <div className="flex h-9 shrink-0 items-center justify-between px-3 font-mono text-(--chrome-ink-muted) text-xs/4 tabular-nums tracking-[0.08em]">
+    <div className="flex h-9 shrink-0 items-center justify-between px-3 font-mono text-xs/4 tracking-[0.08em] text-(--chrome-ink-muted) tabular-nums">
       <span className="uppercase">{CONTENTS_LIST_LABEL}</span>
       <span>
         {Math.max(current, 0) + 1} / {total}
@@ -133,7 +133,7 @@ function BackToTop({
       {/* The rule spans exactly the rows' own width, so its ends and a
           highlighted row's edges agree, with equal air on both sides. */}
       <div className="shrink-0 py-1.5">
-        <div className="h-px bg-border" />
+        <div className="bg-border h-px" />
       </div>
       <button
         className={cn(rowClassName(density), className)}

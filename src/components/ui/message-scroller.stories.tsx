@@ -52,7 +52,7 @@ function AskTranscript() {
 
   return (
     <div className="flex w-96 flex-col gap-3">
-      <div className="h-80 overflow-hidden rounded-lg ring-1 ring-foreground/10">
+      <div className="ring-foreground/10 h-80 overflow-hidden rounded-lg ring-1">
         <MessageScrollerProvider autoScroll>
           <MessageScroller>
             <MessageScrollerViewport aria-label="Transcript">

@@ -93,7 +93,7 @@ export const TabbedRoot = ({
   )
 }
 
-export const TabStrip = ({
+const TabStrip = ({
   ariaLabel,
   rows,
   tabSize,
@@ -110,7 +110,7 @@ export const TabStrip = ({
           key={row.id ?? index}
           value={valueFor(rows, index)}
           className={cn(
-            'text-muted-foreground transition-colors hover:text-foreground data-[state=active]:text-primary',
+            'text-muted-foreground hover:text-foreground data-[state=active]:text-primary transition-colors',
             TAB_TRIGGER[size],
           )}
         >

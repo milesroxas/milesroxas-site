@@ -36,8 +36,8 @@ function MediaRow() {
           A frame wipes open downward.
         </h2>
       </div>
-      <div className="aspect-video overflow-hidden bg-muted" data-reveal="media">
-        <div className="size-full bg-linear-to-br from-muted to-accent" />
+      <div className="bg-muted aspect-video overflow-hidden" data-reveal="media">
+        <div className="from-muted to-accent size-full bg-linear-to-br" />
       </div>
     </div>
   )
@@ -68,13 +68,13 @@ function RevealPage({ variant }: { variant: ScrollRevealVariant }) {
               {section.eyebrow}
             </p>
             <h2
-              className="max-w-2xl text-balance text-heading-1"
+              className="text-heading-1 max-w-2xl text-balance"
               data-reveal=""
               data-reveal-group={section.heading}
             >
               {section.heading}
             </h2>
-            <p className="max-w-xl text-lead text-muted-foreground" data-reveal="">
+            <p className="text-lead text-muted-foreground max-w-xl" data-reveal="">
               {section.body}
             </p>
           </section>
@@ -136,7 +136,7 @@ function SwapCard() {
   const { title, body } = PANELS[panel === 1 ? 1 : 0]
   return (
     <div className="flex w-sm flex-col gap-4">
-      <div className="overflow-hidden rounded-md bg-muted p-6" ref={rootRef}>
+      <div className="bg-muted overflow-hidden rounded-md p-6" ref={rootRef}>
         <div className="flex flex-col gap-2">
           <h3 className="text-heading-3" data-swap="text">
             {title}

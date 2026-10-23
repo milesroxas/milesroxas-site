@@ -43,10 +43,10 @@ const meta = {
     priority: true,
   },
   render: (args) => (
-    <div className="relative isolate min-h-svh bg-background text-foreground">
+    <div className="bg-background text-foreground relative isolate min-h-svh">
       <StreakVisual {...args} />
       <div className="relative flex min-h-svh items-end p-10">
-        <h2 className="max-w-xl text-balance text-heading-2">Signal, seen from the side.</h2>
+        <h2 className="text-heading-2 max-w-xl text-balance">Signal, seen from the side.</h2>
       </div>
     </div>
   ),
