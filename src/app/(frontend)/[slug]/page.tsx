@@ -10,18 +10,9 @@ import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { ContentsButton } from '@/features/contents'
 import { RenderHero } from '@/heros/RenderHero'
-import HomeTemplate from '@/templates/Homepage/HomeTemplate'
 import { generateMeta } from '@/utilities/generateMeta'
-import {
-  breadcrumbSchema,
-  faqPageSchema,
-  profilePageSchema,
-  webPageSchema,
-} from '@/utilities/schema'
+import { breadcrumbSchema, faqPageSchema, webPageSchema } from '@/utilities/schema'
 import PageClient from './page.client'
-
-/** Where a page publishes: `home` is the site root (shared/content/surfaces.ts). */
-const pagePath = (slug: string) => (slug === 'home' ? '/' : `/${slug}`)
 
 // Cached HTML, regenerated every ten minutes and on publish (revalidatePage).
 export const revalidate = 600
@@ -40,9 +31,9 @@ export async function generateStaticParams() {
   })
 
   const params = pages.docs
-    // Home renders at `/`, and Contact has its own route (contact/page.tsx).
+    // Contact has its own route (contact/page.tsx).
     ?.filter((doc) => {
-      return doc.slug !== 'home' && doc.slug !== 'contact'
+      return doc.slug !== 'contact'
     })
     .map(({ slug }) => {
       return { slug }
@@ -53,13 +44,13 @@ export async function generateStaticParams() {
 
 type Args = {
   params: Promise<{
-    slug?: string
+    slug: string
   }>
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = 'home' } = await paramsPromise
+  const { slug } = await paramsPromise
   const url = `/${slug}`
 
   const page: RequiredDataFromCollectionSlug<'pages'> | null = await queryPageBySlug({
@@ -68,17 +59,6 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   if (!page) {
     return <PayloadRedirects url={url} />
-  }
-
-  // the homepage
-  if (slug === 'home') {
-    const { hero, layout } = page
-    return (
-      <>
-        <JsonLd data={[profilePageSchema(page), faqPageSchema(layout)]} />
-        <HomeTemplate hero={hero} layout={layout} />
-      </>
-    )
   }
 
   const { hero, layout, showContents } = page
@@ -104,17 +84,13 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = 'home' } = await paramsPromise
+  const { slug } = await paramsPromise
   const page = await queryPageBySlug({
     slug,
   })
 
-  return generateMeta({
-    doc: page,
-    pathname: pagePath(slug),
-    // Root pages other than home have no `.md` route (`/<slug>.md` would shadow files).
-    ...(slug === 'home' && page && !page.meta?.noIndex ? { markdownPath: '/index.md' } : {}),
-  })
+  // Root pages have no `.md` route (`/<slug>.md` would shadow files).
+  return generateMeta({ doc: page, pathname: `/${slug}` })
 }
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {

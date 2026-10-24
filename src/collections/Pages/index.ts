@@ -1,7 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { seoTab } from '@/collections/shared/seoTab'
-import { contentsButtonField } from '@/fields/pageFields'
-import { pageLayoutBlocks } from '@/fields/pageLayoutBlocks'
+import { contentsButtonField, pageLayoutField } from '@/fields/pageFields'
 import { slugField } from '@/fields/slug'
 import { heroField } from '@/heros/config'
 import { authenticated } from '../../access/authenticated'
@@ -55,20 +54,7 @@ export const Pages: CollectionConfig<'pages'> = {
           label: 'Opening',
         },
         {
-          fields: [
-            {
-              name: 'layout',
-              type: 'blocks',
-              label: 'Composition',
-              labels: { singular: 'Section', plural: 'Sections' },
-              blocks: pageLayoutBlocks,
-              required: true,
-              admin: {
-                initCollapsed: true,
-              },
-            },
-            contentsButtonField(),
-          ],
+          fields: [pageLayoutField(), contentsButtonField()],
           label: 'Composition',
         },
         seoTab(),

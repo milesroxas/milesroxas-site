@@ -19,6 +19,7 @@ import {
 import { mcpJevClient } from './jev'
 import { locateInOutline } from './locate'
 import {
+  type CollectionTarget,
   cannot,
   draftParam,
   errorText,
@@ -62,7 +63,7 @@ import {
 const findContent: SiteTool = {
   name: 'findContent',
   description:
-    "Where the published site talks about a topic, across Pages, Works, Posts and Site Info, judged on the server (a vector search over the site, then one Jev check per passage), so no page reaches you. Answers with passages best first: collection, document id, title, url, section heading, a snippet, and `focus`: how much of the passage is about the topic (`subject`, `part` or `passing`). Published copy only, protected works never included: before editing, locateBlock the document by id with the user's words. Send the topic as the user put it.",
+    "Where the published site talks about a topic, across Home, Pages, Works, Posts and Site Info, judged on the server (a vector search over the site, then one Jev check per passage), so no page reaches you. Answers with passages best first: collection, document id, title, url, section heading, a snippet, and `focus`: how much of the passage is about the topic (`subject`, `part` or `passing`). Published copy only, protected works never included: before editing, locateBlock the document by id with the user's words. Send the topic as the user put it.",
   parameters: {
     topic: z
       .string()
@@ -138,7 +139,7 @@ const outlineDocument: SiteTool = {
     'One row per block of a document, nested blocks included: path, id, blockType, blockName, a child count, and the first 200 characters of its copy. Read this instead of the whole document to find the block an edit concerns, then getBlock or patchBlock it by id. Returns the latest draft.',
   parameters: targetParams,
   handler: async (args, req) => {
-    const { collection, id } = args as { collection: Target; id: string | number }
+    const { collection, id } = args as { collection: Target; id?: string | number }
     if (!keyAllows(req, collection, 'find')) return cannot('find', collection)
     try {
       const doc = await readTarget(req, collection, id)
@@ -171,7 +172,7 @@ const locateBlock: SiteTool = {
   handler: async (args, req) => {
     const { collection, id, instruction } = args as {
       collection: Target
-      id: string | number
+      id?: string | number
       instruction: string
     }
     if (!keyAllows(req, collection, 'find')) return cannot('find', collection)
@@ -207,7 +208,7 @@ const getBlock: SiteTool = {
   handler: async (args, req) => {
     const { collection, id, blockId } = args as {
       collection: Target
-      id: string | number
+      id?: string | number
       blockId: string
     }
     if (!keyAllows(req, collection, 'find')) return cannot('find', collection)
@@ -243,7 +244,7 @@ const patchBlock: SiteTool = {
       draft = true,
     } = args as {
       collection: Target
-      id: string | number
+      id?: string | number
       blockId: string
       patch: Doc
       draft?: boolean
@@ -283,13 +284,14 @@ export const SEO_TARGETS = {
   pages: SEO_FIELDS,
   posts: SEO_FIELDS,
   works: SEO_FIELDS,
+  home: SEO_FIELDS,
   'works-index': SEO_FIELDS,
   'contact-page': ['title', 'description'],
 } as const satisfies Record<string, readonly (typeof SEO_FIELDS)[number][]>
 
 type SeoTarget = keyof typeof SEO_TARGETS
 
-const SEO_GLOBAL_TARGETS: ReadonlySet<SeoTarget> = new Set(['works-index', 'contact-page'])
+const SEO_GLOBAL_TARGETS: ReadonlySet<SeoTarget> = new Set(['home', 'works-index', 'contact-page'])
 
 /** Targets without drafts save straight to the live document. */
 const SEO_UNVERSIONED: ReadonlySet<SeoTarget> = new Set(['contact-page'])
@@ -319,7 +321,7 @@ const seoRefusal = ({ collection, id, meta }: SeoArgs): string | null => {
 const updateSeo: SiteTool = {
   name: 'updateSeo',
   description:
-    'Set the SEO fields (`meta`) of a page, post, work, the works index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.',
+    'Set the SEO fields (`meta`) of a page, post, work, the home page (`home`), the works index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.',
   parameters: {
     collection: z
       .enum(Object.keys(SEO_TARGETS) as [SeoTarget, ...SeoTarget[]])
@@ -359,7 +361,7 @@ const updateSeo: SiteTool = {
         ? await req.payload.updateGlobal({ ...common, slug: collection as 'works-index' })
         : await req.payload.update({
             ...common,
-            collection: collection as Target,
+            collection: collection as CollectionTarget,
             id: id as string | number,
             overrideLock: true,
           })) as unknown as Doc

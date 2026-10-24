@@ -1,8 +1,9 @@
 import type { MCPPluginConfig } from '@payloadcms/plugin-mcp'
-import type { CollectionSlug, PayloadRequest } from 'payload'
+import type { CollectionSlug, GlobalSlug, PayloadRequest } from 'payload'
 // The plugin and the MCP SDK under it were built against zod 3; the project
 // is on zod 4. A `zod/v3` schema is what the SDK's converter expects.
 import { z } from 'zod/v3'
+import { HOME_SURFACE } from '@/shared/content/surfaces'
 import type { Doc } from './blocks'
 
 export type McpTool = NonNullable<NonNullable<MCPPluginConfig['mcp']>['tools']>[number]
@@ -21,7 +22,19 @@ export const BLOCK_COLLECTIONS = [
   'posts',
 ] as const satisfies readonly CollectionSlug[]
 
-export type Target = (typeof BLOCK_COLLECTIONS)[number]
+/** Globals with blocks in them. Each is one document, so a call names no id. */
+export const BLOCK_GLOBALS = [HOME_SURFACE.global] as const satisfies readonly GlobalSlug[]
+
+const BLOCK_TARGETS = [...BLOCK_COLLECTIONS, ...BLOCK_GLOBALS] as const
+
+export type CollectionTarget = (typeof BLOCK_COLLECTIONS)[number]
+
+export type GlobalTarget = (typeof BLOCK_GLOBALS)[number]
+
+export type Target = CollectionTarget | GlobalTarget
+
+export const isGlobalTarget = (target: string): target is GlobalTarget =>
+  (BLOCK_GLOBALS as readonly string[]).includes(target)
 
 /** The plugin's rule for a capability group name: `site-info` is `siteInfo`. */
 const toCamelCase = (slug: string): string =>
@@ -61,8 +74,20 @@ export const collectionParam = z
   .describe('The collection the document is in, by slug.')
 
 export const targetParams = {
-  collection: collectionParam,
-  id: z.union([z.string(), z.number()]).describe('The document id.'),
+  collection: z
+    .enum(BLOCK_TARGETS)
+    .describe('The collection the document is in, or `home` for the home page global, by slug.'),
+  id: z
+    .union([z.string(), z.number()])
+    .optional()
+    .describe('The document id. Required for pages, posts and works; omit for `home`.'),
+}
+
+type TargetId = string | number | undefined
+
+const requireId = (collection: CollectionTarget, id: TargetId): string | number => {
+  if (id === undefined) throw new Error(`send the id of the ${collection} document.`)
+  return id
 }
 
 export const draftParam = z
@@ -80,16 +105,11 @@ export const withStatus = (data: Doc, draft: boolean): Doc =>
   draft || data._status ? data : { ...data, _status: 'published' }
 
 /** The latest version of the document, draft or published, as the team member may see it. */
-export async function readTarget(req: PayloadRequest, collection: Target, id: string | number) {
-  const doc = await req.payload.findByID({
-    collection,
-    id,
-    depth: 0,
-    draft: true,
-    overrideAccess: false,
-    req,
-    user: req.user,
-  })
+export async function readTarget(req: PayloadRequest, collection: Target, id: TargetId) {
+  const common = { depth: 0, draft: true, overrideAccess: false, req, user: req.user }
+  const doc = isGlobalTarget(collection)
+    ? await req.payload.findGlobal({ ...common, slug: collection })
+    : await req.payload.findByID({ ...common, collection, id: requireId(collection, id) })
   return doc as unknown as Doc
 }
 
@@ -97,13 +117,11 @@ export async function readTarget(req: PayloadRequest, collection: Target, id: st
 export async function saveTarget(
   req: PayloadRequest,
   collection: Target,
-  id: string | number,
+  id: TargetId,
   data: Doc,
   draft: boolean,
 ) {
-  const saved = await req.payload.update({
-    collection,
-    id,
+  const common = {
     data: withStatus(data, draft),
     depth: 0,
     draft,
@@ -111,6 +129,9 @@ export async function saveTarget(
     overrideLock: true,
     req,
     user: req.user,
-  })
+  }
+  const saved = isGlobalTarget(collection)
+    ? await req.payload.updateGlobal({ ...common, slug: collection })
+    : await req.payload.update({ ...common, collection, id: requireId(collection, id) })
   return saved as unknown as Doc
 }

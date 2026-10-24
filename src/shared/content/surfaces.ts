@@ -13,7 +13,8 @@ import type { CollectionSlug, GlobalSlug } from 'payload'
  *
  * Adding a new public collection here puts it on every surface at once.
  * Singleton pages (globals) live in `GLOBAL_SURFACES` below: they have no
- * search-plugin or llms.txt listing, but the Ask corpus embeds them.
+ * search-plugin listing, but the Ask corpus embeds them, and a surface's
+ * `home` lists with it.
  */
 
 export type SurfaceBody =
@@ -36,8 +37,8 @@ export type ContentSurface = {
   title: string
   /** URL prefix the collection publishes under, e.g. '/expertise'. Empty string for root. */
   urlPrefix: string
-  /** Slug that maps to the site root instead of `${urlPrefix}/${slug}`. */
-  homeSlug?: string
+  /** The singleton published at the site root, listed first among this surface's documents. */
+  home?: GlobalSurface
   /**
    * Slug that maps to the prefix itself rather than a child of it, so the
    * primary contact page is `/contact` and not `/contact/contact`.
@@ -49,13 +50,43 @@ export type ContentSurface = {
 }
 
 /**
+ * Singleton public pages and site-wide facts that live in globals. They are
+ * not listed by the search plugin, but the Ask corpus embeds them so the
+ * homepage, the index heroes, and company facts (address, contact, response
+ * time) can answer questions.
+ */
+export type GlobalSurface = {
+  global: GlobalSlug
+  /** Human title used for the retrieved source when the global has no `title`. */
+  title: string
+  /** Site-relative path the global publishes at (or the best page to link for it). */
+  path: string
+  /** True when the global has `versions.drafts` — only the published version is embedded. */
+  drafts: boolean
+}
+
+/** The home page at `/` (src/globals/Home.ts). llms.txt and the sitemap list it with Pages. */
+export const HOME_SURFACE = {
+  global: 'home',
+  title: 'Home',
+  path: '/',
+  drafts: true,
+} as const satisfies GlobalSurface
+
+/**
  * This site's public collections (docs/archive/composer-roadmap.md, Phase 5): Pages at
- * the root (`home` is `/`), Works under `/works`, Posts under `/posts`.
+ * the root (led by the Home global at `/`), Works under `/works`, Posts under `/posts`.
  * Protected works never reach the corpus: every read is an anonymous visitor's
  * (`overrideAccess: false`), and `worksReadAccess` hides them.
  */
 export const CONTENT_SURFACES: ContentSurface[] = [
-  { collection: 'pages', title: 'Pages', urlPrefix: '', homeSlug: 'home', body: { kind: 'walk' } },
+  {
+    collection: 'pages',
+    title: 'Pages',
+    urlPrefix: '',
+    home: HOME_SURFACE,
+    body: { kind: 'walk' },
+  },
   {
     collection: 'works',
     title: 'Work',
@@ -79,24 +110,8 @@ export const surfaceByCollection: ReadonlyMap<string, ContentSurface> = new Map(
 /** Collections synced into the `search` index (and the RAG corpus). */
 export const SEARCH_COLLECTIONS = CONTENT_SURFACES.map((surface) => surface.collection)
 
-/**
- * Singleton public pages and site-wide facts that live in globals. They are
- * not listed by the search plugin or llms.txt sections (those are
- * per-document), but the Ask corpus embeds them so the homepage, the index
- * heroes, and company facts (address, contact, response time) can answer
- * questions.
- */
-export type GlobalSurface = {
-  global: GlobalSlug
-  /** Human title used for the retrieved source when the global has no `title`. */
-  title: string
-  /** Site-relative path the global publishes at (or the best page to link for it). */
-  path: string
-  /** True when the global has `versions.drafts` — only the published version is embedded. */
-  drafts: boolean
-}
-
 export const GLOBAL_SURFACES: GlobalSurface[] = [
+  HOME_SURFACE,
   { global: 'site-info', title: 'About Miles Roxas', path: '/contact', drafts: false },
 ]
 
@@ -104,9 +119,8 @@ export const globalSurfaceBySlug: ReadonlyMap<string, GlobalSurface> = new Map(
   GLOBAL_SURFACES.map((surface) => [surface.global as string, surface]),
 )
 
-/** Site-relative path for a surface document, honoring the home-slug → root mapping. */
+/** Site-relative path for a surface document. */
 export const surfaceDocPath = (surface: ContentSurface, slug: string): string => {
-  if (surface.homeSlug && slug === surface.homeSlug) return '/'
   if (surface.indexSlug && slug === surface.indexSlug) return surface.urlPrefix
   return `${surface.urlPrefix}/${slug}`
 }

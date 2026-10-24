@@ -19,7 +19,6 @@ const meta = {
     },
   },
   args: {
-    type: 'home',
     media: imageMedia,
   },
 } satisfies Meta<typeof HomeHero>

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { surfaceByCollection } from '@/shared/content/surfaces'
 import {
   docFrontMatter,
   llmsContactSection,
@@ -121,15 +120,7 @@ describe('tidyMarkdown', () => {
   })
 })
 
-const surface = (collection: string) => {
-  const found = surfaceByCollection.get(collection)
-  if (!found) throw new Error(`No content surface for ${collection}`)
-  return found
-}
-
 describe('shownRecord', () => {
-  const pages = surface('pages')
-  const posts = surface('posts')
   const siteInfo = { name: 'Miles Roxas', jobTitle: 'Designer & Builder' }
 
   it('leaves out the body and sections an external post keeps but never renders', () => {
@@ -139,16 +130,15 @@ describe('shownRecord', () => {
       publisher: 'Example',
       address: 'example.com/a',
     }
-    expect(shownRecord(posts, record, siteInfo, original)).toEqual({
+    expect(shownRecord({}, record, siteInfo, original)).toEqual({
       title: 'A',
       intro: { body: 'Why' },
     })
   })
 
-  it('titles the home page with the name and role it shows, not its hero text', () => {
-    const record = { slug: 'home', title: 'Home', hero: { richText: 'Home' }, layout: [] }
-    expect(shownRecord(pages, record, siteInfo, null)).toEqual({
-      slug: 'home',
+  it('titles the home page with the name and role it shows, not its hero', () => {
+    const record = { title: 'Home', hero: { media: 1 }, layout: [] }
+    expect(shownRecord({ global: 'home' }, record, siteInfo, null)).toEqual({
       title: 'Miles Roxas, Designer & Builder',
       layout: [],
     })
@@ -156,6 +146,6 @@ describe('shownRecord', () => {
 
   it('keeps every other record whole', () => {
     const record = { slug: 'about', title: 'About', hero: { richText: 'Hi' } }
-    expect(shownRecord(pages, record, siteInfo, null)).toBe(record)
+    expect(shownRecord({}, record, siteInfo, null)).toBe(record)
   })
 })

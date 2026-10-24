@@ -1,15 +1,14 @@
-import type { CollectionBeforeChangeHook } from 'payload'
+import type { CollectionBeforeChangeHook, GlobalBeforeChangeHook } from 'payload'
 
-export const populatePublishedAt: CollectionBeforeChangeHook = ({ data, operation, req }) => {
-  if (operation === 'create' || operation === 'update') {
-    if (req.data && !req.data.publishedAt) {
-      const now = new Date()
-      return {
-        ...data,
-        publishedAt: now,
-      }
-    }
-  }
+/** Stamps `publishedAt` on the first save that arrives without one. */
+const stampPublishedAt = <T extends object>({
+  data,
+  req,
+}: {
+  data: T
+  req: { data?: { publishedAt?: unknown } }
+}) => (req.data && !req.data.publishedAt ? { ...data, publishedAt: new Date() } : data)
 
-  return data
-}
+export const populatePublishedAt: CollectionBeforeChangeHook = stampPublishedAt
+
+export const populateGlobalPublishedAt: GlobalBeforeChangeHook = stampPublishedAt

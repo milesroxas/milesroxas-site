@@ -83,7 +83,7 @@ The source of truth is `mcp.ts`; this table mirrors it.
 | Assets | `media` | **Read-only**. New images go through `pnpm cms:upload` |
 | Full-length videos | `videos` | **Read-only**. Uploaded and configured in the admin ([media.md](media.md), Videos); a block plays one with `playVideo: true` and `video: <id>` |
 | Visitor records | `inquiries`, `form-submissions`, `ask-questions` | **Read-only** |
-| Globals | `site-info`, `header`, `contact-page`, `works-index` | Find and update |
+| Globals | `home`, `site-info`, `header`, `contact-page`, `works-index` | Find and update |
 
 A new surface added to `CONTENT_SURFACES` is exposed automatically. Any other new collection or
 global is **not** exposed until it is listed in `mcp.ts`, and the capability columns it adds need a
@@ -105,7 +105,8 @@ them into content; the email half of that rule is enforced (below).
 The generated tools move whole documents: `find*` returns the page, `update*` resends the whole
 `layout` as the client model's output tokens. The site tools move one block, or a handful of
 snippets, instead. Each needs its checkbox on the key, plus `find`, `create` or `update` on the collection it touches (`updateMedia` reads the key's Upload
-media capability instead).
+media capability instead). The block tools, `updateDocument`, `describeFields` and `updateSeo`
+take the `home` global as `collection: "home"` with no id (`BLOCK_GLOBALS` in `shared.ts`).
 
 | Tool | Does | Judged by |
 | --- | --- | --- |
@@ -117,7 +118,7 @@ media capability instead).
 | `updateSeo` | Sets the `meta` group (title, description, image, noIndex) of a page, post, work, the works index or the contact page; draft unless `draft: false` | Code |
 | `describeFields` | The fields of a collection or of one block type: name, type, required, options, relationTo, guidance | Code |
 | `createDocument` | Creates a page, post or work from plain JSON | Code |
-| `updateDocument` | Replaces top-level fields of a page, post or work; `"_status": "draft"` with `draft: false` unpublishes | Code |
+| `updateDocument` | Replaces top-level fields of a page, post, work or the `home` global; `"_status": "draft"` with `draft: false` unpublishes | Code |
 | `insertBlock` | Adds a block at the top level or inside a Section, at an index | Code |
 | `moveBlock` | Moves a block to another position, into a Section or out of one | Code |
 | `removeBlock` | Removes a block and its nested blocks | Code |

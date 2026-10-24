@@ -12,7 +12,10 @@ const redirects = async () => {
     source: '/:path((?!ie-incompatible.html$).*)', // all pages except the incompatibility page
   }
 
-  const redirects = [internetExplorerRedirect]
+  // The home page was the Pages document `home` before it became the Home global.
+  const homeRedirect = { source: '/home', destination: '/', permanent: true }
+
+  const redirects = [internetExplorerRedirect, homeRedirect]
 
   return redirects
 }

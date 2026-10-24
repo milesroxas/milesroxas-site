@@ -26,6 +26,7 @@ import { Works } from './collections/Works'
 import { agentMediaEndpoint } from './endpoints/agentMedia'
 import { askEndpoints } from './endpoints/ask'
 import { ContactPage } from './globals/ContactPage'
+import { Home } from './globals/Home'
 import { SiteInfo } from './globals/SiteInfo'
 import { WorksIndex } from './globals/WorksIndex'
 import { Header } from './Header/config'
@@ -131,7 +132,7 @@ export default buildConfig({
   cors: [getServerSideURL()].filter(Boolean),
   // `agent/media`: an MCP key's image upload (docs/mcp.md).
   endpoints: [...askEndpoints, agentMediaEndpoint],
-  globals: [Header, SiteInfo, ContactPage, WorksIndex],
+  globals: [Home, Header, SiteInfo, ContactPage, WorksIndex],
   plugins: [
     ...plugins,
     // Cloudflare R2 is the origin for every file (docs/media.md). The admin

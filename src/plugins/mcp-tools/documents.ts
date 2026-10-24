@@ -11,6 +11,8 @@ import {
 } from './blocks'
 import {
   BLOCK_COLLECTIONS,
+  BLOCK_GLOBALS,
+  type CollectionTarget,
   cannot,
   collectionParam,
   draftParam,
@@ -129,14 +131,14 @@ export function blocksIn(fields: Field[], found = new Map<string, Block>()): Map
   return found
 }
 
-const DESCRIBABLE = [...BLOCK_COLLECTIONS, 'media'] as const
+const DESCRIBABLE = [...BLOCK_COLLECTIONS, ...BLOCK_GLOBALS, 'media'] as const
 
 const describeFields: SiteTool = {
   name: 'describeFields',
   description:
     "The fields a document or a block holds, so you can write `data` for createDocument and updateDocument or a `block` for insertBlock: name, type, required, options, relationTo (send ids), defaults and the field's own guidance, nested fields included. A `blocks` field lists the block types it takes; send one as `blockType` to describe that block. Rich text takes Lexical JSON unless a write-only `markdown` sibling is listed beside it.",
   parameters: {
-    collection: z.enum(DESCRIBABLE).describe('The collection, by slug.'),
+    collection: z.enum(DESCRIBABLE).describe('The collection, or the `home` global, by slug.'),
     blockType: z
       .string()
       .optional()
@@ -148,7 +150,10 @@ const describeFields: SiteTool = {
       blockType?: string
     }
     if (!keyAllows(req, collection, 'find')) return cannot('find', collection)
-    const fields = req.payload.collections[collection]?.config.fields ?? []
+    const fields =
+      req.payload.collections[collection as CollectionTarget]?.config.fields ??
+      req.payload.globals.config.find((global) => global.slug === collection)?.fields ??
+      []
     if (!blockType) return json({ collection, fields: describe(fields) })
     const blocks = blocksIn(fields)
     const block = blocks.get(blockType)
@@ -188,7 +193,7 @@ const createDocument: SiteTool = {
       collection,
       data,
       draft = true,
-    } = args as { collection: Target; data: Doc; draft?: boolean }
+    } = args as { collection: CollectionTarget; data: Doc; draft?: boolean }
     if (!keyAllows(req, collection, 'create')) return cannot('create', collection)
     try {
       const saved = (await req.payload.create({
@@ -210,7 +215,7 @@ const createDocument: SiteTool = {
 const updateDocument: SiteTool = {
   name: 'updateDocument',
   description:
-    'Change top-level fields of a page, post or work (title, hero, intro, relationships, the post body, and the rest describeFields lists) without resending the document. Each field sent replaces the stored one whole, so send a complete group or array. Edit blocks with patchBlock, insertBlock, moveBlock and removeBlock, not by resending `layout`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; send `"_status": "draft"` with `draft: false` to unpublish. Returns the saved fields.',
+    'Change top-level fields of a page, post, work or the `home` global (title, hero, intro, relationships, the post body, and the rest describeFields lists) without resending the document. Each field sent replaces the stored one whole, so send a complete group or array. Edit blocks with patchBlock, insertBlock, moveBlock and removeBlock, not by resending `layout`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; send `"_status": "draft"` with `draft: false` to unpublish. Returns the saved fields.',
   parameters: {
     ...targetParams,
     data: dataParam,
@@ -222,7 +227,7 @@ const updateDocument: SiteTool = {
       id,
       data,
       draft = true,
-    } = args as { collection: Target; id: string | number; data: Doc; draft?: boolean }
+    } = args as { collection: Target; id?: string | number; data: Doc; draft?: boolean }
     if (!keyAllows(req, collection, 'update')) return cannot('update', collection)
     if (Object.keys(data).length === 0) return text('Error: send at least one field in `data`.')
     try {
@@ -250,7 +255,7 @@ const indexParam = z
 
 type BlockArgs = {
   collection: Target
-  id: string | number
+  id?: string | number
   parentId?: string
   index?: number
   draft?: boolean
@@ -281,7 +286,7 @@ const noParent = (collection: Target, doc: Doc, parentId?: string) =>
 const insertBlock: SiteTool = {
   name: 'insertBlock',
   description:
-    "Add one block to a page, post or work: at the top level, or inside a Section by the Section's id. `block` needs its `blockType` (describeFields with that blockType lists its fields); leave out `id`, the server assigns one. Saves a draft unless `draft` is false, which publishes. Returns the new block's id and path.",
+    "Add one block to a page, post, work or the `home` global: at the top level, or inside a Section by the Section's id. `block` needs its `blockType` (describeFields with that blockType lists its fields); leave out `id`, the server assigns one. Saves a draft unless `draft` is false, which publishes. Returns the new block's id and path.",
   parameters: {
     ...targetParams,
     block: z
@@ -322,7 +327,7 @@ const insertBlock: SiteTool = {
 const moveBlock: SiteTool = {
   name: 'moveBlock',
   description:
-    "Move one block of a page, post or work by its id: to another position, into a Section (by the Section's id), or out to the top level. Saves a draft unless `draft` is false, which publishes. Returns the block's new path.",
+    "Move one block of a page, post, work or the `home` global by its id: to another position, into a Section (by the Section's id), or out to the top level. Saves a draft unless `draft` is false, which publishes. Returns the block's new path.",
   parameters: {
     ...targetParams,
     blockId: z.string().describe('The block id from outlineDocument or locateBlock.'),
@@ -357,7 +362,7 @@ const moveBlock: SiteTool = {
 const removeBlock: SiteTool = {
   name: 'removeBlock',
   description:
-    'Remove one block from a page, post or work by its id, nested blocks with it. Only when the user asks. Saves a draft unless `draft` is false, which publishes, so the live page keeps the block until then. Returns what was removed.',
+    'Remove one block from a page, post, work or the `home` global by its id, nested blocks with it. Only when the user asks. Saves a draft unless `draft` is false, which publishes, so the live page keeps the block until then. Returns what was removed.',
   parameters: {
     ...targetParams,
     blockId: z.string().describe('The block id from outlineDocument or locateBlock.'),

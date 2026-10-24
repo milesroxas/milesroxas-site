@@ -125,12 +125,14 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    home: Home;
     header: Header;
     'site-info': SiteInfo;
     'contact-page': ContactPage;
     'works-index': WorksIndex;
   };
   globalsSelect: {
+    home: HomeSelect<false> | HomeSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     'site-info': SiteInfoSelect<false> | SiteInfoSelect<true>;
     'contact-page': ContactPageSelect<false> | ContactPageSelect<true>;
@@ -190,7 +192,7 @@ export interface Page {
   id: number;
   title: string;
   hero: {
-    type: 'none' | 'home' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
     showContent?: boolean | null;
     richText?: {
       root: {
@@ -307,7 +309,7 @@ export interface Post {
     publisher?: string | null;
   };
   hero: {
-    type: 'none' | 'editorial' | 'home' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    type: 'none' | 'editorial' | 'highImpact' | 'mediumImpact' | 'lowImpact';
     showContent?: boolean | null;
     richText?: {
       root: {
@@ -5691,6 +5693,10 @@ export interface PayloadMcpApiKey {
   videos?: {
     find?: boolean | null;
   };
+  home?: {
+    find?: boolean | null;
+    update?: boolean | null;
+  };
   contactPage?: {
     find?: boolean | null;
     update?: boolean | null;
@@ -5709,7 +5715,7 @@ export interface PayloadMcpApiKey {
   };
   'payload-mcp-tool'?: {
     /**
-     * Where the published site talks about a topic, across Pages, Works, Posts and Site Info, judged on the server (a vector search over the site, then one Jev check per passage), so no page reaches you. Answers with passages best first: collection, document id, title, url, section heading, a snippet, and `focus`: how much of the passage is about the topic (`subject`, `part` or `passing`). Published copy only, protected works never included: before editing, locateBlock the document by id with the user's words. Send the topic as the user put it.
+     * Where the published site talks about a topic, across Home, Pages, Works, Posts and Site Info, judged on the server (a vector search over the site, then one Jev check per passage), so no page reaches you. Answers with passages best first: collection, document id, title, url, section heading, a snippet, and `focus`: how much of the passage is about the topic (`subject`, `part` or `passing`). Published copy only, protected works never included: before editing, locateBlock the document by id with the user's words. Send the topic as the user put it.
      */
     findContent?: boolean | null;
     /**
@@ -5729,7 +5735,7 @@ export interface PayloadMcpApiKey {
      */
     patchBlock?: boolean | null;
     /**
-     * Set the SEO fields (`meta`) of a page, post, work, the works index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.
+     * Set the SEO fields (`meta`) of a page, post, work, the home page (`home`), the works index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.
      */
     updateSeo?: boolean | null;
     /**
@@ -5741,19 +5747,19 @@ export interface PayloadMcpApiKey {
      */
     createDocument?: boolean | null;
     /**
-     * Change top-level fields of a page, post or work (title, hero, intro, relationships, the post body, and the rest describeFields lists) without resending the document. Each field sent replaces the stored one whole, so send a complete group or array. Edit blocks with patchBlock, insertBlock, moveBlock and removeBlock, not by resending `layout`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; send `"_status": "draft"` with `draft: false` to unpublish. Returns the saved fields.
+     * Change top-level fields of a page, post, work or the `home` global (title, hero, intro, relationships, the post body, and the rest describeFields lists) without resending the document. Each field sent replaces the stored one whole, so send a complete group or array. Edit blocks with patchBlock, insertBlock, moveBlock and removeBlock, not by resending `layout`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; send `"_status": "draft"` with `draft: false` to unpublish. Returns the saved fields.
      */
     updateDocument?: boolean | null;
     /**
-     * Add one block to a page, post or work: at the top level, or inside a Section by the Section's id. `block` needs its `blockType` (describeFields with that blockType lists its fields); leave out `id`, the server assigns one. Saves a draft unless `draft` is false, which publishes. Returns the new block's id and path.
+     * Add one block to a page, post, work or the `home` global: at the top level, or inside a Section by the Section's id. `block` needs its `blockType` (describeFields with that blockType lists its fields); leave out `id`, the server assigns one. Saves a draft unless `draft` is false, which publishes. Returns the new block's id and path.
      */
     insertBlock?: boolean | null;
     /**
-     * Move one block of a page, post or work by its id: to another position, into a Section (by the Section's id), or out to the top level. Saves a draft unless `draft` is false, which publishes. Returns the block's new path.
+     * Move one block of a page, post, work or the `home` global by its id: to another position, into a Section (by the Section's id), or out to the top level. Saves a draft unless `draft` is false, which publishes. Returns the block's new path.
      */
     moveBlock?: boolean | null;
     /**
-     * Remove one block from a page, post or work by its id, nested blocks with it. Only when the user asks. Saves a draft unless `draft` is false, which publishes, so the live page keeps the block until then. Returns what was removed.
+     * Remove one block from a page, post, work or the `home` global by its id, nested blocks with it. Only when the user asks. Saves a draft unless `draft` is false, which publishes, so the live page keeps the block until then. Returns what was removed.
      */
     removeBlock?: boolean | null;
     /**
@@ -7543,6 +7549,12 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
     | {
         find?: T;
       };
+  home?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
   contactPage?:
     | T
     | {
@@ -7643,6 +7655,71 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * The home page at /: the portrait opening, the sections under it, and SEO.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home".
+ */
+export interface Home {
+  id: number;
+  /**
+   * Names the page in listings. The page heading is Site Info’s name and role.
+   */
+  title: string;
+  hero: {
+    /**
+     * The portrait between the two word strips: a 9:16 image or video, cropped to fill the frame.
+     */
+    media: number | Media;
+  };
+  layout: (
+    | PageSectionBlock
+    | RichTransitionBlock
+    | FeatureHeadingOffsetBlock
+    | FullMediaBlock
+    | MediaContentSplitBlock
+    | SplitContentNarrowBlock
+    | CarouselSplitBlock
+    | ImagePairBlock
+    | SplitImageOffsetBlock
+    | FeatureImageStatementBlock
+    | CaptionBlock
+    | YouTubeBlock
+    | RichTextBlock
+    | CodeBlock
+    | ChartBlock
+    | DiagramBlock
+    | FaqBlock
+    | CarouselBlock
+    | CarouselTabsBlock
+    | FeatureTabsBlock
+    | InsightListBlock
+    | SliderBlock
+    | CallOutBlock
+    | ArchiveBlock
+    | CallToActionBlock
+    | FormBlock
+    | MediaBlock
+    | ContentBlock
+  )[];
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+    /**
+     * Prevent search engines from indexing this page
+     */
+    noIndex?: boolean | null;
+  };
+  publishedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -7889,6 +7966,63 @@ export interface WorksIndex {
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home_select".
+ */
+export interface HomeSelect<T extends boolean = true> {
+  title?: T;
+  hero?:
+    | T
+    | {
+        media?: T;
+      };
+  layout?:
+    | T
+    | {
+        section?: T | PageSectionBlockSelect<T>;
+        richTransition?: T | RichTransitionBlockSelect<T>;
+        featureHeadingOffset?: T | FeatureHeadingOffsetBlockSelect<T>;
+        fullMedia?: T | FullMediaBlockSelect<T>;
+        mediaContentSplit?: T | MediaContentSplitBlockSelect<T>;
+        splitContentNarrow?: T | SplitContentNarrowBlockSelect<T>;
+        carouselSplit?: T | CarouselSplitBlockSelect<T>;
+        imagePair?: T | ImagePairBlockSelect<T>;
+        splitImageOffset?: T | SplitImageOffsetBlockSelect<T>;
+        featureImageStatement?: T | FeatureImageStatementBlockSelect<T>;
+        caption?: T | CaptionBlockSelect<T>;
+        youtube?: T | YouTubeBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
+        chart?: T | ChartBlockSelect<T>;
+        diagram?: T | DiagramBlockSelect<T>;
+        faq?: T | FaqBlockSelect<T>;
+        carousel?: T | CarouselBlockSelect<T>;
+        carouselTabs?: T | CarouselTabsBlockSelect<T>;
+        featureTabs?: T | FeatureTabsBlockSelect<T>;
+        insightList?: T | InsightListBlockSelect<T>;
+        slider?: T | SliderBlockSelect<T>;
+        callout?: T | CallOutBlockSelect<T>;
+        archive?: T | ArchiveBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+        noIndex?: T;
+      };
+  publishedAt?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

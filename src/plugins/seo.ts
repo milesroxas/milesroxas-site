@@ -1,21 +1,24 @@
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import type { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import type { CollectionSlug, GlobalSlug, Plugin } from 'payload'
-import type { Page, Post, Work } from '@/payload-types'
-import { surfaceByCollection, surfaceDocPath } from '@/shared/content/surfaces'
+import type { Home, Page, Post, Work } from '@/payload-types'
+import { HOME_SURFACE, surfaceByCollection, surfaceDocPath } from '@/shared/content/surfaces'
 import { getServerSideURL } from '@/utilities/getURL'
 
 /** Documents that carry the manual SEO tab (`src/collections/shared/seoTab.ts`). */
 export const SEO_COLLECTIONS: CollectionSlug[] = ['pages', 'posts', 'works']
-export const SEO_GLOBALS: GlobalSlug[] = ['works-index']
+export const SEO_GLOBALS: GlobalSlug[] = [HOME_SURFACE.global, 'works-index']
 
 /** The page's own title: the root layout's title template adds " | Miles Roxas". */
-export const generateTitle: GenerateTitle<Post | Page | Work> = ({ doc }) => doc?.title ?? ''
+export const generateTitle: GenerateTitle<Post | Page | Work | Home> = ({ doc }) => doc?.title ?? ''
 
 /** Globals with an SEO tab publish at a fixed path. */
-const GLOBAL_PATHS: Partial<Record<GlobalSlug, string>> = { 'works-index': '/works' }
+const GLOBAL_PATHS: Partial<Record<GlobalSlug, string>> = {
+  [HOME_SURFACE.global]: HOME_SURFACE.path,
+  'works-index': '/works',
+}
 
-/** The document's public URL, by its collection's surface (a work under /works, home at /). */
+/** The document's public URL: a global at its path, a document by its collection's surface. */
 export const generateURL: GenerateURL<Post | Page | Work> = ({
   doc,
   collectionSlug,

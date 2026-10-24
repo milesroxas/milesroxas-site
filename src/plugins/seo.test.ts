@@ -43,13 +43,11 @@ describe('generateTitle', () => {
 })
 
 describe('generateURL', () => {
-  it('resolves a work under /works, the home page at the root, and a global at its path', () => {
+  it('resolves a work under /works, the home global at the root, and a global at its path', () => {
     expect(generateURL({ doc: { slug: 'arturo' }, collectionSlug: 'works' } as never)).toMatch(
       /\/works\/arturo$/,
     )
-    expect(generateURL({ doc: { slug: 'home' }, collectionSlug: 'pages' } as never)).toMatch(
-      /^https?:\/\/[^/]+\/?$/,
-    )
+    expect(generateURL({ doc: {}, globalSlug: 'home' } as never)).toMatch(/^https?:\/\/[^/]+\/$/)
     expect(generateURL({ doc: {}, globalSlug: 'works-index' } as never)).toMatch(/\/works$/)
   })
 })

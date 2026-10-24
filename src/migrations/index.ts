@@ -40,6 +40,7 @@ import * as migration_20261015_150822_contact_page_cv from './20261015_150822_co
 import * as migration_20261015_163350_contact_page_recommended from './20261015_163350_contact_page_recommended';
 import * as migration_20261017_211828_videos from './20261017_211828_videos';
 import * as migration_20261021_161707_studio_stills from './20261021_161707_studio_stills';
+import * as migration_20261024_203357_home_global from './20261024_203357_home_global';
 
 export const migrations = [
   {
@@ -250,6 +251,11 @@ export const migrations = [
   {
     up: migration_20261021_161707_studio_stills.up,
     down: migration_20261021_161707_studio_stills.down,
-    name: '20261021_161707_studio_stills'
+    name: '20261021_161707_studio_stills',
+  },
+  {
+    up: migration_20261024_203357_home_global.up,
+    down: migration_20261024_203357_home_global.down,
+    name: '20261024_203357_home_global'
   },
 ];

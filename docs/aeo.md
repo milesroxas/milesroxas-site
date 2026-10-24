@@ -104,10 +104,11 @@ under `/posts`):
   | `/contact` | `/contact.md` | The page's words, the form and its reply time, the email, the profiles, the CV |
 
   Each says only what its page shows: an external post is its introduction and the link to the
-  original (the body it kept is left out), and the home page drops its hero's text, which never
-  renders. `/ask` has none: it is a chat box with nothing to read. Root pages other than home
+  original (the body it kept is left out), and the home page (the Home global,
+  `src/globals/Home.ts`) drops its hero, a portrait with no words. `/ask` has none: it is a chat box with nothing to read. Root pages other than home
   have none either, since `/<slug>.md` would have to be routed beside every root file.
-- **On publish, unpublish, slug change and delete** the AEO plugin refreshes the sitemap and
+- **On publish, unpublish, slug change and delete** (for the Home global, publish and unpublish:
+  it lists first under Pages, `ContentSurface.home`) the AEO plugin refreshes the sitemap and
   the two llms documents and, in production with `INDEXNOW_KEY` set, submits the changed URL
   (and the old one) to IndexNow. Draft saves never reach any of it.
 

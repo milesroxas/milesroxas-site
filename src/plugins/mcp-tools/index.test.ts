@@ -180,6 +180,43 @@ describe('patchBlock', () => {
   })
 })
 
+describe('the home global', () => {
+  const homeRequest = (capabilities: Capabilities) => {
+    const { req, payload } = request(capabilities, { ...page, id: 1, title: 'Home' })
+    const extra = {
+      findGlobal: vi.fn().mockResolvedValue({ ...page, id: 1, title: 'Home' }),
+      updateGlobal: vi
+        .fn()
+        .mockImplementation(({ data }: { data: { layout: unknown } }) =>
+          Promise.resolve({ ...page, id: 1, title: 'Home', _status: 'draft', layout: data.layout }),
+        ),
+    }
+    Object.assign(payload, extra)
+    return { req, payload: payload as typeof payload & typeof extra }
+  }
+
+  it('outlines and patches a block with no id, through the global', async () => {
+    const { req, payload } = homeRequest({ home: { find: true, update: true } })
+    const outline = JSON.parse(await call('outlineDocument', { collection: 'home' }, req))
+    expect(outline).toMatchObject({ collection: 'home', id: 1, title: 'Home' })
+    expect(payload.findGlobal).toHaveBeenCalledWith(
+      expect.objectContaining({ slug: 'home', draft: true, overrideAccess: false }),
+    )
+
+    await call('patchBlock', { collection: 'home', blockId: 'c1', patch: { heading: 'x' } }, req)
+    expect(payload.updateGlobal.mock.calls[0]?.[0]).toMatchObject({ slug: 'home', draft: true })
+    expect(payload.findByID).not.toHaveBeenCalled()
+    expect(payload.update).not.toHaveBeenCalled()
+  })
+
+  it('needs an id for a collection', async () => {
+    const { req } = request(full)
+    await expect(call('outlineDocument', { collection: 'pages' }, req)).resolves.toMatch(
+      /send the id of the pages document/,
+    )
+  })
+})
+
 describe('locateBlock', () => {
   beforeEach(() => {
     jevConfigured.on = true
@@ -248,7 +285,7 @@ describe('findContent', () => {
   it('refuses a key that can find none of the sources', async () => {
     const { req } = request({})
     await expect(call('findContent', { topic: 'Webflow' }, req)).resolves.toMatch(
-      /cannot find pages, works, posts, site-info/,
+      /cannot find home, pages, works, posts, site-info/,
     )
     expect(embeddings.embedQuestions).not.toHaveBeenCalled()
   })

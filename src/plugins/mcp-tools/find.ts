@@ -26,10 +26,13 @@ import type { Jev } from './jev'
  */
 
 /** Where findContent looks: every row source of the Ask index. `find.test.ts` keeps it in step with `surfaces.ts`. */
-export const FIND_SOURCES = ['pages', 'works', 'posts', 'site-info'] as const satisfies readonly (
-  | CollectionSlug
-  | GlobalSlug
-)[]
+export const FIND_SOURCES = [
+  'home',
+  'pages',
+  'works',
+  'posts',
+  'site-info',
+] as const satisfies readonly (CollectionSlug | GlobalSlug)[]
 
 export type FindSource = (typeof FIND_SOURCES)[number]
 

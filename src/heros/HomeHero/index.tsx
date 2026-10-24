@@ -1,12 +1,12 @@
 import type React from 'react'
 import { Media } from '@/components/Media'
-import type { Page } from '@/payload-types'
+import type { Home } from '@/payload-types'
 
 import { getCompositeKey } from '@/utilities/reactKeys'
 import { cn } from '@/utilities/ui'
 import styles from './homeHero.module.css'
 
-type HeroProps = Page['hero'] & {
+type HeroProps = Pick<Home['hero'], 'media'> & {
   /**
    * The page's h1. The opening is a portrait between two word strips with no
    * title of its own, so the heading is for readers and crawlers (the logo in

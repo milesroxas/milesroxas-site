@@ -7,6 +7,6 @@ export const {
   afterDelete: revalidateDelete,
 } = revalidateDocument<'pages'>({
   noun: 'page',
-  pathFor: (slug) => (slug === 'home' ? '/' : `/${slug}`),
+  pathFor: (slug) => `/${slug}`,
   revalidateLists: () => {},
 })

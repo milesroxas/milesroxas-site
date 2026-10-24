@@ -64,7 +64,7 @@ const READ_ONLY = { find: true } as const
 
 /** What each public surface is, beyond its URL. */
 const SURFACE_NOTES: Record<string, string> = {
-  pages: 'The home page is the one with slug `home`.',
+  pages: 'The home page at / is the `home` global, not a page.',
   works:
     'Case studies of client and personal work. `isProtected` hides a work behind an access link: treat it as confidential and never quote it in public copy. `fallbackWork` is the public work shown in its place.',
   posts:
@@ -139,6 +139,11 @@ const collections: MCPPluginConfig['collections'] = Object.fromEntries([
 ])
 
 const globals: MCPPluginConfig['globals'] = {
+  home: {
+    description:
+      'The home page at /: `title` (names it in listings; the h1 is Site Info’s name and job title), `hero.media` (the portrait, a media id), `layout` (the sections, the same blocks as a page) and SEO. Edit its blocks with outlineDocument, patchBlock and the other block tools, `collection: "home"` and no id. Draft-enabled',
+    enabled: { find: true, update: true },
+  },
   'contact-page': {
     description:
       'The copy on /contact: form heading, lead, placeholder, the sent state, the suggestions under it (`recommended`: up to three `{ relationTo: works or posts, value: id }`, empty places fill automatically), the CV card (`cv` takes a PDF media id) and SEO. Reply time, email address and the profile links beside the form live in Site Info',

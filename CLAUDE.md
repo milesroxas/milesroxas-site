@@ -90,6 +90,7 @@ Storybook conventions:
 - Public routes live in `src/app/(frontend)`. Pages are cached HTML (`export const revalidate = 600`, busted on publish by the collections' revalidate hooks). Never call `cookies()` or `headers()` in a page tree directly: the only request read is `hasWorkAccess`, passed as a function to `resolveVisibleWork`, which calls it only for a protected work. The proxy turns `?access=<key>` into the cookie and redirects to the clean URL.
 - Payload admin/API routes live in `src/app/(payload)`.
 - SEO and AEO are one system (`docs/aeo.md`): every route calls `generateMeta` with its `pathname` and renders `<JsonLd>` from the builders in `src/utilities/schema.ts`; Site Info is the source of the site-wide facts. `src/app/robots.ts` and `src/app/sitemap.ts` replace next-sitemap; `/llms.txt`, `/llms-full.txt` and the `.md` alternates are built in `src/plugins/aeo` from `CONTENT_SURFACES`. A new public collection goes in `CONTENT_SURFACES` first.
+- The home page at `/` is the `home` global (`src/globals/Home.ts`): one opening (`homeHeroField`, `HomeHero`) and the Pages blocks (`pageLayoutField`). It is not a Pages document; `HOME_SURFACE` in `src/shared/content/surfaces.ts` wires it into AEO, SEO, Ask and MCP.
 - Collections are in `src/collections` (`pages`, `posts`, `works`, `media`, `videos`, `capabilities`, `categories`, `clients`, `inquiries`, `ask-questions`, `users`).
 - Layout blocks are in `src/blocks`.
 - Hero configs/components are in `src/heros`.

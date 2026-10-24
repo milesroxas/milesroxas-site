@@ -6,10 +6,17 @@ import type {
   CollectionAfterOperationHook,
   CollectionSlug,
   Config,
+  GlobalAfterChangeHook,
+  GlobalSlug,
   Plugin,
 } from 'payload'
 import { unpublishedByOperation } from '@/collections/shared/revalidateDocument'
-import { CONTENT_SURFACES, type ContentSurface, surfaceDocPath } from '@/shared/content/surfaces'
+import {
+  CONTENT_SURFACES,
+  type ContentSurface,
+  type GlobalSurface,
+  surfaceDocPath,
+} from '@/shared/content/surfaces'
 import { getServerSideURL } from '@/utilities/getURL'
 import { indexNowEnabled, submitToIndexNow } from './indexNow'
 
@@ -108,9 +115,29 @@ const indexNowAfterDelete =
   }
 
 /**
+ * A surface's `home` singleton lists with the surface, so its publish and
+ * unpublish refresh the same listings, and a publish pings IndexNow with its
+ * path. A global has no afterOperation, so an unpublish is read off
+ * `previousDoc` (`revalidatePublishedGlobal` does the same).
+ */
+const homeAfterChange =
+  (home: GlobalSurface): GlobalAfterChangeHook =>
+  async ({ doc, previousDoc, req: { payload, context } }) => {
+    if (context.disableRevalidate) return doc
+    if (!isPublished(doc) && !isPublished(previousDoc)) return doc
+
+    revalidatePublicListings()
+    if (isPublished(doc) && indexNowEnabled()) {
+      const url = `${getServerSideURL()}${home.path}`
+      await submitDeferred(() => submitToIndexNow(payload, [url]))
+    }
+    return doc
+  }
+
+/**
  * Answer-engine optimization (docs/aeo.md), ported from sas-site's plugin.
- * Hooks every public content surface so that a publish, unpublish, slug
- * change or delete refreshes /sitemap.xml, /llms.txt and /llms-full.txt and,
+ * Hooks every public content surface, and the home singleton that lists with
+ * one, so that a publish, unpublish, slug change or delete refreshes /sitemap.xml, /llms.txt and /llms-full.txt and,
  * in production with INDEXNOW_KEY set, tells the IndexNow engines which URL
  * changed. The documents themselves are served by the route handlers in
  * src/app/(frontend)/(ai)/ and src/app/sitemap.ts, from ./buildLlms.ts and
@@ -122,6 +149,9 @@ export const aeoPlugin =
   (config: Config): Config => {
     const surfaces = new Map<CollectionSlug, ContentSurface>(
       CONTENT_SURFACES.map((surface) => [surface.collection, surface]),
+    )
+    const homes = new Map<GlobalSlug, GlobalSurface>(
+      CONTENT_SURFACES.flatMap(({ home }) => (home ? [[home.global, home] as const] : [])),
     )
 
     return {
@@ -149,6 +179,18 @@ export const aeoPlugin =
               revalidateListingsOnUnpublish,
               indexNowAfterOperation(surface),
             ],
+          },
+        }
+      }),
+      globals: (config.globals ?? []).map((global) => {
+        const home = homes.get(global.slug as GlobalSlug)
+        if (!home) return global
+
+        return {
+          ...global,
+          hooks: {
+            ...global.hooks,
+            afterChange: [...(global.hooks?.afterChange ?? []), homeAfterChange(home)],
           },
         }
       }),

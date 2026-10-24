@@ -1,15 +1,17 @@
 import type { Payload } from 'payload'
 import type { SiteInfo } from '@/payload-types'
-import { extractDocMarkdown, readPublicDoc } from '@/shared/content/extract'
+import { extractDocMarkdown, readPublicDoc, readPublicGlobal } from '@/shared/content/extract'
 import { homeHeading } from '@/shared/content/home'
 import {
   CONTENT_SURFACES,
   type ContentSurface,
+  globalSurfaceBySlug,
+  HOME_SURFACE,
   surfaceByCollection,
 } from '@/shared/content/surfaces'
 import { type ExternalArticle, externalArticle } from '@/utilities/externalArticle'
 import { getServerSideURL } from '@/utilities/getURL'
-import { listPublicDocs, type PublicDoc } from './publicDocs'
+import { listPublicDocs, type PublicDoc, readPublicHome } from './publicDocs'
 
 /**
  * The markdown the site serves to agents (docs/aeo.md): /llms.txt, an index
@@ -148,10 +150,10 @@ type DocRecord = Record<string, unknown>
 /**
  * The record as its page shows it. An external post renders its introduction
  * and the link out, never the body and sections it kept from before; the home
- * page renders Site Info's name and role over a portrait, never its hero's text.
+ * page renders Site Info's name and role over a portrait, never its hero.
  */
 export function shownRecord(
-  surface: ContentSurface,
+  doc: Pick<PublicDoc, 'global'>,
   record: DocRecord,
   siteInfo: Partial<SiteInfo>,
   original: ExternalArticle | null,
@@ -160,11 +162,18 @@ export function shownRecord(
     const { content: _content, layout: _layout, ...shown } = record
     return shown
   }
-  if (surface.homeSlug && record.slug === surface.homeSlug) {
+  if (doc.global === HOME_SURFACE.global) {
     const { hero: _hero, ...shown } = record
     return { ...shown, title: homeHeading(siteInfo) }
   }
   return record
+}
+
+/** The record behind a listing entry: its global, or its document in the surface's collection. */
+const readListedRecord = (payload: Payload, surface: ContentSurface, doc: PublicDoc) => {
+  const global = doc.global ? globalSurfaceBySlug.get(doc.global) : undefined
+  if (global) return readPublicGlobal(payload, global)
+  return readPublicDoc(payload, surface.collection, doc.id)
 }
 
 /** The document's markdown with its front matter, read again as the public sees it. */
@@ -175,10 +184,10 @@ async function docMarkdown(
   siteUrl: string,
   siteInfo: Partial<SiteInfo>,
 ): Promise<string | null> {
-  const record = await readPublicDoc(payload, surface.collection, doc.id)
+  const record = await readListedRecord(payload, surface, doc)
   if (!record) return null
   const original = surface.collection === 'posts' ? externalArticle(record) : null
-  const shown = shownRecord(surface, record, siteInfo, original)
+  const shown = shownRecord(doc, record, siteInfo, original)
   const markdown = await extractDocMarkdown(
     payload,
     shown,
@@ -218,6 +227,22 @@ export async function buildDocMarkdown(
   const docs = await listPublicDocs(payload, surface)
   const doc = docs.find((candidate) => candidate.slug === slug)
   if (!doc) return null
+
+  const markdown = await docMarkdown(
+    payload,
+    surface,
+    doc,
+    getServerSideURL(),
+    await readSiteInfo(payload),
+  )
+  return markdown ? `${markdown}\n` : null
+}
+
+/** `/index.md`: the home page's markdown, as its page shows it. Null until it is public. */
+export async function buildHomeMarkdown(payload: Payload): Promise<string | null> {
+  const surface = CONTENT_SURFACES.find((candidate) => candidate.home)
+  const doc = surface?.home ? await readPublicHome(payload, surface.home) : null
+  if (!surface || !doc) return null
 
   const markdown = await docMarkdown(
     payload,
