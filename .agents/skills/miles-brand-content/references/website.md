@@ -80,13 +80,15 @@ Case study narrative lives in `layout` blocks; there are no story sections. Map 
 
 ## Posts
 
-Posts carry the "Building and learning" and "Tools and systems" pillars most often. Establish the reader's question before naming tools, give each section one job, and end on an implication the evidence earns. Bylined posts speak as Miles in the first person. Name AI and collaborators where they did the work ("Claude wrote the hook and I reviewed it"): how the work was split is part of the story.
+Posts carry the "Building and learning" and "Tools and systems" pillars most often. Write them with `references/articles.md`: pick the shape, open on the work, state the point early, give each section one job, and end on an implication the evidence earns. Bylined posts speak as Miles in the first person. Name AI and collaborators where they did the work: how the work was split is part of the story.
+
+A post's sections are Standard heading blocks (`richTransition`) followed by Rich text blocks, as the published posts are built; `content` holds the body when the post has no layout. An external post (`source: external`) gets only `intro.body`: two short paragraphs, what the article covers and who it is worth reading for, with one concrete detail from it.
 
 ## SEO and answer engines
 
 - **`meta.title`** is the page's own title. The template appends " | Miles Roxas" (14 characters), so keep the stored title to about 45 characters and never type the name. The home page is the exception: its title leads with the name and is used as written.
 - **`meta.description`** is the search snippet, the share card, the page's line in llms.txt and its JSON-LD description. 100 to 155 characters, third person or no subject, saying what the page is and naming the client, product or topic. Every page gets one.
-- **Answer first.** Open each section with the direct answer, then the detail. Phrase headings as the question a reader would ask where that reads naturally. A page with a FAQ block emits FAQPage schema, so each answer starts with the answer.
+- **Answer first.** Open each section with the direct answer, then the detail. On pages, a heading may be the question a reader would ask where that reads naturally; in posts and case study narrative, headings are short labels or claims and the section's first sentence carries the answer (`references/articles.md`). A page with a FAQ block emits FAQPage schema, so each answer starts with the answer.
 - **One h1 per page.** Works, posts, the works index and the contact page render theirs from the title.
 - **Keep the entity consistent:** the same name, role ("Designer & Builder") and one-line description wherever Miles appears.
 

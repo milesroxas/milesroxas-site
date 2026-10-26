@@ -3,27 +3,194 @@
   "evals": [
     {
       "id": 1,
+      "name": "rewrite-summaries-live",
       "prompt": "the summaries on my NextStreet and GentleBeast case studies read like agency copy. rewrite them so they sound like me, and fix the seo descriptions on both if they need it",
       "expected_output": "Reads the live works, rewrites both summaries in Miles's voice with only verified facts, flags GentleBeast's empty role, checks SEO descriptions (100-155 chars, third person), and saves as drafts with top-level fields.",
-      "files": []
+      "files": [],
+      "expectations": [
+        "Reads both works from the CMS before rewriting",
+        "Flags that GentleBeast's role field is empty instead of guessing it",
+        "Keeps each summary to two sentences and about 220 characters",
+        "Writes SEO descriptions of 100 to 155 characters in third person or with no subject",
+        "Saves with draft: true and reports the admin links"
+      ],
+      "bench": { "live": true, "judge": false }
     },
     {
       "id": 2,
+      "name": "linkedin-ask",
       "prompt": "write a linkedin post about the Ask feature on my portfolio, the RAG assistant that answers questions about my work. i want people to go read the write-up",
       "expected_output": "A calm, specific LinkedIn post: point in the first line, one real decision, AI credited as a tool with Miles's role clear, no hype or hashtag wall, flags that the write-up is still a draft.",
-      "files": []
+      "files": ["evals/files/ask-notes.md"],
+      "expectations": [
+        "The first line states the point in under 140 characters",
+        "Includes one real decision or number from the evidence",
+        "Says AI agents helped build it without inventing how the work was split",
+        "Has one link at most, no emoji, no hashtag wall and no engagement bait",
+        "Flags that the Ask post is still a draft"
+      ],
+      "bench": {
+        "kind": "linkedinPost",
+        "evidence": ["evals/files/ask-notes.md"],
+        "words": [80, 250]
+      }
     },
     {
       "id": 3,
+      "name": "plan-home-siteinfo",
       "prompt": "plan a rewrite of my homepage hero and Site Info so they actually match my brand guide. don't write final copy yet, i just want the plan",
       "expected_output": "A brief: reader, goal, evidence ledger, outline, open questions. Flags live copy that contradicts the guide (labels, year count), notes Site Info saves go live, writes nothing to the CMS.",
-      "files": []
+      "files": [],
+      "expectations": [
+        "Produces the brief format from SKILL.md",
+        "Flags live copy that contradicts the guide",
+        "Notes that Site Info saves go live immediately",
+        "Writes nothing to the CMS"
+      ],
+      "bench": { "live": true, "judge": false }
     },
     {
       "id": 4,
+      "name": "cv-linear-application",
       "prompt": "I'm applying for a Design Engineer role at Linear. write 4 CV bullets for my Suits & Sandals co-founder role, plus a short answer to the application question 'Why are you leaving your agency?'",
       "expected_output": "Four verb-first bullets under 30 words with no inflated engineering claims, titles and dates flagged for checking, and an answer that frames the move to product work as deliberate.",
-      "files": []
+      "files": [],
+      "expectations": [
+        "Four bullets, each opening with a strong verb and under 30 words",
+        "No bullet claims engineering depth the evidence does not show",
+        "Titles and dates are flagged for checking, not invented",
+        "The answer frames the move to one product as deliberate, without apologizing for the agency years"
+      ],
+      "bench": { "kind": "body", "evidence": ["references/brand-context.md"] }
+    },
+    {
+      "id": 5,
+      "name": "build-story-ask",
+      "prompt": "Write a post for my site about how the Ask assistant works and why I built it the way I did. Use only the facts in evals/files/ask-notes.md. Don't save anything to the CMS: give me the post as Markdown in chat, with a title.",
+      "expected_output": "A build story to references/articles.md: an opening inside the problem, the point by the third paragraph, label or claim headings, at least one decision against its alternative, the judge's cost, correct retention, the Ask work split marked for checking, and an implication ending.",
+      "files": ["evals/files/ask-notes.md"],
+      "expectations": [
+        "Opens on the reader's or Miles's problem, not on the feature or an announcement",
+        "States the point or a result by the third paragraph",
+        "Section headings are short labels or claims; none is a question",
+        "Describes at least one decision against the alternative it beat",
+        "Reports at least one cost or failure, such as slower worded turns or 5 wrong cards in 57",
+        "Never says a daily or scheduled job deletes stored questions",
+        "Marks how the Ask work was split between Miles and AI agents with [check: ...] or leaves it out",
+        "Ends on an implication, optionally followed by one line pointing to Ask",
+        "Passes check-voice.mjs --kind article with no errors"
+      ],
+      "bench": {
+        "kind": "article",
+        "evidence": ["evals/files/ask-notes.md"],
+        "words": [700, 1800],
+        "aiBuilt": true
+      }
+    },
+    {
+      "id": 6,
+      "name": "essay-judgment",
+      "prompt": "Write a short essay (500 to 800 words) for my site on why design judgment matters more, not less, now that agents write most of my code. Draw on my own work in evals/files/ask-notes.md and evals/files/parallel-post.md. Markdown in chat, with a title; don't save it.",
+      "expected_output": "An essay to references/articles.md: a position stated early, one concrete story from Miles's own work as the proof, AI as a tool with Miles's deciding and reviewing role explicit, few or no headings, and an implication ending. No borrowed lines or references.",
+      "files": ["evals/files/ask-notes.md", "evals/files/parallel-post.md"],
+      "expectations": [
+        "States a clear position within the first three paragraphs",
+        "Uses at least one concrete story from Miles's own work as evidence",
+        "Describes AI as a tool, with what Miles decides and reviews made explicit",
+        "Does not borrow lines, references or examples from other writers' essays",
+        "Has few or no headings and ends on an implication rather than a moral",
+        "Does not call Miles an engineer or an AI expert"
+      ],
+      "bench": {
+        "kind": "article",
+        "evidence": ["evals/files/ask-notes.md", "evals/files/parallel-post.md"],
+        "words": [450, 900],
+        "aiBuilt": true
+      }
+    },
+    {
+      "id": 7,
+      "name": "edit-parallel-open-close",
+      "prompt": "Tighten the first two paragraphs and the last paragraph of my published post in evals/files/parallel-post.md. Show each change as before and after with a reason. Keep every fact and don't touch the CMS.",
+      "expected_output": "Edit mode: only the first two paragraphs and the last paragraph change, every number survives, each change has a before, an after and a rule-based reason, and what already works is kept.",
+      "files": ["evals/files/parallel-post.md"],
+      "expectations": [
+        "Changes only the first two paragraphs and the last paragraph",
+        "Keeps every number: 58 commits, 14 workspaces, 170 commits, 23 migrations, 37 branches",
+        "Shows each change as before and after with a one-line reason tied to a rule",
+        "Adds no fact that is not in the post",
+        "Says where the original already works instead of rewriting it wholesale"
+      ],
+      "bench": { "judge": false, "kind": "body", "evidence": ["evals/files/parallel-post.md"] }
+    },
+    {
+      "id": 8,
+      "name": "review-ask-draft",
+      "prompt": "Review my Ask post draft in evals/files/ask-draft.md before I publish it. Don't rewrite it.",
+      "expected_output": "Review mode: findings most serious first with location, quote, rule and fix. Catches the daily-job retention claim against the repo, the feature-first opening, the missing cost or failure section and the tool-led title, and ends with the two or three changes that matter most.",
+      "files": ["evals/files/ask-draft.md"],
+      "expectations": [
+        "Flags 'a daily job deletes rows after 90 days' as wrong: since 2026-10-17 nothing runs on a schedule and retention runs after each stored question",
+        "Notes the opening leads with the feature rather than the reader's problem and suggests an opening move",
+        "Notes the missing account of what did not work or what it cost, and points to evidence that could supply it",
+        "Checks the title and SEO description against the website rules (tool-led title, third person description)",
+        "Lists findings most serious first with location, quote, rule and fix, and ends with the two or three changes that matter most",
+        "Does not rewrite the post"
+      ],
+      "bench": { "judge": false }
+    },
+    {
+      "id": 9,
+      "name": "case-study-buzlee",
+      "prompt": "Draft the narrative sections of my Buzlee case study: problem, insight, choices, what was built, outcome, lesson. Use only evals/files/buzlee-notes.md. Markdown in chat with one heading per section; don't save it.",
+      "expected_output": "A case study narrative in the website.md order with short headings, the founder credited, I for Miles's own work, at least one choice against its alternative, and every missing fact (metrics, dates, launch status, reasons) marked for checking rather than invented.",
+      "files": ["evals/files/buzlee-notes.md"],
+      "expectations": [
+        "Follows problem, insight, choices, what was built, outcome, lesson",
+        "Invents no metrics, dates, user numbers, team members or launch status",
+        "Marks reasons and results not in the evidence with [check: ...]",
+        "Credits the founder and uses I only for Miles's own work",
+        "Shows at least one choice against the alternative it beat",
+        "Headings are short labels or claims"
+      ],
+      "bench": {
+        "kind": "article",
+        "evidence": ["evals/files/buzlee-notes.md"],
+        "words": [400, 1200]
+      }
+    },
+    {
+      "id": 10,
+      "name": "linkedin-parallel",
+      "prompt": "Write a LinkedIn post that points people to my post on working in parallel (evals/files/parallel-post.md).",
+      "expected_output": "A LinkedIn post: the point in the first line, one concrete detail from the post (a guard and the bug behind it, or a number), the AI split stated as the post states it, one link, no emoji or hashtag wall.",
+      "files": ["evals/files/parallel-post.md"],
+      "expectations": [
+        "The first line carries the point in under 140 characters",
+        "Includes one concrete detail from the post",
+        "States the agent's part the way the post does, without inflating it",
+        "One link at most, no emoji, no hashtag wall, no engagement bait"
+      ],
+      "bench": {
+        "kind": "linkedinPost",
+        "evidence": ["evals/files/parallel-post.md"],
+        "words": [80, 250],
+        "aiBuilt": true
+      }
+    },
+    {
+      "id": 11,
+      "name": "titles-ask",
+      "prompt": "Give me three title options, an SEO title and an SEO description for my Ask post in evals/files/ask-draft.md.",
+      "expected_output": "Three descriptive or claim titles in sentence case under about 60 characters, an SEO title of about 45 characters without the name, and a 100 to 155 character third-person description that names Ask and what it does.",
+      "files": ["evals/files/ask-draft.md"],
+      "expectations": [
+        "Three titles, each descriptive or a claim, in sentence case and under about 60 characters",
+        "No title leads with a tool acronym or hype",
+        "The SEO title is about 45 characters and does not include Miles's name",
+        "The SEO description is 100 to 155 characters, third person or no subject, and names Ask"
+      ],
+      "bench": { "judge": false, "kind": "body" }
     }
   ]
 }

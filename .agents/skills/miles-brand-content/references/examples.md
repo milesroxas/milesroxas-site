@@ -15,6 +15,9 @@ Pairs that show the voice by contrast. "Live" befores were on milesroxas.com on 
 9. [LinkedIn post](#9-linkedin-post)
 10. [CV bullet](#10-cv-bullet)
 11. [Alt text](#11-alt-text)
+12. [Article opening](#12-article-opening)
+13. [Article section](#13-article-section)
+14. [Article ending](#14-article-ending)
 
 ## 1. Site tagline
 
@@ -133,3 +136,39 @@ After:
 > Buzlee's map view on a phone, with event pins across a small town and a flyer card open at the bottom. [check: matches the image]
 
 Why: says what is in the picture for someone who can't see it, with no "image of" and no adjectives. Write alt text from the actual image, never from the case study.
+
+## 12. Article opening
+
+Before (draft, the Ask post):
+> Press ⌘K anywhere on this site, or tap Ask in the dock, and ask about my work in plain words. The answer comes only from what is published here, lists the pages it used, and stays under 120 words.
+
+After:
+> A portfolio gets read by someone with a few minutes and one question, and the page they land on rarely answers it. So this site has Ask: press ⌘K, ask about my work in plain words, and the answer comes only from what is published here, with the pages it used listed under it.
+>
+> The hard part was not the answer. It was deciding when Ask should not answer at all. Without a judge, the writing model made that call, and on the Suits & Sandals site it showed the wrong handoff card in 5 of 57 test turns. This post covers the index that keeps Ask current, the judge that now makes that call, and what it cost.
+
+Why: opens on the reader's problem before the feature, states the point and the result by the second paragraph, and previews the sections. Sources: the Ask post draft (the 57-turn measure, 52 right cards before the judge).
+
+## 13. Article section
+
+Before:
+> ## How does the Payload integration keep everything up to date automatically?
+>
+> Payload is an amazing CMS that makes this super easy. Whenever content changes, the index updates seamlessly.
+
+After:
+> ## Publishing is the trigger
+>
+> The index updates when a page is published, and only then. An `afterChange` hook re-embeds a published document; draft saves and autosave are skipped, and an unpublish deletes its rows. Vectors are reused by exact passage text, so fixing an SEO title re-embeds nothing.
+
+Why: a claim heading of four words instead of a question, a first sentence that answers it, and mechanism instead of praise. Sources: the Ask post draft.
+
+## 14. Article ending
+
+Before:
+> In summary, Ask uses embeddings, Payload hooks and Jev to deliver a great experience. I hope this was helpful! Let me know what you think in the comments.
+
+After:
+> The point is not the commit count. It is that a half-finished thought never blocks the next one.
+
+Why: ends on what the work implies, in two sentences, instead of recapping the sections and asking for engagement. Source: the published post "Fourteen branches, one afternoon".

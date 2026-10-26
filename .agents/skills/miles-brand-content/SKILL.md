@@ -1,6 +1,6 @@
 ---
 name: miles-brand-content
-description: Plans, writes and edits content in Miles Roxas's personal brand voice ("Designer & Builder") for his portfolio site milesroxas.com (pages, works and case studies, posts, Site Info, SEO titles and descriptions, alt text) and for his other channels (LinkedIn posts and profile, YouTube titles and scripts, CVs, cover letters, job applications, interview answers, bios). Checks every claim against evidence, runs a voice lint, and saves website copy as CMS drafts over the milesroxas-cms MCP server. Use whenever the user asks to draft, outline, plan, rewrite, tighten, review or audit anything Miles will publish or send about himself or his work, even when the brand guide is not mentioned. Not for the Suits & Sandals studio site (sas-cms), which has its own voice.
+description: Plans, writes and edits content in Miles Roxas's personal brand voice ("Designer & Builder") for his portfolio site milesroxas.com (pages, works and case studies, posts, articles, essays and build stories, Site Info, SEO titles and descriptions, alt text) and for his other channels (LinkedIn posts and profile, YouTube titles and scripts, CVs, cover letters, job applications, interview answers, bios). Checks every claim against evidence, runs a voice lint, and saves website copy as CMS drafts over the milesroxas-cms MCP server. Use whenever the user asks to draft, outline, plan, rewrite, tighten, review or audit anything Miles will publish or send about himself or his work, even when the brand guide is not mentioned. Not for the Suits & Sandals studio site (sas-cms), which has its own voice.
 ---
 
 # Miles Roxas brand content
@@ -13,6 +13,7 @@ You plan, write and edit copy that speaks for Miles. Miles reviews and publishes
 2. Name the job in one line before writing: mode (plan, write, edit, review), channel, surface (for example "work hero summary" or "LinkedIn post"), reader, and what the reader should understand or do afterwards.
 3. Read the reference for the channel:
    - Website, any Payload page, work, post, global, SEO field or alt text: `references/website.md`
+   - A post, essay, build story or case study narrative, on any channel: `references/articles.md` as well. It holds the long-form shapes, openings, headings and endings.
    - LinkedIn, YouTube, CV, cover letter, application, interview, bio: `references/channels.md`
 4. Read `references/examples.md` before drafting or editing. It shows the distance between agency copy and Miles's voice, which is easier to hear than to describe.
 
@@ -65,7 +66,7 @@ When an open question blocks the draft (his role, who else worked on it, whether
 
 ### Write
 
-Draft from the brief, or build one in your head first if the request is small. Follow the guide's narrative order so the reader learns why something was made, not only what. Lead each section with the direct point, then the detail. Use the surface's shape and limits from the channel reference. Vary sentence length and keep paragraphs short. One memorable line is enough; a punchline on every paragraph reads as a template.
+Draft from the brief, or build one in your head first if the request is small. Follow the guide's narrative order so the reader learns why something was made, not only what. For long-form, name the shape from `references/articles.md` first (build story, practice, essay, field notes, case study) and follow its skeleton. Lead each section with the direct point, then the detail. Use the surface's shape and limits from the channel reference. Vary sentence length and keep paragraphs short. One memorable line is enough; a punchline on every paragraph reads as a template.
 
 ### Edit
 
@@ -85,7 +86,7 @@ Assess without rewriting. List findings most serious first: location, the quoted
    node .agents/skills/miles-brand-content/scripts/check-voice.mjs --kind <kind> [--target cms] [--format text] <file>
    ```
 
-   Pass a text or Markdown file for one passage, or a JSON file `{"fields":[{"path","kind","text"}]}` to check several fields at once. `--help` lists the kinds (metaTitle, metaDescription, workSummary, tagline, heading, linkedinPost, youtubeTitle, cvBullet and more). Use `--target cms` for anything you will save. Fix every error. Fix each warning or say in one line why it stands. Info rows are claims to confirm against the ledger.
+   Pass a text or Markdown file for one passage, or a JSON file `{"fields":[{"path","kind","text"}]}` to check several fields at once. `--help` lists the kinds (article, metaTitle, metaDescription, workSummary, tagline, heading, linkedinPost, youtubeTitle, cvBullet and more). Use `--target cms` for anything you will save. Fix every error. Fix each warning or say in one line why it stands. Info rows are claims to confirm against the ledger.
 
 2. Then read it as Miles would. Code can't judge these:
    - Does a hiring manager learn what Miles did and why within the first two sentences?
@@ -112,3 +113,7 @@ Assess without rewriting. List findings most serious first: location, the quoted
 - Markdown goes only in the Rich text block's `body`, a post's `content` and a media `caption`. Every other rich text field takes Lexical JSON (`references/website.md`). The Markdown fields refuse any `<word>` as raw HTML.
 - A refused save names each problem by path (an em dash, a visitor email, Miles's own address in body copy). Fix exactly those paths and resend.
 - The SEO title template appends " | Miles Roxas". Never type the name into `meta.title`.
+
+## Measuring this skill
+
+`evals/benchmarks.md` is the benchmark: test prompts with evidence packs, a lint and shape pass, and Jev judgments for openings, specificity, decisions, honesty, endings and claim grounding (`scripts/bench.mjs`). Run it before and after changing this skill or the guide, and keep a change only when its scores hold or improve.

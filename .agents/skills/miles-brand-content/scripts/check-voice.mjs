@@ -9,8 +9,9 @@
  * The em dash rule matches src/plugins/mcp-write-checks.ts, and the phrase list
  * extends AVOID_PHRASES in src/features/ask/prompts.ts and sas-site's voice.ts.
  */
-import { readFileSync } from 'node:fs'
+import { readFileSync, realpathSync } from 'node:fs'
 import { extname } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { parseArgs } from 'node:util'
 
 const HELP = `Usage: node check-voice.mjs [options] [file ...]
@@ -70,10 +71,15 @@ const KINDS = {
   cvBullet: { about: 'CV bullet', maxWords: 30 },
   coverLetter: { about: 'Cover letter or application answer', maxWords: 400 },
   bio: { about: 'Bio, any length' },
+  article: {
+    about: 'Post, essay or case study narrative in Markdown (references/articles.md)',
+    minWords: 400,
+    maxWords: 2500,
+  },
 }
 
 /** Kinds that may land in a CMS Markdown field, which refuses raw HTML. */
-const MARKDOWN_KINDS = new Set(['body', 'caption'])
+const MARKDOWN_KINDS = new Set(['body', 'caption', 'article'])
 
 /** Agency, sales and hype language. A single word is caught in any inflection. */
 const AVOID_PHRASES = [
@@ -289,6 +295,16 @@ const PARAGRAPH_WORDS = 130
 const UNIFORM_MIN_SENTENCES = 4
 const UNIFORM_SPREAD = 0.1
 
+/** Article shape, from the long-form study in docs/article-voice-study.md. */
+const ARTICLE = {
+  headingWords: 8,
+  sectionEveryWords: 700,
+  oneLineShare: 0.25,
+  oneLineMinParagraphs: 8,
+}
+const RECAP_ENDING =
+  /^(?:in (?:summary|conclusion|short)|to (?:sum up|wrap up|recap|summarize)|overall,|all in all|that'?s (?:a wrap|it)|so there you have it)/i
+
 /**
  * Checks on the field as a whole. `test` gets the kind's shape and the
  * measures and returns a message when the check fails.
@@ -384,11 +400,80 @@ const SHAPE_CHECKS = [
     rule: 'cliche-opener',
     severity: 'warning',
     test: (_s, m) => {
-      const opener = CLICHE_OPENERS.exec(m.text.replace(/^[^\p{L}]+/u, ''))
+      const start = m.article?.prose[0] ?? m.text
+      const opener = CLICHE_OPENERS.exec(start.replace(/^[^\p{L}]+/u, ''))
       return opener && `Opens with "${opener[0]}". Start with the point.`
     },
   },
+  {
+    rule: 'question-heading',
+    severity: 'warning',
+    test: (_s, m) => {
+      const asked = m.article?.headings.filter((heading) => heading.endsWith('?')) ?? []
+      return (
+        asked.length > 0 &&
+        `Question headings: "${asked.join('", "')}". Use a label or a claim, and answer in the section's first sentence.`
+      )
+    },
+  },
+  {
+    rule: 'long-heading',
+    severity: 'warning',
+    test: (_s, m) => {
+      const long = m.article?.headings.filter((h) => words(h).length > ARTICLE.headingWords) ?? []
+      return (
+        long.length > 0 &&
+        `Headings over ${ARTICLE.headingWords} words: "${long.join('", "')}". Put the sentence in the body.`
+      )
+    },
+  },
+  {
+    rule: 'sections',
+    severity: 'info',
+    test: (_s, m) =>
+      m.article &&
+      m.words > ARTICLE.sectionEveryWords &&
+      m.article.headings.length < 2 &&
+      `${m.words} words with ${m.article.headings.length} section headings. A build story or practice post needs sections; an essay may not.`,
+  },
+  {
+    rule: 'one-line-paragraphs',
+    severity: 'warning',
+    test: (_s, m) => {
+      const prose = m.article?.prose ?? []
+      if (prose.length < ARTICLE.oneLineMinParagraphs) return false
+      const single = prose.filter((p) => sentencesOf(p).length <= 1).length
+      const share = single / prose.length
+      return (
+        share > ARTICLE.oneLineShare &&
+        `${single} of ${prose.length} paragraphs are one sentence. Keep one-liners for the turns; build paragraphs of two to four sentences.`
+      )
+    },
+  },
+  {
+    rule: 'recap-ending',
+    severity: 'warning',
+    test: (_s, m) => {
+      const last = m.article?.prose.at(-1)
+      const recap = last && RECAP_ENDING.exec(last)
+      return recap && `Ends with "${recap[0]}". End on what the work implies, not a summary.`
+    },
+  },
 ]
+
+/** Headings and prose paragraphs of a Markdown article; the title (#) is not a section heading. */
+function articleParts(text) {
+  const headings = []
+  const prose = []
+  for (const { text: block } of paragraphsOf(text)) {
+    const line = block.trim()
+    const heading = /^(#{1,6})\s+(.*)$/.exec(line)
+    if (heading) {
+      if (heading[1].length > 1) headings.push(heading[2].replace(/[*_`]/g, '').trim())
+    } else if (!standsAlone(line) && !/^!?\[/.test(line)) prose.push(line)
+  }
+  return { headings, prose }
+}
 
 /** Blanks code and URLs to spaces of the same length, so offsets and lines still match the input. */
 function maskNonCopy(text) {
@@ -556,6 +641,7 @@ function lintField({ path, kind, text }, target) {
     sentences: sentencesOf(trimmed).length,
     firstLine: trimmed.split('\n')[0].trim(),
     hashtags: (trimmed.match(/(?:^|\s)#[A-Za-z]\w*/g) ?? []).length,
+    article: kind === 'article' ? articleParts(trimmed) : null,
   }
   for (const { rule, severity, test } of SHAPE_CHECKS) {
     const message = test(shape, measures)
@@ -657,4 +743,8 @@ function main() {
   return report(findings, fields, options).errors === 0 ? 0 : 1
 }
 
-process.exitCode = main()
+export { articleParts, KINDS, lintField, maskNonCopy, sentencesOf, words }
+
+// Imported by scripts/bench.mjs; runs only as a CLI. The skill is reached through a symlink.
+const invoked = process.argv[1] && pathToFileURL(realpathSync(process.argv[1])).href
+if (invoked === import.meta.url) process.exitCode = main()
