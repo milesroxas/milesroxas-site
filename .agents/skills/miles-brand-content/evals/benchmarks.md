@@ -4,6 +4,7 @@ How to tell whether a change to this skill, or to the brand guide, makes Miles's
 
 ## Contents
 
+- [The review loop](#the-review-loop)
 - [What gets measured](#what-gets-measured)
 - [The Jev questions](#the-jev-questions)
 - [Cases](#cases)
@@ -13,6 +14,24 @@ How to tell whether a change to this skill, or to the brand guide, makes Miles's
 - [Refine the skill](#refine-the-skill)
 - [Results log](#results-log)
 - [Limits](#limits)
+
+## The review loop
+
+Scores tell you where to look; your reading decides. The review tool puts both on one screen:
+
+```bash
+pnpm content-review
+```
+
+Then open http://localhost:4330. The in-app guide (http://localhost:4330/guide, or the Guide button) walks through every part with screenshots; `pnpm content-review:guide` retakes them after the tool changes. One pass:
+
+1. **Judge blind.** Rate an output from 1 to 5, mark each layer Good or Bad, and note any paragraph, before you see a score. Everything saves to `evals/reviews.json`.
+2. **Compare.** Put two outputs side by side (another skill version, another model, another sample, a rewrite), pick one, and read Jev's notes on each paragraph and claim. Diff shows the word-level change.
+3. **Read Insights.** For each layer, your marks against the bench: both bad means change the skill (it names the section); you and the bench disagreeing means change the benchmark (it names the question or knob).
+4. **Tweak.** Edit the skill and check Skill diff; rewrite one piece with a direction; or drag the Knobs, which rescore every output from Jev's stored answers and save to `evals/bench-config.json`.
+5. **Generate and repeat.** Write new outputs with any writer: Claude through Claude Code, OpenAI models through the API, or the Codex CLI once installed, each with its own model and effort. A change to the skill's text starts a new version, which you name when you generate.
+
+Names follow one pattern. A case is its number and title ("9 · Case study: Buzlee"). A skill version is a number and a short name ("v2 · Claims need a source"), and a new number starts whenever the skill's text changes (its hash differs from every earlier version's). A writer is a model and an effort ("GPT-5.5, high effort"). A run folder is `<date>-skill-<version>-<engine>-<model>[-<effort>]`, and each output in it is `<case>-<name>-s<sample>.md`, with the writer's own notes beside it in `_<same>.notes.md`, the grade in `report.json`, the run's details in `run.json` and the skill that wrote it in `_skill/`.
 
 ## What gets measured
 
@@ -25,7 +44,7 @@ How to tell whether a change to this skill, or to the brand guide, makes Miles's
 | tone | 10 | How promotional each paragraph is, averaged | Jev |
 | grounding | 15 | The share of factual claims the evidence pack supports, as (supported + 0.9) / (factual + 1) so one verdict cannot swing a short piece to 0. Any contradiction caps the layer at 50. A claim flagged with `[check: ...]` (its own sentence or the one before the marker) is not counted; a piece with no unflagged claims skips the layer | Jev, one question per claim, a second literal check before a contradiction counts |
 
-A layer that does not apply is left out and the rest rescale to 100: a CV bullet has no shape or structure, and a case with no evidence pack has no grounding. Weights, bands and thresholds are constants at the top of `scripts/bench.mjs`. Change them there, never in the questions.
+A layer that does not apply is left out and the rest rescale to 100: a CV bullet has no shape or structure, and a case with no evidence pack has no grounding. Weights, bands and thresholds live in `scripts/bench-core.mjs` (`DEFAULT_CONFIG`), overridden by `evals/bench-config.json` when the review tool saves one. Change them there, never in the questions.
 
 Flags are listed under each output and matter more than the total: a contradicted claim, an opening outside the work, no decision, an ending that recaps, a borrowed line from the study's source, a length outside the case's range.
 
@@ -102,7 +121,7 @@ All commands run from the repo root. `.env` holds `TYPESAFE_API_KEY`. In a workt
 3. **Grade.** Files starting with `_` are skipped, and the report lands in the run folder.
 
    ```bash
-   node --env-file=.env .agents/skills/miles-brand-content/scripts/bench.mjs .agents/skills/miles-brand-content/evals/runs/2026-10-26-v2
+   node --env-file=.env .agents/skills/miles-brand-content/scripts/bench.mjs .agents/skills/miles-brand-content/evals/runs/2026-10-26-skill-v2-claude-opus-5-5
    ```
 
    `--no-jev` grades lint and shape only, offline. `--case 5 file.md` grades any file as a case, which is how to score a draft Miles wrote himself.
@@ -110,7 +129,7 @@ All commands run from the repo root. `.env` holds `TYPESAFE_API_KEY`. In a workt
 4. **Compare.**
 
    ```bash
-   node .agents/skills/miles-brand-content/scripts/bench.mjs --compare .agents/skills/miles-brand-content/evals/runs/2026-10-26-before/report.json .agents/skills/miles-brand-content/evals/runs/2026-10-26-v2/report.json
+   node .agents/skills/miles-brand-content/scripts/bench.mjs --compare .agents/skills/miles-brand-content/evals/runs/2026-10-26-skill-v0-claude-opus-5-5/report.json .agents/skills/miles-brand-content/evals/runs/2026-10-26-skill-v2-claude-opus-5-5/report.json
    ```
 
 5. **Check the expectations** of every case you ran, by reading the output against `expectations` in `evals.json`. Count passes. The cases bench cannot grade (1, 3, 7, 8, 11) are scored this way only.
@@ -150,9 +169,9 @@ The best test data is Miles's own editing. When he rewrites a generated draft be
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-26 | judge only | anchors, several runs | 6 anchors | Ask: good 94, agency 32 to 42, broetry 36 to 43, invented 76 to 78. LinkedIn: good 78 to 85, bad 14 to 23 | Self-test 14 of 14 on jev-1.14.0, every run |
 | 2026-10-26 | n/a | live copy | Ask draft as case 5; parallel post, no case | Ask draft 64; parallel post 91 | Ask draft: opening outside the work, daily-job retention contradicted, 6 of 19 paragraphs one sentence |
-| 2026-10-26 | before (commit 4d76a3b, no articles.md) | `runs/2026-10-26-before`, 1 run each | 5, 6, 9 | 93, 96, 77 (mean 89) | The voice was already strong. Case 5 opened on the feature (structure 75); case 9 flagged nearly every claim, and the one left read as an inference |
-| 2026-10-26 | v1: `articles.md` added | `runs/2026-10-26-v1`, 1 run each | 5, 6, 9 | 88, 91, 84 (mean 88) | Structure up, grounding down: the honesty moves pushed writers to infer costs and an open question ("What I haven't settled is scale") |
-| 2026-10-26 | v2: honesty and decision moves need a source | `runs/2026-10-26-v2`, case 9 twice | 5, 6, 9 | 95, 91, 83 and 91 (mean 91) | Grounding back (93 to 99), structure 100 on every case. The essay's substance (81) and tone (87) sit below the old skill's (94, 94): the next thing to look at |
+| 2026-10-26 | v0 · Before the playbook (commit 4d76a3b) | `runs/2026-10-26-skill-v0-claude-opus-5-5`, 1 run each | 5, 6, 9 | 93, 96, 77 (mean 89) | The voice was already strong. Case 5 opened on the feature (structure 75); case 9 flagged nearly every claim, and the one left read as an inference |
+| 2026-10-26 | v1 · Playbook added | `runs/2026-10-26-skill-v1-claude-opus-5-5`, 1 run each | 5, 6, 9 | 88, 91, 84 (mean 88) | Structure up, grounding down: the honesty moves pushed writers to infer costs and an open question ("What I haven't settled is scale") |
+| 2026-10-26 | v2 · Claims need a source | `runs/2026-10-26-skill-v2-claude-opus-5-5`, case 9 twice | 5, 6, 9 | 95, 91, 83 and 91 (mean 91) | Grounding back (93 to 99), structure 100 on every case. The essay's substance (81) and tone (87) sit below the old skill's (94, 94): the next thing to look at |
 
 Every row was regraded with the final grader. Each skill row is one sample per case (two for case 9 in v2), so the v2 gain is a direction, not a result: run each case two or three more times before treating it as settled.
 

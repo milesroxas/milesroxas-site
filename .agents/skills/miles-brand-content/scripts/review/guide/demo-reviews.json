@@ -1,0 +1,47 @@
+{
+  "_about": "Example judgments for the guide's screenshots only (pnpm content-review:guide). Not Miles's reviews: those live in evals/reviews.json.",
+  "reviews": {
+    "2026-10-26-skill-v0-claude-opus-5-5/5-build-story-ask-s1.md": {
+      "rating": 3,
+      "marks": { "structure": "bad", "substance": "good" },
+      "notes": "Solid mechanism, but it opens on the feature."
+    },
+    "2026-10-26-skill-v1-claude-opus-5-5/5-build-story-ask-s1.md": {
+      "rating": 3,
+      "marks": { "structure": "good", "grounding": "bad" },
+      "notes": "Better opening. Says things the notes do not hold."
+    },
+    "2026-10-26-skill-v2-claude-opus-5-5/5-build-story-ask-s1.md": {
+      "rating": 5,
+      "marks": { "structure": "good", "substance": "good", "grounding": "good", "tone": "good" },
+      "notes": "This is the one. Keep the ending."
+    },
+    "2026-10-26-skill-v1-claude-opus-5-5/9-case-study-buzlee-s1.md": {
+      "rating": 2,
+      "marks": { "substance": "bad", "grounding": "bad" },
+      "notes": "Invents an open question about scale."
+    },
+    "2026-10-26-skill-v2-claude-opus-5-5/9-case-study-buzlee-s1.md": {
+      "rating": 4,
+      "marks": { "substance": "good" },
+      "notes": "Thin, but honest about what it does not know."
+    },
+    "2026-10-26-skill-v0-claude-opus-5-5/6-essay-judgment-s1.md": {
+      "rating": 4,
+      "marks": { "tone": "good" }
+    },
+    "2026-10-26-skill-v2-claude-opus-5-5/6-essay-judgment-s1.md": {
+      "rating": 3,
+      "marks": { "tone": "bad" },
+      "notes": "The ending sells Ask."
+    }
+  },
+  "preferences": [
+    {
+      "a": "2026-10-26-skill-v1-claude-opus-5-5/5-build-story-ask-s1.md",
+      "b": "2026-10-26-skill-v2-claude-opus-5-5/5-build-story-ask-s1.md",
+      "winner": "b",
+      "note": "Same shape, no invented claims."
+    }
+  ]
+}

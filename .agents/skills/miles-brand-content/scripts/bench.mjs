@@ -13,6 +13,7 @@ import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 import { choice, noul, score, TypeSafeClient } from '@typesafe-ai/sdk'
+import { copyOf, mergeConfig, readFrontMatter, scoreResult, unitsOf } from './bench-core.mjs'
 import { articleParts, lintField, sentencesOf, words } from './check-voice.mjs'
 
 const HELP = `Usage:
@@ -22,7 +23,10 @@ const HELP = `Usage:
 
 An output is a Markdown file. Its case comes from front matter (case: 5) or a
 file name that starts with the case id (5-build-story.md). The case's bench
-settings in evals/evals.json give the kind, the evidence and the word range.
+settings in evals/evals.json give the kind, the evidence and the word range;
+an output with no case can set kind and evidence (comma separated) in front
+matter. Weights and thresholds come from evals/bench-config.json when it
+exists (the review tool writes it), else from bench-core.mjs.
 
 Options:
   --case <id>      Grade every file as this case.
@@ -35,34 +39,14 @@ Options:
   -h, --help       Show this help.`
 
 const SKILL = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const CONFIG_PATH = join(SKILL, 'evals/bench-config.json')
 const DEFAULT_MODEL = 'jev-1.14.0'
-
-/** A Noul at or above this reads as yes. Tune it on the anchors, never per case. */
-const YES = 0.5
-/** A grounding Choice below this confidence goes to the human list as unsure. */
-const SURE = 0.6
 const CONCURRENCY = 6
 const MAX_CLAIMS = 60
 const EVIDENCE_CHUNKS = 6
 
-/** Bands from the study's 2025 to 2026 posts; each band met is a share of the shape score. */
-const SHAPE_BANDS = {
-  sentenceMedian: [12, 22],
-  shortSentenceShare: [0.08, 0.3],
-  paragraphMedian: [25, 75],
-  oneLineShare: [0, 0.2],
-}
-
-/** Points per layer. A layer that does not apply to a kind or a case is left out and the rest rescale to 100. */
-const WEIGHTS = { lint: 15, shape: 15, structure: 20, substance: 25, tone: 10, grounding: 15 }
-
-const LAYERS = {
-  article: ['lint', 'shape', 'structure', 'substance', 'tone', 'grounding'],
-  linkedinPost: ['lint', 'structure', 'substance', 'tone', 'grounding'],
-  coverLetter: ['lint', 'structure', 'substance', 'tone', 'grounding'],
-  youtubeScript: ['lint', 'structure', 'substance', 'tone', 'grounding'],
-}
-const DEFAULT_LAYERS = ['lint', 'substance', 'tone', 'grounding']
+const loadConfig = () =>
+  mergeConfig(existsSync(CONFIG_PATH) ? JSON.parse(readFileSync(CONFIG_PATH, 'utf8')) : {})
 
 /** Lines the long-form study read in its source. Copy that repeats one borrowed a line. */
 const BORROWED = [
@@ -196,38 +180,6 @@ const CONFLICT_QUESTION = {
 
 // Parsing
 
-function readFrontMatter(raw) {
-  const match = /^---\n([\s\S]*?)\n---\n?/.exec(raw)
-  if (!match) return { meta: {}, text: raw.trim() }
-  const meta = {}
-  for (const line of match[1].split('\n')) {
-    const field = /^(\w+):\s*(.*)$/.exec(line)
-    if (field) meta[field[1]] = field[2].trim()
-  }
-  return { meta, text: raw.slice(match[0].length).trim() }
-}
-
-/** Prose paragraphs and list blocks, in order; headings, figures and code are left out. */
-function unitsOf(text) {
-  const units = []
-  const blocks = text
-    .replace(/```[\s\S]*?```/g, '')
-    .split(/\n\s*\n/)
-    .map((block) => block.trim())
-    .filter(Boolean)
-  for (const block of blocks) {
-    if (/^#{1,6}\s/.test(block) || /^\[(?:figure|caption)\]/i.test(block)) continue
-    if (/^<!--/.test(block) || /^!\[/.test(block)) continue
-    const lines = block.split('\n')
-    const isList = lines.every((line) => /^\s*(?:[-*+]|\d+[.)])\s/.test(line))
-    const items = isList
-      ? lines.map((line) => line.replace(/^\s*(?:[-*+]|\d+[.)])\s+/, ''))
-      : [block.replace(/\n/g, ' ')]
-    units.push({ text: items.join(' ').replace(/^>\s?/, ''), items, list: isList })
-  }
-  return units
-}
-
 const median = (values) => {
   if (!values.length) return null
   const sorted = [...values].sort((a, b) => a - b)
@@ -235,7 +187,6 @@ const median = (values) => {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
 }
 
-const inBand = (value, [low, high]) => value !== null && value >= low && value <= high
 const round = (value, places = 2) => (value === null ? null : Number(value.toFixed(places)))
 
 function shapeOf(text) {
@@ -251,16 +202,11 @@ function shapeOf(text) {
     paragraphMedian: median(paragraphLengths),
     oneLineShare: prose.length ? single / prose.length : null,
   }
-  const questionHeadings = headings.filter((h) => h.endsWith('?')).length
-  const longHeadings = headings.filter((h) => words(h).length > 8).length
-  const checks = Object.entries(SHAPE_BANDS).map(([key, band]) => inBand(measures[key], band))
-  checks.push(questionHeadings === 0 && longHeadings === 0)
   return {
-    score: checks.filter(Boolean).length / checks.length,
     measures: Object.fromEntries(Object.entries(measures).map(([k, v]) => [k, round(v)])),
     headings: headings.length,
-    questionHeadings,
-    longHeadings,
+    questionHeadings: headings.filter((h) => h.endsWith('?')).length,
+    longHeadings: headings.filter((h) => words(h).length > 8).length,
   }
 }
 
@@ -364,9 +310,7 @@ async function pool(items, run) {
   return results
 }
 
-const mean = (values) =>
-  values.length ? values.reduce((sum, v) => sum + v, 0) / values.length : null
-
+/** Jev's raw answers for one output. Thresholds are applied later, in bench-core.mjs. */
 async function judge({ text, units, title, evidence, model, aiBuilt }) {
   const prose = units.filter((u) => !u.list)
   const opening = prose
@@ -393,13 +337,9 @@ async function judge({ text, units, title, evidence, model, aiBuilt }) {
     ),
   ])
 
-  // An ending that only points to more is fine after an implication, so read the paragraph before it.
-  let endingKind = piece.ending.choice
-  if (endingKind === 'pointer' && piece.ending_before?.choice === 'implication')
-    endingKind = 'implication'
-
   const perUnit = units.map((unit, i) => ({
-    excerpt: unit.text.slice(0, 90),
+    text: unit.text,
+    list: unit.list,
     specificity: round(unitAnswers[i].specificity.score / 2),
     selling: round(unitAnswers[i].selling.score / 2),
     decision: round(unitAnswers[i].decision.noul),
@@ -407,8 +347,6 @@ async function judge({ text, units, title, evidence, model, aiBuilt }) {
     aiDidWork: unitAnswers[i].ai_did_work ? round(unitAnswers[i].ai_did_work.noul) : null,
     aiSplit: unitAnswers[i].ai_split ? round(unitAnswers[i].ai_split.noul) : null,
   }))
-  const aiUnits = perUnit.filter((u) => u.aiDidWork !== null && u.aiDidWork >= YES)
-
   let grounding = null
   if (evidence.length) {
     const claims = claimsOf(units)
@@ -422,115 +360,35 @@ async function judge({ text, units, title, evidence, model, aiBuilt }) {
         evidence: nearestEvidence(`${before ?? ''} ${claim}`, evidence),
       }
       const answer = await ask(model, state, GROUNDING_QUESTION)
-      let verdict = answer.grounding.choice
-      if (verdict === 'contradicted') {
-        const check = await ask(model, state, CONFLICT_QUESTION)
-        if (check.conflict.noul < YES) verdict = 'missing'
+      const verdict = answer.grounding.choice
+      const conflict =
+        verdict === 'contradicted'
+          ? round((await ask(model, state, CONFLICT_QUESTION)).conflict.noul)
+          : null
+      return {
+        claim,
+        before,
+        verdict,
+        conflict,
+        confidence: round(answer.grounding.confidence),
+        evidence: state.evidence,
       }
-      return { claim, verdict, confidence: round(answer.grounding.confidence) }
     })
-    const factual = verdicts.filter((v) => v.verdict !== 'no_facts')
-    const supported = factual.filter((v) => v.verdict === 'supported').length
-    grounding = {
-      claims: verdicts.length,
-      factual: factual.length,
-      supported,
-      // A one-claim prior at 0.9, so one verdict in a short piece cannot swing the layer to 0.
-      share: (supported + 0.9) / (factual.length + 1),
-      contradicted: verdicts.filter((v) => v.verdict === 'contradicted'),
-      missing: verdicts.filter((v) => v.verdict === 'missing'),
-      unsure: verdicts.filter((v) => v.verdict !== 'no_facts' && v.confidence < SURE),
-    }
+    grounding = { verdicts }
   }
 
   return {
     opensOnWork: round(piece.opens_on_work.noul),
     pointEarly: round(piece.point_early.noul),
-    ending: endingKind,
+    ending: piece.ending.choice,
+    endingBefore: piece.ending_before?.choice ?? null,
     endingProbabilities: piece.ending.probabilities,
     title: titleAnswer ? titleAnswer.title.choice : null,
-    specificity: round(mean(perUnit.map((u) => u.specificity))),
-    selling: round(mean(perUnit.map((u) => u.selling))),
-    decisions: perUnit.filter((u) => u.decision >= YES).length,
-    setbacks: perUnit.filter((u) => u.setback >= YES).length,
-    aiWorkParagraphs: aiUnits.length,
-    aiSplitShare: aiUnits.length
-      ? aiUnits.filter((u) => u.aiSplit >= YES).length / aiUnits.length
-      : null,
-    aiBuiltUnmentioned: Boolean(aiBuilt) && aiUnits.length === 0 && AI_MENTION.test(text) === false,
+    aiBuilt: Boolean(aiBuilt),
+    aiMentioned: AI_MENTION.test(text),
     grounding,
     perUnit,
   }
-}
-
-// Scoring
-
-function layerScores({ kind, lint, shape, jev, hasEvidence }) {
-  const layers = LAYERS[kind] ?? DEFAULT_LAYERS
-  const scores = {}
-  const errors = lint.filter((f) => f.severity === 'error').length
-  const warnings = lint.filter((f) => f.severity === 'warning').length
-  if (layers.includes('lint')) scores.lint = errors ? 0 : Math.max(0, 1 - warnings * 0.2)
-  if (layers.includes('shape') && shape) scores.shape = shape.score
-  if (jev) {
-    if (layers.includes('structure')) {
-      const parts = [
-        [jev.opensOnWork >= YES ? 1 : 0, 5],
-        [jev.pointEarly >= YES ? 1 : 0, 5],
-        [{ implication: 1, pointer: 0.5 }[jev.ending] ?? 0, 6],
-      ]
-      if (jev.title) parts.push([['descriptive', 'claim'].includes(jev.title) ? 1 : 0, 4])
-      scores.structure =
-        parts.reduce((sum, [v, w]) => sum + v * w, 0) / parts.reduce((sum, [, w]) => sum + w, 0)
-    }
-    if (layers.includes('substance')) {
-      const parts = [
-        [jev.specificity ?? 0, 13],
-        [jev.decisions > 0 ? 1 : 0, 5],
-        [jev.setbacks > 0 ? 1 : 0, 4],
-      ]
-      if (jev.aiSplitShare !== null) parts.push([jev.aiSplitShare, 3])
-      if (jev.aiBuiltUnmentioned) parts.push([0, 3])
-      scores.substance =
-        parts.reduce((sum, [v, w]) => sum + v * w, 0) / parts.reduce((sum, [, w]) => sum + w, 0)
-    }
-    if (layers.includes('tone')) scores.tone = 1 - (jev.selling ?? 0)
-    if (layers.includes('grounding') && hasEvidence && jev.grounding?.factual > 0)
-      scores.grounding = jev.grounding.contradicted.length
-        ? Math.min(jev.grounding.share, 0.5)
-        : jev.grounding.share
-  }
-  const weight = Object.keys(scores).reduce((sum, layer) => sum + WEIGHTS[layer], 0)
-  const total = weight
-    ? (Object.entries(scores).reduce((sum, [layer, v]) => sum + v * WEIGHTS[layer], 0) / weight) *
-      100
-    : null
-  return {
-    ...Object.fromEntries(Object.entries(scores).map(([k, v]) => [k, Math.round(v * 100)])),
-    total: total === null ? null : Math.round(total),
-  }
-}
-
-function flagsFor({ text, words: count, range, jev, lint }) {
-  const flags = []
-  if (range && (count < range[0] || count > range[1]))
-    flags.push(`length: ${count} words, case asks ${range[0]} to ${range[1]}`)
-  for (const pattern of BORROWED)
-    if (pattern.test(text)) flags.push(`borrowed line: ${pattern.source}`)
-  const errors = lint.filter((f) => f.severity === 'error')
-  for (const f of errors) flags.push(`lint error ${f.rule}: ${f.excerpt ?? f.message}`)
-  if (!jev) return flags
-  if (jev.opensOnWork < YES) flags.push('opening is not inside the work')
-  if (jev.pointEarly < YES) flags.push('point not stated in the first two paragraphs')
-  if (jev.ending !== 'implication') flags.push(`ending reads as ${jev.ending}`)
-  if (jev.decisions === 0) flags.push('no decision against an alternative')
-  if (jev.setbacks === 0) flags.push('no cost, failure or open question')
-  if (jev.aiBuiltUnmentioned)
-    flags.push('evidence says AI helped build it; the copy does not say so')
-  for (const v of jev.grounding?.contradicted ?? [])
-    flags.push(`CONTRADICTS evidence: "${v.claim}"`)
-  for (const v of jev.grounding?.missing ?? []) flags.push(`not in evidence: "${v.claim}"`)
-  return flags
 }
 
 // Cases and files
@@ -551,12 +409,16 @@ function outputFiles(paths) {
   })
 }
 
-async function gradeFile(file, { cases, caseId, useJev, model }) {
-  const { meta, text: raw } = readFrontMatter(readFileSync(file, 'utf8'))
-  const text = raw.replace(/<!--[\s\S]*?-->\s*/g, '').trim()
+async function gradeFile(file, { cases, caseId, useJev, model, config }) {
+  const source = readFileSync(file, 'utf8')
+  const { meta } = readFrontMatter(source)
+  const text = copyOf(source)
   const id = caseId ?? meta.case ?? /^(?:case-)?(\d+)[-_.]/.exec(basename(file))?.[1] ?? null
   const testCase = id ? cases.get(String(id)) : null
-  const bench = testCase?.bench ?? {}
+  const bench = testCase?.bench ?? {
+    kind: meta.kind,
+    evidence: meta.evidence ? meta.evidence.split(/,\s*/) : [],
+  }
   const kind = bench.kind ?? 'article'
   const title = /^#\s+(.+)$/m.exec(text)?.[1]?.trim() ?? null
   const units = unitsOf(text)
@@ -568,23 +430,27 @@ async function gradeFile(file, { cases, caseId, useJev, model }) {
   const jev = runJudge
     ? await judge({ text, units, title, evidence, model, aiBuilt: bench.aiBuilt })
     : null
-  const scores = layerScores({ kind, lint, shape, jev, hasEvidence: evidence.length > 0 })
-  return {
+  const errors = lint.filter((f) => f.severity === 'error')
+  const result = {
     file: basename(file),
-    case: id ? Number(id) : null,
+    case: id && /^\d+$/.test(String(id)) ? Number(id) : (id ?? null),
     label: meta.label ?? null,
     tests: meta.tests ? meta.tests.split(/,\s*/) : [],
     kind,
     words: count,
-    scores,
-    flags: flagsFor({ text, words: count, range: bench.words, jev, lint }),
+    range: bench.words ?? null,
+    hasEvidence: evidence.length > 0,
+    borrowed: BORROWED.filter((pattern) => pattern.test(text)).map((pattern) => pattern.source),
     lint: {
-      errors: lint.filter((f) => f.severity === 'error').length,
+      errors: errors.length,
+      errorExcerpts: errors.map((f) => `${f.rule}: ${f.excerpt ?? f.message}`),
       warnings: lint.filter((f) => f.severity === 'warning').map((f) => f.rule),
     },
     shape,
     jev,
   }
+  const { scores, flags } = scoreResult(result, config)
+  return { ...result, scores, flags }
 }
 
 // Reports
@@ -678,19 +544,21 @@ async function main() {
   }
 
   const cases = loadCases()
+  const config = loadConfig()
   const files = outputFiles(paths)
   const startedAt = performance.now()
   const results = []
   for (const file of files)
-    results.push(await gradeFile(file, { cases, caseId: values.case, useJev, model: values.model }))
+    results.push(
+      await gradeFile(file, { cases, caseId: values.case, useJev, model: values.model, config }),
+    )
 
   const report = {
     createdAt: new Date().toISOString(),
     model: useJev ? (modelSeen ?? values.model) : null,
     inputTokens,
     seconds: Math.round((performance.now() - startedAt) / 100) / 10,
-    weights: WEIGHTS,
-    yes: YES,
+    config,
     results,
   }
   const firstDir = paths.find((p) => existsSync(p) && statSync(p).isDirectory())

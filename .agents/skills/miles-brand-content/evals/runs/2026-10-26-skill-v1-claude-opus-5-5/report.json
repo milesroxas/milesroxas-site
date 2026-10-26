@@ -1,0 +1,1785 @@
+{
+  "createdAt": "2026-10-26T19:30:55.747Z",
+  "model": "jev-1.14.0",
+  "inputTokens": 102017,
+  "seconds": 1.8,
+  "config": {
+    "weights": {
+      "lint": 15,
+      "shape": 15,
+      "structure": 20,
+      "substance": 25,
+      "tone": 10,
+      "grounding": 15
+    },
+    "yes": 0.5,
+    "sure": 0.6,
+    "warningCost": 0.2,
+    "structure": {
+      "opening": 5,
+      "point": 5,
+      "ending": 6,
+      "title": 4,
+      "pointerCredit": 0.5
+    },
+    "substance": {
+      "specificity": 13,
+      "decision": 5,
+      "setback": 4,
+      "aiSplit": 3
+    },
+    "groundingPrior": 0.9,
+    "contradictionCap": 0.5,
+    "bands": {
+      "sentenceMedian": [12, 22],
+      "shortSentenceShare": [0.08, 0.3],
+      "paragraphMedian": [25, 75],
+      "oneLineShare": [0, 0.2]
+    },
+    "agreeAt": 70
+  },
+  "results": [
+    {
+      "file": "5-build-story-ask-s1.md",
+      "case": 5,
+      "label": null,
+      "tests": [],
+      "kind": "article",
+      "words": 1141,
+      "range": [700, 1800],
+      "hasEvidence": true,
+      "borrowed": [],
+      "lint": {
+        "errors": 0,
+        "errorExcerpts": [],
+        "warnings": []
+      },
+      "shape": {
+        "measures": {
+          "sentenceMedian": 15,
+          "shortSentenceShare": 0.1,
+          "paragraphMedian": 46,
+          "oneLineShare": 0.04
+        },
+        "headings": 6,
+        "questionHeadings": 0,
+        "longHeadings": 0
+      },
+      "jev": {
+        "opensOnWork": 0.94,
+        "pointEarly": 0.94,
+        "ending": "pointer",
+        "endingBefore": "implication",
+        "endingProbabilities": {
+          "recap": 0,
+          "implication": 0,
+          "engagement": 0,
+          "moral": 0,
+          "pointer": 1
+        },
+        "title": "descriptive",
+        "aiBuilt": true,
+        "aiMentioned": true,
+        "grounding": {
+          "verdicts": [
+            {
+              "claim": "An assistant on a portfolio does harm the moment it guesses: someone asks about my work, gets a confident answer I never published, and leaves believing something about me that isn't true.",
+              "before": null,
+              "verdict": "no_facts",
+              "conflict": null,
+              "confidence": 0.81,
+              "evidence": [
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Drafts and protected client work never reach the index. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "So the assistant I built, Ask, answers only from what is published on milesroxas.com.",
+              "before": "An assistant on a portfolio does harm the moment it guesses: someone asks about my work, gets a confident answer I never published, and leaves believing something about me that isn't true.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "Drafts and protected client work never reach the index. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Press \u2318K anywhere on the site, or open the Ask tab in the dock, and ask about my work in plain words.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.88,
+              "evidence": [
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "Drafts and protected client work never reach the index. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "The answer stays under 120 words and lists the pages it used.",
+              "before": "Press \u2318K anywhere on the site, or open the Ask tab in the dock, and ask about my work in plain words.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "The outcome (answered, partial, no_sources, chat_only) is set by code, so the content-gaps filter is a real list of questions the site cannot answer yet. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches me.",
+              "before": "The answer stays under 120 words and lists the pages it used.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.52,
+              "evidence": [
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "Passages are grouped into at most four pages, three passages each. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Much of Ask's design is about that last case: knowing when not to answer.",
+              "before": null,
+              "verdict": "no_facts",
+              "conflict": null,
+              "confidence": 0.6,
+              "evidence": [
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "The indexer reads each document as an anonymous visitor would, so a protected case study fails the read and cannot be retrieved. (Ask post draft)",
+                "findContent judged 24 passages in 366 ms for \"design systems\", kept 7 and dropped 17, for 14,696 input tokens. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "I built it first for the Suits & Sandals site, then ported it here.",
+              "before": "Much of Ask's design is about that last case: knowing when not to answer.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.99,
+              "evidence": [
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "The outcome (answered, partial, no_sources, chat_only) is set by code, so the content-gaps filter is a real list of questions the site cannot answer yet. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "This post covers the index Ask reads from, the path from question to answer, the judge that decides when a question comes to me, what that judge cost, and what Ask keeps.",
+              "before": "I built it first for the Suits & Sandals site, then ported it here.",
+              "verdict": "missing",
+              "conflict": null,
+              "confidence": 0.71,
+              "evidence": [
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "The judge has the clearest result: on the Suits & Sandals site, it raised the right handoff card from 52 to 57 of 57 test turns.",
+              "before": "This post covers the index Ask reads from, the path from question to answer, the judge that decides when a question comes to me, what that judge cost, and what Ask keeps.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.71,
+              "evidence": [
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "OpenAI's text-embedding-3-small turns the question into a 1,536-dimension vector; a follow-up is embedded alone and joined to the previous question. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "I build with AI coding agents.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.95,
+              "evidence": [
+                "261 of the repo's 486 commits carry a \"Co-Authored-By: Claude\" line: Miles builds with AI coding agents. (git log, 2026-10-26)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`.",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Across this repo, 261 of 486 commits carry an AI co-author line.",
+              "before": "I build with AI coding agents.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.99,
+              "evidence": [
+                "261 of the repo's 486 commits carry a \"Co-Authored-By: Claude\" line: Miles builds with AI coding agents. (git log, 2026-10-26)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`.",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "It is one table, ask_embeddings, in Postgres with pgvector, an extension that stores embeddings beside ordinary rows.",
+              "before": "Ask's index holds what an anonymous visitor can read, and nothing more.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.87,
+              "evidence": [
+                "The index is one pgvector table, ask_embeddings, declared in Drizzle beside Payload's schema. Nothing outside the CMS writes to it. (Ask post draft)",
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "The indexer reads each document as an anonymous visitor would, so a protected case study fails the read and cannot be retrieved. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "The table is declared in Drizzle next to the schema of Payload, the CMS behind the site.",
+              "before": "It is one table, ask_embeddings, in Postgres with pgvector, an extension that stores embeddings beside ordinary rows.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.99,
+              "evidence": [
+                "The index is one pgvector table, ask_embeddings, declared in Drizzle beside Payload's schema. Nothing outside the CMS writes to it. (Ask post draft)",
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next. (Ask post draft)",
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Nothing outside the CMS writes to it.",
+              "before": "The table is declared in Drizzle next to the schema of Payload, the CMS behind the site.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 1,
+              "evidence": [
+                "The index is one pgvector table, ask_embeddings, declared in Drizzle beside Payload's schema. Nothing outside the CMS writes to it. (Ask post draft)",
+                "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next. (Ask post draft)",
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Drafts and protected client work never reach it.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.95,
+              "evidence": [
+                "Drafts and protected client work never reach the index. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "The indexer reads each document as an anonymous visitor would, so a protected case study fails the read and cannot be retrieved. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`."
+              ]
+            },
+            {
+              "claim": "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published.",
+              "before": "The index changes when a document is published or unpublished, not when it is saved.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.97,
+              "evidence": [
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "Drafts and protected client work never reach the index. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "A half-written draft never reaches an answer, and taking a page down takes it out of Ask in the same step.",
+              "before": "Draft saves and autosave are skipped, and an unpublish deletes the document's rows.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.61,
+              "evidence": [
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "A grounded answer takes 5 to 6 seconds end to end today, with about 1,650 input and 300 output tokens. (Ask post draft)",
+                "Drafts and protected client work never reach the index. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Passages aim for 2,000 characters and are split on headings.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.99,
+              "evidence": [
+                "Passages aim for 2,000 characters and are split on headings. Vectors are reused by exact passage text, so fixing an SEO title re-embeds nothing. (Ask post draft)",
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "Passages are grouped into at most four pages, three passages each. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)",
+                "findContent judged 24 passages in 366 ms for \"design systems\", kept 7 and dropped 17, for 14,696 input tokens. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Vectors are reused by exact passage text, so a passage that hasn't changed keeps its vector, and fixing an SEO title re-embeds nothing.",
+              "before": "Passages aim for 2,000 characters and are split on headings.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.91,
+              "evidence": [
+                "Passages aim for 2,000 characters and are split on headings. Vectors are reused by exact passage text, so fixing an SEO title re-embeds nothing. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "OpenAI's text-embedding-3-small turns the question into a 1,536-dimension vector; a follow-up is embedded alone and joined to the previous question. (Ask post draft)",
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "Passages are grouped into at most four pages, three passages each. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages.",
+              "before": "Vectors are reused by exact passage text, so a passage that hasn't changed keeps its vector, and fixing an SEO title re-embeds nothing.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 1,
+              "evidence": [
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)",
+                "Passages aim for 2,000 characters and are split on headings. Vectors are reused by exact passage text, so fixing an SEO title re-embeds nothing. (Ask post draft)",
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "OpenAI's text-embedding-3-small turns the question into a 1,536-dimension vector; a follow-up is embedded alone and joined to the previous question.",
+              "before": "Ask looks for evidence before any model writes a word.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.95,
+              "evidence": [
+                "OpenAI's text-embedding-3-small turns the question into a 1,536-dimension vector; a follow-up is embedded alone and joined to the previous question. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Postgres returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index, and Ask groups them into at most four pages, three passages each.",
+              "before": "OpenAI's text-embedding-3-small turns the question into a 1,536-dimension vector; a follow-up is embedded alone and joined to the previous question.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "OpenAI's text-embedding-3-small turns the question into a 1,536-dimension vector; a follow-up is embedded alone and joined to the previous question. (Ask post draft)",
+                "Passages are grouped into at most four pages, three passages each. (Ask post draft)",
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Then gpt-5-mini writes the answer from those passages only, in under 120 words.",
+              "before": "Postgres returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index, and Ask groups them into at most four pages, three passages each.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.95,
+              "evidence": [
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Passages are grouped into at most four pages, three passages each. (Ask post draft)",
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "The 0.3 is a floor, and it is the first place Ask declines.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.23,
+              "evidence": [
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "A model that never runs can't make anything up.",
+              "before": "If nothing clears it on a first question, the visitor gets a card that points them to me, and no writing model runs.",
+              "verdict": "no_facts",
+              "conflict": null,
+              "confidence": 0.45,
+              "evidence": [
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`."
+              ]
+            },
+            {
+              "claim": "A handoff is a choice of reason, and the words on the card never come from a model.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.44,
+              "evidence": [
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Drafts and protected client work never reach the index. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Every word on the card is written in code.",
+              "before": "The writing model has a handoff tool with five reasons: an estimate, a project, a person, contact details, or no answer.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "The outcome (answered, partial, no_sources, chat_only) is set by code, so the content-gaps filter is a real list of questions the site cannot answer yet. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "On the Suits & Sandals site it showed the right card in 52 of 57 test turns (19 questions, three runs each).",
+              "before": "Left to the writing model, that choice was right most of the time, and wrong often enough to matter.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.91,
+              "evidence": [
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)",
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "So Ask got a judge that runs before the writer.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.99,
+              "evidence": [
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next. (Ask post draft)",
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities, and my code owns every threshold.",
+              "before": "So Ask got a judge that runs before the writer.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "One Jev request classifies each turn as information, an estimate, a project, a person or conversation.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.95,
+              "evidence": [
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`.",
+                "Passages are grouped into at most four pages, three passages each. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Then one request per retrieved passage asks whether the passage is relevant and whether it holds evidence, and code keeps a passage at 0.45 relevance and 0.55 evidence.",
+              "before": "The same request asks whether the turn is about the visitor's own project and whether it names my work.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.85,
+              "evidence": [
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "The indexer reads each document as an anonymous visitor would, so a protected case study fails the read and cannot be retrieved. (Ask post draft)",
+                "Every turn is saved to an ask-questions collection, redacted: emails, phone numbers, keys and long tokens are stripped; no IP address or visitor id is kept. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`."
+              ]
+            },
+            {
+              "claim": "That passage check let the similarity floor drop from 0.3 to 0.2: a wider search, with a stricter test of what it finds.",
+              "before": "Then one request per retrieved passage asks whether the passage is relevant and whether it holds evidence, and code keeps a passage at 0.45 relevance and 0.55 evidence.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.67,
+              "evidence": [
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "How design, direction, review and code were split on Ask specifically is not recorded. (no source: mark `[check: ...]`)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`.",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Measured on the Suits & Sandals site on September 19, 2026 (model jev-1.13.0), the right card showed in 57 of 57 turns, up from 52.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.83,
+              "evidence": [
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Turns answered with no writing-model call went from 6 to 23.",
+              "before": "Measured on the Suits & Sandals site on September 19, 2026 (model jev-1.13.0), the right card showed in 57 of 57 turns, up from 52.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 1,
+              "evidence": [
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "A Choice always picks something.",
+              "before": "Code owning the thresholds is what lets the answer be \"none\".",
+              "verdict": "contradicted",
+              "conflict": 0.63,
+              "confidence": 0.47,
+              "evidence": [
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "locateBlock asked to \"fix the FAQ about pricing\" on a home page with no FAQ: the Choice still picked a block at 0.46, but a Noul put the odds that any block fits at 0.02, so the tool answered none. (Ask post draft)",
+                "The outcome (answered, partial, no_sources, chat_only) is set by code, so the content-gaps filter is a real list of questions the site cannot answer yet. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Asked to \"fix the FAQ about pricing\" on a home page with no FAQ, locateBlock, the tool that finds the block an edit request points at, still picked a block with its Choice, at 0.46.",
+              "before": "A Choice always picks something.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.79,
+              "evidence": [
+                "locateBlock asked to \"fix the FAQ about pricing\" on a home page with no FAQ: the Choice still picked a block at 0.46, but a Noul put the odds that any block fits at 0.02, so the tool answered none. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`."
+              ]
+            },
+            {
+              "claim": "A Noul put the odds that any block fits at 0.02, so the tool answered none.",
+              "before": "Asked to \"fix the FAQ about pricing\" on a home page with no FAQ, locateBlock, the tool that finds the block an edit request points at, still picked a block with its Choice, at 0.46.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.6,
+              "evidence": [
+                "locateBlock asked to \"fix the FAQ about pricing\" on a home page with no FAQ: the Choice still picked a block at 0.46, but a Noul put the odds that any block fits at 0.02, so the tool answered none. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Because it runs before the writer, median time to first output on worded turns went from 3,490 ms to 4,655 ms.",
+              "before": "The judge costs time, and the cost lands on worded answers.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`.",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Setting the writer to minimal reasoning brought them to 1,542 ms.",
+              "before": "Because it runs before the writer, median time to first output on worded turns went from 3,490 ms to 4,655 ms.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.93,
+              "evidence": [
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`.",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "OpenAI's text-embedding-3-small turns the question into a 1,536-dimension vector; a follow-up is embedded alone and joined to the previous question. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Card-only turns got faster with the judge, from 2,669 ms to 365 ms.",
+              "before": "Setting the writer to minimal reasoning brought them to 1,542 ms.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "OpenAI's text-embedding-3-small turns the question into a 1,536-dimension vector; a follow-up is embedded alone and joined to the previous question. (Ask post draft)",
+                "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next. (Ask post draft)",
+                "findContent judged 24 passages in 366 ms for \"design systems\", kept 7 and dropped 17, for 14,696 input tokens. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`."
+              ]
+            },
+            {
+              "claim": "Those numbers come from the Suits & Sandals site.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.77,
+              "evidence": [
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next.",
+              "before": "Those numbers come from the Suits & Sandals site.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.84,
+              "evidence": [
+                "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "Every turn is saved to an ask-questions collection, redacted: emails, phone numbers, keys and long tokens are stripped; no IP address or visitor id is kept. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "So 57 of 57 is a result from one site, and whether the judge earns its place on this one is still open.",
+              "before": "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.83,
+              "evidence": [
+                "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Here, today, a grounded answer takes 5 to 6 seconds end to end, with about 1,650 input and 300 output tokens.",
+              "before": "So 57 of 57 is a result from one site, and whether the judge earns its place on this one is still open.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.97,
+              "evidence": [
+                "A grounded answer takes 5 to 6 seconds end to end today, with about 1,650 input and 300 output tokens. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "findContent judged 24 passages in 366 ms for \"design systems\", kept 7 and dropped 17, for 14,696 input tokens. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Every turn is saved to an ask-questions collection, redacted.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.95,
+              "evidence": [
+                "Every turn is saved to an ask-questions collection, redacted: emails, phone numbers, keys and long tokens are stripped; no IP address or visitor id is kept. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`."
+              ]
+            },
+            {
+              "claim": "Emails, phone numbers, keys and long tokens are stripped, and no IP address or visitor id is kept.",
+              "before": "Every turn is saved to an ask-questions collection, redacted.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 1,
+              "evidence": [
+                "Every turn is saved to an ask-questions collection, redacted: emails, phone numbers, keys and long tokens are stripped; no IP address or visitor id is kept. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "findContent judged 24 passages in 366 ms for \"design systems\", kept 7 and dropped 17, for 14,696 input tokens. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "The indexer reads each document as an anonymous visitor would, so a protected case study fails the read and cannot be retrieved. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Stored questions are kept 90 days.",
+              "before": "Emails, phone numbers, keys and long tokens are stripped, and no IP address or visitor id is kept.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "Every turn is saved to an ask-questions collection, redacted: emails, phone numbers, keys and long tokens are stripped; no IP address or visitor id is kept. (Ask post draft)",
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "findContent judged 24 passages in 366 ms for \"design systems\", kept 7 and dropped 17, for 14,696 input tokens. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "The indexer reads each document as an anonymous visitor would, so a protected case study fails the read and cannot be retrieved. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "An earlier daily cron was meant to clear expired rows, and it never ran.",
+              "before": "Deleting them took two tries.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.69,
+              "evidence": [
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "Drafts and protected client work never reach the index. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`.",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Since October 17, nothing on this site runs on a schedule: expired rows are deleted after each stored question, so the request that adds a row also clears the old ones.",
+              "before": "An earlier daily cron was meant to clear expired rows, and it never ran.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.87,
+              "evidence": [
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "findContent judged 24 passages in 366 ms for \"design systems\", kept 7 and dropped 17, for 14,696 input tokens. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "The pattern under every decision is the same: models score and write, and code decides what counts.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.75,
+              "evidence": [
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "Every turn is saved to an ask-questions collection, redacted: emails, phone numbers, keys and long tokens are stripped; no IP address or visitor id is kept. (Ask post draft)",
+                "The outcome (answered, partial, no_sources, chat_only) is set by code, so the content-gaps filter is a real list of questions the site cannot answer yet. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "What Ask may say about my work stays a rule I can read.",
+              "before": "The pattern under every decision is the same: models score and write, and code decides what counts.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.55,
+              "evidence": [
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Drafts and protected client work never reach the index. (Ask post draft)",
+                "The indexer reads each document as an anonymous visitor would, so a protected case study fails the read and cannot be retrieved. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)"
+              ]
+            }
+          ]
+        },
+        "perUnit": [
+          {
+            "text": "An assistant on a portfolio does harm the moment it guesses: someone asks about my work, gets a confident answer I never published, and leaves believing something about me that isn't true. So the assistant I built, Ask, answers only from what is published on milesroxas.com.",
+            "list": false,
+            "specificity": 0.95,
+            "selling": 0.11,
+            "decision": 0.95,
+            "setback": 0.48,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Press \u2318K anywhere on the site, or open the Ask tab in the dock, and ask about my work in plain words. The answer stays under 120 words and lists the pages it used. When the honest answer is \"ask Miles\", it says so and opens a short form that reaches me.",
+            "list": false,
+            "specificity": 0.73,
+            "selling": 0.04,
+            "decision": 0.14,
+            "setback": 0.11,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Much of Ask's design is about that last case: knowing when not to answer. I built it first for the Suits & Sandals site, then ported it here. This post covers the index Ask reads from, the path from question to answer, the judge that decides when a question comes to me, what that judge cost, and what Ask keeps. The judge has the clearest result: on the Suits & Sandals site, it raised the right handoff card from 52 to 57 of 57 test turns.",
+            "list": false,
+            "specificity": 1,
+            "selling": 0.23,
+            "decision": 0.52,
+            "setback": 0.52,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "I build with AI coding agents. Across this repo, 261 of 486 commits carry an AI co-author line. On Ask, I designed how it behaves and directed the build, reviewing each change. [check: how design, direction, review and code were split on Ask, which nothing records]",
+            "list": false,
+            "specificity": 0.93,
+            "selling": 0.03,
+            "decision": 0.04,
+            "setback": 0.87,
+            "aiDidWork": 0.98,
+            "aiSplit": 0.42
+          },
+          {
+            "text": "Ask's index holds what an anonymous visitor can read, and nothing more. It is one table, `ask_embeddings`, in Postgres with pgvector, an extension that stores embeddings beside ordinary rows. The table is declared in Drizzle next to the schema of Payload, the CMS behind the site. Nothing outside the CMS writes to it.",
+            "list": false,
+            "specificity": 0.99,
+            "selling": 0,
+            "decision": 0.05,
+            "setback": 0.26,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Drafts and protected client work never reach it. The indexer reads each document the way an anonymous visitor would, so the site's own access rules do the filtering. A protected case study fails the read, and what fails the read can't be retrieved.",
+            "list": false,
+            "specificity": 0.73,
+            "selling": 0.01,
+            "decision": 0.25,
+            "setback": 0.71,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "The index changes when a document is published or unpublished, not when it is saved. An `afterChange` hook on Pages, Works, Posts and Site Info re-embeds a document when it is published. Draft saves and autosave are skipped, and an unpublish deletes the document's rows. A half-written draft never reaches an answer, and taking a page down takes it out of Ask in the same step.",
+            "list": false,
+            "specificity": 0.94,
+            "selling": 0,
+            "decision": 0.09,
+            "setback": 0.42,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Passages aim for 2,000 characters and are split on headings. Vectors are reused by exact passage text, so a passage that hasn't changed keeps its vector, and fixing an SEO title re-embeds nothing. A full rebuild of this site takes 12 seconds: 19 documents, 70 passages.",
+            "list": false,
+            "specificity": 0.99,
+            "selling": 0.04,
+            "decision": 0.18,
+            "setback": 0.37,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Ask looks for evidence before any model writes a word. OpenAI's text-embedding-3-small turns the question into a 1,536-dimension vector; a follow-up is embedded alone and joined to the previous question. Postgres returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index, and Ask groups them into at most four pages, three passages each. Then gpt-5-mini writes the answer from those passages only, in under 120 words.",
+            "list": false,
+            "specificity": 0.99,
+            "selling": 0.01,
+            "decision": 0.04,
+            "setback": 0.08,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "The 0.3 is a floor, and it is the first place Ask declines. If nothing clears it on a first question, the visitor gets a card that points them to me, and no writing model runs. A model that never runs can't make anything up.",
+            "list": false,
+            "specificity": 0.99,
+            "selling": 0.1,
+            "decision": 0.84,
+            "setback": 0.64,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "A handoff is a choice of reason, and the words on the card never come from a model. The writing model has a handoff tool with five reasons: an estimate, a project, a person, contact details, or no answer. Every word on the card is written in code.",
+            "list": false,
+            "specificity": 0.82,
+            "selling": 0.01,
+            "decision": 0.56,
+            "setback": 0.44,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Left to the writing model, that choice was right most of the time, and wrong often enough to matter. On the Suits & Sandals site it showed the right card in 52 of 57 test turns (19 questions, three runs each).",
+            "list": false,
+            "specificity": 0.99,
+            "selling": 0.09,
+            "decision": 0.25,
+            "setback": 0.88,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "So Ask got a judge that runs before the writer. Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities, and my code owns every threshold.",
+            "list": false,
+            "specificity": 0.99,
+            "selling": 0.03,
+            "decision": 0.12,
+            "setback": 0.08,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "One Jev request classifies each turn as information, an estimate, a project, a person or conversation. The same request asks whether the turn is about the visitor's own project and whether it names my work. Then one request per retrieved passage asks whether the passage is relevant and whether it holds evidence, and code keeps a passage at 0.45 relevance and 0.55 evidence. That passage check let the similarity floor drop from 0.3 to 0.2: a wider search, with a stricter test of what it finds.",
+            "list": false,
+            "specificity": 0.98,
+            "selling": 0.03,
+            "decision": 0.79,
+            "setback": 0.14,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Measured on the Suits & Sandals site on September 19, 2026 (model jev-1.13.0), the right card showed in 57 of 57 turns, up from 52. Turns answered with no writing-model call went from 6 to 23.",
+            "list": false,
+            "specificity": 1,
+            "selling": 0,
+            "decision": 0.13,
+            "setback": 0.06,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Code owning the thresholds is what lets the answer be \"none\". A Choice always picks something. Asked to \"fix the FAQ about pricing\" on a home page with no FAQ, locateBlock, the tool that finds the block an edit request points at, still picked a block with its Choice, at 0.46. A Noul put the odds that any block fits at 0.02, so the tool answered none.",
+            "list": false,
+            "specificity": 1,
+            "selling": 0.01,
+            "decision": 0.85,
+            "setback": 0.74,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "The judge costs time, and the cost lands on worded answers. Because it runs before the writer, median time to first output on worded turns went from 3,490 ms to 4,655 ms. Setting the writer to minimal reasoning brought them to 1,542 ms. Card-only turns got faster with the judge, from 2,669 ms to 365 ms.",
+            "list": false,
+            "specificity": 1,
+            "selling": 0.01,
+            "decision": 0.48,
+            "setback": 0.87,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Those numbers come from the Suits & Sandals site. On milesroxas.com the turn judge ships behind the `ASK_JEV` switch and is off for now; shadow mode comes next. So 57 of 57 is a result from one site, and whether the judge earns its place on this one is still open. Here, today, a grounded answer takes 5 to 6 seconds end to end, with about 1,650 input and 300 output tokens.",
+            "list": false,
+            "specificity": 1,
+            "selling": 0.02,
+            "decision": 0.48,
+            "setback": 0.98,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Every turn is saved to an `ask-questions` collection, redacted. Emails, phone numbers, keys and long tokens are stripped, and no IP address or visitor id is kept. Stored questions are kept 90 days.",
+            "list": false,
+            "specificity": 0.99,
+            "selling": 0,
+            "decision": 0.04,
+            "setback": 0.11,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Deleting them took two tries. An earlier daily cron was meant to clear expired rows, and it never ran. Since October 17, nothing on this site runs on a schedule: expired rows are deleted after each stored question, so the request that adds a row also clears the old ones.",
+            "list": false,
+            "specificity": 0.99,
+            "selling": 0,
+            "decision": 0.53,
+            "setback": 0.95,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Code also sets each turn's outcome: answered, partial, no_sources or chat_only. Because code sets it, the content-gaps filter is a real list of questions the site cannot answer yet.",
+            "list": false,
+            "specificity": 0.95,
+            "selling": 0.07,
+            "decision": 0.25,
+            "setback": 0.84,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "The pattern under every decision is the same: models score and write, and code decides what counts. What Ask may say about my work stays a rule I can read.",
+            "list": false,
+            "specificity": 0.34,
+            "selling": 0.01,
+            "decision": 0.06,
+            "setback": 0.23,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Try it with \u2318K, anywhere on the site.",
+            "list": false,
+            "specificity": 0.65,
+            "selling": 0.01,
+            "decision": 0.03,
+            "setback": 0.03,
+            "aiDidWork": null,
+            "aiSplit": null
+          }
+        ]
+      },
+      "scores": {
+        "lint": 100,
+        "shape": 100,
+        "structure": 100,
+        "substance": 83,
+        "tone": 96,
+        "grounding": 50,
+        "total": 88
+      },
+      "flags": [
+        "CONTRADICTS evidence: \"A Choice always picks something.\"",
+        "not in evidence: \"This post covers the index Ask reads from, the path from question to answer, the judge that decides when a question comes to me, what that judge cost, and what Ask keeps.\""
+      ]
+    },
+    {
+      "file": "6-essay-judgment-s1.md",
+      "case": 6,
+      "label": null,
+      "tests": [],
+      "kind": "article",
+      "words": 681,
+      "range": [450, 900],
+      "hasEvidence": true,
+      "borrowed": [],
+      "lint": {
+        "errors": 0,
+        "errorExcerpts": [],
+        "warnings": []
+      },
+      "shape": {
+        "measures": {
+          "sentenceMedian": 15,
+          "shortSentenceShare": 0.2,
+          "paragraphMedian": 78.5,
+          "oneLineShare": 0.1
+        },
+        "headings": 2,
+        "questionHeadings": 0,
+        "longHeadings": 0
+      },
+      "jev": {
+        "opensOnWork": 0.93,
+        "pointEarly": 0.91,
+        "ending": "pointer",
+        "endingBefore": "implication",
+        "endingProbabilities": {
+          "recap": 0,
+          "implication": 0.02,
+          "engagement": 0,
+          "moral": 0,
+          "pointer": 0.98
+        },
+        "title": "claim",
+        "aiBuilt": true,
+        "aiMentioned": true,
+        "grounding": {
+          "verdicts": [
+            {
+              "claim": "Coding agents write most of the code on this site now: of the repo's 486 commits, 261 carry one as a co-author.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.79,
+              "evidence": [
+                "261 of the repo's 486 commits carry a \"Co-Authored-By: Claude\" line: Miles builds with AI coding agents. (git log, 2026-10-26)",
+                "On October 7 this site's repo took 58 commits. They came from 14 workspaces I opened that day, each on its own branch, each with its own dev server and database, most of them driven by a coding agent while I reviewed the one before. Since 25 September the count is 170 commits, 23 migrations and 37 workspace branches, from one person.",
+                "Conductor opens a git worktree per task and runs a coding agent inside it. That is the easy half. The repo's job is to make each worktree a complete, isolated copy of the site: its own port, its own Postgres database, its own .env. Three small scripts do it, and a fourth holds the shared helpers.",
+                "Content runs through the same loop. This site exposes an MCP server, so an agent in one workspace can draft a post or patch a block against the live CMS while another workspace is changing code. This post was drafted that way, with the charts above built from the repo's own git log.",
+                "The outcome (answered, partial, no_sources, chat_only) is set by code, so the content-gaps filter is a real list of questions the site cannot answer yet. (Ask post draft)",
+                "None of that is possible with one checkout. Someone building alone is rarely blocked by how fast they can write code. They are blocked by waiting: a dev server restarting, an agent running for ten minutes, a schema push that has to finish before the next thing starts. One checkout means one branch, one port, one database. Start a second task and you stash, switch, re-sync the schema and lose the state of the first."
+              ]
+            },
+            {
+              "claim": "Press \u2318K on any page and it answers questions about my work from what is published here and nothing else, lists the pages it used, and stays under 120 words.",
+              "before": "Ask, the question box on this site, shows it most clearly.",
+              "verdict": "missing",
+              "conflict": null,
+              "confidence": 0.8,
+              "evidence": [
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "Stored questions are kept 90 days. Since 2026-10-17 nothing on the site runs on a schedule: expired rows are deleted after each stored question. The earlier daily cron never ran. (src/features/ask/retention.ts, commit \"nothing on a schedule\", 2026-10-17)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches me.",
+              "before": "Press \u2318K on any page and it answers questions about my work from what is published here and nothing else, lists the pages it used, and stays under 120 words.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.95,
+              "evidence": [
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "gpt-5-mini writes the answer from those passages only, in under 120 words. (Ask post draft)",
+                "An afterChange hook on Pages, Works, Posts and Site Info re-embeds a document when it is published; draft saves and autosave are skipped; an unpublish deletes its rows. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "On the Suits & Sandals site, where I built Ask first, it showed the right handoff card in 52 of 57 test turns (19 questions, three runs each).",
+              "before": "Without a judge, the writing model made that call itself, through a handoff tool with five reasons to use it.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.95,
+              "evidence": [
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "A full rebuild of this site takes 12 seconds: 19 documents, 70 passages. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "It also scores every retrieved passage for relevance and evidence.",
+              "before": "A separate judge reads each turn before anything is written and sorts it: information, estimate, project, person or conversation.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "The indexer reads each document as an anonymous visitor would, so a protected case study fails the read and cannot be retrieved. (Ask post draft)",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`.",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "The judge only returns probabilities.",
+              "before": "It also scores every retrieved passage for relevance and evidence.",
+              "verdict": "contradicted",
+              "conflict": 0.24,
+              "confidence": 0.21,
+              "evidence": [
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "Postgres with pgvector returns the 12 nearest passages above a cosine similarity of 0.3, through an HNSW index. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "The indexer reads each document as an anonymous visitor would, so a protected case study fails the read and cannot be retrieved. (Ask post draft)",
+                "Passages aim for 2,000 characters and are split on headings. Vectors are reused by exact passage text, so fixing an SEO title re-embeds nothing. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "My code owns each threshold, and keeps a passage only when it clears 0.45 for relevance and 0.55 for evidence.",
+              "before": "The judge only returns probabilities.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.75,
+              "evidence": [
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "A working day looks like this. I open a workspace per task and give each one a line: fix the carousel tab position, make capabilities a taxonomy, tune the mask animation speed. Setup runs on its own. The agent builds while I review the previous workspace's preview on its own port, with real content, and Storybook one port up when a component needs isolating. When a task is right, it lands with a rebase and a push to dev, and the workspace is archived. Three to six are open at any time; the limit is my attention, not the machine.",
+                "Facts a benchmark output may use. Each line names its source. Anything else is a claim to mark `[check: ...]`.",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "With the judge, the right card showed in 57 of 57 turns, and 23 turns were answered with no writing-model call at all, up from 6.",
+              "before": "The words on the handoff card are written in code as well, so no model improvises the moment someone asks for me.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "On October 7 this site's repo took 58 commits. They came from 14 workspaces I opened that day, each on its own branch, each with its own dev server and database, most of them driven by a coding agent while I reviewed the one before. Since 25 September the count is 170 commits, 23 migrations and 37 workspace branches, from one person.",
+                "**170 commits.** On dev since 25 September 2026, with 23 migrations among them.",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "Jev is TypeSafe's System One model: it answers typed questions (Choice, Noul, Score) with probabilities; Miles's code owns every threshold. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "The judge runs before the writer, so turns that needed a written answer got slower: median time to first output went from 3,490 ms to 4,655 ms.",
+              "before": "It cost time.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.93,
+              "evidence": [
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "A grounded answer takes 5 to 6 seconds end to end today, with about 1,650 input and 300 output tokens. (Ask post draft)",
+                "The scripts are short. The guards around them are where the time went, and each one is a bug I hit once."
+              ]
+            },
+            {
+              "claim": "Turning the writer's reasoning down to minimal brought that to 1,542 ms, and turns that only showed a card dropped from 2,669 ms to 365 ms.",
+              "before": "The judge runs before the writer, so turns that needed a written answer got slower: median time to first output went from 3,490 ms to 4,655 ms.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.95,
+              "evidence": [
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)",
+                "findContent judged 24 passages in 366 ms for \"design systems\", kept 7 and dropped 17, for 14,696 input tokens. (Ask post draft)",
+                "A grounded answer takes 5 to 6 seconds end to end today, with about 1,650 input and 300 output tokens. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "On this site the turn judge is built but switched off for now.",
+              "before": "Turning the writer's reasoning down to minimal brought that to 1,542 ms, and turns that only showed a card dropped from 2,669 ms to 365 ms.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.93,
+              "evidence": [
+                "The judge alone made worded turns slower (median first output 3,490 ms before, 4,655 ms with the judge), because it runs before the writer. Minimal reasoning on the writer brought them to 1,542 ms. Card-only turns went from 2,669 ms to 365 ms. (Ask post draft)",
+                "Measured on the Suits & Sandals site, 2026-09-19, model jev-1.13.0: 57 turns (19 questions, three runs each). Right handoff card: 52 before the judge, 57 with it. Turns answered with no writing-model call: 6 before, 23 with the judge. (Ask post draft)",
+                "On milesroxas.com the turn judge ships behind the ASK_JEV switch and is off for now; shadow mode comes next. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "findContent judged 24 passages in 366 ms for \"design systems\", kept 7 and dropped 17, for 14,696 input tokens. (Ask post draft)",
+                "Database identity is the directory, not the name. Conductor renames a workspace to its branch after the first chat. Keyed on the name, the next Run created a second database and the archive dropped the wrong one. Orphans piled up at 50 MB each. Now the DB name comes from the worktree directory, and once .env exists its POSTGRES_URL is the source of truth."
+              ]
+            },
+            {
+              "claim": "On October 7 this site's repo took 58 commits from 14 workspaces, most of them driven by a coding agent while I reviewed the one before.",
+              "before": "The same split runs my days.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "On October 7 this site's repo took 58 commits. They came from 14 workspaces I opened that day, each on its own branch, each with its own dev server and database, most of them driven by a coding agent while I reviewed the one before. Since 25 September the count is 170 commits, 23 migrations and 37 workspace branches, from one person.",
+                "[figure] Commits per day since Conductor went in: Daily commits on the dev branch. The workspace tooling landed on 3 October; the spike is 14 workspaces landing on the same afternoon.",
+                "Content runs through the same loop. This site exposes an MCP server, so an agent in one workspace can draft a post or patch a block against the live CMS while another workspace is changing code. This post was drafted that way, with the charts above built from the repo's own git log.",
+                "**37 workspaces.** Opened between 3 and 12 October, 14 of them on 7 October.",
+                "Conductor opens a git worktree per task and runs a coding agent inside it. That is the easy half. The repo's job is to make each worktree a complete, isolated copy of the site: its own port, its own Postgres database, its own .env. Three small scripts do it, and a fourth holds the shared helpers.",
+                "Conductor reads one file, .conductor/settings.toml. It names the scripts, tells Conductor that workspaces may run at the same time, and gives every agent that opens in this repo the landing rule, so Claude and Codex both get it without reading CLAUDE.md."
+              ]
+            },
+            {
+              "claim": "I keep three to six open at once, and what caps the number is how many I can review well.",
+              "before": "Each task starts as one line from me (fix the carousel tab position, make capabilities a taxonomy, tune the mask animation speed) and ends with me checking its preview against real content before it lands.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 1,
+              "evidence": [
+                "A working day looks like this. I open a workspace per task and give each one a line: fix the carousel tab position, make capabilities a taxonomy, tune the mask animation speed. Setup runs on its own. The agent builds while I review the previous workspace's preview on its own port, with real content, and Storybook one port up when a component needs isolating. When a task is right, it lands with a rebase and a push to dev, and the workspace is archived. Three to six are open at any time; the limit is my attention, not the machine.",
+                "The fix is not a faster machine. It is making a task cheap to open and cheap to throw away, then running as many at once as attention allows. The rest of this post is the setup that does that: the worktree tooling, the database isolation, and the migration gates that keep parallel schema work from breaking production.",
+                "None of that is possible with one checkout. Someone building alone is rarely blocked by how fast they can write code. They are blocked by waiting: a dev server restarting, an agent running for ten minutes, a schema push that has to finish before the next thing starts. One checkout means one branch, one port, one database. Start a second task and you stash, switch, re-sync the schema and lose the state of the first.",
+                "Conductor opens a git worktree per task and runs a coding agent inside it. That is the easy half. The repo's job is to make each worktree a complete, isolated copy of the site: its own port, its own Postgres database, its own .env. Three small scripts do it, and a fourth holds the shared helpers.",
+                "Two workspaces changing the schema at once is the real test of a parallel setup. The rule that makes it safe has two halves. Local databases are push-managed: on every pnpm dev, Drizzle diffs the Payload config against the workspace database and applies the difference. Neon, in preview and production, is only ever changed by payload migrate inside the Vercel build. Nothing runs migrations by hand, and push is wired so it cannot reach a remote database.",
+                "The other side is kept deliberately dull. Only main deploys; a push to dev builds nothing, which saves build minutes and means a release is one fast-forward push that only I make. The build command is three steps, and the first one exists because a preview build once pointed at the wrong database."
+              ]
+            },
+            {
+              "claim": "The scripts that open a workspace were short; the guards around them took longer, and each one was written after a bug I hit once.",
+              "before": "My own judgment arrives late sometimes.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.96,
+              "evidence": [
+                "The scripts are short. The guards around them are where the time went, and each one is a bug I hit once.",
+                "The guards took longer to write than the scripts, and each one was written after the bug, not before.",
+                "On October 7 this site's repo took 58 commits. They came from 14 workspaces I opened that day, each on its own branch, each with its own dev server and database, most of them driven by a coding agent while I reviewed the one before. Since 25 September the count is 170 commits, 23 migrations and 37 workspace branches, from one person.",
+                "A working day looks like this. I open a workspace per task and give each one a line: fix the carousel tab position, make capabilities a taxonomy, tune the mask animation speed. Setup runs on its own. The agent builds while I review the previous workspace's preview on its own port, with real content, and Storybook one port up when a component needs isolating. When a task is right, it lands with a rebase and a push to dev, and the workspace is archived. Three to six are open at any time; the limit is my attention, not the machine.",
+                "Conductor opens a git worktree per task and runs a coding agent inside it. That is the easy half. The repo's job is to make each worktree a complete, isolated copy of the site: its own port, its own Postgres database, its own .env. Three small scripts do it, and a fourth holds the shared helpers.",
+                "Database identity is the directory, not the name. Conductor renames a workspace to its branch after the first chat. Keyed on the name, the next Run created a second database and the archive dropped the wrong one. Orphans piled up at 50 MB each. Now the DB name comes from the worktree directory, and once .env exists its POSTGRES_URL is the source of truth."
+              ]
+            },
+            {
+              "claim": "What stays with me is the judgment: what Ask should refuse, which card a visitor sees, and whether a branch is ready to land.",
+              "before": "They did not make a wrong decision cheaper; they made it ship sooner.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.31,
+              "evidence": [
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "If nothing clears the floor on a first question, the visitor gets a card offering Miles and no model runs. (Ask post draft)",
+                "One Jev request classifies each turn (information, estimate, project, person, conversation) and asks whether it is about the visitor's own project and whether it names Miles's work. (Ask post draft)",
+                "One Jev request per retrieved passage asks whether it is relevant and whether it holds evidence; code keeps a passage at 0.45 relevance and 0.55 evidence, which let the similarity floor drop from 0.3 to 0.2. (Ask post draft)",
+                "The other side is kept deliberately dull. Only main deploys; a push to dev builds nothing, which saves build minutes and means a release is one fast-forward push that only I make. The build command is three steps, and the first one exists because a preview build once pointed at the wrong database.",
+                "The writing model has a handoff tool with five reasons (estimate, project, person, contact details, no answer); every word on the card is written in code. (Ask post draft)"
+              ]
+            },
+            {
+              "claim": "Press \u2318K on any page to try Ask.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.97,
+              "evidence": [
+                "locateBlock asked to \"fix the FAQ about pricing\" on a home page with no FAQ: the Choice still picked a block at 0.46, but a Noul put the odds that any block fits at 0.02, so the tool answered none. (Ask post draft)",
+                "Ask answers questions about Miles's work from what is published on milesroxas.com only, lists the pages it used, and stays under 120 words. (Ask post draft)",
+                "Visitors open it with \u2318K anywhere on the site or the Ask tab in the dock. (Ask post draft)",
+                "When the honest answer is \"ask Miles\", it says so and opens a short form that reaches him. (Ask post draft)",
+                "Miles built Ask first for the Suits & Sandals site, then ported it to milesroxas.com. (Ask post draft)",
+                "Drafts and protected client work never reach the index. (Ask post draft)"
+              ]
+            }
+          ]
+        },
+        "perUnit": [
+          {
+            "text": "Coding agents write most of the code on this site now: of the repo's 486 commits, 261 carry one as a co-author. The easy conclusion is that the design work shrinks along with the typing. Describe the feature, let the agent build it, check that it runs.",
+            "list": false,
+            "specificity": 0.97,
+            "selling": 0.07,
+            "decision": 0.34,
+            "setback": 0.3,
+            "aiDidWork": 0.98,
+            "aiSplit": 0.76
+          },
+          {
+            "text": "In my work it has gone the other way. An agent builds what it is told, fast and convincingly, including the wrong thing. It does not decide what a feature should refuse to do, when it should stop, or what a visitor should see when the right answer is a person. Those are design decisions, and with the typing handled, they are most of my job.",
+            "list": false,
+            "specificity": 0.13,
+            "selling": 0.24,
+            "decision": 0.49,
+            "setback": 0.7,
+            "aiDidWork": 0.97,
+            "aiSplit": 0.94
+          },
+          {
+            "text": "Ask, the question box on this site, shows it most clearly. Press \u2318K on any page and it answers questions about my work from what is published here and nothing else, lists the pages it used, and stays under 120 words. When the honest answer is \"ask Miles\", it says so and opens a short form that reaches me. I designed how it behaves and directed the build with coding agents. [check: how design, direction, review and code were split on Ask]",
+            "list": false,
+            "specificity": 1,
+            "selling": 0.43,
+            "decision": 0.16,
+            "setback": 0.63,
+            "aiDidWork": 0.98,
+            "aiSplit": 0.41
+          },
+          {
+            "text": "Most of the design sits in that handoff. A visitor asking for an estimate, pitching a project or asking something no page covers should reach me, not get a confident paragraph. Without a judge, the writing model made that call itself, through a handoff tool with five reasons to use it. On the Suits & Sandals site, where I built Ask first, it showed the right handoff card in 52 of 57 test turns (19 questions, three runs each).",
+            "list": false,
+            "specificity": 1,
+            "selling": 0.34,
+            "decision": 0.96,
+            "setback": 0.33,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "So the call moved out of the writer. A separate judge reads each turn before anything is written and sorts it: information, estimate, project, person or conversation. It also scores every retrieved passage for relevance and evidence. The judge only returns probabilities. My code owns each threshold, and keeps a passage only when it clears 0.45 for relevance and 0.55 for evidence. The words on the handoff card are written in code as well, so no model improvises the moment someone asks for me. With the judge, the right card showed in 57 of 57 turns, and 23 turns were answered with no writing-model call at all, up from 6.",
+            "list": false,
+            "specificity": 1,
+            "selling": 0.14,
+            "decision": 0.31,
+            "setback": 0.06,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "It cost time. The judge runs before the writer, so turns that needed a written answer got slower: median time to first output went from 3,490 ms to 4,655 ms. Turning the writer's reasoning down to minimal brought that to 1,542 ms, and turns that only showed a card dropped from 2,669 ms to 365 ms. On this site the turn judge is built but switched off for now. Shadow mode comes next, where it judges real questions without acting on them.",
+            "list": false,
+            "specificity": 1,
+            "selling": 0.01,
+            "decision": 0.68,
+            "setback": 0.96,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "The same split runs my days. On October 7 this site's repo took 58 commits from 14 workspaces, most of them driven by a coding agent while I reviewed the one before. Each task starts as one line from me (fix the carousel tab position, make capabilities a taxonomy, tune the mask animation speed) and ends with me checking its preview against real content before it lands. I keep three to six open at once, and what caps the number is how many I can review well.",
+            "list": false,
+            "specificity": 0.99,
+            "selling": 0.01,
+            "decision": 0.43,
+            "setback": 0.55,
+            "aiDidWork": 0.98,
+            "aiSplit": 0.93
+          },
+          {
+            "text": "My own judgment arrives late sometimes. The scripts that open a workspace were short; the guards around them took longer, and each one was written after a bug I hit once. A workspace database was keyed on a name that later changed, so archiving dropped the wrong one. A dev server left running by another repo held a port a new workspace had been given. Both were gaps in what I had decided, found by running into them.",
+            "list": false,
+            "specificity": 0.94,
+            "selling": 0,
+            "decision": 0.14,
+            "setback": 0.97,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Agents made the typing cheap. They did not make a wrong decision cheaper; they made it ship sooner. What stays with me is the judgment: what Ask should refuse, which card a visitor sees, and whether a branch is ready to land.",
+            "list": false,
+            "specificity": 0.74,
+            "selling": 0.07,
+            "decision": 0.87,
+            "setback": 0.74,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Press \u2318K on any page to try Ask.",
+            "list": false,
+            "specificity": 0.72,
+            "selling": 0.09,
+            "decision": 0.03,
+            "setback": 0.03,
+            "aiDidWork": null,
+            "aiSplit": null
+          }
+        ]
+      },
+      "scores": {
+        "lint": 100,
+        "shape": 80,
+        "structure": 100,
+        "substance": 89,
+        "tone": 86,
+        "grounding": 88,
+        "total": 91
+      },
+      "flags": [
+        "not in evidence: \"Press \u2318K on any page and it answers questions about my work from what is published here and nothing else, lists the pages it used, and stays under 120 words.\"",
+        "not in evidence: \"The judge only returns probabilities.\""
+      ]
+    },
+    {
+      "file": "9-case-study-buzlee-s1.md",
+      "case": 9,
+      "label": null,
+      "tests": [],
+      "kind": "article",
+      "words": 563,
+      "range": [400, 1200],
+      "hasEvidence": true,
+      "borrowed": [],
+      "lint": {
+        "errors": 0,
+        "errorExcerpts": [],
+        "warnings": []
+      },
+      "shape": {
+        "measures": {
+          "sentenceMedian": 16,
+          "shortSentenceShare": 0.05,
+          "paragraphMedian": 47,
+          "oneLineShare": 0.11
+        },
+        "headings": 6,
+        "questionHeadings": 0,
+        "longHeadings": 0
+      },
+      "jev": {
+        "opensOnWork": 0.76,
+        "pointEarly": 0.45,
+        "ending": "implication",
+        "endingBefore": "detail",
+        "endingProbabilities": {
+          "recap": 0.01,
+          "implication": 0.99,
+          "engagement": 0,
+          "moral": 0,
+          "pointer": 0
+        },
+        "title": "descriptive",
+        "aiBuilt": false,
+        "aiMentioned": true,
+        "grounding": {
+          "verdicts": [
+            {
+              "claim": "The model for Buzlee already existed off the screen.",
+              "before": null,
+              "verdict": "missing",
+              "conflict": null,
+              "confidence": 0.36,
+              "evidence": [
+                "Buzlee is a digital bulletin board for small towns: one feed and one map for what is on this week, posted by local businesses and approved by a person. No ads, no ratings, no ranking algorithm. (work 15 intro)",
+                "The brand guide lists Buzlee as \"bringing a community product from concept to working applications and supporting systems\". (docs/miles-roxas-brand-context.md)",
+                "Work page \"Local Events Without the Noise\", role \"Product, Design, Engineering\", industry \"Consumer App\", capabilities Mobile App and Product Design. (milesroxas.com work 15)",
+                "It brings local events into one feed and one map, without ads, reviews, or algorithms deciding what deserves attention. (work 15 summary)",
+                "Miles worked with the founder to shape the MVP, then designed and built the mobile apps and supporting systems. (work 15 intro)",
+                "Features named on the site: map-based discovery, business flyers, human content moderation. (work 15 SEO description)"
+              ]
+            },
+            {
+              "claim": "A small town also has few enough events each week for a person to read every post before it goes up.",
+              "before": null,
+              "verdict": "missing",
+              "conflict": null,
+              "confidence": 0.51,
+              "evidence": [
+                "Buzlee is a digital bulletin board for small towns: one feed and one map for what is on this week, posted by local businesses and approved by a person. No ads, no ratings, no ranking algorithm. (work 15 intro)",
+                "Work page \"Local Events Without the Noise\", role \"Product, Design, Engineering\", industry \"Consumer App\", capabilities Mobile App and Product Design. (milesroxas.com work 15)",
+                "It brings local events into one feed and one map, without ads, reviews, or algorithms deciding what deserves attention. (work 15 summary)",
+                "Miles worked with the founder to shape the MVP, then designed and built the mobile apps and supporting systems. (work 15 intro)",
+                "Features named on the site: map-based discovery, business flyers, human content moderation. (work 15 SEO description)",
+                "The brand guide lists Buzlee as \"bringing a community product from concept to working applications and supporting systems\". (docs/miles-roxas-brand-context.md)"
+              ]
+            },
+            {
+              "claim": "A person approves every post.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.61,
+              "evidence": [
+                "Buzlee is a digital bulletin board for small towns: one feed and one map for what is on this week, posted by local businesses and approved by a person. No ads, no ratings, no ranking algorithm. (work 15 intro)",
+                "Work page \"Local Events Without the Noise\", role \"Product, Design, Engineering\", industry \"Consumer App\", capabilities Mobile App and Product Design. (milesroxas.com work 15)",
+                "It brings local events into one feed and one map, without ads, reviews, or algorithms deciding what deserves attention. (work 15 summary)",
+                "Miles worked with the founder to shape the MVP, then designed and built the mobile apps and supporting systems. (work 15 intro)",
+                "Features named on the site: map-based discovery, business flyers, human content moderation. (work 15 SEO description)",
+                "The brand guide lists Buzlee as \"bringing a community product from concept to working applications and supporting systems\". (docs/miles-roxas-brand-context.md)"
+              ]
+            },
+            {
+              "claim": "A flyer goes live only after someone reads it, rather than when an automated filter passes it.",
+              "before": "A person approves every post.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.79,
+              "evidence": [
+                "Buzlee is a digital bulletin board for small towns: one feed and one map for what is on this week, posted by local businesses and approved by a person. No ads, no ratings, no ranking algorithm. (work 15 intro)",
+                "Work page \"Local Events Without the Noise\", role \"Product, Design, Engineering\", industry \"Consumer App\", capabilities Mobile App and Product Design. (milesroxas.com work 15)",
+                "It brings local events into one feed and one map, without ads, reviews, or algorithms deciding what deserves attention. (work 15 summary)",
+                "Miles worked with the founder to shape the MVP, then designed and built the mobile apps and supporting systems. (work 15 intro)",
+                "Features named on the site: map-based discovery, business flyers, human content moderation. (work 15 SEO description)",
+                "The brand guide lists Buzlee as \"bringing a community product from concept to working applications and supporting systems\". (docs/miles-roxas-brand-context.md)"
+              ]
+            },
+            {
+              "claim": "The cost is that Buzlee never learns what a person likes and shows them more of it.",
+              "before": "The feed and the map show what is on, and no algorithm pushes an event up for being popular.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.17,
+              "evidence": [
+                "Buzlee is a digital bulletin board for small towns: one feed and one map for what is on this week, posted by local businesses and approved by a person. No ads, no ratings, no ranking algorithm. (work 15 intro)",
+                "It brings local events into one feed and one map, without ads, reviews, or algorithms deciding what deserves attention. (work 15 summary)",
+                "The brand guide lists Buzlee as \"bringing a community product from concept to working applications and supporting systems\". (docs/miles-roxas-brand-context.md)",
+                "Work page \"Local Events Without the Noise\", role \"Product, Design, Engineering\", industry \"Consumer App\", capabilities Mobile App and Product Design. (milesroxas.com work 15)",
+                "Miles worked with the founder to shape the MVP, then designed and built the mobile apps and supporting systems. (work 15 intro)",
+                "Features named on the site: map-based discovery, business flyers, human content moderation. (work 15 SEO description)"
+              ]
+            },
+            {
+              "claim": "Each flyer reaches the feed and the map only after a person approves it.",
+              "before": "Local businesses post their events as flyers.",
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.87,
+              "evidence": [
+                "Buzlee is a digital bulletin board for small towns: one feed and one map for what is on this week, posted by local businesses and approved by a person. No ads, no ratings, no ranking algorithm. (work 15 intro)",
+                "It brings local events into one feed and one map, without ads, reviews, or algorithms deciding what deserves attention. (work 15 summary)",
+                "Work page \"Local Events Without the Noise\", role \"Product, Design, Engineering\", industry \"Consumer App\", capabilities Mobile App and Product Design. (milesroxas.com work 15)",
+                "Features named on the site: map-based discovery, business flyers, human content moderation. (work 15 SEO description)",
+                "Miles worked with the founder to shape the MVP, then designed and built the mobile apps and supporting systems. (work 15 intro)",
+                "The brand guide lists Buzlee as \"bringing a community product from concept to working applications and supporting systems\". (docs/miles-roxas-brand-context.md)"
+              ]
+            },
+            {
+              "claim": "Most of Buzlee's design is in what it refuses: ads, ratings and ranking.",
+              "before": null,
+              "verdict": "supported",
+              "conflict": null,
+              "confidence": 0.39,
+              "evidence": [
+                "Buzlee is a digital bulletin board for small towns: one feed and one map for what is on this week, posted by local businesses and approved by a person. No ads, no ratings, no ranking algorithm. (work 15 intro)",
+                "It brings local events into one feed and one map, without ads, reviews, or algorithms deciding what deserves attention. (work 15 summary)",
+                "Work page \"Local Events Without the Noise\", role \"Product, Design, Engineering\", industry \"Consumer App\", capabilities Mobile App and Product Design. (milesroxas.com work 15)",
+                "The brand guide lists Buzlee as \"bringing a community product from concept to working applications and supporting systems\". (docs/miles-roxas-brand-context.md)",
+                "No usage numbers, launch date, store ratings or team size are published. (no source)",
+                "Miles worked with the founder to shape the MVP, then designed and built the mobile apps and supporting systems. (work 15 intro)"
+              ]
+            }
+          ]
+        },
+        "perUnit": [
+          {
+            "text": "In a small town, a local business's event usually ends up on a platform where ads, reviews and ranking algorithms decide what deserves attention. [check: where people in Buzlee's towns found events before, so this can name it] I worked with Buzlee's founder [check: name, and whether to credit them by name] to shape an MVP with none of the three, then designed and built the mobile apps and the systems behind them.",
+            "list": false,
+            "specificity": 0.95,
+            "selling": 0.08,
+            "decision": 0.63,
+            "setback": 0.4,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Buzlee is a digital bulletin board for small towns: one feed and one map for what is on this week, posted by local businesses and approved by a person.",
+            "list": false,
+            "specificity": 0.83,
+            "selling": 0.04,
+            "decision": 0.04,
+            "setback": 0.03,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "The model for Buzlee already existed off the screen. A business pins a flyer to a bulletin board, anyone walking past can read it, and nothing decides that one flyer deserves more attention than another. Buzlee keeps those rules and puts the board on a phone.",
+            "list": false,
+            "specificity": 0.84,
+            "selling": 0.06,
+            "decision": 0.29,
+            "setback": 0.05,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "A small town also has few enough events each week for a person to read every post before it goes up. That makes human approval workable here, where a larger platform would hand the job to software. [check: that this was the reasoning and whose it was (Miles's, the founder's or shared), and roughly how many posts arrive in a week]",
+            "list": false,
+            "specificity": 0.86,
+            "selling": 0.03,
+            "decision": 0.98,
+            "setback": 0.55,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "The founder and I shaped the MVP around three decisions, and each one gave something up. [check: which of these were the founder's calls and which were Miles's]",
+            "list": false,
+            "specificity": 0.49,
+            "selling": 0,
+            "decision": 0.6,
+            "setback": 0.97,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "**A person approves every post.** A flyer goes live only after someone reads it, rather than when an automated filter passes it. The cost is time: someone reviews every post, and a business waits before its event appears. [check: who approves posts and how long approval usually takes] **Nothing is ranked.** The feed and the map show what is on, and no algorithm pushes an event up for being popular. The cost is that Buzlee never learns what a person likes and shows them more of it. **No ads and no ratings.** A business can't pay to rise, and no event carries a score. That gives up advertising as a way to pay for the app.",
+            "list": true,
+            "specificity": 0.93,
+            "selling": 0.01,
+            "decision": 0.89,
+            "setback": 0.97,
+            "aiDidWork": 0.03,
+            "aiSplit": 0.02
+          },
+          {
+            "text": "I designed and built the mobile apps and the systems that support them. [check: which platforms, and what the supporting systems include, for example the posting tool for businesses and the approval queue] [check: who else worked on the build, including any AI-assisted development, so the split of the work can be stated here]",
+            "list": false,
+            "specificity": 0.41,
+            "selling": 0.01,
+            "decision": 0.03,
+            "setback": 0.36,
+            "aiDidWork": 0.05,
+            "aiSplit": 0.02
+          },
+          {
+            "text": "People find events two ways: a feed of what is on this week, and a map that places each event where it happens. Local businesses post their events as flyers. Each flyer reaches the feed and the map only after a person approves it.",
+            "list": false,
+            "specificity": 0.82,
+            "selling": 0,
+            "decision": 0.15,
+            "setback": 0.09,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Buzlee went from concept to working mobile apps and the systems that support them. [check: status (live in the app stores, in beta or in a pilot) and since when, which towns use it, and any number Miles can share, such as businesses posting or events listed]",
+            "list": false,
+            "specificity": 0.53,
+            "selling": 0.04,
+            "decision": 0.03,
+            "setback": 0.37,
+            "aiDidWork": null,
+            "aiSplit": null
+          },
+          {
+            "text": "Most of Buzlee's design is in what it refuses: ads, ratings and ranking. I would decide those refusals first again, before any feature. What I haven't settled is scale: a person can read every flyer in one small town, and I don't know yet whether that holds as Buzlee adds towns. [check: the lesson in Miles's words, and whether scale is a real open question]",
+            "list": false,
+            "specificity": 0.98,
+            "selling": 0.1,
+            "decision": 0.88,
+            "setback": 0.98,
+            "aiDidWork": null,
+            "aiSplit": null
+          }
+        ]
+      },
+      "scores": {
+        "lint": 100,
+        "shape": 80,
+        "structure": 75,
+        "substance": 86,
+        "tone": 96,
+        "grounding": 74,
+        "total": 84
+      },
+      "flags": [
+        "point not stated in the first two paragraphs",
+        "not in evidence: \"The model for Buzlee already existed off the screen.\"",
+        "not in evidence: \"A small town also has few enough events each week for a person to read every post before it goes up.\""
+      ]
+    }
+  ]
+}

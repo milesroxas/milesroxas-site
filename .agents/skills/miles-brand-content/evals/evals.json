@@ -4,6 +4,7 @@
     {
       "id": 1,
       "name": "rewrite-summaries-live",
+      "title": "Rewrite two case study summaries",
       "prompt": "the summaries on my NextStreet and GentleBeast case studies read like agency copy. rewrite them so they sound like me, and fix the seo descriptions on both if they need it",
       "expected_output": "Reads the live works, rewrites both summaries in Miles's voice with only verified facts, flags GentleBeast's empty role, checks SEO descriptions (100-155 chars, third person), and saves as drafts with top-level fields.",
       "files": [],
@@ -14,11 +15,15 @@
         "Writes SEO descriptions of 100 to 155 characters in third person or with no subject",
         "Saves with draft: true and reports the admin links"
       ],
-      "bench": { "live": true, "judge": false }
+      "bench": {
+        "live": true,
+        "judge": false
+      }
     },
     {
       "id": 2,
       "name": "linkedin-ask",
+      "title": "LinkedIn post: Ask",
       "prompt": "write a linkedin post about the Ask feature on my portfolio, the RAG assistant that answers questions about my work. i want people to go read the write-up",
       "expected_output": "A calm, specific LinkedIn post: point in the first line, one real decision, AI credited as a tool with Miles's role clear, no hype or hashtag wall, flags that the write-up is still a draft.",
       "files": ["evals/files/ask-notes.md"],
@@ -38,6 +43,7 @@
     {
       "id": 3,
       "name": "plan-home-siteinfo",
+      "title": "Plan: home hero and Site Info",
       "prompt": "plan a rewrite of my homepage hero and Site Info so they actually match my brand guide. don't write final copy yet, i just want the plan",
       "expected_output": "A brief: reader, goal, evidence ledger, outline, open questions. Flags live copy that contradicts the guide (labels, year count), notes Site Info saves go live, writes nothing to the CMS.",
       "files": [],
@@ -47,11 +53,15 @@
         "Notes that Site Info saves go live immediately",
         "Writes nothing to the CMS"
       ],
-      "bench": { "live": true, "judge": false }
+      "bench": {
+        "live": true,
+        "judge": false
+      }
     },
     {
       "id": 4,
       "name": "cv-linear-application",
+      "title": "CV bullets for a Linear application",
       "prompt": "I'm applying for a Design Engineer role at Linear. write 4 CV bullets for my Suits & Sandals co-founder role, plus a short answer to the application question 'Why are you leaving your agency?'",
       "expected_output": "Four verb-first bullets under 30 words with no inflated engineering claims, titles and dates flagged for checking, and an answer that frames the move to product work as deliberate.",
       "files": [],
@@ -61,11 +71,15 @@
         "Titles and dates are flagged for checking, not invented",
         "The answer frames the move to one product as deliberate, without apologizing for the agency years"
       ],
-      "bench": { "kind": "body", "evidence": ["references/brand-context.md"] }
+      "bench": {
+        "kind": "body",
+        "evidence": ["references/brand-context.md"]
+      }
     },
     {
       "id": 5,
       "name": "build-story-ask",
+      "title": "Build story: how Ask works",
       "prompt": "Write a post for my site about how the Ask assistant works and why I built it the way I did. Use only the facts in evals/files/ask-notes.md. Don't save anything to the CMS: give me the post as Markdown in chat, with a title.",
       "expected_output": "A build story to references/articles.md: an opening inside the problem, the point by the third paragraph, label or claim headings, at least one decision against its alternative, the judge's cost, correct retention, the Ask work split marked for checking, and an implication ending.",
       "files": ["evals/files/ask-notes.md"],
@@ -90,6 +104,7 @@
     {
       "id": 6,
       "name": "essay-judgment",
+      "title": "Essay: design judgment and agents",
       "prompt": "Write a short essay (500 to 800 words) for my site on why design judgment matters more, not less, now that agents write most of my code. Draw on my own work in evals/files/ask-notes.md and evals/files/parallel-post.md. Markdown in chat, with a title; don't save it.",
       "expected_output": "An essay to references/articles.md: a position stated early, one concrete story from Miles's own work as the proof, AI as a tool with Miles's deciding and reviewing role explicit, few or no headings, and an implication ending. No borrowed lines or references.",
       "files": ["evals/files/ask-notes.md", "evals/files/parallel-post.md"],
@@ -111,6 +126,7 @@
     {
       "id": 7,
       "name": "edit-parallel-open-close",
+      "title": "Edit: tighten the parallel-work post",
       "prompt": "Tighten the first two paragraphs and the last paragraph of my published post in evals/files/parallel-post.md. Show each change as before and after with a reason. Keep every fact and don't touch the CMS.",
       "expected_output": "Edit mode: only the first two paragraphs and the last paragraph change, every number survives, each change has a before, an after and a rule-based reason, and what already works is kept.",
       "files": ["evals/files/parallel-post.md"],
@@ -121,11 +137,16 @@
         "Adds no fact that is not in the post",
         "Says where the original already works instead of rewriting it wholesale"
       ],
-      "bench": { "judge": false, "kind": "body", "evidence": ["evals/files/parallel-post.md"] }
+      "bench": {
+        "judge": false,
+        "kind": "body",
+        "evidence": ["evals/files/parallel-post.md"]
+      }
     },
     {
       "id": 8,
       "name": "review-ask-draft",
+      "title": "Review: the Ask draft",
       "prompt": "Review my Ask post draft in evals/files/ask-draft.md before I publish it. Don't rewrite it.",
       "expected_output": "Review mode: findings most serious first with location, quote, rule and fix. Catches the daily-job retention claim against the repo, the feature-first opening, the missing cost or failure section and the tool-led title, and ends with the two or three changes that matter most.",
       "files": ["evals/files/ask-draft.md"],
@@ -137,11 +158,14 @@
         "Lists findings most serious first with location, quote, rule and fix, and ends with the two or three changes that matter most",
         "Does not rewrite the post"
       ],
-      "bench": { "judge": false }
+      "bench": {
+        "judge": false
+      }
     },
     {
       "id": 9,
       "name": "case-study-buzlee",
+      "title": "Case study: Buzlee",
       "prompt": "Draft the narrative sections of my Buzlee case study: problem, insight, choices, what was built, outcome, lesson. Use only evals/files/buzlee-notes.md. Markdown in chat with one heading per section; don't save it.",
       "expected_output": "A case study narrative in the website.md order with short headings, the founder credited, I for Miles's own work, at least one choice against its alternative, and every missing fact (metrics, dates, launch status, reasons) marked for checking rather than invented.",
       "files": ["evals/files/buzlee-notes.md"],
@@ -162,6 +186,7 @@
     {
       "id": 10,
       "name": "linkedin-parallel",
+      "title": "LinkedIn post: parallel work",
       "prompt": "Write a LinkedIn post that points people to my post on working in parallel (evals/files/parallel-post.md).",
       "expected_output": "A LinkedIn post: the point in the first line, one concrete detail from the post (a guard and the bug behind it, or a number), the AI split stated as the post states it, one link, no emoji or hashtag wall.",
       "files": ["evals/files/parallel-post.md"],
@@ -181,6 +206,7 @@
     {
       "id": 11,
       "name": "titles-ask",
+      "title": "Titles and SEO for the Ask post",
       "prompt": "Give me three title options, an SEO title and an SEO description for my Ask post in evals/files/ask-draft.md.",
       "expected_output": "Three descriptive or claim titles in sentence case under about 60 characters, an SEO title of about 45 characters without the name, and a 100 to 155 character third-person description that names Ask and what it does.",
       "files": ["evals/files/ask-draft.md"],
@@ -190,7 +216,10 @@
         "The SEO title is about 45 characters and does not include Miles's name",
         "The SEO description is 100 to 155 characters, third person or no subject, and names Ask"
       ],
-      "bench": { "judge": false, "kind": "body" }
+      "bench": {
+        "judge": false,
+        "kind": "body"
+      }
     }
   ]
 }

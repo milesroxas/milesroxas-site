@@ -1,0 +1,27 @@
+{
+  "skillVersion": "v1",
+  "skillName": "Playbook added",
+  "skillHash": "d85dc4e87bb8",
+  "note": "references/articles.md added: long-form shapes, openings, headings, honesty moves, endings.",
+  "skillCommit": "ddb3144 minus the v2 edits",
+  "writer": {
+    "engine": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "default",
+    "harness": "agent"
+  },
+  "generator": "Claude Code subagent, one session per output",
+  "createdAt": "2026-10-26",
+  "case": null,
+  "samples": [
+    {
+      "file": "5-build-story-ask-s1.md"
+    },
+    {
+      "file": "6-essay-judgment-s1.md"
+    },
+    {
+      "file": "9-case-study-buzlee-s1.md"
+    }
+  ]
+}

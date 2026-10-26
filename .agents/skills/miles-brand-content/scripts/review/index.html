@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Brand content review</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <h1>Brand content review</h1>
+        <span class="hint">Click an output for A, ⌥-click for B · <kbd>1</kbd>–<kbd>5</kbd> rate · <kbd>j</kbd>/<kbd>k</kbd> next · <kbd>d</kbd> diff · <kbd>b</kbd> blind</span>
+        <span class="spacer"></span>
+        <span class="job-pill" id="jobs-pill" hidden><span class="dot"></span><span id="jobs-text"></span></span>
+        <a class="button" href="/guide">Guide</a>
+      </header>
+      <nav class="rail" id="rail" aria-label="Outputs"></nav>
+      <main class="stage" id="stage"></main>
+      <aside class="panel">
+        <div class="tabs" role="tablist" id="tabs"></div>
+        <div class="panel-body" id="panel"></div>
+      </aside>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+    <script type="module" src="/app.mjs"></script>
+  </body>
+</html>

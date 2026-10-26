@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Review tool guide</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="guide-page">
+    <header class="guide-top">
+      <a class="button" href="/">← Back to the tool</a>
+      <nav aria-label="Sections">
+        <a href="#start">Start</a>
+        <a href="#screen">The screen</a>
+        <a href="#judge">Judge</a>
+        <a href="#read">Read</a>
+        <a href="#insights">Insights</a>
+        <a href="#tweak">Tweak</a>
+        <a href="#generate">Generate</a>
+        <a href="#keep">Keep</a>
+        <a href="#reference">Reference</a>
+      </nav>
+    </header>
+
+    <main class="guide">
+      <h1>How to use the review tool</h1>
+      <p class="lede">
+        This tool is where you read what the <code>miles-brand-content</code> skill writes, judge it in your own words, and decide what to change: the skill, or the benchmark that grades it. The benchmark scores every output; your reading decides what the scores are worth.
+      </p>
+
+      <ol class="loop">
+        <li><b>Judge blind.</b> Rate an output before you see any score.</li>
+        <li><b>Compare.</b> Put two outputs side by side and pick the better one.</li>
+        <li><b>Read Insights.</b> See where you and the bench agree, and where you don't.</li>
+        <li><b>Tweak.</b> Change the skill, a single piece, or the benchmark.</li>
+        <li><b>Generate and repeat.</b> Write new outputs, with any model, and judge again.</li>
+      </ol>
+
+      <section id="start">
+        <h2>Start it</h2>
+        <p>From the repo:</p>
+        <pre><code>pnpm content-review</code></pre>
+        <p>Then open <a href="http://localhost:4330">localhost:4330</a>. The tool reads <code>.env</code> for three keys, and works without any of them for reading and judging:</p>
+        <table>
+          <tr><th>Needs</th><th>For</th></tr>
+          <tr><td><code>TYPESAFE_API_KEY</code></td><td>Grading new outputs with Jev</td></tr>
+          <tr><td><code>OPENAI_API_KEY</code></td><td>Writing with OpenAI models</td></tr>
+          <tr><td>Claude Code, logged in</td><td>Writing with Claude models (the tool runs <code>claude -p</code>)</td></tr>
+        </table>
+      </section>
+
+      <section id="screen">
+        <h2>The screen</h2>
+        <figure>
+          <img src="/guide/overview.jpg" alt="The review tool with two outputs open side by side, the list of outputs on the left and the Judge panel on the right." />
+          <figcaption>Two versions of the same case, side by side.</figcaption>
+        </figure>
+        <ol class="callouts">
+          <li><b>Outputs.</b> Grouped by test case. Each row is one output: the skill version that wrote it on the first line ("v2 · Claims need a source"), then the model, and the sample number when a run wrote more than one. The chip is the bench total.</li>
+          <li><b>Scores.</b> The six layers the bench grades, with B's difference from A in green or red.</li>
+          <li><b>The paragraph margin.</b> How specific (green bar) and how promotional (orange bar) Jev found each paragraph, plus badges for a decision (D), a cost or setback (S), and how AI work is credited (AI).</li>
+          <li><b>Claims.</b> A wavy amber underline is a claim the evidence does not hold. Red is a claim the evidence contradicts. Hover to see the nearest evidence.</li>
+          <li><b>Panel tabs.</b> Judge, Insights, Knobs, Skill diff and Generate.</li>
+          <li><b>Blind.</b> Hides every score while you judge.</li>
+        </ol>
+      </section>
+
+      <section id="judge">
+        <h2>1. Judge blind</h2>
+        <figure>
+          <img src="/guide/blind.jpg" alt="Blind mode: the outputs show no scores, and the Judge panel shows the rating buttons and the layer marks." />
+        </figure>
+        <ol class="callouts">
+          <li>Turn on <b>Blind</b> (or press <kbd>b</kbd>). Scores, model names and Jev's notes disappear, so the numbers don't steer your reading.</li>
+          <li><b>Rate</b> the whole piece from 1 to 5 (keys <kbd>1</kbd> to <kbd>5</kbd>).</li>
+          <li><b>Mark each layer</b> Good or Bad in plain terms: the opening and ending, whether it is specific and honest, whether it sounds like you, whether the facts hold, whether it reads well.</li>
+          <li><b>Write notes.</b> To note one paragraph, click its left margin.</li>
+        </ol>
+        <p>Everything saves as you go, to <code>evals/reviews.json</code>. The case's expectations are listed under the notes: tick the ones the output meets.</p>
+      </section>
+
+      <section id="read">
+        <h2>2. Compare and read the annotations</h2>
+        <p>Click an output to open it as A. <kbd>⌥</kbd>-click another to open it as B: an older skill version, another model, another sample, or a rewrite. Then turn Blind off.</p>
+        <figure>
+          <img src="/guide/annotations.jpg" alt="One output up close: the layer scores, the flags, the margin meters and badges, an underlined claim and a check marker." />
+        </figure>
+        <ol class="callouts">
+          <li><b>Layer scores.</b> Hover one for what produced it, such as "7 of 8 claims supported".</li>
+          <li><b>Flags.</b> The specific problems the bench found. A contradicted claim always opens this list.</li>
+          <li><b>Meters.</b> Specific (green) and selling (orange), per paragraph.</li>
+          <li><b>Badges.</b> D: a decision against an alternative. S: a cost, failure or open question. AI: AI did part of the work, green when the split between AI and you is stated.</li>
+          <li><b>Underlines.</b> Claims not in the evidence (amber) or contradicted (red).</li>
+          <li><b>Check markers.</b> Gaps the writer flagged for you to confirm. These are good: the skill asked instead of inventing.</li>
+        </ol>
+        <p>Pick <b>A</b>, <b>B</b> or <b>Tie</b> in the Judge panel and say why. The panel then tells you whether the bench agreed.</p>
+        <figure>
+          <img src="/guide/diff.jpg" alt="The word diff between two versions: removed words struck through in red, added words in green." />
+          <figcaption><b>Diff A→B</b> (or <kbd>d</kbd>) shows exactly what changed between two outputs. Most useful after a rewrite.</figcaption>
+        </figure>
+      </section>
+
+      <section id="insights">
+        <h2>3. Read Insights</h2>
+        <figure class="narrow">
+          <img src="/guide/insights.jpg" alt="The Insights panel: a grid of your marks against the bench, the verdicts it draws, and a plot of your ratings against the bench totals." />
+        </figure>
+        <ol class="callouts">
+          <li><b>The grid.</b> For each layer, how your Good and Bad marks line up with the bench's score. A bench score of 70 or more counts as good (change it in Knobs → agree at).</li>
+          <li><b>The verdicts.</b> Where to act. The four cells mean different things:</li>
+          <li><b>Your rating against the total.</b> Each dot is an output. A rank correlation above 0.6 means the bench orders outputs the way you do.</li>
+        </ol>
+        <table>
+          <tr><th>Cell</th><th>What it means</th><th>What to change</th></tr>
+          <tr><td>Both good</td><td>You and the bench agree it works</td><td>Nothing</td></tr>
+          <tr><td>Both bad</td><td>You and the bench agree it falls short</td><td><b>The skill.</b> The verdict names the section of <code>articles.md</code> or <code>SKILL.md</code>.</td></tr>
+          <tr><td>Bench missed</td><td>You marked it bad; the bench scored it high</td><td><b>The benchmark.</b> A Jev question is too lenient, or a weight too low.</td></tr>
+          <tr><td>Too harsh</td><td>You marked it good; the bench scored it low</td><td><b>The benchmark.</b> A question is too strict, or the evidence pack is missing a fact.</td></tr>
+        </table>
+        <p>Click any count to list those outputs and open one.</p>
+      </section>
+
+      <section id="tweak">
+        <h2>4. Tweak</h2>
+        <h3>The benchmark: Knobs</h3>
+        <figure class="narrow">
+          <img src="/guide/knobs.jpg" alt="The Knobs panel: sliders for layer weights and thresholds, with the agreement count at the top." />
+        </figure>
+        <p>Every slider rescores every output instantly, from the answers Jev already gave: no new calls, no cost. Watch the line at the top, <b>Agreement with your marks</b>: you want it to go up. <b>Save</b> writes <code>evals/bench-config.json</code>, which <code>bench.mjs</code> reads from then on. A wrong reading that no weight can fix is a question to reword in <code>scripts/bench.mjs</code>; then use <b>Grade again</b> in Generate.</p>
+
+        <h3>The skill: Skill diff</h3>
+        <figure class="narrow">
+          <img src="/guide/skill-diff.jpg" alt="The Skill diff panel comparing two skill versions line by line." />
+        </figure>
+        <p>Every run keeps a copy of the skill that wrote it, so you can compare any two versions, or the last version against your unsaved edits ("Working tree"). Edit the skill in your editor, or ask Claude to apply your notes from <code>evals/reviews.json</code>. The tool notices the files changed and asks you to name the new version when you generate.</p>
+      </section>
+
+      <section id="generate">
+        <h2>5. Generate: new outputs, rewrites, other models</h2>
+        <figure class="narrow">
+          <img src="/guide/generate.jpg" alt="The Generate panel: the skill version, what to write, and two writers, Claude Sonnet and GPT-5.5 at high effort." />
+        </figure>
+        <ol class="callouts">
+          <li><b>Skill version.</b> If the skill files changed since the last version, name the new one in a few words ("Shorter openings") and say what changed. If nothing changed, outputs join the current version.</li>
+          <li><b>What to write.</b> A test case (optionally with your own prompt), a new brief with its evidence, or a rewrite of the output you have open, with your direction.</li>
+          <li><b>Writers.</b> Pick an engine, a model and an effort. Add up to four writers to compare models and effort on the same request; each gets its own run.</li>
+        </ol>
+        <table>
+          <tr><th>Engine</th><th>How it writes</th><th>Effort</th><th>Cost shown</th></tr>
+          <tr><td>Claude · Claude Code</td><td>A full agent session that loads the skill, reads its references and runs the lint, the way you use it every day</td><td>low, medium, high, xhigh, max</td><td>Dollars per sample</td></tr>
+          <tr><td>OpenAI · API</td><td>One call with the skill and its references in the prompt, then one repair call with the lint's findings. Cheap and controlled</td><td>none, minimal, low, medium, high, xhigh, max (reasoning models only)</td><td>Tokens per sample</td></tr>
+          <tr><td>OpenAI · Codex CLI</td><td>A full agent session, like Claude Code. Shows up once the Codex CLI is installed and logged in</td><td>minimal to xhigh</td><td>None</td></tr>
+        </table>
+        <p>For a fair test of a model or an effort, change one thing within one engine. The API engine and the agent engines differ in more than the model, so a gap between them is partly the harness. Each new output is graded automatically and appears in the rail with its version and model.</p>
+      </section>
+
+      <section id="keep">
+        <h2>6. Keep what you learn</h2>
+        <p><b>Make it an anchor…</b> in the Judge panel copies an output into <code>evals/anchors</code> as a good or bad example. A bad anchor lists the layers you marked bad, and the benchmark's self-test then checks that the bench always scores it below the good one:</p>
+        <pre><code>node --env-file=.env .agents/skills/miles-brand-content/scripts/bench.mjs --self-test</code></pre>
+        <p>Every rewrite you make by hand is the best data there is. Save your version as a good anchor and the original as a bad one, and the grader learns your taste.</p>
+      </section>
+
+      <section id="reference">
+        <h2>Reference</h2>
+        <h3>Names</h3>
+        <table>
+          <tr><th>Label</th><th>Means</th></tr>
+          <tr><td>5 · Build story: how Ask works</td><td>The test case: its number and what it asks for</td></tr>
+          <tr><td>v2 · Claims need a source</td><td>The skill version that wrote it. A new number starts whenever the skill's text changes</td></tr>
+          <tr><td>Claude Opus 5.5 · sample 2 of 2</td><td>The writer (model and effort), and which sample when a run wrote several</td></tr>
+          <tr><td>Folder <code>2026-10-26-skill-v2-claude-opus-5-5</code></td><td>One run: one skill version, one writer, one day</td></tr>
+        </table>
+        <h3>Keyboard</h3>
+        <table>
+          <tr><td><kbd>1</kbd>–<kbd>5</kbd></td><td>Rate the focused output</td></tr>
+          <tr><td><kbd>j</kbd> / <kbd>k</kbd></td><td>Next or previous output</td></tr>
+          <tr><td><kbd>⌥</kbd>-click</td><td>Open as B</td></tr>
+          <tr><td><kbd>f</kbd></td><td>Switch the Judge panel between A and B</td></tr>
+          <tr><td><kbd>d</kbd></td><td>Diff A→B</td></tr>
+          <tr><td><kbd>b</kbd></td><td>Blind on or off</td></tr>
+        </table>
+        <h3>Where things are saved</h3>
+        <table>
+          <tr><th>File</th><th>Holds</th></tr>
+          <tr><td><code>evals/reviews.json</code></td><td>Your ratings, marks, notes and A-or-B picks</td></tr>
+          <tr><td><code>evals/bench-config.json</code></td><td>Saved weights and thresholds</td></tr>
+          <tr><td><code>evals/runs/&lt;run&gt;/</code></td><td>The outputs, the writer's notes (<code>_*.notes.md</code>), the grade (<code>report.json</code>), the run's details (<code>run.json</code>) and the skill that wrote it (<code>_skill/</code>)</td></tr>
+          <tr><td><code>evals/anchors/</code></td><td>Good and bad examples for the self-test</td></tr>
+        </table>
+        <p>All paths are inside <code>.agents/skills/miles-brand-content/</code>. The benchmark itself is documented in <code>evals/benchmarks.md</code>.</p>
+        <h3>When something is off</h3>
+        <table>
+          <tr><td>Port 4330 is taken</td><td><code>lsof -nP -iTCP:4330 -sTCP:LISTEN</code> shows what holds it; or start with <code>REVIEW_PORT=4340 pnpm content-review</code></td></tr>
+          <tr><td>New outputs have no scores</td><td><code>TYPESAFE_API_KEY</code> is missing from <code>.env</code>. Add it, restart, then Generate → Grade again</td></tr>
+          <tr><td>An engine says "not set up"</td><td>Its line under Writers says what it needs</td></tr>
+          <tr><td>An OpenAI model refuses an effort</td><td>Older models (gpt-4.1, gpt-4o) don't reason; the tool retries without the effort and says so in the log</td></tr>
+          <tr><td>The screenshots here are out of date</td><td><code>pnpm content-review:guide</code> retakes them</td></tr>
+        </table>
+      </section>
+    </main>
+  </body>
+</html>

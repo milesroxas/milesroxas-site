@@ -116,4 +116,4 @@ Assess without rewriting. List findings most serious first: location, the quoted
 
 ## Measuring this skill
 
-`evals/benchmarks.md` is the benchmark: test prompts with evidence packs, a lint and shape pass, and Jev judgments for openings, specificity, decisions, honesty, endings and claim grounding (`scripts/bench.mjs`). Run it before and after changing this skill or the guide, and keep a change only when its scores hold or improve.
+`evals/benchmarks.md` is the benchmark: test prompts with evidence packs, a lint and shape pass, and Jev judgments for openings, specificity, decisions, honesty, endings and claim grounding (`scripts/bench.mjs`). Run it before and after changing this skill or the guide, and keep a change only when its scores hold or improve. Miles reads and judges outputs in the review tool (`pnpm content-review`, with a guide at /guide); his notes in `evals/reviews.json` are the best guide to what to change here.

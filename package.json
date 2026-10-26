@@ -8,6 +8,8 @@
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --dns-result-order=ipv4first\" next build --webpack",
     "migrate:status": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/migrate-status-prod.ts",
     "cms:upload": "cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env scripts/cms-upload.ts",
+    "content-review": "node --env-file-if-exists=.env .agents/skills/miles-brand-content/scripts/review.mjs",
+    "content-review:guide": "node --env-file-if-exists=.env .agents/skills/miles-brand-content/scripts/review/capture-guide.mjs",
     "check:migrations": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/check-migration-enum-safety.ts",
     "check:migrations:drift": "cross-env NODE_OPTIONS=--no-deprecation tsx --env-file=.env scripts/check-migration-drift.ts",
     "check:block-controls": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/generate-block-controls.ts --check",

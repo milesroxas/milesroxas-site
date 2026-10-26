@@ -1,0 +1,27 @@
+{
+  "skillVersion": "v0",
+  "skillName": "Before the playbook",
+  "skillHash": "0370a5b84495",
+  "note": "The skill at commit 4d76a3b, before references/articles.md existed.",
+  "skillCommit": "4d76a3b",
+  "writer": {
+    "engine": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "default",
+    "harness": "agent"
+  },
+  "generator": "Claude Code subagent, one session per output",
+  "createdAt": "2026-10-26",
+  "case": null,
+  "samples": [
+    {
+      "file": "5-build-story-ask-s1.md"
+    },
+    {
+      "file": "6-essay-judgment-s1.md"
+    },
+    {
+      "file": "9-case-study-buzlee-s1.md"
+    }
+  ]
+}

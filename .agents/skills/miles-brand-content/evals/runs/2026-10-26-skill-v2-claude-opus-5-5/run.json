@@ -1,0 +1,30 @@
+{
+  "skillVersion": "v2",
+  "skillName": "Claims need a source",
+  "skillHash": "194ff7f24460",
+  "note": "Honesty and decision moves need a source; ask instead of inferring them.",
+  "skillCommit": "ddb3144",
+  "writer": {
+    "engine": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "default",
+    "harness": "agent"
+  },
+  "generator": "Claude Code subagent, one session per output",
+  "createdAt": "2026-10-26",
+  "case": null,
+  "samples": [
+    {
+      "file": "5-build-story-ask-s1.md"
+    },
+    {
+      "file": "6-essay-judgment-s1.md"
+    },
+    {
+      "file": "9-case-study-buzlee-s1.md"
+    },
+    {
+      "file": "9-case-study-buzlee-s2.md"
+    }
+  ]
+}
