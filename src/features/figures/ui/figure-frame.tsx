@@ -59,8 +59,8 @@ type Ids = ReturnType<typeof figureIds>
  * line, whatever the figure kind hands over (a chart's legend). One row, so
  * the title and the key read as one unit over the drawing, and the two share
  * a baseline; when the line cannot hold both, the aside wraps underneath.
- * Both are reveal targets: the title opens line by line and the key follows
- * it as one unit, before the drawing starts.
+ * Both are reveal targets: the title fades up and the key follows it,
+ * before the drawing starts.
  */
 const Header = ({
   aside,
@@ -161,8 +161,7 @@ const Disclosure = ({
  * markers (`shared/ui/scroll-reveal`): the title and key open first, the
  * visual is a stage that draws itself (`data-reveal="stage"`: the chart's
  * marks grow, the diagram's steps surface, keyed on `data-reveal-state`),
- * and the caption, source and disclosure wait for it to land, because they
- * read against what it drew.
+ * and the caption, source and disclosure follow on the cascade.
  */
 export const FigureFrame = ({
   aside,

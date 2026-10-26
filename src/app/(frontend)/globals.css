@@ -3202,11 +3202,10 @@ html:active-view-transition-type(work-open) .dock {
    order and each edge draws from its source, so the first thing a reader
    learns is which way the figure runs. The drawing is a stage of the block's
    reveal (`data-reveal="stage"`, shared/ui/scroll-reveal): the shell keeps it
-   hidden until its beat, marks it `data-reveal-state` as the beat starts,
-   and holds the caption under it until the stage has landed. Nothing masks
-   the drawing, so the steps are the whole entrance and they only fade: the
-   title line above is already opening, and a translate on top would double
-   the motion. Everything that enters on a beat carries `.figure-step`; `--i`
+   hidden until its beat and marks it `data-reveal-state` as the beat
+   starts. Nothing masks the drawing, so the steps are the whole entrance
+   and they only fade: the title above is already rising, and a translate
+   on top would double the motion. Everything that enters on a beat carries `.figure-step`; `--i`
    is its reading-order step, capped by the renderer so a 40-node graph still
    lands inside about two seconds. The drawing's frame (an axis, a rail, the
    eras) is step 0, so it is there before the first node. Outside a reveal

@@ -202,7 +202,6 @@ export function ContactTemplate({
     onSettled: () =>
       requestAnimationFrame(() => sentHeadingRef.current?.focus({ preventScroll: true })),
     morphHeight: true,
-    scaleMedia: false,
   })
 
   return (

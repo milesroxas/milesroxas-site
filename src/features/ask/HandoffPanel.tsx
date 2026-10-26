@@ -150,7 +150,6 @@ function usePanelSwap({
       )
     },
     morphHeight: true,
-    scaleMedia: false,
   })
 
   return (next: Panel) => {

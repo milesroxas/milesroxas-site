@@ -2,7 +2,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { CallOutBlock as CallOutBlockProps } from '@/payload-types'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 
-// Past the shared 0.25 gate: the bottom veil hides the copy's first stretch
+// Past the shared gate: the bottom veil hides the copy's first stretch
 // above the fold, and the entrance has to play where it can be seen.
 const ENTER_OFFSET = 0.4
 

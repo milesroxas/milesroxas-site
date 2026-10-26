@@ -10,7 +10,8 @@ function subscribe(onStoreChange: () => void): () => void {
   return () => mq.removeEventListener('change', onStoreChange)
 }
 
-function getSnapshot(): boolean {
+/** The live media query, for effects that run before the hook's hydrated value lands. */
+export function readPrefersReducedMotion(): boolean {
   return window.matchMedia(REDUCED_MOTION_QUERY).matches
 }
 
@@ -20,5 +21,5 @@ function getServerSnapshot(): boolean {
 
 /** Reactive `prefers-reduced-motion: reduce` state. SSR-safe (returns `false` on the server). */
 export function usePrefersReducedMotion(): boolean {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  return useSyncExternalStore(subscribe, readPrefersReducedMotion, getServerSnapshot)
 }

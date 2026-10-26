@@ -7,19 +7,14 @@ import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import {
   SCROLL_REVEAL_EXIT_TIME_SCALE as EXIT_TIME_SCALE,
   SCROLL_REVEAL_SWAP,
-  SCROLL_REVEAL_UNDER_MEDIA,
 } from './scroll-reveal'
 
 gsap.registerPlugin(useGSAP)
 
 /**
  * Panel-swap choreography for dropdown-driven blocks. Opacity only, with
- * timings from `SCROLL_REVEAL_SWAP` — not the under-media entrance (mask
- * wipe, 600ms), which is first-seen language and reads as a replay when a
- * dropdown fires it. Media can still take the entrance zoom when the
- * consumer asks (`scaleMedia`) and the entrance still carries one; the zoom
- * value is imported from the reveal that owns it, never restated, so a mask-
- * only entrance (`mediaScaleFrom` 1) leaves the swap fading alone too.
+ * timings from `SCROLL_REVEAL_SWAP` — not the scroll entrance's mask wipe,
+ * which is first-seen language and reads as a replay when a dropdown fires it.
  */
 const {
   textDuration: TEXT_DURATION,
@@ -28,19 +23,12 @@ const {
   mediaDuration: MEDIA_DURATION,
   mediaEase: MEDIA_EASE,
 } = SCROLL_REVEAL_SWAP
-const { mediaScaleFrom: MEDIA_SCALE_FROM } = SCROLL_REVEAL_UNDER_MEDIA
-const SCALES_MEDIA = MEDIA_SCALE_FROM !== 1
 
 const SWAP_TEXT = '[data-swap="text"]'
 const SWAP_MEDIA = '[data-swap="media"]'
 
 /** Entrance half: the incoming panel fades in, the root carrying the outgoing height when it differs. */
-function playSwapEntrance(
-  root: HTMLElement,
-  fromHeight: number | null,
-  scaleMedia: boolean,
-  onComplete: () => void,
-) {
+function playSwapEntrance(root: HTMLElement, fromHeight: number | null, onComplete: () => void) {
   const texts = root.querySelectorAll<HTMLElement>(SWAP_TEXT)
   const media = root.querySelector<HTMLElement>(SWAP_MEDIA)
   const tl = gsap.timeline({ onComplete })
@@ -73,10 +61,8 @@ function playSwapEntrance(
   if (media) {
     tl.fromTo(
       media,
-      scaleMedia && SCALES_MEDIA ? { autoAlpha: 0, scale: MEDIA_SCALE_FROM } : { autoAlpha: 0 },
-      scaleMedia && SCALES_MEDIA
-        ? { autoAlpha: 1, scale: 1, duration: MEDIA_DURATION, ease: MEDIA_EASE }
-        : { autoAlpha: 1, duration: MEDIA_DURATION, ease: MEDIA_EASE },
+      { autoAlpha: 0 },
+      { autoAlpha: 1, duration: MEDIA_DURATION, ease: MEDIA_EASE },
       0,
     )
   }
@@ -84,7 +70,7 @@ function playSwapEntrance(
 }
 
 /** Exit half: the current panel fades out, sped up like every swap exit. */
-function playSwapExit(root: HTMLElement, scaleMedia: boolean, onComplete: () => void) {
+function playSwapExit(root: HTMLElement, onComplete: () => void) {
   const texts = root.querySelectorAll<HTMLElement>(SWAP_TEXT)
   const media = root.querySelector<HTMLElement>(SWAP_MEDIA)
   const tl = gsap.timeline({ onComplete }).timeScale(EXIT_TIME_SCALE)
@@ -101,13 +87,7 @@ function playSwapExit(root: HTMLElement, scaleMedia: boolean, onComplete: () => 
     )
   }
   if (media) {
-    tl.to(
-      media,
-      scaleMedia && SCALES_MEDIA
-        ? { autoAlpha: 0, scale: MEDIA_SCALE_FROM, duration: MEDIA_DURATION, ease: MEDIA_EASE }
-        : { autoAlpha: 0, duration: MEDIA_DURATION, ease: MEDIA_EASE },
-      0,
-    )
+    tl.to(media, { autoAlpha: 0, duration: MEDIA_DURATION, ease: MEDIA_EASE }, 0)
   }
   return tl
 }
@@ -118,16 +98,10 @@ type RevealSwapOptions = {
   active: number
   /** State setter invoked once the exit half finishes. */
   onSwap: (index: number) => void
-  /** Fires as the exit half begins — unmount work that must not composite during the scale. */
+  /** Fires as the exit half begins — unmount work that must not composite during the fade. */
   onSwapStart?: () => void
   /** Fires once the entrance half has settled (or immediately under reduced motion). */
   onSettled?: () => void
-  /**
-   * Media zoom on swap, matching the under-media entrance. False fades only —
-   * IndustryWork hides the WebGL layer during swap, so a zoom on the DOM
-   * track would read as a scale that isn't on the resting canvas.
-   */
-  scaleMedia?: boolean
   /** Tween the root's height across the swap (see above). */
   morphHeight?: boolean
 }
@@ -150,7 +124,6 @@ export function useRevealSwap({
   onSwap,
   onSwapStart,
   onSettled,
-  scaleMedia = true,
   morphHeight = false,
 }: RevealSwapOptions) {
   const swapTlRef = useRef<gsap.core.Timeline | null>(null)
@@ -158,9 +131,9 @@ export function useRevealSwap({
   const fromHeightRef = useRef<number | null>(null)
   const swappingRef = useRef(false)
   const targetIndexRef = useRef(active)
-  /** This render's callbacks and media setting, for the timelines that outlive it. */
-  const latest = useRef({ onSwapStart, onSettled, scaleMedia })
-  latest.current = { onSwapStart, onSettled, scaleMedia }
+  /** This render's callbacks, for the timelines that outlive it. */
+  const latest = useRef({ onSwapStart, onSettled })
+  latest.current = { onSwapStart, onSettled }
   const prefersReducedMotion = usePrefersReducedMotion()
 
   const { contextSafe } = useGSAP(
@@ -174,11 +147,9 @@ export function useRevealSwap({
 
       const fromHeight = fromHeightRef.current
       fromHeightRef.current = null
-      swapTlRef.current = playSwapEntrance(root, fromHeight, scaleMedia, () =>
-        latest.current.onSettled?.(),
-      )
+      swapTlRef.current = playSwapEntrance(root, fromHeight, () => latest.current.onSettled?.())
     },
-    { scope: rootRef, dependencies: [active, prefersReducedMotion, scaleMedia] },
+    { scope: rootRef, dependencies: [active, prefersReducedMotion] },
   )
 
   return contextSafe((index: number) => {
@@ -196,7 +167,7 @@ export function useRevealSwap({
     // and the entrance effect above plays.
     swapTlRef.current?.kill()
     swappingRef.current = true
-    swapTlRef.current = playSwapExit(root, latest.current.scaleMedia, () => {
+    swapTlRef.current = playSwapExit(root, () => {
       fromHeightRef.current = morphHeight ? (rootRef.current?.offsetHeight ?? null) : null
       onSwap(index)
     })

@@ -9,13 +9,13 @@ const eyebrow = 'font-mono text-xs/4 uppercase tracking-widest text-muted-foregr
 const SECTIONS = [
   {
     eyebrow: 'One system',
-    heading: 'Copy opens line by line as it reaches the gate.',
-    body: 'Every block on the site enters the same way. A mask opens each rendered line from the top as that line rises a quarter of the viewport past the fold, and nothing else moves: no drop, no blur, no fade.',
+    heading: 'Copy fades up a paragraph at a time as it reaches the gate.',
+    body: 'Every block on the site enters the same way. Each paragraph, heading and list item fades up half a rem as it rises a tenth of the viewport past the fold, and pieces arriving together cascade.',
   },
   {
     eyebrow: 'Grouped beats',
     heading: 'An eyebrow and its heading land together.',
-    body: 'Targets that share a data-reveal-group value join the beat before them, so a label and the heading it introduces read as one moment, and the body follows on the cascade.',
+    body: 'Targets that share a data-reveal-group value start on the same beat, so a label and the heading it introduces read as one moment, and the body follows on the cascade.',
   },
   {
     eyebrow: 'Play once',
@@ -87,9 +87,9 @@ function RevealPage({ variant }: { variant: ScrollRevealVariant }) {
 
 /**
  * The site's one scroll entrance (`ScrollReveal`), played over `data-reveal`
- * markers: copy (`data-reveal`) opens one line at a time, frames
- * (`data-reveal="media"`) on their own track, and a shared
- * `data-reveal-group` lands its targets on one beat. Blocks pick a variant in
+ * markers: copy (`data-reveal`) fades up a paragraph at a time, frames
+ * (`data-reveal="media"`) wipe open from the top, and a shared
+ * `data-reveal-group` starts its targets on one beat. Blocks pick a variant in
  * `src/blocks/shared/reveal-variants.ts`; a chart or diagram is a
  * `data-reveal="stage"` beat that draws itself (see the figure blocks'
  * Entrance stories). Scroll to drive it.
@@ -106,10 +106,10 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Copy-led blocks: longer lines of air between beats. */
+/** Copy-led blocks: a 0.7s fade-up, 60ms between pieces. */
 export const Intro: Story = {}
 
-/** Copy paired with media: a quicker text beat and a 1.2s mask wipe on the frame, no zoom. */
+/** Copy paired with media: a quicker 0.6s text beat and a 1.2s mask wipe on the frame. */
 export const UnderMedia: Story = { args: { variant: 'underMedia' } }
 
 const PANELS = [
@@ -162,5 +162,40 @@ export const PanelSwap: Story = {
       () => expect(canvas.getByRole('heading', { name: 'Sent to Miles' })).toBeInTheDocument(),
       { timeout: 3000 },
     )
+  },
+}
+
+const COPY = [
+  'The paragraph fades up, and once it has landed the copy belongs to React again.',
+  'Edited after the entrance, the paragraph shows the new words once, never beside the old ones.',
+] as const
+
+/** Copy React re-renders after its entrance has landed. */
+function EditedCopy() {
+  const [version, setVersion] = useState(0)
+  return (
+    <div className="flex w-sm flex-col gap-4">
+      <ScrollReveal as="div">
+        {/* Mixed children, like rich text: React updates the text node it rendered, not the paragraph. */}
+        <p className="text-lead" data-reveal="" data-testid="copy">
+          {COPY[version]} <em>Thank you.</em>
+        </p>
+      </ScrollReveal>
+      <Button className="self-start" onClick={() => setVersion(1)} variant="outline">
+        Edit
+      </Button>
+    </div>
+  )
+}
+
+/** The entrance never rewrites React's nodes, so a re-render after it updates what is on screen. */
+export const EditedAfterEntrance: Story = {
+  parameters: { layout: 'centered', controls: { disable: true } },
+  render: () => <EditedCopy />,
+  play: async ({ canvas, userEvent }) => {
+    const copy = canvas.getByTestId('copy')
+    await waitFor(() => expect(copy.dataset.revealState).toBe('done'), { timeout: 4000 })
+    await userEvent.click(canvas.getByRole('button', { name: 'Edit' }))
+    await waitFor(() => expect(copy.textContent).toBe(`${COPY[1]} Thank you.`))
   },
 }
