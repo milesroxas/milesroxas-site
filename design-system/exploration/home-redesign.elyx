@@ -1,0 +1,1324 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/media.elyx" as m
+import "controls/chrome.elyx" as chrome
+import "blocks/more-work.elyx" as mw
+import "blocks/lists.elyx" as lists
+
+// Proposal: three homes for milesroxas.com, each the page at 1440px top to
+// bottom with the published works and posts. All three keep the same rules:
+// the opening says Designer & Builder in words, the work proves it, no
+// service bands, no badges, no centred hero, one accent, motion only where
+// the visitor acts. They differ in what carries the page.
+// A Ledger: type first, the work as an index beside one sticky plate.
+// B Plate: the newest work fills the first viewport, the statement follows.
+// C Dossier: a fixed identity column beside one stream of work.
+homeRedesign = frame {
+  layout: {direction: .column, item-gap: 96px},
+  fill: c.colors.neutral,
+  padding: 96px,
+  children: [intro, boards],
+
+  intro = frame {
+    width: 1248px,
+    layout: {direction: .column, item-gap: 24px},
+    children: [introTitle, introNote, introRules],
+
+    introTitle = text : t.display {
+      contents: "Three homes",
+      font-size: 72
+    }
+
+    introNote = text : t.statement {
+      width: 928px,
+      contents: "The current home opens on a portrait between two drifting word strips, then runs three service bands (Strategy, Design, Development) over work cards. The brand guide asks the site to lead with Designer & Builder and prove it through selected work, not a list of agency services. Each board below is the whole page at 1440px with the published content.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    introRules = text : t.body {
+      width: 768px,
+      contents: "Rules the three share. The h1 is on the page, not screen-reader only. Work is sorted and captioned by client and industry, never by service. No Work badge on a card: the page is the work. One accent, the brand orange, on text only. Copy lives in the DOM; the intro plays once per session; nothing moves unless the visitor scrolls or points. The chrome, type scale and grid stay as built.",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+
+  boards = frame {
+    layout: {item-gap: 384px},
+    children: [optionA, optionB, optionC],
+
+    // A. Ledger. The opening is a statement, set left on six columns with the
+    // portrait beside it. The work is one index beside a sticky plate, as the
+    // close of a case study already does, so the home reads like a table of
+    // contents. Writing and contact are rows in the same rhythm.
+    optionA = frame {
+      layout: {direction: .column, item-gap: 32px},
+      children: [labelA, noteA, boardA],
+
+      labelA = text : t.blockHeading {
+        contents: "A. Ledger"
+      }
+
+      noteA = text : t.body {
+        width: 768px,
+        contents: "Type carries the page. The statement is the h1, set on six columns with the portrait loop beside it, the dock under both. The work is an index: one plate that sticks while the rows scroll, each row a title over its client and industry. Writing and contact repeat the row. Nearest to what is built, so the cheapest to ship.",
+        fill[0].color: c.colors.muted-foreground
+      }
+
+      boardA = frame {
+        title: "A. Ledger",
+        caption: "The home at 1440px, top to bottom. Hover on a row swaps the plate.",
+        width: l.lengths.page,
+        layout: {direction: .column},
+        fill: c.colors.background,
+        children: [openingA, workA, writingA, contactA, topBarA, dockRailA],
+
+        openingA = frame {
+          width: 100%,
+          height: l.lengths.viewport,
+          layout: {align-items: .end, item-gap: l.lengths.grid-gap},
+          padding: [176px, l.lengths.gutter, 112px],
+          children: [statementColumnA, portraitA],
+
+          statementColumnA = frame {
+            width: l.lengths.span-6,
+            layout: {direction: .column, item-gap: 40px},
+            children: [eyebrowA, headlineA, leadA],
+
+            eyebrowA = text : t.eyebrow {
+              contents: "DESIGNER & BUILDER, BROOKLYN"
+            }
+
+            headlineA = text : t.display {
+              width: 100%,
+              contents: "I design experiences and build the systems behind them.",
+              font-size: 72
+            }
+
+            leadA = text : t.statement {
+              width: l.lengths.span-4,
+              contents: "16 years across brand, product and technology. Co-founder of Suits & Sandals, hands-on with startups and enterprises: identities, design systems, products and the tools teams use every day.",
+              font-size: 20,
+              line-height: 1.5,
+              fill[0].color: c.colors.muted-foreground
+            }
+          }
+
+          portraitA = frame : m.media {
+            width: l.lengths.span-2,
+            height: 512px,
+            corner-radius: l.lengths.radius-sm,
+
+            mediaLabel {
+              contents: "PORTRAIT 9:16"
+            }
+          }
+        }
+
+        workA = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 64px},
+          padding: [
+            l.lengths.band-normal,
+            l.lengths.gutter,
+            l.lengths.band-loose
+          ],
+          children: [workHeaderA, workGridA],
+
+          workHeaderA = frame : sheetHeader {
+            headerLockup {
+              headerTitle {
+                contents: "Work"
+              }
+
+              headerCount {
+                contents: "11"
+              }
+            }
+
+            headerLink {
+              contents: "All work →"
+            }
+          }
+
+          workGridA = frame {
+            width: 100%,
+            layout: {item-gap: 48px},
+            children: [plateColumnA, indexA],
+
+            plateColumnA = frame {
+              width: 564px,
+              layout: {direction: .column, item-gap: 16px},
+              children: [plateA, plateCaptionA],
+
+              plateA = frame : m.media {
+                width: 100%,
+                height: 353px,
+                corner-radius: 0px,
+
+                mediaLabel {
+                  contents: "PLATE 1.6:1, NXST-HERO"
+                }
+              }
+
+              plateCaptionA = frame {
+                width: 100%,
+                layout: {justify-content: .space-between, align-items: .center},
+                children: [plateClientA, plateCountA],
+
+                plateClientA = text : t.eyebrow {
+                  contents: "NextStreet",
+                  line-height: 1
+                }
+
+                plateCountA = text : t.mono {
+                  contents: "1 of 6",
+                  line-height: 1,
+                  letter-spacing: 0
+                }
+              }
+            }
+
+            indexA = frame {
+              width: 636px,
+              layout: {direction: .column},
+              border: {color: c.colors.foreground, sides: .top},
+              children: [rowA1, rowA2, rowA3, rowA4, rowA5, rowA6],
+
+              rowA1 = frame : mw.moreWorkRowActive {
+                rowText {
+                  rowTitle {
+                    contents: "Design Systems for Organizational Scale"
+                  }
+
+                  rowMeta {
+                    rowIndustry {
+                      contents: "NextStreet, Business Consulting"
+                    }
+
+                    rowServices {
+                      contents: "Design system, product design"
+                    }
+                  }
+                }
+              }
+
+              rowA2 = frame : mw.moreWorkRow {
+                rowText {
+                  rowTitle {
+                    contents: "Local Events Without the Noise"
+                  }
+
+                  rowMeta {
+                    rowIndustry {
+                      contents: "Buzlee, Consumer App"
+                    }
+
+                    rowServices {
+                      contents: "Mobile app, product design"
+                    }
+                  }
+                }
+              }
+
+              rowA3 = frame : mw.moreWorkRow {
+                rowText {
+                  rowTitle {
+                    contents: "Custom App to Fill Webflow's Gaps"
+                  }
+
+                  rowMeta {
+                    rowIndustry {
+                      contents: "Roxas Ventures, Developer Tools"
+                    }
+
+                    rowServices {
+                      contents: "Product design, engineering"
+                    }
+                  }
+                }
+              }
+
+              rowA4 = frame : mw.moreWorkRow {
+                rowText {
+                  rowTitle {
+                    contents: "Brand Expansion Through Narrative"
+                  }
+
+                  rowMeta {
+                    rowIndustry {
+                      contents: "Arturo, Insurance Tech"
+                    }
+
+                    rowServices {
+                      contents: "Brand expansion, website"
+                    }
+                  }
+                }
+              }
+
+              rowA5 = frame : mw.moreWorkRow {
+                rowText {
+                  rowTitle {
+                    contents: "Identity for Higher-Stakes Work"
+                  }
+
+                  rowMeta {
+                    rowIndustry {
+                      contents: "Vault Workforce Screening, Human Resources"
+                    }
+
+                    rowServices {
+                      contents: "Corporate identity, web design"
+                    }
+                  }
+                }
+              }
+
+              rowA6 = frame : mw.moreWorkRow {
+                rowText {
+                  rowTitle {
+                    contents: "Craft and Code for an Evolving Agency"
+                  }
+
+                  rowMeta {
+                    rowIndustry {
+                      contents: "Suits & Sandals, Creative Services"
+                    }
+
+                    rowServices {
+                      contents: "Web design, engineering"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        writingA = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 48px},
+          padding: [0px, l.lengths.gutter, l.lengths.band-loose],
+          children: [writingHeaderA, postsA],
+
+          writingHeaderA = frame : sheetHeader {
+            headerLockup {
+              headerTitle {
+                contents: "Writing"
+              }
+
+              headerCount {
+                contents: "07"
+              }
+            }
+
+            headerLink {
+              contents: "All posts →"
+            }
+          }
+
+          postsA = frame {
+            width: 100%,
+            layout: {direction: .column},
+            border: {color: c.colors.foreground, sides: .top},
+            children: [postA1, postA2, postA3, postA4],
+
+            postA1 = frame : postRow {
+              postTitle {
+                contents: "Fourteen branches, one afternoon: how I work in parallel"
+              }
+
+              postDate {
+                contents: "12 Oct 2026"
+              }
+            }
+
+            postA2 = frame : postRow {
+              postTitle {
+                contents: "Documenting a feature as it is built"
+              }
+
+              postDate {
+                contents: "27 Sep 2026"
+              }
+            }
+
+            postA3 = frame : postRow {
+              postTitle {
+                contents: "From Webflow to Payload: a CMS built around a Content Hub"
+              }
+
+              postDate {
+                contents: "21 Sep 2026"
+              }
+            }
+
+            postA4 = frame : postRow {
+              postTitle {
+                contents: "Building a shader studio in Payload CMS"
+              }
+
+              postDate {
+                contents: "13 Sep 2026"
+              }
+            }
+          }
+        }
+
+        contactA = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 48px},
+          border: {color: c.colors.border, sides: .top},
+          padding: [l.lengths.band-normal, l.lengths.gutter],
+          children: [contactStatementA, contactRowA],
+
+          contactStatementA = text : t.title {
+            width: l.lengths.span-5,
+            contents: "Working on something? Write to miles@milesroxas.com. I reply within two business days.",
+            font-style: "Light",
+            line-height: 1.3,
+            letter-spacing: 0
+          }
+
+          contactRowA = frame : socialRow {}
+        }
+
+        topBarA = frame : chrome.topBarOnPage {
+          left: 0px,
+          top: 0px,
+          ignore-stack: .true
+        }
+
+        dockRailA = frame : dockRail {
+          left: 0px,
+          top: 836px
+        }
+      }
+    }
+
+    // B. Plate. The newest work fills the first viewport edge to edge with
+    // its title over it, so the first thing a visitor sees is the work. The
+    // statement comes second, then a grid of plates captioned by client, the
+    // writing, and an About band that holds the portrait and the facts.
+    optionB = frame {
+      layout: {direction: .column, item-gap: 32px},
+      children: [labelB, noteB, boardB],
+
+      labelB = text : t.blockHeading {
+        contents: "B. Plate"
+      }
+
+      noteB = text : t.body {
+        width: 768px,
+        contents: "The work carries the page. The newest case study fills the first viewport with its title over the picture and the dark chrome from the High Impact hero. The statement is the second band, so the h1 still sits above the fold on scroll. Work is a grid of 1.6 plates captioned by title and client, writing is three cards, and About closes with the portrait and three facts. Most change to the opening; the plate must be good every time.",
+        fill[0].color: c.colors.muted-foreground
+      }
+
+      boardB = frame {
+        title: "B. Plate",
+        caption: "The home at 1440px, top to bottom. The opening plate is the newest published work.",
+        width: l.lengths.page,
+        layout: {direction: .column},
+        fill: c.colors.background,
+        children: [openingB, statementB, workB, writingB, aboutB],
+
+        openingB = frame {
+          width: 100%,
+          height: l.lengths.viewport,
+          children: [plateB, lockupB, countB, topBarB, dockRailB],
+
+          plateB = frame : m.media {
+            left: 0px,
+            top: 0px,
+            width: 100%,
+            height: 100%,
+            corner-radius: 0px,
+            fill[0].color: c.colors.hero-ground,
+
+            mediaLabel {
+              fill[0].color: c.colors.hero-ink-quiet,
+              contents: "PLATE, NEWEST WORK, FULL BLEED"
+            }
+          }
+
+          lockupB = frame {
+            left: 48px,
+            bottom: 128px,
+            width: l.lengths.span-5,
+            layout: {direction: .column, item-gap: 20px},
+            children: [lockupEyebrowB, lockupTitleB, lockupMetaB],
+
+            lockupEyebrowB = text : t.eyebrow {
+              contents: "LATEST WORK",
+              fill[0].color: c.colors.hero-ink-quiet
+            }
+
+            lockupTitleB = text : t.caseTitle {
+              width: 100%,
+              contents: "Design Systems for Organizational Scale",
+              fill[0].color: c.colors.hero-ink
+            }
+
+            lockupMetaB = text : t.body {
+              contents: "NextStreet, Business Consulting. Product design lead.",
+              fill[0].color: c.colors.hero-ink-quiet
+            }
+          }
+
+          countB = frame {
+            right: 48px,
+            bottom: 128px,
+            layout: {direction: .column, align-items: .end, item-gap: 12px},
+            children: [countTextB, countLinkB],
+
+            countTextB = text : t.mono {
+              contents: "01 / 11",
+              line-height: 1,
+              letter-spacing: 0,
+              fill[0].color: c.colors.hero-ink-quiet
+            }
+
+            countLinkB = text : t.body {
+              contents: "Open the case study →",
+              font-style: "Medium",
+              line-height: 1,
+              fill[0].color: c.colors.hero-ink
+            }
+          }
+
+          topBarB = frame : chrome.topBar {
+            left: 0px,
+            top: 0px
+          }
+
+          dockRailB = frame {
+            left: 0px,
+            top: 836px,
+            width: 100%,
+            layout: {justify-content: .center},
+            children: dockB,
+
+            dockB = frame : chrome.dock {
+              dockTabs {
+                tabWork {
+                  fill[0].color: .transparent,
+
+                  tabLabel {
+                    font-style: "Medium"
+                  }
+                }
+
+                tabHome {
+                  fill[0].color: c.colors.chrome-selected,
+
+                  tabLabel {
+                    font-style: "SemiBold"
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        statementB = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 40px},
+          padding: [l.lengths.band-loose, l.lengths.gutter],
+          children: [eyebrowB, headlineB, leadB],
+
+          eyebrowB = text : t.eyebrow {
+            contents: "DESIGNER & BUILDER, BROOKLYN"
+          }
+
+          headlineB = text : t.display {
+            width: l.lengths.span-6,
+            contents: "I design experiences and build the systems behind them.",
+            font-size: 72
+          }
+
+          leadB = text : t.statement {
+            width: l.lengths.span-4,
+            contents: "16 years across brand, product and technology. Co-founder of Suits & Sandals, hands-on with startups and enterprises: identities, design systems, products and the tools teams use every day.",
+            font-size: 20,
+            line-height: 1.5,
+            fill[0].color: c.colors.muted-foreground
+          }
+        }
+
+        workB = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 64px},
+          padding: [0px, l.lengths.gutter, l.lengths.band-loose],
+          children: [workHeaderB, gridB],
+
+          workHeaderB = frame : sheetHeader {
+            headerLockup {
+              headerTitle {
+                contents: "Work"
+              }
+
+              headerCount {
+                contents: "11"
+              }
+            }
+
+            headerLink {
+              contents: "All work →"
+            }
+          }
+
+          gridB = frame {
+            width: 100%,
+            layout: {item-gap: l.lengths.grid-gap, wrap: .true, line-gap: 64px},
+            children: [cardB1, cardB2, cardB3, cardB4, cardB5, cardB6],
+
+            cardB1 = frame : plateCard {
+              plateCardCopy {
+                plateCardTitle {
+                  contents: "Local Events Without the Noise"
+                }
+
+                plateCardMeta {
+                  contents: "Buzlee, Consumer App"
+                }
+              }
+            }
+
+            cardB2 = frame : plateCard {
+              plateCardCopy {
+                plateCardTitle {
+                  contents: "Custom App to Fill Webflow's Gaps"
+                }
+
+                plateCardMeta {
+                  contents: "Roxas Ventures, Developer Tools"
+                }
+              }
+            }
+
+            cardB3 = frame : plateCard {
+              plateCardCopy {
+                plateCardTitle {
+                  contents: "Brand Expansion Through Narrative"
+                }
+
+                plateCardMeta {
+                  contents: "Arturo, Insurance Tech"
+                }
+              }
+            }
+
+            cardB4 = frame : plateCard {
+              plateCardCopy {
+                plateCardTitle {
+                  contents: "Identity for Higher-Stakes Work"
+                }
+
+                plateCardMeta {
+                  contents: "Vault Workforce Screening, Human Resources"
+                }
+              }
+            }
+
+            cardB5 = frame : plateCard {
+              plateCardCopy {
+                plateCardTitle {
+                  contents: "Craft and Code for an Evolving Agency"
+                }
+
+                plateCardMeta {
+                  contents: "Suits & Sandals, Creative Services"
+                }
+              }
+            }
+
+            cardB6 = frame : plateCard {
+              plateCardCopy {
+                plateCardTitle {
+                  contents: "Differentiation Through Immersive Digital Experience"
+                }
+
+                plateCardMeta {
+                  contents: "O'Linn Security, Security Services"
+                }
+              }
+            }
+          }
+        }
+
+        writingB = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 48px},
+          padding: [0px, l.lengths.gutter, l.lengths.band-loose],
+          children: [writingHeaderB, postCardsB],
+
+          writingHeaderB = frame : sheetHeader {
+            headerLockup {
+              headerTitle {
+                contents: "Writing"
+              }
+
+              headerCount {
+                contents: "07"
+              }
+            }
+
+            headerLink {
+              contents: "All posts →"
+            }
+          }
+
+          postCardsB = frame {
+            width: 100%,
+            layout: {item-gap: 16px},
+            children: [postB1, postB2, postB3],
+
+            postB1 = frame : lists.postCard {
+              cardDescription {
+                fill[0].color: c.colors.muted-foreground,
+                contents: "Running many tasks at once with AI coding agents, and what the afternoon looked like from the inside."
+              }
+
+              cardHeader {
+                cardBadge {
+                  display: .none
+                }
+
+                cardTitle {
+                  contents: "Fourteen branches, one afternoon: how I work in parallel"
+                }
+              }
+            }
+
+            postB2 = frame : lists.postCard {
+              cardDescription {
+                fill[0].color: c.colors.muted-foreground,
+                contents: "A journal that follows a feature while it is built, then a separate writer turns the record into an article."
+              }
+
+              cardHeader {
+                cardBadge {
+                  display: .none
+                }
+
+                cardTitle {
+                  contents: "Documenting a feature as it is built"
+                }
+              }
+            }
+
+            postB3 = frame : lists.postCard {
+              cardDescription {
+                fill[0].color: c.colors.muted-foreground,
+                contents: "Why the studio site left Webflow for Payload, and how one record feeds the site, an assistant and agents over MCP."
+              }
+
+              cardHeader {
+                cardBadge {
+                  display: .none
+                }
+
+                cardTitle {
+                  contents: "From Webflow to Payload: a CMS built around a Content Hub"
+                }
+              }
+            }
+          }
+        }
+
+        aboutB = frame {
+          width: 100%,
+          layout: {align-items: .end, item-gap: l.lengths.grid-gap},
+          fill: c.colors.neutral,
+          padding: [l.lengths.band-normal, l.lengths.gutter],
+          children: [portraitB, aboutCopyB],
+
+          portraitB = frame : m.media {
+            width: l.lengths.span-2,
+            height: 512px,
+            corner-radius: l.lengths.radius-sm,
+
+            mediaLabel {
+              contents: "PORTRAIT 9:16"
+            }
+          }
+
+          aboutCopyB = frame {
+            width: l.lengths.span-6,
+            layout: {direction: .column, item-gap: 48px},
+            children: [factsB, contactStatementB, socialRowB],
+
+            factsB = frame {
+              width: 100%,
+              layout: {item-gap: l.lengths.grid-gap},
+              children: [factB1, factB2, factB3],
+
+              factB1 = frame : fact {
+                factLabel {
+                  contents: "BASED"
+                }
+
+                factValue {
+                  contents: "Brooklyn, NY"
+                }
+              }
+
+              factB2 = frame : fact {
+                factLabel {
+                  contents: "EXPERIENCE"
+                }
+
+                factValue {
+                  contents: "16 years across brand, product and technology"
+                }
+              }
+
+              factB3 = frame : fact {
+                factLabel {
+                  contents: "STUDIO"
+                }
+
+                factValue {
+                  contents: "Co-founder, Suits & Sandals"
+                }
+              }
+            }
+
+            contactStatementB = text : t.title {
+              width: 100%,
+              contents: "Working on something? Write to miles@milesroxas.com. I reply within two business days.",
+              font-style: "Light",
+              line-height: 1.3,
+              letter-spacing: 0
+            }
+
+            socialRowB = frame : socialRow {}
+          }
+        }
+      }
+    }
+
+    // C. Dossier. Two columns for the whole page: the identity on the left,
+    // three columns wide and sticky, and one stream of work on the right,
+    // five columns wide, each piece a plate over its title, summary and
+    // client. The reader always has who beside what.
+    optionC = frame {
+      layout: {direction: .column, item-gap: 32px},
+      children: [labelC, noteC, boardC],
+
+      labelC = text : t.blockHeading {
+        contents: "C. Dossier"
+      }
+
+      noteC = text : t.body {
+        width: 768px,
+        contents: "Two columns carry the page together. The identity column sticks on the left: role, statement, the portrait loop, three facts and contact. The work streams down the right, one piece at a time with its summary, newest first, then the writing as rows. No section bands, no grid of equals; every work gets the same full-column plate. On narrow screens the identity column becomes the opening and the stream follows.",
+        fill[0].color: c.colors.muted-foreground
+      }
+
+      boardC = frame {
+        title: "C. Dossier",
+        caption: "The home at 1440px, top to bottom. The left column sticks at the first viewport.",
+        width: l.lengths.page,
+        layout: {direction: .column},
+        fill: c.colors.background,
+        children: [pageC, topBarC, dockRailC],
+
+        pageC = frame {
+          width: 100%,
+          layout: {item-gap: l.lengths.grid-gap},
+          padding: [176px, l.lengths.gutter, l.lengths.band-normal],
+          children: [identityC, streamC],
+
+          identityC = frame {
+            width: l.lengths.span-3,
+            layout: {direction: .column, item-gap: 40px},
+            children: [eyebrowC, headlineC, leadC, portraitC, factsC, contactC],
+
+            eyebrowC = text : t.eyebrow {
+              contents: "DESIGNER & BUILDER, BROOKLYN"
+            }
+
+            headlineC = text : t.title {
+              width: 100%,
+              contents: "I design experiences and build the systems behind them."
+            }
+
+            leadC = text : t.body {
+              width: 100%,
+              contents: "16 years across brand, product and technology. Co-founder of Suits & Sandals, hands-on with startups and enterprises: identities, design systems, products and the tools teams use every day.",
+              fill[0].color: c.colors.muted-foreground
+            }
+
+            portraitC = frame : m.media {
+              width: l.lengths.span-2,
+              height: 512px,
+              corner-radius: l.lengths.radius-sm,
+
+              mediaLabel {
+                contents: "PORTRAIT 9:16"
+              }
+            }
+
+            factsC = frame {
+              width: 100%,
+              layout: {direction: .column, item-gap: 24px},
+              children: [factC1, factC2, factC3],
+
+              factC1 = frame : fact {
+                width: 100%,
+
+                factLabel {
+                  contents: "STUDIO"
+                }
+
+                factValue {
+                  contents: "Co-founder, Suits & Sandals"
+                }
+              }
+
+              factC2 = frame : fact {
+                width: 100%,
+
+                factLabel {
+                  contents: "ALSO"
+                }
+
+                factValue {
+                  contents: "Founder, Codalyn"
+                }
+              }
+
+              factC3 = frame : fact {
+                width: 100%,
+
+                factLabel {
+                  contents: "CONTACT"
+                }
+
+                factValue {
+                  contents: "miles@milesroxas.com, replies within two business days"
+                }
+              }
+            }
+
+            contactC = frame : socialRow {}
+          }
+
+          streamC = frame {
+            width: l.lengths.span-5,
+            layout: {direction: .column, item-gap: 112px},
+            children: [
+              itemC1,
+              itemC2,
+              itemC3,
+              itemC4,
+              itemC5,
+              allWorkC,
+              writingC
+            ],
+
+            // The identity column already says whose work this is, so the
+            // stream opens on the plate and its index link closes it.
+            allWorkC = frame {
+              width: 100%,
+              layout: {justify-content: .space-between, align-items: .end},
+              border: {color: c.colors.foreground, sides: .top},
+              padding-top: 24px,
+              children: [allWorkLabelC, allWorkLinkC],
+
+              allWorkLabelC = text : t.body {
+                contents: "Six more case studies",
+                fill[0].color: c.colors.muted-foreground
+              }
+
+              allWorkLinkC = text : t.body {
+                contents: "All work →",
+                font-style: "Medium"
+              }
+            }
+
+            itemC1 = frame : streamItem {
+              streamCopy {
+                streamTitle {
+                  contents: "Design Systems for Organizational Scale"
+                }
+
+                streamSummary {
+                  contents: "A high-velocity organization required a unified design system to support multiple products and teams at scale."
+                }
+
+                streamMeta {
+                  contents: "NextStreet, Business Consulting. Product design lead."
+                }
+              }
+            }
+
+            itemC2 = frame : streamItem {
+              streamPlate {
+                mediaLabel {
+                  contents: "PLATE 1.6:1, BUZLEE"
+                }
+              }
+
+              streamCopy {
+                streamTitle {
+                  contents: "Local Events Without the Noise"
+                }
+
+                streamSummary {
+                  contents: "Buzlee is a digital bulletin board that brings local events into one feed and one map, without ads, reviews or algorithms deciding what deserves attention."
+                }
+
+                streamMeta {
+                  contents: "Buzlee, Consumer App. Product, design, engineering."
+                }
+              }
+            }
+
+            itemC3 = frame : streamItem {
+              streamPlate {
+                mediaLabel {
+                  contents: "PLATE 1.6:1, BEACON"
+                }
+              }
+
+              streamCopy {
+                streamTitle {
+                  contents: "Custom App to Fill Webflow's Gaps"
+                }
+
+                streamSummary {
+                  contents: "A Webflow app that adds the checks and tooling the platform leaves out, built end to end as sole contributor."
+                }
+
+                streamMeta {
+                  contents: "Roxas Ventures, Developer Tools. Sole contributor."
+                }
+              }
+            }
+
+            itemC4 = frame : streamItem {
+              streamPlate {
+                mediaLabel {
+                  contents: "PLATE 1.6:1, ARTURO"
+                }
+              }
+
+              streamCopy {
+                streamTitle {
+                  contents: "Brand Expansion Through Narrative"
+                }
+
+                streamSummary {
+                  contents: "A growing company established a brand narrative that guided creative decisions across its digital presence and key initiatives."
+                }
+
+                streamMeta {
+                  contents: "Arturo, Insurance Tech. Lead design and development."
+                }
+              }
+            }
+
+            itemC5 = frame : streamItem {
+              streamPlate {
+                mediaLabel {
+                  contents: "PLATE 1.6:1, VAULT"
+                }
+              }
+
+              streamCopy {
+                streamTitle {
+                  contents: "Identity for Higher-Stakes Work"
+                }
+
+                streamSummary {
+                  contents: "As the company evolved its business, it required an identity aligned with the significance and responsibility of its work."
+                }
+
+                streamMeta {
+                  contents: "Vault Workforce Screening, Human Resources. Lead design."
+                }
+              }
+            }
+
+            writingC = frame {
+              width: 100%,
+              layout: {direction: .column, item-gap: 48px},
+              children: [writingHeaderC, postsC],
+
+              writingHeaderC = frame : sheetHeader {
+                headerLockup {
+                  headerTitle {
+                    contents: "Writing",
+                    font-size: 44
+                  }
+
+                  headerCount {
+                    contents: "07"
+                  }
+                }
+
+                headerLink {
+                  contents: "All posts →"
+                }
+              }
+
+              postsC = frame {
+                width: 100%,
+                layout: {direction: .column},
+                border: {color: c.colors.foreground, sides: .top},
+                children: [postC1, postC2, postC3],
+
+                postC1 = frame : postRow {
+                  width: 100%,
+
+                  postTitle {
+                    width: 560px,
+                    contents: "Fourteen branches, one afternoon: how I work in parallel"
+                  }
+
+                  postDate {
+                    contents: "12 Oct 2026"
+                  }
+                }
+
+                postC2 = frame : postRow {
+                  width: 100%,
+
+                  postTitle {
+                    width: 560px,
+                    contents: "Documenting a feature as it is built"
+                  }
+
+                  postDate {
+                    contents: "27 Sep 2026"
+                  }
+                }
+
+                postC3 = frame : postRow {
+                  width: 100%,
+
+                  postTitle {
+                    width: 560px,
+                    contents: "From Webflow to Payload: a CMS built around a Content Hub"
+                  }
+
+                  postDate {
+                    contents: "21 Sep 2026"
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        topBarC = frame : chrome.topBarOnPage {
+          left: 0px,
+          top: 0px,
+          ignore-stack: .true
+        }
+
+        dockRailC = frame : dockRail {
+          left: 0px,
+          top: 836px
+        }
+      }
+    }
+  }
+}
+
+// Sheet parts, drawn off the sheet to the right.
+// Section header: a title with its count, the link to the index opposite.
+sheetHeader = frame {
+  left: 6000px,
+  width: 1248px,
+  layout: {justify-content: .space-between, align-items: .end, item-gap: 24px},
+  children: [headerLockup, headerLink],
+
+  headerLockup = frame {
+    layout: {item-gap: 12px},
+    children: [headerTitle, headerCount],
+
+    headerTitle = text : t.caseTitle {
+      contents: "Work",
+      line-height: 1
+    }
+
+    headerCount = text : t.eyebrow {
+      contents: "11",
+      font-size: 14,
+      line-height: 1
+    }
+  }
+
+  headerLink = text : t.body {
+    contents: "All work →",
+    font-style: "Medium",
+    line-height: 1
+  }
+}
+
+// Post row: title in the lead size, date in mono, a hairline under.
+postRow = frame {
+  left: 6000px,
+  top: 200px,
+  width: 1248px,
+  layout: {justify-content: .space-between, item-gap: 32px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [24px, 0px],
+  children: [postTitle, postDate],
+
+  postTitle = text : t.lead {
+    width: 928px,
+    contents: "Post title",
+    font-size: 20,
+    font-style: "Light",
+    line-height: 1.4
+  }
+
+  postDate = text : t.mono {
+    contents: "12 Oct 2026",
+    line-height: 1.75,
+    letter-spacing: 0
+  }
+}
+
+// Social row: the three profiles in mono, 32px apart.
+socialRow = frame {
+  left: 6000px,
+  top: 400px,
+  layout: {item-gap: 32px},
+  children: [socialGitHub, socialYouTube, socialLinkedIn],
+
+  socialGitHub = text : t.mono {
+    contents: "GITHUB",
+    fill[0].color: c.colors.foreground
+  }
+
+  socialYouTube = text : t.mono {
+    contents: "YOUTUBE",
+    fill[0].color: c.colors.foreground
+  }
+
+  socialLinkedIn = text : t.mono {
+    contents: "LINKEDIN",
+    fill[0].color: c.colors.foreground
+  }
+}
+
+// Fact: a mono label over its value, left aligned, on two columns.
+fact = frame {
+  left: 6000px,
+  top: 600px,
+  width: 288px,
+  layout: {direction: .column, item-gap: 8px},
+  children: [factLabel, factValue],
+
+  factLabel = text : t.eyebrow {
+    contents: "LABEL",
+    line-height: 1
+  }
+
+  factValue = text : t.body {
+    width: 100%,
+    contents: "Value"
+  }
+}
+
+// Dock rail: the on-page dock with Home current, 24px above the first
+// viewport's bottom edge.
+dockRail = frame {
+  left: 6000px,
+  top: 800px,
+  width: l.lengths.page,
+  ignore-stack: .true,
+  layout: {justify-content: .center},
+  children: dock,
+
+  dock = frame : chrome.dockOnPageHome {}
+}
+
+// Plate card: a 1.6 plate on four columns, the title and client under it.
+plateCard = frame {
+  left: 6000px,
+  top: 1000px,
+  width: l.lengths.span-4,
+  layout: {direction: .column, item-gap: 20px},
+  children: [plateCardMedia, plateCardCopy],
+
+  plateCardMedia = frame : m.media {
+    width: 100%,
+    height: 380px,
+    corner-radius: 0px,
+
+    mediaLabel {
+      contents: "PLATE 1.6:1"
+    }
+  }
+
+  plateCardCopy = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 8px},
+    children: [plateCardTitle, plateCardMeta],
+
+    plateCardTitle = text : t.heading {
+      width: 100%,
+      contents: "Work title",
+      font-style: "Light",
+      line-height: 1.2,
+      letter-spacing: -2%
+    }
+
+    plateCardMeta = text : t.body {
+      contents: "Client, industry",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+}
+
+// Stream item: a 1.6 plate on five columns over the title, summary and client.
+streamItem = frame {
+  left: 6000px,
+  top: 1600px,
+  width: l.lengths.span-5,
+  layout: {direction: .column, item-gap: 24px},
+  children: [streamPlate, streamCopy],
+
+  streamPlate = frame : m.media {
+    width: 100%,
+    height: 480px,
+    corner-radius: 0px,
+
+    mediaLabel {
+      contents: "PLATE 1.6:1, NXST-HERO"
+    }
+  }
+
+  streamCopy = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 12px},
+    children: [streamTitle, streamSummary, streamMeta],
+
+    streamTitle = text : t.heading {
+      width: 100%,
+      contents: "Work title",
+      font-style: "Light",
+      line-height: 1.2,
+      letter-spacing: -2%
+    }
+
+    streamSummary = text : t.lead {
+      width: 608px,
+      contents: "One or two sentences on the work.",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    streamMeta = text : t.mono {
+      contents: "Client, industry. Role.",
+      line-height: 1.5,
+      letter-spacing: 0
+    }
+  }
+}

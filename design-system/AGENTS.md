@@ -54,6 +54,10 @@ with the site chrome over it.
 - `exploration/`: proposal sheets, not screens as built. `works-summary.elyx`
   draws two homes for a work's summary on the /works dial (A under the active
   title, B under the plate caption), each a 1440 by 900 board with a note.
+  `home-redesign.elyx` draws three homes top to bottom at 1440px (A Ledger,
+  B Plate, C Dossier) beside the rules they share; its sheet parts sit off
+  the sheet to the right. Render one board with
+  `--ref homeRedesign.boards.optionA.boardA`.
 - `flows/`: empty so far.
 
 ## Conventions
