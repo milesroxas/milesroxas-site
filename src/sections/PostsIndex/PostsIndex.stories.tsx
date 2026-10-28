@@ -15,6 +15,7 @@ const items: MorePostsItem[] = [
     source: 'Design',
     hero: { media: imageMedia },
     metaImage: null,
+    membersOnly: false,
   },
   {
     id: 2,
@@ -25,6 +26,7 @@ const items: MorePostsItem[] = [
     source: 'Suits & Sandals',
     hero: { media: null, visualType: 'streakField', shader: { preset: 'depth-map-v1', seed: 42 } },
     metaImage: null,
+    membersOnly: true,
   },
   {
     id: 3,
@@ -35,6 +37,7 @@ const items: MorePostsItem[] = [
     source: null,
     hero: null,
     metaImage: null,
+    membersOnly: false,
   },
 ]
 

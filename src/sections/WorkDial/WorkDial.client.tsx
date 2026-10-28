@@ -11,6 +11,7 @@ import {
   useSyncExternalStore,
   ViewTransition,
 } from 'react'
+import { MembersMark } from '@/features/members/MembersMark'
 import { choreographWorkMorph, useWorkCardMorph, workMorphName } from '@/heros/WorkHero/morph'
 import { useLenis } from '@/hooks/useLenis'
 import { cursorTarget } from '@/providers/Cursor/variants'
@@ -518,6 +519,12 @@ function Dial({ items, title, lead }: WorkDialProps) {
                   )}
                   {item.industry && (
                     <span className="text-muted-foreground truncate">{item.industry}</span>
+                  )}
+                  {item.membersOnly && (
+                    <>
+                      <span aria-hidden className="work-dial-label-rule" />
+                      <MembersMark />
+                    </>
                   )}
                 </span>
               ))}

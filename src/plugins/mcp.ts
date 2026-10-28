@@ -33,6 +33,8 @@ import { CONTENT_SURFACES } from '@/shared/content/surfaces'
  * - `users` and the MCP API-keys collection: the auth and capability control
  *   plane. A key that could write either would be able to mint an admin or
  *   widen its own capabilities.
+ * - `members`: site members' accounts (docs/members.md), personal data that
+ *   no authoring task needs.
  * - `search` (rebuilt by plugin hooks, so writes are clobbered) and Payload's
  *   internals (`payload-jobs`, `payload-kv`, `payload-folders`,
  *   `payload-locked-documents`, `payload-preferences`, `payload-migrations`):

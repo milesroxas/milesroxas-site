@@ -17,6 +17,7 @@ import { Clients } from './collections/Clients'
 import { Inquiries } from './collections/Inquiries'
 import { Media } from './collections/Media'
 import { cloudflareMediaSync } from './collections/Media/hooks/syncCloudflare'
+import { Members } from './collections/Members'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
@@ -128,6 +129,7 @@ export default buildConfig({
     Inquiries,
     AskQuestions,
     Users,
+    Members,
   ],
   cors: [getServerSideURL()].filter(Boolean),
   // `agent/media`: an MCP key's image upload (docs/mcp.md).

@@ -1,6 +1,7 @@
 import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
 import type React from 'react'
+import { MEMBERS_TEASER } from '@/access/members'
 import type { CardPostData } from '@/components/Card/Posts/Component'
 
 import type { CardWorkData } from '@/components/Card/Works/Component'
@@ -20,7 +21,9 @@ async function fetchPostsByCollection(
     collection: 'posts',
     depth: 2,
     limit,
-    overrideAccess: false, // anonymous read: published posts only
+    // Anonymous read: published posts only, members-only ones as locked cards.
+    context: MEMBERS_TEASER,
+    overrideAccess: false,
     ...categoryFilter,
   })
   return fetchedPosts.docs

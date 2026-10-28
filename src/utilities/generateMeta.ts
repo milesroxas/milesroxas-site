@@ -99,6 +99,8 @@ export type GenerateMetaArgs = {
   article?: { authors?: string[] }
   /** The page's markdown alternate, when one is served (`/posts/<slug>.md`). */
   markdownPath?: string
+  /** Keep the page out of search results whatever the document says (a members-only page). */
+  noIndex?: boolean
 }
 
 const articleFields = (doc: MetaDoc | null, authors: string[]) => ({
@@ -109,7 +111,7 @@ const articleFields = (doc: MetaDoc | null, authors: string[]) => ({
 })
 
 export const generateMeta = async (args: GenerateMetaArgs): Promise<Metadata> => {
-  const { doc, pathname, article, markdownPath } = args
+  const { doc, pathname, article, markdownPath, noIndex } = args
   const siteInfo = await loadSiteInfo()
   const name = siteName(siteInfo)
   const { title, text } = resolveTitle(doc, pathname, name)
@@ -134,6 +136,6 @@ export const generateMeta = async (args: GenerateMetaArgs): Promise<Metadata> =>
         ? articleFields(doc, articleAuthors(article.authors, name))
         : { type: 'website' }),
     },
-    ...(doc?.meta?.noIndex ? { robots: { index: false, follow: false } } : {}),
+    ...(doc?.meta?.noIndex || noIndex ? { robots: { index: false, follow: false } } : {}),
   }
 }

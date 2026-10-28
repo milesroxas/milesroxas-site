@@ -1,6 +1,8 @@
 import configPromise from '@payload-config'
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import { getPayload, type Where } from 'payload'
+import { MEMBERS_TEASER } from '@/access/members'
+import { isMembersOnly } from '@/fields/visibility'
 import type { Capability, Client, Media, Work } from '@/payload-types'
 import { populatedDoc, relationshipIds } from '@/utilities/relationshipId'
 
@@ -18,6 +20,8 @@ export type MoreWorkItem = {
   /** The work's summary (its hero statement), else the SEO description. */
   summary: string | null
   media: Media | null
+  /** For signed-in members: the row carries the lock (docs/members.md). */
+  membersOnly: boolean
 }
 
 /** What a row and the plate render; a query for index rows selects this. */
@@ -29,11 +33,12 @@ export const WORK_INDEX_SELECT = {
   industry: true,
   capabilities: true,
   meta: { description: true },
+  visibility: true,
 } as const
 
 export type WorkIndexDoc = Pick<
   Work,
-  'id' | 'title' | 'slug' | 'hero' | 'client' | 'industry' | 'capabilities' | 'meta'
+  'id' | 'title' | 'slug' | 'hero' | 'client' | 'industry' | 'capabilities' | 'meta' | 'visibility'
 >
 
 const summaryOf = (doc: WorkIndexDoc) => {
@@ -57,6 +62,7 @@ export const toWorkIndexItem = (doc: WorkIndexDoc): MoreWorkItem | null =>
         ),
         summary: summaryOf(doc),
         media: populatedDoc<Media>(doc.hero?.media),
+        membersOnly: isMembersOnly(doc),
       }
     : null
 
@@ -64,7 +70,8 @@ export const toWorkIndexItem = (doc: WorkIndexDoc): MoreWorkItem | null =>
  * The works to show under a case study: the ones it names as related, in
  * the order it names them, then the rest in the Works collection order.
  * Reads as an anonymous visitor (`overrideAccess: false`), so drafts and
- * protected works never surface, whoever is looking.
+ * protected works never surface, whoever is looking; members-only works come
+ * as locked rows.
  */
 export async function getMoreWork(
   work: Pick<Work, 'id' | 'relatedWorks'>,
@@ -81,6 +88,7 @@ export async function getMoreWork(
       depth: 1,
       draft: false,
       limit,
+      context: MEMBERS_TEASER,
       overrideAccess: false,
       pagination: false,
       select: WORK_INDEX_SELECT,

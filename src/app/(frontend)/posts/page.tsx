@@ -2,6 +2,7 @@ import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
+import { MEMBERS_TEASER } from '@/access/members'
 import { JsonLd } from '@/components/JsonLd'
 import { Pagination } from '@/components/Pagination'
 import {
@@ -33,6 +34,7 @@ const getPosts = unstable_cache(
       collection: 'posts',
       depth: 1,
       limit: POSTS_PER_PAGE,
+      context: MEMBERS_TEASER,
       overrideAccess: false,
       select: POST_ITEM_SELECT,
     })

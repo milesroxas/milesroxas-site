@@ -10,6 +10,10 @@ import { JsonLd } from '@/components/JsonLd'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { ContentsButton } from '@/features/contents'
+import { MembersGate } from '@/features/members/MembersGate'
+import { isGated } from '@/features/members/session'
+import { toTeaser } from '@/features/members/teaser'
+import { isMembersOnly } from '@/fields/visibility'
 import { WorkHero } from '@/heros/WorkHero'
 import { MoreWork } from '@/sections/MoreWork'
 import { WorkIntro } from '@/sections/WorkIntro'
@@ -64,11 +68,15 @@ export default async function Work({ params: paramsPromise }: Args) {
   if (!work) return <PayloadRedirects url={url} />
 
   // Protected works resolve to their fallback (or 404 without one)
-  const visibleWork = await resolveVisibleWork(work, hasWorkAccess)
+  const resolved = await resolveVisibleWork(work, hasWorkAccess)
 
-  if (!visibleWork) notFound()
+  if (!resolved) notFound()
 
-  const layout = visibleWork.layout || []
+  // A members-only work renders per request; to a visitor who is not signed
+  // in it is its opening and the gate, and nothing else reaches the page.
+  const gated = await isGated(resolved)
+  const visibleWork = gated ? toTeaser(resolved) : resolved
+  const layout = gated ? [] : visibleWork.layout || []
 
   return (
     <>
@@ -79,7 +87,7 @@ export default async function Work({ params: paramsPromise }: Args) {
         {/* The visible work's facts only: a protected work's stand-in describes itself. */}
         <JsonLd
           data={[
-            creativeWorkSchema(visibleWork),
+            ...(gated ? [] : [creativeWorkSchema(visibleWork)]),
             breadcrumbSchema([
               { name: 'Work', path: '/works' },
               { name: visibleWork.title, path: `/works/${visibleWork.slug}` },
@@ -91,15 +99,16 @@ export default async function Work({ params: paramsPromise }: Args) {
         <PageClient work={visibleWork} />
         {/* Arriving from a work card, the body loads in after the hero (globals.css). */}
         <div data-slot="work-body">
+          {gated && <MembersGate kind="case study" next={url} />}
           {visibleWork.intro?.body && (
             <WorkIntro body={visibleWork.intro.body} title={visibleWork.intro.title} />
           )}
           <RenderBlocks blocks={layout} />
           <Suspense fallback={null}>
-            <MoreWork work={visibleWork} />
+            <MoreWork work={resolved} />
           </Suspense>
         </div>
-        {visibleWork.showContents && <ContentsButton />}
+        {!gated && visibleWork.showContents && <ContentsButton />}
       </article>
     </>
   )
@@ -112,13 +121,17 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   // Never leak protected-work meta: resolve to the fallback (or nothing)
   const visibleWork = work ? await resolveVisibleWork(work, hasWorkAccess) : null
 
+  const membersOnly = isMembersOnly(visibleWork)
+
   // The canonical URL is the stand-in's own page: this address is not the public one.
+  // A members-only work stays out of search results and has no markdown alternate.
   return generateMeta({
     doc: visibleWork,
     pathname: `/works/${visibleWork?.slug ?? slug}`,
-    ...(visibleWork && !visibleWork.isProtected
+    ...(visibleWork && !visibleWork.isProtected && !membersOnly
       ? { markdownPath: `/works/${visibleWork.slug}.md` }
       : {}),
+    noIndex: membersOnly,
   })
 }
 

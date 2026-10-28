@@ -23,11 +23,12 @@ export const beforeSyncWithSearch: BeforeSync = async ({
     doc: { relationTo: collection },
   } = searchDoc
 
-  const { slug, id, categories, title, meta } = originalDoc
+  const { slug, id, categories, title, meta, visibility } = originalDoc
 
   const modifiedDoc: DocToSync = {
     ...searchDoc,
     slug,
+    visibility: visibility ?? 'public',
     meta: {
       ...meta,
       title: meta?.title || title,

@@ -64,6 +64,7 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    members: MemberAuthOperations;
     'payload-mcp-api-keys': PayloadMcpApiKeyAuthOperations;
   };
   blocks: {};
@@ -79,6 +80,7 @@ export interface Config {
     inquiries: Inquiry;
     'ask-questions': AskQuestion;
     users: User;
+    members: Member;
     'streak-looks': StreakLook;
     redirects: Redirect;
     forms: Form;
@@ -108,6 +110,7 @@ export interface Config {
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
     'ask-questions': AskQuestionsSelect<false> | AskQuestionsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
     'streak-looks': StreakLooksSelect<false> | StreakLooksSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -142,13 +145,31 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User | PayloadMcpApiKey;
+  user: User | Member | PayloadMcpApiKey;
   jobs: {
     tasks: unknown;
     workflows: unknown;
   };
 }
 export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface MemberAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -288,6 +309,10 @@ export interface Page {
     noIndex?: boolean | null;
   };
   publishedAt?: string | null;
+  /**
+   * Members-only pages show a sign-in gate to everyone else.
+   */
+  visibility: 'public' | 'members';
   slug?: string | null;
   slugLock?: boolean | null;
   updatedAt: string;
@@ -444,6 +469,10 @@ export interface Post {
         name?: string | null;
       }[]
     | null;
+  /**
+   * Members-only pages show a sign-in gate to everyone else.
+   */
+  visibility: 'public' | 'members';
   slug?: string | null;
   slugLock?: boolean | null;
   updatedAt: string;
@@ -4756,6 +4785,10 @@ export interface Work {
     noIndex?: boolean | null;
   };
   publishedAt?: string | null;
+  /**
+   * Members-only pages show a sign-in gate to everyone else.
+   */
+  visibility: 'public' | 'members';
   slug?: string | null;
   slugLock?: boolean | null;
   updatedAt: string;
@@ -5524,6 +5557,35 @@ export interface AskQuestion {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: number;
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  _verified?: boolean | null;
+  _verificationToken?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'members';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -5594,6 +5656,7 @@ export interface Search {
     description?: string | null;
     image?: (number | null) | Media;
   };
+  visibility?: string | null;
   categories?:
     | {
         relationTo?: string | null;
@@ -5848,6 +5911,10 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'members';
+        value: number | Member;
+      } | null)
+    | ({
         relationTo: 'streak-looks';
         value: number | StreakLook;
       } | null)
@@ -5882,6 +5949,10 @@ export interface PayloadLockedDocument {
         value: number | User;
       }
     | {
+        relationTo: 'members';
+        value: number | Member;
+      }
+    | {
         relationTo: 'payload-mcp-api-keys';
         value: number | PayloadMcpApiKey;
       };
@@ -5898,6 +5969,10 @@ export interface PayloadPreference {
     | {
         relationTo: 'users';
         value: number | User;
+      }
+    | {
+        relationTo: 'members';
+        value: number | Member;
       }
     | {
         relationTo: 'payload-mcp-api-keys';
@@ -6001,6 +6076,7 @@ export interface PagesSelect<T extends boolean = true> {
         noIndex?: T;
       };
   publishedAt?: T;
+  visibility?: T;
   slug?: T;
   slugLock?: T;
   updatedAt?: T;
@@ -6795,6 +6871,7 @@ export interface PostsSelect<T extends boolean = true> {
         id?: T;
         name?: T;
       };
+  visibility?: T;
   slug?: T;
   slugLock?: T;
   updatedAt?: T;
@@ -6918,6 +6995,7 @@ export interface WorksSelect<T extends boolean = true> {
         noIndex?: T;
       };
   publishedAt?: T;
+  visibility?: T;
   slug?: T;
   slugLock?: T;
   updatedAt?: T;
@@ -7224,6 +7302,32 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  resetPasswordRequestedAt?: T;
+  _verified?: T;
+  _verificationToken?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "streak-looks_select".
  */
 export interface StreakLooksSelect<T extends boolean = true> {
@@ -7434,6 +7538,7 @@ export interface SearchSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  visibility?: T;
   categories?:
     | T
     | {

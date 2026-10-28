@@ -14,6 +14,7 @@ import {
   ViewTransition,
 } from 'react'
 import { Media } from '@/components/Media'
+import { MembersMark } from '@/features/members/MembersMark'
 import { choreographWorkMorph, useWorkCardMorph, workMorphName } from '@/heros/WorkHero/morph'
 import { cursorTarget } from '@/providers/Cursor/variants'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
@@ -45,7 +46,7 @@ type RowProps = {
  * study's hero the way a work card does (`useWorkCardMorph`).
  */
 function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOpen }: RowProps) {
-  const { slug, title, industry, capabilities, media } = item
+  const { slug, title, industry, capabilities, media, membersOnly } = item
   const href = workHref(slug)
   const thumbRef = useRef<HTMLDivElement>(null)
   // Resolved at click: whichever picture this layout shows stays while the page clears.
@@ -107,6 +108,7 @@ function MoreWorkRow({ item, index, active, morphing, plateRef, onActivate, onOp
             <h3 className="plate:text-muted-foreground text-heading-3 plate:group-data-active:text-foreground tracking-[-0.02em] text-pretty transition-colors duration-(--more-work-ink) ease-[ease]">
               {title}
             </h3>
+            {membersOnly && <MembersMark className="text-muted-foreground" />}
             {(industry || services) && (
               <p className="plate:flex-row plate:flex-wrap plate:items-center plate:gap-x-2.5 text-muted-foreground flex flex-col gap-1 text-base">
                 {industry && <span>{industry}</span>}

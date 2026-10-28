@@ -18,4 +18,5 @@ export const postCardSelect = {
   external: {
     publisher: true,
   },
+  visibility: true,
 } satisfies PostsSelect<true>

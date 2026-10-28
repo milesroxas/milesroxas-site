@@ -37,6 +37,14 @@ export const searchFields: Field[] = [
     ],
   },
   {
+    // The source's audience, so a result for a members-only post draws the lock.
+    name: 'visibility',
+    type: 'text',
+    admin: {
+      readOnly: true,
+    },
+  },
+  {
     label: 'Categories',
     name: 'categories',
     type: 'array',

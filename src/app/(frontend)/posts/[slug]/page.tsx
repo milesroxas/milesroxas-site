@@ -3,12 +3,17 @@ import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import { cache } from 'react'
+import { MEMBERS_TEASER } from '@/access/members'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { JsonLd } from '@/components/JsonLd'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import RichText from '@/components/RichText/Legacy'
 import { ContentsButton } from '@/features/contents'
+import { MembersGate } from '@/features/members/MembersGate'
+import { isGated } from '@/features/members/session'
+import { toTeaser } from '@/features/members/teaser'
+import { isMembersOnly } from '@/fields/visibility'
 import { PostHero } from '@/heros/PostHero'
 import { RenderHero } from '@/heros/RenderHero'
 import type { Post as PostDoc, SiteInfo } from '@/payload-types'
@@ -77,15 +82,20 @@ export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
   const url = `/posts/${slug}`
-  const post = await queryPostBySlug({ slug })
+  const found = await queryPostBySlug({ slug })
 
-  if (!post) return <PayloadRedirects url={url} />
+  if (!found) return <PayloadRedirects url={url} />
+
+  // A members-only post renders per request; to a visitor who is not signed
+  // in it is its opening and the gate, and nothing else reaches the page.
+  const gated = await isGated(found)
+  const post = gated ? toTeaser(found) : found
 
   // An external post keeps any body it had before it was switched; only the link out renders.
   const external = externalArticle(post)
   const editorial = post.hero.type === 'editorial'
   const [morePosts, siteInfo] = await Promise.all([
-    getMorePosts(post),
+    getMorePosts(found),
     getCachedGlobal('site-info', 1)() as Promise<SiteInfo | null>,
   ])
 
@@ -96,12 +106,11 @@ export default async function Post({ params: paramsPromise }: Args) {
       >
         <JsonLd
           data={[
-            blogPostingSchema(post, siteInfo ?? {}),
+            ...(gated ? [] : [blogPostingSchema(post, siteInfo ?? {}), faqPageSchema(post.layout)]),
             breadcrumbSchema([
               { name: 'Posts', path: '/posts' },
               { name: post.title, path: url },
             ]),
-            faqPageSchema(post.layout),
           ]}
         />
         {/* Allows redirects for valid pages too */}
@@ -116,7 +125,9 @@ export default async function Post({ params: paramsPromise }: Args) {
         )}
         {post.intro?.body && <WorkIntro body={post.intro.body} title={post.intro.title} />}
 
-        {external ? (
+        {gated ? (
+          <MembersGate kind="post" next={url} />
+        ) : external ? (
           <ExternalArticle {...external} last={morePosts.length === 0} />
         ) : (
           <>
@@ -126,7 +137,7 @@ export default async function Post({ params: paramsPromise }: Args) {
             <RenderBlocks blocks={post.layout} />
           </>
         )}
-        {!external && post.showContents && <ContentsButton />}
+        {!gated && !external && post.showContents && <ContentsButton />}
       </article>
       <MorePosts items={morePosts} />
     </>
@@ -136,7 +147,9 @@ export default async function Post({ params: paramsPromise }: Args) {
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
   const post = await queryPostBySlug({ slug })
+  const membersOnly = isMembersOnly(post)
 
+  // A members-only post stays out of search results and has no markdown alternate.
   return generateMeta({
     doc: post,
     pathname: `/posts/${slug}`,
@@ -145,7 +158,8 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
         author.name ? [author.name] : [],
       ),
     },
-    ...(post ? { markdownPath: `/posts/${slug}.md` } : {}),
+    ...(post && !membersOnly ? { markdownPath: `/posts/${slug}.md` } : {}),
+    noIndex: membersOnly,
   })
 }
 
@@ -158,6 +172,8 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
     collection: 'posts',
     draft,
     limit: 1,
+    // Members-only posts included, published only: the page draws the gate.
+    context: MEMBERS_TEASER,
     overrideAccess: draft,
     pagination: false,
     where: {

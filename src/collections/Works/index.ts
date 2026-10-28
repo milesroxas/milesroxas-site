@@ -5,6 +5,7 @@ import { contentsButtonField } from '@/fields/pageFields'
 import { pageIntroField } from '@/fields/pageHero'
 import { workLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
+import { visibilityField } from '@/fields/visibility'
 import { workHeroField } from '@/heros/WorkHero/config'
 import { authenticated } from '../../access/authenticated'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -35,6 +36,7 @@ export const Works: CollectionConfig<'works'> = {
     },
     isProtected: true,
     fallbackWork: true,
+    visibility: true,
     // resolveVisibleWork hides a referenced work that is not published.
     _status: true,
   },
@@ -247,6 +249,7 @@ export const Works: CollectionConfig<'works'> = {
         position: 'sidebar',
       },
     },
+    visibilityField(),
     ...slugField(),
   ],
   hooks: {

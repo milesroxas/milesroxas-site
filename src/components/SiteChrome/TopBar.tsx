@@ -1,6 +1,6 @@
 'use client'
 
-import { IconChevronRight } from '@tabler/icons-react'
+import { IconChevronRight, IconUserCircle } from '@tabler/icons-react'
 import Link from 'next/link'
 import { useRef } from 'react'
 import { Logo } from '@/components/Logo/Logo'
@@ -19,7 +19,8 @@ import { useBandGround } from './use-band-ground'
  * title. Wide screens only; a phone has no room beside the wordmark.
  *
  * The theme toggle sits with the clock rather than in the dock: both are the
- * bar's quiet register, and the dock stays navigation only.
+ * bar's quiet register, and the dock stays navigation only. A signed-in
+ * member also finds their library there.
  */
 export function TopBar({ section }: { section: string | null }) {
   const ref = useRef<HTMLElement>(null)
@@ -58,6 +59,14 @@ export function TopBar({ section }: { section: string | null }) {
 
       <div className="flex shrink-0 items-center gap-4 md:gap-5">
         <Clock />
+        {/* Signed-in members only (the `member` hint): everyone else signs in from a locked card or page. */}
+        <Link
+          aria-label="Your members library"
+          className="chrome-focus guest:hidden pointer-events-auto -m-3.5 rounded-md p-3.5 text-(--chrome-ink) md:-m-2 md:p-2"
+          href="/members"
+        >
+          <IconUserCircle aria-hidden className="size-4" stroke={1.75} />
+        </Link>
         <ThemeToggle />
       </div>
     </header>

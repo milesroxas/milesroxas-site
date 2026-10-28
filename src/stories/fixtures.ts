@@ -158,6 +158,7 @@ export const workIndexItems: MoreWorkItem[] = [
     capabilities: ['Brand Identity', 'Website'],
     summary:
       'A new identity and site for an enterprise platform, built to read as one voice across sales and product.',
+    membersOnly: false,
     media: textureMedia(31, 'vault', 1280, 720),
   },
   {
@@ -169,6 +170,7 @@ export const workIndexItems: MoreWorkItem[] = [
     capabilities: ['Web Design', 'Web Development'],
     summary:
       'A studio site that says what the studio does in its own words, with the work doing the talking.',
+    membersOnly: false,
     media: textureMedia(32, 'gentlebeast', 1064, 625),
   },
   {
@@ -180,6 +182,7 @@ export const workIndexItems: MoreWorkItem[] = [
     capabilities: ['Product Design'],
     summary:
       'Launch design for a consumer product: the story, the page and the system behind both.',
+    membersOnly: true,
     media: textureMedia(33, 'arturo', 1064, 625),
   },
   {
@@ -190,6 +193,7 @@ export const workIndexItems: MoreWorkItem[] = [
     industry: null,
     capabilities: [],
     summary: null,
+    membersOnly: false,
     media: imageMedia,
   },
 ]

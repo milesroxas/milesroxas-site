@@ -9,6 +9,9 @@ import { JsonLd } from '@/components/JsonLd'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { ContentsButton } from '@/features/contents'
+import { MembersGate } from '@/features/members/MembersGate'
+import { isGated } from '@/features/members/session'
+import { isMembersOnly } from '@/fields/visibility'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { breadcrumbSchema, faqPageSchema, webPageSchema } from '@/utilities/schema'
@@ -62,6 +65,8 @@ export default async function Page({ params: paramsPromise }: Args) {
   }
 
   const { hero, layout, showContents } = page
+  // A members-only page renders per request; without a session, its opening and the gate.
+  const gated = await isGated(page)
 
   return (
     <article className="pb-24">
@@ -69,7 +74,7 @@ export default async function Page({ params: paramsPromise }: Args) {
         data={[
           webPageSchema(page, url),
           breadcrumbSchema([{ name: page.title, path: url }]),
-          faqPageSchema(layout),
+          ...(gated ? [] : [faqPageSchema(layout)]),
         ]}
       />
       <PageClient />
@@ -77,8 +82,8 @@ export default async function Page({ params: paramsPromise }: Args) {
       <PayloadRedirects disableNotFound url={url} />
       {draft && <LivePreviewListener />}
       <RenderHero {...hero} />
-      <RenderBlocks blocks={layout} />
-      {showContents && <ContentsButton />}
+      {gated ? <MembersGate kind="page" next={url} /> : <RenderBlocks blocks={layout} />}
+      {!gated && showContents && <ContentsButton />}
     </article>
   )
 }
@@ -90,7 +95,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   })
 
   // Root pages have no `.md` route (`/<slug>.md` would shadow files).
-  return generateMeta({ doc: page, pathname: `/${slug}` })
+  return generateMeta({ doc: page, pathname: `/${slug}`, noIndex: isMembersOnly(page) })
 }
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {

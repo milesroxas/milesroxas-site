@@ -6,6 +6,7 @@ import { useId } from 'react'
 import { Media } from '@/components/Media'
 import { Visual } from '@/components/Visual'
 import { resolveOpening } from '@/features/immersive/visual'
+import { MembersMark } from '@/features/members/MembersMark'
 import { useCurtainLink } from '@/features/page-transition/use-curtain-link'
 import type { Media as MediaType } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
@@ -34,8 +35,8 @@ function Ink({ children }: { children: string }) {
 }
 
 export function Byline({ item }: { item: MorePostsItem }) {
-  const { publishedAt, source } = item
-  if (!publishedAt && !source) return null
+  const { publishedAt, source, membersOnly } = item
+  if (!publishedAt && !source && !membersOnly) return null
   return (
     <p className="text-muted-foreground text-xs/none flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono">
       {publishedAt && (
@@ -45,6 +46,10 @@ export function Byline({ item }: { item: MorePostsItem }) {
       )}
       {publishedAt && source && <span aria-hidden className="bg-border h-px w-5" />}
       {source && <span>{source}</span>}
+      {membersOnly && (publishedAt || source) && (
+        <span aria-hidden className="bg-border h-px w-5" />
+      )}
+      {membersOnly && <MembersMark className="text-foreground" />}
     </p>
   )
 }

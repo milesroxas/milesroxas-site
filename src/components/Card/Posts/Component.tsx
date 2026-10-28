@@ -3,7 +3,9 @@
 import Link from 'next/link'
 import type React from 'react'
 import { Badge } from '@/components/ui/badge'
+import { MembersMark } from '@/features/members/MembersMark'
 import { useCurtainLink } from '@/features/page-transition/use-curtain-link'
+import { isMembersOnly } from '@/fields/visibility'
 import type { Post } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
 import { DEFAULT_PUBLISHER, isExternalPost } from '@/utilities/externalArticle'
@@ -11,7 +13,7 @@ import { cn } from '@/utilities/ui'
 import { type CardAspect, CardImage } from '../shared'
 
 export type CardPostData = Pick<Post, 'slug' | 'meta' | 'title' | 'hero'> &
-  Partial<Pick<Post, 'source' | 'external'>>
+  Partial<Pick<Post, 'source' | 'external' | 'visibility'>>
 
 interface PostCardProps {
   className?: string
@@ -31,6 +33,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   aspect = 'wide',
 }) => {
   const { slug, meta, title, hero } = doc || {}
+  const membersOnly = isMembersOnly(doc)
   // The card reads the publisher only; the URL stays with the post page.
   const publisher = isExternalPost(doc) ? doc?.external?.publisher || DEFAULT_PUBLISHER : null
   const description = meta?.description
@@ -50,9 +53,12 @@ export const PostCard: React.FC<PostCardProps> = ({
             data-reveal-group={slug}
           >
             <h3 className="text-lg font-light">{titleFromProps || title}</h3>
-            <Badge variant="post" className="mt-1">
-              Post
-            </Badge>
+            <div className="mt-1 flex shrink-0 items-center gap-2">
+              {membersOnly && <MembersMark className="text-muted-foreground" />}
+              <Badge variant="post" className="mt-0">
+                Post
+              </Badge>
+            </div>
           </div>
         )}
         {publisher && (

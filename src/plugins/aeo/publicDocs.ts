@@ -5,10 +5,10 @@ import { type ContentSurface, type GlobalSurface, surfaceDocPath } from '@/share
 
 /**
  * Root paths a route owns (`/works`, `/posts`, `/contact`, `/ask`, `/search`,
- * and `/home`, which redirects to the Home global at `/`): a Pages document
+ * `/members`, and `/home`, which redirects to the Home global at `/`): a Pages document
  * with that slug never renders, so it never lists either.
  */
-const ROUTE_OWNED_PAGE_SLUGS = new Set([...Object.keys(INDEX_PAGES), 'search', 'home'])
+const ROUTE_OWNED_PAGE_SLUGS = new Set([...Object.keys(INDEX_PAGES), 'search', 'home', 'members'])
 
 /** What a public listing (sitemap, llms.txt) needs from a surface document. */
 export type PublicDoc = {

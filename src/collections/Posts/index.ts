@@ -8,7 +8,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { publishedContentRead } from '@/access/members'
 import { Banner } from '@/blocks/Banner/config'
 
 import { Code } from '@/blocks/Code/config'
@@ -19,6 +19,7 @@ import { contentsButtonField } from '@/fields/pageFields'
 import { pageIntroField } from '@/fields/pageHero'
 import { postLayoutBlocks } from '@/fields/pageLayoutBlocks'
 import { slugField } from '@/fields/slug'
+import { visibilityField } from '@/fields/visibility'
 import { heroField } from '@/heros/config'
 import { generatePreviewPath } from '@/utilities/generatePreviewPath'
 import { postCardSelect } from './cardSelect'
@@ -31,7 +32,7 @@ export const Posts: CollectionConfig<'posts'> = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: authenticatedOrPublished,
+    read: publishedContentRead(),
     update: authenticated,
   },
   // This config controls what's populated by default when a post is referenced
@@ -212,6 +213,7 @@ export const Posts: CollectionConfig<'posts'> = {
         },
       ],
     },
+    visibilityField(),
     ...slugField(),
   ],
   hooks: {

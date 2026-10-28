@@ -66,6 +66,11 @@
   )
 );
 
+/* Signed in or not, from the hint the head script stamps on `<html>`
+   (src/features/members/hint.ts). Drawing only: the server gates content. */
+@custom-variant member (&:where(:root[data-member] *));
+@custom-variant guest (&:where(:root:not([data-member]) *));
+
 /* Custom variants */
 @custom-variant data-open {
   &:where([data-state="open"]),

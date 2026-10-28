@@ -2,6 +2,7 @@ import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
+import { MEMBERS_TEASER } from '@/access/members'
 import { Pagination } from '@/components/Pagination'
 import {
   type MorePostsDoc,
@@ -35,6 +36,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     depth: 1,
     limit: POSTS_PER_PAGE,
     page: sanitizedPageNumber,
+    context: MEMBERS_TEASER,
     overrideAccess: false,
     select: POST_ITEM_SELECT,
   })
@@ -63,6 +65,7 @@ export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
   const { totalDocs } = await payload.count({
     collection: 'posts',
+    context: MEMBERS_TEASER,
     overrideAccess: false,
   })
 

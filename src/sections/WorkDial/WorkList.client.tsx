@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { type CSSProperties, useRef, ViewTransition } from 'react'
 import { Media } from '@/components/Media'
+import { MembersMark } from '@/features/members/MembersMark'
 import { useWorkCardMorph } from '@/heros/WorkHero/morph'
 import { cursorTarget } from '@/providers/Cursor/variants'
 import type { MoreWorkItem } from '@/sections/MoreWork/query'
@@ -10,7 +11,7 @@ import type { MoreWorkItem } from '@/sections/MoreWork/query'
 const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as CSSProperties
 
 function WorkCard({ item, index }: { item: MoreWorkItem; index: number }) {
-  const { slug, title, client, industry, summary, media } = item
+  const { slug, title, client, industry, summary, media, membersOnly } = item
   const href = `/works/${slug}`
   const pictureRef = useRef<HTMLDivElement>(null)
   const morph = useWorkCardMorph(slug, href, pictureRef, undefined, { travel: true })
@@ -46,6 +47,7 @@ function WorkCard({ item, index }: { item: MoreWorkItem; index: number }) {
           {client && <span className="truncate font-medium">{client}</span>}
           {client && industry && <span aria-hidden className="bg-border h-px w-4 shrink-0" />}
           {industry && <span className="text-muted-foreground truncate">{industry}</span>}
+          {membersOnly && <MembersMark className="ml-auto" />}
         </p>
         <h2 className="mt-2 text-2xl/[1.2] font-light tracking-[-0.015em] text-balance">
           {/* The whole card is the target; the title names it. */}

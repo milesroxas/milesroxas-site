@@ -13,6 +13,8 @@ import { AdminBar } from '@/components/AdminBar'
 import { JsonLd } from '@/components/JsonLd'
 import { SiteChrome } from '@/components/SiteChrome/SiteChrome'
 import { Footer } from '@/Footer/Component'
+import { MemberHintSync } from '@/features/members/MemberHint'
+import { MemberHintScript } from '@/features/members/MemberHintScript'
 import { ibmPlexSans } from '@/fonts/ibm-plex-sans'
 import type { SiteInfo } from '@/payload-types'
 import { Providers } from '@/providers'
@@ -60,6 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <head>
         <InitTheme />
+        <MemberHintScript />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
         {/* The site's entity anchor, once; page schemas point back at it by @id (docs/aeo.md). */}
@@ -70,6 +73,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="bg-background text-foreground min-h-screen antialiased">
         <Providers>
           <SiteChrome />
+          <MemberHintSync />
           {/* One landmark for the page's content, so readers and extractors find it without the chrome. */}
           <main id="main">{children}</main>
           <AdminBar

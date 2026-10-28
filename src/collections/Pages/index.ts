@@ -1,10 +1,11 @@
 import type { CollectionConfig } from 'payload'
+import { publishedContentRead } from '@/access/members'
 import { seoTab } from '@/collections/shared/seoTab'
 import { contentsButtonField, pageLayoutField } from '@/fields/pageFields'
 import { slugField } from '@/fields/slug'
+import { visibilityField } from '@/fields/visibility'
 import { heroField } from '@/heros/config'
 import { authenticated } from '../../access/authenticated'
-import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage, revalidateUnpublish } from './hooks/revalidatePage'
@@ -14,7 +15,7 @@ export const Pages: CollectionConfig<'pages'> = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: authenticatedOrPublished,
+    read: publishedContentRead(),
     update: authenticated,
   },
   // This config controls what's populated by default when a page is referenced
@@ -67,6 +68,7 @@ export const Pages: CollectionConfig<'pages'> = {
         position: 'sidebar',
       },
     },
+    visibilityField(),
     ...slugField(),
   ],
   hooks: {

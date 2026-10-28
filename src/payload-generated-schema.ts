@@ -612,7 +612,6 @@ export const enum_pages_blocks_media_block_space_mb = pgEnum(
 );
 export const enum_pages_hero_type = pgEnum("enum_pages_hero_type", [
   "none",
-  "home",
   "highImpact",
   "mediumImpact",
   "lowImpact",
@@ -625,6 +624,10 @@ export const enum_pages_hero_shader_origin = pgEnum(
   "enum_pages_hero_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
 );
+export const enum_pages_visibility = pgEnum("enum_pages_visibility", [
+  "public",
+  "members",
+]);
 export const enum_pages_status = pgEnum("enum_pages_status", [
   "draft",
   "published",
@@ -1185,7 +1188,7 @@ export const enum__pages_v_blocks_media_block_space_mb = pgEnum(
 );
 export const enum__pages_v_version_hero_type = pgEnum(
   "enum__pages_v_version_hero_type",
-  ["none", "home", "highImpact", "mediumImpact", "lowImpact"],
+  ["none", "highImpact", "mediumImpact", "lowImpact"],
 );
 export const enum__pages_v_version_hero_visual_type = pgEnum(
   "enum__pages_v_version_hero_visual_type",
@@ -1194,6 +1197,10 @@ export const enum__pages_v_version_hero_visual_type = pgEnum(
 export const enum__pages_v_version_hero_shader_origin = pgEnum(
   "enum__pages_v_version_hero_shader_origin",
   ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum__pages_v_version_visibility = pgEnum(
+  "enum__pages_v_version_visibility",
+  ["public", "members"],
 );
 export const enum__pages_v_version_status = pgEnum(
   "enum__pages_v_version_status",
@@ -1667,7 +1674,6 @@ export const enum_posts_section_stack = pgEnum("enum_posts_section_stack", [
 export const enum_posts_hero_type = pgEnum("enum_posts_hero_type", [
   "none",
   "editorial",
-  "home",
   "highImpact",
   "mediumImpact",
   "lowImpact",
@@ -1683,6 +1689,10 @@ export const enum_posts_hero_shader_origin = pgEnum(
 export const enum_posts_source = pgEnum("enum_posts_source", [
   "internal",
   "external",
+]);
+export const enum_posts_visibility = pgEnum("enum_posts_visibility", [
+  "public",
+  "members",
 ]);
 export const enum_posts_status = pgEnum("enum_posts_status", [
   "draft",
@@ -2132,7 +2142,7 @@ export const enum___posts_v_section_v_stack = pgEnum(
 );
 export const enum__posts_v_version_hero_type = pgEnum(
   "enum__posts_v_version_hero_type",
-  ["none", "editorial", "home", "highImpact", "mediumImpact", "lowImpact"],
+  ["none", "editorial", "highImpact", "mediumImpact", "lowImpact"],
 );
 export const enum__posts_v_version_hero_visual_type = pgEnum(
   "enum__posts_v_version_hero_visual_type",
@@ -2145,6 +2155,10 @@ export const enum__posts_v_version_hero_shader_origin = pgEnum(
 export const enum__posts_v_version_source = pgEnum(
   "enum__posts_v_version_source",
   ["internal", "external"],
+);
+export const enum__posts_v_version_visibility = pgEnum(
+  "enum__posts_v_version_visibility",
+  ["public", "members"],
 );
 export const enum__posts_v_version_status = pgEnum(
   "enum__posts_v_version_status",
@@ -2755,6 +2769,10 @@ export const enum_works_project_status = pgEnum("enum_works_project_status", [
   "coming-soon",
   "live",
 ]);
+export const enum_works_visibility = pgEnum("enum_works_visibility", [
+  "public",
+  "members",
+]);
 export const enum_works_status = pgEnum("enum_works_status", [
   "draft",
   "published",
@@ -3337,6 +3355,10 @@ export const enum__works_v_blocks_media_block_space_mb = pgEnum(
   "enum__works_v_blocks_media_block_space_mb",
   ["none", "sm", "md", "lg", "xl"],
 );
+export const enum__works_v_version_visibility = pgEnum(
+  "enum__works_v_version_visibility",
+  ["public", "members"],
+);
 export const enum__works_v_version_status = pgEnum(
   "enum__works_v_version_status",
   ["draft", "published"],
@@ -3433,6 +3455,1122 @@ export const enum_forms_confirmation_type = pgEnum(
 export const enum_payload_folders_folder_type = pgEnum(
   "enum_payload_folders_folder_type",
   ["media", "streak-looks"],
+);
+export const enum_home_transition_layout = pgEnum(
+  "enum_home_transition_layout",
+  ["offset", "left", "centered", "split", "statement", "prose"],
+);
+export const enum_home_transition_text_size = pgEnum(
+  "enum_home_transition_text_size",
+  ["small", "large"],
+);
+export const enum_home_transition_heading_level = pgEnum(
+  "enum_home_transition_heading_level",
+  ["h2", "h3", "h4"],
+);
+export const enum_home_transition_theme = pgEnum("enum_home_transition_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_blocks_feature_heading_offset_text_size = pgEnum(
+  "enum_home_blocks_feature_heading_offset_text_size",
+  ["small", "large"],
+);
+export const enum_home_blocks_feature_heading_offset_theme = pgEnum(
+  "enum_home_blocks_feature_heading_offset_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_full_media_visual_type = pgEnum(
+  "enum_home_full_media_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum_home_full_media_shader_origin = pgEnum(
+  "enum_home_full_media_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum_home_full_media_text_size = pgEnum(
+  "enum_home_full_media_text_size",
+  ["small", "large"],
+);
+export const enum_home_full_media_width = pgEnum("enum_home_full_media_width", [
+  "contained",
+  "full-width",
+]);
+export const enum_home_full_media_aspect_ratio = pgEnum(
+  "enum_home_full_media_aspect_ratio",
+  ["16-9", "3-2", "21-9"],
+);
+export const enum_home_full_media_content_position = pgEnum(
+  "enum_home_full_media_content_position",
+  ["left", "right"],
+);
+export const enum_home_full_media_theme = pgEnum("enum_home_full_media_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_media_split_visual_type = pgEnum(
+  "enum_home_media_split_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum_home_media_split_shader_origin = pgEnum(
+  "enum_home_media_split_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum_home_media_split_text_size = pgEnum(
+  "enum_home_media_split_text_size",
+  ["small", "large"],
+);
+export const enum_home_media_split_layout = pgEnum(
+  "enum_home_media_split_layout",
+  ["left", "right"],
+);
+export const enum_home_media_split_aspect_ratio = pgEnum(
+  "enum_home_media_split_aspect_ratio",
+  ["16-9", "3-2", "21-9"],
+);
+export const enum_home_media_split_theme = pgEnum(
+  "enum_home_media_split_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_split_narrow_visual_type = pgEnum(
+  "enum_home_split_narrow_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum_home_split_narrow_shader_origin = pgEnum(
+  "enum_home_split_narrow_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum_home_split_narrow_text_size = pgEnum(
+  "enum_home_split_narrow_text_size",
+  ["small", "large"],
+);
+export const enum_home_split_narrow_image_position = pgEnum(
+  "enum_home_split_narrow_image_position",
+  ["left", "right"],
+);
+export const enum_home_split_narrow_theme = pgEnum(
+  "enum_home_split_narrow_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_blocks_carousel_split_text_size = pgEnum(
+  "enum_home_blocks_carousel_split_text_size",
+  ["small", "large"],
+);
+export const enum_home_blocks_carousel_split_carousel_position = pgEnum(
+  "enum_home_blocks_carousel_split_carousel_position",
+  ["left", "right"],
+);
+export const enum_home_blocks_carousel_split_slide_size = pgEnum(
+  "enum_home_blocks_carousel_split_slide_size",
+  ["full", "half", "third"],
+);
+export const enum_home_blocks_carousel_split_theme = pgEnum(
+  "enum_home_blocks_carousel_split_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_image_pair_text_size = pgEnum(
+  "enum_home_image_pair_text_size",
+  ["small", "large"],
+);
+export const enum_home_image_pair_portrait_position = pgEnum(
+  "enum_home_image_pair_portrait_position",
+  ["left", "right"],
+);
+export const enum_home_image_pair_text_position = pgEnum(
+  "enum_home_image_pair_text_position",
+  ["under-portrait", "under-landscape"],
+);
+export const enum_home_image_pair_theme = pgEnum("enum_home_image_pair_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_split_offset_text_size = pgEnum(
+  "enum_home_split_offset_text_size",
+  ["small", "large"],
+);
+export const enum_home_split_offset_caption_position = pgEnum(
+  "enum_home_split_offset_caption_position",
+  ["left", "right"],
+);
+export const enum_home_split_offset_theme = pgEnum(
+  "enum_home_split_offset_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_image_statement_text_size = pgEnum(
+  "enum_home_image_statement_text_size",
+  ["small", "large"],
+);
+export const enum_home_image_statement_text_position = pgEnum(
+  "enum_home_image_statement_text_position",
+  ["left", "right"],
+);
+export const enum_home_image_statement_image_width = pgEnum(
+  "enum_home_image_statement_image_width",
+  ["contained", "full"],
+);
+export const enum_home_image_statement_aspect_ratio = pgEnum(
+  "enum_home_image_statement_aspect_ratio",
+  ["responsive", "16-9", "3-2", "21-9"],
+);
+export const enum_home_image_statement_theme = pgEnum(
+  "enum_home_image_statement_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_caption_size = pgEnum("enum_home_caption_size", [
+  "full",
+  "contained",
+  "inset",
+  "small",
+]);
+export const enum_home_caption_theme = pgEnum("enum_home_caption_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_youtube_size = pgEnum("enum_home_youtube_size", [
+  "full",
+  "contained",
+  "inset",
+  "small",
+]);
+export const enum_home_youtube_theme = pgEnum("enum_home_youtube_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_rich_text_text_size = pgEnum(
+  "enum_home_rich_text_text_size",
+  ["small", "large"],
+);
+export const enum_home_rich_text_theme = pgEnum("enum_home_rich_text_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_code_language = pgEnum("enum_home_code_language", [
+  "typescript",
+  "tsx",
+  "javascript",
+  "css",
+  "json",
+  "glsl",
+  "bash",
+]);
+export const enum_home_chart_width = pgEnum("enum_home_chart_width", [
+  "text",
+  "wide",
+  "full",
+]);
+export const enum_home_chart_theme = pgEnum("enum_home_chart_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_diagram_width = pgEnum("enum_home_diagram_width", [
+  "text",
+  "wide",
+  "full",
+]);
+export const enum_home_diagram_theme = pgEnum("enum_home_diagram_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_faq_link_type = pgEnum("enum_home_faq_link_type", [
+  "reference",
+  "index",
+  "custom",
+]);
+export const enum_home_faq_link_index_page = pgEnum(
+  "enum_home_faq_link_index_page",
+  ["works", "posts", "contact", "ask"],
+);
+export const enum_home_faq_text_size = pgEnum("enum_home_faq_text_size", [
+  "small",
+  "large",
+]);
+export const enum_home_faq_theme = pgEnum("enum_home_faq_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_blocks_carousel_width = pgEnum(
+  "enum_home_blocks_carousel_width",
+  ["contained", "full-width"],
+);
+export const enum_home_blocks_carousel_slide_size = pgEnum(
+  "enum_home_blocks_carousel_slide_size",
+  ["full", "half", "third"],
+);
+export const enum_home_blocks_carousel_theme = pgEnum(
+  "enum_home_blocks_carousel_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_blocks_carousel_tabs_text_size = pgEnum(
+  "enum_home_blocks_carousel_tabs_text_size",
+  ["small", "large"],
+);
+export const enum_home_blocks_carousel_tabs_deck_style = pgEnum(
+  "enum_home_blocks_carousel_tabs_deck_style",
+  ["coverflow", "stack"],
+);
+export const enum_home_blocks_carousel_tabs_slide_size = pgEnum(
+  "enum_home_blocks_carousel_tabs_slide_size",
+  ["full", "half", "third"],
+);
+export const enum_home_blocks_carousel_tabs_tab_size = pgEnum(
+  "enum_home_blocks_carousel_tabs_tab_size",
+  ["default", "small"],
+);
+export const enum_home_blocks_carousel_tabs_theme = pgEnum(
+  "enum_home_blocks_carousel_tabs_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_blocks_feature_tabs_tabs_visual_type = pgEnum(
+  "enum_home_blocks_feature_tabs_tabs_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum_home_blocks_feature_tabs_tabs_shader_origin = pgEnum(
+  "enum_home_blocks_feature_tabs_tabs_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum_home_blocks_feature_tabs_text_size = pgEnum(
+  "enum_home_blocks_feature_tabs_text_size",
+  ["small", "large"],
+);
+export const enum_home_blocks_feature_tabs_tab_size = pgEnum(
+  "enum_home_blocks_feature_tabs_tab_size",
+  ["default", "small"],
+);
+export const enum_home_blocks_feature_tabs_theme = pgEnum(
+  "enum_home_blocks_feature_tabs_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_insight_list_text_size = pgEnum(
+  "enum_home_insight_list_text_size",
+  ["small", "large"],
+);
+export const enum_home_insight_list_layout = pgEnum(
+  "enum_home_insight_list_layout",
+  ["side", "stacked", "ledger"],
+);
+export const enum_home_insight_list_mark_size = pgEnum(
+  "enum_home_insight_list_mark_size",
+  ["small", "medium", "large"],
+);
+export const enum_home_insight_list_theme = pgEnum(
+  "enum_home_insight_list_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_blocks_content_columns_sizes = pgEnum(
+  "enum_home_blocks_content_columns_sizes",
+  ["oneThird", "half", "twoThirds", "fiveCols", "full"],
+);
+export const enum_home_blocks_content_columns_content = pgEnum(
+  "enum_home_blocks_content_columns_content",
+  ["text", "sectionHeading", "work", "post", "media", "slider", "youTube"],
+);
+export const enum_home_blocks_content_columns_text_text_size = pgEnum(
+  "enum_home_blocks_content_columns_text_text_size",
+  ["sm", "base", "lg", "xl", "2xl"],
+);
+export const enum_home_blocks_content_columns_text_link_type = pgEnum(
+  "enum_home_blocks_content_columns_text_link_type",
+  ["reference", "index", "custom"],
+);
+export const enum_home_blocks_content_columns_text_link_index_page = pgEnum(
+  "enum_home_blocks_content_columns_text_link_index_page",
+  ["works", "posts", "contact", "ask"],
+);
+export const enum_home_blocks_content_columns_text_link_appearance = pgEnum(
+  "enum_home_blocks_content_columns_text_link_appearance",
+  ["default", "outline"],
+);
+export const enum_home_blocks_content_columns_section_heading_size = pgEnum(
+  "enum_home_blocks_content_columns_section_heading_size",
+  ["base", "lg", "xl"],
+);
+export const enum_home_blocks_content_columns_section_heading_align = pgEnum(
+  "enum_home_blocks_content_columns_section_heading_align",
+  ["left", "center"],
+);
+export const enum_home_blocks_content_columns_section_heading_style = pgEnum(
+  "enum_home_blocks_content_columns_section_heading_style",
+  ["default", "border", "jumbo"],
+);
+export const enum_home_blocks_content_columns_work_aspect = pgEnum(
+  "enum_home_blocks_content_columns_work_aspect",
+  ["wide", "square", "portrait"],
+);
+export const enum_home_blocks_content_columns_work_variant = pgEnum(
+  "enum_home_blocks_content_columns_work_variant",
+  ["featured", "card"],
+);
+export const enum_home_blocks_content_columns_post_aspect = pgEnum(
+  "enum_home_blocks_content_columns_post_aspect",
+  ["wide", "square", "portrait"],
+);
+export const enum_home_blocks_content_columns_post_variant = pgEnum(
+  "enum_home_blocks_content_columns_post_variant",
+  ["featured", "card"],
+);
+export const enum_home_blocks_content_columns_slider_theme = pgEnum(
+  "enum_home_blocks_content_columns_slider_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_blocks_content_columns_slider_intro_content_size =
+  pgEnum("enum_home_blocks_content_columns_slider_intro_content_size", [
+    "base",
+    "lg",
+    "xl",
+  ]);
+export const enum_home_blocks_content_columns_slider_intro_content_align =
+  pgEnum("enum_home_blocks_content_columns_slider_intro_content_align", [
+    "left",
+    "center",
+  ]);
+export const enum_home_blocks_content_columns_slider_style = pgEnum(
+  "enum_home_blocks_content_columns_slider_style",
+  ["default", "cropped", "single"],
+);
+export const enum_home_blocks_content_columns_slider_space_pt = pgEnum(
+  "enum_home_blocks_content_columns_slider_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_content_columns_slider_space_pb = pgEnum(
+  "enum_home_blocks_content_columns_slider_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_content_columns_slider_space_mt = pgEnum(
+  "enum_home_blocks_content_columns_slider_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_content_columns_slider_space_mb = pgEnum(
+  "enum_home_blocks_content_columns_slider_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_content_columns_media_aspect_ratio = pgEnum(
+  "enum_home_blocks_content_columns_media_aspect_ratio",
+  ["square", "landscape", "portrait", "original"],
+);
+export const enum_home_blocks_content_columns_media_caption_size = pgEnum(
+  "enum_home_blocks_content_columns_media_caption_size",
+  ["normal", "large", "xl"],
+);
+export const enum_home_blocks_content_columns_you_tube_aspect_ratio = pgEnum(
+  "enum_home_blocks_content_columns_you_tube_aspect_ratio",
+  ["landscape", "square", "portrait"],
+);
+export const enum_home_blocks_content_theme = pgEnum(
+  "enum_home_blocks_content_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_blocks_content_container_width = pgEnum(
+  "enum_home_blocks_content_container_width",
+  ["contained", "fullWidth"],
+);
+export const enum_home_blocks_content_space_pt = pgEnum(
+  "enum_home_blocks_content_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_content_space_pb = pgEnum(
+  "enum_home_blocks_content_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_content_space_mt = pgEnum(
+  "enum_home_blocks_content_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_content_space_mb = pgEnum(
+  "enum_home_blocks_content_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_section_theme = pgEnum("enum_home_section_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum_home_section_spacing = pgEnum("enum_home_section_spacing", [
+  "default",
+  "tight",
+  "loose",
+  "none",
+]);
+export const enum_home_section_stack = pgEnum("enum_home_section_stack", [
+  "default",
+  "tight",
+  "loose",
+  "none",
+]);
+export const enum_home_blocks_slider_theme = pgEnum(
+  "enum_home_blocks_slider_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_blocks_slider_intro_content_size = pgEnum(
+  "enum_home_blocks_slider_intro_content_size",
+  ["base", "lg", "xl"],
+);
+export const enum_home_blocks_slider_intro_content_align = pgEnum(
+  "enum_home_blocks_slider_intro_content_align",
+  ["left", "center"],
+);
+export const enum_home_blocks_slider_style = pgEnum(
+  "enum_home_blocks_slider_style",
+  ["default", "cropped", "single"],
+);
+export const enum_home_blocks_slider_space_pt = pgEnum(
+  "enum_home_blocks_slider_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_slider_space_pb = pgEnum(
+  "enum_home_blocks_slider_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_slider_space_mt = pgEnum(
+  "enum_home_blocks_slider_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_slider_space_mb = pgEnum(
+  "enum_home_blocks_slider_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_archive_theme = pgEnum(
+  "enum_home_blocks_archive_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_blocks_archive_card_style = pgEnum(
+  "enum_home_blocks_archive_card_style",
+  ["card", "featured"],
+);
+export const enum_home_blocks_archive_populate_by = pgEnum(
+  "enum_home_blocks_archive_populate_by",
+  ["collection", "selection"],
+);
+export const enum_home_blocks_archive_relation_to = pgEnum(
+  "enum_home_blocks_archive_relation_to",
+  ["posts", "works"],
+);
+export const enum_home_blocks_cta_links_link_type = pgEnum(
+  "enum_home_blocks_cta_links_link_type",
+  ["reference", "index", "custom"],
+);
+export const enum_home_blocks_cta_links_link_index_page = pgEnum(
+  "enum_home_blocks_cta_links_link_index_page",
+  ["works", "posts", "contact", "ask"],
+);
+export const enum_home_blocks_cta_links_link_appearance = pgEnum(
+  "enum_home_blocks_cta_links_link_appearance",
+  ["default", "outline"],
+);
+export const enum_home_blocks_form_block_space_pt = pgEnum(
+  "enum_home_blocks_form_block_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_form_block_space_pb = pgEnum(
+  "enum_home_blocks_form_block_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_form_block_space_mt = pgEnum(
+  "enum_home_blocks_form_block_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_form_block_space_mb = pgEnum(
+  "enum_home_blocks_form_block_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_form_block_intro_align = pgEnum(
+  "enum_home_blocks_form_block_intro_align",
+  ["left", "center"],
+);
+export const enum_home_blocks_media_block_aspect_ratio = pgEnum(
+  "enum_home_blocks_media_block_aspect_ratio",
+  ["landscape", "square", "portrait", "original"],
+);
+export const enum_home_blocks_media_block_theme = pgEnum(
+  "enum_home_blocks_media_block_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum_home_blocks_media_block_caption_layout = pgEnum(
+  "enum_home_blocks_media_block_caption_layout",
+  ["center", "left", "right", "split-left", "split-right"],
+);
+export const enum_home_blocks_media_block_text_size = pgEnum(
+  "enum_home_blocks_media_block_text_size",
+  ["sm", "base", "lg", "xl", "2xl"],
+);
+export const enum_home_blocks_media_block_space_pt = pgEnum(
+  "enum_home_blocks_media_block_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_media_block_space_pb = pgEnum(
+  "enum_home_blocks_media_block_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_media_block_space_mt = pgEnum(
+  "enum_home_blocks_media_block_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_blocks_media_block_space_mb = pgEnum(
+  "enum_home_blocks_media_block_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum_home_status = pgEnum("enum_home_status", [
+  "draft",
+  "published",
+]);
+export const enum___home_v_transition_v_layout = pgEnum(
+  "enum___home_v_transition_v_layout",
+  ["offset", "left", "centered", "split", "statement", "prose"],
+);
+export const enum___home_v_transition_v_text_size = pgEnum(
+  "enum___home_v_transition_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_transition_v_heading_level = pgEnum(
+  "enum___home_v_transition_v_heading_level",
+  ["h2", "h3", "h4"],
+);
+export const enum___home_v_transition_v_theme = pgEnum(
+  "enum___home_v_transition_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_feature_heading_offset_text_size = pgEnum(
+  "enum__home_v_blocks_feature_heading_offset_text_size",
+  ["small", "large"],
+);
+export const enum__home_v_blocks_feature_heading_offset_theme = pgEnum(
+  "enum__home_v_blocks_feature_heading_offset_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_full_media_v_visual_type = pgEnum(
+  "enum___home_v_full_media_v_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum___home_v_full_media_v_shader_origin = pgEnum(
+  "enum___home_v_full_media_v_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum___home_v_full_media_v_text_size = pgEnum(
+  "enum___home_v_full_media_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_full_media_v_width = pgEnum(
+  "enum___home_v_full_media_v_width",
+  ["contained", "full-width"],
+);
+export const enum___home_v_full_media_v_aspect_ratio = pgEnum(
+  "enum___home_v_full_media_v_aspect_ratio",
+  ["16-9", "3-2", "21-9"],
+);
+export const enum___home_v_full_media_v_content_position = pgEnum(
+  "enum___home_v_full_media_v_content_position",
+  ["left", "right"],
+);
+export const enum___home_v_full_media_v_theme = pgEnum(
+  "enum___home_v_full_media_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_media_split_v_visual_type = pgEnum(
+  "enum___home_v_media_split_v_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum___home_v_media_split_v_shader_origin = pgEnum(
+  "enum___home_v_media_split_v_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum___home_v_media_split_v_text_size = pgEnum(
+  "enum___home_v_media_split_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_media_split_v_layout = pgEnum(
+  "enum___home_v_media_split_v_layout",
+  ["left", "right"],
+);
+export const enum___home_v_media_split_v_aspect_ratio = pgEnum(
+  "enum___home_v_media_split_v_aspect_ratio",
+  ["16-9", "3-2", "21-9"],
+);
+export const enum___home_v_media_split_v_theme = pgEnum(
+  "enum___home_v_media_split_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_split_narrow_v_visual_type = pgEnum(
+  "enum___home_v_split_narrow_v_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum___home_v_split_narrow_v_shader_origin = pgEnum(
+  "enum___home_v_split_narrow_v_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum___home_v_split_narrow_v_text_size = pgEnum(
+  "enum___home_v_split_narrow_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_split_narrow_v_image_position = pgEnum(
+  "enum___home_v_split_narrow_v_image_position",
+  ["left", "right"],
+);
+export const enum___home_v_split_narrow_v_theme = pgEnum(
+  "enum___home_v_split_narrow_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_carousel_split_text_size = pgEnum(
+  "enum__home_v_blocks_carousel_split_text_size",
+  ["small", "large"],
+);
+export const enum__home_v_blocks_carousel_split_carousel_position = pgEnum(
+  "enum__home_v_blocks_carousel_split_carousel_position",
+  ["left", "right"],
+);
+export const enum__home_v_blocks_carousel_split_slide_size = pgEnum(
+  "enum__home_v_blocks_carousel_split_slide_size",
+  ["full", "half", "third"],
+);
+export const enum__home_v_blocks_carousel_split_theme = pgEnum(
+  "enum__home_v_blocks_carousel_split_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_image_pair_v_text_size = pgEnum(
+  "enum___home_v_image_pair_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_image_pair_v_portrait_position = pgEnum(
+  "enum___home_v_image_pair_v_portrait_position",
+  ["left", "right"],
+);
+export const enum___home_v_image_pair_v_text_position = pgEnum(
+  "enum___home_v_image_pair_v_text_position",
+  ["under-portrait", "under-landscape"],
+);
+export const enum___home_v_image_pair_v_theme = pgEnum(
+  "enum___home_v_image_pair_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_split_offset_v_text_size = pgEnum(
+  "enum___home_v_split_offset_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_split_offset_v_caption_position = pgEnum(
+  "enum___home_v_split_offset_v_caption_position",
+  ["left", "right"],
+);
+export const enum___home_v_split_offset_v_theme = pgEnum(
+  "enum___home_v_split_offset_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_image_statement_v_text_size = pgEnum(
+  "enum___home_v_image_statement_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_image_statement_v_text_position = pgEnum(
+  "enum___home_v_image_statement_v_text_position",
+  ["left", "right"],
+);
+export const enum___home_v_image_statement_v_image_width = pgEnum(
+  "enum___home_v_image_statement_v_image_width",
+  ["contained", "full"],
+);
+export const enum___home_v_image_statement_v_aspect_ratio = pgEnum(
+  "enum___home_v_image_statement_v_aspect_ratio",
+  ["responsive", "16-9", "3-2", "21-9"],
+);
+export const enum___home_v_image_statement_v_theme = pgEnum(
+  "enum___home_v_image_statement_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_caption_v_size = pgEnum(
+  "enum___home_v_caption_v_size",
+  ["full", "contained", "inset", "small"],
+);
+export const enum___home_v_caption_v_theme = pgEnum(
+  "enum___home_v_caption_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_youtube_v_size = pgEnum(
+  "enum___home_v_youtube_v_size",
+  ["full", "contained", "inset", "small"],
+);
+export const enum___home_v_youtube_v_theme = pgEnum(
+  "enum___home_v_youtube_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_rich_text_v_text_size = pgEnum(
+  "enum___home_v_rich_text_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_rich_text_v_theme = pgEnum(
+  "enum___home_v_rich_text_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_code_v_language = pgEnum(
+  "enum___home_v_code_v_language",
+  ["typescript", "tsx", "javascript", "css", "json", "glsl", "bash"],
+);
+export const enum___home_v_chart_v_width = pgEnum(
+  "enum___home_v_chart_v_width",
+  ["text", "wide", "full"],
+);
+export const enum___home_v_chart_v_theme = pgEnum(
+  "enum___home_v_chart_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_diagram_v_width = pgEnum(
+  "enum___home_v_diagram_v_width",
+  ["text", "wide", "full"],
+);
+export const enum___home_v_diagram_v_theme = pgEnum(
+  "enum___home_v_diagram_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_faq_v_link_type = pgEnum(
+  "enum___home_v_faq_v_link_type",
+  ["reference", "index", "custom"],
+);
+export const enum___home_v_faq_v_link_index_page = pgEnum(
+  "enum___home_v_faq_v_link_index_page",
+  ["works", "posts", "contact", "ask"],
+);
+export const enum___home_v_faq_v_text_size = pgEnum(
+  "enum___home_v_faq_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_faq_v_theme = pgEnum("enum___home_v_faq_v_theme", [
+  "default",
+  "inverted",
+  "neutral",
+  "brand",
+]);
+export const enum__home_v_blocks_carousel_width = pgEnum(
+  "enum__home_v_blocks_carousel_width",
+  ["contained", "full-width"],
+);
+export const enum__home_v_blocks_carousel_slide_size = pgEnum(
+  "enum__home_v_blocks_carousel_slide_size",
+  ["full", "half", "third"],
+);
+export const enum__home_v_blocks_carousel_theme = pgEnum(
+  "enum__home_v_blocks_carousel_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_carousel_tabs_text_size = pgEnum(
+  "enum__home_v_blocks_carousel_tabs_text_size",
+  ["small", "large"],
+);
+export const enum__home_v_blocks_carousel_tabs_deck_style = pgEnum(
+  "enum__home_v_blocks_carousel_tabs_deck_style",
+  ["coverflow", "stack"],
+);
+export const enum__home_v_blocks_carousel_tabs_slide_size = pgEnum(
+  "enum__home_v_blocks_carousel_tabs_slide_size",
+  ["full", "half", "third"],
+);
+export const enum__home_v_blocks_carousel_tabs_tab_size = pgEnum(
+  "enum__home_v_blocks_carousel_tabs_tab_size",
+  ["default", "small"],
+);
+export const enum__home_v_blocks_carousel_tabs_theme = pgEnum(
+  "enum__home_v_blocks_carousel_tabs_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_feature_tabs_tabs_visual_type = pgEnum(
+  "enum__home_v_blocks_feature_tabs_tabs_visual_type",
+  ["media", "streakField", "lightLeak"],
+);
+export const enum__home_v_blocks_feature_tabs_tabs_shader_origin = pgEnum(
+  "enum__home_v_blocks_feature_tabs_tabs_shader_origin",
+  ["top-right", "top-left", "bottom-right", "bottom-left"],
+);
+export const enum__home_v_blocks_feature_tabs_text_size = pgEnum(
+  "enum__home_v_blocks_feature_tabs_text_size",
+  ["small", "large"],
+);
+export const enum__home_v_blocks_feature_tabs_tab_size = pgEnum(
+  "enum__home_v_blocks_feature_tabs_tab_size",
+  ["default", "small"],
+);
+export const enum__home_v_blocks_feature_tabs_theme = pgEnum(
+  "enum__home_v_blocks_feature_tabs_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_insight_list_v_text_size = pgEnum(
+  "enum___home_v_insight_list_v_text_size",
+  ["small", "large"],
+);
+export const enum___home_v_insight_list_v_layout = pgEnum(
+  "enum___home_v_insight_list_v_layout",
+  ["side", "stacked", "ledger"],
+);
+export const enum___home_v_insight_list_v_mark_size = pgEnum(
+  "enum___home_v_insight_list_v_mark_size",
+  ["small", "medium", "large"],
+);
+export const enum___home_v_insight_list_v_theme = pgEnum(
+  "enum___home_v_insight_list_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_content_columns_sizes = pgEnum(
+  "enum__home_v_blocks_content_columns_sizes",
+  ["oneThird", "half", "twoThirds", "fiveCols", "full"],
+);
+export const enum__home_v_blocks_content_columns_content = pgEnum(
+  "enum__home_v_blocks_content_columns_content",
+  ["text", "sectionHeading", "work", "post", "media", "slider", "youTube"],
+);
+export const enum__home_v_blocks_content_columns_text_text_size = pgEnum(
+  "enum__home_v_blocks_content_columns_text_text_size",
+  ["sm", "base", "lg", "xl", "2xl"],
+);
+export const enum__home_v_blocks_content_columns_text_link_type = pgEnum(
+  "enum__home_v_blocks_content_columns_text_link_type",
+  ["reference", "index", "custom"],
+);
+export const enum__home_v_blocks_content_columns_text_link_index_page = pgEnum(
+  "enum__home_v_blocks_content_columns_text_link_index_page",
+  ["works", "posts", "contact", "ask"],
+);
+export const enum__home_v_blocks_content_columns_text_link_appearance = pgEnum(
+  "enum__home_v_blocks_content_columns_text_link_appearance",
+  ["default", "outline"],
+);
+export const enum__home_v_blocks_content_columns_section_heading_size = pgEnum(
+  "enum__home_v_blocks_content_columns_section_heading_size",
+  ["base", "lg", "xl"],
+);
+export const enum__home_v_blocks_content_columns_section_heading_align = pgEnum(
+  "enum__home_v_blocks_content_columns_section_heading_align",
+  ["left", "center"],
+);
+export const enum__home_v_blocks_content_columns_section_heading_style = pgEnum(
+  "enum__home_v_blocks_content_columns_section_heading_style",
+  ["default", "border", "jumbo"],
+);
+export const enum__home_v_blocks_content_columns_work_aspect = pgEnum(
+  "enum__home_v_blocks_content_columns_work_aspect",
+  ["wide", "square", "portrait"],
+);
+export const enum__home_v_blocks_content_columns_work_variant = pgEnum(
+  "enum__home_v_blocks_content_columns_work_variant",
+  ["featured", "card"],
+);
+export const enum__home_v_blocks_content_columns_post_aspect = pgEnum(
+  "enum__home_v_blocks_content_columns_post_aspect",
+  ["wide", "square", "portrait"],
+);
+export const enum__home_v_blocks_content_columns_post_variant = pgEnum(
+  "enum__home_v_blocks_content_columns_post_variant",
+  ["featured", "card"],
+);
+export const enum__home_v_blocks_content_columns_slider_theme = pgEnum(
+  "enum__home_v_blocks_content_columns_slider_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_content_columns_slider_intro_content_size =
+  pgEnum("enum__home_v_blocks_content_columns_slider_intro_content_size", [
+    "base",
+    "lg",
+    "xl",
+  ]);
+export const enum__home_v_blocks_content_columns_slider_intro_content_align =
+  pgEnum("enum__home_v_blocks_content_columns_slider_intro_content_align", [
+    "left",
+    "center",
+  ]);
+export const enum__home_v_blocks_content_columns_slider_style = pgEnum(
+  "enum__home_v_blocks_content_columns_slider_style",
+  ["default", "cropped", "single"],
+);
+export const enum__home_v_blocks_content_columns_slider_space_pt = pgEnum(
+  "enum__home_v_blocks_content_columns_slider_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_content_columns_slider_space_pb = pgEnum(
+  "enum__home_v_blocks_content_columns_slider_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_content_columns_slider_space_mt = pgEnum(
+  "enum__home_v_blocks_content_columns_slider_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_content_columns_slider_space_mb = pgEnum(
+  "enum__home_v_blocks_content_columns_slider_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_content_columns_media_aspect_ratio = pgEnum(
+  "enum__home_v_blocks_content_columns_media_aspect_ratio",
+  ["square", "landscape", "portrait", "original"],
+);
+export const enum__home_v_blocks_content_columns_media_caption_size = pgEnum(
+  "enum__home_v_blocks_content_columns_media_caption_size",
+  ["normal", "large", "xl"],
+);
+export const enum__home_v_blocks_content_columns_you_tube_aspect_ratio = pgEnum(
+  "enum__home_v_blocks_content_columns_you_tube_aspect_ratio",
+  ["landscape", "square", "portrait"],
+);
+export const enum__home_v_blocks_content_theme = pgEnum(
+  "enum__home_v_blocks_content_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_content_container_width = pgEnum(
+  "enum__home_v_blocks_content_container_width",
+  ["contained", "fullWidth"],
+);
+export const enum__home_v_blocks_content_space_pt = pgEnum(
+  "enum__home_v_blocks_content_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_content_space_pb = pgEnum(
+  "enum__home_v_blocks_content_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_content_space_mt = pgEnum(
+  "enum__home_v_blocks_content_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_content_space_mb = pgEnum(
+  "enum__home_v_blocks_content_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum___home_v_section_v_theme = pgEnum(
+  "enum___home_v_section_v_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum___home_v_section_v_spacing = pgEnum(
+  "enum___home_v_section_v_spacing",
+  ["default", "tight", "loose", "none"],
+);
+export const enum___home_v_section_v_stack = pgEnum(
+  "enum___home_v_section_v_stack",
+  ["default", "tight", "loose", "none"],
+);
+export const enum__home_v_blocks_slider_theme = pgEnum(
+  "enum__home_v_blocks_slider_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_slider_intro_content_size = pgEnum(
+  "enum__home_v_blocks_slider_intro_content_size",
+  ["base", "lg", "xl"],
+);
+export const enum__home_v_blocks_slider_intro_content_align = pgEnum(
+  "enum__home_v_blocks_slider_intro_content_align",
+  ["left", "center"],
+);
+export const enum__home_v_blocks_slider_style = pgEnum(
+  "enum__home_v_blocks_slider_style",
+  ["default", "cropped", "single"],
+);
+export const enum__home_v_blocks_slider_space_pt = pgEnum(
+  "enum__home_v_blocks_slider_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_slider_space_pb = pgEnum(
+  "enum__home_v_blocks_slider_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_slider_space_mt = pgEnum(
+  "enum__home_v_blocks_slider_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_slider_space_mb = pgEnum(
+  "enum__home_v_blocks_slider_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_archive_theme = pgEnum(
+  "enum__home_v_blocks_archive_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_archive_card_style = pgEnum(
+  "enum__home_v_blocks_archive_card_style",
+  ["card", "featured"],
+);
+export const enum__home_v_blocks_archive_populate_by = pgEnum(
+  "enum__home_v_blocks_archive_populate_by",
+  ["collection", "selection"],
+);
+export const enum__home_v_blocks_archive_relation_to = pgEnum(
+  "enum__home_v_blocks_archive_relation_to",
+  ["posts", "works"],
+);
+export const enum__home_v_blocks_cta_links_link_type = pgEnum(
+  "enum__home_v_blocks_cta_links_link_type",
+  ["reference", "index", "custom"],
+);
+export const enum__home_v_blocks_cta_links_link_index_page = pgEnum(
+  "enum__home_v_blocks_cta_links_link_index_page",
+  ["works", "posts", "contact", "ask"],
+);
+export const enum__home_v_blocks_cta_links_link_appearance = pgEnum(
+  "enum__home_v_blocks_cta_links_link_appearance",
+  ["default", "outline"],
+);
+export const enum__home_v_blocks_form_block_space_pt = pgEnum(
+  "enum__home_v_blocks_form_block_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_form_block_space_pb = pgEnum(
+  "enum__home_v_blocks_form_block_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_form_block_space_mt = pgEnum(
+  "enum__home_v_blocks_form_block_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_form_block_space_mb = pgEnum(
+  "enum__home_v_blocks_form_block_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_form_block_intro_align = pgEnum(
+  "enum__home_v_blocks_form_block_intro_align",
+  ["left", "center"],
+);
+export const enum__home_v_blocks_media_block_aspect_ratio = pgEnum(
+  "enum__home_v_blocks_media_block_aspect_ratio",
+  ["landscape", "square", "portrait", "original"],
+);
+export const enum__home_v_blocks_media_block_theme = pgEnum(
+  "enum__home_v_blocks_media_block_theme",
+  ["default", "inverted", "neutral", "brand"],
+);
+export const enum__home_v_blocks_media_block_caption_layout = pgEnum(
+  "enum__home_v_blocks_media_block_caption_layout",
+  ["center", "left", "right", "split-left", "split-right"],
+);
+export const enum__home_v_blocks_media_block_text_size = pgEnum(
+  "enum__home_v_blocks_media_block_text_size",
+  ["sm", "base", "lg", "xl", "2xl"],
+);
+export const enum__home_v_blocks_media_block_space_pt = pgEnum(
+  "enum__home_v_blocks_media_block_space_pt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_media_block_space_pb = pgEnum(
+  "enum__home_v_blocks_media_block_space_pb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_media_block_space_mt = pgEnum(
+  "enum__home_v_blocks_media_block_space_mt",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_blocks_media_block_space_mb = pgEnum(
+  "enum__home_v_blocks_media_block_space_mb",
+  ["none", "sm", "md", "lg", "xl"],
+);
+export const enum__home_v_version_status = pgEnum(
+  "enum__home_v_version_status",
+  ["draft", "published"],
 );
 export const enum_header_nav_items_link_type = pgEnum(
   "enum_header_nav_items_link_type",
@@ -4980,6 +6118,7 @@ export const pages = pgTable(
       withTimezone: true,
       precision: 3,
     }),
+    visibility: enum_pages_visibility("visibility").default("public"),
     slug: varchar("slug"),
     slugLock: boolean("slug_lock").default(true),
     updatedAt: timestamp("updated_at", {
@@ -5007,6 +6146,7 @@ export const pages = pgTable(
       columns.hero_shader_posterMedia,
     ),
     index("pages_meta_meta_image_idx").on(columns.meta_image),
+    index("pages_visibility_idx").on(columns.visibility),
     index("pages_slug_idx").on(columns.slug),
     index("pages_updated_at_idx").on(columns.updatedAt),
     index("pages_created_at_idx").on(columns.createdAt),
@@ -6715,6 +7855,8 @@ export const _pages_v = pgTable(
       withTimezone: true,
       precision: 3,
     }),
+    version_visibility:
+      enum__pages_v_version_visibility("version_visibility").default("public"),
     version_slug: varchar("version_slug"),
     version_slugLock: boolean("version_slug_lock").default(true),
     version_updatedAt: timestamp("version_updated_at", {
@@ -6759,6 +7901,9 @@ export const _pages_v = pgTable(
     ),
     index("_pages_v_version_meta_version_meta_image_idx").on(
       columns.version_meta_image,
+    ),
+    index("_pages_v_version_version_visibility_idx").on(
+      columns.version_visibility,
     ),
     index("_pages_v_version_version_slug_idx").on(columns.version_slug),
     index("_pages_v_version_version_updated_at_idx").on(
@@ -8134,6 +9279,7 @@ export const posts = pgTable(
       withTimezone: true,
       precision: 3,
     }),
+    visibility: enum_posts_visibility("visibility").default("public"),
     slug: varchar("slug"),
     slugLock: boolean("slug_lock").default(true),
     updatedAt: timestamp("updated_at", {
@@ -8161,6 +9307,7 @@ export const posts = pgTable(
       columns.hero_shader_posterMedia,
     ),
     index("posts_meta_meta_image_idx").on(columns.meta_image),
+    index("posts_visibility_idx").on(columns.visibility),
     index("posts_slug_idx").on(columns.slug),
     index("posts_updated_at_idx").on(columns.updatedAt),
     index("posts_created_at_idx").on(columns.createdAt),
@@ -9647,6 +10794,8 @@ export const _posts_v = pgTable(
       withTimezone: true,
       precision: 3,
     }),
+    version_visibility:
+      enum__posts_v_version_visibility("version_visibility").default("public"),
     version_slug: varchar("version_slug"),
     version_slugLock: boolean("version_slug_lock").default(true),
     version_updatedAt: timestamp("version_updated_at", {
@@ -9691,6 +10840,9 @@ export const _posts_v = pgTable(
     ),
     index("_posts_v_version_meta_version_meta_image_idx").on(
       columns.version_meta_image,
+    ),
+    index("_posts_v_version_version_visibility_idx").on(
+      columns.version_visibility,
     ),
     index("_posts_v_version_version_slug_idx").on(columns.version_slug),
     index("_posts_v_version_version_updated_at_idx").on(
@@ -11315,6 +12467,7 @@ export const works = pgTable(
       withTimezone: true,
       precision: 3,
     }),
+    visibility: enum_works_visibility("visibility").default("public"),
     slug: varchar("slug"),
     slugLock: boolean("slug_lock").default(true),
     updatedAt: timestamp("updated_at", {
@@ -11339,6 +12492,7 @@ export const works = pgTable(
     index("works_client_idx").on(columns.client),
     index("works_fallback_work_idx").on(columns.fallbackWork),
     index("works_meta_meta_image_idx").on(columns.meta_image),
+    index("works_visibility_idx").on(columns.visibility),
     index("works_slug_idx").on(columns.slug),
     index("works_updated_at_idx").on(columns.updatedAt),
     index("works_created_at_idx").on(columns.createdAt),
@@ -13065,6 +14219,8 @@ export const _works_v = pgTable(
       withTimezone: true,
       precision: 3,
     }),
+    version_visibility:
+      enum__works_v_version_visibility("version_visibility").default("public"),
     version_slug: varchar("version_slug"),
     version_slugLock: boolean("version_slug_lock").default(true),
     version_updatedAt: timestamp("version_updated_at", {
@@ -13108,6 +14264,9 @@ export const _works_v = pgTable(
     ),
     index("_works_v_version_meta_version_meta_image_idx").on(
       columns.version_meta_image,
+    ),
+    index("_works_v_version_version_visibility_idx").on(
+      columns.version_visibility,
     ),
     index("_works_v_version_version_slug_idx").on(columns.version_slug),
     index("_works_v_version_version_updated_at_idx").on(
@@ -13669,6 +14828,83 @@ export const users = pgTable(
   ],
 );
 
+export const members_sessions = pgTable(
+  "members_sessions",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    expiresAt: timestamp("expires_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }).notNull(),
+  },
+  (columns) => [
+    index("members_sessions_order_idx").on(columns._order),
+    index("members_sessions_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [members.id],
+      name: "members_sessions_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const members = pgTable(
+  "members",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    email: varchar("email").notNull(),
+    resetPasswordToken: varchar("reset_password_token"),
+    resetPasswordExpiration: timestamp("reset_password_expiration", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    salt: varchar("salt"),
+    hash: varchar("hash"),
+    resetPasswordRequestedAt: timestamp("reset_password_requested_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    _verified: boolean("_verified"),
+    _verificationToken: varchar("_verificationtoken"),
+    loginAttempts: numeric("login_attempts", { mode: "number" }).default(0),
+    lockUntil: timestamp("lock_until", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+  },
+  (columns) => [
+    index("members_updated_at_idx").on(columns.updatedAt),
+    index("members_created_at_idx").on(columns.createdAt),
+    uniqueIndex("members_email_idx").on(columns.email),
+  ],
+);
+
 export const streak_looks = pgTable(
   "streak_looks",
   {
@@ -13694,6 +14930,7 @@ export const streak_looks = pgTable(
     recipe: jsonb("recipe").default(
       sql`'{"version":1,"seed":694,"deltas":{},"frame":150}'::jsonb`,
     ),
+    stills: jsonb("stills").default(sql`'[]'::jsonb`),
     snapshot: jsonb("snapshot"),
     posters: jsonb("posters"),
     sourceHash: varchar("source_hash"),
@@ -13751,6 +14988,33 @@ export const streak_looks_texts = pgTable(
   ],
 );
 
+export const streak_looks_rels = pgTable(
+  "streak_looks_rels",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order"),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    mediaID: integer("media_id"),
+  },
+  (columns) => [
+    index("streak_looks_rels_order_idx").on(columns.order),
+    index("streak_looks_rels_parent_idx").on(columns.parent),
+    index("streak_looks_rels_path_idx").on(columns.path),
+    index("streak_looks_rels_media_id_idx").on(columns.mediaID),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [streak_looks.id],
+      name: "streak_looks_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["mediaID"]],
+      foreignColumns: [media.id],
+      name: "streak_looks_rels_media_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
 export const _streak_looks_v = pgTable(
   "_streak_looks_v",
   {
@@ -13794,6 +15058,7 @@ export const _streak_looks_v = pgTable(
     version_recipe: jsonb("version_recipe").default(
       sql`'{"version":1,"seed":694,"deltas":{},"frame":150}'::jsonb`,
     ),
+    version_stills: jsonb("version_stills").default(sql`'[]'::jsonb`),
     version_snapshot: jsonb("version_snapshot"),
     version_posters: jsonb("version_posters"),
     version_sourceHash: varchar("version_source_hash"),
@@ -13892,6 +15157,33 @@ export const _streak_looks_v_texts = pgTable(
       columns: [columns["parent"]],
       foreignColumns: [_streak_looks_v.id],
       name: "_streak_looks_v_texts_parent_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _streak_looks_v_rels = pgTable(
+  "_streak_looks_v_rels",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order"),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    mediaID: integer("media_id"),
+  },
+  (columns) => [
+    index("_streak_looks_v_rels_order_idx").on(columns.order),
+    index("_streak_looks_v_rels_parent_idx").on(columns.parent),
+    index("_streak_looks_v_rels_path_idx").on(columns.path),
+    index("_streak_looks_v_rels_media_id_idx").on(columns.mediaID),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [_streak_looks_v.id],
+      name: "_streak_looks_v_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["mediaID"]],
+      foreignColumns: [media.id],
+      name: "_streak_looks_v_rels_media_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -14350,6 +15642,7 @@ export const search = pgTable(
     meta_image: integer("meta_image_id").references(() => media.id, {
       onDelete: "set null",
     }),
+    visibility: varchar("visibility"),
     updatedAt: timestamp("updated_at", {
       mode: "string",
       withTimezone: true,
@@ -14466,6 +15759,8 @@ export const payload_mcp_api_keys = pgTable(
     streakLooks_delete: boolean("streak_looks_delete").default(false),
     media_find: boolean("media_find").default(false),
     videos_find: boolean("videos_find").default(false),
+    home_find: boolean("home_find").default(false),
+    home_update: boolean("home_update").default(false),
     contactPage_find: boolean("contact_page_find").default(false),
     contactPage_update: boolean("contact_page_update").default(false),
     header_find: boolean("header_find").default(false),
@@ -14647,6 +15942,7 @@ export const payload_locked_documents_rels = pgTable(
     inquiriesID: integer("inquiries_id"),
     "ask-questionsID": integer("ask_questions_id"),
     usersID: integer("users_id"),
+    membersID: integer("members_id"),
     "streak-looksID": integer("streak_looks_id"),
     redirectsID: integer("redirects_id"),
     formsID: integer("forms_id"),
@@ -14678,6 +15974,7 @@ export const payload_locked_documents_rels = pgTable(
       columns["ask-questionsID"],
     ),
     index("payload_locked_documents_rels_users_id_idx").on(columns.usersID),
+    index("payload_locked_documents_rels_members_id_idx").on(columns.membersID),
     index("payload_locked_documents_rels_streak_looks_id_idx").on(
       columns["streak-looksID"],
     ),
@@ -14756,6 +16053,11 @@ export const payload_locked_documents_rels = pgTable(
       name: "payload_locked_documents_rels_users_fk",
     }).onDelete("cascade"),
     foreignKey({
+      columns: [columns["membersID"]],
+      foreignColumns: [members.id],
+      name: "payload_locked_documents_rels_members_fk",
+    }).onDelete("cascade"),
+    foreignKey({
       columns: [columns["streak-looksID"]],
       foreignColumns: [streak_looks.id],
       name: "payload_locked_documents_rels_streak_looks_fk",
@@ -14829,6 +16131,7 @@ export const payload_preferences_rels = pgTable(
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
     usersID: integer("users_id"),
+    membersID: integer("members_id"),
     "payload-mcp-api-keysID": integer("payload_mcp_api_keys_id"),
   },
   (columns) => [
@@ -14836,6 +16139,7 @@ export const payload_preferences_rels = pgTable(
     index("payload_preferences_rels_parent_idx").on(columns.parent),
     index("payload_preferences_rels_path_idx").on(columns.path),
     index("payload_preferences_rels_users_id_idx").on(columns.usersID),
+    index("payload_preferences_rels_members_id_idx").on(columns.membersID),
     index("payload_preferences_rels_payload_mcp_api_keys_id_idx").on(
       columns["payload-mcp-api-keysID"],
     ),
@@ -14848,6 +16152,11 @@ export const payload_preferences_rels = pgTable(
       columns: [columns["usersID"]],
       foreignColumns: [users.id],
       name: "payload_preferences_rels_users_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["membersID"]],
+      foreignColumns: [members.id],
+      name: "payload_preferences_rels_members_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["payload-mcp-api-keysID"]],
@@ -14881,6 +16190,3154 @@ export const payload_migrations = pgTable(
   (columns) => [
     index("payload_migrations_updated_at_idx").on(columns.updatedAt),
     index("payload_migrations_created_at_idx").on(columns.createdAt),
+  ],
+);
+
+export const home_transition = pgTable(
+  "home_transition",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    layout: enum_home_transition_layout("layout").default("offset"),
+    textSize: enum_home_transition_text_size("text_size").default("small"),
+    headingLevel:
+      enum_home_transition_heading_level("heading_level").default("h2"),
+    theme: enum_home_transition_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_transition_order_idx").on(columns._order),
+    index("home_transition_parent_id_idx").on(columns._parentID),
+    index("home_transition_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_transition_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_feature_heading_offset = pgTable(
+  "home_blocks_feature_heading_offset",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    textSize:
+      enum_home_blocks_feature_heading_offset_text_size("text_size").default(
+        "small",
+      ),
+    theme:
+      enum_home_blocks_feature_heading_offset_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_feature_heading_offset_order_idx").on(columns._order),
+    index("home_blocks_feature_heading_offset_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("home_blocks_feature_heading_offset_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_feature_heading_offset_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_full_media = pgTable(
+  "home_full_media",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    showContent: boolean("show_content").default(true),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    visualType: enum_home_full_media_visual_type("visual_type"),
+    shader_studio: integer("shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    shader_preset: varchar("shader_preset"),
+    shader_seed: numeric("shader_seed", { mode: "number" }),
+    shader_speed: numeric("shader_speed", { mode: "number" }),
+    shader_intensity: numeric("shader_intensity", { mode: "number" }),
+    shader_bleed: boolean("shader_bleed").default(false),
+    shader_origin:
+      enum_home_full_media_shader_origin("shader_origin").default("top-right"),
+    shader_showMedia: boolean("shader_show_media").default(false),
+    shader_surface: enum_visual_surface("shader_surface").default("auto"),
+    shader_pointerInteraction: boolean("shader_pointer_interaction").default(
+      false,
+    ),
+    shader_hoverTargets: enum_leak_hover_targets("shader_hover_targets"),
+    shader_sectionHover: numeric("shader_section_hover", { mode: "number" }),
+    shader_posterMedia: integer("shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    textSize: enum_home_full_media_text_size("text_size").default("small"),
+    width: enum_home_full_media_width("width").default("contained"),
+    aspectRatio:
+      enum_home_full_media_aspect_ratio("aspect_ratio").default("16-9"),
+    contentPosition:
+      enum_home_full_media_content_position("content_position").default("left"),
+    theme: enum_home_full_media_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_full_media_order_idx").on(columns._order),
+    index("home_full_media_parent_id_idx").on(columns._parentID),
+    index("home_full_media_path_idx").on(columns._path),
+    index("home_full_media_video_idx").on(columns.video),
+    index("home_full_media_media_idx").on(columns.media),
+    index("home_full_media_shader_shader_studio_idx").on(columns.shader_studio),
+    index("home_full_media_shader_shader_poster_media_idx").on(
+      columns.shader_posterMedia,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_full_media_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_media_split = pgTable(
+  "home_media_split",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    visualType: enum_home_media_split_visual_type("visual_type"),
+    shader_studio: integer("shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    shader_preset: varchar("shader_preset"),
+    shader_seed: numeric("shader_seed", { mode: "number" }),
+    shader_speed: numeric("shader_speed", { mode: "number" }),
+    shader_intensity: numeric("shader_intensity", { mode: "number" }),
+    shader_bleed: boolean("shader_bleed").default(false),
+    shader_origin:
+      enum_home_media_split_shader_origin("shader_origin").default("top-right"),
+    shader_showMedia: boolean("shader_show_media").default(false),
+    shader_surface: enum_visual_surface("shader_surface").default("auto"),
+    shader_pointerInteraction: boolean("shader_pointer_interaction").default(
+      false,
+    ),
+    shader_hoverTargets: enum_leak_hover_targets("shader_hover_targets"),
+    shader_sectionHover: numeric("shader_section_hover", { mode: "number" }),
+    shader_posterMedia: integer("shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    textSize: enum_home_media_split_text_size("text_size").default("small"),
+    layout: enum_home_media_split_layout("layout").default("left"),
+    aspectRatio:
+      enum_home_media_split_aspect_ratio("aspect_ratio").default("16-9"),
+    theme: enum_home_media_split_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_media_split_order_idx").on(columns._order),
+    index("home_media_split_parent_id_idx").on(columns._parentID),
+    index("home_media_split_path_idx").on(columns._path),
+    index("home_media_split_video_idx").on(columns.video),
+    index("home_media_split_media_idx").on(columns.media),
+    index("home_media_split_shader_shader_studio_idx").on(
+      columns.shader_studio,
+    ),
+    index("home_media_split_shader_shader_poster_media_idx").on(
+      columns.shader_posterMedia,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_media_split_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_split_narrow = pgTable(
+  "home_split_narrow",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    visualType: enum_home_split_narrow_visual_type("visual_type"),
+    shader_studio: integer("shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    shader_preset: varchar("shader_preset"),
+    shader_seed: numeric("shader_seed", { mode: "number" }),
+    shader_speed: numeric("shader_speed", { mode: "number" }),
+    shader_intensity: numeric("shader_intensity", { mode: "number" }),
+    shader_bleed: boolean("shader_bleed").default(false),
+    shader_origin:
+      enum_home_split_narrow_shader_origin("shader_origin").default(
+        "top-right",
+      ),
+    shader_showMedia: boolean("shader_show_media").default(false),
+    shader_surface: enum_visual_surface("shader_surface").default("auto"),
+    shader_pointerInteraction: boolean("shader_pointer_interaction").default(
+      false,
+    ),
+    shader_hoverTargets: enum_leak_hover_targets("shader_hover_targets"),
+    shader_sectionHover: numeric("shader_section_hover", { mode: "number" }),
+    shader_posterMedia: integer("shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    textSize: enum_home_split_narrow_text_size("text_size").default("small"),
+    imagePosition:
+      enum_home_split_narrow_image_position("image_position").default("left"),
+    theme: enum_home_split_narrow_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_split_narrow_order_idx").on(columns._order),
+    index("home_split_narrow_parent_id_idx").on(columns._parentID),
+    index("home_split_narrow_path_idx").on(columns._path),
+    index("home_split_narrow_video_idx").on(columns.video),
+    index("home_split_narrow_media_idx").on(columns.media),
+    index("home_split_narrow_shader_shader_studio_idx").on(
+      columns.shader_studio,
+    ),
+    index("home_split_narrow_shader_shader_poster_media_idx").on(
+      columns.shader_posterMedia,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_split_narrow_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_carousel_split_slides = pgTable(
+  "home_blocks_carousel_split_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+  },
+  (columns) => [
+    index("home_blocks_carousel_split_slides_order_idx").on(columns._order),
+    index("home_blocks_carousel_split_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("home_blocks_carousel_split_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_carousel_split.id],
+      name: "home_blocks_carousel_split_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_carousel_split = pgTable(
+  "home_blocks_carousel_split",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    textSize:
+      enum_home_blocks_carousel_split_text_size("text_size").default("small"),
+    carouselPosition:
+      enum_home_blocks_carousel_split_carousel_position(
+        "carousel_position",
+      ).default("right"),
+    slideSize:
+      enum_home_blocks_carousel_split_slide_size("slide_size").default("full"),
+    showArrows: boolean("show_arrows").default(false),
+    theme: enum_home_blocks_carousel_split_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_carousel_split_order_idx").on(columns._order),
+    index("home_blocks_carousel_split_parent_id_idx").on(columns._parentID),
+    index("home_blocks_carousel_split_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_carousel_split_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_image_pair = pgTable(
+  "home_image_pair",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    portraitMedia: integer("portrait_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    landscapeMedia: integer("landscape_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    textSize: enum_home_image_pair_text_size("text_size").default("small"),
+    portraitPosition:
+      enum_home_image_pair_portrait_position("portrait_position").default(
+        "left",
+      ),
+    textPosition:
+      enum_home_image_pair_text_position("text_position").default(
+        "under-portrait",
+      ),
+    theme: enum_home_image_pair_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_image_pair_order_idx").on(columns._order),
+    index("home_image_pair_parent_id_idx").on(columns._parentID),
+    index("home_image_pair_path_idx").on(columns._path),
+    index("home_image_pair_portrait_media_idx").on(columns.portraitMedia),
+    index("home_image_pair_landscape_media_idx").on(columns.landscapeMedia),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_image_pair_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_split_offset = pgTable(
+  "home_split_offset",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    largeMedia: integer("large_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    smallMedia: integer("small_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    textSize: enum_home_split_offset_text_size("text_size").default("small"),
+    captionPosition:
+      enum_home_split_offset_caption_position("caption_position").default(
+        "left",
+      ),
+    theme: enum_home_split_offset_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_split_offset_order_idx").on(columns._order),
+    index("home_split_offset_parent_id_idx").on(columns._parentID),
+    index("home_split_offset_path_idx").on(columns._path),
+    index("home_split_offset_large_media_idx").on(columns.largeMedia),
+    index("home_split_offset_small_media_idx").on(columns.smallMedia),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_split_offset_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_image_statement = pgTable(
+  "home_image_statement",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: jsonb("caption"),
+    textSize: enum_home_image_statement_text_size("text_size").default("small"),
+    textPosition:
+      enum_home_image_statement_text_position("text_position").default("left"),
+    imageWidth:
+      enum_home_image_statement_image_width("image_width").default("contained"),
+    aspectRatio:
+      enum_home_image_statement_aspect_ratio("aspect_ratio").default(
+        "responsive",
+      ),
+    theme: enum_home_image_statement_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_image_statement_order_idx").on(columns._order),
+    index("home_image_statement_parent_id_idx").on(columns._parentID),
+    index("home_image_statement_path_idx").on(columns._path),
+    index("home_image_statement_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_image_statement_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_caption = pgTable(
+  "home_caption",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    captionOverride: jsonb("caption_override"),
+    size: enum_home_caption_size("size"),
+    theme: enum_home_caption_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_caption_order_idx").on(columns._order),
+    index("home_caption_parent_id_idx").on(columns._parentID),
+    index("home_caption_path_idx").on(columns._path),
+    index("home_caption_video_idx").on(columns.video),
+    index("home_caption_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_caption_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_youtube = pgTable(
+  "home_youtube",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    url: varchar("url"),
+    title: varchar("title"),
+    size: enum_home_youtube_size("size"),
+    theme: enum_home_youtube_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_youtube_order_idx").on(columns._order),
+    index("home_youtube_parent_id_idx").on(columns._parentID),
+    index("home_youtube_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_youtube_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_rich_text = pgTable(
+  "home_rich_text",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    body: jsonb("body"),
+    textSize: enum_home_rich_text_text_size("text_size").default("small"),
+    theme: enum_home_rich_text_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_rich_text_order_idx").on(columns._order),
+    index("home_rich_text_parent_id_idx").on(columns._parentID),
+    index("home_rich_text_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_rich_text_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_code = pgTable(
+  "home_code",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    language: enum_home_code_language("language").default("typescript"),
+    code: varchar("code"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_code_order_idx").on(columns._order),
+    index("home_code_parent_id_idx").on(columns._parentID),
+    index("home_code_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_code_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_chart = pgTable(
+  "home_chart",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum_home_chart_width("width").default("wide"),
+    theme: enum_home_chart_theme("theme").default("default"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
+    ),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_chart_order_idx").on(columns._order),
+    index("home_chart_parent_id_idx").on(columns._parentID),
+    index("home_chart_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_chart_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_diagram = pgTable(
+  "home_diagram",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum_home_diagram_width("width").default("wide"),
+    theme: enum_home_diagram_theme("theme").default("default"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
+    ),
+    geometry: jsonb("geometry"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_diagram_order_idx").on(columns._order),
+    index("home_diagram_parent_id_idx").on(columns._parentID),
+    index("home_diagram_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_diagram_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_faq_items = pgTable(
+  "home_faq_items",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    question: varchar("question"),
+    answer: jsonb("answer"),
+  },
+  (columns) => [
+    index("home_faq_items_order_idx").on(columns._order),
+    index("home_faq_items_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_faq.id],
+      name: "home_faq_items_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_faq = pgTable(
+  "home_faq",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    enableLink: boolean("enable_link"),
+    prompt: varchar("prompt"),
+    link_type: enum_home_faq_link_type("link_type").default("reference"),
+    link_newTab: boolean("link_new_tab"),
+    link_indexPage: enum_home_faq_link_index_page("link_index_page"),
+    link_url: varchar("link_url"),
+    link_label: varchar("link_label"),
+    textSize: enum_home_faq_text_size("text_size").default("small"),
+    theme: enum_home_faq_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_faq_order_idx").on(columns._order),
+    index("home_faq_parent_id_idx").on(columns._parentID),
+    index("home_faq_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_faq_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_carousel_slides = pgTable(
+  "home_blocks_carousel_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+  },
+  (columns) => [
+    index("home_blocks_carousel_slides_order_idx").on(columns._order),
+    index("home_blocks_carousel_slides_parent_id_idx").on(columns._parentID),
+    index("home_blocks_carousel_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_carousel.id],
+      name: "home_blocks_carousel_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_carousel = pgTable(
+  "home_blocks_carousel",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    width: enum_home_blocks_carousel_width("width").default("contained"),
+    showArrows: boolean("show_arrows").default(false),
+    slideSize:
+      enum_home_blocks_carousel_slide_size("slide_size").default("full"),
+    theme: enum_home_blocks_carousel_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_carousel_order_idx").on(columns._order),
+    index("home_blocks_carousel_parent_id_idx").on(columns._parentID),
+    index("home_blocks_carousel_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_carousel_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_carousel_tabs_tabs_slides = pgTable(
+  "home_blocks_carousel_tabs_tabs_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+  },
+  (columns) => [
+    index("home_blocks_carousel_tabs_tabs_slides_order_idx").on(columns._order),
+    index("home_blocks_carousel_tabs_tabs_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("home_blocks_carousel_tabs_tabs_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_carousel_tabs_tabs.id],
+      name: "home_blocks_carousel_tabs_tabs_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_carousel_tabs_tabs = pgTable(
+  "home_blocks_carousel_tabs_tabs",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+  },
+  (columns) => [
+    index("home_blocks_carousel_tabs_tabs_order_idx").on(columns._order),
+    index("home_blocks_carousel_tabs_tabs_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_carousel_tabs.id],
+      name: "home_blocks_carousel_tabs_tabs_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_carousel_tabs = pgTable(
+  "home_blocks_carousel_tabs",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    textSize:
+      enum_home_blocks_carousel_tabs_text_size("text_size").default("small"),
+    deckStyle:
+      enum_home_blocks_carousel_tabs_deck_style("deck_style").default(
+        "coverflow",
+      ),
+    slideSize:
+      enum_home_blocks_carousel_tabs_slide_size("slide_size").default("full"),
+    showArrows: boolean("show_arrows").default(false),
+    tabSize:
+      enum_home_blocks_carousel_tabs_tab_size("tab_size").default("default"),
+    theme: enum_home_blocks_carousel_tabs_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_carousel_tabs_order_idx").on(columns._order),
+    index("home_blocks_carousel_tabs_parent_id_idx").on(columns._parentID),
+    index("home_blocks_carousel_tabs_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_carousel_tabs_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_feature_tabs_tabs_items = pgTable(
+  "home_blocks_feature_tabs_tabs_items",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    text: varchar("text"),
+  },
+  (columns) => [
+    index("home_blocks_feature_tabs_tabs_items_order_idx").on(columns._order),
+    index("home_blocks_feature_tabs_tabs_items_parent_id_idx").on(
+      columns._parentID,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_feature_tabs_tabs.id],
+      name: "home_blocks_feature_tabs_tabs_items_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_feature_tabs_tabs = pgTable(
+  "home_blocks_feature_tabs_tabs",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    title: varchar("title"),
+    heading: varchar("heading"),
+    description: jsonb("description"),
+    subheading: varchar("subheading").default("Included"),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    visualType: enum_home_blocks_feature_tabs_tabs_visual_type("visual_type"),
+    shader_studio: integer("shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    shader_preset: varchar("shader_preset"),
+    shader_seed: numeric("shader_seed", { mode: "number" }),
+    shader_speed: numeric("shader_speed", { mode: "number" }),
+    shader_intensity: numeric("shader_intensity", { mode: "number" }),
+    shader_bleed: boolean("shader_bleed").default(false),
+    shader_origin:
+      enum_home_blocks_feature_tabs_tabs_shader_origin("shader_origin").default(
+        "top-right",
+      ),
+    shader_showMedia: boolean("shader_show_media").default(false),
+    shader_surface: enum_visual_surface("shader_surface").default("auto"),
+    shader_pointerInteraction: boolean("shader_pointer_interaction").default(
+      false,
+    ),
+    shader_hoverTargets: enum_leak_hover_targets("shader_hover_targets"),
+    shader_sectionHover: numeric("shader_section_hover", { mode: "number" }),
+    shader_posterMedia: integer("shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    caption: varchar("caption"),
+  },
+  (columns) => [
+    index("home_blocks_feature_tabs_tabs_order_idx").on(columns._order),
+    index("home_blocks_feature_tabs_tabs_parent_id_idx").on(columns._parentID),
+    index("home_blocks_feature_tabs_tabs_media_idx").on(columns.media),
+    index("home_blocks_feature_tabs_tabs_shader_shader_studio_idx").on(
+      columns.shader_studio,
+    ),
+    index("home_blocks_feature_tabs_tabs_shader_shader_poster_media_idx").on(
+      columns.shader_posterMedia,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_feature_tabs.id],
+      name: "home_blocks_feature_tabs_tabs_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_feature_tabs = pgTable(
+  "home_blocks_feature_tabs",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    textSize:
+      enum_home_blocks_feature_tabs_text_size("text_size").default("small"),
+    tabSize:
+      enum_home_blocks_feature_tabs_tab_size("tab_size").default("default"),
+    theme: enum_home_blocks_feature_tabs_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_feature_tabs_order_idx").on(columns._order),
+    index("home_blocks_feature_tabs_parent_id_idx").on(columns._parentID),
+    index("home_blocks_feature_tabs_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_feature_tabs_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_insight_list_items = pgTable(
+  "home_insight_list_items",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    title: varchar("title"),
+    description: varchar("description"),
+  },
+  (columns) => [
+    index("home_insight_list_items_order_idx").on(columns._order),
+    index("home_insight_list_items_parent_id_idx").on(columns._parentID),
+    index("home_insight_list_items_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_insight_list.id],
+      name: "home_insight_list_items_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_insight_list = pgTable(
+  "home_insight_list",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    summary: varchar("summary"),
+    textSize: enum_home_insight_list_text_size("text_size").default("small"),
+    layout: enum_home_insight_list_layout("layout").default("side"),
+    markSize: enum_home_insight_list_mark_size("mark_size").default("medium"),
+    theme: enum_home_insight_list_theme("theme").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_insight_list_order_idx").on(columns._order),
+    index("home_insight_list_parent_id_idx").on(columns._parentID),
+    index("home_insight_list_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_insight_list_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_content_columns_slider_slides = pgTable(
+  "home_blocks_content_columns_slider_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    slide_image: integer("slide_image_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    slide_caption: varchar("slide_caption"),
+  },
+  (columns) => [
+    index("home_blocks_content_columns_slider_slides_order_idx").on(
+      columns._order,
+    ),
+    index("home_blocks_content_columns_slider_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("home_blocks_content_columns_slider_slides_slide_slide_im_idx").on(
+      columns.slide_image,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_content_columns.id],
+      name: "home_blocks_content_columns_slider_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_content_columns = pgTable(
+  "home_blocks_content_columns",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    sizes: enum_home_blocks_content_columns_sizes("sizes").default("oneThird"),
+    content:
+      enum_home_blocks_content_columns_content("content").default("text"),
+    text_richText: jsonb("text_rich_text").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
+    text_textSize:
+      enum_home_blocks_content_columns_text_text_size("text_text_size").default(
+        "base",
+      ),
+    text_enableLink: boolean("text_enable_link"),
+    text_link_type:
+      enum_home_blocks_content_columns_text_link_type("text_link_type").default(
+        "reference",
+      ),
+    text_link_newTab: boolean("text_link_new_tab"),
+    text_link_indexPage: enum_home_blocks_content_columns_text_link_index_page(
+      "text_link_index_page",
+    ),
+    text_link_url: varchar("text_link_url"),
+    text_link_label: varchar("text_link_label"),
+    text_link_appearance: enum_home_blocks_content_columns_text_link_appearance(
+      "text_link_appearance",
+    ).default("default"),
+    sectionHeading_eyebrow: varchar("section_heading_eyebrow"),
+    sectionHeading_content: jsonb("section_heading_content").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
+    sectionHeading_size: enum_home_blocks_content_columns_section_heading_size(
+      "section_heading_size",
+    ).default("base"),
+    sectionHeading_align:
+      enum_home_blocks_content_columns_section_heading_align(
+        "section_heading_align",
+      ).default("left"),
+    sectionHeading_style:
+      enum_home_blocks_content_columns_section_heading_style(
+        "section_heading_style",
+      ).default("default"),
+    work_works: integer("work_works_id").references(() => works.id, {
+      onDelete: "set null",
+    }),
+    work_aspect:
+      enum_home_blocks_content_columns_work_aspect("work_aspect").default(
+        "wide",
+      ),
+    work_variant:
+      enum_home_blocks_content_columns_work_variant("work_variant").default(
+        "featured",
+      ),
+    post_posts: integer("post_posts_id").references(() => posts.id, {
+      onDelete: "set null",
+    }),
+    post_aspect:
+      enum_home_blocks_content_columns_post_aspect("post_aspect").default(
+        "wide",
+      ),
+    post_variant:
+      enum_home_blocks_content_columns_post_variant("post_variant").default(
+        "featured",
+      ),
+    slider_theme:
+      enum_home_blocks_content_columns_slider_theme("slider_theme").default(
+        "default",
+      ),
+    slider_introContent_heading: varchar("slider_intro_content_heading"),
+    slider_introContent_subheading: varchar("slider_intro_content_subheading"),
+    slider_introContent_size:
+      enum_home_blocks_content_columns_slider_intro_content_size(
+        "slider_intro_content_size",
+      ).default("base"),
+    slider_introContent_align:
+      enum_home_blocks_content_columns_slider_intro_content_align(
+        "slider_intro_content_align",
+      ).default("left"),
+    slider_style:
+      enum_home_blocks_content_columns_slider_style("slider_style").default(
+        "default",
+      ),
+    slider_space_pt:
+      enum_home_blocks_content_columns_slider_space_pt(
+        "slider_space_pt",
+      ).default("md"),
+    slider_space_pb:
+      enum_home_blocks_content_columns_slider_space_pb(
+        "slider_space_pb",
+      ).default("md"),
+    slider_space_mt:
+      enum_home_blocks_content_columns_slider_space_mt(
+        "slider_space_mt",
+      ).default("none"),
+    slider_space_mb:
+      enum_home_blocks_content_columns_slider_space_mb(
+        "slider_space_mb",
+      ).default("none"),
+    media_media: integer("media_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    media_aspectRatio:
+      enum_home_blocks_content_columns_media_aspect_ratio(
+        "media_aspect_ratio",
+      ).default("landscape"),
+    media_fullWidth: boolean("media_full_width").default(false),
+    media_captionSize:
+      enum_home_blocks_content_columns_media_caption_size(
+        "media_caption_size",
+      ).default("normal"),
+    youTube_url: varchar("you_tube_url"),
+    youTube_aspectRatio: enum_home_blocks_content_columns_you_tube_aspect_ratio(
+      "you_tube_aspect_ratio",
+    ).default("landscape"),
+    youTube_fullWidth: boolean("you_tube_full_width").default(false),
+  },
+  (columns) => [
+    index("home_blocks_content_columns_order_idx").on(columns._order),
+    index("home_blocks_content_columns_parent_id_idx").on(columns._parentID),
+    index("home_blocks_content_columns_work_work_works_idx").on(
+      columns.work_works,
+    ),
+    index("home_blocks_content_columns_post_post_posts_idx").on(
+      columns.post_posts,
+    ),
+    index("home_blocks_content_columns_media_media_media_idx").on(
+      columns.media_media,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_content.id],
+      name: "home_blocks_content_columns_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_content = pgTable(
+  "home_blocks_content",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    theme: enum_home_blocks_content_theme("theme").default("default"),
+    containerWidth:
+      enum_home_blocks_content_container_width("container_width").default(
+        "contained",
+      ),
+    space_pt: enum_home_blocks_content_space_pt("space_pt").default("md"),
+    space_pb: enum_home_blocks_content_space_pb("space_pb").default("md"),
+    space_mt: enum_home_blocks_content_space_mt("space_mt").default("none"),
+    space_mb: enum_home_blocks_content_space_mb("space_mb").default("none"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_content_order_idx").on(columns._order),
+    index("home_blocks_content_parent_id_idx").on(columns._parentID),
+    index("home_blocks_content_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_content_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_section = pgTable(
+  "home_section",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    customize: boolean("customize").default(false),
+    theme: enum_home_section_theme("theme").default("default"),
+    spacing: enum_home_section_spacing("spacing").default("default"),
+    stack: enum_home_section_stack("stack").default("default"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_section_order_idx").on(columns._order),
+    index("home_section_parent_id_idx").on(columns._parentID),
+    index("home_section_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_section_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_slider_slides = pgTable(
+  "home_blocks_slider_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    slide_image: integer("slide_image_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    slide_caption: varchar("slide_caption"),
+  },
+  (columns) => [
+    index("home_blocks_slider_slides_order_idx").on(columns._order),
+    index("home_blocks_slider_slides_parent_id_idx").on(columns._parentID),
+    index("home_blocks_slider_slides_slide_slide_image_idx").on(
+      columns.slide_image,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_slider.id],
+      name: "home_blocks_slider_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_slider = pgTable(
+  "home_blocks_slider",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    theme: enum_home_blocks_slider_theme("theme").default("default"),
+    introContent_heading: varchar("intro_content_heading"),
+    introContent_subheading: varchar("intro_content_subheading"),
+    introContent_size:
+      enum_home_blocks_slider_intro_content_size("intro_content_size").default(
+        "base",
+      ),
+    introContent_align: enum_home_blocks_slider_intro_content_align(
+      "intro_content_align",
+    ).default("left"),
+    style: enum_home_blocks_slider_style("style").default("default"),
+    space_pt: enum_home_blocks_slider_space_pt("space_pt").default("md"),
+    space_pb: enum_home_blocks_slider_space_pb("space_pb").default("md"),
+    space_mt: enum_home_blocks_slider_space_mt("space_mt").default("none"),
+    space_mb: enum_home_blocks_slider_space_mb("space_mb").default("none"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_slider_order_idx").on(columns._order),
+    index("home_blocks_slider_parent_id_idx").on(columns._parentID),
+    index("home_blocks_slider_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_slider_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_callout = pgTable(
+  "home_blocks_callout",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    richText: jsonb("rich_text"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_callout_order_idx").on(columns._order),
+    index("home_blocks_callout_parent_id_idx").on(columns._parentID),
+    index("home_blocks_callout_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_callout_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_archive = pgTable(
+  "home_blocks_archive",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    theme: enum_home_blocks_archive_theme("theme").default("default"),
+    cardStyle:
+      enum_home_blocks_archive_card_style("card_style").default("card"),
+    introContent: jsonb("intro_content"),
+    populateBy:
+      enum_home_blocks_archive_populate_by("populate_by").default("collection"),
+    relationTo:
+      enum_home_blocks_archive_relation_to("relation_to").default("posts"),
+    limit: numeric("limit", { mode: "number" }).default(10),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_archive_order_idx").on(columns._order),
+    index("home_blocks_archive_parent_id_idx").on(columns._parentID),
+    index("home_blocks_archive_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_archive_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_cta_links = pgTable(
+  "home_blocks_cta_links",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: varchar("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    link_type:
+      enum_home_blocks_cta_links_link_type("link_type").default("reference"),
+    link_newTab: boolean("link_new_tab"),
+    link_indexPage:
+      enum_home_blocks_cta_links_link_index_page("link_index_page"),
+    link_url: varchar("link_url"),
+    link_label: varchar("link_label"),
+    link_appearance:
+      enum_home_blocks_cta_links_link_appearance("link_appearance").default(
+        "default",
+      ),
+  },
+  (columns) => [
+    index("home_blocks_cta_links_order_idx").on(columns._order),
+    index("home_blocks_cta_links_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home_blocks_cta.id],
+      name: "home_blocks_cta_links_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_cta = pgTable(
+  "home_blocks_cta",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    richText: jsonb("rich_text"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_cta_order_idx").on(columns._order),
+    index("home_blocks_cta_parent_id_idx").on(columns._parentID),
+    index("home_blocks_cta_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_cta_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_form_block = pgTable(
+  "home_blocks_form_block",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    form: integer("form_id").references(() => forms.id, {
+      onDelete: "set null",
+    }),
+    space_pt: enum_home_blocks_form_block_space_pt("space_pt").default("md"),
+    space_pb: enum_home_blocks_form_block_space_pb("space_pb").default("md"),
+    space_mt: enum_home_blocks_form_block_space_mt("space_mt").default("none"),
+    space_mb: enum_home_blocks_form_block_space_mb("space_mb").default("none"),
+    enableIntro: boolean("enable_intro"),
+    introAlign:
+      enum_home_blocks_form_block_intro_align("intro_align").default("left"),
+    introContent: jsonb("intro_content"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_form_block_order_idx").on(columns._order),
+    index("home_blocks_form_block_parent_id_idx").on(columns._parentID),
+    index("home_blocks_form_block_path_idx").on(columns._path),
+    index("home_blocks_form_block_form_idx").on(columns.form),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_form_block_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home_blocks_media_block = pgTable(
+  "home_blocks_media_block",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: varchar("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    aspectRatio:
+      enum_home_blocks_media_block_aspect_ratio("aspect_ratio").default(
+        "landscape",
+      ),
+    fullWidth: boolean("full_width").default(false),
+    theme: enum_home_blocks_media_block_theme("theme").default("default"),
+    showCaption: boolean("show_caption").default(true),
+    captionLayout:
+      enum_home_blocks_media_block_caption_layout("caption_layout").default(
+        "center",
+      ),
+    richText: jsonb("rich_text").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
+    textSize:
+      enum_home_blocks_media_block_text_size("text_size").default("base"),
+    space_pt: enum_home_blocks_media_block_space_pt("space_pt").default("md"),
+    space_pb: enum_home_blocks_media_block_space_pb("space_pb").default("md"),
+    space_mt: enum_home_blocks_media_block_space_mt("space_mt").default("none"),
+    space_mb: enum_home_blocks_media_block_space_mb("space_mb").default("none"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("home_blocks_media_block_order_idx").on(columns._order),
+    index("home_blocks_media_block_parent_id_idx").on(columns._parentID),
+    index("home_blocks_media_block_path_idx").on(columns._path),
+    index("home_blocks_media_block_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [home.id],
+      name: "home_blocks_media_block_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const home = pgTable(
+  "home",
+  {
+    id: serial("id").primaryKey(),
+    title: varchar("title").default("Home"),
+    hero_media: integer("hero_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    meta_title: varchar("meta_title"),
+    meta_image: integer("meta_image_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    meta_description: varchar("meta_description"),
+    meta_noIndex: boolean("meta_no_index").default(false),
+    publishedAt: timestamp("published_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    _status: enum_home_status("_status").default("draft"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+  },
+  (columns) => [
+    index("home_hero_hero_media_idx").on(columns.hero_media),
+    index("home_meta_meta_image_idx").on(columns.meta_image),
+    index("home__status_idx").on(columns._status),
+  ],
+);
+
+export const home_rels = pgTable(
+  "home_rels",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order"),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    pagesID: integer("pages_id"),
+    postsID: integer("posts_id"),
+    worksID: integer("works_id"),
+    categoriesID: integer("categories_id"),
+  },
+  (columns) => [
+    index("home_rels_order_idx").on(columns.order),
+    index("home_rels_parent_idx").on(columns.parent),
+    index("home_rels_path_idx").on(columns.path),
+    index("home_rels_pages_id_idx").on(columns.pagesID),
+    index("home_rels_posts_id_idx").on(columns.postsID),
+    index("home_rels_works_id_idx").on(columns.worksID),
+    index("home_rels_categories_id_idx").on(columns.categoriesID),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [home.id],
+      name: "home_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["pagesID"]],
+      foreignColumns: [pages.id],
+      name: "home_rels_pages_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["postsID"]],
+      foreignColumns: [posts.id],
+      name: "home_rels_posts_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["worksID"]],
+      foreignColumns: [works.id],
+      name: "home_rels_works_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["categoriesID"]],
+      foreignColumns: [categories.id],
+      name: "home_rels_categories_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_transition_v = pgTable(
+  "__home_v_transition_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    layout: enum___home_v_transition_v_layout("layout").default("offset"),
+    textSize:
+      enum___home_v_transition_v_text_size("text_size").default("small"),
+    headingLevel:
+      enum___home_v_transition_v_heading_level("heading_level").default("h2"),
+    theme: enum___home_v_transition_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_transition_v_order_idx").on(columns._order),
+    index("__home_v_transition_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_transition_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_transition_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_feature_heading_offset = pgTable(
+  "_home_v_blocks_feature_heading_offset",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    textSize:
+      enum__home_v_blocks_feature_heading_offset_text_size("text_size").default(
+        "small",
+      ),
+    theme:
+      enum__home_v_blocks_feature_heading_offset_theme("theme").default(
+        "default",
+      ),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_feature_heading_offset_order_idx").on(columns._order),
+    index("_home_v_blocks_feature_heading_offset_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("_home_v_blocks_feature_heading_offset_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_feature_heading_offset_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_full_media_v = pgTable(
+  "__home_v_full_media_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    showContent: boolean("show_content").default(true),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    visualType: enum___home_v_full_media_v_visual_type("visual_type"),
+    shader_studio: integer("shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    shader_preset: varchar("shader_preset"),
+    shader_seed: numeric("shader_seed", { mode: "number" }),
+    shader_speed: numeric("shader_speed", { mode: "number" }),
+    shader_intensity: numeric("shader_intensity", { mode: "number" }),
+    shader_bleed: boolean("shader_bleed").default(false),
+    shader_origin:
+      enum___home_v_full_media_v_shader_origin("shader_origin").default(
+        "top-right",
+      ),
+    shader_showMedia: boolean("shader_show_media").default(false),
+    shader_surface: enum_visual_surface("shader_surface").default("auto"),
+    shader_pointerInteraction: boolean("shader_pointer_interaction").default(
+      false,
+    ),
+    shader_hoverTargets: enum_leak_hover_targets("shader_hover_targets"),
+    shader_sectionHover: numeric("shader_section_hover", { mode: "number" }),
+    shader_posterMedia: integer("shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    textSize:
+      enum___home_v_full_media_v_text_size("text_size").default("small"),
+    width: enum___home_v_full_media_v_width("width").default("contained"),
+    aspectRatio:
+      enum___home_v_full_media_v_aspect_ratio("aspect_ratio").default("16-9"),
+    contentPosition:
+      enum___home_v_full_media_v_content_position("content_position").default(
+        "left",
+      ),
+    theme: enum___home_v_full_media_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_full_media_v_order_idx").on(columns._order),
+    index("__home_v_full_media_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_full_media_v_path_idx").on(columns._path),
+    index("__home_v_full_media_v_video_idx").on(columns.video),
+    index("__home_v_full_media_v_media_idx").on(columns.media),
+    index("__home_v_full_media_v_shader_shader_studio_idx").on(
+      columns.shader_studio,
+    ),
+    index("__home_v_full_media_v_shader_shader_poster_media_idx").on(
+      columns.shader_posterMedia,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_full_media_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_media_split_v = pgTable(
+  "__home_v_media_split_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    visualType: enum___home_v_media_split_v_visual_type("visual_type"),
+    shader_studio: integer("shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    shader_preset: varchar("shader_preset"),
+    shader_seed: numeric("shader_seed", { mode: "number" }),
+    shader_speed: numeric("shader_speed", { mode: "number" }),
+    shader_intensity: numeric("shader_intensity", { mode: "number" }),
+    shader_bleed: boolean("shader_bleed").default(false),
+    shader_origin:
+      enum___home_v_media_split_v_shader_origin("shader_origin").default(
+        "top-right",
+      ),
+    shader_showMedia: boolean("shader_show_media").default(false),
+    shader_surface: enum_visual_surface("shader_surface").default("auto"),
+    shader_pointerInteraction: boolean("shader_pointer_interaction").default(
+      false,
+    ),
+    shader_hoverTargets: enum_leak_hover_targets("shader_hover_targets"),
+    shader_sectionHover: numeric("shader_section_hover", { mode: "number" }),
+    shader_posterMedia: integer("shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    textSize:
+      enum___home_v_media_split_v_text_size("text_size").default("small"),
+    layout: enum___home_v_media_split_v_layout("layout").default("left"),
+    aspectRatio:
+      enum___home_v_media_split_v_aspect_ratio("aspect_ratio").default("16-9"),
+    theme: enum___home_v_media_split_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_media_split_v_order_idx").on(columns._order),
+    index("__home_v_media_split_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_media_split_v_path_idx").on(columns._path),
+    index("__home_v_media_split_v_video_idx").on(columns.video),
+    index("__home_v_media_split_v_media_idx").on(columns.media),
+    index("__home_v_media_split_v_shader_shader_studio_idx").on(
+      columns.shader_studio,
+    ),
+    index("__home_v_media_split_v_shader_shader_poster_media_idx").on(
+      columns.shader_posterMedia,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_media_split_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_split_narrow_v = pgTable(
+  "__home_v_split_narrow_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    visualType: enum___home_v_split_narrow_v_visual_type("visual_type"),
+    shader_studio: integer("shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    shader_preset: varchar("shader_preset"),
+    shader_seed: numeric("shader_seed", { mode: "number" }),
+    shader_speed: numeric("shader_speed", { mode: "number" }),
+    shader_intensity: numeric("shader_intensity", { mode: "number" }),
+    shader_bleed: boolean("shader_bleed").default(false),
+    shader_origin:
+      enum___home_v_split_narrow_v_shader_origin("shader_origin").default(
+        "top-right",
+      ),
+    shader_showMedia: boolean("shader_show_media").default(false),
+    shader_surface: enum_visual_surface("shader_surface").default("auto"),
+    shader_pointerInteraction: boolean("shader_pointer_interaction").default(
+      false,
+    ),
+    shader_hoverTargets: enum_leak_hover_targets("shader_hover_targets"),
+    shader_sectionHover: numeric("shader_section_hover", { mode: "number" }),
+    shader_posterMedia: integer("shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    textSize:
+      enum___home_v_split_narrow_v_text_size("text_size").default("small"),
+    imagePosition:
+      enum___home_v_split_narrow_v_image_position("image_position").default(
+        "left",
+      ),
+    theme: enum___home_v_split_narrow_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_split_narrow_v_order_idx").on(columns._order),
+    index("__home_v_split_narrow_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_split_narrow_v_path_idx").on(columns._path),
+    index("__home_v_split_narrow_v_video_idx").on(columns.video),
+    index("__home_v_split_narrow_v_media_idx").on(columns.media),
+    index("__home_v_split_narrow_v_shader_shader_studio_idx").on(
+      columns.shader_studio,
+    ),
+    index("__home_v_split_narrow_v_shader_shader_poster_media_idx").on(
+      columns.shader_posterMedia,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_split_narrow_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_carousel_split_slides = pgTable(
+  "_home_v_blocks_carousel_split_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_carousel_split_slides_order_idx").on(columns._order),
+    index("_home_v_blocks_carousel_split_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("_home_v_blocks_carousel_split_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_carousel_split.id],
+      name: "_home_v_blocks_carousel_split_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_carousel_split = pgTable(
+  "_home_v_blocks_carousel_split",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    textSize:
+      enum__home_v_blocks_carousel_split_text_size("text_size").default(
+        "small",
+      ),
+    carouselPosition:
+      enum__home_v_blocks_carousel_split_carousel_position(
+        "carousel_position",
+      ).default("right"),
+    slideSize:
+      enum__home_v_blocks_carousel_split_slide_size("slide_size").default(
+        "full",
+      ),
+    showArrows: boolean("show_arrows").default(false),
+    theme: enum__home_v_blocks_carousel_split_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_carousel_split_order_idx").on(columns._order),
+    index("_home_v_blocks_carousel_split_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_carousel_split_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_carousel_split_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_image_pair_v = pgTable(
+  "__home_v_image_pair_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    portraitMedia: integer("portrait_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    landscapeMedia: integer("landscape_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    textSize:
+      enum___home_v_image_pair_v_text_size("text_size").default("small"),
+    portraitPosition:
+      enum___home_v_image_pair_v_portrait_position("portrait_position").default(
+        "left",
+      ),
+    textPosition:
+      enum___home_v_image_pair_v_text_position("text_position").default(
+        "under-portrait",
+      ),
+    theme: enum___home_v_image_pair_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_image_pair_v_order_idx").on(columns._order),
+    index("__home_v_image_pair_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_image_pair_v_path_idx").on(columns._path),
+    index("__home_v_image_pair_v_portrait_media_idx").on(columns.portraitMedia),
+    index("__home_v_image_pair_v_landscape_media_idx").on(
+      columns.landscapeMedia,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_image_pair_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_split_offset_v = pgTable(
+  "__home_v_split_offset_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    largeMedia: integer("large_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    smallMedia: integer("small_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    textSize:
+      enum___home_v_split_offset_v_text_size("text_size").default("small"),
+    captionPosition:
+      enum___home_v_split_offset_v_caption_position("caption_position").default(
+        "left",
+      ),
+    theme: enum___home_v_split_offset_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_split_offset_v_order_idx").on(columns._order),
+    index("__home_v_split_offset_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_split_offset_v_path_idx").on(columns._path),
+    index("__home_v_split_offset_v_large_media_idx").on(columns.largeMedia),
+    index("__home_v_split_offset_v_small_media_idx").on(columns.smallMedia),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_split_offset_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_image_statement_v = pgTable(
+  "__home_v_image_statement_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: jsonb("caption"),
+    textSize:
+      enum___home_v_image_statement_v_text_size("text_size").default("small"),
+    textPosition:
+      enum___home_v_image_statement_v_text_position("text_position").default(
+        "left",
+      ),
+    imageWidth:
+      enum___home_v_image_statement_v_image_width("image_width").default(
+        "contained",
+      ),
+    aspectRatio:
+      enum___home_v_image_statement_v_aspect_ratio("aspect_ratio").default(
+        "responsive",
+      ),
+    theme: enum___home_v_image_statement_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_image_statement_v_order_idx").on(columns._order),
+    index("__home_v_image_statement_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_image_statement_v_path_idx").on(columns._path),
+    index("__home_v_image_statement_v_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_image_statement_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_caption_v = pgTable(
+  "__home_v_caption_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    playVideo: boolean("play_video").default(false),
+    video: integer("video_id").references(() => videos.id, {
+      onDelete: "set null",
+    }),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    captionOverride: jsonb("caption_override"),
+    size: enum___home_v_caption_v_size("size"),
+    theme: enum___home_v_caption_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_caption_v_order_idx").on(columns._order),
+    index("__home_v_caption_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_caption_v_path_idx").on(columns._path),
+    index("__home_v_caption_v_video_idx").on(columns.video),
+    index("__home_v_caption_v_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_caption_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_youtube_v = pgTable(
+  "__home_v_youtube_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    url: varchar("url"),
+    title: varchar("title"),
+    size: enum___home_v_youtube_v_size("size"),
+    theme: enum___home_v_youtube_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_youtube_v_order_idx").on(columns._order),
+    index("__home_v_youtube_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_youtube_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_youtube_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_rich_text_v = pgTable(
+  "__home_v_rich_text_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    body: jsonb("body"),
+    textSize: enum___home_v_rich_text_v_text_size("text_size").default("small"),
+    theme: enum___home_v_rich_text_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_rich_text_v_order_idx").on(columns._order),
+    index("__home_v_rich_text_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_rich_text_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_rich_text_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_code_v = pgTable(
+  "__home_v_code_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    language: enum___home_v_code_v_language("language").default("typescript"),
+    code: varchar("code"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_code_v_order_idx").on(columns._order),
+    index("__home_v_code_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_code_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_code_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_chart_v = pgTable(
+  "__home_v_chart_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum___home_v_chart_v_width("width").default("wide"),
+    theme: enum___home_v_chart_v_theme("theme").default("default"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"bar","x":{"key":"label","type":"category"},"y":{},"series":[{"key":"value","label":"Value"}],"rows":[{"label":"A","value":12},{"label":"B","value":19}]}'::jsonb`,
+    ),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_chart_v_order_idx").on(columns._order),
+    index("__home_v_chart_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_chart_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_chart_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_diagram_v = pgTable(
+  "__home_v_diagram_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    textAlternative: varchar("text_alternative"),
+    caption: varchar("caption"),
+    dataSource_label: varchar("data_source_label"),
+    dataSource_href: varchar("data_source_href"),
+    width: enum___home_v_diagram_v_width("width").default("wide"),
+    theme: enum___home_v_diagram_v_theme("theme").default("default"),
+    spec: jsonb("spec").default(
+      sql`'{"specVersion":1,"kind":"flow","direction":"LR","nodes":[{"id":"start","label":"Start","shape":"terminal"},{"id":"finish","label":"Finish","shape":"terminal"}],"edges":[{"from":"start","to":"finish"}]}'::jsonb`,
+    ),
+    geometry: jsonb("geometry"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_diagram_v_order_idx").on(columns._order),
+    index("__home_v_diagram_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_diagram_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_diagram_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_faq_v_items = pgTable(
+  "__home_v_faq_v_items",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    question: varchar("question"),
+    answer: jsonb("answer"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("__home_v_faq_v_items_order_idx").on(columns._order),
+    index("__home_v_faq_v_items_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [__home_v_faq_v.id],
+      name: "__home_v_faq_v_items_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_faq_v = pgTable(
+  "__home_v_faq_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    enableLink: boolean("enable_link"),
+    prompt: varchar("prompt"),
+    link_type: enum___home_v_faq_v_link_type("link_type").default("reference"),
+    link_newTab: boolean("link_new_tab"),
+    link_indexPage: enum___home_v_faq_v_link_index_page("link_index_page"),
+    link_url: varchar("link_url"),
+    link_label: varchar("link_label"),
+    textSize: enum___home_v_faq_v_text_size("text_size").default("small"),
+    theme: enum___home_v_faq_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_faq_v_order_idx").on(columns._order),
+    index("__home_v_faq_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_faq_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_faq_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_carousel_slides = pgTable(
+  "_home_v_blocks_carousel_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_carousel_slides_order_idx").on(columns._order),
+    index("_home_v_blocks_carousel_slides_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_carousel_slides_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_carousel.id],
+      name: "_home_v_blocks_carousel_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_carousel = pgTable(
+  "_home_v_blocks_carousel",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    width: enum__home_v_blocks_carousel_width("width").default("contained"),
+    showArrows: boolean("show_arrows").default(false),
+    slideSize:
+      enum__home_v_blocks_carousel_slide_size("slide_size").default("full"),
+    theme: enum__home_v_blocks_carousel_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_carousel_order_idx").on(columns._order),
+    index("_home_v_blocks_carousel_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_carousel_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_carousel_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_carousel_tabs_tabs_slides = pgTable(
+  "_home_v_blocks_carousel_tabs_tabs_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    caption: varchar("caption"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_carousel_tabs_tabs_slides_order_idx").on(
+      columns._order,
+    ),
+    index("_home_v_blocks_carousel_tabs_tabs_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("_home_v_blocks_carousel_tabs_tabs_slides_media_idx").on(
+      columns.media,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_carousel_tabs_tabs.id],
+      name: "_home_v_blocks_carousel_tabs_tabs_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_carousel_tabs_tabs = pgTable(
+  "_home_v_blocks_carousel_tabs_tabs",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_carousel_tabs_tabs_order_idx").on(columns._order),
+    index("_home_v_blocks_carousel_tabs_tabs_parent_id_idx").on(
+      columns._parentID,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_carousel_tabs.id],
+      name: "_home_v_blocks_carousel_tabs_tabs_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_carousel_tabs = pgTable(
+  "_home_v_blocks_carousel_tabs",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    body: jsonb("body"),
+    textSize:
+      enum__home_v_blocks_carousel_tabs_text_size("text_size").default("small"),
+    deckStyle:
+      enum__home_v_blocks_carousel_tabs_deck_style("deck_style").default(
+        "coverflow",
+      ),
+    slideSize:
+      enum__home_v_blocks_carousel_tabs_slide_size("slide_size").default(
+        "full",
+      ),
+    showArrows: boolean("show_arrows").default(false),
+    tabSize:
+      enum__home_v_blocks_carousel_tabs_tab_size("tab_size").default("default"),
+    theme: enum__home_v_blocks_carousel_tabs_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_carousel_tabs_order_idx").on(columns._order),
+    index("_home_v_blocks_carousel_tabs_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_carousel_tabs_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_carousel_tabs_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_feature_tabs_tabs_items = pgTable(
+  "_home_v_blocks_feature_tabs_tabs_items",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    text: varchar("text"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_feature_tabs_tabs_items_order_idx").on(
+      columns._order,
+    ),
+    index("_home_v_blocks_feature_tabs_tabs_items_parent_id_idx").on(
+      columns._parentID,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_feature_tabs_tabs.id],
+      name: "_home_v_blocks_feature_tabs_tabs_items_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_feature_tabs_tabs = pgTable(
+  "_home_v_blocks_feature_tabs_tabs",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    title: varchar("title"),
+    heading: varchar("heading"),
+    description: jsonb("description"),
+    subheading: varchar("subheading").default("Included"),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    visualType:
+      enum__home_v_blocks_feature_tabs_tabs_visual_type("visual_type"),
+    shader_studio: integer("shader_studio_id").references(
+      () => streak_looks.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    shader_preset: varchar("shader_preset"),
+    shader_seed: numeric("shader_seed", { mode: "number" }),
+    shader_speed: numeric("shader_speed", { mode: "number" }),
+    shader_intensity: numeric("shader_intensity", { mode: "number" }),
+    shader_bleed: boolean("shader_bleed").default(false),
+    shader_origin:
+      enum__home_v_blocks_feature_tabs_tabs_shader_origin(
+        "shader_origin",
+      ).default("top-right"),
+    shader_showMedia: boolean("shader_show_media").default(false),
+    shader_surface: enum_visual_surface("shader_surface").default("auto"),
+    shader_pointerInteraction: boolean("shader_pointer_interaction").default(
+      false,
+    ),
+    shader_hoverTargets: enum_leak_hover_targets("shader_hover_targets"),
+    shader_sectionHover: numeric("shader_section_hover", { mode: "number" }),
+    shader_posterMedia: integer("shader_poster_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    caption: varchar("caption"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_feature_tabs_tabs_order_idx").on(columns._order),
+    index("_home_v_blocks_feature_tabs_tabs_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("_home_v_blocks_feature_tabs_tabs_media_idx").on(columns.media),
+    index("_home_v_blocks_feature_tabs_tabs_shader_shader_studio_idx").on(
+      columns.shader_studio,
+    ),
+    index("_home_v_blocks_feature_tabs_tabs_shader_shader_poster_me_idx").on(
+      columns.shader_posterMedia,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_feature_tabs.id],
+      name: "_home_v_blocks_feature_tabs_tabs_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_feature_tabs = pgTable(
+  "_home_v_blocks_feature_tabs",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    textSize:
+      enum__home_v_blocks_feature_tabs_text_size("text_size").default("small"),
+    tabSize:
+      enum__home_v_blocks_feature_tabs_tab_size("tab_size").default("default"),
+    theme: enum__home_v_blocks_feature_tabs_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_feature_tabs_order_idx").on(columns._order),
+    index("_home_v_blocks_feature_tabs_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_feature_tabs_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_feature_tabs_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_insight_list_v_items = pgTable(
+  "__home_v_insight_list_v_items",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    title: varchar("title"),
+    description: varchar("description"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("__home_v_insight_list_v_items_order_idx").on(columns._order),
+    index("__home_v_insight_list_v_items_parent_id_idx").on(columns._parentID),
+    index("__home_v_insight_list_v_items_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [__home_v_insight_list_v.id],
+      name: "__home_v_insight_list_v_items_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_insight_list_v = pgTable(
+  "__home_v_insight_list_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    eyebrow: varchar("eyebrow"),
+    heading: varchar("heading"),
+    summary: varchar("summary"),
+    textSize:
+      enum___home_v_insight_list_v_text_size("text_size").default("small"),
+    layout: enum___home_v_insight_list_v_layout("layout").default("side"),
+    markSize:
+      enum___home_v_insight_list_v_mark_size("mark_size").default("medium"),
+    theme: enum___home_v_insight_list_v_theme("theme").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_insight_list_v_order_idx").on(columns._order),
+    index("__home_v_insight_list_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_insight_list_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_insight_list_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_content_columns_slider_slides = pgTable(
+  "_home_v_blocks_content_columns_slider_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    slide_image: integer("slide_image_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    slide_caption: varchar("slide_caption"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_content_columns_slider_slides_order_idx").on(
+      columns._order,
+    ),
+    index("_home_v_blocks_content_columns_slider_slides_parent_id_idx").on(
+      columns._parentID,
+    ),
+    index("_home_v_blocks_content_columns_slider_slides_slide_slide_idx").on(
+      columns.slide_image,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_content_columns.id],
+      name: "_home_v_blocks_content_columns_slider_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_content_columns = pgTable(
+  "_home_v_blocks_content_columns",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    sizes:
+      enum__home_v_blocks_content_columns_sizes("sizes").default("oneThird"),
+    content:
+      enum__home_v_blocks_content_columns_content("content").default("text"),
+    text_richText: jsonb("text_rich_text").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
+    text_textSize:
+      enum__home_v_blocks_content_columns_text_text_size(
+        "text_text_size",
+      ).default("base"),
+    text_enableLink: boolean("text_enable_link"),
+    text_link_type:
+      enum__home_v_blocks_content_columns_text_link_type(
+        "text_link_type",
+      ).default("reference"),
+    text_link_newTab: boolean("text_link_new_tab"),
+    text_link_indexPage:
+      enum__home_v_blocks_content_columns_text_link_index_page(
+        "text_link_index_page",
+      ),
+    text_link_url: varchar("text_link_url"),
+    text_link_label: varchar("text_link_label"),
+    text_link_appearance:
+      enum__home_v_blocks_content_columns_text_link_appearance(
+        "text_link_appearance",
+      ).default("default"),
+    sectionHeading_eyebrow: varchar("section_heading_eyebrow"),
+    sectionHeading_content: jsonb("section_heading_content").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
+    sectionHeading_size:
+      enum__home_v_blocks_content_columns_section_heading_size(
+        "section_heading_size",
+      ).default("base"),
+    sectionHeading_align:
+      enum__home_v_blocks_content_columns_section_heading_align(
+        "section_heading_align",
+      ).default("left"),
+    sectionHeading_style:
+      enum__home_v_blocks_content_columns_section_heading_style(
+        "section_heading_style",
+      ).default("default"),
+    work_works: integer("work_works_id").references(() => works.id, {
+      onDelete: "set null",
+    }),
+    work_aspect:
+      enum__home_v_blocks_content_columns_work_aspect("work_aspect").default(
+        "wide",
+      ),
+    work_variant:
+      enum__home_v_blocks_content_columns_work_variant("work_variant").default(
+        "featured",
+      ),
+    post_posts: integer("post_posts_id").references(() => posts.id, {
+      onDelete: "set null",
+    }),
+    post_aspect:
+      enum__home_v_blocks_content_columns_post_aspect("post_aspect").default(
+        "wide",
+      ),
+    post_variant:
+      enum__home_v_blocks_content_columns_post_variant("post_variant").default(
+        "featured",
+      ),
+    slider_theme:
+      enum__home_v_blocks_content_columns_slider_theme("slider_theme").default(
+        "default",
+      ),
+    slider_introContent_heading: varchar("slider_intro_content_heading"),
+    slider_introContent_subheading: varchar("slider_intro_content_subheading"),
+    slider_introContent_size:
+      enum__home_v_blocks_content_columns_slider_intro_content_size(
+        "slider_intro_content_size",
+      ).default("base"),
+    slider_introContent_align:
+      enum__home_v_blocks_content_columns_slider_intro_content_align(
+        "slider_intro_content_align",
+      ).default("left"),
+    slider_style:
+      enum__home_v_blocks_content_columns_slider_style("slider_style").default(
+        "default",
+      ),
+    slider_space_pt:
+      enum__home_v_blocks_content_columns_slider_space_pt(
+        "slider_space_pt",
+      ).default("md"),
+    slider_space_pb:
+      enum__home_v_blocks_content_columns_slider_space_pb(
+        "slider_space_pb",
+      ).default("md"),
+    slider_space_mt:
+      enum__home_v_blocks_content_columns_slider_space_mt(
+        "slider_space_mt",
+      ).default("none"),
+    slider_space_mb:
+      enum__home_v_blocks_content_columns_slider_space_mb(
+        "slider_space_mb",
+      ).default("none"),
+    media_media: integer("media_media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    media_aspectRatio:
+      enum__home_v_blocks_content_columns_media_aspect_ratio(
+        "media_aspect_ratio",
+      ).default("landscape"),
+    media_fullWidth: boolean("media_full_width").default(false),
+    media_captionSize:
+      enum__home_v_blocks_content_columns_media_caption_size(
+        "media_caption_size",
+      ).default("normal"),
+    youTube_url: varchar("you_tube_url"),
+    youTube_aspectRatio:
+      enum__home_v_blocks_content_columns_you_tube_aspect_ratio(
+        "you_tube_aspect_ratio",
+      ).default("landscape"),
+    youTube_fullWidth: boolean("you_tube_full_width").default(false),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_content_columns_order_idx").on(columns._order),
+    index("_home_v_blocks_content_columns_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_content_columns_work_work_works_idx").on(
+      columns.work_works,
+    ),
+    index("_home_v_blocks_content_columns_post_post_posts_idx").on(
+      columns.post_posts,
+    ),
+    index("_home_v_blocks_content_columns_media_media_media_idx").on(
+      columns.media_media,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_content.id],
+      name: "_home_v_blocks_content_columns_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_content = pgTable(
+  "_home_v_blocks_content",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    theme: enum__home_v_blocks_content_theme("theme").default("default"),
+    containerWidth:
+      enum__home_v_blocks_content_container_width("container_width").default(
+        "contained",
+      ),
+    space_pt: enum__home_v_blocks_content_space_pt("space_pt").default("md"),
+    space_pb: enum__home_v_blocks_content_space_pb("space_pb").default("md"),
+    space_mt: enum__home_v_blocks_content_space_mt("space_mt").default("none"),
+    space_mb: enum__home_v_blocks_content_space_mb("space_mb").default("none"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_content_order_idx").on(columns._order),
+    index("_home_v_blocks_content_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_content_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_content_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const __home_v_section_v = pgTable(
+  "__home_v_section_v",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    customize: boolean("customize").default(false),
+    theme: enum___home_v_section_v_theme("theme").default("default"),
+    spacing: enum___home_v_section_v_spacing("spacing").default("default"),
+    stack: enum___home_v_section_v_stack("stack").default("default"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("__home_v_section_v_order_idx").on(columns._order),
+    index("__home_v_section_v_parent_id_idx").on(columns._parentID),
+    index("__home_v_section_v_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "__home_v_section_v_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_slider_slides = pgTable(
+  "_home_v_blocks_slider_slides",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    slide_image: integer("slide_image_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    slide_caption: varchar("slide_caption"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_slider_slides_order_idx").on(columns._order),
+    index("_home_v_blocks_slider_slides_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_slider_slides_slide_slide_image_idx").on(
+      columns.slide_image,
+    ),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_slider.id],
+      name: "_home_v_blocks_slider_slides_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_slider = pgTable(
+  "_home_v_blocks_slider",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    theme: enum__home_v_blocks_slider_theme("theme").default("default"),
+    introContent_heading: varchar("intro_content_heading"),
+    introContent_subheading: varchar("intro_content_subheading"),
+    introContent_size:
+      enum__home_v_blocks_slider_intro_content_size(
+        "intro_content_size",
+      ).default("base"),
+    introContent_align: enum__home_v_blocks_slider_intro_content_align(
+      "intro_content_align",
+    ).default("left"),
+    style: enum__home_v_blocks_slider_style("style").default("default"),
+    space_pt: enum__home_v_blocks_slider_space_pt("space_pt").default("md"),
+    space_pb: enum__home_v_blocks_slider_space_pb("space_pb").default("md"),
+    space_mt: enum__home_v_blocks_slider_space_mt("space_mt").default("none"),
+    space_mb: enum__home_v_blocks_slider_space_mb("space_mb").default("none"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_slider_order_idx").on(columns._order),
+    index("_home_v_blocks_slider_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_slider_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_slider_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_callout = pgTable(
+  "_home_v_blocks_callout",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    richText: jsonb("rich_text"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_callout_order_idx").on(columns._order),
+    index("_home_v_blocks_callout_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_callout_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_callout_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_archive = pgTable(
+  "_home_v_blocks_archive",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    theme: enum__home_v_blocks_archive_theme("theme").default("default"),
+    cardStyle:
+      enum__home_v_blocks_archive_card_style("card_style").default("card"),
+    introContent: jsonb("intro_content"),
+    populateBy:
+      enum__home_v_blocks_archive_populate_by("populate_by").default(
+        "collection",
+      ),
+    relationTo:
+      enum__home_v_blocks_archive_relation_to("relation_to").default("posts"),
+    limit: numeric("limit", { mode: "number" }).default(10),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_archive_order_idx").on(columns._order),
+    index("_home_v_blocks_archive_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_archive_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_archive_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_cta_links = pgTable(
+  "_home_v_blocks_cta_links",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    link_type:
+      enum__home_v_blocks_cta_links_link_type("link_type").default("reference"),
+    link_newTab: boolean("link_new_tab"),
+    link_indexPage:
+      enum__home_v_blocks_cta_links_link_index_page("link_index_page"),
+    link_url: varchar("link_url"),
+    link_label: varchar("link_label"),
+    link_appearance:
+      enum__home_v_blocks_cta_links_link_appearance("link_appearance").default(
+        "default",
+      ),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_home_v_blocks_cta_links_order_idx").on(columns._order),
+    index("_home_v_blocks_cta_links_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v_blocks_cta.id],
+      name: "_home_v_blocks_cta_links_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_cta = pgTable(
+  "_home_v_blocks_cta",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    richText: jsonb("rich_text"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_cta_order_idx").on(columns._order),
+    index("_home_v_blocks_cta_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_cta_path_idx").on(columns._path),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_cta_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_form_block = pgTable(
+  "_home_v_blocks_form_block",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    form: integer("form_id").references(() => forms.id, {
+      onDelete: "set null",
+    }),
+    space_pt: enum__home_v_blocks_form_block_space_pt("space_pt").default("md"),
+    space_pb: enum__home_v_blocks_form_block_space_pb("space_pb").default("md"),
+    space_mt:
+      enum__home_v_blocks_form_block_space_mt("space_mt").default("none"),
+    space_mb:
+      enum__home_v_blocks_form_block_space_mb("space_mb").default("none"),
+    enableIntro: boolean("enable_intro"),
+    introAlign:
+      enum__home_v_blocks_form_block_intro_align("intro_align").default("left"),
+    introContent: jsonb("intro_content"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_form_block_order_idx").on(columns._order),
+    index("_home_v_blocks_form_block_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_form_block_path_idx").on(columns._path),
+    index("_home_v_blocks_form_block_form_idx").on(columns.form),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_form_block_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v_blocks_media_block = pgTable(
+  "_home_v_blocks_media_block",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    _path: text("_path").notNull(),
+    id: serial("id").primaryKey(),
+    media: integer("media_id").references(() => media.id, {
+      onDelete: "set null",
+    }),
+    aspectRatio:
+      enum__home_v_blocks_media_block_aspect_ratio("aspect_ratio").default(
+        "landscape",
+      ),
+    fullWidth: boolean("full_width").default(false),
+    theme: enum__home_v_blocks_media_block_theme("theme").default("default"),
+    showCaption: boolean("show_caption").default(true),
+    captionLayout:
+      enum__home_v_blocks_media_block_caption_layout("caption_layout").default(
+        "center",
+      ),
+    richText: jsonb("rich_text").default(
+      sql`'{"root":{"type":"root","children":[{"type":"paragraph","children":[]}],"direction":"ltr","format":"","indent":0,"version":1}}'::jsonb`,
+    ),
+    textSize:
+      enum__home_v_blocks_media_block_text_size("text_size").default("base"),
+    space_pt:
+      enum__home_v_blocks_media_block_space_pt("space_pt").default("md"),
+    space_pb:
+      enum__home_v_blocks_media_block_space_pb("space_pb").default("md"),
+    space_mt:
+      enum__home_v_blocks_media_block_space_mt("space_mt").default("none"),
+    space_mb:
+      enum__home_v_blocks_media_block_space_mb("space_mb").default("none"),
+    _uuid: varchar("_uuid"),
+    blockName: varchar("block_name"),
+  },
+  (columns) => [
+    index("_home_v_blocks_media_block_order_idx").on(columns._order),
+    index("_home_v_blocks_media_block_parent_id_idx").on(columns._parentID),
+    index("_home_v_blocks_media_block_path_idx").on(columns._path),
+    index("_home_v_blocks_media_block_media_idx").on(columns.media),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_blocks_media_block_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _home_v = pgTable(
+  "_home_v",
+  {
+    id: serial("id").primaryKey(),
+    version_title: varchar("version_title").default("Home"),
+    version_hero_media: integer("version_hero_media_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    version_meta_title: varchar("version_meta_title"),
+    version_meta_image: integer("version_meta_image_id").references(
+      () => media.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    version_meta_description: varchar("version_meta_description"),
+    version_meta_noIndex: boolean("version_meta_no_index").default(false),
+    version_publishedAt: timestamp("version_published_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    version__status:
+      enum__home_v_version_status("version__status").default("draft"),
+    version_updatedAt: timestamp("version_updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    version_createdAt: timestamp("version_created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    latest: boolean("latest"),
+    autosave: boolean("autosave"),
+  },
+  (columns) => [
+    index("_home_v_version_hero_version_hero_media_idx").on(
+      columns.version_hero_media,
+    ),
+    index("_home_v_version_meta_version_meta_image_idx").on(
+      columns.version_meta_image,
+    ),
+    index("_home_v_version_version__status_idx").on(columns.version__status),
+    index("_home_v_created_at_idx").on(columns.createdAt),
+    index("_home_v_updated_at_idx").on(columns.updatedAt),
+    index("_home_v_latest_idx").on(columns.latest),
+    index("_home_v_autosave_idx").on(columns.autosave),
+  ],
+);
+
+export const _home_v_rels = pgTable(
+  "_home_v_rels",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order"),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    pagesID: integer("pages_id"),
+    postsID: integer("posts_id"),
+    worksID: integer("works_id"),
+    categoriesID: integer("categories_id"),
+  },
+  (columns) => [
+    index("_home_v_rels_order_idx").on(columns.order),
+    index("_home_v_rels_parent_idx").on(columns.parent),
+    index("_home_v_rels_path_idx").on(columns.path),
+    index("_home_v_rels_pages_id_idx").on(columns.pagesID),
+    index("_home_v_rels_posts_id_idx").on(columns.postsID),
+    index("_home_v_rels_works_id_idx").on(columns.worksID),
+    index("_home_v_rels_categories_id_idx").on(columns.categoriesID),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [_home_v.id],
+      name: "_home_v_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["pagesID"]],
+      foreignColumns: [pages.id],
+      name: "_home_v_rels_pages_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["postsID"]],
+      foreignColumns: [posts.id],
+      name: "_home_v_rels_posts_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["worksID"]],
+      foreignColumns: [works.id],
+      name: "_home_v_rels_works_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["categoriesID"]],
+      foreignColumns: [categories.id],
+      name: "_home_v_rels_categories_fk",
+    }).onDelete("cascade"),
   ],
 );
 
@@ -19641,6 +24098,21 @@ export const relations_users = relations(users, ({ many }) => ({
     relationName: "sessions",
   }),
 }));
+export const relations_members_sessions = relations(
+  members_sessions,
+  ({ one }) => ({
+    _parentID: one(members, {
+      fields: [members_sessions._parentID],
+      references: [members.id],
+      relationName: "sessions",
+    }),
+  }),
+);
+export const relations_members = relations(members, ({ many }) => ({
+  sessions: many(members_sessions, {
+    relationName: "sessions",
+  }),
+}));
 export const relations_streak_looks_texts = relations(
   streak_looks_texts,
   ({ one }) => ({
@@ -19648,6 +24120,21 @@ export const relations_streak_looks_texts = relations(
       fields: [streak_looks_texts.parent],
       references: [streak_looks.id],
       relationName: "_texts",
+    }),
+  }),
+);
+export const relations_streak_looks_rels = relations(
+  streak_looks_rels,
+  ({ one }) => ({
+    parent: one(streak_looks, {
+      fields: [streak_looks_rels.parent],
+      references: [streak_looks.id],
+      relationName: "_rels",
+    }),
+    mediaID: one(media, {
+      fields: [streak_looks_rels.mediaID],
+      references: [media.id],
+      relationName: "media",
     }),
   }),
 );
@@ -19682,6 +24169,9 @@ export const relations_streak_looks = relations(
     _texts: many(streak_looks_texts, {
       relationName: "_texts",
     }),
+    _rels: many(streak_looks_rels, {
+      relationName: "_rels",
+    }),
   }),
 );
 export const relations__streak_looks_v_texts = relations(
@@ -19691,6 +24181,21 @@ export const relations__streak_looks_v_texts = relations(
       fields: [_streak_looks_v_texts.parent],
       references: [_streak_looks_v.id],
       relationName: "_texts",
+    }),
+  }),
+);
+export const relations__streak_looks_v_rels = relations(
+  _streak_looks_v_rels,
+  ({ one }) => ({
+    parent: one(_streak_looks_v, {
+      fields: [_streak_looks_v_rels.parent],
+      references: [_streak_looks_v.id],
+      relationName: "_rels",
+    }),
+    mediaID: one(media, {
+      fields: [_streak_looks_v_rels.mediaID],
+      references: [media.id],
+      relationName: "media",
     }),
   }),
 );
@@ -19729,6 +24234,9 @@ export const relations__streak_looks_v = relations(
     }),
     _texts: many(_streak_looks_v_texts, {
       relationName: "_texts",
+    }),
+    _rels: many(_streak_looks_v_rels, {
+      relationName: "_rels",
     }),
   }),
 );
@@ -20064,6 +24572,11 @@ export const relations_payload_locked_documents_rels = relations(
       references: [users.id],
       relationName: "users",
     }),
+    membersID: one(members, {
+      fields: [payload_locked_documents_rels.membersID],
+      references: [members.id],
+      relationName: "members",
+    }),
     "streak-looksID": one(streak_looks, {
       fields: [payload_locked_documents_rels["streak-looksID"]],
       references: [streak_looks.id],
@@ -20122,6 +24635,11 @@ export const relations_payload_preferences_rels = relations(
       references: [users.id],
       relationName: "users",
     }),
+    membersID: one(members, {
+      fields: [payload_preferences_rels.membersID],
+      references: [members.id],
+      relationName: "members",
+    }),
     "payload-mcp-api-keysID": one(payload_mcp_api_keys, {
       fields: [payload_preferences_rels["payload-mcp-api-keysID"]],
       references: [payload_mcp_api_keys.id],
@@ -20141,6 +24659,1439 @@ export const relations_payload_migrations = relations(
   payload_migrations,
   () => ({}),
 );
+export const relations_home_transition = relations(
+  home_transition,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_transition._parentID],
+      references: [home.id],
+      relationName: "_blocks_richTransition",
+    }),
+  }),
+);
+export const relations_home_blocks_feature_heading_offset = relations(
+  home_blocks_feature_heading_offset,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_feature_heading_offset._parentID],
+      references: [home.id],
+      relationName: "_blocks_featureHeadingOffset",
+    }),
+  }),
+);
+export const relations_home_full_media = relations(
+  home_full_media,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_full_media._parentID],
+      references: [home.id],
+      relationName: "_blocks_fullMedia",
+    }),
+    video: one(videos, {
+      fields: [home_full_media.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
+    media: one(media, {
+      fields: [home_full_media.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+    shader_studio: one(streak_looks, {
+      fields: [home_full_media.shader_studio],
+      references: [streak_looks.id],
+      relationName: "shader_studio",
+    }),
+    shader_posterMedia: one(media, {
+      fields: [home_full_media.shader_posterMedia],
+      references: [media.id],
+      relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations_home_media_split = relations(
+  home_media_split,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_media_split._parentID],
+      references: [home.id],
+      relationName: "_blocks_mediaContentSplit",
+    }),
+    video: one(videos, {
+      fields: [home_media_split.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
+    media: one(media, {
+      fields: [home_media_split.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+    shader_studio: one(streak_looks, {
+      fields: [home_media_split.shader_studio],
+      references: [streak_looks.id],
+      relationName: "shader_studio",
+    }),
+    shader_posterMedia: one(media, {
+      fields: [home_media_split.shader_posterMedia],
+      references: [media.id],
+      relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations_home_split_narrow = relations(
+  home_split_narrow,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_split_narrow._parentID],
+      references: [home.id],
+      relationName: "_blocks_splitContentNarrow",
+    }),
+    video: one(videos, {
+      fields: [home_split_narrow.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
+    media: one(media, {
+      fields: [home_split_narrow.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+    shader_studio: one(streak_looks, {
+      fields: [home_split_narrow.shader_studio],
+      references: [streak_looks.id],
+      relationName: "shader_studio",
+    }),
+    shader_posterMedia: one(media, {
+      fields: [home_split_narrow.shader_posterMedia],
+      references: [media.id],
+      relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations_home_blocks_carousel_split_slides = relations(
+  home_blocks_carousel_split_slides,
+  ({ one }) => ({
+    _parentID: one(home_blocks_carousel_split, {
+      fields: [home_blocks_carousel_split_slides._parentID],
+      references: [home_blocks_carousel_split.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [home_blocks_carousel_split_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_home_blocks_carousel_split = relations(
+  home_blocks_carousel_split,
+  ({ one, many }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_carousel_split._parentID],
+      references: [home.id],
+      relationName: "_blocks_carouselSplit",
+    }),
+    slides: many(home_blocks_carousel_split_slides, {
+      relationName: "slides",
+    }),
+  }),
+);
+export const relations_home_image_pair = relations(
+  home_image_pair,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_image_pair._parentID],
+      references: [home.id],
+      relationName: "_blocks_imagePair",
+    }),
+    portraitMedia: one(media, {
+      fields: [home_image_pair.portraitMedia],
+      references: [media.id],
+      relationName: "portraitMedia",
+    }),
+    landscapeMedia: one(media, {
+      fields: [home_image_pair.landscapeMedia],
+      references: [media.id],
+      relationName: "landscapeMedia",
+    }),
+  }),
+);
+export const relations_home_split_offset = relations(
+  home_split_offset,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_split_offset._parentID],
+      references: [home.id],
+      relationName: "_blocks_splitImageOffset",
+    }),
+    largeMedia: one(media, {
+      fields: [home_split_offset.largeMedia],
+      references: [media.id],
+      relationName: "largeMedia",
+    }),
+    smallMedia: one(media, {
+      fields: [home_split_offset.smallMedia],
+      references: [media.id],
+      relationName: "smallMedia",
+    }),
+  }),
+);
+export const relations_home_image_statement = relations(
+  home_image_statement,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_image_statement._parentID],
+      references: [home.id],
+      relationName: "_blocks_featureImageStatement",
+    }),
+    media: one(media, {
+      fields: [home_image_statement.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_home_caption = relations(home_caption, ({ one }) => ({
+  _parentID: one(home, {
+    fields: [home_caption._parentID],
+    references: [home.id],
+    relationName: "_blocks_caption",
+  }),
+  video: one(videos, {
+    fields: [home_caption.video],
+    references: [videos.id],
+    relationName: "video",
+  }),
+  media: one(media, {
+    fields: [home_caption.media],
+    references: [media.id],
+    relationName: "media",
+  }),
+}));
+export const relations_home_youtube = relations(home_youtube, ({ one }) => ({
+  _parentID: one(home, {
+    fields: [home_youtube._parentID],
+    references: [home.id],
+    relationName: "_blocks_youtube",
+  }),
+}));
+export const relations_home_rich_text = relations(
+  home_rich_text,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_rich_text._parentID],
+      references: [home.id],
+      relationName: "_blocks_richText",
+    }),
+  }),
+);
+export const relations_home_code = relations(home_code, ({ one }) => ({
+  _parentID: one(home, {
+    fields: [home_code._parentID],
+    references: [home.id],
+    relationName: "_blocks_code",
+  }),
+}));
+export const relations_home_chart = relations(home_chart, ({ one }) => ({
+  _parentID: one(home, {
+    fields: [home_chart._parentID],
+    references: [home.id],
+    relationName: "_blocks_chart",
+  }),
+}));
+export const relations_home_diagram = relations(home_diagram, ({ one }) => ({
+  _parentID: one(home, {
+    fields: [home_diagram._parentID],
+    references: [home.id],
+    relationName: "_blocks_diagram",
+  }),
+}));
+export const relations_home_faq_items = relations(
+  home_faq_items,
+  ({ one }) => ({
+    _parentID: one(home_faq, {
+      fields: [home_faq_items._parentID],
+      references: [home_faq.id],
+      relationName: "items",
+    }),
+  }),
+);
+export const relations_home_faq = relations(home_faq, ({ one, many }) => ({
+  _parentID: one(home, {
+    fields: [home_faq._parentID],
+    references: [home.id],
+    relationName: "_blocks_faq",
+  }),
+  items: many(home_faq_items, {
+    relationName: "items",
+  }),
+}));
+export const relations_home_blocks_carousel_slides = relations(
+  home_blocks_carousel_slides,
+  ({ one }) => ({
+    _parentID: one(home_blocks_carousel, {
+      fields: [home_blocks_carousel_slides._parentID],
+      references: [home_blocks_carousel.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [home_blocks_carousel_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_home_blocks_carousel = relations(
+  home_blocks_carousel,
+  ({ one, many }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_carousel._parentID],
+      references: [home.id],
+      relationName: "_blocks_carousel",
+    }),
+    slides: many(home_blocks_carousel_slides, {
+      relationName: "slides",
+    }),
+  }),
+);
+export const relations_home_blocks_carousel_tabs_tabs_slides = relations(
+  home_blocks_carousel_tabs_tabs_slides,
+  ({ one }) => ({
+    _parentID: one(home_blocks_carousel_tabs_tabs, {
+      fields: [home_blocks_carousel_tabs_tabs_slides._parentID],
+      references: [home_blocks_carousel_tabs_tabs.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [home_blocks_carousel_tabs_tabs_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_home_blocks_carousel_tabs_tabs = relations(
+  home_blocks_carousel_tabs_tabs,
+  ({ one, many }) => ({
+    _parentID: one(home_blocks_carousel_tabs, {
+      fields: [home_blocks_carousel_tabs_tabs._parentID],
+      references: [home_blocks_carousel_tabs.id],
+      relationName: "tabs",
+    }),
+    slides: many(home_blocks_carousel_tabs_tabs_slides, {
+      relationName: "slides",
+    }),
+  }),
+);
+export const relations_home_blocks_carousel_tabs = relations(
+  home_blocks_carousel_tabs,
+  ({ one, many }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_carousel_tabs._parentID],
+      references: [home.id],
+      relationName: "_blocks_carouselTabs",
+    }),
+    tabs: many(home_blocks_carousel_tabs_tabs, {
+      relationName: "tabs",
+    }),
+  }),
+);
+export const relations_home_blocks_feature_tabs_tabs_items = relations(
+  home_blocks_feature_tabs_tabs_items,
+  ({ one }) => ({
+    _parentID: one(home_blocks_feature_tabs_tabs, {
+      fields: [home_blocks_feature_tabs_tabs_items._parentID],
+      references: [home_blocks_feature_tabs_tabs.id],
+      relationName: "items",
+    }),
+  }),
+);
+export const relations_home_blocks_feature_tabs_tabs = relations(
+  home_blocks_feature_tabs_tabs,
+  ({ one, many }) => ({
+    _parentID: one(home_blocks_feature_tabs, {
+      fields: [home_blocks_feature_tabs_tabs._parentID],
+      references: [home_blocks_feature_tabs.id],
+      relationName: "tabs",
+    }),
+    items: many(home_blocks_feature_tabs_tabs_items, {
+      relationName: "items",
+    }),
+    media: one(media, {
+      fields: [home_blocks_feature_tabs_tabs.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+    shader_studio: one(streak_looks, {
+      fields: [home_blocks_feature_tabs_tabs.shader_studio],
+      references: [streak_looks.id],
+      relationName: "shader_studio",
+    }),
+    shader_posterMedia: one(media, {
+      fields: [home_blocks_feature_tabs_tabs.shader_posterMedia],
+      references: [media.id],
+      relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations_home_blocks_feature_tabs = relations(
+  home_blocks_feature_tabs,
+  ({ one, many }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_feature_tabs._parentID],
+      references: [home.id],
+      relationName: "_blocks_featureTabs",
+    }),
+    tabs: many(home_blocks_feature_tabs_tabs, {
+      relationName: "tabs",
+    }),
+  }),
+);
+export const relations_home_insight_list_items = relations(
+  home_insight_list_items,
+  ({ one }) => ({
+    _parentID: one(home_insight_list, {
+      fields: [home_insight_list_items._parentID],
+      references: [home_insight_list.id],
+      relationName: "items",
+    }),
+    media: one(media, {
+      fields: [home_insight_list_items.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_home_insight_list = relations(
+  home_insight_list,
+  ({ one, many }) => ({
+    _parentID: one(home, {
+      fields: [home_insight_list._parentID],
+      references: [home.id],
+      relationName: "_blocks_insightList",
+    }),
+    items: many(home_insight_list_items, {
+      relationName: "items",
+    }),
+  }),
+);
+export const relations_home_blocks_content_columns_slider_slides = relations(
+  home_blocks_content_columns_slider_slides,
+  ({ one }) => ({
+    _parentID: one(home_blocks_content_columns, {
+      fields: [home_blocks_content_columns_slider_slides._parentID],
+      references: [home_blocks_content_columns.id],
+      relationName: "slider_slides",
+    }),
+    slide_image: one(media, {
+      fields: [home_blocks_content_columns_slider_slides.slide_image],
+      references: [media.id],
+      relationName: "slide_image",
+    }),
+  }),
+);
+export const relations_home_blocks_content_columns = relations(
+  home_blocks_content_columns,
+  ({ one, many }) => ({
+    _parentID: one(home_blocks_content, {
+      fields: [home_blocks_content_columns._parentID],
+      references: [home_blocks_content.id],
+      relationName: "columns",
+    }),
+    work_works: one(works, {
+      fields: [home_blocks_content_columns.work_works],
+      references: [works.id],
+      relationName: "work_works",
+    }),
+    post_posts: one(posts, {
+      fields: [home_blocks_content_columns.post_posts],
+      references: [posts.id],
+      relationName: "post_posts",
+    }),
+    slider_slides: many(home_blocks_content_columns_slider_slides, {
+      relationName: "slider_slides",
+    }),
+    media_media: one(media, {
+      fields: [home_blocks_content_columns.media_media],
+      references: [media.id],
+      relationName: "media_media",
+    }),
+  }),
+);
+export const relations_home_blocks_content = relations(
+  home_blocks_content,
+  ({ one, many }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_content._parentID],
+      references: [home.id],
+      relationName: "_blocks_content",
+    }),
+    columns: many(home_blocks_content_columns, {
+      relationName: "columns",
+    }),
+  }),
+);
+export const relations_home_section = relations(home_section, ({ one }) => ({
+  _parentID: one(home, {
+    fields: [home_section._parentID],
+    references: [home.id],
+    relationName: "_blocks_section",
+  }),
+}));
+export const relations_home_blocks_slider_slides = relations(
+  home_blocks_slider_slides,
+  ({ one }) => ({
+    _parentID: one(home_blocks_slider, {
+      fields: [home_blocks_slider_slides._parentID],
+      references: [home_blocks_slider.id],
+      relationName: "slides",
+    }),
+    slide_image: one(media, {
+      fields: [home_blocks_slider_slides.slide_image],
+      references: [media.id],
+      relationName: "slide_image",
+    }),
+  }),
+);
+export const relations_home_blocks_slider = relations(
+  home_blocks_slider,
+  ({ one, many }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_slider._parentID],
+      references: [home.id],
+      relationName: "_blocks_slider",
+    }),
+    slides: many(home_blocks_slider_slides, {
+      relationName: "slides",
+    }),
+  }),
+);
+export const relations_home_blocks_callout = relations(
+  home_blocks_callout,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_callout._parentID],
+      references: [home.id],
+      relationName: "_blocks_callout",
+    }),
+  }),
+);
+export const relations_home_blocks_archive = relations(
+  home_blocks_archive,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_archive._parentID],
+      references: [home.id],
+      relationName: "_blocks_archive",
+    }),
+  }),
+);
+export const relations_home_blocks_cta_links = relations(
+  home_blocks_cta_links,
+  ({ one }) => ({
+    _parentID: one(home_blocks_cta, {
+      fields: [home_blocks_cta_links._parentID],
+      references: [home_blocks_cta.id],
+      relationName: "links",
+    }),
+  }),
+);
+export const relations_home_blocks_cta = relations(
+  home_blocks_cta,
+  ({ one, many }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_cta._parentID],
+      references: [home.id],
+      relationName: "_blocks_cta",
+    }),
+    links: many(home_blocks_cta_links, {
+      relationName: "links",
+    }),
+  }),
+);
+export const relations_home_blocks_form_block = relations(
+  home_blocks_form_block,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_form_block._parentID],
+      references: [home.id],
+      relationName: "_blocks_formBlock",
+    }),
+    form: one(forms, {
+      fields: [home_blocks_form_block.form],
+      references: [forms.id],
+      relationName: "form",
+    }),
+  }),
+);
+export const relations_home_blocks_media_block = relations(
+  home_blocks_media_block,
+  ({ one }) => ({
+    _parentID: one(home, {
+      fields: [home_blocks_media_block._parentID],
+      references: [home.id],
+      relationName: "_blocks_mediaBlock",
+    }),
+    media: one(media, {
+      fields: [home_blocks_media_block.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations_home_rels = relations(home_rels, ({ one }) => ({
+  parent: one(home, {
+    fields: [home_rels.parent],
+    references: [home.id],
+    relationName: "_rels",
+  }),
+  pagesID: one(pages, {
+    fields: [home_rels.pagesID],
+    references: [pages.id],
+    relationName: "pages",
+  }),
+  postsID: one(posts, {
+    fields: [home_rels.postsID],
+    references: [posts.id],
+    relationName: "posts",
+  }),
+  worksID: one(works, {
+    fields: [home_rels.worksID],
+    references: [works.id],
+    relationName: "works",
+  }),
+  categoriesID: one(categories, {
+    fields: [home_rels.categoriesID],
+    references: [categories.id],
+    relationName: "categories",
+  }),
+}));
+export const relations_home = relations(home, ({ one, many }) => ({
+  hero_media: one(media, {
+    fields: [home.hero_media],
+    references: [media.id],
+    relationName: "hero_media",
+  }),
+  _blocks_richTransition: many(home_transition, {
+    relationName: "_blocks_richTransition",
+  }),
+  _blocks_featureHeadingOffset: many(home_blocks_feature_heading_offset, {
+    relationName: "_blocks_featureHeadingOffset",
+  }),
+  _blocks_fullMedia: many(home_full_media, {
+    relationName: "_blocks_fullMedia",
+  }),
+  _blocks_mediaContentSplit: many(home_media_split, {
+    relationName: "_blocks_mediaContentSplit",
+  }),
+  _blocks_splitContentNarrow: many(home_split_narrow, {
+    relationName: "_blocks_splitContentNarrow",
+  }),
+  _blocks_carouselSplit: many(home_blocks_carousel_split, {
+    relationName: "_blocks_carouselSplit",
+  }),
+  _blocks_imagePair: many(home_image_pair, {
+    relationName: "_blocks_imagePair",
+  }),
+  _blocks_splitImageOffset: many(home_split_offset, {
+    relationName: "_blocks_splitImageOffset",
+  }),
+  _blocks_featureImageStatement: many(home_image_statement, {
+    relationName: "_blocks_featureImageStatement",
+  }),
+  _blocks_caption: many(home_caption, {
+    relationName: "_blocks_caption",
+  }),
+  _blocks_youtube: many(home_youtube, {
+    relationName: "_blocks_youtube",
+  }),
+  _blocks_richText: many(home_rich_text, {
+    relationName: "_blocks_richText",
+  }),
+  _blocks_code: many(home_code, {
+    relationName: "_blocks_code",
+  }),
+  _blocks_chart: many(home_chart, {
+    relationName: "_blocks_chart",
+  }),
+  _blocks_diagram: many(home_diagram, {
+    relationName: "_blocks_diagram",
+  }),
+  _blocks_faq: many(home_faq, {
+    relationName: "_blocks_faq",
+  }),
+  _blocks_carousel: many(home_blocks_carousel, {
+    relationName: "_blocks_carousel",
+  }),
+  _blocks_carouselTabs: many(home_blocks_carousel_tabs, {
+    relationName: "_blocks_carouselTabs",
+  }),
+  _blocks_featureTabs: many(home_blocks_feature_tabs, {
+    relationName: "_blocks_featureTabs",
+  }),
+  _blocks_insightList: many(home_insight_list, {
+    relationName: "_blocks_insightList",
+  }),
+  _blocks_content: many(home_blocks_content, {
+    relationName: "_blocks_content",
+  }),
+  _blocks_section: many(home_section, {
+    relationName: "_blocks_section",
+  }),
+  _blocks_slider: many(home_blocks_slider, {
+    relationName: "_blocks_slider",
+  }),
+  _blocks_callout: many(home_blocks_callout, {
+    relationName: "_blocks_callout",
+  }),
+  _blocks_archive: many(home_blocks_archive, {
+    relationName: "_blocks_archive",
+  }),
+  _blocks_cta: many(home_blocks_cta, {
+    relationName: "_blocks_cta",
+  }),
+  _blocks_formBlock: many(home_blocks_form_block, {
+    relationName: "_blocks_formBlock",
+  }),
+  _blocks_mediaBlock: many(home_blocks_media_block, {
+    relationName: "_blocks_mediaBlock",
+  }),
+  meta_image: one(media, {
+    fields: [home.meta_image],
+    references: [media.id],
+    relationName: "meta_image",
+  }),
+  _rels: many(home_rels, {
+    relationName: "_rels",
+  }),
+}));
+export const relations___home_v_transition_v = relations(
+  __home_v_transition_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_transition_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_richTransition",
+    }),
+  }),
+);
+export const relations__home_v_blocks_feature_heading_offset = relations(
+  _home_v_blocks_feature_heading_offset,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_feature_heading_offset._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_featureHeadingOffset",
+    }),
+  }),
+);
+export const relations___home_v_full_media_v = relations(
+  __home_v_full_media_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_full_media_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_fullMedia",
+    }),
+    video: one(videos, {
+      fields: [__home_v_full_media_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
+    media: one(media, {
+      fields: [__home_v_full_media_v.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+    shader_studio: one(streak_looks, {
+      fields: [__home_v_full_media_v.shader_studio],
+      references: [streak_looks.id],
+      relationName: "shader_studio",
+    }),
+    shader_posterMedia: one(media, {
+      fields: [__home_v_full_media_v.shader_posterMedia],
+      references: [media.id],
+      relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations___home_v_media_split_v = relations(
+  __home_v_media_split_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_media_split_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_mediaContentSplit",
+    }),
+    video: one(videos, {
+      fields: [__home_v_media_split_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
+    media: one(media, {
+      fields: [__home_v_media_split_v.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+    shader_studio: one(streak_looks, {
+      fields: [__home_v_media_split_v.shader_studio],
+      references: [streak_looks.id],
+      relationName: "shader_studio",
+    }),
+    shader_posterMedia: one(media, {
+      fields: [__home_v_media_split_v.shader_posterMedia],
+      references: [media.id],
+      relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations___home_v_split_narrow_v = relations(
+  __home_v_split_narrow_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_split_narrow_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_splitContentNarrow",
+    }),
+    video: one(videos, {
+      fields: [__home_v_split_narrow_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
+    media: one(media, {
+      fields: [__home_v_split_narrow_v.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+    shader_studio: one(streak_looks, {
+      fields: [__home_v_split_narrow_v.shader_studio],
+      references: [streak_looks.id],
+      relationName: "shader_studio",
+    }),
+    shader_posterMedia: one(media, {
+      fields: [__home_v_split_narrow_v.shader_posterMedia],
+      references: [media.id],
+      relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations__home_v_blocks_carousel_split_slides = relations(
+  _home_v_blocks_carousel_split_slides,
+  ({ one }) => ({
+    _parentID: one(_home_v_blocks_carousel_split, {
+      fields: [_home_v_blocks_carousel_split_slides._parentID],
+      references: [_home_v_blocks_carousel_split.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [_home_v_blocks_carousel_split_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations__home_v_blocks_carousel_split = relations(
+  _home_v_blocks_carousel_split,
+  ({ one, many }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_carousel_split._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_carouselSplit",
+    }),
+    slides: many(_home_v_blocks_carousel_split_slides, {
+      relationName: "slides",
+    }),
+  }),
+);
+export const relations___home_v_image_pair_v = relations(
+  __home_v_image_pair_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_image_pair_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_imagePair",
+    }),
+    portraitMedia: one(media, {
+      fields: [__home_v_image_pair_v.portraitMedia],
+      references: [media.id],
+      relationName: "portraitMedia",
+    }),
+    landscapeMedia: one(media, {
+      fields: [__home_v_image_pair_v.landscapeMedia],
+      references: [media.id],
+      relationName: "landscapeMedia",
+    }),
+  }),
+);
+export const relations___home_v_split_offset_v = relations(
+  __home_v_split_offset_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_split_offset_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_splitImageOffset",
+    }),
+    largeMedia: one(media, {
+      fields: [__home_v_split_offset_v.largeMedia],
+      references: [media.id],
+      relationName: "largeMedia",
+    }),
+    smallMedia: one(media, {
+      fields: [__home_v_split_offset_v.smallMedia],
+      references: [media.id],
+      relationName: "smallMedia",
+    }),
+  }),
+);
+export const relations___home_v_image_statement_v = relations(
+  __home_v_image_statement_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_image_statement_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_featureImageStatement",
+    }),
+    media: one(media, {
+      fields: [__home_v_image_statement_v.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations___home_v_caption_v = relations(
+  __home_v_caption_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_caption_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_caption",
+    }),
+    video: one(videos, {
+      fields: [__home_v_caption_v.video],
+      references: [videos.id],
+      relationName: "video",
+    }),
+    media: one(media, {
+      fields: [__home_v_caption_v.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations___home_v_youtube_v = relations(
+  __home_v_youtube_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_youtube_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_youtube",
+    }),
+  }),
+);
+export const relations___home_v_rich_text_v = relations(
+  __home_v_rich_text_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_rich_text_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_richText",
+    }),
+  }),
+);
+export const relations___home_v_code_v = relations(
+  __home_v_code_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_code_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_code",
+    }),
+  }),
+);
+export const relations___home_v_chart_v = relations(
+  __home_v_chart_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_chart_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_chart",
+    }),
+  }),
+);
+export const relations___home_v_diagram_v = relations(
+  __home_v_diagram_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_diagram_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_diagram",
+    }),
+  }),
+);
+export const relations___home_v_faq_v_items = relations(
+  __home_v_faq_v_items,
+  ({ one }) => ({
+    _parentID: one(__home_v_faq_v, {
+      fields: [__home_v_faq_v_items._parentID],
+      references: [__home_v_faq_v.id],
+      relationName: "items",
+    }),
+  }),
+);
+export const relations___home_v_faq_v = relations(
+  __home_v_faq_v,
+  ({ one, many }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_faq_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_faq",
+    }),
+    items: many(__home_v_faq_v_items, {
+      relationName: "items",
+    }),
+  }),
+);
+export const relations__home_v_blocks_carousel_slides = relations(
+  _home_v_blocks_carousel_slides,
+  ({ one }) => ({
+    _parentID: one(_home_v_blocks_carousel, {
+      fields: [_home_v_blocks_carousel_slides._parentID],
+      references: [_home_v_blocks_carousel.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [_home_v_blocks_carousel_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations__home_v_blocks_carousel = relations(
+  _home_v_blocks_carousel,
+  ({ one, many }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_carousel._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_carousel",
+    }),
+    slides: many(_home_v_blocks_carousel_slides, {
+      relationName: "slides",
+    }),
+  }),
+);
+export const relations__home_v_blocks_carousel_tabs_tabs_slides = relations(
+  _home_v_blocks_carousel_tabs_tabs_slides,
+  ({ one }) => ({
+    _parentID: one(_home_v_blocks_carousel_tabs_tabs, {
+      fields: [_home_v_blocks_carousel_tabs_tabs_slides._parentID],
+      references: [_home_v_blocks_carousel_tabs_tabs.id],
+      relationName: "slides",
+    }),
+    media: one(media, {
+      fields: [_home_v_blocks_carousel_tabs_tabs_slides.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations__home_v_blocks_carousel_tabs_tabs = relations(
+  _home_v_blocks_carousel_tabs_tabs,
+  ({ one, many }) => ({
+    _parentID: one(_home_v_blocks_carousel_tabs, {
+      fields: [_home_v_blocks_carousel_tabs_tabs._parentID],
+      references: [_home_v_blocks_carousel_tabs.id],
+      relationName: "tabs",
+    }),
+    slides: many(_home_v_blocks_carousel_tabs_tabs_slides, {
+      relationName: "slides",
+    }),
+  }),
+);
+export const relations__home_v_blocks_carousel_tabs = relations(
+  _home_v_blocks_carousel_tabs,
+  ({ one, many }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_carousel_tabs._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_carouselTabs",
+    }),
+    tabs: many(_home_v_blocks_carousel_tabs_tabs, {
+      relationName: "tabs",
+    }),
+  }),
+);
+export const relations__home_v_blocks_feature_tabs_tabs_items = relations(
+  _home_v_blocks_feature_tabs_tabs_items,
+  ({ one }) => ({
+    _parentID: one(_home_v_blocks_feature_tabs_tabs, {
+      fields: [_home_v_blocks_feature_tabs_tabs_items._parentID],
+      references: [_home_v_blocks_feature_tabs_tabs.id],
+      relationName: "items",
+    }),
+  }),
+);
+export const relations__home_v_blocks_feature_tabs_tabs = relations(
+  _home_v_blocks_feature_tabs_tabs,
+  ({ one, many }) => ({
+    _parentID: one(_home_v_blocks_feature_tabs, {
+      fields: [_home_v_blocks_feature_tabs_tabs._parentID],
+      references: [_home_v_blocks_feature_tabs.id],
+      relationName: "tabs",
+    }),
+    items: many(_home_v_blocks_feature_tabs_tabs_items, {
+      relationName: "items",
+    }),
+    media: one(media, {
+      fields: [_home_v_blocks_feature_tabs_tabs.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+    shader_studio: one(streak_looks, {
+      fields: [_home_v_blocks_feature_tabs_tabs.shader_studio],
+      references: [streak_looks.id],
+      relationName: "shader_studio",
+    }),
+    shader_posterMedia: one(media, {
+      fields: [_home_v_blocks_feature_tabs_tabs.shader_posterMedia],
+      references: [media.id],
+      relationName: "shader_posterMedia",
+    }),
+  }),
+);
+export const relations__home_v_blocks_feature_tabs = relations(
+  _home_v_blocks_feature_tabs,
+  ({ one, many }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_feature_tabs._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_featureTabs",
+    }),
+    tabs: many(_home_v_blocks_feature_tabs_tabs, {
+      relationName: "tabs",
+    }),
+  }),
+);
+export const relations___home_v_insight_list_v_items = relations(
+  __home_v_insight_list_v_items,
+  ({ one }) => ({
+    _parentID: one(__home_v_insight_list_v, {
+      fields: [__home_v_insight_list_v_items._parentID],
+      references: [__home_v_insight_list_v.id],
+      relationName: "items",
+    }),
+    media: one(media, {
+      fields: [__home_v_insight_list_v_items.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations___home_v_insight_list_v = relations(
+  __home_v_insight_list_v,
+  ({ one, many }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_insight_list_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_insightList",
+    }),
+    items: many(__home_v_insight_list_v_items, {
+      relationName: "items",
+    }),
+  }),
+);
+export const relations__home_v_blocks_content_columns_slider_slides = relations(
+  _home_v_blocks_content_columns_slider_slides,
+  ({ one }) => ({
+    _parentID: one(_home_v_blocks_content_columns, {
+      fields: [_home_v_blocks_content_columns_slider_slides._parentID],
+      references: [_home_v_blocks_content_columns.id],
+      relationName: "slider_slides",
+    }),
+    slide_image: one(media, {
+      fields: [_home_v_blocks_content_columns_slider_slides.slide_image],
+      references: [media.id],
+      relationName: "slide_image",
+    }),
+  }),
+);
+export const relations__home_v_blocks_content_columns = relations(
+  _home_v_blocks_content_columns,
+  ({ one, many }) => ({
+    _parentID: one(_home_v_blocks_content, {
+      fields: [_home_v_blocks_content_columns._parentID],
+      references: [_home_v_blocks_content.id],
+      relationName: "columns",
+    }),
+    work_works: one(works, {
+      fields: [_home_v_blocks_content_columns.work_works],
+      references: [works.id],
+      relationName: "work_works",
+    }),
+    post_posts: one(posts, {
+      fields: [_home_v_blocks_content_columns.post_posts],
+      references: [posts.id],
+      relationName: "post_posts",
+    }),
+    slider_slides: many(_home_v_blocks_content_columns_slider_slides, {
+      relationName: "slider_slides",
+    }),
+    media_media: one(media, {
+      fields: [_home_v_blocks_content_columns.media_media],
+      references: [media.id],
+      relationName: "media_media",
+    }),
+  }),
+);
+export const relations__home_v_blocks_content = relations(
+  _home_v_blocks_content,
+  ({ one, many }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_content._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_content",
+    }),
+    columns: many(_home_v_blocks_content_columns, {
+      relationName: "columns",
+    }),
+  }),
+);
+export const relations___home_v_section_v = relations(
+  __home_v_section_v,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [__home_v_section_v._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_section",
+    }),
+  }),
+);
+export const relations__home_v_blocks_slider_slides = relations(
+  _home_v_blocks_slider_slides,
+  ({ one }) => ({
+    _parentID: one(_home_v_blocks_slider, {
+      fields: [_home_v_blocks_slider_slides._parentID],
+      references: [_home_v_blocks_slider.id],
+      relationName: "slides",
+    }),
+    slide_image: one(media, {
+      fields: [_home_v_blocks_slider_slides.slide_image],
+      references: [media.id],
+      relationName: "slide_image",
+    }),
+  }),
+);
+export const relations__home_v_blocks_slider = relations(
+  _home_v_blocks_slider,
+  ({ one, many }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_slider._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_slider",
+    }),
+    slides: many(_home_v_blocks_slider_slides, {
+      relationName: "slides",
+    }),
+  }),
+);
+export const relations__home_v_blocks_callout = relations(
+  _home_v_blocks_callout,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_callout._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_callout",
+    }),
+  }),
+);
+export const relations__home_v_blocks_archive = relations(
+  _home_v_blocks_archive,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_archive._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_archive",
+    }),
+  }),
+);
+export const relations__home_v_blocks_cta_links = relations(
+  _home_v_blocks_cta_links,
+  ({ one }) => ({
+    _parentID: one(_home_v_blocks_cta, {
+      fields: [_home_v_blocks_cta_links._parentID],
+      references: [_home_v_blocks_cta.id],
+      relationName: "links",
+    }),
+  }),
+);
+export const relations__home_v_blocks_cta = relations(
+  _home_v_blocks_cta,
+  ({ one, many }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_cta._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_cta",
+    }),
+    links: many(_home_v_blocks_cta_links, {
+      relationName: "links",
+    }),
+  }),
+);
+export const relations__home_v_blocks_form_block = relations(
+  _home_v_blocks_form_block,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_form_block._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_formBlock",
+    }),
+    form: one(forms, {
+      fields: [_home_v_blocks_form_block.form],
+      references: [forms.id],
+      relationName: "form",
+    }),
+  }),
+);
+export const relations__home_v_blocks_media_block = relations(
+  _home_v_blocks_media_block,
+  ({ one }) => ({
+    _parentID: one(_home_v, {
+      fields: [_home_v_blocks_media_block._parentID],
+      references: [_home_v.id],
+      relationName: "_blocks_mediaBlock",
+    }),
+    media: one(media, {
+      fields: [_home_v_blocks_media_block.media],
+      references: [media.id],
+      relationName: "media",
+    }),
+  }),
+);
+export const relations__home_v_rels = relations(_home_v_rels, ({ one }) => ({
+  parent: one(_home_v, {
+    fields: [_home_v_rels.parent],
+    references: [_home_v.id],
+    relationName: "_rels",
+  }),
+  pagesID: one(pages, {
+    fields: [_home_v_rels.pagesID],
+    references: [pages.id],
+    relationName: "pages",
+  }),
+  postsID: one(posts, {
+    fields: [_home_v_rels.postsID],
+    references: [posts.id],
+    relationName: "posts",
+  }),
+  worksID: one(works, {
+    fields: [_home_v_rels.worksID],
+    references: [works.id],
+    relationName: "works",
+  }),
+  categoriesID: one(categories, {
+    fields: [_home_v_rels.categoriesID],
+    references: [categories.id],
+    relationName: "categories",
+  }),
+}));
+export const relations__home_v = relations(_home_v, ({ one, many }) => ({
+  version_hero_media: one(media, {
+    fields: [_home_v.version_hero_media],
+    references: [media.id],
+    relationName: "version_hero_media",
+  }),
+  _blocks_richTransition: many(__home_v_transition_v, {
+    relationName: "_blocks_richTransition",
+  }),
+  _blocks_featureHeadingOffset: many(_home_v_blocks_feature_heading_offset, {
+    relationName: "_blocks_featureHeadingOffset",
+  }),
+  _blocks_fullMedia: many(__home_v_full_media_v, {
+    relationName: "_blocks_fullMedia",
+  }),
+  _blocks_mediaContentSplit: many(__home_v_media_split_v, {
+    relationName: "_blocks_mediaContentSplit",
+  }),
+  _blocks_splitContentNarrow: many(__home_v_split_narrow_v, {
+    relationName: "_blocks_splitContentNarrow",
+  }),
+  _blocks_carouselSplit: many(_home_v_blocks_carousel_split, {
+    relationName: "_blocks_carouselSplit",
+  }),
+  _blocks_imagePair: many(__home_v_image_pair_v, {
+    relationName: "_blocks_imagePair",
+  }),
+  _blocks_splitImageOffset: many(__home_v_split_offset_v, {
+    relationName: "_blocks_splitImageOffset",
+  }),
+  _blocks_featureImageStatement: many(__home_v_image_statement_v, {
+    relationName: "_blocks_featureImageStatement",
+  }),
+  _blocks_caption: many(__home_v_caption_v, {
+    relationName: "_blocks_caption",
+  }),
+  _blocks_youtube: many(__home_v_youtube_v, {
+    relationName: "_blocks_youtube",
+  }),
+  _blocks_richText: many(__home_v_rich_text_v, {
+    relationName: "_blocks_richText",
+  }),
+  _blocks_code: many(__home_v_code_v, {
+    relationName: "_blocks_code",
+  }),
+  _blocks_chart: many(__home_v_chart_v, {
+    relationName: "_blocks_chart",
+  }),
+  _blocks_diagram: many(__home_v_diagram_v, {
+    relationName: "_blocks_diagram",
+  }),
+  _blocks_faq: many(__home_v_faq_v, {
+    relationName: "_blocks_faq",
+  }),
+  _blocks_carousel: many(_home_v_blocks_carousel, {
+    relationName: "_blocks_carousel",
+  }),
+  _blocks_carouselTabs: many(_home_v_blocks_carousel_tabs, {
+    relationName: "_blocks_carouselTabs",
+  }),
+  _blocks_featureTabs: many(_home_v_blocks_feature_tabs, {
+    relationName: "_blocks_featureTabs",
+  }),
+  _blocks_insightList: many(__home_v_insight_list_v, {
+    relationName: "_blocks_insightList",
+  }),
+  _blocks_content: many(_home_v_blocks_content, {
+    relationName: "_blocks_content",
+  }),
+  _blocks_section: many(__home_v_section_v, {
+    relationName: "_blocks_section",
+  }),
+  _blocks_slider: many(_home_v_blocks_slider, {
+    relationName: "_blocks_slider",
+  }),
+  _blocks_callout: many(_home_v_blocks_callout, {
+    relationName: "_blocks_callout",
+  }),
+  _blocks_archive: many(_home_v_blocks_archive, {
+    relationName: "_blocks_archive",
+  }),
+  _blocks_cta: many(_home_v_blocks_cta, {
+    relationName: "_blocks_cta",
+  }),
+  _blocks_formBlock: many(_home_v_blocks_form_block, {
+    relationName: "_blocks_formBlock",
+  }),
+  _blocks_mediaBlock: many(_home_v_blocks_media_block, {
+    relationName: "_blocks_mediaBlock",
+  }),
+  version_meta_image: one(media, {
+    fields: [_home_v.version_meta_image],
+    references: [media.id],
+    relationName: "version_meta_image",
+  }),
+  _rels: many(_home_v_rels, {
+    relationName: "_rels",
+  }),
+}));
 export const relations_header_nav_items = relations(
   header_nav_items,
   ({ one }) => ({
@@ -20420,6 +26371,7 @@ type DatabaseSchema = {
   enum_pages_hero_type: typeof enum_pages_hero_type;
   enum_pages_hero_visual_type: typeof enum_pages_hero_visual_type;
   enum_pages_hero_shader_origin: typeof enum_pages_hero_shader_origin;
+  enum_pages_visibility: typeof enum_pages_visibility;
   enum_pages_status: typeof enum_pages_status;
   enum__pages_v_version_hero_links_link_type: typeof enum__pages_v_version_hero_links_link_type;
   enum__pages_v_version_hero_links_link_index_page: typeof enum__pages_v_version_hero_links_link_index_page;
@@ -20560,6 +26512,7 @@ type DatabaseSchema = {
   enum__pages_v_version_hero_type: typeof enum__pages_v_version_hero_type;
   enum__pages_v_version_hero_visual_type: typeof enum__pages_v_version_hero_visual_type;
   enum__pages_v_version_hero_shader_origin: typeof enum__pages_v_version_hero_shader_origin;
+  enum__pages_v_version_visibility: typeof enum__pages_v_version_visibility;
   enum__pages_v_version_status: typeof enum__pages_v_version_status;
   enum_posts_hero_links_link_type: typeof enum_posts_hero_links_link_type;
   enum_posts_hero_links_link_index_page: typeof enum_posts_hero_links_link_index_page;
@@ -20673,6 +26626,7 @@ type DatabaseSchema = {
   enum_posts_hero_visual_type: typeof enum_posts_hero_visual_type;
   enum_posts_hero_shader_origin: typeof enum_posts_hero_shader_origin;
   enum_posts_source: typeof enum_posts_source;
+  enum_posts_visibility: typeof enum_posts_visibility;
   enum_posts_status: typeof enum_posts_status;
   enum__posts_v_version_hero_links_link_type: typeof enum__posts_v_version_hero_links_link_type;
   enum__posts_v_version_hero_links_link_index_page: typeof enum__posts_v_version_hero_links_link_index_page;
@@ -20786,6 +26740,7 @@ type DatabaseSchema = {
   enum__posts_v_version_hero_visual_type: typeof enum__posts_v_version_hero_visual_type;
   enum__posts_v_version_hero_shader_origin: typeof enum__posts_v_version_hero_shader_origin;
   enum__posts_v_version_source: typeof enum__posts_v_version_source;
+  enum__posts_v_version_visibility: typeof enum__posts_v_version_visibility;
   enum__posts_v_version_status: typeof enum__posts_v_version_status;
   enum_works_transition_layout: typeof enum_works_transition_layout;
   enum_works_transition_text_size: typeof enum_works_transition_text_size;
@@ -20930,6 +26885,7 @@ type DatabaseSchema = {
   enum_works_blocks_media_block_space_mt: typeof enum_works_blocks_media_block_space_mt;
   enum_works_blocks_media_block_space_mb: typeof enum_works_blocks_media_block_space_mb;
   enum_works_project_status: typeof enum_works_project_status;
+  enum_works_visibility: typeof enum_works_visibility;
   enum_works_status: typeof enum_works_status;
   enum___works_v_transition_v_layout: typeof enum___works_v_transition_v_layout;
   enum___works_v_transition_v_text_size: typeof enum___works_v_transition_v_text_size;
@@ -21073,6 +27029,7 @@ type DatabaseSchema = {
   enum__works_v_blocks_media_block_space_pb: typeof enum__works_v_blocks_media_block_space_pb;
   enum__works_v_blocks_media_block_space_mt: typeof enum__works_v_blocks_media_block_space_mt;
   enum__works_v_blocks_media_block_space_mb: typeof enum__works_v_blocks_media_block_space_mb;
+  enum__works_v_version_visibility: typeof enum__works_v_version_visibility;
   enum__works_v_version_status: typeof enum__works_v_version_status;
   enum_inquiries_type: typeof enum_inquiries_type;
   enum_inquiries_status: typeof enum_inquiries_status;
@@ -21092,6 +27049,274 @@ type DatabaseSchema = {
   enum_redirects_to_type: typeof enum_redirects_to_type;
   enum_forms_confirmation_type: typeof enum_forms_confirmation_type;
   enum_payload_folders_folder_type: typeof enum_payload_folders_folder_type;
+  enum_home_transition_layout: typeof enum_home_transition_layout;
+  enum_home_transition_text_size: typeof enum_home_transition_text_size;
+  enum_home_transition_heading_level: typeof enum_home_transition_heading_level;
+  enum_home_transition_theme: typeof enum_home_transition_theme;
+  enum_home_blocks_feature_heading_offset_text_size: typeof enum_home_blocks_feature_heading_offset_text_size;
+  enum_home_blocks_feature_heading_offset_theme: typeof enum_home_blocks_feature_heading_offset_theme;
+  enum_home_full_media_visual_type: typeof enum_home_full_media_visual_type;
+  enum_home_full_media_shader_origin: typeof enum_home_full_media_shader_origin;
+  enum_home_full_media_text_size: typeof enum_home_full_media_text_size;
+  enum_home_full_media_width: typeof enum_home_full_media_width;
+  enum_home_full_media_aspect_ratio: typeof enum_home_full_media_aspect_ratio;
+  enum_home_full_media_content_position: typeof enum_home_full_media_content_position;
+  enum_home_full_media_theme: typeof enum_home_full_media_theme;
+  enum_home_media_split_visual_type: typeof enum_home_media_split_visual_type;
+  enum_home_media_split_shader_origin: typeof enum_home_media_split_shader_origin;
+  enum_home_media_split_text_size: typeof enum_home_media_split_text_size;
+  enum_home_media_split_layout: typeof enum_home_media_split_layout;
+  enum_home_media_split_aspect_ratio: typeof enum_home_media_split_aspect_ratio;
+  enum_home_media_split_theme: typeof enum_home_media_split_theme;
+  enum_home_split_narrow_visual_type: typeof enum_home_split_narrow_visual_type;
+  enum_home_split_narrow_shader_origin: typeof enum_home_split_narrow_shader_origin;
+  enum_home_split_narrow_text_size: typeof enum_home_split_narrow_text_size;
+  enum_home_split_narrow_image_position: typeof enum_home_split_narrow_image_position;
+  enum_home_split_narrow_theme: typeof enum_home_split_narrow_theme;
+  enum_home_blocks_carousel_split_text_size: typeof enum_home_blocks_carousel_split_text_size;
+  enum_home_blocks_carousel_split_carousel_position: typeof enum_home_blocks_carousel_split_carousel_position;
+  enum_home_blocks_carousel_split_slide_size: typeof enum_home_blocks_carousel_split_slide_size;
+  enum_home_blocks_carousel_split_theme: typeof enum_home_blocks_carousel_split_theme;
+  enum_home_image_pair_text_size: typeof enum_home_image_pair_text_size;
+  enum_home_image_pair_portrait_position: typeof enum_home_image_pair_portrait_position;
+  enum_home_image_pair_text_position: typeof enum_home_image_pair_text_position;
+  enum_home_image_pair_theme: typeof enum_home_image_pair_theme;
+  enum_home_split_offset_text_size: typeof enum_home_split_offset_text_size;
+  enum_home_split_offset_caption_position: typeof enum_home_split_offset_caption_position;
+  enum_home_split_offset_theme: typeof enum_home_split_offset_theme;
+  enum_home_image_statement_text_size: typeof enum_home_image_statement_text_size;
+  enum_home_image_statement_text_position: typeof enum_home_image_statement_text_position;
+  enum_home_image_statement_image_width: typeof enum_home_image_statement_image_width;
+  enum_home_image_statement_aspect_ratio: typeof enum_home_image_statement_aspect_ratio;
+  enum_home_image_statement_theme: typeof enum_home_image_statement_theme;
+  enum_home_caption_size: typeof enum_home_caption_size;
+  enum_home_caption_theme: typeof enum_home_caption_theme;
+  enum_home_youtube_size: typeof enum_home_youtube_size;
+  enum_home_youtube_theme: typeof enum_home_youtube_theme;
+  enum_home_rich_text_text_size: typeof enum_home_rich_text_text_size;
+  enum_home_rich_text_theme: typeof enum_home_rich_text_theme;
+  enum_home_code_language: typeof enum_home_code_language;
+  enum_home_chart_width: typeof enum_home_chart_width;
+  enum_home_chart_theme: typeof enum_home_chart_theme;
+  enum_home_diagram_width: typeof enum_home_diagram_width;
+  enum_home_diagram_theme: typeof enum_home_diagram_theme;
+  enum_home_faq_link_type: typeof enum_home_faq_link_type;
+  enum_home_faq_link_index_page: typeof enum_home_faq_link_index_page;
+  enum_home_faq_text_size: typeof enum_home_faq_text_size;
+  enum_home_faq_theme: typeof enum_home_faq_theme;
+  enum_home_blocks_carousel_width: typeof enum_home_blocks_carousel_width;
+  enum_home_blocks_carousel_slide_size: typeof enum_home_blocks_carousel_slide_size;
+  enum_home_blocks_carousel_theme: typeof enum_home_blocks_carousel_theme;
+  enum_home_blocks_carousel_tabs_text_size: typeof enum_home_blocks_carousel_tabs_text_size;
+  enum_home_blocks_carousel_tabs_deck_style: typeof enum_home_blocks_carousel_tabs_deck_style;
+  enum_home_blocks_carousel_tabs_slide_size: typeof enum_home_blocks_carousel_tabs_slide_size;
+  enum_home_blocks_carousel_tabs_tab_size: typeof enum_home_blocks_carousel_tabs_tab_size;
+  enum_home_blocks_carousel_tabs_theme: typeof enum_home_blocks_carousel_tabs_theme;
+  enum_home_blocks_feature_tabs_tabs_visual_type: typeof enum_home_blocks_feature_tabs_tabs_visual_type;
+  enum_home_blocks_feature_tabs_tabs_shader_origin: typeof enum_home_blocks_feature_tabs_tabs_shader_origin;
+  enum_home_blocks_feature_tabs_text_size: typeof enum_home_blocks_feature_tabs_text_size;
+  enum_home_blocks_feature_tabs_tab_size: typeof enum_home_blocks_feature_tabs_tab_size;
+  enum_home_blocks_feature_tabs_theme: typeof enum_home_blocks_feature_tabs_theme;
+  enum_home_insight_list_text_size: typeof enum_home_insight_list_text_size;
+  enum_home_insight_list_layout: typeof enum_home_insight_list_layout;
+  enum_home_insight_list_mark_size: typeof enum_home_insight_list_mark_size;
+  enum_home_insight_list_theme: typeof enum_home_insight_list_theme;
+  enum_home_blocks_content_columns_sizes: typeof enum_home_blocks_content_columns_sizes;
+  enum_home_blocks_content_columns_content: typeof enum_home_blocks_content_columns_content;
+  enum_home_blocks_content_columns_text_text_size: typeof enum_home_blocks_content_columns_text_text_size;
+  enum_home_blocks_content_columns_text_link_type: typeof enum_home_blocks_content_columns_text_link_type;
+  enum_home_blocks_content_columns_text_link_index_page: typeof enum_home_blocks_content_columns_text_link_index_page;
+  enum_home_blocks_content_columns_text_link_appearance: typeof enum_home_blocks_content_columns_text_link_appearance;
+  enum_home_blocks_content_columns_section_heading_size: typeof enum_home_blocks_content_columns_section_heading_size;
+  enum_home_blocks_content_columns_section_heading_align: typeof enum_home_blocks_content_columns_section_heading_align;
+  enum_home_blocks_content_columns_section_heading_style: typeof enum_home_blocks_content_columns_section_heading_style;
+  enum_home_blocks_content_columns_work_aspect: typeof enum_home_blocks_content_columns_work_aspect;
+  enum_home_blocks_content_columns_work_variant: typeof enum_home_blocks_content_columns_work_variant;
+  enum_home_blocks_content_columns_post_aspect: typeof enum_home_blocks_content_columns_post_aspect;
+  enum_home_blocks_content_columns_post_variant: typeof enum_home_blocks_content_columns_post_variant;
+  enum_home_blocks_content_columns_slider_theme: typeof enum_home_blocks_content_columns_slider_theme;
+  enum_home_blocks_content_columns_slider_intro_content_size: typeof enum_home_blocks_content_columns_slider_intro_content_size;
+  enum_home_blocks_content_columns_slider_intro_content_align: typeof enum_home_blocks_content_columns_slider_intro_content_align;
+  enum_home_blocks_content_columns_slider_style: typeof enum_home_blocks_content_columns_slider_style;
+  enum_home_blocks_content_columns_slider_space_pt: typeof enum_home_blocks_content_columns_slider_space_pt;
+  enum_home_blocks_content_columns_slider_space_pb: typeof enum_home_blocks_content_columns_slider_space_pb;
+  enum_home_blocks_content_columns_slider_space_mt: typeof enum_home_blocks_content_columns_slider_space_mt;
+  enum_home_blocks_content_columns_slider_space_mb: typeof enum_home_blocks_content_columns_slider_space_mb;
+  enum_home_blocks_content_columns_media_aspect_ratio: typeof enum_home_blocks_content_columns_media_aspect_ratio;
+  enum_home_blocks_content_columns_media_caption_size: typeof enum_home_blocks_content_columns_media_caption_size;
+  enum_home_blocks_content_columns_you_tube_aspect_ratio: typeof enum_home_blocks_content_columns_you_tube_aspect_ratio;
+  enum_home_blocks_content_theme: typeof enum_home_blocks_content_theme;
+  enum_home_blocks_content_container_width: typeof enum_home_blocks_content_container_width;
+  enum_home_blocks_content_space_pt: typeof enum_home_blocks_content_space_pt;
+  enum_home_blocks_content_space_pb: typeof enum_home_blocks_content_space_pb;
+  enum_home_blocks_content_space_mt: typeof enum_home_blocks_content_space_mt;
+  enum_home_blocks_content_space_mb: typeof enum_home_blocks_content_space_mb;
+  enum_home_section_theme: typeof enum_home_section_theme;
+  enum_home_section_spacing: typeof enum_home_section_spacing;
+  enum_home_section_stack: typeof enum_home_section_stack;
+  enum_home_blocks_slider_theme: typeof enum_home_blocks_slider_theme;
+  enum_home_blocks_slider_intro_content_size: typeof enum_home_blocks_slider_intro_content_size;
+  enum_home_blocks_slider_intro_content_align: typeof enum_home_blocks_slider_intro_content_align;
+  enum_home_blocks_slider_style: typeof enum_home_blocks_slider_style;
+  enum_home_blocks_slider_space_pt: typeof enum_home_blocks_slider_space_pt;
+  enum_home_blocks_slider_space_pb: typeof enum_home_blocks_slider_space_pb;
+  enum_home_blocks_slider_space_mt: typeof enum_home_blocks_slider_space_mt;
+  enum_home_blocks_slider_space_mb: typeof enum_home_blocks_slider_space_mb;
+  enum_home_blocks_archive_theme: typeof enum_home_blocks_archive_theme;
+  enum_home_blocks_archive_card_style: typeof enum_home_blocks_archive_card_style;
+  enum_home_blocks_archive_populate_by: typeof enum_home_blocks_archive_populate_by;
+  enum_home_blocks_archive_relation_to: typeof enum_home_blocks_archive_relation_to;
+  enum_home_blocks_cta_links_link_type: typeof enum_home_blocks_cta_links_link_type;
+  enum_home_blocks_cta_links_link_index_page: typeof enum_home_blocks_cta_links_link_index_page;
+  enum_home_blocks_cta_links_link_appearance: typeof enum_home_blocks_cta_links_link_appearance;
+  enum_home_blocks_form_block_space_pt: typeof enum_home_blocks_form_block_space_pt;
+  enum_home_blocks_form_block_space_pb: typeof enum_home_blocks_form_block_space_pb;
+  enum_home_blocks_form_block_space_mt: typeof enum_home_blocks_form_block_space_mt;
+  enum_home_blocks_form_block_space_mb: typeof enum_home_blocks_form_block_space_mb;
+  enum_home_blocks_form_block_intro_align: typeof enum_home_blocks_form_block_intro_align;
+  enum_home_blocks_media_block_aspect_ratio: typeof enum_home_blocks_media_block_aspect_ratio;
+  enum_home_blocks_media_block_theme: typeof enum_home_blocks_media_block_theme;
+  enum_home_blocks_media_block_caption_layout: typeof enum_home_blocks_media_block_caption_layout;
+  enum_home_blocks_media_block_text_size: typeof enum_home_blocks_media_block_text_size;
+  enum_home_blocks_media_block_space_pt: typeof enum_home_blocks_media_block_space_pt;
+  enum_home_blocks_media_block_space_pb: typeof enum_home_blocks_media_block_space_pb;
+  enum_home_blocks_media_block_space_mt: typeof enum_home_blocks_media_block_space_mt;
+  enum_home_blocks_media_block_space_mb: typeof enum_home_blocks_media_block_space_mb;
+  enum_home_status: typeof enum_home_status;
+  enum___home_v_transition_v_layout: typeof enum___home_v_transition_v_layout;
+  enum___home_v_transition_v_text_size: typeof enum___home_v_transition_v_text_size;
+  enum___home_v_transition_v_heading_level: typeof enum___home_v_transition_v_heading_level;
+  enum___home_v_transition_v_theme: typeof enum___home_v_transition_v_theme;
+  enum__home_v_blocks_feature_heading_offset_text_size: typeof enum__home_v_blocks_feature_heading_offset_text_size;
+  enum__home_v_blocks_feature_heading_offset_theme: typeof enum__home_v_blocks_feature_heading_offset_theme;
+  enum___home_v_full_media_v_visual_type: typeof enum___home_v_full_media_v_visual_type;
+  enum___home_v_full_media_v_shader_origin: typeof enum___home_v_full_media_v_shader_origin;
+  enum___home_v_full_media_v_text_size: typeof enum___home_v_full_media_v_text_size;
+  enum___home_v_full_media_v_width: typeof enum___home_v_full_media_v_width;
+  enum___home_v_full_media_v_aspect_ratio: typeof enum___home_v_full_media_v_aspect_ratio;
+  enum___home_v_full_media_v_content_position: typeof enum___home_v_full_media_v_content_position;
+  enum___home_v_full_media_v_theme: typeof enum___home_v_full_media_v_theme;
+  enum___home_v_media_split_v_visual_type: typeof enum___home_v_media_split_v_visual_type;
+  enum___home_v_media_split_v_shader_origin: typeof enum___home_v_media_split_v_shader_origin;
+  enum___home_v_media_split_v_text_size: typeof enum___home_v_media_split_v_text_size;
+  enum___home_v_media_split_v_layout: typeof enum___home_v_media_split_v_layout;
+  enum___home_v_media_split_v_aspect_ratio: typeof enum___home_v_media_split_v_aspect_ratio;
+  enum___home_v_media_split_v_theme: typeof enum___home_v_media_split_v_theme;
+  enum___home_v_split_narrow_v_visual_type: typeof enum___home_v_split_narrow_v_visual_type;
+  enum___home_v_split_narrow_v_shader_origin: typeof enum___home_v_split_narrow_v_shader_origin;
+  enum___home_v_split_narrow_v_text_size: typeof enum___home_v_split_narrow_v_text_size;
+  enum___home_v_split_narrow_v_image_position: typeof enum___home_v_split_narrow_v_image_position;
+  enum___home_v_split_narrow_v_theme: typeof enum___home_v_split_narrow_v_theme;
+  enum__home_v_blocks_carousel_split_text_size: typeof enum__home_v_blocks_carousel_split_text_size;
+  enum__home_v_blocks_carousel_split_carousel_position: typeof enum__home_v_blocks_carousel_split_carousel_position;
+  enum__home_v_blocks_carousel_split_slide_size: typeof enum__home_v_blocks_carousel_split_slide_size;
+  enum__home_v_blocks_carousel_split_theme: typeof enum__home_v_blocks_carousel_split_theme;
+  enum___home_v_image_pair_v_text_size: typeof enum___home_v_image_pair_v_text_size;
+  enum___home_v_image_pair_v_portrait_position: typeof enum___home_v_image_pair_v_portrait_position;
+  enum___home_v_image_pair_v_text_position: typeof enum___home_v_image_pair_v_text_position;
+  enum___home_v_image_pair_v_theme: typeof enum___home_v_image_pair_v_theme;
+  enum___home_v_split_offset_v_text_size: typeof enum___home_v_split_offset_v_text_size;
+  enum___home_v_split_offset_v_caption_position: typeof enum___home_v_split_offset_v_caption_position;
+  enum___home_v_split_offset_v_theme: typeof enum___home_v_split_offset_v_theme;
+  enum___home_v_image_statement_v_text_size: typeof enum___home_v_image_statement_v_text_size;
+  enum___home_v_image_statement_v_text_position: typeof enum___home_v_image_statement_v_text_position;
+  enum___home_v_image_statement_v_image_width: typeof enum___home_v_image_statement_v_image_width;
+  enum___home_v_image_statement_v_aspect_ratio: typeof enum___home_v_image_statement_v_aspect_ratio;
+  enum___home_v_image_statement_v_theme: typeof enum___home_v_image_statement_v_theme;
+  enum___home_v_caption_v_size: typeof enum___home_v_caption_v_size;
+  enum___home_v_caption_v_theme: typeof enum___home_v_caption_v_theme;
+  enum___home_v_youtube_v_size: typeof enum___home_v_youtube_v_size;
+  enum___home_v_youtube_v_theme: typeof enum___home_v_youtube_v_theme;
+  enum___home_v_rich_text_v_text_size: typeof enum___home_v_rich_text_v_text_size;
+  enum___home_v_rich_text_v_theme: typeof enum___home_v_rich_text_v_theme;
+  enum___home_v_code_v_language: typeof enum___home_v_code_v_language;
+  enum___home_v_chart_v_width: typeof enum___home_v_chart_v_width;
+  enum___home_v_chart_v_theme: typeof enum___home_v_chart_v_theme;
+  enum___home_v_diagram_v_width: typeof enum___home_v_diagram_v_width;
+  enum___home_v_diagram_v_theme: typeof enum___home_v_diagram_v_theme;
+  enum___home_v_faq_v_link_type: typeof enum___home_v_faq_v_link_type;
+  enum___home_v_faq_v_link_index_page: typeof enum___home_v_faq_v_link_index_page;
+  enum___home_v_faq_v_text_size: typeof enum___home_v_faq_v_text_size;
+  enum___home_v_faq_v_theme: typeof enum___home_v_faq_v_theme;
+  enum__home_v_blocks_carousel_width: typeof enum__home_v_blocks_carousel_width;
+  enum__home_v_blocks_carousel_slide_size: typeof enum__home_v_blocks_carousel_slide_size;
+  enum__home_v_blocks_carousel_theme: typeof enum__home_v_blocks_carousel_theme;
+  enum__home_v_blocks_carousel_tabs_text_size: typeof enum__home_v_blocks_carousel_tabs_text_size;
+  enum__home_v_blocks_carousel_tabs_deck_style: typeof enum__home_v_blocks_carousel_tabs_deck_style;
+  enum__home_v_blocks_carousel_tabs_slide_size: typeof enum__home_v_blocks_carousel_tabs_slide_size;
+  enum__home_v_blocks_carousel_tabs_tab_size: typeof enum__home_v_blocks_carousel_tabs_tab_size;
+  enum__home_v_blocks_carousel_tabs_theme: typeof enum__home_v_blocks_carousel_tabs_theme;
+  enum__home_v_blocks_feature_tabs_tabs_visual_type: typeof enum__home_v_blocks_feature_tabs_tabs_visual_type;
+  enum__home_v_blocks_feature_tabs_tabs_shader_origin: typeof enum__home_v_blocks_feature_tabs_tabs_shader_origin;
+  enum__home_v_blocks_feature_tabs_text_size: typeof enum__home_v_blocks_feature_tabs_text_size;
+  enum__home_v_blocks_feature_tabs_tab_size: typeof enum__home_v_blocks_feature_tabs_tab_size;
+  enum__home_v_blocks_feature_tabs_theme: typeof enum__home_v_blocks_feature_tabs_theme;
+  enum___home_v_insight_list_v_text_size: typeof enum___home_v_insight_list_v_text_size;
+  enum___home_v_insight_list_v_layout: typeof enum___home_v_insight_list_v_layout;
+  enum___home_v_insight_list_v_mark_size: typeof enum___home_v_insight_list_v_mark_size;
+  enum___home_v_insight_list_v_theme: typeof enum___home_v_insight_list_v_theme;
+  enum__home_v_blocks_content_columns_sizes: typeof enum__home_v_blocks_content_columns_sizes;
+  enum__home_v_blocks_content_columns_content: typeof enum__home_v_blocks_content_columns_content;
+  enum__home_v_blocks_content_columns_text_text_size: typeof enum__home_v_blocks_content_columns_text_text_size;
+  enum__home_v_blocks_content_columns_text_link_type: typeof enum__home_v_blocks_content_columns_text_link_type;
+  enum__home_v_blocks_content_columns_text_link_index_page: typeof enum__home_v_blocks_content_columns_text_link_index_page;
+  enum__home_v_blocks_content_columns_text_link_appearance: typeof enum__home_v_blocks_content_columns_text_link_appearance;
+  enum__home_v_blocks_content_columns_section_heading_size: typeof enum__home_v_blocks_content_columns_section_heading_size;
+  enum__home_v_blocks_content_columns_section_heading_align: typeof enum__home_v_blocks_content_columns_section_heading_align;
+  enum__home_v_blocks_content_columns_section_heading_style: typeof enum__home_v_blocks_content_columns_section_heading_style;
+  enum__home_v_blocks_content_columns_work_aspect: typeof enum__home_v_blocks_content_columns_work_aspect;
+  enum__home_v_blocks_content_columns_work_variant: typeof enum__home_v_blocks_content_columns_work_variant;
+  enum__home_v_blocks_content_columns_post_aspect: typeof enum__home_v_blocks_content_columns_post_aspect;
+  enum__home_v_blocks_content_columns_post_variant: typeof enum__home_v_blocks_content_columns_post_variant;
+  enum__home_v_blocks_content_columns_slider_theme: typeof enum__home_v_blocks_content_columns_slider_theme;
+  enum__home_v_blocks_content_columns_slider_intro_content_size: typeof enum__home_v_blocks_content_columns_slider_intro_content_size;
+  enum__home_v_blocks_content_columns_slider_intro_content_align: typeof enum__home_v_blocks_content_columns_slider_intro_content_align;
+  enum__home_v_blocks_content_columns_slider_style: typeof enum__home_v_blocks_content_columns_slider_style;
+  enum__home_v_blocks_content_columns_slider_space_pt: typeof enum__home_v_blocks_content_columns_slider_space_pt;
+  enum__home_v_blocks_content_columns_slider_space_pb: typeof enum__home_v_blocks_content_columns_slider_space_pb;
+  enum__home_v_blocks_content_columns_slider_space_mt: typeof enum__home_v_blocks_content_columns_slider_space_mt;
+  enum__home_v_blocks_content_columns_slider_space_mb: typeof enum__home_v_blocks_content_columns_slider_space_mb;
+  enum__home_v_blocks_content_columns_media_aspect_ratio: typeof enum__home_v_blocks_content_columns_media_aspect_ratio;
+  enum__home_v_blocks_content_columns_media_caption_size: typeof enum__home_v_blocks_content_columns_media_caption_size;
+  enum__home_v_blocks_content_columns_you_tube_aspect_ratio: typeof enum__home_v_blocks_content_columns_you_tube_aspect_ratio;
+  enum__home_v_blocks_content_theme: typeof enum__home_v_blocks_content_theme;
+  enum__home_v_blocks_content_container_width: typeof enum__home_v_blocks_content_container_width;
+  enum__home_v_blocks_content_space_pt: typeof enum__home_v_blocks_content_space_pt;
+  enum__home_v_blocks_content_space_pb: typeof enum__home_v_blocks_content_space_pb;
+  enum__home_v_blocks_content_space_mt: typeof enum__home_v_blocks_content_space_mt;
+  enum__home_v_blocks_content_space_mb: typeof enum__home_v_blocks_content_space_mb;
+  enum___home_v_section_v_theme: typeof enum___home_v_section_v_theme;
+  enum___home_v_section_v_spacing: typeof enum___home_v_section_v_spacing;
+  enum___home_v_section_v_stack: typeof enum___home_v_section_v_stack;
+  enum__home_v_blocks_slider_theme: typeof enum__home_v_blocks_slider_theme;
+  enum__home_v_blocks_slider_intro_content_size: typeof enum__home_v_blocks_slider_intro_content_size;
+  enum__home_v_blocks_slider_intro_content_align: typeof enum__home_v_blocks_slider_intro_content_align;
+  enum__home_v_blocks_slider_style: typeof enum__home_v_blocks_slider_style;
+  enum__home_v_blocks_slider_space_pt: typeof enum__home_v_blocks_slider_space_pt;
+  enum__home_v_blocks_slider_space_pb: typeof enum__home_v_blocks_slider_space_pb;
+  enum__home_v_blocks_slider_space_mt: typeof enum__home_v_blocks_slider_space_mt;
+  enum__home_v_blocks_slider_space_mb: typeof enum__home_v_blocks_slider_space_mb;
+  enum__home_v_blocks_archive_theme: typeof enum__home_v_blocks_archive_theme;
+  enum__home_v_blocks_archive_card_style: typeof enum__home_v_blocks_archive_card_style;
+  enum__home_v_blocks_archive_populate_by: typeof enum__home_v_blocks_archive_populate_by;
+  enum__home_v_blocks_archive_relation_to: typeof enum__home_v_blocks_archive_relation_to;
+  enum__home_v_blocks_cta_links_link_type: typeof enum__home_v_blocks_cta_links_link_type;
+  enum__home_v_blocks_cta_links_link_index_page: typeof enum__home_v_blocks_cta_links_link_index_page;
+  enum__home_v_blocks_cta_links_link_appearance: typeof enum__home_v_blocks_cta_links_link_appearance;
+  enum__home_v_blocks_form_block_space_pt: typeof enum__home_v_blocks_form_block_space_pt;
+  enum__home_v_blocks_form_block_space_pb: typeof enum__home_v_blocks_form_block_space_pb;
+  enum__home_v_blocks_form_block_space_mt: typeof enum__home_v_blocks_form_block_space_mt;
+  enum__home_v_blocks_form_block_space_mb: typeof enum__home_v_blocks_form_block_space_mb;
+  enum__home_v_blocks_form_block_intro_align: typeof enum__home_v_blocks_form_block_intro_align;
+  enum__home_v_blocks_media_block_aspect_ratio: typeof enum__home_v_blocks_media_block_aspect_ratio;
+  enum__home_v_blocks_media_block_theme: typeof enum__home_v_blocks_media_block_theme;
+  enum__home_v_blocks_media_block_caption_layout: typeof enum__home_v_blocks_media_block_caption_layout;
+  enum__home_v_blocks_media_block_text_size: typeof enum__home_v_blocks_media_block_text_size;
+  enum__home_v_blocks_media_block_space_pt: typeof enum__home_v_blocks_media_block_space_pt;
+  enum__home_v_blocks_media_block_space_pb: typeof enum__home_v_blocks_media_block_space_pb;
+  enum__home_v_blocks_media_block_space_mt: typeof enum__home_v_blocks_media_block_space_mt;
+  enum__home_v_blocks_media_block_space_mb: typeof enum__home_v_blocks_media_block_space_mb;
+  enum__home_v_version_status: typeof enum__home_v_version_status;
   enum_header_nav_items_link_type: typeof enum_header_nav_items_link_type;
   enum_header_nav_items_link_index_page: typeof enum_header_nav_items_link_index_page;
   enum_works_index_status: typeof enum_works_index_status;
@@ -21355,10 +27580,14 @@ type DatabaseSchema = {
   ask_questions_rels: typeof ask_questions_rels;
   users_sessions: typeof users_sessions;
   users: typeof users;
+  members_sessions: typeof members_sessions;
+  members: typeof members;
   streak_looks: typeof streak_looks;
   streak_looks_texts: typeof streak_looks_texts;
+  streak_looks_rels: typeof streak_looks_rels;
   _streak_looks_v: typeof _streak_looks_v;
   _streak_looks_v_texts: typeof _streak_looks_v_texts;
+  _streak_looks_v_rels: typeof _streak_looks_v_rels;
   redirects: typeof redirects;
   redirects_rels: typeof redirects_rels;
   forms_blocks_checkbox: typeof forms_blocks_checkbox;
@@ -21387,6 +27616,90 @@ type DatabaseSchema = {
   payload_preferences: typeof payload_preferences;
   payload_preferences_rels: typeof payload_preferences_rels;
   payload_migrations: typeof payload_migrations;
+  home_transition: typeof home_transition;
+  home_blocks_feature_heading_offset: typeof home_blocks_feature_heading_offset;
+  home_full_media: typeof home_full_media;
+  home_media_split: typeof home_media_split;
+  home_split_narrow: typeof home_split_narrow;
+  home_blocks_carousel_split_slides: typeof home_blocks_carousel_split_slides;
+  home_blocks_carousel_split: typeof home_blocks_carousel_split;
+  home_image_pair: typeof home_image_pair;
+  home_split_offset: typeof home_split_offset;
+  home_image_statement: typeof home_image_statement;
+  home_caption: typeof home_caption;
+  home_youtube: typeof home_youtube;
+  home_rich_text: typeof home_rich_text;
+  home_code: typeof home_code;
+  home_chart: typeof home_chart;
+  home_diagram: typeof home_diagram;
+  home_faq_items: typeof home_faq_items;
+  home_faq: typeof home_faq;
+  home_blocks_carousel_slides: typeof home_blocks_carousel_slides;
+  home_blocks_carousel: typeof home_blocks_carousel;
+  home_blocks_carousel_tabs_tabs_slides: typeof home_blocks_carousel_tabs_tabs_slides;
+  home_blocks_carousel_tabs_tabs: typeof home_blocks_carousel_tabs_tabs;
+  home_blocks_carousel_tabs: typeof home_blocks_carousel_tabs;
+  home_blocks_feature_tabs_tabs_items: typeof home_blocks_feature_tabs_tabs_items;
+  home_blocks_feature_tabs_tabs: typeof home_blocks_feature_tabs_tabs;
+  home_blocks_feature_tabs: typeof home_blocks_feature_tabs;
+  home_insight_list_items: typeof home_insight_list_items;
+  home_insight_list: typeof home_insight_list;
+  home_blocks_content_columns_slider_slides: typeof home_blocks_content_columns_slider_slides;
+  home_blocks_content_columns: typeof home_blocks_content_columns;
+  home_blocks_content: typeof home_blocks_content;
+  home_section: typeof home_section;
+  home_blocks_slider_slides: typeof home_blocks_slider_slides;
+  home_blocks_slider: typeof home_blocks_slider;
+  home_blocks_callout: typeof home_blocks_callout;
+  home_blocks_archive: typeof home_blocks_archive;
+  home_blocks_cta_links: typeof home_blocks_cta_links;
+  home_blocks_cta: typeof home_blocks_cta;
+  home_blocks_form_block: typeof home_blocks_form_block;
+  home_blocks_media_block: typeof home_blocks_media_block;
+  home: typeof home;
+  home_rels: typeof home_rels;
+  __home_v_transition_v: typeof __home_v_transition_v;
+  _home_v_blocks_feature_heading_offset: typeof _home_v_blocks_feature_heading_offset;
+  __home_v_full_media_v: typeof __home_v_full_media_v;
+  __home_v_media_split_v: typeof __home_v_media_split_v;
+  __home_v_split_narrow_v: typeof __home_v_split_narrow_v;
+  _home_v_blocks_carousel_split_slides: typeof _home_v_blocks_carousel_split_slides;
+  _home_v_blocks_carousel_split: typeof _home_v_blocks_carousel_split;
+  __home_v_image_pair_v: typeof __home_v_image_pair_v;
+  __home_v_split_offset_v: typeof __home_v_split_offset_v;
+  __home_v_image_statement_v: typeof __home_v_image_statement_v;
+  __home_v_caption_v: typeof __home_v_caption_v;
+  __home_v_youtube_v: typeof __home_v_youtube_v;
+  __home_v_rich_text_v: typeof __home_v_rich_text_v;
+  __home_v_code_v: typeof __home_v_code_v;
+  __home_v_chart_v: typeof __home_v_chart_v;
+  __home_v_diagram_v: typeof __home_v_diagram_v;
+  __home_v_faq_v_items: typeof __home_v_faq_v_items;
+  __home_v_faq_v: typeof __home_v_faq_v;
+  _home_v_blocks_carousel_slides: typeof _home_v_blocks_carousel_slides;
+  _home_v_blocks_carousel: typeof _home_v_blocks_carousel;
+  _home_v_blocks_carousel_tabs_tabs_slides: typeof _home_v_blocks_carousel_tabs_tabs_slides;
+  _home_v_blocks_carousel_tabs_tabs: typeof _home_v_blocks_carousel_tabs_tabs;
+  _home_v_blocks_carousel_tabs: typeof _home_v_blocks_carousel_tabs;
+  _home_v_blocks_feature_tabs_tabs_items: typeof _home_v_blocks_feature_tabs_tabs_items;
+  _home_v_blocks_feature_tabs_tabs: typeof _home_v_blocks_feature_tabs_tabs;
+  _home_v_blocks_feature_tabs: typeof _home_v_blocks_feature_tabs;
+  __home_v_insight_list_v_items: typeof __home_v_insight_list_v_items;
+  __home_v_insight_list_v: typeof __home_v_insight_list_v;
+  _home_v_blocks_content_columns_slider_slides: typeof _home_v_blocks_content_columns_slider_slides;
+  _home_v_blocks_content_columns: typeof _home_v_blocks_content_columns;
+  _home_v_blocks_content: typeof _home_v_blocks_content;
+  __home_v_section_v: typeof __home_v_section_v;
+  _home_v_blocks_slider_slides: typeof _home_v_blocks_slider_slides;
+  _home_v_blocks_slider: typeof _home_v_blocks_slider;
+  _home_v_blocks_callout: typeof _home_v_blocks_callout;
+  _home_v_blocks_archive: typeof _home_v_blocks_archive;
+  _home_v_blocks_cta_links: typeof _home_v_blocks_cta_links;
+  _home_v_blocks_cta: typeof _home_v_blocks_cta;
+  _home_v_blocks_form_block: typeof _home_v_blocks_form_block;
+  _home_v_blocks_media_block: typeof _home_v_blocks_media_block;
+  _home_v: typeof _home_v;
+  _home_v_rels: typeof _home_v_rels;
   header_nav_items: typeof header_nav_items;
   header: typeof header;
   header_rels: typeof header_rels;
@@ -21657,9 +27970,13 @@ type DatabaseSchema = {
   relations_ask_questions: typeof relations_ask_questions;
   relations_users_sessions: typeof relations_users_sessions;
   relations_users: typeof relations_users;
+  relations_members_sessions: typeof relations_members_sessions;
+  relations_members: typeof relations_members;
   relations_streak_looks_texts: typeof relations_streak_looks_texts;
+  relations_streak_looks_rels: typeof relations_streak_looks_rels;
   relations_streak_looks: typeof relations_streak_looks;
   relations__streak_looks_v_texts: typeof relations__streak_looks_v_texts;
+  relations__streak_looks_v_rels: typeof relations__streak_looks_v_rels;
   relations__streak_looks_v: typeof relations__streak_looks_v;
   relations_redirects_rels: typeof relations_redirects_rels;
   relations_redirects: typeof relations_redirects;
@@ -21689,6 +28006,90 @@ type DatabaseSchema = {
   relations_payload_preferences_rels: typeof relations_payload_preferences_rels;
   relations_payload_preferences: typeof relations_payload_preferences;
   relations_payload_migrations: typeof relations_payload_migrations;
+  relations_home_transition: typeof relations_home_transition;
+  relations_home_blocks_feature_heading_offset: typeof relations_home_blocks_feature_heading_offset;
+  relations_home_full_media: typeof relations_home_full_media;
+  relations_home_media_split: typeof relations_home_media_split;
+  relations_home_split_narrow: typeof relations_home_split_narrow;
+  relations_home_blocks_carousel_split_slides: typeof relations_home_blocks_carousel_split_slides;
+  relations_home_blocks_carousel_split: typeof relations_home_blocks_carousel_split;
+  relations_home_image_pair: typeof relations_home_image_pair;
+  relations_home_split_offset: typeof relations_home_split_offset;
+  relations_home_image_statement: typeof relations_home_image_statement;
+  relations_home_caption: typeof relations_home_caption;
+  relations_home_youtube: typeof relations_home_youtube;
+  relations_home_rich_text: typeof relations_home_rich_text;
+  relations_home_code: typeof relations_home_code;
+  relations_home_chart: typeof relations_home_chart;
+  relations_home_diagram: typeof relations_home_diagram;
+  relations_home_faq_items: typeof relations_home_faq_items;
+  relations_home_faq: typeof relations_home_faq;
+  relations_home_blocks_carousel_slides: typeof relations_home_blocks_carousel_slides;
+  relations_home_blocks_carousel: typeof relations_home_blocks_carousel;
+  relations_home_blocks_carousel_tabs_tabs_slides: typeof relations_home_blocks_carousel_tabs_tabs_slides;
+  relations_home_blocks_carousel_tabs_tabs: typeof relations_home_blocks_carousel_tabs_tabs;
+  relations_home_blocks_carousel_tabs: typeof relations_home_blocks_carousel_tabs;
+  relations_home_blocks_feature_tabs_tabs_items: typeof relations_home_blocks_feature_tabs_tabs_items;
+  relations_home_blocks_feature_tabs_tabs: typeof relations_home_blocks_feature_tabs_tabs;
+  relations_home_blocks_feature_tabs: typeof relations_home_blocks_feature_tabs;
+  relations_home_insight_list_items: typeof relations_home_insight_list_items;
+  relations_home_insight_list: typeof relations_home_insight_list;
+  relations_home_blocks_content_columns_slider_slides: typeof relations_home_blocks_content_columns_slider_slides;
+  relations_home_blocks_content_columns: typeof relations_home_blocks_content_columns;
+  relations_home_blocks_content: typeof relations_home_blocks_content;
+  relations_home_section: typeof relations_home_section;
+  relations_home_blocks_slider_slides: typeof relations_home_blocks_slider_slides;
+  relations_home_blocks_slider: typeof relations_home_blocks_slider;
+  relations_home_blocks_callout: typeof relations_home_blocks_callout;
+  relations_home_blocks_archive: typeof relations_home_blocks_archive;
+  relations_home_blocks_cta_links: typeof relations_home_blocks_cta_links;
+  relations_home_blocks_cta: typeof relations_home_blocks_cta;
+  relations_home_blocks_form_block: typeof relations_home_blocks_form_block;
+  relations_home_blocks_media_block: typeof relations_home_blocks_media_block;
+  relations_home_rels: typeof relations_home_rels;
+  relations_home: typeof relations_home;
+  relations___home_v_transition_v: typeof relations___home_v_transition_v;
+  relations__home_v_blocks_feature_heading_offset: typeof relations__home_v_blocks_feature_heading_offset;
+  relations___home_v_full_media_v: typeof relations___home_v_full_media_v;
+  relations___home_v_media_split_v: typeof relations___home_v_media_split_v;
+  relations___home_v_split_narrow_v: typeof relations___home_v_split_narrow_v;
+  relations__home_v_blocks_carousel_split_slides: typeof relations__home_v_blocks_carousel_split_slides;
+  relations__home_v_blocks_carousel_split: typeof relations__home_v_blocks_carousel_split;
+  relations___home_v_image_pair_v: typeof relations___home_v_image_pair_v;
+  relations___home_v_split_offset_v: typeof relations___home_v_split_offset_v;
+  relations___home_v_image_statement_v: typeof relations___home_v_image_statement_v;
+  relations___home_v_caption_v: typeof relations___home_v_caption_v;
+  relations___home_v_youtube_v: typeof relations___home_v_youtube_v;
+  relations___home_v_rich_text_v: typeof relations___home_v_rich_text_v;
+  relations___home_v_code_v: typeof relations___home_v_code_v;
+  relations___home_v_chart_v: typeof relations___home_v_chart_v;
+  relations___home_v_diagram_v: typeof relations___home_v_diagram_v;
+  relations___home_v_faq_v_items: typeof relations___home_v_faq_v_items;
+  relations___home_v_faq_v: typeof relations___home_v_faq_v;
+  relations__home_v_blocks_carousel_slides: typeof relations__home_v_blocks_carousel_slides;
+  relations__home_v_blocks_carousel: typeof relations__home_v_blocks_carousel;
+  relations__home_v_blocks_carousel_tabs_tabs_slides: typeof relations__home_v_blocks_carousel_tabs_tabs_slides;
+  relations__home_v_blocks_carousel_tabs_tabs: typeof relations__home_v_blocks_carousel_tabs_tabs;
+  relations__home_v_blocks_carousel_tabs: typeof relations__home_v_blocks_carousel_tabs;
+  relations__home_v_blocks_feature_tabs_tabs_items: typeof relations__home_v_blocks_feature_tabs_tabs_items;
+  relations__home_v_blocks_feature_tabs_tabs: typeof relations__home_v_blocks_feature_tabs_tabs;
+  relations__home_v_blocks_feature_tabs: typeof relations__home_v_blocks_feature_tabs;
+  relations___home_v_insight_list_v_items: typeof relations___home_v_insight_list_v_items;
+  relations___home_v_insight_list_v: typeof relations___home_v_insight_list_v;
+  relations__home_v_blocks_content_columns_slider_slides: typeof relations__home_v_blocks_content_columns_slider_slides;
+  relations__home_v_blocks_content_columns: typeof relations__home_v_blocks_content_columns;
+  relations__home_v_blocks_content: typeof relations__home_v_blocks_content;
+  relations___home_v_section_v: typeof relations___home_v_section_v;
+  relations__home_v_blocks_slider_slides: typeof relations__home_v_blocks_slider_slides;
+  relations__home_v_blocks_slider: typeof relations__home_v_blocks_slider;
+  relations__home_v_blocks_callout: typeof relations__home_v_blocks_callout;
+  relations__home_v_blocks_archive: typeof relations__home_v_blocks_archive;
+  relations__home_v_blocks_cta_links: typeof relations__home_v_blocks_cta_links;
+  relations__home_v_blocks_cta: typeof relations__home_v_blocks_cta;
+  relations__home_v_blocks_form_block: typeof relations__home_v_blocks_form_block;
+  relations__home_v_blocks_media_block: typeof relations__home_v_blocks_media_block;
+  relations__home_v_rels: typeof relations__home_v_rels;
+  relations__home_v: typeof relations__home_v;
   relations_header_nav_items: typeof relations_header_nav_items;
   relations_header_rels: typeof relations_header_rels;
   relations_header: typeof relations_header;

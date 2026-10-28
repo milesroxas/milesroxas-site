@@ -6,13 +6,16 @@ import Link from 'next/link'
 import type React from 'react'
 import { useRef, ViewTransition } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { MembersMark } from '@/features/members/MembersMark'
+import { isMembersOnly } from '@/fields/visibility'
 import { useWorkCardMorph } from '@/heros/WorkHero/morph'
 import type { Work } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
 import { cn } from '@/utilities/ui'
 import { type CardAspect, CardImage } from '../shared'
 
-export type CardWorkData = Pick<Work, 'slug' | 'meta' | 'title' | 'hero'>
+export type CardWorkData = Pick<Work, 'slug' | 'meta' | 'title' | 'hero'> &
+  Partial<Pick<Work, 'visibility'>>
 
 interface WorkCardProps {
   className?: string
@@ -39,6 +42,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   titleClassName = 'font-light text-3xl',
 }) => {
   const { slug, title, hero } = doc || {}
+  const membersOnly = isMembersOnly(doc)
   const description = hero?.richText
   const href = `/${relationTo}/${slug}`
   const localImageRef = useRef<HTMLDivElement>(null)
@@ -66,7 +70,12 @@ export const WorkCard: React.FC<WorkCardProps> = ({
             data-reveal-group={slug}
           >
             <h3 className={titleClassName}>{titleFromProps || title}</h3>
-            <Badge variant="work">Work</Badge>
+            <div className="mt-1 flex shrink-0 items-center gap-2">
+              {membersOnly && <MembersMark className="text-muted-foreground" />}
+              <Badge variant="work" className="mt-0">
+                Work
+              </Badge>
+            </div>
           </div>
         )}
       </Link>

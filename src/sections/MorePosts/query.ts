@@ -1,6 +1,8 @@
 import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
+import { MEMBERS_TEASER } from '@/access/members'
 import type { StoredVisualSlot } from '@/features/immersive/visual'
+import { isMembersOnly } from '@/fields/visibility'
 import type { Category, Media, Post } from '@/payload-types'
 import { DEFAULT_PUBLISHER, isExternalPost } from '@/utilities/externalArticle'
 import { populatedDoc, relationshipIds } from '@/utilities/relationshipId'
@@ -21,6 +23,8 @@ export type MorePostsItem = {
   hero: StoredVisualSlot | null
   /** The share image, for a hero with neither. */
   metaImage: Media | null
+  /** For signed-in members: the row carries the lock (docs/members.md). */
+  membersOnly: boolean
 }
 
 /** What a post row reads: the close under a post and the posts index. */
@@ -33,11 +37,21 @@ export const POST_ITEM_SELECT = {
   meta: { image: true, description: true },
   source: true,
   external: { publisher: true },
+  visibility: true,
 } as const
 
 export type MorePostsDoc = Pick<
   Post,
-  'id' | 'title' | 'slug' | 'publishedAt' | 'categories' | 'hero' | 'meta' | 'source' | 'external'
+  | 'id'
+  | 'title'
+  | 'slug'
+  | 'publishedAt'
+  | 'categories'
+  | 'hero'
+  | 'meta'
+  | 'source'
+  | 'external'
+  | 'visibility'
 >
 
 export const toPostItem = (doc: MorePostsDoc): MorePostsItem | null =>
@@ -55,6 +69,7 @@ export const toPostItem = (doc: MorePostsDoc): MorePostsItem | null =>
           ? { media: doc.hero.media, visualType: doc.hero.visualType, shader: doc.hero.shader }
           : null,
         metaImage: populatedDoc<Media>(doc.meta?.image),
+        membersOnly: isMembersOnly(doc),
       }
     : null
 
@@ -62,7 +77,7 @@ export const toPostItem = (doc: MorePostsDoc): MorePostsItem | null =>
  * The posts to show under a post: the ones it names as related, in the order
  * it names them, then others filed under its categories, then the newest.
  * Reads as an anonymous visitor (`overrideAccess: false`), so drafts never
- * surface, whoever is looking.
+ * surface, whoever is looking; members-only posts come as locked rows.
  */
 export async function getMorePosts(
   post: Pick<Post, 'id' | 'relatedPosts' | 'categories' | 'hideRelatedPosts'>,
@@ -81,6 +96,7 @@ export async function getMorePosts(
       depth: 1,
       draft: false,
       limit,
+      context: MEMBERS_TEASER,
       overrideAccess: false,
       pagination: false,
       select: POST_ITEM_SELECT,
