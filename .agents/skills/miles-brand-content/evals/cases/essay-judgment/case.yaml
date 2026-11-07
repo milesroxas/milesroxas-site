@@ -1,0 +1,10 @@
+title: "Essay: design judgment and agents"
+expected_outcome: "An essay to references/articles.md: a position stated early,
+  one concrete story from Miles's own work as the proof, AI as a tool with
+  Miles's deciding and reviewing role explicit, few or no headings, and an
+  implication ending. No borrowed lines or references."
+bench:
+  words: [ 450, 900 ]
+  kind: article
+  evidence: [ evals/files/ask-notes.md, evals/files/parallel-post.md ]
+  aiBuilt: true

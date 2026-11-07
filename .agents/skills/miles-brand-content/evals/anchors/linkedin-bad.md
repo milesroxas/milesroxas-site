@@ -1,5 +1,5 @@
 ---
-case: 2
+case: linkedin-ask
 label: bad
 tests: lint, structure, tone, total
 about: The "before" of references/examples.md pair 9.

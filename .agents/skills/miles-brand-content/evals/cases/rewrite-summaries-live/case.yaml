@@ -1,0 +1,8 @@
+title: Rewrite two case study summaries
+expected_outcome: Reads the live works, rewrites both summaries in Miles's voice
+  with only verified facts, flags GentleBeast's empty role, checks SEO
+  descriptions (100-155 chars, third person), and saves as drafts with top-level
+  fields.
+bench:
+  live: true
+  judge: false

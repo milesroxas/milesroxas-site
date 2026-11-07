@@ -1,5 +1,5 @@
 ---
-case: 5
+case: build-story-ask
 label: bad
 tests: grounding, total
 about: The good anchor's shape with invented and contradicted facts. Should lose on grounding; voice dimensions may stay close.

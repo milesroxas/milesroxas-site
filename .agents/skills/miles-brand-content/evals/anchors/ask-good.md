@@ -1,5 +1,5 @@
 ---
-case: 5
+case: build-story-ask
 label: good
 about: A build story written to references/articles.md from evals/files/ask-notes.md only. Every bad anchor for case 5 should score below it.
 ---

@@ -1,5 +1,5 @@
 ---
-case: 5
+case: build-story-ask
 label: bad
 tests: lint, structure, substance, tone, total
 about: Agency and hype language on the same topic, few facts. Should lose on every voice dimension.

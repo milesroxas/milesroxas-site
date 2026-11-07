@@ -1,0 +1,7 @@
+title: Titles and SEO for the Ask post
+expected_outcome: Three descriptive or claim titles in sentence case under about
+  60 characters, an SEO title of about 45 characters without the name, and a 100
+  to 155 character third-person description that names Ask and what it does.
+bench:
+  judge: false
+  kind: body

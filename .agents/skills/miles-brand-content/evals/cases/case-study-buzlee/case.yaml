@@ -1,0 +1,9 @@
+title: "Case study: Buzlee"
+expected_outcome: A case study narrative in the website.md order with short
+  headings, the founder credited, I for Miles's own work, at least one choice
+  against its alternative, and every missing fact (metrics, dates, launch
+  status, reasons) marked for checking rather than invented.
+bench:
+  words: [ 400, 1200 ]
+  kind: article
+  evidence: [ evals/files/buzlee-notes.md ]

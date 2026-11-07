@@ -15,16 +15,16 @@
   "case": null,
   "samples": [
     {
-      "file": "5-build-story-ask-s1.md"
+      "file": "build-story-ask-s1.md"
     },
     {
-      "file": "6-essay-judgment-s1.md"
+      "file": "essay-judgment-s1.md"
     },
     {
-      "file": "9-case-study-buzlee-s1.md"
+      "file": "case-study-buzlee-s1.md"
     },
     {
-      "file": "9-case-study-buzlee-s2.md"
+      "file": "case-study-buzlee-s2.md"
     }
   ]
 }

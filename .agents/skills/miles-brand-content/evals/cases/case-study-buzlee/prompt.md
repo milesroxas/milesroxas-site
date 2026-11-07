@@ -1,0 +1,1 @@
+Draft the narrative sections of my Buzlee case study: problem, insight, choices, what was built, outcome, lesson. Use only evals/files/buzlee-notes.md. Markdown in chat with one heading per section; don't save it.

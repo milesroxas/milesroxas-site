@@ -1,0 +1,7 @@
+title: "Review: the Ask draft"
+expected_outcome: "Review mode: findings most serious first with location,
+  quote, rule and fix. Catches the daily-job retention claim against the repo,
+  the feature-first opening, the missing cost or failure section and the
+  tool-led title, and ends with the two or three changes that matter most."
+bench:
+  judge: false

@@ -29,7 +29,7 @@ About 728 words (without the check markers), title as an h1, four short h2 secti
 
 ## Lint
 
-`node check-voice.mjs --kind body --format text 6-essay-judgment.md` gave 0 errors, 0 warnings and 2 info. The 2 info rows are the two `[check: ...]` markers above.
+`node check-voice.mjs --kind body --format text essay-judgment.md` gave 0 errors, 0 warnings and 2 info. The 2 info rows are the two `[check: ...]` markers above.
 
 ## Notes
 

@@ -40,8 +40,8 @@
   },
   "results": [
     {
-      "file": "5-build-story-ask-s1.md",
-      "case": 5,
+      "file": "build-story-ask-s1.md",
+      "case": "build-story-ask",
       "label": null,
       "tests": [],
       "kind": "article",
@@ -1112,8 +1112,8 @@
       ]
     },
     {
-      "file": "6-essay-judgment-s1.md",
-      "case": 6,
+      "file": "essay-judgment-s1.md",
+      "case": "essay-judgment",
       "label": null,
       "tests": [],
       "kind": "article",
@@ -1514,8 +1514,8 @@
       ]
     },
     {
-      "file": "9-case-study-buzlee-s1.md",
-      "case": 9,
+      "file": "case-study-buzlee-s1.md",
+      "case": "case-study-buzlee",
       "label": null,
       "tests": [],
       "kind": "article",

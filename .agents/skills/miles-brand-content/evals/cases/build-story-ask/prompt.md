@@ -1,0 +1,1 @@
+Write a post for my site about how the Ask assistant works and why I built it the way I did. Use only the facts in evals/files/ask-notes.md. Don't save anything to the CMS: give me the post as Markdown in chat, with a title.

@@ -1,0 +1,1 @@
+Write a short essay (500 to 800 words) for my site on why design judgment matters more, not less, now that agents write most of my code. Draw on my own work in evals/files/ask-notes.md and evals/files/parallel-post.md. Markdown in chat, with a title; don't save it.

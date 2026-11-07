@@ -1,0 +1,10 @@
+title: "Build story: how Ask works"
+expected_outcome: "A build story to references/articles.md: an opening inside
+  the problem, the point by the third paragraph, label or claim headings, at
+  least one decision against its alternative, the judge's cost, correct
+  retention, the Ask work split marked for checking, and an implication ending."
+bench:
+  words: [ 700, 1800 ]
+  kind: article
+  evidence: [ evals/files/ask-notes.md ]
+  aiBuilt: true

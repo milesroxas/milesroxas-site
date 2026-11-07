@@ -1,4 +1,4 @@
-# Notes for 5-build-story-ask.md
+# Notes for build-story-ask.md
 
 **Job:** write a website post (Tools and systems pillar, with Building and learning), bylined as Miles in the first person. Readers are hiring teams at product organizations plus builders who are curious how Ask works. Afterwards they should understand what Ask does, why it is shaped the way it is, and what Miles owned. Source: evals/files/ask-notes.md only. Nothing was saved to the CMS.
 
@@ -26,6 +26,6 @@
 
 ## Lint
 
-- Post: `node SKILL_DIR/scripts/check-voice.mjs --kind body --format text 5-build-story-ask.md` gave **0 errors, 0 warnings, 5 info**. Four info rows are the open `[check: ...]` markers above. One is "90 days", which comes from the notes (Logging and retention).
+- Post: `node SKILL_DIR/scripts/check-voice.mjs --kind body --format text build-story-ask.md` gave **0 errors, 0 warnings, 5 info**. Four info rows are the open `[check: ...]` markers above. One is "90 days", which comes from the notes (Logging and retention).
 - Title options and meta description (JSON, metaTitle and metaDescription kinds): 0 errors, 0 warnings, 0 info.
 - Lint ran with the default chat target. Saving to the CMS would mean removing the four inline markers and leaving those claims out (lint `--target cms` fails on a marker).

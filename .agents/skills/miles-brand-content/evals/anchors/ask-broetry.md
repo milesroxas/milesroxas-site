@@ -1,5 +1,5 @@
 ---
-case: 5
+case: build-story-ask
 label: bad
 tests: shape, structure, total
 about: True facts in the wrong shape: an announcement opening, one-line paragraphs, question headings, a recap and an engagement ending.

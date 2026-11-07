@@ -1,0 +1,1 @@
+Tighten the first two paragraphs and the last paragraph of my published post in evals/files/parallel-post.md. Show each change as before and after with a reason. Keep every fact and don't touch the CMS.

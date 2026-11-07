@@ -1,4 +1,4 @@
-# Notes for 5-build-story-ask.md
+# Notes for build-story-ask.md
 
 **Job:** write, website post (build story shape), for hiring teams and fellow builders. Afterwards they know how Ask turns a question into an answer or a handoff, and why each piece took its shape. Chat only. Nothing was saved to the CMS.
 

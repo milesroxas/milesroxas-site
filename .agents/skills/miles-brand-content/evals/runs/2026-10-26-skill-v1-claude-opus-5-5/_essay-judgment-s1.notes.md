@@ -35,7 +35,7 @@
 
 ## Lint
 
-`node .agents/skills/miles-brand-content/scripts/check-voice.mjs --kind article --format text 6-essay-judgment.md`
+`node .agents/skills/miles-brand-content/scripts/check-voice.mjs --kind article --format text essay-judgment.md`
 
 0 errors, 0 warnings, 1 info. The info row is the `[check: ...]` marker on the Ask work split, which is listed above. No em dashes.
 

@@ -1,0 +1,8 @@
+title: "Edit: tighten the parallel-work post"
+expected_outcome: "Edit mode: only the first two paragraphs and the last
+  paragraph change, every number survives, each change has a before, an after
+  and a rule-based reason, and what already works is kept."
+bench:
+  judge: false
+  kind: body
+  evidence: [ evals/files/parallel-post.md ]

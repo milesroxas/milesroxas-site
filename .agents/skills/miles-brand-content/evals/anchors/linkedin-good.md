@@ -1,5 +1,5 @@
 ---
-case: 2
+case: linkedin-ask
 label: good
 about: The "after" of references/examples.md pair 9.
 ---

@@ -50,7 +50,7 @@ The title line uses the live work title, "Local Events Without the Noise", in se
 
 ## Lint
 
-`node .agents/skills/miles-brand-content/scripts/check-voice.mjs --kind article --format text 9-case-study-buzlee.md`
+`node .agents/skills/miles-brand-content/scripts/check-voice.mjs --kind article --format text case-study-buzlee.md`
 
 Result: 0 errors, 0 warnings, 9 info. The 9 info rows are the `[check: ...]` markers, listed above. No em dashes. About 600 words including markers.
 

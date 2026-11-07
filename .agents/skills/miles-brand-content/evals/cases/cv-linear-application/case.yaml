@@ -1,0 +1,7 @@
+title: CV bullets for a Linear application
+expected_outcome: Four verb-first bullets under 30 words with no inflated
+  engineering claims, titles and dates flagged for checking, and an answer that
+  frames the move to product work as deliberate.
+bench:
+  kind: body
+  evidence: [ references/brand-context.md ]

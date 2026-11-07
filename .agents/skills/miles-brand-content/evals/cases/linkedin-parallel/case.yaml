@@ -1,0 +1,9 @@
+title: "LinkedIn post: parallel work"
+expected_outcome: "A LinkedIn post: the point in the first line, one concrete
+  detail from the post (a guard and the bug behind it, or a number), the AI
+  split stated as the post states it, one link, no emoji or hashtag wall."
+bench:
+  words: [ 80, 250 ]
+  kind: linkedinPost
+  evidence: [ evals/files/parallel-post.md ]
+  aiBuilt: true

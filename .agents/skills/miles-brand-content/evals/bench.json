@@ -1,0 +1,14 @@
+{
+  "packs": [
+    "generic"
+  ],
+  "rules": null,
+  "weights": {
+    "adherence": 50,
+    "rubric": 50
+  },
+  "yes": 0.5,
+  "sure": 0.6,
+  "agreeAt": 70,
+  "defaultCase": "build-story-ask"
+}

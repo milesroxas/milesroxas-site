@@ -1,0 +1,7 @@
+title: "Plan: home hero and Site Info."
+expected_outcome: "A brief: reader, goal, evidence ledger, outline, open
+  questions. Flags live copy that contradicts the guide (labels, year count),
+  notes Site Info saves go live, writes nothing to the CMS."
+bench:
+  live: true
+  judge: false

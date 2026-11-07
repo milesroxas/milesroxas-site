@@ -1,4 +1,4 @@
-# Notes for 9-case-study-buzlee-a
+# Notes for case-study-buzlee-a
 
 **Job:** Write. Website, Buzlee work page (work 15), the narrative sections from problem to lesson. Reader: a hiring team at a product org that has already seen the summary and role. Afterwards they should know what Buzlee is for, why it is shaped the way it is, and what Miles did. Shape: case study narrative (`references/website.md`, Case study shape). Chat only, nothing saved.
 

@@ -1,0 +1,8 @@
+title: "LinkedIn post: Ask"
+expected_outcome: "A calm, specific LinkedIn post: point in the first line, one
+  real decision, AI credited as a tool with Miles's role clear, no hype or
+  hashtag wall, flags that the write-up is still a draft."
+bench:
+  words: [ 80, 250 ]
+  kind: linkedinPost
+  evidence: [ evals/files/ask-notes.md ]
