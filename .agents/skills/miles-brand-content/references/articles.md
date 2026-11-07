@@ -42,20 +42,20 @@ The first paragraph earns the second. Use one of four openings, all grounded in 
 - **The stake.** What people assume, and why Miles did it anyway. "Running fourteen branches against one schema sounds like a way to break production."
 - **The admission.** Where Miles started, including what was wrong. "Without a judge, Ask's writing model decided when to hand a question to me. On the Suits & Sandals site it showed the wrong card in 5 of 57 test turns."
 
-State the point by the end of the second or third paragraph: what the piece shows, the result in numbers if there is one, or the question it answers. A build story often previews its sections in that paragraph ("three scripts, one database per workspace, and the migration gates"), and the headings then follow that order.
+State the point by the end of the second or third paragraph: what the piece shows, the result in numbers if there is one, or the question it answers. In a build story, that paragraph previews the sections ("three scripts, one database per workspace, and the migration gates"), and the headings then follow that order.
 
 Never open with an announcement ("I'm excited to share"), a greeting, a question you then answer, a dictionary definition or a claim about "today's world". The lint catches the common ones.
 
 ## Sections and headings
 
 - One job per section. Its first sentence makes the section's claim or answers its implied question, so an assistant quoting the section alone still gets the point.
-- Headings are labels ("The judge", "Database per workspace") or claims ("Unchanged text costs nothing", "Access rules do the filtering"). Principle headings in the imperative ("Check ports before use") suit field notes. Not questions, not sentences: about two to six words, eight at most, sentence case.
+- Headings are labels ("The judge", "Database per workspace") or claims ("Unchanged text costs nothing", "Access rules do the filtering"). Principle headings in the imperative ("Check ports before use") suit field notes. Not questions, not sentences: two to six words, eight at most, sentence case. A longer h2 wraps to two lines on a phone and reads as body text.
 - Give the outline a visible logic: stages in order, decisions in the order they were made, or principles that build. A reader skimming only the headings should be able to retell the piece.
 - Subsections in field notes: a principle heading, then a short "In practice" with one real instance.
 
 ## Paragraphs and sentences
 
-- Paragraphs of two to four sentences, about 30 to 70 words. A one-sentence paragraph is a turn in the argument, used a few times per piece, not a rhythm.
+- Paragraphs of two to four sentences, 30 to 70 words. A one-sentence paragraph is a turn in the argument, used a few times per piece, not a rhythm.
 - Mostly full sentences of 12 to 25 words, plain verbs, one idea each. After a longer build, a short sentence lands the turn ("Nothing outside the CMS writes to it." "The guards took longer than the scripts.").
 - Contrast does the arguing. Define a choice against the alternative that was actually on the table: "rather than", "instead of", "we kept X; Y would have meant Z". Avoid the template "it's not just X, it's Y" (the lint flags it).
 - Define a term once, inline, the first time a reader needs it: "pgvector, a Postgres extension that stores embeddings". Then use it plainly.
@@ -71,7 +71,7 @@ Never open with an announcement ("I'm excited to share"), a greeting, a question
 
 ## Honesty
 
-These moves are what make the piece credible, and each one is a claim. Use every one the evidence holds; a build story or practice post usually has at least two. An invented cost, failure, doubt or open question is as false as an invented metric, and worse, because it sounds candid. Inferring "the cost was X" from a choice, or "I haven't settled Y" from a gap, counts as inventing. When the evidence holds none, ask Miles which went wrong and what it cost.
+These moves are what make the piece credible, and each one is a claim. Use every one the evidence holds. A build story or practice post needs at least two: the cost of a decision, and one thing that did not work or one open question. An invented cost, failure, doubt or open question is as false as an invented metric, and worse, because it sounds candid. Inferring "the cost was X" from a choice, or "I haven't settled Y" from a gap, counts as inventing. When the evidence holds none, ask Miles which went wrong and what it cost.
 
 - **The concession.** Say the objection first, then why the choice still stands. "A Postgres container per workspace is the obvious isolation. It is also slow and eats memory, so each workspace gets its own database in one shared container."
 - **What did not work.** The first approach, why it failed, what replaced it.
@@ -87,9 +87,9 @@ No recap of the sections, no moral about the industry, no question to the reader
 
 ## Titles
 
-- Descriptive ("How I built Ask", "Why nothing on this site runs on a schedule") or a claim ("Unchanged text should cost nothing"). Sentence case. About 60 characters at most.
+- Descriptive ("How I built Ask", "Why nothing on this site runs on a schedule") or a claim ("Unchanged text should cost nothing"). Sentence case. 60 characters at most.
 - No teasers that hide the subject, no "ultimate guide", no numbers unless the piece is literally that many principles.
-- The `meta.title` is a shorter variant of about 45 characters; the `meta.description` follows `references/website.md`.
+- The `meta.title` is a shorter variant of 45 characters at most; the `meta.description` follows `references/website.md`.
 
 ## Before you deliver
 

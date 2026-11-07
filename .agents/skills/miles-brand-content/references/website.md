@@ -46,7 +46,7 @@ The portfolio leads with **Designer & Builder** and proves it through selected w
 | Media | `alt`, `caption` | Alt text is required on upload |
 | Capabilities, clients, categories | `title` | Capability titles feed the Person schema's `knowsAbout`, so name real skills plainly |
 
-Field shapes change. When in doubt, `describeFields` with the collection or block type returns the current fields, types and guidance.
+Field shapes change. Before a create or a whole-document update, `describeFields` with the collection or block type returns the current fields, types and guidance.
 
 ## Layout blocks
 
@@ -69,7 +69,7 @@ Headings stay short and read like a table of contents; the sentence goes in the 
 
 Case study narrative lives in `layout` blocks; there are no story sections. Map the guide's order onto the page:
 
-1. **Summary** (`hero.richText`): the problem and what Miles made, naming the client or product. Under about 220 characters.
+1. **Summary** (`hero.richText`): the problem and what Miles made, naming the client or product. 220 characters and 2 sentences at most.
 2. **Role** (`role`): what Miles actually owned, in a few words ("Product, Design, Engineering", "Sole Contributor"). Leave it empty rather than guess.
 3. **Problem**: who had it and why it mattered. A Standard heading with a short body.
 4. **Insight**: what Miles noticed that shaped the approach.
@@ -86,7 +86,7 @@ A post's sections are Standard heading blocks (`richTransition`) followed by Ric
 
 ## SEO and answer engines
 
-- **`meta.title`** is the page's own title. The template appends " | Miles Roxas" (14 characters), so keep the stored title to about 45 characters and never type the name. The home page is the exception: its title leads with the name and is used as written.
+- **`meta.title`** is the page's own title. The template appends " | Miles Roxas" (14 characters), so the stored title is 45 characters at most and never holds the name. The home page is the exception: its title leads with the name and is used as written.
 - **`meta.description`** is the search snippet, the share card, the page's line in llms.txt and its JSON-LD description. 100 to 155 characters, third person or no subject, saying what the page is and naming the client, product or topic. Every page gets one.
 - **Answer first.** Open each section with the direct answer, then the detail. On pages, a heading may be the question a reader would ask where that reads naturally; in posts and case study narrative, headings are short labels or claims and the section's first sentence carries the answer (`references/articles.md`). A page with a FAQ block emits FAQPage schema, so each answer starts with the answer.
 - **One h1 per page.** Works, posts, the works index and the contact page render theirs from the title.
@@ -101,7 +101,7 @@ The server's own instructions arrive with every session; these are the steps for
 - Where the site talks about a topic: `findContent` with the user's words. Published copy only.
 - A document's blocks: `outlineDocument` (collection, id), then `getBlock` for the exact stored block. `locateBlock` picks the block an instruction like "the second paragraph about pricing" means.
 
-**Before editing a live document**, read it twice: a find tool returns the published version by default, and `draft: true` returns the latest draft (`outlineDocument` always shows the latest draft). If they differ, Miles has unpublished work in progress. Save on top of it as a draft (`draft: true`, never `draft: false`): his changes stay, the live page stays untouched. In the report, list what his pending draft changes, since publishing the draft ships his changes and yours together.
+**Before editing a live document**, read it twice: a find tool returns the published version by default, and `draft: true` returns the latest draft (`outlineDocument` always shows the latest draft). If they differ, Miles has unpublished work in progress. Save on top of it as a draft (`draft: true`, never `draft: false`): his changes stay, the live page stays untouched. Every save builds on the latest draft, and a save without `draft: true` on a document that has a newer draft can unpublish the page, so pass `draft: true` explicitly on every write. In the report, list what his pending draft changes, since publishing the draft ships his changes and yours together.
 
 **Write**
 
@@ -114,17 +114,19 @@ The server's own instructions arrive with every session; these are the steps for
 | SEO title and description | `updateSeo` | Draft unless `draft: false` |
 | Alt text and caption | `updateMedia` | New images: `pnpm cms:upload <file> --alt "<what it shows>"` |
 | Works index | `updateWorksIndex` | Has drafts: send `draft: true` |
-| Site Info, Contact page, Header | `updateSiteInfo`, `updateContactPage`, `updateHeader` | Generated tools: fields at the top level, never in a `data` wrapper. No draft state: a save is live. Show Miles the exact change and get a yes first |
+| Site Info, Contact page, Header | `updateSiteInfo`, `updateContactPage`, `updateHeader` | Generated tools: fields at the top level, never in a `data` wrapper (a wrapped call reports success and writes nothing). No draft state: a save is live. Show Miles the exact change and get a yes first |
 
 A whole-document update must keep every block `id`; blocks sent without ids replace the rows. Relationship fields take ids from a find tool.
 
 **Confirm**
 
+A refused save names each problem by path (an em dash, a visitor email, Miles's own address in body copy). Fix exactly those paths and resend.
+
 Read the document back with `select` and `draft: true` and check the fields changed as intended. Then give Miles the admin link for live preview: `https://www.milesroxas.com/admin/collections/<collection>/<id>` (globals: `/admin/globals/<slug>`).
 
 ## Rich text formats
 
-Markdown is accepted only in the Rich text block's `body`, a post's `content` and a media `caption`, and it replaces existing content only with `replace: true`. No `<word>` sequences, even in backticks.
+Markdown is accepted only in the Rich text block's `body`, a post's `content` and a media `caption`, and it replaces existing content only with `replace: true`. No `<word>` sequences, even in backticks: the field reads them as raw HTML and refuses the save.
 
 Every other rich text field (`hero.richText`, a Standard block's `body`, FAQ answers) takes Lexical JSON. One paragraph:
 
@@ -145,4 +147,4 @@ Every other rich text field (`hero.richText`, a Standard block's `body`, FAQ ans
 }
 ```
 
-Add one paragraph object per paragraph. Never send empty paragraphs to pad spacing.
+Add one paragraph object per paragraph. Never send empty paragraphs to pad spacing: each renders as a blank gap on top of the spacing the page already has.

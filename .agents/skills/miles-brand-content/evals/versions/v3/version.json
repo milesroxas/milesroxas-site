@@ -1,0 +1,7 @@
+{
+  "version": "v3",
+  "name": "Routed reads and three decisions",
+  "note": "Reads routed by surface (examples.md pairs 5 and 6 always, the rest per surface). Guide rules no longer restated: each keeps only its reason. Three decision trees: which mode, where the copy goes, and a three-state claim ledger (verified, inferred, none) with one action each. Gotchas folded into website.md; Measuring section removed, Skill Studio owns evals now. Hedges replaced with the lint's numbers across website.md, articles.md and channels.md. brand-context.md untouched.",
+  "hash": "2d0eeebee533",
+  "createdAt": "2026-11-07T14:57:54.098Z"
+}

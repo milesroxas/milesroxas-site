@@ -105,13 +105,13 @@ Four forms, all sentence case and literal: "How we X" or "Why we X" (the most co
 ## What this found in the current skill and content
 
 - **The skill had no long-form guidance** beyond three sentences in `references/website.md`, and its advice to phrase headings as questions contradicts the long-form model for posts. Fixed: `references/articles.md`, a narrower heading rule in `website.md`, and an `article` kind in the lint.
-- **The evals had no article case.** Fixed: `evals/benchmarks.md` and seven new cases.
+- **The evals had no article case.** Fixed: seven article cases in `evals/cases/`, graded by Skill Studio's writing pack.
 - **"Fourteen branches, one afternoon" already follows most of the model**: an observation opening, the point by the third paragraph, a list of guards each with the bug that caused it, an honest cost list, and an ending that states the implication. One note: its slug ends in "as-a-solo-engineer", an identity label the guide avoids. Changing it needs a redirect, so it is Miles's call.
 - **The Ask draft is strong on mechanism and numbers** but opens on the feature rather than the reader's problem, has no section on what did not work, and claims "a daily job deletes rows after 90 days". The repo's rule is that nothing runs on a schedule and Ask retention runs after each stored question, so that sentence needs checking before it publishes. The benchmark uses it as a grounding trap.
 
 ## Where each finding lives
 
-| Finding | Rule in `references/articles.md` | Lint (`check-voice.mjs --kind article`) | Benchmark dimension (`scripts/bench.mjs`) |
+| Finding | Rule in `references/articles.md` | Lint (`check-voice.mjs --kind article`) | Skill Studio writing pack question |
 | --- | --- | --- | --- |
 | Openings inside the work | Open | cliche-opener | opens_on_work |
 | Point by paragraph three | Open | none | point_early |

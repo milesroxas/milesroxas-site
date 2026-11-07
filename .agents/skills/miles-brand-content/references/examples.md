@@ -2,6 +2,8 @@
 
 Pairs that show the voice by contrast. "Live" befores were on milesroxas.com on 2026-10-16; the others are typical drafts. Every after uses only facts a source holds (named under each pair) and marks the rest with `[check: ...]`. They illustrate the voice. They are not approved copy to paste.
 
+Read pairs 5 and 6 for every job: I and we, and crediting AI, hold on every surface. Then read only the pairs for your surface: 1 to 4, 7 and 8 for website fields; 9 for LinkedIn; 10 for a CV; 11 for alt text; 12 to 14 for long-form; 4 for a bio or About.
+
 ## Contents
 
 1. [Site tagline](#1-site-tagline)

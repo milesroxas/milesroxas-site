@@ -745,6 +745,6 @@ function main() {
 
 export { articleParts, KINDS, lintField, maskNonCopy, sentencesOf, words }
 
-// Imported by scripts/bench.mjs; runs only as a CLI. The skill is reached through a symlink.
+// Runs only as a CLI. The skill is reached through a symlink.
 const invoked = process.argv[1] && pathToFileURL(realpathSync(process.argv[1])).href
 if (invoked === import.meta.url) process.exitCode = main()
