@@ -1,0 +1,186 @@
+use "resources/fonts/GeistMono-Regular.ttf"
+use "resources/fonts/IBMPlexSans-Variable.ttf"
+
+import "tokens/lengths.elyx" as l
+import "blocks/home.elyx" as opening
+import "blocks/legacy.elyx" as legacy
+import "tokens/colors.elyx" as c
+import "blocks/statements.elyx" as statements
+import "controls/chrome.elyx" as chrome
+
+// The home page at 1440px, top to bottom, with the published Home content:
+// the Home hero, a Callout, then three Columns bands (Strategy, Design,
+// Development) of section heading and work cards. The chrome sits as it does
+// on load, the hero filling the first 900px viewport, with the Home tab
+// current. src/templates/Homepage/HomeTemplate.tsx
+home = frame {
+  left: -204px,
+  top: -2013.5px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding-bottom: 96px,
+  children: [hero, callout, strategy, design, development, topBar, dockRail],
+
+  hero = frame : opening.homeHero {
+    fill[0].color: rgb(96.86%, 92.549%, 89.41%),
+    overrides: [
+      insert(wordmark, after = .nil),
+      remove(opening.homeHero.roleMarquee),
+      remove(opening.homeHero.heroVideo),
+      remove(opening.homeHero.skillsMarquee)
+    ]
+  }
+
+  callout = frame : statements.callout {}
+
+  strategy = frame : legacy.contentWorks {
+    padding-bottom: l.lengths.band-loose,
+
+    cards {
+      cardTwo {
+        cardHeader {
+          cardTitle {
+            contents: "Identity for Higher-Stakes Work"
+          }
+        }
+      }
+
+      cardOne {
+        cardHeader {
+          cardTitle {
+            contents: "Design Systems for Organizational Scale"
+          }
+        }
+      }
+    }
+
+    heading {
+      headingText {
+        contents: "I partner with startups and enterprises to mine deep market insights, develop customer segments and personas, and chart growth roadmaps, from persuasive pitch decks to MVP definitions."
+      }
+
+      eyebrow {
+        contents: "Strategy"
+      }
+
+      padding-bottom: 72px
+    }
+  }
+
+  // One third, then two thirds.
+  design = frame : legacy.contentWorksInverted {
+    padding-top: l.lengths.band-loose,
+    padding-bottom: l.lengths.band-loose,
+
+    cards {
+      cardTwo {
+        width: l.lengths.columns-8,
+
+        cardMedia {
+          height: 461px
+        }
+
+        cardHeader {
+          cardTitle {
+            contents: "Brand Expansion Through Narrative"
+          }
+        }
+      }
+
+      cardOne {
+        width: l.lengths.columns-4,
+
+        cardMedia {
+          height: 219px
+        }
+
+        cardHeader {
+          cardTitle {
+            contents: "Brand Development at the Executive Level"
+          }
+        }
+      }
+    }
+
+    heading {
+      headingText {
+        contents: "I leverage my expertise in creative direction, branding, graphics, and interactive design to craft cohesive visual narratives and guide teams in executing them."
+      }
+
+      eyebrow {
+        contents: "Design"
+      }
+
+      padding-bottom: 72px
+    }
+  }
+
+  development = frame : legacy.contentWorks {
+    cards {
+      cardTwo {
+        cardHeader {
+          cardTitle {
+            contents: "Information-Driven Digital Experience"
+          }
+        }
+      }
+
+      cardOne {
+        cardHeader {
+          cardTitle {
+            contents: "Enforcing Quality in Low-Code Systems"
+          }
+        }
+      }
+    }
+
+    heading {
+      headingText {
+        contents: "I deliver robust digital products, from immersive web experiences to enterprise platforms, through scalable engineering, performance optimizations, and thorough technical audits."
+      }
+
+      eyebrow {
+        contents: "Development"
+      }
+    }
+  }
+
+  topBar = frame : chrome.topBarOnPage {
+    left: 0px,
+    top: 0px,
+    ignore-stack: .true,
+    overrides: [remove(chrome.topBar.wordmark)]
+  }
+
+  // Fixed 24px above the first viewport's bottom edge.
+  dockRail = frame {
+    left: 0px,
+    top: 836px,
+    width: 100%,
+    ignore-stack: .true,
+    layout: {justify-content: .center},
+    children: dock,
+
+    dock = frame : chrome.dockOnPageHome {}
+  }
+
+  wordmark = asset {
+    left: 468px,
+    top: 430.5px,
+    width: 504px,
+    height: 39.67px,
+    ignore-stack: .true,
+    fill: c.colors.foreground,
+    contents: chrome.logoGlyph
+  }
+}
+
+hero_2 = frame : opening.homeHero {
+  left: -1839.1985px,
+  top: -2013.5px,
+  overrides: [
+    remove(opening.homeHero.roleMarquee),
+    remove(opening.homeHero.skillsMarquee)
+  ]
+}
