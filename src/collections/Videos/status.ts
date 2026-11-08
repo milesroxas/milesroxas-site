@@ -24,7 +24,8 @@ export type VideoStatus = {
   error: string | null
 }
 
-function videoStatus(doc: VideoDoc): VideoStatus {
+/** The status for one document, as the admin panel and the agent endpoint answer it. */
+export function videoStatus(doc: VideoDoc): VideoStatus {
   const stage = stageOf(doc)
   const duration = typeof doc.duration === 'number' ? doc.duration : null
   return {

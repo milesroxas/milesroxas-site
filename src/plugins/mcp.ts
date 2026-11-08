@@ -125,16 +125,16 @@ const collections: MCPPluginConfig['collections'] = Object.fromEntries([
     },
     AUTHORING,
   ),
-  // Media stays read-only here: MCP tools cannot send binary uploads, and a
-  // generated update would expose the file and Cloudflare fields. Images come in
-  // through `pnpm cms:upload`, alt text and captions through the `updateMedia`
-  // site tool; both read `uploadMediaCapability` below.
+  // Media and Videos stay read-only here: MCP tools cannot send binary uploads,
+  // and a generated update would expose the file and Cloudflare fields. Files
+  // come in through `pnpm cms:upload`, alt text and captions through the
+  // `updateMedia` site tool; both read `uploadMediaCapability` below.
   ...entries(
     {
       media:
-        'Uploaded images and videos. Reference existing documents by id. Set alt text and captions with updateMedia; new images go through `pnpm cms:upload`',
+        'Uploaded images and short muted loops. Reference existing documents by id. Set alt text and captions with updateMedia; new files go through `pnpm cms:upload` (an image, or a video with `--loop`)',
       videos:
-        'Full-length videos that play on click, each with a short muted loop. A Caption, Stacked, Split or Split narrow block plays one with `playVideo: true` and `video: <id>`. Uploaded and configured in the admin only',
+        'Full-length videos that play on click, each with a short muted loop. A Caption, Stacked, Split or Split narrow block plays one with `playVideo: true` and `video: <id>`. New ones go through `pnpm cms:upload <file.mp4>`, which waits for Stream; the loop is set there or in the admin',
     },
     READ_ONLY,
   ),
@@ -263,8 +263,8 @@ const withCapabilityControls = (fields: Field[]): Field[] => {
 
 /**
  * The one capability that is not an MCP tool. MCP cannot carry a binary, so
- * media is added through `POST /api/agent/media` (`endpoints/agentMedia.ts`)
- * with the same key, and that endpoint reads this checkbox, as does the
+ * media and videos are added through `/api/agent/media` (`endpoints/agentMedia.ts`)
+ * with the same key, and those endpoints read this checkbox, as does the
  * `updateMedia` site tool for alt text and captions. It is its own
  * field rather than `create` on the media entry above because that would
  * register a create tool that can never receive a file. Off by default, like

@@ -112,7 +112,7 @@ The server's own instructions arrive with every session; these are the steps for
 | New page, work or post | `describeFields`, then `createDocument` with `draft: true` | Omit `slug` |
 | Top-level fields (title, summary, role) | `updateDocument` | Fields inside `data`. Each field replaces the stored one whole: to change the summary, send all of `hero` (its `type` and `media` id too), not only `hero.richText` |
 | SEO title and description | `updateSeo` | Draft unless `draft: false` |
-| Alt text and caption | `updateMedia` | New images: `pnpm cms:upload <file> --alt "<what it shows>"` |
+| Alt text and caption | `updateMedia` | New images: `pnpm cms:upload <file> --alt "<what it shows>"`. New videos: `pnpm cms:upload <file.mp4> --title "<name>"` (waits for Stream), or `--loop --alt` for a muted loop |
 | Works index | `updateWorksIndex` | Has drafts: send `draft: true` |
 | Site Info, Contact page, Header | `updateSiteInfo`, `updateContactPage`, `updateHeader` | Generated tools: fields at the top level, never in a `data` wrapper (a wrapped call reports success and writes nothing). No draft state: a save is live. Show Miles the exact change and get a yes first |
 

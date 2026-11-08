@@ -12,7 +12,7 @@ export for each block: [media-dimensions.md](media-dimensions.md).
 | Sweep for anything the hook missed, run by hand | [`scripts/resync-cloudflare-media.ts`](../scripts/resync-cloudflare-media.ts) |
 | Cloudflare API client with retries | [`src/utilities/cloudflare.ts`](../src/utilities/cloudflare.ts) |
 | Stream "ready" webhook | [`src/app/(payload)/api/cloudflare-stream-webhook/route.ts`](<../src/app/(payload)/api/cloudflare-stream-webhook/route.ts>) |
-| Agent upload | [`src/endpoints/agentMedia.ts`](../src/endpoints/agentMedia.ts), `pnpm cms:upload` ([mcp.md](mcp.md)) |
+| Agent upload, images and videos | [`src/endpoints/agentMedia.ts`](../src/endpoints/agentMedia.ts), `pnpm cms:upload` ([mcp.md](mcp.md)) |
 | Rendering | [`src/components/Media`](../src/components/Media) |
 | Full-length videos: collection, Stream pipeline, admin panel | [`src/collections/Videos`](../src/collections/Videos), player in [`src/components/VideoPlayer`](../src/components/VideoPlayer) |
 
@@ -22,8 +22,9 @@ export for each block: [media-dimensions.md](media-dimensions.md).
    its public URL `R2_PUBLIC_URL` (the r2.dev URL, see Setup; no egress charge). The admin uploads straight
    from the browser on a presigned PUT (`clientUploads`): the server mints a fresh
    `<_objectKey>/<filename>` key per upload and never receives the bytes, so a video never meets
-   Vercel's 4.5 MB body limit. `pnpm cms:upload` and the Local API upload server-side, with no
-   folder. `disablePayloadAccessControl` plus `generateFileURL` make `url` and the size URL direct
+   Vercel's 4.5 MB body limit. `pnpm cms:upload` sends an image server-side, with no folder, and
+   takes the same presigned PUT for a video ([mcp.md](mcp.md), Adding images and videos); the
+   Local API uploads server-side. `disablePayloadAccessControl` plus `generateFileURL` make `url` and the size URL direct
    bucket URLs in both cases, so nothing is proxied through a function and the URL the hooks see
    is the final one. The bucket needs a CORS rule for the presigned PUT (see Setup).
    Until 2026-10-11 the origin was Vercel Blob; its browser-upload path authorised an "overwrite"
@@ -116,7 +117,8 @@ a full-length video that plays on click, with a few seconds that loop muted unti
 1. **The block switch.** Caption, Stacked, Split and Split narrow carry **Play a video**
    (`fields/video`). On, the media upload (and the effect choice, on a visual slot) hides and a
    Videos upload takes its place, with the encoding panel under it. The editor uploads from the
-   page through the upload drawer, or picks a video already in the library. `resolveVisual`
+   page through the upload drawer, or picks a video already in the library; an agent uploads one
+   with `pnpm cms:upload <file.mp4>` ([mcp.md](mcp.md)). `resolveVisual`
    answers `{ kind: 'video' }` for such a slot and the `Visual` adapter mounts the player.
 2. **The Video document.** A `title` (the play button's accessible name; blank takes the
    filename) and a **Loop** group: `start` and `length` in seconds, both optional. Blank loops
@@ -130,8 +132,9 @@ a full-length video that plays on click, with a few seconds that loop muted unti
    loop is cut once it is (`POST /stream/clip`), and the loop is asked after in turn. The save
    hook runs a pass in the request that saved the document (`videoStreamSync`, registered after
    the storage adapter), and recuts the loop when the editor moved it. Every other caller runs
-   the same pass: `GET /api/videos/:id/status`, the Stream webhook, and the resync script run by
-   hand. Nothing runs on a schedule.
+   the same pass: `GET /api/videos/:id/status`, the agent's `GET /api/agent/media/videos/:id/status`
+   (`pnpm cms:upload` polls it until the video is ready), the Stream webhook, and the resync
+   script run by hand. Nothing runs on a schedule.
    A failed request is recorded as `streamError` instead of blocking the save; the next pass that
    gets through clears it. Replacing or deleting the file deletes the source and the loop on Stream.
 4. **The admin watches, and by watching, pumps.** The encoding panel (`VideoStatusField`, on the

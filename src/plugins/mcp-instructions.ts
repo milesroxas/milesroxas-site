@@ -24,7 +24,7 @@ export const MCP_INSTRUCTIONS = [
   "A visual slot's `studio` field takes a Studio look id: the streak-looks tools explain looks.",
   'A work with `isProtected` is client work behind an access link: never quote it in public copy.',
   'Delete only when the user asks; prefer a reversible step (unpublish, or `archived` on a look). A delete takes two calls: do what the first answers.',
-  'Add images with `pnpm cms:upload` (docs/mcp.md).',
+  'Add images and videos with `pnpm cms:upload` (docs/mcp.md).',
   'Inquiries, form submissions and Ask questions hold visitor contact details: read them for analysis and triage only, and never copy them into content or send them outside this workspace.',
   'House style for all copy: plain and specific, no hype, never an em dash. A save with an em dash is refused, by path.',
 ].join(' ')

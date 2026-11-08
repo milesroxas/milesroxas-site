@@ -24,7 +24,7 @@ import { Users } from './collections/Users'
 import { Videos } from './collections/Videos'
 import { videoStreamSync } from './collections/Videos/hooks'
 import { Works } from './collections/Works'
-import { agentMediaEndpoint } from './endpoints/agentMedia'
+import { agentMediaEndpoints } from './endpoints/agentMedia'
 import { askEndpoints } from './endpoints/ask'
 import { ContactPage } from './globals/ContactPage'
 import { Home } from './globals/Home'
@@ -132,8 +132,8 @@ export default buildConfig({
     Members,
   ],
   cors: [getServerSideURL()].filter(Boolean),
-  // `agent/media`: an MCP key's image upload (docs/mcp.md).
-  endpoints: [...askEndpoints, agentMediaEndpoint],
+  // `agent/media`: an MCP key's image and video uploads (docs/mcp.md).
+  endpoints: [...askEndpoints, ...agentMediaEndpoints],
   globals: [Home, Header, SiteInfo, ContactPage, WorksIndex],
   plugins: [
     ...plugins,

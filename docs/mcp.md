@@ -15,7 +15,7 @@ sas-site repo, not here. One tool that sas-site's roadmap had left as the next s
 | Site tools: `findContent`, `outlineDocument`, `locateBlock`, `getBlock`, `patchBlock`, `updateSeo`, `describeFields`, `createDocument`, `updateDocument`, `insertBlock`, `moveBlock`, `removeBlock`, `updateMedia` | [`src/plugins/mcp-tools/`](../src/plugins/mcp-tools/index.ts) |
 | Copy checks on every MCP write | [`src/plugins/mcp-write-checks.ts`](../src/plugins/mcp-write-checks.ts) |
 | Two-call delete | [`src/plugins/mcp-delete-confirmation.ts`](../src/plugins/mcp-delete-confirmation.ts) |
-| Image upload with an MCP key | [`src/endpoints/agentMedia.ts`](../src/endpoints/agentMedia.ts), `pnpm cms:upload` |
+| Image and video upload with an MCP key | [`src/endpoints/agentMedia.ts`](../src/endpoints/agentMedia.ts), `pnpm cms:upload` |
 | Admin UI for key capabilities | [`src/components/McpCapabilityControls`](../src/components/McpCapabilityControls/index.tsx) |
 
 Built on `@payloadcms/plugin-mcp`, pinned to the Payload release line (`3.90.2`) and patched
@@ -80,8 +80,8 @@ The source of truth is `mcp.ts`; this table mirrors it.
 | Public surfaces | Every `CONTENT_SURFACES` collection: `pages`, `works`, `posts` | Full authoring |
 | Operations | `capabilities`, `categories`, `clients`, `forms`, `redirects` | Full authoring |
 | Assets | `streak-looks` | Full authoring, **drafts only**: a look and its stills are published from the Studio, where they are rendered |
-| Assets | `media` | **Read-only**. New images go through `pnpm cms:upload` |
-| Full-length videos | `videos` | **Read-only**. Uploaded and configured in the admin ([media.md](media.md), Videos); a block plays one with `playVideo: true` and `video: <id>` |
+| Assets | `media` | **Read-only**. New images and muted loops go through `pnpm cms:upload` |
+| Full-length videos | `videos` | **Read-only**. New ones go through `pnpm cms:upload` ([Adding images and videos](#adding-images-and-videos)); the loop is set there or in the admin ([media.md](media.md), Videos); a block plays one with `playVideo: true` and `video: <id>` |
 | Visitor records | `inquiries`, `form-submissions`, `ask-questions` | **Read-only** |
 | Globals | `home`, `site-info`, `header`, `contact-page`, `works-index` | Find and update |
 
@@ -214,25 +214,56 @@ token in `confirm`. The token is an HMAC of the collection, id and `updatedAt` u
 secret, so it names one document in one state and stops working if the document changes. A `where`
 delete can never pass.
 
-## Adding images
+## Adding images and videos
 
 MCP cannot carry a binary, and a key fails every team-only REST rule, so `POST /api/media` is
-closed to it. `POST /api/agent/media` is the narrow door: the same Bearer key, the key's
-**Upload media** checkbox, alt text required, the bytes decoded as JPEG, PNG or WebP whatever the
-request claims, and the image re-encoded as WebP (compressed, all metadata dropped).
+closed to it. `/api/agent/media` is the narrow door: the same Bearer key and the key's
+**Upload media** checkbox, with the request acting as the key's user under access control.
 
 ```bash
-pnpm cms:upload <file> --alt "<what it shows>" [--caption "<text>"] [--local]
+pnpm cms:upload <image> --alt "<what it shows>" [--caption "<text>"] [--local]
+pnpm cms:upload <video> [--title "<name>"] [--loop-start <s>] [--loop-length <s>] [--no-wait] [--local]
+pnpm cms:upload <video> --loop --alt "<what it shows>" [--caption "<text>"] [--local]
 ```
 
 The script takes the site, the key and any `x-vercel-protection-bypass` header from Claude Code's
-`milesroxas-cms` entry, so an uploaded media id always exists in the database the MCP client drafts
+`milesroxas-cms` entry, so an uploaded id always exists in the database the MCP client drafts
 in. `CMS_MCP_API_KEY` (else `MILESROXAS_CMS_MCP_KEY`), `CMS_UPLOAD_SERVER` and
-`VERCEL_AUTOMATION_BYPASS_SECRET` override it. A local site needs `--local`.
+`VERCEL_AUTOMATION_BYPASS_SECRET` override it. A local site needs `--local`. It prints the new
+document id on stdout and nothing else; progress is on stderr.
 
-The endpoint answers `{ id, cloudflareImageId }`. A null `cloudflareImageId` means the file is on
-Blob but the Cloudflare Images sync failed (the server log has `[Cloudflare] Upload failed`), and
-the script warns on stderr; the daily sweep retries it ([media.md](media.md)).
+**An image** (JPEG, PNG, WebP, 8 MB at most) goes up in the request, `POST /api/agent/media`:
+alt text required, the bytes decoded as an image whatever the request claims, and the image
+re-encoded as WebP (compressed, all metadata dropped). The endpoint answers
+`{ id, cloudflareImageId }`. A null `cloudflareImageId` means the file is in the bucket but the
+Cloudflare Images sync failed (the server log has `[Cloudflare] Upload failed`), and the script
+warns on stderr; `scripts/resync-cloudflare-media.ts` retries it ([media.md](media.md)).
+
+**A video** (MP4, M4V, MOV or WebM, 400 MB at most) is too big for a function body, so it takes
+the admin's road ([media.md](media.md), "The pipeline"): `POST /api/agent/media/<collection>/sign`
+asks the storage adapter for a presigned PUT and a signed receipt, the script PUTs the bytes
+straight to the bucket, and `POST /api/agent/media/<collection>` creates the row from the
+receipt. Payload verifies that receipt against the key's user and the collection, streams the
+object back to check its type, and the usual after-change hooks start the Stream pipeline. The
+`<collection>` is one of two:
+
+- **`videos`**, the default: a full-length video that plays on click, with a few seconds that loop
+  muted until then. A block shows it with `playVideo: true` and `video: <id>`. `--title` names it
+  for the play button (blank takes the filename); `--loop-start` and `--loop-length` (3 to 30
+  seconds) place the loop, as the admin's Loop group does. The endpoint answers the id and the
+  stage, and the script then polls `GET /api/agent/media/videos/<id>/status` every 5 seconds for
+  up to ten minutes: each call is one pass of the Stream pipeline, the same pass the admin's
+  panel runs, so the agent's waiting is what carries the video to *Ready* where no webhook lands.
+  Publish once it is ready; a page published earlier bakes the poster in until its next
+  revalidation. `--no-wait` returns at once, and the admin panel or the Stream webhook finish it.
+- **`media`**, with `--loop`: a short clip that loops whole and muted wherever a `media` field
+  takes it. Alt text is required, as for an image. The endpoint answers `{ id, cloudflareStreamUid }`;
+  the site plays the clip from the bucket until Stream has it.
+
+A key with the capability can call the endpoints without the script: the sign step takes JSON
+`{ filename, filesize, mimeType }` and answers `{ url, headers, filename, clientUploadContext }`;
+the create step is multipart with `_payload` (the fields as JSON) and `file` (a JSON string with
+`filename`, `mimeType`, `size` and that `clientUploadContext`), the shape the admin sends.
 
 ## Security: the REST rule
 
