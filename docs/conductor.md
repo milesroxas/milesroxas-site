@@ -126,15 +126,39 @@ Merge order does not matter as long as the last migration to land was regenerate
 
 After rebasing, `pnpm dev` push re-syncs the workspace DB. If push warns about data loss (a column removed on `dev`), accept — the workspace DB is disposable — or `bash .conductor/setup.sh --reseed`.
 
-## Worktrees outside Conductor
+## Worktrees outside Conductor (T3 Code, a plain terminal)
 
-A hand-made worktree (`git worktree add …`) that copies the main `.env` shares the `payload` DB and port 3000 with the main checkout. Two branches pushing different schemas into one DB fight each other (columns added/dropped on every restart, data-loss prompts). Either run that branch in Conductor, or give it its own DB the same way: `CREATE DATABASE payload_x TEMPLATE payload` and point its `.env` at it. Prune does not touch that DB; drop it yourself when the worktree goes.
+The same scripts run under [T3 Code](https://github.com/pingdotgg/t3code) and in any `git worktree`. With no Conductor env set, `lib.sh` takes the root from `$T3CODE_PROJECT_ROOT` (T3 Code) or from git (a terminal): your main checkout, never pulled.
+
+Save these as the project's scripts in T3 Code (stored in T3 Code, not in this repo):
+
+| Project script | Command | When |
+|---|---|---|
+| Setup worktree | `bash .conductor/setup.sh` | Automatically on worktree create |
+| Dev | `bash .conductor/run-dev.sh` | Play button |
+| Storybook | `bash .conductor/run-storybook.sh` | Manual |
+| Prune worktree DBs (dry run) | `bash .conductor/prune-dbs.sh` | Manual; add `--yes` in a terminal to drop |
+
+What differs from Conductor, all handled in `lib.sh`:
+
+| Thing | Conductor | T3 Code or a terminal |
+|---|---|---|
+| Root (`.env` source) | `$CONDUCTOR_ROOT_PATH`, pulled on setup | `$T3CODE_PROJECT_ROOT` or the git main worktree: your main checkout, never pulled |
+| Port | `$CONDUCTOR_PORT` | None is handed out: setup takes the first even port in 3300–3398 (Storybook on +1) that no other worktree's `.env` claims and nothing listens on, and stores it as `DEV_PORT` in `.env` |
+| Database | `payload_<city>` | `payload_<worktree dir>`, marked like any workspace DB |
+| Cleanup | `archive.sh` drops the DB | No archive hook: run the prune script now and then |
+
+In the main checkout (a T3 thread in local mode) `setup.sh` refuses, since it keeps its own `.env`, DB `payload` and port 3000, and `run-dev.sh` is plain `pnpm dev`.
+
+Prune counts Conductor workspaces, T3 worktrees (`~/.t3/worktrees/milesroxas-site`) and every git worktree of the checkout as live, so pruning from either tool never drops the other's DBs. T3 Code cuts worktrees from the branch you pick for the thread; start them from `dev`.
 
 ## Troubleshooting
 
 | Symptom | Cause / fix |
 |---------|-------------|
-| Run: `no .env in this workspace` | Setup never ran — Conductor → Run setup script, or `bash .conductor/setup.sh` |
+| Run: `no .env in this workspace` | Setup never ran. Conductor → Run setup script, T3 Code → Setup worktree, or `bash .conductor/setup.sh` |
+| `this is the main checkout, not a worktree` | Setup ran in the main checkout (a T3 thread in local mode). Nothing to do: it uses `.env` as is |
+| `no free port pair in 3300-3398` | 50 worktrees claim ports. Remove stale worktrees, then re-run setup |
 | `Docker is not running` | Start Docker Desktop; Run re-ensures the container |
 | Dev server reads/writes the shared `payload` DB although `.env` names `payload_<city>` | Launcher injected `POSTGRES_URL` into the process env (Next.js prefers process env over `.env`). `lib.sh` exports the workspace URL explicitly; restart Run ▶ |
 | `.env.local sets POSTGRES_URL to a database other than …` | `vercel env pull` ran in the workspace. `mv .env.local .env.local.neon-bak`, restart |
