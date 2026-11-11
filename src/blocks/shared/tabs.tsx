@@ -13,6 +13,7 @@ import {
 } from 'react'
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import { cn } from '@/utilities/ui'
+import { ordinalLabel } from './numbering'
 import {
   cancelTabSwap,
   playTabSwap,
@@ -29,34 +30,30 @@ export type TabSize = 'default' | 'small'
 export type TabbedRow = { id?: string | null; title?: string | null }
 
 /**
- * Below `md` every strip is one rail on a hairline: a row that wraps into
- * centred lines of different lengths reads as loose words, not a control.
- * The rail bleeds to the page gutter so a half-cut tab, not a scrollbar, is
- * the pan affordance, and `scroll-fade-x` dims only the edge with tabs still
- * behind it. Triggers stand 44px tall there, so each label is a full touch
- * target, and the active one's ink sits on the hairline.
+ * The strip is a track on a hairline, flush with the grid it switches: a
+ * centred row of words belonged to neither column of the panel's asymmetric
+ * split and read as floating copy, not a control. Each tab is a cell of the
+ * track (equal while the labels fit, never narrower than its label), marked
+ * with the site's mono ordinal from `md`, so the row reads as a set of
+ * options before anything is hovered (on a phone the ordinals would push a
+ * third tab off screen, and the track already says "tabs"). The active
+ * cell's ink covers its whole width.
  *
- * From `md`, default: heading-sized triggers that wrap onto a second row once
- * the labels outgrow the container (fine up to four tabs). Small: one type
- * step down (`text-lead`, the same step Image statement takes) and never
- * wraps; past the container it keeps panning. `justify-center-safe` keeps
- * the row centred while it fits and falls back to start alignment once it
- * overflows, so the first tab can never be scrolled out of reach.
+ * Labels sit a rung under the panel heading they switch (`text-lead` at the
+ * small text size): a control that out-shouts its content inverts the
+ * hierarchy. Cells stand 48px tall, a full touch target.
+ *
+ * Past the container the track pans instead of wrapping. On a phone it
+ * bleeds to the page gutter so a half-cut tab, not a scrollbar, is the pan
+ * affordance, and `scroll-fade-x` dims only the edge with tabs still behind
+ * it. From `md` it stays inside the grid's edges.
  */
-const RAIL =
-  'no-scrollbar scroll-fade-x scroll-fade-8 relative -mx-gutter flex items-center gap-6 overflow-x-auto overscroll-x-contain px-gutter max-md:shadow-[inset_0_-1px_0_var(--color-border)]'
-
-const TAB_STRIP = {
-  default: cn(
-    RAIL,
-    'md:mx-0 md:flex-wrap md:justify-center md:gap-x-24 md:gap-y-4 md:overflow-visible md:px-0',
-  ),
-  small: cn(RAIL, 'justify-start md:justify-center-safe md:gap-12'),
-} as const
+const TAB_STRIP =
+  'no-scrollbar scroll-fade-x scroll-fade-8 relative -mx-gutter grid auto-cols-[minmax(max-content,1fr)] grid-flow-col overflow-x-auto overscroll-x-contain px-gutter shadow-[inset_0_-1px_0_var(--color-border)] md:mx-0 md:px-0'
 
 const TAB_TRIGGER = {
-  default: 'h-11 text-lead md:h-auto md:pb-3 md:text-heading-3',
-  small: 'h-11 text-lead md:h-auto md:pb-3',
+  default: 'h-12 text-base md:h-14 md:text-lg',
+  small: 'h-12 text-base',
 } as const
 
 /** A row's Radix value, for a block that draws its own triggers (Carousel tabs' index). */
@@ -176,20 +173,31 @@ const TabStrip = ({
   const size = tabSize === 'small' ? 'small' : 'default'
   const { inkRef, listRef } = useTabInk(useActiveValue())
   return (
-    <TabsPrimitive.List aria-label={ariaLabel} className={TAB_STRIP[size]} ref={listRef}>
+    <TabsPrimitive.List aria-label={ariaLabel} className={TAB_STRIP} ref={listRef}>
       {rows.map((row, index) => (
         <TabsPrimitive.Trigger
           key={row.id ?? index}
           value={valueFor(rows, index)}
           className={cn(
-            'text-muted-foreground hover:text-foreground data-[state=active]:text-primary shrink-0 whitespace-nowrap',
-            'touch-manipulation select-none [-webkit-tap-highlight-color:transparent]',
-            'transition-[color,scale] duration-360 ease-(--ease-out-quint) active:scale-[0.97] motion-reduce:transition-none',
+            'group text-muted-foreground relative flex items-center pe-4 text-left whitespace-nowrap last:pe-0 md:pe-6',
+            'hover:text-foreground data-[state=active]:text-primary',
+            'touch-manipulation select-none [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none]',
+            'transition-colors duration-360 ease-(--ease-out-quint) motion-reduce:transition-none',
             'focus-visible:outline-ring rounded-sm focus-visible:outline-2 focus-visible:-outline-offset-2',
             TAB_TRIGGER[size],
           )}
         >
-          {row.title}
+          <span className="flex origin-left items-baseline gap-2.5 transition-[scale] duration-150 ease-(--ease-out-quint) group-active:scale-[0.97] motion-reduce:transition-none">
+            <span aria-hidden="true" className="font-mono text-xs tabular-nums max-md:hidden">
+              {ordinalLabel(index)}
+            </span>
+            {row.title}
+          </span>
+          {/* Hover previews the ink: the cell's hairline darkens from its start. */}
+          <span
+            aria-hidden="true"
+            className="bg-foreground/25 absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 transition-transform duration-360 ease-(--ease-out-quint) group-hover:scale-x-100 group-data-[state=active]:invisible motion-reduce:transition-none"
+          />
         </TabsPrimitive.Trigger>
       ))}
       <span
@@ -346,7 +354,9 @@ const TabPanels = <Row extends TabbedRow>({
  * way; a block supplies only what a panel looks like and marks its parts for
  * the swap (./tab-swap). The strip and the panels stack on a scale step
  * (grid doc, G6) carried by a flex column `gap`; tighter on a phone, where
- * the strip is the panel's own control and belongs right above it.
+ * the strip is the panel's own control and belongs right above it, and never
+ * wider than the panel's own row gap from `lg`, so the track reads as the
+ * panel's header rather than a band of its own.
  *
  * Under a GSAP reveal (`data-reveal` on the root) the strip and the panel
  * each enter whole: a panel that swaps on click cannot split into lines.
@@ -365,7 +375,7 @@ export const TabbedPanels = <Row extends TabbedRow>({
   if (rows.length === 0) return null
 
   return (
-    <TabbedRoot className="flex flex-col gap-8 md:gap-12 lg:gap-16" rows={rows}>
+    <TabbedRoot className="flex flex-col gap-8 md:gap-10 lg:gap-12" rows={rows}>
       <TabStrip ariaLabel={ariaLabel} rows={rows} tabSize={tabSize} />
       <TabPanels renderPanel={renderPanel} rows={rows} />
     </TabbedRoot>

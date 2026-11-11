@@ -4469,7 +4469,7 @@ export interface FeatureTabsBlock {
    */
   textSize?: ('small' | 'large') | null;
   /**
-   * Default sets heading-sized tab labels that wrap onto a second row. Small steps them down one type size and keeps them on one row that pans sideways, for five or more tabs.
+   * Default sets the tab labels one step under the panel heading. Small sets them at body size in shorter tabs, for five or more. Either way the tabs stay on one row and pan sideways once they outgrow it.
    */
   tabSize?: ('default' | 'small') | null;
   /**

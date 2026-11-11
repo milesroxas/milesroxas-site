@@ -5,7 +5,7 @@ import { BlockGrid } from '@/blocks/shared/grid'
 import type { RowWithVisual } from '@/blocks/shared/row-visuals'
 import { Section } from '@/blocks/shared/section'
 import { TabbedPanels } from '@/blocks/shared/tabs'
-import { type TypeScale, typeScale } from '@/blocks/shared/typography'
+import { eyebrowClassName, type TypeScale, typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import { Visual } from '@/components/Visual'
@@ -52,11 +52,11 @@ const TabPanel: React.FC<{ tab: FeatureTab; type: TypeScale }> = ({ tab, type })
   <BlockGrid>
     <div className="flex flex-col justify-between gap-8 md:col-span-8 lg:col-span-3 lg:gap-12">
       <div className="text-stack">
-        <h3 className={type.heading} data-tab-swap="copy">
+        <h3 className={cn(type.heading, 'text-balance')} data-tab-swap="copy">
           {tab.heading}
         </h3>
         {tab.description ? (
-          <div data-tab-swap="copy">
+          <div className="text-pretty" data-tab-swap="copy">
             <RichText
               className={type.body}
               data={tab.description}
@@ -69,16 +69,13 @@ const TabPanel: React.FC<{ tab: FeatureTab; type: TypeScale }> = ({ tab, type })
       {tab.items?.length ? (
         <div className="flex flex-col gap-3">
           {tab.subheading ? (
-            <h4
-              className="text-muted-foreground font-mono text-sm font-normal"
-              data-tab-swap="copy"
-            >
+            <h4 className={cn(eyebrowClassName, 'text-muted-foreground')} data-tab-swap="copy">
               {tab.subheading}
             </h4>
           ) : null}
           <ul className="divide-border flex flex-col divide-y text-sm">
             {tab.items.map((item, itemIndex) => (
-              <li key={item.id ?? itemIndex} className="py-1 last:pb-0" data-tab-swap="copy">
+              <li key={item.id ?? itemIndex} className="py-1.5 last:pb-0" data-tab-swap="copy">
                 {item.text}
               </li>
             ))}
