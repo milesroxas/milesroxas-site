@@ -13,7 +13,6 @@ import {
 } from 'react'
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion'
 import { cn } from '@/utilities/ui'
-import { ordinalLabel } from './numbering'
 import {
   cancelTabSwap,
   playTabSwap,
@@ -33,11 +32,8 @@ export type TabbedRow = { id?: string | null; title?: string | null }
  * The strip is a track on a hairline, flush with the grid it switches: a
  * centred row of words belonged to neither column of the panel's asymmetric
  * split and read as floating copy, not a control. Each tab is a cell of the
- * track (equal while the labels fit, never narrower than its label), marked
- * with the site's mono ordinal from `md`, so the row reads as a set of
- * options before anything is hovered (on a phone the ordinals would push a
- * third tab off screen, and the track already says "tabs"). The active
- * cell's ink covers its whole width.
+ * track (equal while the labels fit, never narrower than its label), and the
+ * active cell's ink covers its whole width.
  *
  * Labels sit a rung under the panel heading they switch (`text-lead` at the
  * small text size): a control that out-shouts its content inverts the
@@ -187,10 +183,7 @@ const TabStrip = ({
             TAB_TRIGGER[size],
           )}
         >
-          <span className="flex origin-left items-baseline gap-2.5 transition-[scale] duration-150 ease-(--ease-out-quint) group-active:scale-[0.97] motion-reduce:transition-none">
-            <span aria-hidden="true" className="font-mono text-xs tabular-nums max-md:hidden">
-              {ordinalLabel(index)}
-            </span>
+          <span className="origin-left transition-[scale] duration-150 ease-(--ease-out-quint) group-active:scale-[0.97] motion-reduce:transition-none">
             {row.title}
           </span>
           {/* Hover previews the ink: the cell's hairline darkens from its start. */}
