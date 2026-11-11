@@ -89,7 +89,14 @@ const nextConfig: NextConfig = {
   },
 
   // Applies when using Webpack (plain next build)
-  webpack: (webpackConfig) => {
+  webpack: (webpackConfig, { dev }) => {
+    // Vercel restores webpack's persistent cache between deploys, and that
+    // cache keys the Tailwind stylesheet on globals.css alone: a deploy that
+    // adds classes only in components ships the previous build's CSS (the tab
+    // strip's grid went out missing on 2026-11-10). Production builds compile
+    // the CSS fresh every time.
+    if (!dev) webpackConfig.cache = false
+
     // Keep this for non-Turbopack builds
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
