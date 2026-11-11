@@ -40,14 +40,25 @@ export const TAB_SWAP_MOTION = {
 
 export type SwapDirection = 1 | -1
 
-/** A running swap: every animation it started, run back together when the reader returns. */
+/** A running swap: every animation it started, and the leg it is waiting on to land. */
 export type TabSwap = {
   animations: Animation[]
+  /** The newest leg: the animations the swap lands on. A turn starts a new one. */
+  leg: Animation[]
+  direction: SwapDirection
+  incoming: HTMLElement | undefined
+  outgoing: HTMLElement | undefined
+  /** The incoming plate, when it wipes open over the old one. */
+  incomingPlate: HTMLElement | undefined
+  /** The old plate, when the new tab has no picture and it fades out instead. */
+  fadedPlate: HTMLElement | undefined
+  reduced: boolean
   /** The plate's animations, held at their start until the picture is ready. */
   plate: Animation[]
   plateStarted: boolean
   /** Resolves once the plate may open (picture ready, or the hold ran out). */
   ready: Promise<void>
+  /** True while the swap heads back to the tab it left. */
   reversed: boolean
 }
 
@@ -174,6 +185,13 @@ export function playTabSwap({
 
   const swap: TabSwap = {
     animations,
+    leg: [...animations],
+    direction,
+    incoming,
+    outgoing,
+    incomingPlate: plateMotion.length ? incomingPlate : undefined,
+    fadedPlate: outgoingPlate && !hasPicture ? outgoingPlate : undefined,
+    reduced,
     plate: plateMotion,
     plateStarted: plateMotion.length === 0,
     ready: whenPictureReady(incomingPlate, hold),
@@ -192,24 +210,87 @@ function startPlate(swap: TabSwap) {
 }
 
 /**
- * Runs the swap the other way from wherever it is. A plate still holding for
- * its picture stays closed: reversing an animation at its start would rewind
- * it to its end and flash the plate open.
+ * Turns the swap toward the other tab from wherever it is: everything in
+ * flight holds its frame and a new leg animates each part to where that tab
+ * wants it, on the forward curves. Never `reverse()`: a reversed ease-out is
+ * an ease-in, so the plate would hang open and then snap shut.
  */
-export function reverseTabSwap(swap: TabSwap) {
+export function redirectTabSwap(swap: TabSwap) {
+  const { copy, ease, exit, exitEase, fade, plate } = TAB_SWAP_MOTION
   swap.reversed = !swap.reversed
-  for (const animation of swap.animations) {
-    if (swap.plateStarted || !swap.plate.includes(animation)) animation.reverse()
+  for (const animation of swap.animations) animation.pause()
+
+  const leg: Animation[] = []
+  const add = (el: HTMLElement, keyframes: Keyframe[], options: KeyframeAnimationOptions) => {
+    const animation = el.animate(keyframes, { fill: 'both', ...options })
+    leg.push(animation)
+    swap.animations.push(animation)
   }
+  const { reduced, reversed } = swap
+  const toward = reversed ? swap.outgoing : swap.incoming
+  const away = reversed ? swap.incoming : swap.outgoing
+  const direction = reversed ? -swap.direction : swap.direction
+
+  for (const piece of parts(away, 'copy')) {
+    add(
+      piece,
+      reduced
+        ? [{ opacity: 0 }]
+        : [{ opacity: 0, translate: `calc(${exit.travel} * ${-direction}) 0` }],
+      { duration: reduced ? fade / 2 : exit.duration, easing: exitEase },
+    )
+  }
+
+  const pieces = parts(toward, 'copy')
+  const step = pieces.length > 1 ? Math.min(copy.stagger, copy.cascade / (pieces.length - 1)) : 0
+  pieces.forEach((piece, index) => {
+    add(
+      piece,
+      reduced ? [{ opacity: 1 }] : [{ opacity: 1, translate: '0 0', filter: 'blur(0px)' }],
+      {
+        delay: reduced ? 0 : copy.delay + index * step,
+        duration: reduced ? fade : copy.duration,
+        easing: ease,
+      },
+    )
+  })
+
+  if (swap.fadedPlate) {
+    add(swap.fadedPlate, [{ opacity: reversed ? 1 : 0 }], { duration: fade, easing: ease })
+  }
+
+  if (swap.incomingPlate && swap.plateStarted) {
+    const closed = swap.direction > 0 ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)'
+    add(
+      swap.incomingPlate,
+      reduced
+        ? [{ opacity: reversed ? 0 : 1 }]
+        : [{ clipPath: reversed ? closed : 'inset(0 0 0 0)' }],
+      { duration: reduced ? fade : plate.duration, easing: ease },
+    )
+    if (!reduced && !reversed) {
+      for (const picture of parts(swap.incomingPlate, 'settle')) {
+        add(picture, [{ scale: 1 }], { duration: plate.settle, easing: ease })
+      }
+    }
+  } else if (!reversed) {
+    // Still held for its picture: the original plate motion opens it once ready.
+    leg.push(...swap.plate)
+  }
+
+  swap.leg = leg
 }
 
-/** Resolves when the swap has landed, whichever way it runs. */
+/** Resolves true once the swap's newest leg has landed; false if a later turn took over. */
 export async function tabSwapSettled(swap: TabSwap) {
+  const leg = swap.leg
   if (!swap.reversed) await swap.ready
+  if (swap.leg !== leg) return false
   // Forward again after the picture loaded while reversed: open the plate now.
   if (!swap.reversed) startPlate(swap)
-  const live = swap.animations.filter((a) => swap.plateStarted || !swap.plate.includes(a))
+  const live = leg.filter((a) => swap.plateStarted || !swap.plate.includes(a))
   await Promise.all(live.map((animation) => animation.finished)).catch(() => {})
+  return swap.leg === leg
 }
 
 export function cancelTabSwap(swap: TabSwap | undefined) {

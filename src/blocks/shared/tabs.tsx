@@ -17,7 +17,7 @@ import { ordinalLabel } from './numbering'
 import {
   cancelTabSwap,
   playTabSwap,
-  reverseTabSwap,
+  redirectTabSwap,
   type SwapDirection,
   TAB_SWAP_MOTION,
   type TabSwap,
@@ -219,8 +219,9 @@ type Layer = { swap?: TabSwap; value: string }
  * its top edge and clipped to it, inert until the swap has landed.
  *
  * Interruptible: choosing the tab just left while its successor is still
- * arriving runs that swap back; choosing any other stacks a new swap on top,
- * and each swap that lands clears the layers under it.
+ * arriving turns that swap around from where it stands, on the forward
+ * curves; choosing any other stacks a new swap on top, and each swap that
+ * lands clears the layers under it.
  */
 const TabPanels = <Row extends TabbedRow>({
   renderPanel,
@@ -245,7 +246,8 @@ const TabPanels = <Row extends TabbedRow>({
    * or it would flash back for a frame.
    */
   const land = useCallback((swap: TabSwap, incoming: string) => {
-    void tabSwapSettled(swap).then(() => {
+    void tabSwapSettled(swap).then((settled) => {
+      if (!settled) return
       const top = live.current.layers.find((layer) => layer.value === incoming)
       if (top?.swap !== swap) return
       const node = nodes.current.get(incoming)
@@ -271,11 +273,11 @@ const TabPanels = <Row extends TabbedRow>({
     const top = current.at(-1)
     const below = current.at(-2)
 
-    // Back to the tab just left, or forward again: run the swap the other way.
+    // Back to the tab just left, or forward again: turn the swap from where it is.
     const returning = top?.swap && top.value === from && below?.value === value
     const resuming = top?.swap?.reversed && top.value === value
     if (top?.swap && (returning || resuming)) {
-      reverseTabSwap(top.swap)
+      redirectTabSwap(top.swap)
       land(top.swap, top.value)
       return
     }
