@@ -10,6 +10,7 @@ import { Container } from '@/components/Container'
 import RichText from '@/components/RichText'
 import { Visual } from '@/components/Visual'
 import type { FeatureTabsBlock as FeatureTabsBlockData } from '@/payload-types'
+import { cn } from '@/utilities/ui'
 
 /** A tab after the adapter resolved its visual slot; the story `source` never reaches the client. */
 type FeatureTab = Omit<RowWithVisual<NonNullable<FeatureTabsBlockData['tabs']>[number]>, 'source'>
@@ -33,34 +34,51 @@ const MEDIA_SIZES = '(max-width: 1024px) 100vw, 62vw'
  * statement, body, included list) takes columns 1-3 and the media plate
  * columns 4-8 at 16:9; grid cells stretch to the row, so the copy column's
  * `justify-between` pins the statement to the plate's top edge and the list
- * to its bottom. At `md` both cells span the full eight columns and stack on
- * the grid's gap, the plate at 3:2: three columns of a 768px page cannot hold
- * a heading, and a 16:9 plate there is shallower than its caption card.
+ * to its bottom.
+ *
+ * Below `lg` both stack full width with the plate first, at 3:2: the plate
+ * is what a tab changes most, so it sits right under the strip and a tap
+ * shows its answer without a scroll. A tab with no picture drops the plate
+ * there rather than leave an empty frame between the strip and its copy.
+ * The caption is the plate's card from `md`. On a phone a card would cover
+ * most of the picture, and a caption between the plate and the heading
+ * reads as the panel's intro, so the figure dissolves into the stack
+ * (`contents`) and the caption closes the panel as a note.
+ *
+ * Every part is marked for the swap (`shared/tab-swap.ts`): the plate wipes,
+ * its picture settles, the copy cascades.
  */
 const TabPanel: React.FC<{ tab: FeatureTab; type: TypeScale }> = ({ tab, type }) => (
   <BlockGrid>
-    <div className="flex flex-col justify-between gap-12 md:col-span-8 lg:col-span-3">
+    <div className="flex flex-col justify-between gap-8 md:col-span-8 lg:col-span-3 lg:gap-12">
       <div className="text-stack">
-        <h3 className={type.heading}>{tab.heading}</h3>
+        <h3 className={type.heading} data-tab-swap="copy">
+          {tab.heading}
+        </h3>
         {tab.description ? (
-          <RichText
-            className={type.body}
-            data={tab.description}
-            enableGutter={false}
-            enableProse={false}
-          />
+          <div data-tab-swap="copy">
+            <RichText
+              className={type.body}
+              data={tab.description}
+              enableGutter={false}
+              enableProse={false}
+            />
+          </div>
         ) : null}
       </div>
       {tab.items?.length ? (
         <div className="flex flex-col gap-3">
           {tab.subheading ? (
-            <h4 className="text-muted-foreground font-mono text-sm font-normal">
+            <h4
+              className="text-muted-foreground font-mono text-sm font-normal"
+              data-tab-swap="copy"
+            >
               {tab.subheading}
             </h4>
           ) : null}
           <ul className="divide-border flex flex-col divide-y text-sm">
             {tab.items.map((item, itemIndex) => (
-              <li key={item.id ?? itemIndex} className="py-1 last:pb-0">
+              <li key={item.id ?? itemIndex} className="py-1 last:pb-0" data-tab-swap="copy">
                 {item.text}
               </li>
             ))}
@@ -68,23 +86,41 @@ const TabPanel: React.FC<{ tab: FeatureTab; type: TypeScale }> = ({ tab, type })
         </div>
       ) : null}
     </div>
-    <div className="relative aspect-3/2 overflow-hidden rounded-lg md:col-span-8 lg:col-span-5 lg:aspect-16/9">
-      {tab.visual ? (
-        <Visual
-          fill
-          htmlElement={null}
-          imgClassName="object-cover"
-          placement="block"
-          size={MEDIA_SIZES}
-          visual={tab.visual}
-        />
-      ) : null}
+    <figure
+      className={cn(
+        'relative max-lg:order-first max-md:contents md:col-span-8 lg:col-span-5',
+        !tab.visual && 'max-lg:hidden',
+      )}
+    >
+      <div
+        className={cn(
+          'relative aspect-3/2 overflow-hidden rounded-lg max-md:order-first lg:aspect-16/9',
+          !tab.visual && 'max-lg:hidden',
+        )}
+        data-tab-swap="plate"
+      >
+        {tab.visual ? (
+          <div className="absolute inset-0" data-tab-swap="settle">
+            <Visual
+              fill
+              htmlElement={null}
+              imgClassName="object-cover"
+              placement="block"
+              size={MEDIA_SIZES}
+              visual={tab.visual}
+            />
+          </div>
+        ) : null}
+      </div>
       {tab.caption ? (
-        <div className="bg-card text-card-foreground absolute right-4 bottom-4 max-w-72 rounded-md p-4 md:right-8 md:bottom-9">
-          <p className="text-muted-foreground text-sm">{tab.caption}</p>
-        </div>
+        <figcaption
+          className="text-muted-foreground md:bg-card text-sm max-md:order-last md:absolute md:right-8 md:bottom-9 md:max-w-72 md:rounded-md md:p-4"
+          data-tab-swap="copy"
+        >
+          {tab.caption}
+        </figcaption>
       ) : null}
-    </div>
+    </figure>
   </BlockGrid>
 )
 
