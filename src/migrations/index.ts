@@ -42,6 +42,7 @@ import * as migration_20261017_211828_videos from './20261017_211828_videos';
 import * as migration_20261021_161707_studio_stills from './20261021_161707_studio_stills';
 import * as migration_20261024_203357_home_global from './20261024_203357_home_global';
 import * as migration_20261028_185828_members_and_visibility from './20261028_185828_members_and_visibility';
+import * as migration_20261115_215255_app_download_block from './20261115_215255_app_download_block';
 
 export const migrations = [
   {
@@ -262,6 +263,11 @@ export const migrations = [
   {
     up: migration_20261028_185828_members_and_visibility.up,
     down: migration_20261028_185828_members_and_visibility.down,
-    name: '20261028_185828_members_and_visibility'
+    name: '20261028_185828_members_and_visibility',
+  },
+  {
+    up: migration_20261115_215255_app_download_block.up,
+    down: migration_20261115_215255_app_download_block.down,
+    name: '20261115_215255_app_download_block'
   },
 ];
