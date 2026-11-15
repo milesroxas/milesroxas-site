@@ -13,6 +13,12 @@ const NEXT_PUBLIC_SERVER_URL =
 const url = new URL(NEXT_PUBLIC_SERVER_URL)
 
 const nextConfig: NextConfig = {
+  // `*.dev.tsx` / `*.dev.ts` route files (the brand lab in src/app/lab) exist
+  // only under `next dev`; a production build never compiles them.
+  pageExtensions:
+    process.env.NODE_ENV === 'development'
+      ? ['dev.tsx', 'dev.ts', 'tsx', 'ts', 'jsx', 'js']
+      : ['tsx', 'ts', 'jsx', 'js'],
   images: {
     localPatterns: [
       // Every local path without a query string, as before this list existed.
