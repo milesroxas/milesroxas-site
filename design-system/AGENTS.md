@@ -24,6 +24,10 @@ with the site chrome over it.
   (128px columns, 32px gap, 96px gutter) and the band spacing steps.
 - `controls/`: text styles (`type.elyx`), the media placeholder, button,
   carousel arrow, pill, form field and the site chrome (top bar and dock).
+- `controls/media.elyx` also holds `exportSizes`, the sheet of export sizes
+  for every media slot, beside the `media` stand-in. It mirrors
+  `../docs/media-dimensions.md` plus the heroes and covers; update both when a
+  frame's span or ratio changes.
 - `blocks/`: one exported component per CMS block, grouped by the blocks
   drawer's groups. Each source names the React file it mirrors.
 - `resources/fonts/`: IBM Plex Sans and Geist Mono, loaded by `controls/type.elyx`.
@@ -48,7 +52,11 @@ with the site chrome over it.
   `screens/home.elyx` is the home page with its published content.
   `screens/design-systems-for-organizational-scale.elyx` is the NextStreet
   work page with its published production content. `screens/works.elyx` is
-  /works on load.
+  /works on load. `screens/skill-studio.elyx` is the Skill Studio work page
+  in progress. Its media are plates in `resources/images/skill-studio/`:
+  real app stills, dimmed except the part the block talks about. They are
+  made in `~/SITES/tools/skill-studio-design` (`recorder/stills.ts` takes
+  the stills, `plates/render.mjs` edits them); never redraw the app in Elyx.
   `screens/section-headings.elyx` is the specimen sheet for the two Section
   heading blocks: every variant their Payload settings produce, labelled.
 - `exploration/`: proposal sheets, not screens as built. `works-summary.elyx`

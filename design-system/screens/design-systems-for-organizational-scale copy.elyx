@@ -8,6 +8,7 @@ import "blocks/media.elyx" as media
 import "blocks/media-content.elyx" as mc
 import "blocks/text.elyx" as prose
 import "blocks/more-work.elyx" as more
+import "resources/images/Studio Display LUX-25-L.png" as StudioDisplayLUX-25-L
 
 // The work page for "Design Systems for Organizational Scale" (NextStreet) at
 // 1440px, top to bottom, with its published production content: the Work
@@ -715,5 +716,23 @@ designSystemsForOrganizationalScale = frame {
     children: dock,
 
     dock = frame : chrome.dockOnPageSection {}
+  }
+}
+
+skill-studio-hero = frame {
+  left: 1443px,
+  top: -7107px,
+  width: 2400px,
+  height: 1500px,
+  fill: .white,
+  children: StudioDisplayLUX-25-Lpng,
+
+  StudioDisplayLUX-25-Lpng = shape {
+    left: 0px,
+    top: -0.12px,
+    width: 2400px,
+    height: 1500.24px,
+    fill: {image: {ref: StudioDisplayLUX-25-L}},
+    type: .rect
   }
 }

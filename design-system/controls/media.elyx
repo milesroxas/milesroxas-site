@@ -17,3 +17,1706 @@ export media = frame {
     fill[0].color: c.colors.media-ink
   }
 }
+
+// Export sizes for every media slot, beside the stand-in it fills.
+// Mirrors docs/media-dimensions.md (block by block); heroes and covers are
+// measured from src/heros and src/sections. Update both when a frame changes.
+exportSizes = frame {
+  left: 1008px,
+  top: 0px,
+  width: 1792px,
+  layout: {direction: .column, item-gap: 128px},
+  fill: c.colors.background,
+  padding: 96px,
+  children: [
+    exportIntro,
+    exportRules,
+    exportGrid,
+    heroes,
+    mediaContent,
+    mediaBlocks,
+    interactive
+  ]
+}
+
+exportIntro = frame {
+  width: 100%,
+  layout: {direction: .column, item-gap: 24px},
+  children: [exportTitle, exportNote]
+}
+
+exportTitle = text : t.display {
+  contents: "Media export sizes",
+  font-size: 72
+}
+
+exportNote = text : t.statement {
+  width: 960px,
+  contents: "The size to export each image or video at before uploading it. Every number is twice the widest the frame renders, so it stays sharp on retina screens. Cloudflare scales it down and picks the format per screen.",
+  fill[0].color: c.colors.muted-foreground
+}
+
+rule1 = frame {
+  width: 376px,
+  layout: {direction: .column, item-gap: 12px},
+  border: {color: c.colors.foreground, sides: .top},
+  padding-top: 20px,
+  children: [rule1Head, rule1Body]
+}
+
+rule1Head = text : t.blockHeading {
+  width: 376px,
+  contents: "Images at 2×",
+  fill[0].color: c.colors.foreground
+}
+
+rule1Body = text : t.body {
+  width: 376px,
+  contents: "Export twice the widest the frame renders. Larger costs nothing on the page; smaller goes soft on retina.",
+  fill[0].color: c.colors.muted-foreground
+}
+
+rule2 = frame {
+  width: 376px,
+  layout: {direction: .column, item-gap: 12px},
+  border: {color: c.colors.foreground, sides: .top},
+  padding-top: 20px,
+  children: [rule2Head, rule2Body]
+}
+
+rule2Head = text : t.blockHeading {
+  width: 376px,
+  contents: "Video at 1080p",
+  fill[0].color: c.colors.foreground
+}
+
+rule2Body = text : t.body {
+  width: 376px,
+  contents: "MP4 (H.264) at the frame's ratio. Stream stops at 1080p, so 4K adds nothing. 2560 only for a full-bleed hero.",
+  fill[0].color: c.colors.muted-foreground
+}
+
+rule3 = frame {
+  width: 376px,
+  layout: {direction: .column, item-gap: 12px},
+  border: {color: c.colors.foreground, sides: .top},
+  padding-top: 20px,
+  children: [rule3Head, rule3Body]
+}
+
+rule3Head = text : t.blockHeading {
+  width: 376px,
+  contents: "Crops come from the centre",
+  fill[0].color: c.colors.foreground
+}
+
+rule3Body = text : t.body {
+  width: 376px,
+  contents: "There is no focal point. Export at the listed ratio and keep the subject in the middle.",
+  fill[0].color: c.colors.muted-foreground
+}
+
+rule4 = frame {
+  width: 376px,
+  layout: {direction: .column, item-gap: 12px},
+  border: {color: c.colors.foreground, sides: .top},
+  padding-top: 20px,
+  children: [rule4Head, rule4Body]
+}
+
+rule4Head = text : t.blockHeading {
+  width: 376px,
+  contents: "JPEG or PNG, under 10 MB",
+  fill[0].color: c.colors.foreground
+}
+
+rule4Body = text : t.body {
+  width: 376px,
+  contents: "High-quality JPEG for photos, PNG for flat graphics. No AVIF: the upload refuses it. No need to make WebP.",
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportRules = frame {
+  width: 100%,
+  layout: {item-gap: 32px},
+  children: [rule1, rule2, rule3, rule4]
+}
+
+exportGrid = frame {
+  width: 100%,
+  layout: {direction: .column, item-gap: 24px},
+  children: [exportGridTitle, exportGridNote, exportGridTable]
+}
+
+exportGridTitle = text : t.heading {
+  contents: "By grid width",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridNote = text : t.body {
+  width: 960px,
+  contents: "The rule of thumb when a frame isn't listed below: find how many of the 8 columns it spans.",
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridTable = frame {
+  width: 100%,
+  layout: {direction: .column},
+  border: {color: c.colors.foreground, sides: .top},
+  children: [
+    exportGridHead,
+    exportGridRow1,
+    exportGridRow2,
+    exportGridRow3,
+    exportGridRow4,
+    exportGridRow5,
+    exportGridRow6
+  ]
+}
+
+exportGridHead = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [16px, 0px],
+  children: [exportGridHead0, exportGridHead1, exportGridHead2]
+}
+
+exportGridHead0 = text : t.eyebrow {
+  width: 520px,
+  contents: "FRAME SPANS",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridHead1 = text : t.eyebrow {
+  width: 520px,
+  contents: "RENDERS UP TO (PX)",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridHead2 = text : t.eyebrow {
+  width: 512px,
+  contents: "EXPORT WIDTH (PX)",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridRow1 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [exportGridRow1C0, exportGridRow1C1, exportGridRow1C2]
+}
+
+exportGridRow1C0 = text : t.lead {
+  width: 520px,
+  contents: "Full bleed (the window)",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow1C1 = text : t.body {
+  width: 520px,
+  contents: "The window, sized for 1440",
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridRow1C2 = text : t.lead {
+  width: 512px,
+  contents: "2880",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow2 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [exportGridRow2C0, exportGridRow2C1, exportGridRow2C2]
+}
+
+exportGridRow2C0 = text : t.lead {
+  width: 520px,
+  contents: "8 columns (the page column)",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow2C1 = text : t.body {
+  width: 520px,
+  contents: "1408",
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridRow2C2 = text : t.lead {
+  width: 512px,
+  contents: "2800",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow3 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [exportGridRow3C0, exportGridRow3C1, exportGridRow3C2]
+}
+
+exportGridRow3C0 = text : t.lead {
+  width: 520px,
+  contents: "6 columns",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow3C1 = text : t.body {
+  width: 520px,
+  contents: "1048",
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridRow3C2 = text : t.lead {
+  width: 512px,
+  contents: "2100",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow4 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [exportGridRow4C0, exportGridRow4C1, exportGridRow4C2]
+}
+
+exportGridRow4C0 = text : t.lead {
+  width: 520px,
+  contents: "5 columns",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow4C1 = text : t.body {
+  width: 520px,
+  contents: "868",
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridRow4C2 = text : t.lead {
+  width: 512px,
+  contents: "1800",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow5 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [exportGridRow5C0, exportGridRow5C1, exportGridRow5C2]
+}
+
+exportGridRow5C0 = text : t.lead {
+  width: 520px,
+  contents: "4 columns",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow5C1 = text : t.body {
+  width: 520px,
+  contents: "688",
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridRow5C2 = text : t.lead {
+  width: 512px,
+  contents: "1440",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow6 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [exportGridRow6C0, exportGridRow6C1, exportGridRow6C2]
+}
+
+exportGridRow6C0 = text : t.lead {
+  width: 520px,
+  contents: "3 columns",
+  fill[0].color: c.colors.foreground
+}
+
+exportGridRow6C1 = text : t.body {
+  width: 520px,
+  contents: "508 (576 on a phone)",
+  fill[0].color: c.colors.muted-foreground
+}
+
+exportGridRow6C2 = text : t.lead {
+  width: 512px,
+  contents: "1200",
+  fill[0].color: c.colors.foreground
+}
+
+heroes = frame {
+  width: 100%,
+  layout: {direction: .column, item-gap: 24px},
+  children: [heroesTitle, heroesNote, heroesTable]
+}
+
+heroesTitle = text : t.heading {
+  contents: "Heroes and covers",
+  fill[0].color: c.colors.foreground
+}
+
+heroesNote = text : t.body {
+  width: 960px,
+  contents: "The opening picture of a page. A work's hero media also fills its More work plate and its /works dial plate, so one export serves all three.",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesTable = frame {
+  width: 100%,
+  layout: {direction: .column},
+  border: {color: c.colors.foreground, sides: .top},
+  children: [
+    heroesHead,
+    heroesRow1,
+    heroesRow2,
+    heroesRow3,
+    heroesRow4,
+    heroesRow5,
+    heroesRow6
+  ]
+}
+
+heroesHead = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [16px, 0px],
+  children: [heroesHead0, heroesHead1, heroesHead2, heroesHead3, heroesHead4]
+}
+
+heroesHead0 = text : t.eyebrow {
+  width: 280px,
+  contents: "BLOCK",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesHead1 = text : t.eyebrow {
+  width: 220px,
+  contents: "OPTION",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesHead2 = text : t.eyebrow {
+  width: 380px,
+  contents: "FRAME",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesHead3 = text : t.eyebrow {
+  width: 420px,
+  contents: "IMAGE",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesHead4 = text : t.eyebrow {
+  width: 204px,
+  contents: "VIDEO",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow1 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    heroesRow1C0,
+    heroesRow1C1,
+    heroesRow1C2,
+    heroesRow1C3,
+    heroesRow1C4
+  ]
+}
+
+heroesRow1C0 = text : t.lead {
+  width: 280px,
+  contents: "Home hero",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow1C1 = text : t.body {
+  width: 220px,
+  contents: "Portrait",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow1C2 = text : t.body {
+  width: 380px,
+  contents: "9:16, 30% of the window height (324px wide on a 1080px tall window)",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow1C3 = text : t.lead {
+  width: 420px,
+  contents: "720 × 1280",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow1C4 = text : t.body {
+  width: 204px,
+  contents: "720 × 1280",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow2 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    heroesRow2C0,
+    heroesRow2C1,
+    heroesRow2C2,
+    heroesRow2C3,
+    heroesRow2C4
+  ]
+}
+
+heroesRow2C0 = text : t.lead {
+  width: 280px,
+  contents: "Work hero",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow2C1 = text : t.body {
+  width: 220px,
+  contents: "Cover media",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow2C2 = text : t.body {
+  width: 380px,
+  contents: "16:10, 42% of the window; 46% as the More work plate (904px at 1920)",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow2C3 = text : t.lead {
+  width: 420px,
+  contents: "1920 × 1200",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow2C4 = text : t.body {
+  width: 204px,
+  contents: "1920 × 1200",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow3 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    heroesRow3C0,
+    heroesRow3C1,
+    heroesRow3C2,
+    heroesRow3C3,
+    heroesRow3C4
+  ]
+}
+
+heroesRow3C0 = text : t.lead {
+  width: 280px,
+  contents: "Post hero",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow3C1 = text : t.body {
+  width: 220px,
+  contents: "Featured image",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow3C2 = text : t.body {
+  width: 380px,
+  contents: "Its own ratio beside the title; the posts index fills the window with it, cropped from the centre",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow3C3 = text : t.lead {
+  width: 420px,
+  contents: "2880 × 1800 (16:10)",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow3C4 = text : t.body {
+  width: 204px,
+  contents: "1920 × 1200",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow4 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    heroesRow4C0,
+    heroesRow4C1,
+    heroesRow4C2,
+    heroesRow4C3,
+    heroesRow4C4
+  ]
+}
+
+heroesRow4C0 = text : t.lead {
+  width: 280px,
+  contents: "High Impact hero",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow4C1 = text : t.body {
+  width: 220px,
+  contents: "Pages",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow4C2 = text : t.body {
+  width: 380px,
+  contents: "Fills the window, at least 82% of its height, cropped from the centre",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow4C3 = text : t.lead {
+  width: 420px,
+  contents: "2880 × 1620 (16:9)",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow4C4 = text : t.body {
+  width: 204px,
+  contents: "2560 × 1440",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow5 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    heroesRow5C0,
+    heroesRow5C1,
+    heroesRow5C2,
+    heroesRow5C3,
+    heroesRow5C4
+  ]
+}
+
+heroesRow5C0 = text : t.lead {
+  width: 280px,
+  contents: "Medium Impact hero",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow5C1 = text : t.body {
+  width: 220px,
+  contents: "Pages",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow5C2 = text : t.body {
+  width: 380px,
+  contents: "Its own ratio, no crop, 8 columns",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow5C3 = text : t.lead {
+  width: 420px,
+  contents: "2800 wide",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow5C4 = text : t.body {
+  width: 204px,
+  contents: "1920 wide",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow6 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    heroesRow6C0,
+    heroesRow6C1,
+    heroesRow6C2,
+    heroesRow6C3,
+    heroesRow6C4
+  ]
+}
+
+heroesRow6C0 = text : t.lead {
+  width: 280px,
+  contents: "Share image",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow6C1 = text : t.body {
+  width: 220px,
+  contents: "SEO, Site Info",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow6C2 = text : t.body {
+  width: 380px,
+  contents: "1200 × 630 card on social and chat; resized, not cropped",
+  fill[0].color: c.colors.muted-foreground
+}
+
+heroesRow6C3 = text : t.lead {
+  width: 420px,
+  contents: "1200 × 630",
+  fill[0].color: c.colors.foreground
+}
+
+heroesRow6C4 = text : t.body {
+  width: 204px,
+  contents: "images only",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContent = frame {
+  width: 100%,
+  layout: {direction: .column, item-gap: 24px},
+  children: [mediaContentTitle, mediaContentTable]
+}
+
+mediaContentTitle = text : t.heading {
+  contents: "Media and content",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentTable = frame {
+  width: 100%,
+  layout: {direction: .column},
+  border: {color: c.colors.foreground, sides: .top},
+  children: [
+    mediaContentHead,
+    mediaContentRow1,
+    mediaContentRow2,
+    mediaContentRow3,
+    mediaContentRow4,
+    mediaContentRow5,
+    mediaContentRow6,
+    mediaContentRow7,
+    mediaContentRow8
+  ]
+}
+
+mediaContentHead = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [16px, 0px],
+  children: [
+    mediaContentHead0,
+    mediaContentHead1,
+    mediaContentHead2,
+    mediaContentHead3,
+    mediaContentHead4
+  ]
+}
+
+mediaContentHead0 = text : t.eyebrow {
+  width: 280px,
+  contents: "BLOCK",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentHead1 = text : t.eyebrow {
+  width: 220px,
+  contents: "OPTION",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentHead2 = text : t.eyebrow {
+  width: 380px,
+  contents: "FRAME",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentHead3 = text : t.eyebrow {
+  width: 420px,
+  contents: "IMAGE",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentHead4 = text : t.eyebrow {
+  width: 204px,
+  contents: "VIDEO",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow1 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaContentRow1C0,
+    mediaContentRow1C1,
+    mediaContentRow1C2,
+    mediaContentRow1C3,
+    mediaContentRow1C4
+  ]
+}
+
+mediaContentRow1C0 = text : t.lead {
+  width: 280px,
+  contents: "Full media",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow1C1 = text : t.body {
+  width: 220px,
+  contents: "Full width",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow1C2 = text : t.body {
+  width: 380px,
+  contents: "16:9 on phones, 21:9 from tablet",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow1C3 = text : t.lead {
+  width: 420px,
+  contents: "2880 × 1620 (16:9). Subject in the middle 76% of the height",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow1C4 = text : t.body {
+  width: 204px,
+  contents: "1920 × 1080 (2560 × 1440 as a hero)",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow2 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaContentRow2C0,
+    mediaContentRow2C1,
+    mediaContentRow2C2,
+    mediaContentRow2C3,
+    mediaContentRow2C4
+  ]
+}
+
+mediaContentRow2C0 = text : t.lead {
+  width: 280px,
+  contents: "Full media",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow2C1 = text : t.body {
+  width: 220px,
+  contents: "Contained 16:9 / 3:2 / 21:9",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow2C2 = text : t.body {
+  width: 380px,
+  contents: "Chosen ratio, 8 columns",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow2C3 = text : t.lead {
+  width: 420px,
+  contents: "2800 × 1575 / 2800 × 1867 / 2800 × 1200",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow2C4 = text : t.body {
+  width: 204px,
+  contents: "1920 wide, same ratio",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow3 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaContentRow3C0,
+    mediaContentRow3C1,
+    mediaContentRow3C2,
+    mediaContentRow3C3,
+    mediaContentRow3C4
+  ]
+}
+
+mediaContentRow3C0 = text : t.lead {
+  width: 280px,
+  contents: "Media and content",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow3C1 = text : t.body {
+  width: 220px,
+  contents: "16:9 / 3:2 / 21:9",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow3C2 = text : t.body {
+  width: 380px,
+  contents: "Chosen ratio, 4 columns",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow3C3 = text : t.lead {
+  width: 420px,
+  contents: "1440 × 810 / 1440 × 960 / 1440 × 617",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow3C4 = text : t.body {
+  width: 204px,
+  contents: "1920 wide, same ratio",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow4 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaContentRow4C0,
+    mediaContentRow4C1,
+    mediaContentRow4C2,
+    mediaContentRow4C3,
+    mediaContentRow4C4
+  ]
+}
+
+mediaContentRow4C0 = text : t.lead {
+  width: 280px,
+  contents: "Split content (narrow)",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow4C1 = text : t.body {
+  width: 220px,
+  contents: "Default",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow4C2 = text : t.body {
+  width: 380px,
+  contents: "5:4 on phones, 3:2 from tablet; 6 columns on desktop",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow4C3 = text : t.lead {
+  width: 420px,
+  contents: "2100 × 1400 (3:2). Subject in the middle 83% of the width",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow4C4 = text : t.body {
+  width: 204px,
+  contents: "1920 × 1280",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow5 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaContentRow5C0,
+    mediaContentRow5C1,
+    mediaContentRow5C2,
+    mediaContentRow5C3,
+    mediaContentRow5C4
+  ]
+}
+
+mediaContentRow5C0 = text : t.lead {
+  width: 280px,
+  contents: "Carousel split",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow5C1 = text : t.body {
+  width: 220px,
+  contents: "Default",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow5C2 = text : t.body {
+  width: 380px,
+  contents: "Each slide keeps its own ratio, 6 columns",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow5C3 = text : t.lead {
+  width: 420px,
+  contents: "2100 wide",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow5C4 = text : t.body {
+  width: 204px,
+  contents: "1920 wide",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow6 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaContentRow6C0,
+    mediaContentRow6C1,
+    mediaContentRow6C2,
+    mediaContentRow6C3,
+    mediaContentRow6C4
+  ]
+}
+
+mediaContentRow6C0 = text : t.lead {
+  width: 280px,
+  contents: "Image pair",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow6C1 = text : t.body {
+  width: 220px,
+  contents: "Portrait",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow6C2 = text : t.body {
+  width: 380px,
+  contents: "4:5 at every width, 3 columns, never cropped",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow6C3 = text : t.lead {
+  width: 420px,
+  contents: "1200 × 1500",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow6C4 = text : t.body {
+  width: 204px,
+  contents: "1080 × 1350",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow7 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaContentRow7C0,
+    mediaContentRow7C1,
+    mediaContentRow7C2,
+    mediaContentRow7C3,
+    mediaContentRow7C4
+  ]
+}
+
+mediaContentRow7C0 = text : t.lead {
+  width: 280px,
+  contents: "Image pair",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow7C1 = text : t.body {
+  width: 220px,
+  contents: "Landscape",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow7C2 = text : t.body {
+  width: 380px,
+  contents: "Takes the portrait's height: 1.37:1 on desktop, 16:10 on phones",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow7C3 = text : t.lead {
+  width: 420px,
+  contents: "1736 × 1270. Subject in the middle 85% of the height",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow7C4 = text : t.body {
+  width: 204px,
+  contents: "1920 × 1400",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow8 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaContentRow8C0,
+    mediaContentRow8C1,
+    mediaContentRow8C2,
+    mediaContentRow8C3,
+    mediaContentRow8C4
+  ]
+}
+
+mediaContentRow8C0 = text : t.lead {
+  width: 280px,
+  contents: "Split image offset",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow8C1 = text : t.body {
+  width: 220px,
+  contents: "Large / Small image",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow8C2 = text : t.body {
+  width: 380px,
+  contents: "5:4 on 5 columns / 3:2 on 3 columns",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaContentRow8C3 = text : t.lead {
+  width: 420px,
+  contents: "1800 × 1440 / 1200 × 800",
+  fill[0].color: c.colors.foreground
+}
+
+mediaContentRow8C4 = text : t.body {
+  width: 204px,
+  contents: "1350 × 1080 / 1280 × 854",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocks = frame {
+  width: 100%,
+  layout: {direction: .column, item-gap: 24px},
+  children: [mediaBlocksTitle, mediaBlocksTable]
+}
+
+mediaBlocksTitle = text : t.heading {
+  contents: "Media",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksTable = frame {
+  width: 100%,
+  layout: {direction: .column},
+  border: {color: c.colors.foreground, sides: .top},
+  children: [
+    mediaBlocksHead,
+    mediaBlocksRow1,
+    mediaBlocksRow2,
+    mediaBlocksRow3,
+    mediaBlocksRow4,
+    mediaBlocksRow5
+  ]
+}
+
+mediaBlocksHead = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [16px, 0px],
+  children: [
+    mediaBlocksHead0,
+    mediaBlocksHead1,
+    mediaBlocksHead2,
+    mediaBlocksHead3,
+    mediaBlocksHead4
+  ]
+}
+
+mediaBlocksHead0 = text : t.eyebrow {
+  width: 280px,
+  contents: "BLOCK",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksHead1 = text : t.eyebrow {
+  width: 220px,
+  contents: "OPTION",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksHead2 = text : t.eyebrow {
+  width: 380px,
+  contents: "FRAME",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksHead3 = text : t.eyebrow {
+  width: 420px,
+  contents: "IMAGE",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksHead4 = text : t.eyebrow {
+  width: 204px,
+  contents: "VIDEO",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow1 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaBlocksRow1C0,
+    mediaBlocksRow1C1,
+    mediaBlocksRow1C2,
+    mediaBlocksRow1C3,
+    mediaBlocksRow1C4
+  ]
+}
+
+mediaBlocksRow1C0 = text : t.lead {
+  width: 280px,
+  contents: "Image statement",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow1C1 = text : t.body {
+  width: 220px,
+  contents: "Responsive (default)",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow1C2 = text : t.body {
+  width: 380px,
+  contents: "3:2 on phones, 21:9 from tablet",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow1C3 = text : t.lead {
+  width: 420px,
+  contents: "Contained 2800 × 1867, Full 2880 × 1920. Subject in the middle 64% of the height",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow1C4 = text : t.body {
+  width: 204px,
+  contents: "1920 × 1280",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow2 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaBlocksRow2C0,
+    mediaBlocksRow2C1,
+    mediaBlocksRow2C2,
+    mediaBlocksRow2C3,
+    mediaBlocksRow2C4
+  ]
+}
+
+mediaBlocksRow2C0 = text : t.lead {
+  width: 280px,
+  contents: "Image statement",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow2C1 = text : t.body {
+  width: 220px,
+  contents: "16:9 / 3:2 / 21:9",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow2C2 = text : t.body {
+  width: 380px,
+  contents: "Chosen ratio",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow2C3 = text : t.lead {
+  width: 420px,
+  contents: "Full 2880 wide, Contained 2800 wide",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow2C4 = text : t.body {
+  width: 204px,
+  contents: "1920 wide, same ratio",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow3 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaBlocksRow3C0,
+    mediaBlocksRow3C1,
+    mediaBlocksRow3C2,
+    mediaBlocksRow3C3,
+    mediaBlocksRow3C4
+  ]
+}
+
+mediaBlocksRow3C0 = text : t.lead {
+  width: 280px,
+  contents: "Caption",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow3C1 = text : t.body {
+  width: 220px,
+  contents: "Full width / Contained",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow3C2 = text : t.body {
+  width: 380px,
+  contents: "The media's own ratio, no crop",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow3C3 = text : t.lead {
+  width: 420px,
+  contents: "2880 wide / 2800 wide",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow3C4 = text : t.body {
+  width: 204px,
+  contents: "1920 wide",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow4 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaBlocksRow4C0,
+    mediaBlocksRow4C1,
+    mediaBlocksRow4C2,
+    mediaBlocksRow4C3,
+    mediaBlocksRow4C4
+  ]
+}
+
+mediaBlocksRow4C0 = text : t.lead {
+  width: 280px,
+  contents: "Caption",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow4C1 = text : t.body {
+  width: 220px,
+  contents: "Inset / Small",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow4C2 = text : t.body {
+  width: 380px,
+  contents: "Own ratio, 768px / 448px at most",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow4C3 = text : t.lead {
+  width: 420px,
+  contents: "1600 wide / 900 wide",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow4C4 = text : t.body {
+  width: 204px,
+  contents: "1280 wide",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow5 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    mediaBlocksRow5C0,
+    mediaBlocksRow5C1,
+    mediaBlocksRow5C2,
+    mediaBlocksRow5C3,
+    mediaBlocksRow5C4
+  ]
+}
+
+mediaBlocksRow5C0 = text : t.lead {
+  width: 280px,
+  contents: "YouTube",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow5C1 = text : t.body {
+  width: 220px,
+  contents: "Default",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow5C2 = text : t.body {
+  width: 380px,
+  contents: "Hosted on YouTube",
+  fill[0].color: c.colors.muted-foreground
+}
+
+mediaBlocksRow5C3 = text : t.lead {
+  width: 420px,
+  contents: "Nothing to upload",
+  fill[0].color: c.colors.foreground
+}
+
+mediaBlocksRow5C4 = text : t.body {
+  width: 204px,
+  contents: "1080p or better to YouTube",
+  fill[0].color: c.colors.foreground
+}
+
+interactive = frame {
+  width: 100%,
+  layout: {direction: .column, item-gap: 24px},
+  children: [interactiveTitle, interactiveNote, interactiveTable]
+}
+
+interactiveTitle = text : t.heading {
+  contents: "Interactive and lists",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveNote = text : t.body {
+  width: 960px,
+  contents: "Every slide in a carousel deck should share one ratio: the tallest slide sets the deck's height, capped at 70% of the window.",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveTable = frame {
+  width: 100%,
+  layout: {direction: .column},
+  border: {color: c.colors.foreground, sides: .top},
+  children: [
+    interactiveHead,
+    interactiveRow1,
+    interactiveRow2,
+    interactiveRow3,
+    interactiveRow4,
+    interactiveRow5
+  ]
+}
+
+interactiveHead = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [16px, 0px],
+  children: [
+    interactiveHead0,
+    interactiveHead1,
+    interactiveHead2,
+    interactiveHead3,
+    interactiveHead4
+  ]
+}
+
+interactiveHead0 = text : t.eyebrow {
+  width: 280px,
+  contents: "BLOCK",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveHead1 = text : t.eyebrow {
+  width: 220px,
+  contents: "OPTION",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveHead2 = text : t.eyebrow {
+  width: 380px,
+  contents: "FRAME",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveHead3 = text : t.eyebrow {
+  width: 420px,
+  contents: "IMAGE",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveHead4 = text : t.eyebrow {
+  width: 204px,
+  contents: "VIDEO",
+  font-size: 14,
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow1 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    interactiveRow1C0,
+    interactiveRow1C1,
+    interactiveRow1C2,
+    interactiveRow1C3,
+    interactiveRow1C4
+  ]
+}
+
+interactiveRow1C0 = text : t.lead {
+  width: 280px,
+  contents: "Carousel",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow1C1 = text : t.body {
+  width: 220px,
+  contents: "Contained: Full / Half / Third",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow1C2 = text : t.body {
+  width: 380px,
+  contents: "Each slide keeps its own ratio",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow1C3 = text : t.lead {
+  width: 420px,
+  contents: "2800 / 2300 / 1200 wide",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow1C4 = text : t.body {
+  width: 204px,
+  contents: "1920 wide",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow2 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    interactiveRow2C0,
+    interactiveRow2C1,
+    interactiveRow2C2,
+    interactiveRow2C3,
+    interactiveRow2C4
+  ]
+}
+
+interactiveRow2C0 = text : t.lead {
+  width: 280px,
+  contents: "Carousel",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow2C1 = text : t.body {
+  width: 220px,
+  contents: "Full width: Full / Half / Third",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow2C2 = text : t.body {
+  width: 380px,
+  contents: "Own ratio",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow2C3 = text : t.lead {
+  width: 420px,
+  contents: "2880 / 1800 / 1200 wide",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow2C4 = text : t.body {
+  width: 204px,
+  contents: "1920 wide",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow3 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    interactiveRow3C0,
+    interactiveRow3C1,
+    interactiveRow3C2,
+    interactiveRow3C3,
+    interactiveRow3C4
+  ]
+}
+
+interactiveRow3C0 = text : t.lead {
+  width: 280px,
+  contents: "Carousel tabs",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow3C1 = text : t.body {
+  width: 220px,
+  contents: "Default",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow3C2 = text : t.body {
+  width: 380px,
+  contents: "Own ratio, 5 columns (8 on tablet)",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow3C3 = text : t.lead {
+  width: 420px,
+  contents: "1800 wide",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow3C4 = text : t.body {
+  width: 204px,
+  contents: "1920 wide",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow4 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    interactiveRow4C0,
+    interactiveRow4C1,
+    interactiveRow4C2,
+    interactiveRow4C3,
+    interactiveRow4C4
+  ]
+}
+
+interactiveRow4C0 = text : t.lead {
+  width: 280px,
+  contents: "Feature tabs",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow4C1 = text : t.body {
+  width: 220px,
+  contents: "Default",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow4C2 = text : t.body {
+  width: 380px,
+  contents: "3:2 below desktop, 16:9 on desktop, 5 columns",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow4C3 = text : t.lead {
+  width: 420px,
+  contents: "1920 × 1080. Subject in the middle 84% of the width",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow4C4 = text : t.body {
+  width: 204px,
+  contents: "1920 × 1080",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow5 = frame {
+  width: 100%,
+  layout: {item-gap: 24px},
+  border: {color: c.colors.border, sides: .bottom},
+  padding: [20px, 0px],
+  children: [
+    interactiveRow5C0,
+    interactiveRow5C1,
+    interactiveRow5C2,
+    interactiveRow5C3,
+    interactiveRow5C4
+  ]
+}
+
+interactiveRow5C0 = text : t.lead {
+  width: 280px,
+  contents: "Insight list",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow5C1 = text : t.body {
+  width: 220px,
+  contents: "Mark",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow5C2 = text : t.body {
+  width: 380px,
+  contents: "28, 40 or 56px square, painted in the band's text colour",
+  fill[0].color: c.colors.muted-foreground
+}
+
+interactiveRow5C3 = text : t.lead {
+  width: 420px,
+  contents: "SVG, one colour, square artboard",
+  fill[0].color: c.colors.foreground
+}
+
+interactiveRow5C4 = text : t.body {
+  width: 204px,
+  contents: "not accepted",
+  fill[0].color: c.colors.foreground
+}

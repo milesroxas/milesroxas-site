@@ -1,0 +1,915 @@
+use "resources/fonts/GeistMono-Regular.ttf"
+use "resources/fonts/IBMPlexSans-Variable.ttf"
+use "resources/fonts/GeistMono-Medium.ttf"
+
+import "blocks/media-content.elyx" as mc
+import "tokens/lengths.elyx" as l
+import "tokens/colors.elyx" as c
+import "controls/type.elyx" as t
+import "controls/chrome.elyx" as chrome
+import "blocks/section-heading.elyx" as headings
+import "blocks/more-work.elyx" as more
+import "blocks/media.elyx" as media
+import "blocks/opening.elyx" as opening
+import "resources/images/image-3.png" as image-3
+import "blocks/interactive.elyx" as interactive
+// Plates edited from app stills: skill-studio-design/plates (render.mjs).
+import "resources/images/skill-studio/skill-studio-intro-library.png" as plateLibrary
+import "resources/images/skill-studio/skill-studio-walkthrough.png" as plateWalkthrough
+import "resources/images/skill-studio/skill-studio-one-screen.png" as plateOneScreen
+import "resources/images/skill-studio/skill-studio-mark-met.png" as plateMarkMet
+import "resources/images/skill-studio/skill-studio-selection-tools.png" as plateSelectionTools
+import "resources/images/skill-studio/skill-studio-replaced.png" as plateReplaced
+import "resources/images/skill-studio/skill-studio-auto-refine.png" as plateAutoRefine
+import "resources/images/skill-studio/skill-studio-suggest-changes.png" as plateSuggestChanges
+import "resources/images/skill-studio/skill-studio-help-me-improve.png" as plateHelpMeImprove
+
+// The work page for "Design Systems for Organizational Scale" (NextStreet) at
+// 1440px, top to bottom, with its published production content: the Work
+// hero, the intro statement, six Section blocks, then More work. A Section
+// with Customize off paints the page ground with a 96px band and its blocks
+// bare, 192px apart. A section heading sits half the stack step above the
+// block after it (`STACK_OPENER`), so each heading is grouped with that block
+// in an `...Opening` frame, drawn 7px tighter because Elyx can't trim the
+// heading's line box to its baseline. Clarity is customised to Neutral with
+// loose stacking; its painted edges add 96px inside the band. Foundation is
+// customised to loose spacing. The chrome sits as it does on load, over the
+// page ground, with the Work tab current.
+skillStudio = frame {
+  left: -1569.7061px,
+  top: -2576.32px,
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  children: [hero, intro, introSection, moreWork, topBar, dockRail],
+
+  hero = frame : opening.workHero {
+    padding-left: 96px,
+    padding-right: 96px,
+
+    capabilities {
+      capabilityRow {
+        overrides: [
+          insert(
+            capabilityTwo,
+            after = opening.workHero.capabilities.capabilityRow.capabilityRule
+          ),
+          remove(opening.workHero.capabilities.capabilityRow.capabilityTwo)
+        ],
+
+        capabilityOne {
+          left: 0px,
+          top: 0px,
+          width: 137px,
+          height: 22px,
+          contents: "Product Design"
+        }
+      }
+    }
+
+    stage {
+      heroMedia {
+        overrides: [
+          insert(imagepng, after = .nil),
+          remove(interactive.m.media.mediaLabel)
+        ]
+      }
+    }
+
+    head {
+      facts {
+        factRole {
+          factValue {
+            contents: "Product Design Lead"
+          }
+        }
+
+        factIndustry {
+          factValue {
+            contents: "Business Consulting"
+          }
+        }
+      }
+
+      lockup {
+        workTitle {
+          contents: "Evaluating AI Skills Across Real Work"
+        }
+
+        eyebrow {
+          eyebrowText {
+            contents: "Skill Studio"
+          }
+        }
+      }
+    }
+  }
+
+  intro = frame : opening.workIntro {
+    left: 0px,
+
+    introStatement {
+      contents: "I've been writing skills to improve and maintain consistent output from my agents. But when it comes to refining and improving custom skills, I didn't have a bulletproof system to measure, analyze, and test their effectiveness.\n\nI designed, built, and released Skill Studio, an open-source desktop app that lets you test a skill on the work it’s meant to handle, compare revisions, and review the results yourself."
+    }
+  }
+
+  // Section "Intro": Image statement (16:9, statement left), Split content
+  // (Narrow) with the image left, then Full media (Contained, 16:9, untitled).
+  introSection = frame {
+    left: 0px,
+    top: 1608px,
+    width: 1440px,
+    height: .auto,
+    layout: {direction: .column, item-gap: l.lengths.band-loose},
+    fill: c.colors.background,
+    padding: [l.lengths.band-normal, 0px],
+    children: [
+      visionOpening,
+      introStatement,
+      introSplit,
+      visionOpening_2,
+      introFilm,
+      introSplit_2,
+      visionOpening_3,
+      splitImageOffset,
+      featureTabs
+    ],
+
+    introStatement = frame : media.featureImageStatement {
+      left: 0px,
+      top: 434px,
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      statementRow {
+        left: 96px,
+
+        statement {
+          left: 0px,
+          top: 0px,
+          height: .auto,
+          contents: "I built a downloadable desktop app with features to help users easily configure their AI subscriptions, and a library view to add and manage all skills installed on their machine."
+        }
+
+        top: 734px,
+        width: 1248px,
+        height: .auto
+      }
+
+      visual {
+        height: 702px,
+        fill: {image: {ref: plateLibrary}},
+
+        mediaLabel {
+          display: .none
+        }
+      }
+    }
+
+    introSplit = frame : mc.splitContentNarrow {
+      left: 0px,
+      top: 1202px,
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      grid {
+        copyStack {
+          heading {
+            display: .none
+          }
+
+          eyebrow {
+            display: .none
+          }
+
+          layout.item-gap: 20px,
+
+          copy {
+            contents: "I designed the guided walkthrough to not only show key features of the app but also introduce established practices for structuring skills and writing clear instructions."
+          }
+        }
+
+        visual {
+          fill: {image: {ref: plateWalkthrough}},
+
+          mediaLabel {
+            display: .none
+          }
+        }
+      }
+    }
+
+    introFilm = frame : mc.fullMediaUntitled {
+      left: 0px,
+      top: 3492px,
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      cells {
+        copy {
+          contents: "I cut the workflow from ten screens to three. Now, users compare outputs before and after an edit, see which instructions were missed, and easily select the best result."
+        }
+      }
+
+      visual {
+        fill: {image: {ref: plateOneScreen}},
+
+        mediaLabel {
+          display: .none
+        }
+      }
+    }
+
+    introSplit_2 = frame : mc.splitContentNarrow {
+      left: 0px,
+      top: 2315px,
+      padding-top: 0px,
+      padding-bottom: 0px,
+
+      grid {
+        copyStack {
+          heading {
+            display: .none
+          }
+
+          eyebrow {
+            display: .none
+          }
+
+          layout.item-gap: 20px,
+
+          copy {
+            contents: "They can correct a specific grading mistake without switching context, then get back to the work they came to do."
+          }
+        }
+
+        visual {
+          fill: {image: {ref: plateMarkMet}},
+
+          mediaLabel {
+            display: .none
+          }
+        }
+      }
+    }
+  }
+
+  // Related works first, in the order the work names them, then the rest in
+  // the Works collection order. Services are the work's capabilities.
+  moreWork = frame : more.moreWork {
+    inner {
+      grid {
+        index {
+          rowFour {
+            rowText {
+              rowMeta {
+                display: .none
+              }
+
+              rowTitle {
+                contents: "Brand Expression Through Digital Experience"
+              }
+            }
+          }
+
+          rowThree {
+            rowText {
+              rowMeta {
+                rowServices {
+                  contents: "Brand Identity & Collateral"
+                }
+
+                rowIndustry {
+                  contents: "Healthcare"
+                }
+              }
+
+              rowTitle {
+                contents: "Brand Development at the Executive Level"
+              }
+            }
+          }
+
+          rowTwo {
+            rowText {
+              rowMeta {
+                rowServices {
+                  contents: "Full Corporate Identity, Web Design"
+                }
+
+                rowIndustry {
+                  contents: "Human Resources Services"
+                }
+              }
+
+              rowTitle {
+                contents: "Identity for Higher-Stakes Work"
+              }
+            }
+          }
+
+          rowOne {
+            rowText {
+              rowMeta {
+                rowServices {
+                  contents: "Brand Expansion, Website"
+                }
+
+                rowIndustry {
+                  contents: "Insurance Tech"
+                }
+              }
+
+              rowTitle {
+                contents: "Brand Expansion Through Narrative"
+              }
+            }
+          }
+        }
+
+        plateColumn {
+          plateCaption {
+            plateClient {
+              contents: "Arturo"
+            }
+          }
+
+          plate {
+            mediaLabel {
+              contents: "VIDEO 1.6:1, ARTURO-HERO-2"
+            }
+          }
+        }
+      }
+    }
+  }
+
+  topBar = frame : chrome.topBarOnPage {
+    left: 0px,
+    top: 0px,
+    ignore-stack: .true,
+    padding-left: 96px,
+    padding-right: 96px
+  }
+
+  // Fixed 24px above the first viewport's bottom edge.
+  dockRail = frame {
+    left: 0px,
+    top: 836px,
+    width: 100%,
+    ignore-stack: .true,
+    layout: {justify-content: .center},
+    children: dock,
+
+    dock = frame : chrome.dockOnPageSection {}
+  }
+
+  imagepng = shape {
+    left: 0px,
+    top: 0px,
+    width: 100%,
+    height: 100%,
+    fill: {image: {ref: image-3}},
+    type: .rect
+  }
+
+  visionOpening = frame {
+    left: 0px,
+    top: 0px,
+    width: 100%,
+    layout: {direction: .column, item-gap: 89px},
+    children: visionHeading,
+
+    visionHeading = frame : headings.richTransitionCentered {
+      padding-top: 0px,
+
+      grid {
+        opener {
+          heading {
+            left: 0px,
+            top: 0px,
+            width: 768px,
+            height: 41px,
+            contents: "Make it easier to write a good skill"
+          }
+
+          eyebrow {
+            display: .none
+          }
+        }
+
+        deck {
+          contents: "My first prototype made developer tools the price of entry. People had to clone a GitHub repo and run it from a terminal, making it inaccessible to the rest of my team and users at scale. The idea was sound but the surface was wrong."
+        }
+      }
+    }
+  }
+
+  visionOpening_2 = frame {
+    left: 0px,
+    top: 434px,
+    width: 100%,
+    layout: {direction: .column, item-gap: 89px},
+    children: visionHeading,
+
+    visionHeading = frame : headings.richTransitionCentered {
+      padding-top: 0px,
+
+      grid {
+        opener {
+          heading {
+            left: 0px,
+            top: 0px,
+            width: 768px,
+            height: 41px,
+            contents: "Put the decision on one screen"
+          }
+
+          eyebrow {
+            display: .none
+          }
+        }
+
+        deck {
+          contents: "I built blind reviews, five-point ratings, and a separate screen for checking where people disagreed with the AI grader. I expected those controls to build trust. Instead, they gave users a second job: evaluating the grader before they could tell whether an edit improved the AI’s work."
+        }
+      }
+    }
+  }
+
+  visionOpening_3 = frame {
+    left: 0px,
+    top: 3679px,
+    width: 100%,
+    layout: {direction: .column, item-gap: 89px},
+    children: visionHeading,
+
+    visionHeading = frame : headings.richTransitionCentered {
+      padding-top: 0px,
+
+      grid {
+        opener {
+          heading {
+            left: 0px,
+            top: 0px,
+            width: 768px,
+            height: 41px,
+            contents: "Keep edits where the work happens"
+          }
+
+          eyebrow {
+            display: .none
+          }
+        }
+
+        deck {
+          contents: "In Skill Studio, people write rules that tell an AI how to do a task. I built a chat panel so they could get help refining those rules without leaving the editor. While it improved the experience, testing showed that users found it tedious to find the original lines and paste each suggestion back."
+        }
+      }
+    }
+  }
+}
+
+// Split image offset, `splitImageOffset`, caption left. On the composition
+// grid, the same 5:3 split as Image pair: the side (3:2 figure over the
+// caption, a grid gap apart) on columns 1 to 3, the 5:4 figure on 4 to 8.
+// src/blocks/split-image-offset/SplitImageOffset.tsx
+export splitImageOffset = frame {
+  left: 0px,
+  top: 4800px,
+  width: l.lengths.page,
+  layout: {item-gap: l.lengths.grid-gap},
+  fill: c.colors.background,
+  padding: [0px, l.lengths.gutter],
+  children: [side, large],
+
+  side = frame {
+    width: l.lengths.span-3,
+    layout: {direction: .column, item-gap: l.lengths.grid-gap},
+    children: [smallMedia, caption],
+
+    smallMedia = frame : interactive.m.media {
+      width: 100%,
+      height: 299px,
+      fill: {image: {ref: plateSelectionTools}},
+
+      mediaLabel {
+        display: .none
+      }
+    }
+
+    // `text-stack`: the heading's gap drawn tighter, as in Image pair.
+    caption = frame {
+      width: 100%,
+      layout: {direction: .column, item-gap: 10px},
+      children: copy,
+
+      copy = text : t.body {
+        width: 100%,
+        contents: "I redesigned the workflow and built features for AI suggestions and assistance right on the editor surface."
+      }
+    }
+  }
+
+  large = frame : interactive.m.media {
+    width: l.lengths.span-5,
+    height: 614px,
+    fill: {image: {ref: plateReplaced}},
+
+    mediaLabel {
+      display: .none
+    }
+  }
+}
+
+// Feature tabs, `featureTabs`: a centred tab strip over a copy and media panel.
+// src/blocks/feature/Tabs/FeatureTabs.tsx
+export featureTabs = frame {
+  left: 4800px,
+  top: 5614.0264px,
+  width: l.lengths.page,
+  layout: {direction: .column, align-items: .center, item-gap: 64px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: [tabStrip, panel],
+
+  tabStrip = frame {
+    layout: {align-items: .center, item-gap: 96px},
+    children: [tabOne, tabTwo, tabThree],
+
+    tabOne = text : t.heading {
+      contents: "Auto-Refine",
+      fill[0].color: c.colors.primary
+    }
+
+    tabTwo = text : t.heading {
+      contents: "Suggest Changes",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    tabThree = text : t.heading {
+      contents: "Help me improve",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+
+  panel = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [panelCopy, panelMedia],
+
+    panelCopy = frame {
+      width: l.lengths.span-3,
+      height: 432px,
+      layout: {direction: .column, justify-content: .space-between},
+      children: [panelOpener, panelList],
+
+      panelOpener = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 25px},
+        children: [panelHeading, panelBody],
+
+        panelHeading = text : t.blockHeading {
+          width: 100%,
+          contents: "Quick action"
+        }
+
+        panelBody = text : t.body {
+          width: 100%,
+          contents: "AI proposes one targeted fix when it finds a problem."
+        }
+      }
+
+      panelList = frame {
+        width: 100%,
+        layout: {direction: .column},
+        children: [listLabel, listOne, listTwo, listThree],
+
+        listLabel = frame {
+          width: 100%,
+          layout: {direction: .column},
+          padding-bottom: 12px,
+          children: listLabelText,
+
+          listLabelText = text : t.small {
+            contents: "How it works",
+            font-family: "Geist Mono",
+            fill[0].color: c.colors.muted-foreground
+          }
+        }
+
+        listOne = frame {
+          width: 100%,
+          layout: {direction: .column},
+          border: {color: c.colors.border, sides: .bottom},
+          padding: [4px, 0px],
+          children: listOneText,
+
+          listOneText = text : t.small {
+            contents: "Checks the rule against the writing guide"
+          }
+        }
+
+        listTwo = frame {
+          width: 100%,
+          layout: {direction: .column},
+          border: {color: c.colors.border, sides: .bottom},
+          padding: [4px, 0px],
+          children: listTwoText,
+
+          listTwoText = text : t.small {
+            contents: "Rewrites only if a check fails"
+          }
+        }
+
+        listThree = frame {
+          width: 100%,
+          layout: {direction: .column},
+          padding-top: 4px,
+          children: listThreeText,
+
+          listThreeText = text : t.small {
+            contents: "Fixes only what the checks flagged"
+          }
+        }
+      }
+    }
+
+    panelMedia = frame : interactive.m.media {
+      width: l.lengths.span-5,
+      height: 432px,
+      fill: {image: {ref: plateAutoRefine}},
+
+      mediaLabel {
+        display: .none
+      }
+    }
+  }
+}
+
+// Feature tabs, `featureTabs`: a centred tab strip over a copy and media panel.
+// src/blocks/feature/Tabs/FeatureTabs.tsx
+featureTabs_2 = frame {
+  left: 58.75px,
+  top: 4754.375px,
+  width: l.lengths.page,
+  height: 727px,
+  layout: {direction: .column, align-items: .center, item-gap: 64px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: [tabStrip, panel],
+
+  tabStrip = frame {
+    layout: {align-items: .center, item-gap: 96px},
+    children: [tabTwo, tabOne, tabThree],
+
+    tabOne = text : t.heading {
+      contents: "Suggest Changes",
+      fill[0].color: c.colors.primary
+    }
+
+    tabTwo = text : t.heading {
+      left: 258px,
+      top: 0px,
+      width: 230px,
+      height: 39px,
+      contents: "Auto-Refine",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    tabThree = text : t.heading {
+      contents: "Help me improve",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+
+  panel = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [panelCopy, panelMedia],
+
+    panelCopy = frame {
+      width: l.lengths.span-3,
+      height: 432px,
+      layout: {direction: .column, justify-content: .space-between},
+      children: [panelOpener, panelList],
+
+      panelOpener = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 25px},
+        children: [panelHeading, panelBody],
+
+        panelHeading = text : t.blockHeading {
+          width: 100%,
+          contents: "Options to choose"
+        }
+
+        panelBody = text : t.body {
+          left: 0px,
+          top: 58px,
+          width: 410px,
+          height: 96px,
+          contents: "The AI offers three rewrites with different goals. The app will also flag details a rewrite might drop and problems it still leaves unresolved before the writer chooses whether to replace the original."
+        }
+      }
+
+      panelList = frame {
+        width: 100%,
+        layout: {direction: .column},
+        children: [listLabel, listOne, listTwo, listThree],
+
+        listLabel = frame {
+          width: 100%,
+          layout: {direction: .column},
+          padding-bottom: 12px,
+          children: listLabelText,
+
+          listLabelText = text : t.small {
+            contents: "How it works",
+            font-family: "Geist Mono",
+            fill[0].color: c.colors.muted-foreground
+          }
+        }
+
+        listOne = frame {
+          width: 100%,
+          layout: {direction: .column},
+          border: {color: c.colors.border, sides: .bottom},
+          padding: [4px, 0px],
+          children: listOneText,
+
+          listOneText = text : t.small {
+            contents: "Checks the rule against the writing guide"
+          }
+        }
+
+        listTwo = frame {
+          width: 100%,
+          layout: {direction: .column},
+          border: {color: c.colors.border, sides: .bottom},
+          padding: [4px, 0px],
+          children: listTwoText,
+
+          listTwoText = text : t.small {
+            contents: "Writes three rewrites: best practice, more direct, shorter"
+          }
+        }
+
+        listThree = frame {
+          width: 100%,
+          layout: {direction: .column},
+          padding-top: 4px,
+          children: listThreeText,
+
+          listThreeText = text : t.small {
+            contents: "Flags facts each rewrite might drop"
+          }
+        }
+      }
+    }
+
+    panelMedia = frame : interactive.m.media {
+      width: l.lengths.span-5,
+      height: 432px,
+      fill: {image: {ref: plateSuggestChanges}},
+
+      mediaLabel {
+        display: .none
+      }
+    }
+  }
+}
+
+// Feature tabs, `featureTabs`: a centred tab strip over a copy and media panel.
+// src/blocks/feature/Tabs/FeatureTabs.tsx
+featureTabs_3 = frame {
+  left: 1724.5088px,
+  top: 4754px,
+  width: l.lengths.page,
+  height: 727px,
+  layout: {direction: .column, align-items: .center, item-gap: 64px},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: [tabStrip, panel],
+
+  tabStrip = frame {
+    layout: {align-items: .center, item-gap: 96px},
+    children: [tabTwo, tabThree, tabOne],
+
+    tabOne = text : t.heading {
+      contents: "Help me improve",
+      fill[0].color: c.colors.primary
+    }
+
+    tabTwo = text : t.heading {
+      left: 258px,
+      top: 0px,
+      width: 230px,
+      height: 39px,
+      contents: "Auto-Refine",
+      fill[0].color: c.colors.muted-foreground
+    }
+
+    tabThree = text : t.heading {
+      left: 652px,
+      top: 0px,
+      width: 230px,
+      height: 39px,
+      contents: "Suggest Changes",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+
+  panel = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [panelCopy, panelMedia],
+
+    panelCopy = frame {
+      width: l.lengths.span-3,
+      height: 432px,
+      layout: {direction: .column, justify-content: .space-between},
+      children: [panelOpener, panelList],
+
+      panelOpener = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 25px},
+        children: [panelHeading, panelBody],
+
+        panelHeading = text : t.blockHeading {
+          width: 100%,
+          contents: "Workshop an idea"
+        }
+
+        panelBody = text : t.body {
+          width: 100%,
+          contents: "The user is transferred to the chat panel to allow for a more conversational experience before editing the draft."
+        }
+      }
+
+      panelList = frame {
+        width: 100%,
+        layout: {direction: .column},
+        children: [listLabel, listOne, listTwo, listThree],
+
+        listLabel = frame {
+          width: 100%,
+          layout: {direction: .column},
+          padding-bottom: 12px,
+          children: listLabelText,
+
+          listLabelText = text : t.small {
+            contents: "How it works",
+            font-family: "Geist Mono",
+            fill[0].color: c.colors.muted-foreground
+          }
+        }
+
+        listOne = frame {
+          width: 100%,
+          layout: {direction: .column},
+          border: {color: c.colors.border, sides: .bottom},
+          padding: [4px, 0px],
+          children: listOneText,
+
+          listOneText = text : t.small {
+            contents: "Asks one question at a time about what the rule misses"
+          }
+        }
+
+        listTwo = frame {
+          width: 100%,
+          layout: {direction: .column},
+          border: {color: c.colors.border, sides: .bottom},
+          padding: [4px, 0px],
+          children: listTwoText,
+
+          listTwoText = text : t.small {
+            contents: "Drafts a rewrite from the answers"
+          }
+        }
+
+        listThree = frame {
+          width: 100%,
+          layout: {direction: .column},
+          padding-top: 4px,
+          children: listThreeText,
+
+          listThreeText = text : t.small {
+            contents: "Checks the draft against the writing guide"
+          }
+        }
+      }
+    }
+
+    panelMedia = frame : interactive.m.media {
+      width: l.lengths.span-5,
+      height: 432px,
+      fill: {image: {ref: plateHelpMeImprove}},
+
+      mediaLabel {
+        display: .none
+      }
+    }
+  }
+}
