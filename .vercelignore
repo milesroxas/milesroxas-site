@@ -33,3 +33,13 @@ coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Design and brand ideation (never read by the build or the site)
+design-system/
+*.elyx
+plans/
+.agents/
+.impeccable/
+PRODUCT.md
+src/app/lab/
+src/features/brand-lab/

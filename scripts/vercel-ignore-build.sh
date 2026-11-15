@@ -50,8 +50,17 @@ INERT_RES=(
   '^\.cursor/'
   '^\.conductor/'
   '^\.vscode/'
-  # Design source (Elyx). Nothing in the app imports it.
+  # Design and brand ideation. Nothing in the app imports it: Elyx files
+  # anywhere, plans, agent skills, Impeccable notes and the dev-only brand
+  # lab (its routes are `*.dev.tsx`, which a production build never compiles).
   '^design-system/'
+  '\.elyx$'
+  '^plans/'
+  '^\.agents/'
+  '^\.impeccable/'
+  '^PRODUCT\.md$'
+  '^src/app/lab/'
+  '^src/features/brand-lab/'
   # Repo plumbing that Vercel does not run.
   '^\.github/'
   '^\.githooks/'
