@@ -16,6 +16,7 @@ import type { ScrollRevealVariant } from '@/shared/ui/scroll-reveal'
  * lines would open inside a frame that is still opening.
  */
 const blockRevealVariants = {
+  appDownload: 'intro',
   // Cards carry their own markers.
   archive: 'underMedia',
   // Its own intro shell, gated later than the shared line (its veil).

@@ -1,4 +1,157 @@
 {
+  "appDownload": {
+    "slug": "appDownload",
+    "label": "App download",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "description": "One or two sentences under the heading.",
+        "control": "text"
+      },
+      {
+        "name": "mode",
+        "label": "Mode",
+        "description": "Download buttons install the app on Mac, Windows and Linux. GitHub repository points to the code instead.",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Download buttons",
+            "value": "download"
+          },
+          {
+            "label": "GitHub repository",
+            "value": "repo"
+          }
+        ],
+        "defaultValue": "download"
+      },
+      {
+        "name": "version",
+        "label": "Version",
+        "description": "Shown beside the description, e.g. 0.15.0. Leave empty to hide it.",
+        "if": {
+          "arg": "mode",
+          "eq": "download"
+        },
+        "control": "text"
+      },
+      {
+        "name": "mac",
+        "label": "Mac",
+        "description": "Set both builds to show an Apple silicon / Intel switch. The visitor’s processor is picked for them when the browser says.",
+        "if": {
+          "arg": "mode",
+          "eq": "download"
+        },
+        "control": "none"
+      },
+      {
+        "name": "windows",
+        "label": "Windows",
+        "if": {
+          "arg": "mode",
+          "eq": "download"
+        },
+        "control": "none"
+      },
+      {
+        "name": "linux",
+        "label": "Linux",
+        "if": {
+          "arg": "mode",
+          "eq": "download"
+        },
+        "control": "none"
+      },
+      {
+        "name": "releasesUrl",
+        "label": "All releases link",
+        "description": "Optional. Shown as \"All releases\" under the buttons.",
+        "if": {
+          "arg": "mode",
+          "eq": "download"
+        },
+        "control": "text"
+      },
+      {
+        "name": "repoUrl",
+        "label": "Repository link",
+        "description": "e.g. https://github.com/milesroxas/skill-studio",
+        "if": {
+          "arg": "mode",
+          "eq": "repo"
+        },
+        "control": "text"
+      },
+      {
+        "name": "showClone",
+        "label": "Show clone command",
+        "description": "A copyable `git clone` line under the button, built from the link.",
+        "if": {
+          "arg": "mode",
+          "eq": "repo"
+        },
+        "control": "boolean",
+        "defaultValue": true
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
   "archive": {
     "slug": "archive",
     "label": "Archive",

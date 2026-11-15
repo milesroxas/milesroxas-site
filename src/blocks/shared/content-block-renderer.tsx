@@ -1,4 +1,5 @@
 import type React from 'react'
+import { AppDownloadBlock } from '@/blocks/app-download/Component'
 import { CarouselBlock } from '@/blocks/Carousel/Component'
 import { CodeSectionBlock } from '@/blocks/Code/Section'
 import { CaptionBlock } from '@/blocks/caption/Component'
@@ -38,6 +39,7 @@ export type ContentBlockComponents = Record<string, React.ComponentType<never>>
  * the legacy wrapper, which carries its own theme and spacing.
  */
 export const sectionChildComponents = {
+  appDownload: AppDownloadBlock,
   caption: CaptionBlock,
   carousel: CarouselBlock,
   carouselSplit: CarouselSplitBlock,

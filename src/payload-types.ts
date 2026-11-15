@@ -284,6 +284,7 @@ export interface Page {
     | CarouselTabsBlock
     | FeatureTabsBlock
     | InsightListBlock
+    | AppDownloadBlock
     | SliderBlock
     | CallOutBlock
     | ArchiveBlock
@@ -437,6 +438,7 @@ export interface Post {
         | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
+        | AppDownloadBlock
       )[]
     | null;
   relatedPosts?: (number | Post)[] | null;
@@ -852,6 +854,7 @@ export interface PostSectionBlock {
         | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
+        | AppDownloadBlock
         | ContentBlock
       )[]
     | null;
@@ -4527,6 +4530,106 @@ export interface InsightListBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AppDownloadBlock".
+ */
+export interface AppDownloadBlock {
+  showEyebrow?: boolean | null;
+  /**
+   * A short kicker above the heading. Most headings read better without one.
+   */
+  eyebrow?: string | null;
+  heading: string;
+  /**
+   * One or two sentences under the heading.
+   */
+  description?: string | null;
+  /**
+   * Download buttons install the app on Mac, Windows and Linux. GitHub repository points to the code instead.
+   */
+  mode: 'download' | 'repo';
+  /**
+   * Shown beside the description, e.g. 0.15.0. Leave empty to hide it.
+   */
+  version?: string | null;
+  /**
+   * Set both builds to show an Apple silicon / Intel switch. The visitor’s processor is picked for them when the browser says.
+   */
+  mac?: {
+    /**
+     * The arm64 .dmg.
+     */
+    appleSiliconUrl?: string | null;
+    /**
+     * e.g. 126 MB
+     */
+    appleSiliconSize?: string | null;
+    /**
+     * The x64 .dmg.
+     */
+    intelUrl?: string | null;
+    /**
+     * e.g. 126 MB
+     */
+    intelSize?: string | null;
+    /**
+     * The step after the download, shown under the button and read out once it starts, e.g. "Open the dmg and drag Skill Studio to Applications."
+     */
+    note?: string | null;
+  };
+  windows?: {
+    /**
+     * The .exe or .msi installer.
+     */
+    url?: string | null;
+    /**
+     * e.g. 126 MB
+     */
+    size?: string | null;
+    /**
+     * The step after the download, shown under the button and read out once it starts, e.g. "Open the dmg and drag Skill Studio to Applications."
+     */
+    note?: string | null;
+  };
+  linux?: {
+    /**
+     * The .AppImage, .deb or .rpm.
+     */
+    url?: string | null;
+    /**
+     * e.g. 126 MB
+     */
+    size?: string | null;
+    /**
+     * The step after the download, shown under the button and read out once it starts, e.g. "Open the dmg and drag Skill Studio to Applications."
+     */
+    note?: string | null;
+  };
+  /**
+   * Optional. Shown as "All releases" under the buttons.
+   */
+  releasesUrl?: string | null;
+  /**
+   * e.g. https://github.com/milesroxas/skill-studio
+   */
+  repoUrl?: string | null;
+  /**
+   * A copyable `git clone` line under the button, built from the link.
+   */
+  showClone?: boolean | null;
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
+  /**
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
+   */
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'appDownload';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
@@ -4739,6 +4842,7 @@ export interface Work {
     | CarouselTabsBlock
     | FeatureTabsBlock
     | InsightListBlock
+    | AppDownloadBlock
     | SliderBlock
     | TabsBlock
     | ArchiveBlock
@@ -4863,6 +4967,7 @@ export interface WorkSectionBlock {
         | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
+        | AppDownloadBlock
         | ContentBlock
       )[]
     | null;
@@ -5387,6 +5492,7 @@ export interface PageSectionBlock {
         | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
+        | AppDownloadBlock
         | ContentBlock
       )[]
     | null;
@@ -6058,6 +6164,7 @@ export interface PagesSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        appDownload?: T | AppDownloadBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         callout?: T | CallOutBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
@@ -6134,6 +6241,7 @@ export interface PageSectionBlockSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        appDownload?: T | AppDownloadBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
   id?: T;
@@ -6538,6 +6646,48 @@ export interface InsightListBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AppDownloadBlock_select".
+ */
+export interface AppDownloadBlockSelect<T extends boolean = true> {
+  showEyebrow?: T;
+  eyebrow?: T;
+  heading?: T;
+  description?: T;
+  mode?: T;
+  version?: T;
+  mac?:
+    | T
+    | {
+        appleSiliconUrl?: T;
+        appleSiliconSize?: T;
+        intelUrl?: T;
+        intelSize?: T;
+        note?: T;
+      };
+  windows?:
+    | T
+    | {
+        url?: T;
+        size?: T;
+        note?: T;
+      };
+  linux?:
+    | T
+    | {
+        url?: T;
+        size?: T;
+        note?: T;
+      };
+  releasesUrl?: T;
+  repoUrl?: T;
+  showClone?: T;
+  textSize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContentBlock_select".
  */
 export interface ContentBlockSelect<T extends boolean = true> {
@@ -6850,6 +7000,7 @@ export interface PostsSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        appDownload?: T | AppDownloadBlockSelect<T>;
       };
   relatedPosts?: T;
   hideRelatedPosts?: T;
@@ -6919,6 +7070,7 @@ export interface PostSectionBlockSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        appDownload?: T | AppDownloadBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
   id?: T;
@@ -6966,6 +7118,7 @@ export interface WorksSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        appDownload?: T | AppDownloadBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         tabs?: T | TabsBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
@@ -7034,6 +7187,7 @@ export interface WorkSectionBlockSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        appDownload?: T | AppDownloadBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
   id?: T;
@@ -7801,6 +7955,7 @@ export interface Home {
     | CarouselTabsBlock
     | FeatureTabsBlock
     | InsightListBlock
+    | AppDownloadBlock
     | SliderBlock
     | CallOutBlock
     | ArchiveBlock
@@ -8107,6 +8262,7 @@ export interface HomeSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        appDownload?: T | AppDownloadBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         callout?: T | CallOutBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;

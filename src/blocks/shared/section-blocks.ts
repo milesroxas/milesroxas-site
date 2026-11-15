@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { AppDownload } from '@/blocks/app-download/config'
 import { Carousel } from '@/blocks/Carousel/config'
 import { Code } from '@/blocks/Code/config'
 import { Content } from '@/blocks/Content/config'
@@ -65,6 +66,8 @@ export const sectionNestableBlocks: Block[] = [
   FeatureTabs,
   // Lists
   InsightList,
+  // Forms & CTAs
+  AppDownload,
 ]
 
 /**
