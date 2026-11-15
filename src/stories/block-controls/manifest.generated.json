@@ -2353,6 +2353,27 @@
         "defaultValue": "default"
       },
       {
+        "name": "background",
+        "label": "Background",
+        "description": "An interactive field behind the blocks, in the band's colours. The cursor becomes a reticle that locks onto text, images and links. Use on one section per page at most.",
+        "if": {
+          "arg": "customize",
+          "truthy": true
+        },
+        "control": "select",
+        "options": [
+          {
+            "label": "None",
+            "value": "none"
+          },
+          {
+            "label": "Interactive field",
+            "value": "field"
+          }
+        ],
+        "defaultValue": "none"
+      },
+      {
         "name": "spacing",
         "label": "Band",
         "description": "Top and bottom padding of the section. \"None\" is for a section whose content owns its shell.",

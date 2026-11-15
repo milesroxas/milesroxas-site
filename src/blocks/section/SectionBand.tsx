@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 import type { BandTheme } from '@/blocks/shared/band-theme'
 import { Section, STACK_OPENER, STACK_SPACING } from '@/blocks/shared/section'
+import { AimFieldGround } from '@/features/aim-field/AimFieldGround'
 import { cn } from '@/utilities/ui'
-import { resolveSectionSpacing, type SectionBlockSpacing } from './shared'
+import { resolveSectionSpacing, type SectionBackground, type SectionBlockSpacing } from './shared'
 
 /**
  * The band a Section block paints, shared by every renderer (Pages/Home,
@@ -15,6 +16,7 @@ import { resolveSectionSpacing, type SectionBlockSpacing } from './shared'
  * keep their values.
  */
 export const SectionBand = ({
+  background,
   children,
   className,
   customize,
@@ -22,6 +24,7 @@ export const SectionBand = ({
   stack,
   theme,
 }: {
+  background?: SectionBackground | null
   children: ReactNode
   className?: string
   customize?: boolean | null
@@ -30,17 +33,20 @@ export const SectionBand = ({
   theme?: BandTheme | null
 }) => {
   const stackStep = resolveSectionSpacing(customize, stack)
+  const field = Boolean(customize) && background === 'field'
   return (
     <Section
       className={cn(
         STACK_SPACING[stackStep],
         // A section heading sits half a step above the section it titles.
         STACK_OPENER[stackStep],
+        field && 'relative isolate',
         className,
       )}
       spacing={resolveSectionSpacing(customize, spacing)}
       theme={customize ? theme : null}
     >
+      {field ? <AimFieldGround /> : null}
       {children}
     </Section>
   )

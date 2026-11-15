@@ -825,6 +825,10 @@ export interface PostSectionBlock {
    */
   theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   /**
+   * An interactive field behind the blocks, in the band's colours. The cursor becomes a reticle that locks onto text, images and links. Use on one section per page at most.
+   */
+  background?: ('none' | 'field') | null;
+  /**
    * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
    */
   spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
@@ -4938,6 +4942,10 @@ export interface WorkSectionBlock {
    */
   theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
   /**
+   * An interactive field behind the blocks, in the band's colours. The cursor becomes a reticle that locks onto text, images and links. Use on one section per page at most.
+   */
+  background?: ('none' | 'field') | null;
+  /**
    * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
    */
   spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
@@ -5462,6 +5470,10 @@ export interface PageSectionBlock {
    * The band this section paints. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it, to flip this section against its neighbours.
    */
   theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
+  /**
+   * An interactive field behind the blocks, in the band's colours. The cursor becomes a reticle that locks onto text, images and links. Use on one section per page at most.
+   */
+  background?: ('none' | 'field') | null;
   /**
    * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
    */
@@ -6216,6 +6228,7 @@ export interface PlacedVisualConfigSelect<T extends boolean = true> {
 export interface PageSectionBlockSelect<T extends boolean = true> {
   customize?: T;
   theme?: T;
+  background?: T;
   spacing?: T;
   stack?: T;
   blocks?:
@@ -7045,6 +7058,7 @@ export interface WorkIntroSelect<T extends boolean = true> {
 export interface PostSectionBlockSelect<T extends boolean = true> {
   customize?: T;
   theme?: T;
+  background?: T;
   spacing?: T;
   stack?: T;
   blocks?:
@@ -7162,6 +7176,7 @@ export interface WorksSelect<T extends boolean = true> {
 export interface WorkSectionBlockSelect<T extends boolean = true> {
   customize?: T;
   theme?: T;
+  background?: T;
   spacing?: T;
   stack?: T;
   blocks?:

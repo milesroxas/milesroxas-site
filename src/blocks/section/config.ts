@@ -1,7 +1,11 @@
 import type { Block } from 'payload'
 import { themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
-import { SECTION_CHILDREN_FIELD, SECTION_SPACING_OPTIONS } from './shared'
+import {
+  SECTION_BACKGROUND_OPTIONS,
+  SECTION_CHILDREN_FIELD,
+  SECTION_SPACING_OPTIONS,
+} from './shared'
 
 /**
  * The Section block: the structural wrapper editors add first in the
@@ -50,6 +54,19 @@ export const sectionBlock = ({
               'The band this section paints. "Default" follows the visitor\'s light or dark preference; "Inverted" paints the opposite of it, to flip this section against its neighbours.',
           },
         }),
+        {
+          name: 'background',
+          type: 'select',
+          label: 'Background',
+          defaultValue: 'none',
+          options: [...SECTION_BACKGROUND_OPTIONS],
+          admin: {
+            width: '50%',
+            condition: (_, siblingData) => Boolean(siblingData?.customize),
+            description:
+              "An interactive field behind the blocks, in the band's colours. The cursor becomes a reticle that locks onto text, images and links. Use on one section per page at most.",
+          },
+        },
       ],
     },
     {

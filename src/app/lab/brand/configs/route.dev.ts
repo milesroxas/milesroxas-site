@@ -2,6 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { normalizeConfig } from '@/features/brand-lab/config'
+import { normalizeShader } from '@/features/brand-lab/shader/config'
 import { normalizeSite } from '@/features/brand-lab/site/config'
 import { normalizeSocial } from '@/features/brand-lab/social/config'
 
@@ -25,9 +26,9 @@ export async function GET() {
       raw: JSON.parse(await readFile(path.join(DIR, file), 'utf8')),
     })),
   )
-  // Moments and site views share the folder; `kind: 'site'` tells them apart.
+  // Moments, site, social and shader configs share the folder; `kind` tells them apart.
   const configs = parsed
-    .filter(({ raw }) => raw?.kind !== 'site' && raw?.kind !== 'social')
+    .filter(({ raw }) => !['site', 'social', 'shader'].includes(raw?.kind))
     .map(({ file, raw }) => ({ file, config: normalizeConfig(raw) }))
   const sites = parsed
     .filter(({ raw }) => raw?.kind === 'site')
@@ -35,7 +36,10 @@ export async function GET() {
   const socials = parsed
     .filter(({ raw }) => raw?.kind === 'social')
     .map(({ file, raw }) => ({ file, config: normalizeSocial(raw) }))
-  return Response.json({ configs, sites, socials })
+  const shaders = parsed
+    .filter(({ raw }) => raw?.kind === 'shader')
+    .map(({ file, raw }) => ({ file, config: normalizeShader(raw) }))
+  return Response.json({ configs, sites, socials, shaders })
 }
 
 export async function POST(request: Request) {
@@ -45,13 +49,16 @@ export async function POST(request: Request) {
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15)
   const site = body?.kind === 'site' ? normalizeSite(body) : null
   const social = body?.kind === 'social' ? normalizeSocial(body) : null
-  const moment = site || social ? null : normalizeConfig(body)
-  const config = site ?? social ?? moment
+  const shader = body?.kind === 'shader' ? normalizeShader(body) : null
+  const moment = site || social || shader ? null : normalizeConfig(body)
+  const config = site ?? social ?? shader ?? moment
   const file = site
     ? `${stamp}-site-${site.page}-${site.brand.seed}.json`
     : social
       ? `${stamp}-social-${social.format}-${social.template}-${social.brand.seed}.json`
-      : `${stamp}-${moment?.mode}-${moment?.seed}.json`
+      : shader
+        ? `${stamp}-shader-${shader.shape}-${shader.cursor}-${shader.seed}.json`
+        : `${stamp}-${moment?.mode}-${moment?.seed}.json`
   await mkdir(DIR, { recursive: true })
   await writeFile(path.join(DIR, file), `${JSON.stringify(config, null, 2)}\n`)
   return Response.json({ path: `${RELATIVE}/${file}` })

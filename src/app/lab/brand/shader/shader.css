@@ -1,0 +1,164 @@
+.lab.shader-full {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.shader-stage {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  cursor: crosshair;
+  container-type: inline-size;
+}
+
+.shader-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* A TE frame on top of the field, to judge it as a page background. */
+.shader-page {
+  --fg: #0f0e12;
+  --muted: #7d7d7f;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 4.5cqw;
+  color: var(--fg);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 300;
+  pointer-events: none;
+}
+
+.shader-page[data-ground="ink"] {
+  --fg: #f5f5f5;
+  --muted: #878688;
+}
+
+.shader-top,
+.shader-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 17px;
+}
+
+.shader-top {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--fg);
+}
+
+.shader-meta {
+  color: var(--muted);
+  font:
+    400 11px / 1.4 var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.shader-main {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: 1.2cqw;
+  align-items: center;
+}
+
+.shader-page > * {
+  pointer-events: auto;
+}
+
+.shader-cta {
+  display: inline-block;
+  margin-top: 24px;
+  color: var(--fg);
+  font-size: 17px;
+  text-decoration: underline 3px #f05a24;
+  text-underline-offset: 6px;
+}
+
+.shader-figure {
+  margin: 0;
+}
+
+.shader-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.shader-figure figcaption {
+  margin-top: 8px;
+}
+
+.shader-aim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.shader-stage.no-cursor,
+.shader-stage.no-cursor * {
+  cursor: none;
+}
+
+.shader-body h1 {
+  margin: 0 0 24px;
+  font-size: clamp(56px, 9cqw, 154px);
+  font-weight: 300;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.shader-body p {
+  max-width: 34em;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.shader-readout {
+  padding: 6px 10px;
+  background: #0f0e12;
+  color: #ffe900;
+  font:
+    400 14px / 1 var(--font-geist-pixel-square),
+    var(--font-geist-mono),
+    monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.shader-error {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  margin: 0;
+  color: #f05a24;
+}
+
+.shader-status {
+  color: var(--lab-muted);
+  margin: 10px 0;
+}
+
+.shader-saved {
+  display: block;
+  width: 100%;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--lab-muted);
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shader-saved:hover {
+  color: var(--lab-text);
+}

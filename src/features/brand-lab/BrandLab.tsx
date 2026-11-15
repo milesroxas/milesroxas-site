@@ -28,7 +28,7 @@ function readHash(): BrandConfig | null {
   }
 }
 
-export function LabViews({ current }: { current: 'moments' | 'site' | 'social' }) {
+export function LabViews({ current }: { current: 'moments' | 'site' | 'social' | 'shader' }) {
   return (
     <nav className="lab-views" aria-label="Lab views">
       <a aria-current={current === 'moments' ? 'page' : undefined} href="/lab/brand">
@@ -39,6 +39,9 @@ export function LabViews({ current }: { current: 'moments' | 'site' | 'social' }
       </a>
       <a aria-current={current === 'social' ? 'page' : undefined} href="/lab/brand/social">
         social
+      </a>
+      <a aria-current={current === 'shader' ? 'page' : undefined} href="/lab/brand/shader">
+        shader
       </a>
     </nav>
   )

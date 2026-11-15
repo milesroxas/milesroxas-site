@@ -132,6 +132,7 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
         if (block.blockType === 'section') {
           return withBandEdge(
             <SectionBand
+              background={block.background}
               customize={block.customize}
               key={blockKey}
               spacing={block.spacing}

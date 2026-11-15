@@ -21,6 +21,9 @@ about 300 KB raw. Everything a first paint does not need loads after `whenIdle`
   session exists once they do (`useAskReady`), and the panel (`SiteChromeClient.tsx`) is a
   `lazy()` chunk mounted then. A press before that opens it the moment it lands. The `/ask` page
   imports the runtime statically; it needs it.
+- The aim field (`src/features/aim-field/AimFieldGround.tsx`, a Section's **Interactive field**
+  background): the WebGL runtime is a dynamic import on idle; the band's flat surface shows until
+  it lands, and it stops drawing while the band is offscreen.
 - The code highlighter (`src/blocks/Code/CodeSurface.tsx`): `next/dynamic` from a client file.
   From the block's server component the split did not happen; the client-reference manifest in
   `.next/server/app/**/page_client-reference-manifest.js` is where to check which chunks a route

@@ -43,3 +43,15 @@ export const resolveSectionSpacing = (
   customize?: boolean | null,
   value?: SectionBlockSpacing | null,
 ): BandSpacing => SECTION_SPACING_TO_BAND[(customize && value) || 'default']
+
+/**
+ * What the Section paints under its blocks. `field` is the aim field
+ * (`@/features/aim-field`): an interactive mark lattice in the band's own
+ * colours, with a reticle that locks onto the band's text, media and controls.
+ */
+export const SECTION_BACKGROUND_OPTIONS = [
+  { label: 'None', value: 'none' },
+  { label: 'Interactive field', value: 'field' },
+] as const
+
+export type SectionBackground = (typeof SECTION_BACKGROUND_OPTIONS)[number]['value']

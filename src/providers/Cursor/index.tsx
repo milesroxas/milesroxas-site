@@ -83,6 +83,11 @@ export function Cursor() {
       dot.style.transform = `translate3d(${x}px, ${y}px, 0)`
       ringX(x)
       ringY(y)
+      // A band running the aim field draws its own reticle there.
+      if (e.target instanceof Element && e.target.closest('[data-aim-host]')) {
+        delete root.dataset.visible
+        return
+      }
       root.dataset.visible = ''
       show(variantAt(e.target))
     }
