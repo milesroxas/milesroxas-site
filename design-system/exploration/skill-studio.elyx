@@ -1,0 +1,6247 @@
+use "resources/fonts/Geist-Variable.ttf"
+use "resources/fonts/GeistMono-Regular.ttf"
+use "resources/fonts/GeistPixel-Square.woff2"
+
+import "./skill-studio-tokens.elyx" as k
+import "resources/images/skill-studio/app/library.png" as shotLibrary
+import "resources/images/skill-studio/app/editor.png" as shotEditor
+import "resources/images/skill-studio/app/cases.png" as shotCases
+import "resources/images/skill-studio/app/run.png" as shotRun
+import "resources/images/skill-studio/app/all-cases.png" as shotAllCases
+import "resources/images/skill-studio/app/results.png" as shotResults
+import "resources/images/skill-studio/app/app.png" as shotApp
+import "resources/images/skill-studio/lift-ribbon.svg" as liftRibbon
+import "resources/icons/skill-studio-mark.svg" as flowMark
+import "resources/icons/download.svg" as downloadGlyph
+import "resources/icons/out.svg" as outGlyph
+import "resources/icons/mark-mac.svg" as macMark
+import "resources/icons/mark-windows.svg" as windowsMark
+import "resources/icons/mark-linux.svg" as linuxMark
+import "resources/icons/mark-github.svg" as githubMark
+import "resources/images/skill-studio/windows/lint-check.jpg" as winChecks
+import "resources/images/skill-studio/windows/suggest-rewrites.jpg" as winSuggest
+import "resources/images/skill-studio/windows/chat-reply.jpg" as winChat
+import "resources/images/skill-studio/windows/case-end.jpg" as winCase
+import "resources/images/skill-studio/windows/design-end.jpg" as winDesign
+import "resources/images/skill-studio/windows/results-marked.jpg" as winScores
+import "resources/images/skill-studio/windows/compare-end.jpg" as winWords
+
+file {
+  draw-connections: .true
+}
+
+// Proposal: a page on milesroxas.com that gets people to install Skill Studio
+// or contribute to it. The app flow comes first (real v0.16.0 screens from the
+// app's own docs), then three pages at 1440px in the newest brand, then the
+// App download block redesigned for both of its modes. Copy comes from the
+// README, CONTRIBUTING and the promo lines Miles approved; numbers are the
+// sample skill's (release-notes). Nothing here is built.
+skillStudioMarketing = frame {
+  layout: {direction: .column, item-gap: 192px},
+  fill: k.brand.grey-1,
+  padding: 120px,
+  children: [intro, flowSheet, boards, blocksSheet],
+
+  intro = frame {
+    width: 1310px,
+    layout: {direction: .column, item-gap: 24px},
+    children: [introCode, introTitle, introNote],
+
+    introCode = text : kit.meta {
+      contents: "SKILL STUDIO / MARKETING PAGE / EXPLORATION / 2026-11-16"
+    }
+
+    introTitle = text : kit.display {
+      contents: "three ways in",
+      font-size: 154
+    }
+
+    introNote = text : kit.body {
+      width: k.grid.span-7,
+      contents: "The job: someone who writes agent skills downloads the app, and someone who builds tools opens the repo. Each page answers three questions in order: what is it, does it work, how do I get it. A Spec sheet is the brand as written. B Lift lets the product's own figure carry the opening. C Two doors pushes past the brand: the page forks into use it and build it before anything else."
+    }
+  }
+
+  // The app as it ships (v0.16.0), in the order a new skill goes round the
+  // loop. The page's sections borrow this order: write, run, compare.
+  flowSheet = frame {
+    layout: {direction: .column, item-gap: 48px},
+    children: [flowHead, flowRow],
+
+    flowHead = frame {
+      width: 1310px,
+      layout: {direction: .column, item-gap: 16px},
+      children: [flowCode, flowTitle, flowNote],
+
+      flowCode = text : kit.meta {
+        contents: "01 / APP FLOW / V0.16.0 / SCREENS FROM DOCS/IMAGES"
+      }
+
+      flowTitle = text : kit.lead {
+        contents: "library, skill, cases, run, results"
+      }
+
+      flowNote = text : kit.body {
+        width: k.grid.span-7,
+        contents: "One skill goes round the loop. The Library finds or starts it, the Skill screen holds its rules and versions, Cases are the test tasks, Run sends them to the agent, Results shows the lift and what each version missed. The page only needs three of these: Skill (write), Run, and Results (compare).",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    flowRow = frame {
+      layout: {item-gap: 120px},
+      children: [
+        flowLibrary,
+        flowSkill,
+        flowCases,
+        flowRun,
+        flowLift,
+        flowCompare
+      ],
+
+      flowLibrary = frame : kit.flowCard {
+        connections[0].label: "open a skill",
+        connections[0].target: flowSkill,
+
+        flowWhat {
+          contents: "Every skill on the machine, In progress first. Installed for Claude, Cursor, Codex."
+        }
+
+        flowStep {
+          contents: "01 LIBRARY"
+        }
+      }
+
+      flowSkill = frame : kit.flowCard {
+        connections[0].label: "write cases",
+        connections[0].target: flowCases,
+
+        flowShot {
+          fill[0].image.ref: shotEditor
+        }
+
+        flowWhat {
+          contents: "SKILL.md and its files, versions with their scores, Write with AI. The rules are numbered."
+        }
+
+        flowStep {
+          contents: "02 SKILL / WRITE"
+        }
+      }
+
+      flowCases = frame : kit.flowCard {
+        connections[0].label: "Run v1",
+        connections[0].target: flowRun,
+
+        flowShot {
+          fill[0].image.ref: shotCases
+        }
+
+        flowWhat {
+          contents: "A task asked the way you really would, files it needs, a good answer and its checks."
+        }
+
+        flowStep {
+          contents: "03 CASES"
+        }
+      }
+
+      flowRun = frame : kit.flowCard {
+        connections[0].label: "graded by Jev",
+        connections[0].target: flowLift,
+
+        flowShot {
+          fill[0].image.ref: shotRun
+        }
+
+        flowWhat {
+          contents: "Claude Code or Cursor answers each case with the skill installed. Jev grades the results."
+        }
+
+        flowStep {
+          contents: "04 RUN"
+        }
+      }
+
+      flowLift = frame : kit.flowCard {
+        connections[0].label: "open a case",
+        connections[0].target: flowCompare,
+
+        flowShot {
+          fill[0].image.ref: shotAllCases
+        }
+
+        flowWhat {
+          contents: "All cases: 85 at first runs, 98 now, 71 without the skill. The page's proof."
+        }
+
+        flowStep {
+          contents: "05 RESULTS / LIFT"
+        }
+      }
+
+      flowCompare = frame : kit.flowCard {
+        flowShot {
+          fill[0].image.ref: shotResults
+        }
+
+        flowWhat {
+          contents: "Two versions side by side, with what each missed. You mark a verdict where you disagree."
+        }
+
+        flowStep {
+          contents: "06 RESULTS / COMPARE"
+        }
+      }
+    }
+  }
+
+  boards = frame {
+    layout: {item-gap: 384px},
+    children: [optionA, optionB, optionC],
+
+    // A. Spec sheet. The brand as written: a spec-bar nav, one slogan-stack
+    // moment in the opening with the lift panel on an ink field that runs off
+    // three edges, then frame-only sections in the app's own order.
+    optionA = frame {
+      layout: {direction: .column, item-gap: 32px},
+      children: [labelA, noteA, iaA, boardA],
+
+      labelA = text : kit.lead {
+        contents: "a. spec sheet"
+      }
+
+      noteA = text : kit.body {
+        width: k.grid.span-9,
+        contents: "The brand as written. The opening is the one moment: WRITE BETTER AI SKILLS in orange caps, yellow under SKILLS, the lift panel set as a band across an ink field that runs off the top, right and bottom (the view's one break). Below it everything is frame: numbered sections, spec blocks, a receipt for the downloads. Cheapest to build: it needs only the redesigned App download block.",
+        fill[0].color: k.brand.muted
+      }
+
+      iaA = text : kit.meta {
+        width: k.grid.span-12,
+        contents: "IA / NAV / 01 OPENING + DOWNLOAD / 02 THE LOOP: WRITE, RUN, COMPARE / 03 PROOF: 71, 85, 98 / 04 INSTALL / 05 CONTRIBUTE / COLOPHON"
+      }
+
+      boardA = frame {
+        title: "A. Spec sheet",
+        caption: "The page at 1440px, top to bottom. One moment, in the opening.",
+        width: k.grid.page,
+        layout: {direction: .column},
+        fill: k.brand.paper,
+        children: [
+          navA,
+          openingA,
+          loopA,
+          proofA,
+          installA,
+          contributeA,
+          colophonA
+        ],
+
+        navA = frame : kit.specBar {}
+
+        openingA = frame {
+          width: 100%,
+          height: 860px,
+          fill: k.brand.paper,
+          children: [fieldA, codeA, markerA, hookA, lineA, ctaA, bandA],
+
+          fieldA = frame {
+            left: 839px,
+            top: 0px,
+            width: 601px,
+            height: 100%,
+            layout: {direction: .column, justify-content: .center},
+            fill: k.brand.ink,
+            children: liftBandA,
+
+            liftBandA = frame {
+              width: 100%,
+              height: 300px,
+              fill: {
+                image: {
+                  ref: shotAllCases,
+                  sizing: {scale: 0.5464, offset: [-104.8px, 93.5px]}
+                }
+              }
+            }
+          }
+
+          codeA = text : kit.meta {
+            left: 65px,
+            top: 64px,
+            contents: "01 / A DESKTOP APP FOR WRITING AGENT SKILLS"
+          }
+
+          // The fluoro marker: yellow behind the lower 36% of the last line's
+          // caps, 0.4 gutter past the word on each side.
+          markerA = frame {
+            left: 213px,
+            top: 441px,
+            width: 452px,
+            height: 35px,
+            fill: k.brand.fluoro
+          }
+
+          hookA = text : kit.moment {
+            left: 65px,
+            top: 128px,
+            width: 757px,
+            contents: "WRITE\nBETTER\nAI SKILLS",
+            font-size: 136
+          }
+
+          lineA = text : kit.body {
+            left: 65px,
+            top: 548px,
+            width: k.grid.span-5,
+            contents: "Write the instructions your AI agent follows,\nthen test every change on real work."
+          }
+
+          ctaA = frame {
+            left: 65px,
+            top: 636px,
+            layout: {align-items: .center, item-gap: 32px},
+            children: [downloadA, repoLinkA],
+
+            downloadA = frame : kit.downloadButton {}
+
+            repoLinkA = frame : kit.textLink {
+              linkLabel {
+                contents: "Contribute on GitHub"
+              }
+            }
+          }
+
+          bandA = text : kit.meta {
+            left: 65px,
+            top: 788px,
+            width: 757px,
+            contents: "FREE / MIT / MAC, WINDOWS, LINUX / V0.16.0 / NO ACCOUNT, ANALYTICS OR CRASH REPORTING"
+          }
+        }
+
+        loopA = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 56px},
+          border: {color: k.brand.ink, sides: .top},
+          padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+          children: [loopHeadA, loopColsA],
+
+          loopHeadA = frame : kit.sectionHead {
+            sectionCode {
+              contents: "02 / THE LOOP"
+            }
+
+            sectionLead {
+              contents: "Write the rules. Run an agent on a few real tasks. Compare what each version missed."
+            }
+          }
+
+          loopColsA = frame {
+            width: 100%,
+            layout: {item-gap: k.grid.gutter},
+            children: [stepWriteA, stepRunA, stepCompareA],
+
+            stepWriteA = frame : kit.stepColumn {
+              stepShot {
+                fill[0].image.sizing: {scale: 0.3386, offset: [-88px, 0px]}
+              }
+
+              stepText {
+                contents: "Write the skill's rules in a Markdown editor that numbers them, flags a vague one, and keeps every version with its score."
+              }
+
+              stepTop {
+                stepName {
+                  contents: "write"
+                }
+              }
+            }
+
+            stepRunA = frame : kit.stepColumn {
+              stepShot {
+                fill[0].image.ref: shotRun,
+                fill[0].image.sizing: {scale: 0.37, offset: [-119.8px, 58px]}
+              }
+
+              stepText {
+                contents: "Run an agent, Claude Code or Cursor, on a few test tasks called cases, with the skill installed."
+              }
+
+              stepTop {
+                stepName {
+                  contents: "run"
+                }
+
+                stepNumber {
+                  contents: "02"
+                }
+              }
+            }
+
+            stepCompareA = frame : kit.stepColumn {
+              stepShot {
+                fill[0].image.ref: shotResults,
+                fill[0].image.sizing: {scale: 0.29, offset: [-58.4px, -12.3px]}
+              }
+
+              stepText {
+                contents: "Compare each version's answers side by side, with what each one missed."
+              }
+
+              stepTop {
+                stepName {
+                  contents: "compare"
+                }
+
+                stepNumber {
+                  contents: "03"
+                }
+              }
+            }
+          }
+        }
+
+        proofA = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 56px},
+          padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+          children: [proofHeadA, proofRowA],
+
+          proofHeadA = frame : kit.sectionHead {
+            sectionCode {
+              contents: "03 / THE SAMPLE SKILL, RELEASE-NOTES"
+            }
+
+            sectionLead {
+              contents: "The score says whether the edit helped, and how much the skill does at all."
+            }
+          }
+
+          proofRowA = frame {
+            width: 100%,
+            layout: {item-gap: k.grid.gutter},
+            children: [specsA, verdictA],
+
+            specsA = frame {
+              width: k.grid.span-4,
+              layout: {direction: .column, item-gap: 40px},
+              children: [specWithout, specFirst, specLatest, proofTextA],
+
+              specWithout = frame : kit.specNumber {
+                specLabel {
+                  contents: "WITHOUT THE SKILL"
+                }
+
+                specValue {
+                  contents: "71"
+                }
+              }
+
+              specFirst = frame : kit.specNumber {
+                specLabel {
+                  contents: "FIRST RUNS, V0"
+                }
+
+                specValue {
+                  contents: "85"
+                }
+              }
+
+              specLatest = frame : kit.specNumber {
+                specLabel {
+                  contents: "LATEST RUNS, V1"
+                }
+
+                specValue {
+                  contents: "98"
+                }
+              }
+
+              proofTextA = text : kit.body {
+                width: 100%,
+                contents: "TypeSafe's Jev grades every answer against your rules and each case's checks. Where you disagree, you mark the verdict and the score follows."
+              }
+            }
+
+            verdictA = frame {
+              width: k.grid.span-8,
+              height: 614px,
+              fill: {
+                image: {
+                  ref: shotResults,
+                  sizing: {scale: 0.5959, offset: [-119.2px, -4.2px]}
+                }
+              },
+              border: {color: k.brand.ink, sides: .top}
+            }
+          }
+        }
+
+        installA = frame : kit.appDownloadReceipt {}
+
+        contributeA = frame : kit.appDownloadRepo {}
+
+        colophonA = frame : kit.colophon {}
+      }
+    }
+
+    // B. Lift. The product's own figure carries the opening: the lift ribbon
+    // from Results, drawn edge to edge on ink, with the change as a yellow
+    // pixel readout. The headline drops to light display so the figure is the
+    // one moment. The loop is one annotated window instead of three crops.
+    optionB = frame {
+      layout: {direction: .column, item-gap: 32px},
+      children: [labelB, noteB, iaB, boardB],
+
+      labelB = text : kit.lead {
+        contents: "b. lift"
+      }
+
+      noteB = text : kit.body {
+        width: k.grid.span-9,
+        contents: "Proof first. The opening is ink, and the moment is the lift itself: the ribbon from Results drawn edge to edge (the view's one break), 85 rising to 98 over the dashed line at 71, the +13 as the one yellow readout. The headline is quiet light display, so nothing competes with the figure. The loop is one window with three numbered keys, and install becomes four keys, one per system.",
+        fill[0].color: k.brand.muted
+      }
+
+      iaB = text : kit.meta {
+        width: k.grid.span-12,
+        contents: "IA / NAV ON INK / 01 OPENING: HEADLINE, DOWNLOAD, THE LIFT / 02 ONE WINDOW: 01 WRITE, 02 RUN, 03 COMPARE / 03 THE LAST WORD IS YOURS / 04 INSTALL: FOUR KEYS / 05 CONTRIBUTE / COLOPHON"
+      }
+
+      boardB = frame {
+        title: "B. Lift",
+        caption: "The page at 1440px. The moment is the figure, not the headline.",
+        width: k.grid.page,
+        layout: {direction: .column},
+        fill: k.brand.paper,
+        children: [
+          navB,
+          openingB,
+          windowB,
+          verdictB,
+          installB,
+          contributeB,
+          colophonB
+        ],
+
+        navB = frame : kit.specBar {
+          border[0].color: k.brand.rule-on-ink,
+          fill[0].color: k.brand.ink,
+
+          barCode {
+            fill[0].color: k.brand.muted-on-ink
+          }
+
+          barLinks {
+            linkGuide {
+              fill[0].color: k.brand.paper
+            }
+
+            linkContribute {
+              fill[0].color: k.brand.paper
+            }
+
+            linkInstall {
+              fill[0].color: k.brand.paper
+            }
+
+            linkHow {
+              fill[0].color: k.brand.paper
+            }
+          }
+
+          barName {
+            fill[0].color: k.brand.paper
+          }
+        }
+
+        openingB = frame {
+          width: 100%,
+          height: 900px,
+          fill: k.brand.ink,
+          children: [
+            codeB,
+            headB,
+            lineB,
+            ctaB,
+            readoutB,
+            readoutLabelB,
+            ribbonB,
+            firstLabelB,
+            firstValueB,
+            latestLabelB,
+            latestValueB,
+            withoutLabelB
+          ],
+
+          codeB = text : kit.meta {
+            left: 65px,
+            top: 56px,
+            contents: "01 / A DESKTOP APP FOR WRITING AGENT SKILLS",
+            fill[0].color: k.brand.muted-on-ink
+          }
+
+          headB = text : kit.display {
+            left: 65px,
+            top: 104px,
+            width: k.grid.span-7,
+            contents: "write better\nai skills",
+            fill[0].color: k.brand.paper
+          }
+
+          lineB = text : kit.body {
+            left: 65px,
+            top: 300px,
+            width: k.grid.span-5,
+            contents: "Write the instructions your AI agent follows,\nthen test every change on real work.",
+            fill[0].color: k.brand.muted-on-ink
+          }
+
+          ctaB = frame {
+            left: 65px,
+            top: 380px,
+            layout: {align-items: .center, item-gap: 32px},
+            children: [downloadB, repoLinkB],
+
+            downloadB = frame : kit.downloadButton {
+              fill[0].color: k.brand.paper,
+
+              downloadMeta {
+                fill[0].color: k.brand.muted
+              }
+
+              downloadLabel {
+                fill[0].color: k.brand.ink
+              }
+            }
+
+            repoLinkB = frame : kit.textLink {
+              linkLabel {
+                fill[0].color: k.brand.paper,
+                contents: "Contribute on GitHub"
+              }
+            }
+          }
+
+          readoutB = text {
+            left: 1006px,
+            top: 96px,
+            fill: k.brand.fluoro,
+            contents: "+13",
+            font-size: 176,
+            font-family: "Geist Pixel",
+            line-height: 0.9
+          }
+
+          readoutLabelB = text : kit.meta {
+            left: 1012px,
+            top: 268px,
+            width: 360px,
+            contents: "SINCE EACH CASE'S FIRST RUN\nTHE SAMPLE SKILL, 3 CASES",
+            fill[0].color: k.brand.muted-on-ink
+          }
+
+          ribbonB = asset {
+            left: 0px,
+            top: 400px,
+            width: 1440px,
+            height: 480px,
+            contents: liftRibbon
+          }
+
+          firstLabelB = text : kit.meta {
+            left: 65px,
+            top: 674px,
+            contents: "FIRST RUNS, V0",
+            fill[0].color: k.brand.muted-on-ink
+          }
+
+          firstValueB = text : kit.body {
+            left: 65px,
+            top: 727px,
+            contents: "85",
+            font-family: "Geist Mono",
+            fill[0].color: k.brand.ink
+          }
+
+          latestLabelB = text : kit.meta {
+            left: 1263px,
+            top: 534px,
+            contents: "LATEST RUNS, V1",
+            fill[0].color: k.brand.muted-on-ink
+          }
+
+          latestValueB = text : kit.body {
+            left: 1351px,
+            top: 587px,
+            contents: "98",
+            font-family: "Geist Mono",
+            fill[0].color: k.brand.ink
+          }
+
+          withoutLabelB = text : kit.meta {
+            left: 1220px,
+            top: 826px,
+            contents: "WITHOUT THE SKILL, 71",
+            fill[0].color: k.brand.muted-on-ink
+          }
+        }
+
+        windowB = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 56px},
+          padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+          children: [windowHeadB, windowRowB],
+
+          windowHeadB = frame : kit.sectionHead {
+            sectionCode {
+              contents: "02 / ONE WINDOW"
+            }
+
+            sectionLead {
+              contents: "The rules, the test tasks and the scores sit in one window, so an edit and its result are one click apart."
+            }
+          }
+
+          windowRowB = frame {
+            width: 100%,
+            layout: {item-gap: k.grid.gutter},
+            children: [keysB, appShotB],
+
+            keysB = frame {
+              width: k.grid.span-3,
+              layout: {direction: .column, item-gap: 32px},
+              children: [keyWriteB, keyRunB, keyCompareB],
+
+              keyWriteB = frame : kit.legendKey {
+                keyTop {
+                  keyChip {
+                    keyDigit {
+                      contents: "01"
+                    }
+                  }
+
+                  keyName {
+                    contents: "write"
+                  }
+                }
+
+                keyText {
+                  contents: "The Skill screen: the rules, numbered, and every version with its score."
+                }
+              }
+
+              keyRunB = frame : kit.legendKey {
+                keyTop {
+                  keyChip {
+                    keyDigit {
+                      contents: "02"
+                    }
+                  }
+
+                  keyName {
+                    contents: "run"
+                  }
+                }
+
+                keyText {
+                  contents: "Run v1 sends each case to Claude Code or Cursor with the skill installed."
+                }
+              }
+
+              keyCompareB = frame : kit.legendKey {
+                keyTop {
+                  keyChip {
+                    keyDigit {
+                      contents: "03"
+                    }
+                  }
+
+                  keyName {
+                    contents: "compare"
+                  }
+                }
+
+                keyText {
+                  contents: "Results: two versions side by side, with what each one missed."
+                }
+              }
+            }
+
+            appShotB = frame {
+              width: k.grid.span-9,
+              height: 782.6px,
+              fill: {image: {ref: shotApp}},
+              border: {color: k.brand.ink, position: .outside},
+              children: [pinWriteB, pinRunB, pinCompareB],
+
+              pinWriteB = frame : kit.keyChip {
+                left: 118px,
+                top: 84px,
+
+                keyDigit {
+                  contents: "01"
+                }
+              }
+
+              pinRunB = frame : kit.keyChip {
+                left: 770px,
+                top: 6px,
+
+                keyDigit {
+                  contents: "02"
+                }
+              }
+
+              pinCompareB = frame : kit.keyChip {
+                left: 506px,
+                top: 152px,
+
+                keyDigit {
+                  contents: "03"
+                }
+              }
+            }
+          }
+        }
+
+        verdictB = frame {
+          width: 100%,
+          layout: {item-gap: k.grid.gutter},
+          padding: [k.grid.section, k.grid.margin, k.grid.section-loose],
+          children: [verdictShotB, verdictTextB],
+
+          verdictShotB = frame {
+            width: k.grid.span-6,
+            height: 517px,
+            fill: {
+              image: {
+                ref: shotResults,
+                sizing: {scale: 0.92, offset: [145.9px, 192.2px]}
+              }
+            },
+            border: {color: k.brand.ink, sides: .top}
+          }
+
+          verdictTextB = frame {
+            width: k.grid.span-6,
+            layout: {direction: .column, item-gap: 32px},
+            padding: [0px, 0px, 0px, 111px],
+            children: [verdictCodeB, verdictLeadB, verdictBodyB, verdictSpecsB],
+
+            verdictCodeB = text : kit.meta {
+              contents: "03 / THE LAST WORD"
+            }
+
+            verdictLeadB = text : kit.lead {
+              width: 100%,
+              contents: "Jev grades every answer. Where you disagree, your mark wins."
+            }
+
+            verdictBodyB = text : kit.body {
+              width: 100%,
+              contents: "TypeSafe's Jev grades each answer against your rules and each case's checks. A score counts the rules and checks met. Mark a verdict and the score follows.",
+              fill[0].color: k.brand.muted
+            }
+
+            verdictSpecsB = frame {
+              width: 100%,
+              layout: {direction: .column},
+              children: [specFilesB, specSuitsB],
+
+              specFilesB = frame : kit.needRow {
+                needLabel {
+                  width: k.grid.span-1,
+                  contents: "FILES"
+                }
+
+                needValue {
+                  width: 424px,
+                  contents: "Runs, scores and your corrections are plain files in the skill's evals/ folder."
+                }
+              }
+
+              specSuitsB = frame : kit.needRow {
+                needLabel {
+                  width: k.grid.span-1,
+                  contents: "SUITS"
+                }
+
+                needValue {
+                  width: 424px,
+                  contents: "Work that is a matter of judgement: writing, web pages, agent process."
+                }
+              }
+            }
+          }
+        }
+
+        installB = frame : kit.appDownloadKeys {}
+
+        contributeB = frame : kit.appDownloadRepo {}
+
+        colophonB = frame : kit.colophon {}
+      }
+    }
+
+    // C. Two doors. Past the brand: the first viewport forks. One slogan
+    // stack split across two grounds, USE IT on orange for people who write
+    // skills, BUILD IT on ink for people who build tools, with the Flow mark
+    // cropped by the corner. Below, a field manual and a deadpan receipt.
+    optionC = frame {
+      layout: {direction: .column, item-gap: 32px},
+      children: [labelC, noteC, iaC, boardC],
+
+      labelC = text : kit.lead {
+        contents: "c. two doors"
+      }
+
+      noteC = text : kit.body {
+        width: k.grid.span-9,
+        contents: "Pushes past the brand on purpose. The page forks before it explains: an orange door with USE IT and the download, an ink door with BUILD IT and the repo, the Skill Studio mark cropped by the ink door's corner. It breaks two rules: an orange ground at full height, and two grounds in the first view. Below, the loop is a field manual (a 90° label down the margin, big light numerals) and the facts close as a receipt.",
+        fill[0].color: k.brand.muted
+      }
+
+      iaC = text : kit.meta {
+        width: k.grid.span-12,
+        contents: "IA / NAV / 01 TWO DOORS: USE IT (DOWNLOAD) + BUILD IT (REPO) / 02 FIELD MANUAL: 01 WRITE, 02 RUN, 03 COMPARE / 03 RECEIPT + READOUT / 04 INSTALL / COLOPHON"
+      }
+
+      boardC = frame {
+        title: "C. Two doors",
+        caption: "The page at 1440px. The first view forks into use and build.",
+        width: k.grid.page,
+        layout: {direction: .column},
+        fill: k.brand.paper,
+        children: [navC, doorsC, manualC, receiptC, installC, colophonC],
+
+        navC = frame : kit.specBar {}
+
+        doorsC = frame {
+          width: 100%,
+          height: 860px,
+          layout: {direction: .row},
+          children: [doorUse, doorBuild],
+
+          doorUse = frame {
+            width: 720px,
+            height: 100%,
+            fill: k.brand.spot,
+            children: [useCode, useWord, useLine, useCta, useFoot],
+
+            useCode = text : kit.meta {
+              left: 65px,
+              top: 56px,
+              contents: "FOR PEOPLE WHO WRITE SKILLS",
+              fill[0].color: k.brand.ink
+            }
+
+            useWord = text : kit.moment {
+              left: 58px,
+              top: 120px,
+              contents: "USE\nIT",
+              font-size: 190,
+              letter-spacing: -3%,
+              fill[0].color: k.brand.ink
+            }
+
+            useLine = text : kit.body {
+              left: 65px,
+              top: 560px,
+              width: 430px,
+              contents: "Write the instructions your AI agent follows,\nthen test every change on real work."
+            }
+
+            useCta = frame : kit.downloadButton {
+              left: 65px,
+              top: 648px
+            }
+
+            useFoot = text : kit.meta {
+              left: 65px,
+              top: 788px,
+              contents: "FREE / ALSO FOR WINDOWS AND LINUX / V0.16.0",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          doorBuild = frame {
+            width: 720px,
+            height: 100%,
+            fill: k.brand.ink,
+            children: [
+              buildMark,
+              buildCode,
+              buildWord,
+              buildLine,
+              buildCta,
+              buildCommand
+            ],
+
+            buildMark = asset {
+              left: 330px,
+              top: 560px,
+              width: 478px,
+              height: 395px,
+              fill: k.brand.grey-ink,
+              contents: flowMark
+            }
+
+            buildCode = text : kit.meta {
+              left: 119px,
+              top: 56px,
+              contents: "FOR PEOPLE WHO BUILD TOOLS",
+              fill[0].color: k.brand.muted-on-ink
+            }
+
+            buildWord = text : kit.moment {
+              left: 112px,
+              top: 120px,
+              contents: "BUILD\nIT",
+              font-size: 190,
+              letter-spacing: -3%,
+              fill[0].color: k.brand.paper
+            }
+
+            buildLine = text : kit.body {
+              left: 119px,
+              top: 560px,
+              width: 430px,
+              contents: "Open source under MIT. Judge packs, engine\nadapters, fixes and UI work are welcome.",
+              fill[0].color: k.brand.paper
+            }
+
+            buildCta = frame : kit.textLink {
+              left: 119px,
+              top: 660px,
+
+              linkLabel {
+                fill[0].color: k.brand.paper,
+                contents: "Open the repository"
+              }
+            }
+
+            buildCommand = text : kit.meta {
+              left: 119px,
+              top: 788px,
+              contents: "PNPM INSTALL / PNPM DEV / PNPM CHECK",
+              fill[0].color: k.brand.muted-on-ink
+            }
+          }
+        }
+
+        manualC = frame {
+          width: 100%,
+          layout: {direction: .column, item-gap: 96px},
+          padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+          children: [
+            manualHeadC,
+            chapterWriteC,
+            chapterRunC,
+            chapterCompareC,
+            spineC
+          ],
+
+          manualHeadC = frame : kit.sectionHead {
+            sectionCode {
+              contents: "02 / FIELD MANUAL"
+            }
+
+            sectionLead {
+              contents: "Three screens, one loop. Go round it until the score stops moving."
+            }
+          }
+
+          chapterWriteC = frame : kit.chapter {
+            chapterShot {
+              fill[0].image.sizing: {scale: 0.58, offset: [-140.2px, 88.7px]}
+            }
+
+            chapterWords {
+              chapterText {
+                contents: "Write the skill's rules. The editor numbers them, flags a vague one, and keeps each version with its score."
+              }
+            }
+          }
+
+          chapterRunC = frame : kit.chapter {
+            chapterShot {
+              fill[0].image.ref: shotRun,
+              fill[0].image.sizing: {scale: 0.7, offset: [-246.3px, 201.4px]}
+            }
+
+            chapterWords {
+              chapterText {
+                contents: "Run an agent, Claude Code or Cursor, on a few test tasks called cases, with the skill installed."
+              }
+
+              chapterName {
+                contents: "run"
+              }
+            }
+
+            chapterNumber {
+              contents: "02"
+            }
+          }
+
+          chapterCompareC = frame : kit.chapter {
+            chapterShot {
+              fill[0].image.ref: shotResults,
+              fill[0].image.sizing: {scale: 0.5, offset: [-102px, 1.5px]}
+            }
+
+            chapterWords {
+              chapterText {
+                contents: "Compare each version's answers side by side, with what each one missed. Mark a verdict where you disagree."
+              }
+
+              chapterName {
+                contents: "compare"
+              }
+            }
+
+            chapterNumber {
+              contents: "03"
+            }
+          }
+
+          // The page's one 90° element, down the left margin.
+          spineC = frame {
+            left: 22px,
+            top: 1500px,
+            width: 420px,
+            height: 20px,
+            transform: [0, 1, 0, -1, 0, 0],
+            ignore-stack: .true,
+            children: spineText,
+
+            spineText = text : kit.meta {
+              contents: "SKILL STUDIO / FIELD MANUAL / V0.16.0"
+            }
+          }
+        }
+
+        receiptC = frame {
+          width: 100%,
+          layout: {item-gap: k.grid.gutter},
+          border: {color: k.brand.ink, sides: .top},
+          padding: [k.grid.section, k.grid.margin, k.grid.section-loose],
+          children: [receiptHeadC, receiptListC, readoutC],
+
+          receiptHeadC = frame {
+            width: k.grid.span-3,
+            layout: {direction: .column, item-gap: 16px},
+            children: [receiptCodeC, receiptNoteC],
+
+            receiptCodeC = text : kit.meta {
+              contents: "03 / RECEIPT"
+            }
+
+            receiptNoteC = text : kit.body {
+              width: 100%,
+              contents: "Scores are the sample skill's, release-notes, over 3 cases.",
+              fill[0].color: k.brand.muted
+            }
+          }
+
+          receiptListC = frame {
+            width: k.grid.span-5,
+            layout: {direction: .column},
+            children: [
+              lineFree,
+              lineLicense,
+              lineAccount,
+              lineAnalytics,
+              lineCrash,
+              lineWithout,
+              lineFirst,
+              lineLatest,
+              lineTotal
+            ],
+
+            lineFree = frame : kit.receiptLine {}
+
+            lineLicense = frame : kit.receiptLine {
+              lineLabel {
+                contents: "LICENSE"
+              }
+
+              lineValue {
+                contents: "MIT"
+              }
+            }
+
+            lineAccount = frame : kit.receiptLine {
+              lineLabel {
+                contents: "ACCOUNTS"
+              }
+
+              lineValue {
+                contents: "0"
+              }
+            }
+
+            lineAnalytics = frame : kit.receiptLine {
+              lineLabel {
+                contents: "ANALYTICS"
+              }
+
+              lineValue {
+                contents: "0"
+              }
+            }
+
+            lineCrash = frame : kit.receiptLine {
+              lineLabel {
+                contents: "CRASH REPORTS"
+              }
+
+              lineValue {
+                contents: "0"
+              }
+            }
+
+            lineWithout = frame : kit.receiptLine {
+              lineLabel {
+                contents: "SCORE WITHOUT THE SKILL"
+              }
+
+              lineValue {
+                contents: "71"
+              }
+            }
+
+            lineFirst = frame : kit.receiptLine {
+              lineLabel {
+                contents: "FIRST RUNS, V0"
+              }
+
+              lineValue {
+                contents: "85"
+              }
+            }
+
+            lineLatest = frame : kit.receiptLine {
+              lineLabel {
+                contents: "LATEST RUNS, V1"
+              }
+
+              lineValue {
+                contents: "98"
+              }
+            }
+
+            lineTotal = frame : kit.receiptLine {
+              padding-top: 16px,
+              padding-left: 0px,
+              padding-bottom: 0px,
+              padding-right: 0px,
+              border[0].color: k.brand.ink,
+              border[0].sides: .top,
+              border[0].width: 2px,
+
+              lineLabel {
+                fill[0].color: k.brand.ink,
+                contents: "LIFT"
+              }
+
+              lineValue {
+                contents: "+13"
+              }
+            }
+          }
+
+          readoutC = frame {
+            width: k.grid.span-4,
+            height: 320px,
+            layout: {direction: .column, justify-content: .space-between},
+            fill: k.brand.ink,
+            padding: 24px,
+            children: [readoutTopC, readoutDigitsC],
+
+            readoutTopC = text : kit.meta {
+              contents: "LIFT / SINCE FIRST RUNS",
+              fill[0].color: k.brand.muted-on-ink
+            }
+
+            readoutDigitsC = text {
+              fill: k.brand.fluoro,
+              contents: "+13",
+              font-size: 176,
+              font-family: "Geist Pixel",
+              line-height: 0.9
+            }
+          }
+        }
+
+        installC = frame : kit.appDownloadReceipt {}
+
+        colophonC = frame : kit.colophon {}
+      }
+    }
+  }
+
+  // The App download block (src/blocks/app-download) redesigned for the new
+  // brand, in both of its modes. Download buttons becomes a receipt (one row
+  // per file, the detected system marked in orange) or four keys (B). GitHub repository becomes
+  // a parts list: what is welcome, where it lives, and the three commands.
+  blocksSheet = frame {
+    layout: {direction: .column, item-gap: 48px},
+    children: [blocksHead, blocksRow],
+
+    blocksHead = frame {
+      width: 1310px,
+      layout: {direction: .column, item-gap: 16px},
+      children: [blocksCode, blocksTitle, blocksNote],
+
+      blocksCode = text : kit.meta {
+        contents: "BLOCKS / APP DOWNLOAD, REDESIGNED"
+      }
+
+      blocksTitle = text : kit.lead {
+        contents: "app download: receipt and parts list"
+      }
+
+      blocksNote = text : kit.body {
+        width: k.grid.span-7,
+        contents: "Same fields as the block today (heading, description, version, a file and size per system, releases link, repository link, clone command). The detected system's row is the current item, so it carries the orange square and the ink button. Sizes stay out until the release lists them.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    blocksRow = frame {
+      layout: {direction: .column, item-gap: 96px},
+      children: [blockReceipt, blockKeys, blockRepo],
+
+      blockReceipt = frame : kit.appDownloadReceipt {
+        title: "App download / Download buttons"
+      }
+
+      blockKeys = frame : kit.appDownloadKeys {
+        title: "App download / Download buttons, keys variant"
+      }
+
+      blockRepo = frame : kit.appDownloadRepo {
+        title: "App download / GitHub repository"
+      }
+    }
+  }
+}
+
+// Parts the sheets instance. Text styles follow the brand's three size classes:
+// metadata 11, body 17, large (moment or display) at 8x metadata or more, plus
+// the 1.9x body lead the site's sections allow.
+kit = frame {
+  left: 3800px,
+  top: -4705px,
+  layout: {direction: .column, item-gap: 64px},
+  fill: k.brand.grey-1,
+  padding: 64px,
+  children: [
+    meta,
+    body,
+    lead,
+    display,
+    moment,
+    textLink,
+    downloadButton,
+    specBar,
+    sectionHead,
+    stepColumn,
+    specNumber,
+    flowCard,
+    appDownloadReceipt,
+    appDownloadRepo,
+    receiptRow,
+    needRow,
+    partRow,
+    legendKey,
+    keyChip,
+    chapter,
+    receiptLine,
+    appDownloadKeys,
+    osKey,
+    statement,
+    navOnInk,
+    featureState,
+    hero,
+    example,
+    walkState,
+    dlPrimary,
+    dlSecondary,
+    archSwitch,
+    installBlock,
+    repoBlock,
+    colophon
+  ],
+
+  meta = text {
+    fill: k.brand.muted,
+    contents: "METADATA",
+    font-size: 11,
+    font-family: "Geist Mono",
+    line-height: 1.4,
+    letter-spacing: 6%
+  }
+
+  body = text {
+    fill: k.brand.ink,
+    contents: "Body copy, sentence case.",
+    font-size: 17,
+    font-family: "Geist",
+    font-style: "Regular",
+    line-height: 1.5
+  }
+
+  lead = text {
+    fill: k.brand.ink,
+    contents: "lead statement",
+    font-size: 32,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 1.1,
+    letter-spacing: -2%
+  }
+
+  display = text {
+    fill: k.brand.ink,
+    contents: "display",
+    font-size: 88,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 0.98,
+    letter-spacing: -3.5%
+  }
+
+  moment = text {
+    fill: k.brand.spot,
+    contents: "MOMENT",
+    font-size: 154,
+    font-family: "Geist",
+    font-style: "Black",
+    line-height: 0.88,
+    letter-spacing: -5%
+  }
+
+  // A link under 24px is ink text over a 3px orange rule (orange text needs 24px).
+  textLink = frame {
+    layout: {direction: .column, item-gap: 2px},
+    border: {color: k.brand.spot, width: 3px, sides: .bottom},
+    padding: [0px, 0px, 2px],
+    children: linkLabel,
+
+    linkLabel = text : body {
+      contents: "Read CONTRIBUTING.md"
+    }
+  }
+
+  // Ink is the button; orange is only the glyph, as the block now ships.
+  downloadButton = frame {
+    layout: {align-items: .center, item-gap: 12px},
+    fill: k.brand.ink,
+    padding: [16px, 24px],
+    children: [downloadIcon, downloadLabel, downloadMeta],
+
+    downloadIcon = asset {
+      width: 20px,
+      height: 20px,
+      fill: k.brand.spot,
+      contents: downloadGlyph
+    }
+
+    downloadLabel = text : body {
+      contents: "Download for Mac",
+      fill[0].color: k.brand.paper
+    }
+
+    downloadMeta = text : meta {
+      contents: "APPLE SILICON",
+      fill[0].color: k.brand.muted-on-ink
+    }
+  }
+
+  // Spec-bar nav: name left, lowercase links, code right, a 1px rule below.
+  specBar = frame {
+    width: 1440px,
+    height: 64px,
+    layout: {justify-content: .space-between, align-items: .center},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .bottom},
+    padding: [0px, 65px],
+    children: [barName, barLinks, barCode],
+
+    barName = text : body {
+      contents: "skill studio",
+      font-style: "Light"
+    }
+
+    barLinks = frame {
+      layout: {align-items: .center, item-gap: 32px},
+      children: [linkHow, linkInstall, linkContribute, linkGuide],
+
+      linkHow = text : body {
+        contents: "how it works",
+        font-style: "Light"
+      }
+
+      linkInstall = text : body {
+        contents: "install",
+        font-style: "Light"
+      }
+
+      linkContribute = text : body {
+        contents: "contribute",
+        font-style: "Light"
+      }
+
+      linkGuide = text : body {
+        contents: "guide",
+        font-style: "Light"
+      }
+    }
+
+    barCode = text : meta {
+      contents: "V0.16.0 / 2026-11-15"
+    }
+  }
+
+  // A section's head: the numbered code over three columns, the lead
+  // statement from column four.
+  sectionHead = frame {
+    width: 1310px,
+    layout: {item-gap: k.grid.gutter},
+    children: [sectionCode, sectionLead],
+
+    sectionCode = text : meta {
+      width: k.grid.span-3,
+      contents: "00 / SECTION"
+    }
+
+    sectionLead = text : lead {
+      width: k.grid.span-7,
+      contents: "lead statement"
+    }
+  }
+
+  stepColumn = frame {
+    width: k.grid.span-4,
+    layout: {direction: .column, item-gap: 16px},
+    children: [stepTop, stepText, stepShot],
+
+    stepTop = frame {
+      width: 100%,
+      layout: {item-gap: 16px},
+      border: {color: k.brand.ink, sides: .top},
+      padding: [16px, 0px, 0px],
+      children: [stepNumber, stepName],
+
+      stepNumber = text : meta {
+        contents: "01"
+      }
+
+      stepName = text : body {
+        contents: "step",
+        font-style: "Light"
+      }
+    }
+
+    stepText = text : body {
+      width: 100%,
+      height: 104px,
+      contents: "What the step does."
+    }
+
+    stepShot = frame {
+      width: 100%,
+      height: 416px,
+      fill: {image: {ref: shotEditor}}
+    }
+  }
+
+  // A spec block: label above value, the value in light display.
+  specNumber = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 8px},
+    border: {color: k.brand.ink, sides: .top},
+    padding: [12px, 0px, 0px],
+    children: [specLabel, specValue],
+
+    specLabel = text : meta {
+      contents: "LABEL"
+    }
+
+    specValue = text : display {
+      contents: "00"
+    }
+  }
+
+  flowCard = frame {
+    width: 533px,
+    layout: {direction: .column, item-gap: 16px},
+    children: [flowShot, flowStep, flowWhat],
+
+    flowShot = frame {
+      width: 533px,
+      height: 426px,
+      fill: {image: {ref: shotLibrary}},
+      border: {color: k.brand.grey-2, position: .outside}
+    }
+
+    flowStep = text : meta {
+      contents: "00 SCREEN",
+      fill[0].color: k.brand.ink
+    }
+
+    flowWhat = text : body {
+      width: 100%,
+      contents: "What happens here."
+    }
+  }
+
+  // App download, Download buttons mode, as a receipt.
+  appDownloadReceipt = frame {
+    width: 1440px,
+    layout: {item-gap: k.grid.gutter},
+    fill: k.brand.paper,
+    padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+    children: [receiptIntro, receiptBody],
+
+    receiptIntro = frame {
+      width: k.grid.span-4,
+      layout: {direction: .column, item-gap: 24px},
+      children: [receiptCode, receiptHeading, receiptText],
+
+      receiptCode = text : meta {
+        contents: "04 / INSTALL"
+      }
+
+      receiptHeading = text : lead {
+        width: 100%,
+        contents: "download for your computer"
+      }
+
+      receiptText = text : body {
+        width: 100%,
+        contents: "The app updates itself after that. Every version is on Releases.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    receiptBody = frame {
+      width: k.grid.span-8,
+      layout: {direction: .column},
+      children: [
+        receiptVersion,
+        rowMacArm,
+        rowMacIntel,
+        rowWindows,
+        rowLinux,
+        receiptNeeds,
+        needAgent,
+        needKey,
+        needWriter,
+        receiptFoot
+      ],
+
+      receiptVersion = frame {
+        width: 100%,
+        layout: {justify-content: .space-between},
+        border: {color: k.brand.ink, sides: .bottom},
+        padding: [0px, 0px, 12px],
+        children: [versionLabel, versionValue],
+
+        versionLabel = text : meta {
+          contents: "FILE"
+        }
+
+        versionValue = text : meta {
+          contents: "V0.16.0 / 2026-11-15"
+        }
+      }
+
+      rowMacArm = frame {
+        width: 100%,
+        height: 72px,
+        layout: {align-items: .center, item-gap: 16px},
+        border: {color: k.brand.grey-2, sides: .bottom},
+        children: [armMark, armSystem, armLeader, armFile, armButton],
+
+        armMark = frame {
+          width: 11px,
+          height: 11px,
+          fill: k.brand.spot
+        }
+
+        armSystem = text : body {
+          contents: "macOS, Apple silicon"
+        }
+
+        armLeader = frame {
+          height: 1px,
+          border: {color: k.brand.muted, dash: [1px, 5px], sides: .top}
+        }
+
+        armFile = text : meta {
+          contents: "SKILL-STUDIO-MAC-ARM64.DMG",
+          fill[0].color: k.brand.ink
+        }
+
+        armButton = frame : downloadButton {
+          padding-top: 12px,
+          padding-left: 20px,
+          padding-bottom: 12px,
+          padding-right: 20px,
+
+          downloadLabel {
+            contents: "Download"
+          }
+
+          downloadMeta {
+            contents: "DETECTED"
+          }
+        }
+      }
+
+      rowMacIntel = frame : receiptRow {}
+
+      rowWindows = frame : receiptRow {
+        rowSystem {
+          contents: "Windows, 64-bit"
+        }
+
+        rowFile {
+          contents: "SKILL-STUDIO-WIN-X64.EXE"
+        }
+      }
+
+      rowLinux = frame : receiptRow {
+        rowSystem {
+          contents: "Linux, x86-64"
+        }
+
+        rowFile {
+          contents: "SKILL-STUDIO-LINUX-X86_64.APPIMAGE"
+        }
+      }
+
+      receiptNeeds = frame {
+        width: 100%,
+        padding: [56px, 0px, 12px],
+        children: needsLabel,
+
+        needsLabel = text : meta {
+          contents: "YOU ALSO NEED"
+        }
+      }
+
+      needAgent = frame : needRow {}
+
+      needKey = frame : needRow {
+        needLabel {
+          contents: "GRADER"
+        }
+
+        needValue {
+          contents: "A TypeSafe API key, added under Settings. Without it, no rule or check is marked."
+        }
+      }
+
+      needWriter = frame : needRow {
+        needLabel {
+          contents: "OPTIONAL"
+        }
+
+        needValue {
+          contents: "To write with AI: the claude or codex CLI signed in, or an Anthropic or OpenAI API key."
+        }
+      }
+
+      receiptFoot = frame {
+        width: 100%,
+        layout: {item-gap: 32px},
+        padding: [32px, 0px, 0px],
+        children: [allReleases, checkDownload],
+
+        allReleases = frame : textLink {
+          linkLabel {
+            contents: "All releases"
+          }
+        }
+
+        checkDownload = frame : textLink {
+          border[0].color: k.brand.grey-2,
+          border[0].width: 1,
+
+          linkLabel {
+            contents: "Check a download"
+          }
+        }
+      }
+    }
+  }
+
+  // App download, GitHub repository mode, as a parts list.
+  appDownloadRepo = frame {
+    width: 1440px,
+    layout: {item-gap: k.grid.gutter},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .top},
+    padding: [k.grid.section-loose, k.grid.margin],
+    children: [repoIntro, repoBody],
+
+    repoIntro = frame {
+      width: k.grid.span-4,
+      layout: {direction: .column, item-gap: 24px},
+      children: [repoCode, repoHeading, repoText, repoLinks],
+
+      repoCode = text : meta {
+        contents: "05 / CONTRIBUTE"
+      }
+
+      repoHeading = text : lead {
+        width: 100%,
+        contents: "open source, MIT"
+      }
+
+      repoText = text : body {
+        width: 100%,
+        contents: "Fixes and new parts are welcome. For anything larger than a fix, open an issue first so we can agree on the shape.",
+        fill[0].color: k.brand.muted
+      }
+
+      repoLinks = frame {
+        layout: {direction: .column, item-gap: 16px},
+        padding: [16px, 0px, 0px],
+        children: [repoGitHub, repoGuide],
+
+        repoGitHub = frame : textLink {
+          linkLabel {
+            contents: "Open the repository"
+          }
+        }
+
+        repoGuide = frame : textLink {
+          border[0].color: k.brand.grey-2,
+          border[0].width: 1
+        }
+      }
+    }
+
+    repoBody = frame {
+      width: k.grid.span-8,
+      layout: {direction: .column, item-gap: 48px},
+      children: [partsList, cloneBlock],
+
+      partsList = frame {
+        width: 100%,
+        layout: {direction: .column},
+        children: [partsHead, partJudge, partEngine, partUi, partFix],
+
+        partsHead = frame : partRow {
+          padding-top: 0px,
+          padding-bottom: 12px,
+          border[0].color: k.brand.ink,
+
+          partWhere {
+            fill[0].color: k.brand.muted,
+            contents: "WHERE"
+          }
+
+          partName {
+            fill[0].color: k.brand.muted,
+            contents: "PART",
+            font-size: 11,
+            font-family: "Geist Mono",
+            letter-spacing: 6%
+          }
+
+          partNumber {
+            contents: "NO."
+          }
+        }
+
+        partJudge = frame : partRow {
+          partNumber {
+            contents: "01"
+          }
+
+          partName {
+            contents: "A judge pack: how answers of one kind are graded"
+          }
+
+          partWhere {
+            contents: "SRC/JUDGES"
+          }
+        }
+
+        partEngine = frame : partRow {
+          partNumber {
+            contents: "02"
+          }
+
+          partName {
+            contents: "An engine adapter: one more agent CLI to run"
+          }
+
+          partWhere {
+            contents: "SRC/INFRASTRUCTURE/ENGINES"
+          }
+        }
+
+        partUi = frame : partRow {
+          partNumber {
+            contents: "03"
+          }
+
+          partName {
+            contents: "A UI improvement"
+          }
+
+          partWhere {
+            contents: "SRC/RENDERER"
+          }
+        }
+
+        partFix = frame : partRow {
+          partNumber {
+            contents: "04"
+          }
+
+          partName {
+            contents: "A bug fix, with a test beside the code"
+          }
+
+          partWhere {
+            contents: "ANYWHERE"
+          }
+        }
+      }
+
+      cloneBlock = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 16px},
+        fill: k.brand.ink,
+        padding: 32px,
+        children: [cloneHead, cloneLines],
+
+        cloneHead = frame {
+          width: 100%,
+          layout: {justify-content: .space-between},
+          children: [cloneLabel, cloneCopy],
+
+          cloneLabel = text : meta {
+            contents: "NODE 24 OR LATER, PNPM",
+            fill[0].color: k.brand.muted-on-ink
+          }
+
+          cloneCopy = text : meta {
+            contents: "COPY",
+            fill[0].color: k.brand.paper
+          }
+        }
+
+        cloneLines = text : body {
+          width: 100%,
+          contents: "git clone github.com/milesroxas/skill-studio\npnpm install\npnpm dev      # the app, with hot reloading\npnpm check    # typecheck, Biome, fallow, tests",
+          font-family: "Geist Mono",
+          line-height: 1.7,
+          fill[0].color: k.brand.paper
+        }
+      }
+    }
+  }
+
+  receiptRow = frame {
+    width: 100%,
+    height: 72px,
+    layout: {align-items: .center, item-gap: 16px},
+    border: {color: k.brand.grey-2, sides: .bottom},
+    children: [rowSpacer, rowSystem, rowLeader, rowFile, rowAction],
+
+    rowSpacer = frame {
+      width: 11px,
+      height: 11px
+    }
+
+    rowSystem = text : body {
+      contents: "macOS, Intel"
+    }
+
+    rowLeader = frame {
+      height: 1px,
+      border: {color: k.brand.muted, dash: [1px, 5px], sides: .top}
+    }
+
+    rowFile = text : meta {
+      contents: "SKILL-STUDIO-MAC-X64.DMG",
+      fill[0].color: k.brand.ink
+    }
+
+    rowAction = frame : textLink {
+      linkLabel {
+        contents: "Download"
+      }
+    }
+  }
+
+  needRow = frame {
+    width: 100%,
+    layout: {item-gap: k.grid.gutter},
+    border: {color: k.brand.grey-2, sides: .top},
+    padding: [14px, 0px],
+    children: [needLabel, needValue],
+
+    needLabel = text : meta {
+      width: k.grid.span-2,
+      contents: "AGENT"
+    }
+
+    needValue = text : body {
+      width: 646.5px,
+      contents: "The claude or cursor-agent CLI, installed and signed in. The agent writes the answers."
+    }
+  }
+
+  partRow = frame {
+    width: 100%,
+    layout: {item-gap: k.grid.gutter},
+    border: {color: k.brand.grey-2, sides: .bottom},
+    padding: [18px, 0px],
+    children: [partNumber, partName, partWhere],
+
+    partNumber = text : meta {
+      width: k.grid.span-1,
+      contents: "01"
+    }
+
+    partName = text : body {
+      contents: "Part"
+    }
+
+    partWhere = text : meta {
+      contents: "SRC",
+      fill[0].color: k.brand.ink
+    }
+  }
+
+  legendKey = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 12px},
+    border: {color: k.brand.ink, sides: .top},
+    padding: [16px, 0px, 0px],
+    children: [keyTop, keyText],
+
+    keyTop = frame {
+      layout: {align-items: .center, item-gap: 12px},
+      children: [keyChip, keyName],
+
+      keyChip = frame : kit.keyChip {}
+
+      keyName = text : body {
+        contents: "write",
+        font-style: "Light"
+      }
+    }
+
+    keyText = text : body {
+      width: 100%,
+      contents: "What this part of the window holds.",
+      fill[0].color: k.brand.muted
+    }
+  }
+
+  // A numbered key pinned on a screenshot, matched by its legend.
+  keyChip = frame {
+    width: 28px,
+    height: 28px,
+    layout: {justify-content: .center, align-items: .center},
+    fill: k.brand.ink,
+    children: keyDigit,
+
+    keyDigit = text : meta {
+      contents: "01",
+      fill[0].color: k.brand.paper
+    }
+  }
+
+  chapter = frame {
+    width: 1310px,
+    layout: {item-gap: k.grid.gutter},
+    children: [chapterNumber, chapterWords, chapterShot],
+
+    chapterNumber = text : display {
+      width: k.grid.span-2,
+      contents: "01",
+      font-size: 154,
+      line-height: 0.86
+    }
+
+    chapterWords = frame {
+      width: k.grid.span-3,
+      layout: {direction: .column, item-gap: 16px},
+      border: {color: k.brand.ink, sides: .top},
+      padding: [16px, 0px, 0px],
+      children: [chapterName, chapterText],
+
+      chapterName = text : lead {
+        contents: "write"
+      }
+
+      chapterText = text : body {
+        width: 100%,
+        contents: "What the step does."
+      }
+    }
+
+    chapterShot = frame {
+      width: k.grid.span-7,
+      height: 540px,
+      fill: {image: {ref: shotEditor}},
+      border: {color: k.brand.ink, sides: .top}
+    }
+  }
+
+  // One receipt row: label, a dotted leader, the value.
+  receiptLine = frame {
+    width: 100%,
+    height: 44px,
+    layout: {align-items: .center, item-gap: 12px},
+    children: [lineLabel, lineLeader, lineValue],
+
+    lineLabel = text : meta {
+      contents: "PRICE"
+    }
+
+    lineLeader = frame {
+      height: 1px,
+      border: {color: k.brand.muted, dash: [1px, 5px], sides: .top}
+    }
+
+    lineValue = text : body {
+      contents: "FREE",
+      font-family: "Geist Mono"
+    }
+  }
+
+  // App download, Download buttons mode, as four keys: one per system, the
+  // detected one pressed (ink, an orange rule on top).
+  appDownloadKeys = frame {
+    width: 1440px,
+    layout: {item-gap: k.grid.gutter},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .top},
+    padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+    children: [keysIntro, keysBody],
+
+    keysIntro = frame {
+      width: k.grid.span-4,
+      layout: {direction: .column, item-gap: 24px},
+      children: [keysCode, keysHeading, keysText],
+
+      keysCode = text : meta {
+        contents: "04 / INSTALL"
+      }
+
+      keysHeading = text : lead {
+        width: 100%,
+        contents: "pick your computer"
+      }
+
+      keysText = text : body {
+        width: 100%,
+        contents: "Free, and it updates itself after that. You also need the claude or cursor-agent CLI signed in, and a TypeSafe API key.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    keysBody = frame {
+      width: k.grid.span-8,
+      layout: {direction: .column, item-gap: 24px},
+      children: [keysRow, keysFoot],
+
+      keysRow = frame {
+        width: 100%,
+        layout: {item-gap: k.grid.gutter},
+        children: [keyMacArm, keyMacIntel, keyWindows, keyLinux],
+
+        keyMacArm = frame : osKey {
+          border[0].color: k.brand.spot,
+          border[0].sides: .top,
+          border[0].width: 4px,
+          fill[0].color: k.brand.ink,
+
+          osWords {
+            osArch {
+              fill[0].color: k.brand.muted-on-ink
+            }
+
+            osName {
+              fill[0].color: k.brand.paper
+            }
+          }
+
+          osNumber {
+            fill[0].color: k.brand.muted-on-ink,
+            contents: "01 / DETECTED"
+          }
+        }
+
+        keyMacIntel = frame : osKey {
+          osNumber {
+            contents: "02"
+          }
+
+          osWords {
+            osArch {
+              contents: "INTEL"
+            }
+          }
+        }
+
+        keyWindows = frame : osKey {
+          osNumber {
+            contents: "03"
+          }
+
+          osWords {
+            osName {
+              contents: "Windows"
+            }
+
+            osArch {
+              contents: "64-BIT, NOT SIGNED"
+            }
+          }
+        }
+
+        keyLinux = frame : osKey {
+          osNumber {
+            contents: "04"
+          }
+
+          osWords {
+            osName {
+              contents: "Linux"
+            }
+
+            osArch {
+              contents: "X86-64, APPIMAGE"
+            }
+          }
+        }
+      }
+
+      keysFoot = frame {
+        width: 100%,
+        layout: {justify-content: .space-between, align-items: .center},
+        border: {color: k.brand.ink, sides: .top},
+        padding: [16px, 0px, 0px],
+        children: [keysFile, keysButton],
+
+        keysFile = text : meta {
+          contents: "SKILL-STUDIO-MAC-ARM64.DMG / V0.16.0 / 2026-11-15",
+          fill[0].color: k.brand.ink
+        }
+
+        keysButton = frame : downloadButton {
+          downloadLabel {
+            contents: "Download"
+          }
+
+          downloadMeta {
+            contents: "FREE"
+          }
+        }
+      }
+    }
+  }
+
+  osKey = frame {
+    width: k.grid.span-2,
+    height: 204px,
+    layout: {direction: .column, justify-content: .space-between},
+    border: k.brand.ink,
+    padding: 16px,
+    children: [osNumber, osWords],
+
+    osNumber = text : meta {
+      contents: "01"
+    }
+
+    osWords = frame {
+      layout: {direction: .column, item-gap: 4px},
+      children: [osName, osArch],
+
+      osName = text : body {
+        contents: "macOS"
+      }
+
+      osArch = text : meta {
+        contents: "APPLE SILICON"
+      }
+    }
+  }
+
+  // Round two parts.
+  statement = text {
+    fill: k.brand.ink,
+    contents: "statement",
+    font-size: 88,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 0.98,
+    letter-spacing: -3.5%
+  }
+
+  navOnInk = frame {
+    width: 1440px,
+    height: 72px,
+    layout: {justify-content: .space-between, align-items: .center},
+    padding: [0px, 65px],
+    children: [navName, navLinks],
+
+    navName = text : body {
+      contents: "miles roxas",
+      font-style: "Light",
+      fill[0].color: k.brand.paper
+    }
+
+    navLinks = frame {
+      layout: {item-gap: 32px},
+      children: [navWork, navPosts, navContact],
+
+      navWork = text : body {
+        contents: "work",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+
+      navPosts = text : body {
+        contents: "posts",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+
+      navContact = text : body {
+        contents: "contact",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+    }
+  }
+
+  // The pinned feature, one beat. The screen bleeds off the top, right and
+  // bottom; the verbs are the heading and the progress at once.
+  featureState = frame {
+    width: 1440px,
+    height: 900px,
+    fill: k.brand.ink,
+    children: [featScreen, featVerbs, featText],
+
+    featScreen = frame {
+      left: 618px,
+      top: 0px,
+      width: 822px,
+      height: 900px,
+      fill: {
+        image: {
+          ref: shotEditor,
+          sizing: {scale: 0.7755, offset: [277.6px, -23.5px]}
+        }
+      }
+    }
+
+    featVerbs = frame {
+      left: 65px,
+      top: 144px,
+      layout: {direction: .column},
+      children: [verbWrite, verbRun, verbCompare],
+
+      verbWrite = text : statement {
+        contents: "write",
+        fill[0].color: k.brand.paper
+      }
+
+      verbRun = text : statement {
+        contents: "run",
+        fill[0].color: k.brand.ink-dim
+      }
+
+      verbCompare = text : statement {
+        contents: "compare",
+        fill[0].color: k.brand.ink-dim
+      }
+    }
+
+    featText = text : body {
+      left: 65px,
+      top: 476px,
+      width: k.grid.span-4,
+      contents: "Write the rules in an editor that numbers them and flags a vague one. Every version keeps its score, so you can see which edit helped.",
+      fill[0].color: k.brand.muted-on-ink
+    }
+  }
+
+  // Round three type: the opening line and the statement, refined down.
+  hero = text {
+    fill: k.brand.ink,
+    contents: "hero",
+    font-size: 72,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 1,
+    letter-spacing: -3.5%
+  }
+
+  example = frame {
+    width: 100%,
+    layout: {direction: .column, item-gap: 10px},
+    children: [exampleName, exampleText],
+
+    exampleName = text : statement {
+      contents: "release notes",
+      font-size: 44
+    }
+
+    exampleText = text : body {
+      width: k.grid.span-5,
+      contents: "Tell the people who use the software what changed, in plain words.",
+      fill[0].color: k.brand.muted
+    }
+  }
+
+  // The pinned walkthrough, state 1: write, rule checks. Grey field, the
+  // whole app window on the right.
+  walkState = frame {
+    width: 1440px,
+    height: 900px,
+    fill: k.brand.grey-1,
+    children: [walkOutline, walkText, walkWindow],
+
+    walkOutline = frame {
+      left: 65px,
+      top: 150px,
+      width: k.grid.span-4,
+      layout: {direction: .column, item-gap: 28px},
+      children: [oWrite, oTest, oCompare],
+
+      oWrite = frame {
+        layout: {direction: .column, item-gap: 10px},
+        children: [oWriteVerb, oWriteFeatures],
+
+        oWriteVerb = text : statement {
+          contents: "write",
+          font-size: 44
+        }
+
+        oWriteFeatures = frame {
+          layout: {direction: .column, item-gap: 4px},
+          children: [oChecks, oRewrites, oAssistant],
+
+          oChecks = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [oChecksDot, oChecksName],
+
+            oChecksDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.spot
+            }
+
+            oChecksName = text : body {
+              contents: "rule checks"
+            }
+          }
+
+          oRewrites = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [oRewritesDot, oRewritesName],
+
+            oRewritesDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oRewritesName = text : body {
+              contents: "suggested rewrites",
+              fill[0].color: k.brand.muted
+            }
+          }
+
+          oAssistant = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [oAssistantDot, oAssistantName],
+
+            oAssistantDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oAssistantName = text : body {
+              contents: "assistant",
+              fill[0].color: k.brand.muted
+            }
+          }
+        }
+      }
+
+      oTest = frame {
+        layout: {direction: .column, item-gap: 10px},
+        children: [oTestVerb, oTestFeatures],
+
+        oTestVerb = text : statement {
+          contents: "test",
+          font-size: 44,
+          fill[0].color: k.brand.field-dim
+        }
+
+        oTestFeatures = frame {
+          layout: {direction: .column, item-gap: 4px},
+          children: oTasks,
+
+          oTasks = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [oTasksDot, oTasksName],
+
+            oTasksDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oTasksName = text : body {
+              contents: "example tasks",
+              fill[0].color: k.brand.field-dim
+            }
+          }
+        }
+      }
+
+      oCompare = frame {
+        layout: {direction: .column, item-gap: 10px},
+        children: [oCompareVerb, oCompareFeatures],
+
+        oCompareVerb = text : statement {
+          contents: "compare",
+          font-size: 44,
+          fill[0].color: k.brand.field-dim
+        }
+
+        oCompareFeatures = frame {
+          layout: {direction: .column, item-gap: 4px},
+          children: [oSide, oScores],
+
+          oSide = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [oSideDot, oSideName],
+
+            oSideDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oSideName = text : body {
+              contents: "side by side",
+              fill[0].color: k.brand.field-dim
+            }
+          }
+
+          oScores = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [oScoresDot, oScoresName],
+
+            oScoresDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oScoresName = text : body {
+              contents: "scores you can correct",
+              fill[0].color: k.brand.field-dim
+            }
+          }
+        }
+      }
+    }
+
+    walkText = text : body {
+      left: 65px,
+      top: 640px,
+      width: k.grid.span-4,
+      contents: "Write your instructions as a short list of rules. A rule too vague to follow gets an amber number, with a note on how to fix it.",
+      fill[0].color: k.brand.ink
+    }
+
+    walkWindow = frame {
+      left: 507.3px,
+      top: 179px,
+      width: 867.67px,
+      height: 542.3px,
+      fill: {image: {ref: winChecks}}
+    }
+  }
+
+  // App download, as it ships (DownloadActions in Component.client.tsx),
+  // drawn in the new brand: square, body 17. A Mac visitor on Apple silicon.
+  dlPrimary = frame {
+    width: 646.5px,
+    height: 80px,
+    layout: {justify-content: .space-between, align-items: .center},
+    fill: k.brand.ink,
+    padding: [16px, 20px],
+    children: [dlLead, dlArrow],
+
+    dlLead = frame {
+      layout: {align-items: .center, item-gap: 16px},
+      children: [dlMark, dlWords],
+
+      dlMark = asset {
+        width: 28px,
+        height: 28px,
+        fill: k.brand.paper,
+        contents: macMark
+      }
+
+      dlWords = frame {
+        layout: {direction: .column, item-gap: 4px},
+        children: [dlTitle, dlMeta],
+
+        dlTitle = text : body {
+          contents: "Download for Mac",
+          fill[0].color: k.brand.paper
+        }
+
+        dlMeta = text : meta {
+          contents: "APPLE SILICON / .DMG",
+          fill[0].color: k.brand.muted-on-ink
+        }
+      }
+    }
+
+    dlArrow = asset {
+      width: 24px,
+      height: 24px,
+      fill: k.brand.spot,
+      contents: downloadGlyph
+    }
+  }
+
+  dlSecondary = frame {
+    width: 646.5px,
+    height: 60px,
+    layout: {justify-content: .space-between, align-items: .center},
+    border: k.brand.grey-2,
+    padding: [12px, 16px],
+    children: [dlsLead, dlsArrow],
+
+    dlsLead = frame {
+      layout: {align-items: .center, item-gap: 12px},
+      children: [dlsMark, dlsWords],
+
+      dlsMark = asset {
+        width: 20px,
+        height: 20px,
+        fill: k.brand.ink,
+        contents: windowsMark
+      }
+
+      dlsWords = frame {
+        layout: {direction: .column, item-gap: 2px},
+        children: [dlsTitle, dlsMeta],
+
+        dlsTitle = text : body {
+          contents: "Windows"
+        }
+
+        dlsMeta = text : meta {
+          contents: "64-BIT / .EXE"
+        }
+      }
+    }
+
+    dlsArrow = asset {
+      width: 24px,
+      height: 24px,
+      fill: k.brand.muted,
+      contents: downloadGlyph
+    }
+  }
+
+  archSwitch = frame {
+    layout: {direction: .row},
+    border: k.brand.grey-2,
+    padding: 2px,
+    children: [archOn, archOff],
+
+    archOn = frame {
+      height: 32px,
+      layout: {align-items: .center},
+      fill: k.brand.ink,
+      padding: [0px, 12px],
+      children: archOnLabel,
+
+      archOnLabel = text : meta {
+        contents: "APPLE SILICON",
+        fill[0].color: k.brand.paper
+      }
+    }
+
+    archOff = frame {
+      height: 32px,
+      layout: {align-items: .center},
+      padding: [0px, 12px],
+      children: archOffLabel,
+
+      archOffLabel = text : meta {
+        contents: "INTEL"
+      }
+    }
+  }
+
+  installBlock = frame {
+    width: 1440px,
+    layout: {item-gap: k.grid.gutter},
+    fill: k.brand.paper,
+    padding: [144px, 65px, 160px],
+    children: [installWords, installActions],
+
+    installWords = frame {
+      width: k.grid.span-6,
+      layout: {direction: .column, item-gap: 32px},
+      children: [installStatement, installBody, installVersion],
+
+      installStatement = text : statement {
+        width: 100%,
+        contents: "free for mac, windows and linux"
+      }
+
+      installBody = text : body {
+        width: k.grid.span-4,
+        contents: "It updates itself after that. You also need the claude or cursor-agent CLI, signed in, and a TypeSafe API key for grading.",
+        fill[0].color: k.brand.muted
+      }
+
+      installVersion = text : meta {
+        contents: "VERSION 0.16.0"
+      }
+    }
+
+    installActions = frame {
+      width: k.grid.span-6,
+      layout: {direction: .column, item-gap: 12px},
+      children: [
+        installPrimary,
+        installNoteRow,
+        installWindows,
+        installLinux,
+        installReleases
+      ],
+
+      installPrimary = frame : dlPrimary {
+        width: 100%
+      }
+
+      installNoteRow = frame {
+        width: 100%,
+        layout: {justify-content: .space-between, align-items: .center},
+        padding: [4px, 0px, 28px],
+        children: [installNote, installArch],
+
+        installNote = frame {
+          layout: {align-items: .center, item-gap: 8px},
+          children: [installNoteDot, installNoteText],
+
+          installNoteDot = frame {
+            width: 6px,
+            height: 6px,
+            fill: k.brand.spot
+          }
+
+          installNoteText = text : body {
+            contents: "Drag it to Applications.",
+            fill[0].color: k.brand.muted
+          }
+        }
+
+        installArch = frame : archSwitch {}
+      }
+
+      installWindows = frame : dlSecondary {
+        width: 100%
+      }
+
+      installLinux = frame : dlSecondary {
+        width: 100%,
+
+        dlsLead {
+          dlsMark {
+            contents: linuxMark
+          }
+
+          dlsWords {
+            dlsTitle {
+              contents: "Linux"
+            }
+
+            dlsMeta {
+              contents: "X86-64 / .APPIMAGE"
+            }
+          }
+        }
+      }
+
+      installReleases = frame : textLink {
+        padding-top: 12px,
+        padding-left: 0px,
+        padding-bottom: 2px,
+        padding-right: 0px,
+
+        linkLabel {
+          fill[0].color: k.brand.muted,
+          contents: "All releases"
+        }
+      }
+    }
+  }
+
+  // App download, repository mode (RepoActions), on ink, with the page's close.
+  repoBlock = frame {
+    width: 1440px,
+    layout: {direction: .column, item-gap: 160px},
+    fill: k.brand.ink,
+    padding: [144px, 65px, 48px],
+    children: [repoMain, repoClose],
+
+    repoMain = frame {
+      width: 100%,
+      layout: {item-gap: k.grid.gutter},
+      children: [repoWords, repoActions],
+
+      repoWords = frame {
+        width: k.grid.span-6,
+        layout: {direction: .column, item-gap: 32px},
+        children: [repoStatement, repoBody],
+
+        repoStatement = text : statement {
+          width: 100%,
+          contents: "open source, MIT",
+          fill[0].color: k.brand.paper
+        }
+
+        repoBody = text : body {
+          width: k.grid.span-4,
+          contents: "Fixes, judge packs, engine adapters and interface work are welcome. For anything bigger than a fix, open an issue first so we can agree on the shape.",
+          fill[0].color: k.brand.muted-on-ink
+        }
+      }
+
+      repoActions = frame {
+        width: k.grid.span-6,
+        layout: {direction: .column, item-gap: 12px},
+        children: [repoPrimary, repoClone],
+
+        repoPrimary = frame : dlPrimary {
+          width: 100%,
+          fill[0].color: k.brand.paper,
+
+          dlLead {
+            dlWords {
+              dlMeta {
+                fill[0].color: k.brand.muted,
+                contents: "MILESROXAS/SKILL-STUDIO"
+              }
+
+              dlTitle {
+                fill[0].color: k.brand.ink,
+                contents: "View on GitHub"
+              }
+            }
+
+            dlMark {
+              fill[0].color: k.brand.ink,
+              contents: githubMark
+            }
+          }
+
+          dlArrow {
+            contents: outGlyph
+          }
+        }
+
+        repoClone = frame {
+          width: 100%,
+          height: 52px,
+          layout: {justify-content: .space-between, align-items: .center},
+          border: k.brand.rule-on-ink,
+          padding: [0px, 0px, 0px, 16px],
+          children: [repoCloneCode, repoCopy],
+
+          repoCloneCode = text : body {
+            contents: "git clone https://github.com/milesroxas/skill-studio.git",
+            font-size: 15,
+            font-family: "Geist Mono",
+            fill[0].color: k.brand.paper
+          }
+
+          repoCopy = frame {
+            width: 96px,
+            height: 100%,
+            layout: {justify-content: .center, align-items: .center},
+            fill: k.brand.grey-ink,
+            children: repoCopyLabel,
+
+            repoCopyLabel = text : meta {
+              contents: "COPY",
+              fill[0].color: k.brand.paper
+            }
+          }
+        }
+      }
+    }
+
+    repoClose = frame {
+      width: 100%,
+      layout: {justify-content: .space-between, align-items: .end},
+      children: [repoCredit, repoLinks],
+
+      repoCredit = text : body {
+        width: k.grid.span-6,
+        contents: "Skill Studio was made possible by Emil Kowalski's course AI for Designers and Engineers, which teaches turning taste into rules an agent follows.",
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      repoLinks = text : body {
+        contents: "privacy   security   changelog",
+        fill[0].color: k.brand.muted-on-ink
+      }
+    }
+  }
+
+  colophon = frame {
+    width: 1440px,
+    layout: {direction: .column, item-gap: 24px},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .top},
+    padding: [k.grid.section, k.grid.margin, 48px],
+    children: [colophonTop, colophonBottom],
+
+    colophonTop = frame {
+      width: 100%,
+      layout: {item-gap: k.grid.gutter},
+      children: [colophonName, colophonCredit],
+
+      colophonName = text : body {
+        width: k.grid.span-4,
+        contents: "skill studio",
+        font-style: "Light"
+      }
+
+      colophonCredit = text : body {
+        width: k.grid.span-6,
+        contents: "Made possible by Emil Kowalski's course AI for Designers and Engineers, which teaches turning taste into rules an agent follows.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    colophonBottom = frame {
+      width: 100%,
+      layout: {justify-content: .space-between},
+      children: [colophonLeft, colophonRight],
+
+      colophonLeft = text : meta {
+        contents: "MILES ROXAS / MIT LICENSE / V0.16.0"
+      }
+
+      colophonRight = text : meta {
+        contents: "PRIVACY / SECURITY / CHANGELOG / GITHUB"
+      }
+    }
+  }
+}
+
+// Round two: Lift, refined (2026-11-16). Miles picked B. The pass removes the
+// eyebrows and rules: a change of ground separates sections, one statement in
+// light display names each, and the installer is the App download block as it
+// ships (it already detects the visitor's system). The brand changes this
+// round proposes are on the sheet beside the page.
+round2 = frame {
+  left: -2664px,
+  top: 5905px,
+  layout: {direction: .column, item-gap: 96px},
+  fill: k.brand.grey-1,
+  padding: 120px,
+  children: [r2Intro, r2Row],
+
+  r2Intro = frame {
+    width: 1310px,
+    layout: {direction: .column, item-gap: 24px},
+    children: [r2Title, r2Note],
+
+    r2Title = text : kit.display {
+      contents: "lift, round two",
+      font-size: 154
+    }
+
+    r2Note = text : kit.body {
+      width: k.grid.span-7,
+      contents: "Round one leaned on a code over every section and a rule under it. Both are gone. Grounds change instead (ink, paper, a grey field, ink again), each section is named by one short statement, and the only lines left are data (the baseline at 71) or a thing to press (the orange underline). The installer is the shipped block, drawn square and without its two labels.",
+      fill[0].color: k.brand.muted
+    }
+  }
+
+  r2Row = frame {
+    layout: {item-gap: 384px},
+    children: [liftDesktop, featureBoard, liftMobile, brandDeltas],
+
+    liftDesktop = frame {
+      title: "Lift R2 / 1440",
+      caption: "The page top to bottom. Ink (opening, then the pinned feature), field, paper, ink.",
+      width: k.grid.page,
+      layout: {direction: .column},
+      fill: k.brand.paper,
+      children: [r2Opening, r2Feature, r2Verdict, r2Install, r2Contribute],
+
+      r2Opening = frame {
+        width: 100%,
+        height: 900px,
+        fill: k.brand.ink,
+        children: [
+          r2Nav,
+          r2Head,
+          r2Line,
+          r2Cta,
+          r2Readout,
+          r2Caption,
+          r2Ribbon,
+          r2First,
+          r2Latest,
+          r2Without
+        ],
+
+        r2Nav = frame : kit.navOnInk {
+          left: 0px,
+          top: 0px
+        }
+
+        r2Head = text : kit.statement {
+          left: 65px,
+          top: 136px,
+          width: k.grid.span-7,
+          contents: "write better\nai skills",
+          fill[0].color: k.brand.paper
+        }
+
+        r2Line = text : kit.body {
+          left: 65px,
+          top: 332px,
+          width: k.grid.span-5,
+          contents: "Skill Studio is a desktop app. Write the instructions your AI agent follows, then test every change on real work.",
+          fill[0].color: k.brand.muted-on-ink
+        }
+
+        r2Cta = frame {
+          left: 65px,
+          top: 428px,
+          layout: {align-items: .center, item-gap: 32px},
+          children: [r2Download, r2Source],
+
+          r2Download = frame : kit.dlPrimary {
+            width: k.grid.span-4,
+            fill[0].color: k.brand.paper,
+
+            dlLead {
+              dlWords {
+                dlMeta {
+                  fill[0].color: k.brand.muted
+                }
+
+                dlTitle {
+                  fill[0].color: k.brand.ink
+                }
+              }
+
+              dlMark {
+                fill[0].color: k.brand.ink
+              }
+            }
+          }
+
+          r2Source = frame : kit.textLink {
+            linkLabel {
+              fill[0].color: k.brand.paper,
+              contents: "Source on GitHub"
+            }
+          }
+        }
+
+        r2Readout = text {
+          left: 950px,
+          top: 120px,
+          fill: k.brand.fluoro,
+          contents: "+13",
+          font-size: 176,
+          font-family: "Geist Pixel",
+          line-height: 0.9
+        }
+
+        r2Caption = text : kit.body {
+          left: 950px,
+          top: 300px,
+          width: k.grid.span-4,
+          contents: "The sample skill over 3 cases: 71 with no skill, 85 with the first draft, 98 after one edit.",
+          fill[0].color: k.brand.muted-on-ink
+        }
+
+        r2Ribbon = asset {
+          left: 0px,
+          top: 420px,
+          width: 1440px,
+          height: 480px,
+          contents: liftRibbon
+        }
+
+        r2First = text : kit.body {
+          left: 65px,
+          top: 747px,
+          contents: "85",
+          font-family: "Geist Mono",
+          fill[0].color: k.brand.ink
+        }
+
+        r2Latest = text : kit.body {
+          left: 1351px,
+          top: 607px,
+          contents: "98",
+          font-family: "Geist Mono",
+          fill[0].color: k.brand.ink
+        }
+
+        r2Without = text : kit.body {
+          left: 1351px,
+          top: 838px,
+          contents: "71",
+          font-family: "Geist Mono",
+          fill[0].color: k.brand.muted-on-ink
+        }
+      }
+
+      // The loop as a pinned feature: the first beat, as the section reads
+      // when it pins. The three beats and the motion are on the storyboard.
+      r2Feature = frame : kit.featureState {}
+
+      r2Verdict = frame {
+        width: 100%,
+        height: 760px,
+        fill: k.brand.grey-1,
+        children: [verdictShot, verdictWords],
+
+        verdictShot = frame {
+          left: 0px,
+          top: 100px,
+          width: 711.5px,
+          height: 560px,
+          fill: {
+            image: {
+              ref: shotResults,
+              sizing: {scale: 1.0164, offset: [160.6px, 216px]}
+            }
+          }
+        }
+
+        verdictWords = frame {
+          left: 839.08px,
+          top: 144px,
+          width: k.grid.span-5,
+          layout: {direction: .column, item-gap: 32px},
+          children: [verdictStatement, verdictBody],
+
+          verdictStatement = text : kit.statement {
+            width: 100%,
+            contents: "you have the last word"
+          }
+
+          verdictBody = text : kit.body {
+            width: k.grid.span-4,
+            contents: "Jev marks each rule met or missed. Where you disagree, mark it yourself and the score follows. Runs, scores and your marks are plain files in the skill's folder. There is no account."
+          }
+        }
+      }
+
+      r2Install = frame : kit.installBlock {}
+
+      r2Contribute = frame : kit.repoBlock {}
+    }
+
+    // The feature's three beats as they pin, and how the scroll drives them.
+    featureBoard = frame {
+      title: "Lift R2 / feature, three beats",
+      caption: "Scroll-linked. Nothing moves unless the reader scrolls.",
+      layout: {direction: .column, item-gap: 96px},
+      children: [featureSpec, beatWrite, beatRun, beatCompare],
+
+      featureSpec = frame {
+        width: 1440px,
+        layout: {item-gap: k.grid.gutter},
+        children: [featureSpecTitle, featureSpecBody],
+
+        featureSpecTitle = text : kit.statement {
+          width: k.grid.span-5,
+          contents: "one screen, three beats"
+        }
+
+        featureSpecBody = text : kit.body {
+          width: k.grid.span-6,
+          contents: "The section pins for three viewport heights and the scroll drives it one to one. Between beats, over the same 40% of a viewport: the next verb brightens as the last one dims, the sentence under them swaps, and the screen cross-fades while it settles from 104% to 100%, a slow push in. Each beat crops the app to the one place it talks about. With reduced motion, or on a phone, nothing pins: the three beats stack, verb, sentence, screen. Built on sticky positioning and a CSS scroll timeline, not a scripted entrance, so it stays inside the one reveal system.",
+          fill[0].color: k.brand.muted
+        }
+      }
+
+      beatWrite = frame : kit.featureState {}
+
+      beatRun = frame : kit.featureState {
+        featVerbs {
+          verbRun {
+            fill[0].color: k.brand.paper
+          }
+
+          verbWrite {
+            fill[0].color: k.brand.ink-dim
+          }
+        }
+
+        featScreen {
+          fill[0].image.ref: shotRun,
+          fill[0].image.sizing.scale: 0.6966,
+          fill[0].image.sizing.offset: [-154.7px, 23.7px]
+        }
+
+        featText {
+          contents: "Claude Code or Cursor answers a few real tasks with the skill installed. Jev, from TypeSafe, grades each answer against your rules."
+        }
+      }
+
+      beatCompare = frame : kit.featureState {
+        featVerbs {
+          verbCompare {
+            fill[0].color: k.brand.paper
+          }
+
+          verbWrite {
+            fill[0].color: k.brand.ink-dim
+          }
+        }
+
+        featScreen {
+          fill[0].image.ref: shotResults,
+          fill[0].image.sizing.scale: 0.6,
+          fill[0].image.sizing.offset: [-106.2px, 7.8px]
+        }
+
+        featText {
+          contents: "Two versions side by side, with what each one missed. Keep the edit that scored higher, or write the next one."
+        }
+      }
+    }
+
+    // The first screen on a phone. Moment type does not shrink below 8x
+    // metadata (88px): the headline breaks onto three lines instead.
+    liftMobile = frame {
+      title: "Lift R2 / 390",
+      caption: "First screen on a phone. The block says this is a desktop app.",
+      width: 390px,
+      height: 844px,
+      fill: k.brand.ink,
+      children: [mNav, mHead, mLine, mNote, mReadout, mRibbon],
+
+      mNav = text : kit.body {
+        left: 18px,
+        top: 20px,
+        contents: "miles roxas",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+
+      mHead = text : kit.statement {
+        left: 18px,
+        top: 88px,
+        width: 354px,
+        contents: "write\nbetter\nai skills",
+        fill[0].color: k.brand.paper
+      }
+
+      mLine = text : kit.body {
+        left: 18px,
+        top: 372px,
+        width: 340px,
+        contents: "Skill Studio is a desktop app. Write the instructions your AI agent follows, then test every change on real work.",
+        font-size: 16,
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      mNote = frame {
+        left: 18px,
+        top: 478px,
+        width: 354px,
+        layout: {item-gap: 10px},
+        children: [mNoteDot, mNoteText],
+
+        mNoteDot = frame {
+          top: 9px,
+          width: 6px,
+          height: 6px,
+          fill: k.brand.spot
+        }
+
+        mNoteText = text : kit.body {
+          width: 330px,
+          contents: "Open this page on a Mac, Windows or Linux computer to install it.",
+          font-size: 16,
+          fill[0].color: k.brand.paper
+        }
+      }
+
+      mReadout = text {
+        left: 18px,
+        top: 580px,
+        fill: k.brand.fluoro,
+        contents: "+13",
+        font-size: 88,
+        font-family: "Geist Pixel",
+        line-height: 0.9
+      }
+
+      mRibbon = asset {
+        left: -40px,
+        top: 690px,
+        width: 470px,
+        height: 157px,
+        contents: liftRibbon
+      }
+    }
+
+    brandDeltas = frame {
+      title: "Brand changes, round two",
+      caption: "What this page changed in the new brand. Fold into miles-visual-brand once Miles agrees.",
+      width: 960px,
+      layout: {direction: .column, item-gap: 40px},
+      fill: k.brand.paper,
+      padding: 64px,
+      children: [deltaTitle, deltaList],
+
+      deltaTitle = text : kit.statement {
+        width: 100%,
+        contents: "what changed"
+      }
+
+      deltaList = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 28px},
+        children: [
+          delta1,
+          delta2,
+          delta3,
+          delta4,
+          delta5,
+          delta6,
+          delta7,
+          delta8,
+          delta9
+        ],
+
+        delta1 = text : kit.body {
+          width: 100%,
+          contents: "1. Sections are named by a statement, not a code. One line of light display, six words or fewer, lowercase. The numbered index (02 / the loop) stays for lists and case study chapters, never as a section eyebrow."
+        }
+
+        delta2 = text : kit.body {
+          width: 100%,
+          contents: "2. Grounds separate sections, rules do not. Paper, the grey field and ink take turns. A line is allowed only when it carries data (a chart baseline) or marks a thing to press (the 3px orange underline)."
+        }
+
+        delta3 = text : kit.body {
+          width: 100%,
+          contents: "3. The grey field (#e6e6e6) becomes a named ground, for the one section a page sets apart."
+        }
+
+        delta4 = text : kit.body {
+          width: 100%,
+          contents: "4. Marketing pages drop the 1.9x lead size. Three classes again: metadata 11, body 17, display or moment 88 and up."
+        }
+
+        delta5 = text : kit.body {
+          width: 100%,
+          contents: "5. Metadata is for facts a reader checks (a version, a file type), at most one group per view. Labels that only name what follows are cut."
+        }
+
+        delta6 = text : kit.body {
+          width: 100%,
+          contents: "6. The nav names the site, not the page: miles roxas, then work, posts, contact. The product's name lives in the page's first sentence."
+        }
+
+        delta7 = text : kit.body {
+          width: 100%,
+          contents: "7. The App download block keeps its behaviour (it detects the system and the Mac's chip) and takes three changes: square corners instead of 6px, notes at body size instead of 14px, and no Other systems or Or clone it labels, since the buttons say what they are."
+        }
+
+        delta9 = text : kit.body {
+          width: 100%,
+          contents: "9. One pinned feature per page at most, for a sequence the reader steps through. Scroll drives it one to one; it never plays on its own. Unvisited steps sit in a dim ink (#3a393f) on the ink ground, so the list of steps is also the progress."
+        }
+
+        delta8 = text : kit.body {
+          width: 100%,
+          contents: "8. To settle before building: the site grid is 8 columns with a 96px gutter; the brand says 12 columns, margin 4.5%, gutter 1.2%. This page draws the brand's grid."
+        }
+      }
+    }
+  }
+}
+
+// Round three: Lift for a reader new to all of it (2026-11-16). App screens
+// are shown whole, never cropped. Every product word is explained the first
+// time it appears. Display type drops to 72 (the opening) and 44 (statements),
+// and the pinned feature walks six features under write, test and compare.
+round3 = frame {
+  left: -2664px,
+  top: 11600px,
+  layout: {direction: .column, item-gap: 96px},
+  fill: k.brand.grey-1,
+  padding: 120px,
+  children: [r3Intro, r3Row],
+
+  r3Intro = frame {
+    width: 1310px,
+    layout: {direction: .column, item-gap: 24px},
+    children: [r3Title, r3Note],
+
+    r3Title = text : kit.display {
+      contents: "lift, round three",
+      font-size: 154
+    }
+
+    r3Note = text : kit.body {
+      width: k.grid.span-7,
+      contents: "Written for someone who has never heard of a skill. App screens are whole windows, never crops. The verdict section is gone: grading is now one of the six features in the pinned walkthrough, beside the assistant, the rule checks, suggested rewrites, example tasks and side by side results.",
+      fill[0].color: k.brand.muted
+    }
+  }
+
+  r3Row = frame {
+    layout: {item-gap: 384px},
+    children: [r3Desktop, r3Board, r3Mobile, r3Deltas],
+
+    r3Desktop = frame {
+      title: "Lift R3 / 1440",
+      caption: "Ink, paper, the grey field (pinned), paper, ink.",
+      width: k.grid.page,
+      layout: {direction: .column},
+      fill: k.brand.paper,
+      children: [r3Opening, r3Skill, r3Feature, r3Install, r3Contribute],
+
+      r3Opening = frame {
+        width: 100%,
+        height: 900px,
+        fill: k.brand.ink,
+        children: [
+          r3Nav,
+          r3Head,
+          r3Line,
+          r3Cta,
+          r3Readout,
+          r3Caption,
+          r3Ribbon,
+          r3First,
+          r3Latest,
+          r3Without
+        ],
+
+        r3Nav = frame : kit.navOnInk {
+          left: 0px,
+          top: 0px
+        }
+
+        r3Head = text : kit.hero {
+          left: 65px,
+          top: 160px,
+          width: k.grid.span-6,
+          contents: "write better\nai skills",
+          fill[0].color: k.brand.paper
+        }
+
+        r3Line = text : kit.body {
+          left: 65px,
+          top: 324px,
+          width: k.grid.span-5,
+          contents: "A skill is a page of instructions your AI assistant reads before it does a task for you. Skill Studio helps you write one, then shows whether each change made the results better.",
+          fill[0].color: k.brand.muted-on-ink
+        }
+
+        r3Cta = frame {
+          left: 65px,
+          top: 452px,
+          layout: {align-items: .center, item-gap: 32px},
+          children: [r3Download, r3Source],
+
+          r3Download = frame : kit.dlPrimary {
+            width: k.grid.span-4,
+            fill[0].color: k.brand.paper,
+
+            dlLead {
+              dlWords {
+                dlMeta {
+                  fill[0].color: k.brand.muted
+                }
+
+                dlTitle {
+                  fill[0].color: k.brand.ink
+                }
+              }
+
+              dlMark {
+                fill[0].color: k.brand.ink
+              }
+            }
+          }
+
+          r3Source = frame : kit.textLink {
+            linkLabel {
+              fill[0].color: k.brand.paper,
+              contents: "Source on GitHub"
+            }
+          }
+        }
+
+        r3Readout = text {
+          left: 950px,
+          top: 156px,
+          fill: k.brand.fluoro,
+          contents: "+13",
+          font-size: 120,
+          font-family: "Geist Pixel",
+          line-height: 0.9
+        }
+
+        r3Caption = text : kit.body {
+          left: 950px,
+          top: 284px,
+          width: k.grid.span-4,
+          contents: "In the sample skill, results scored 85 out of 100 with the first draft and 98 after one change. With no skill at all, the same tasks scored 71.",
+          fill[0].color: k.brand.muted-on-ink
+        }
+
+        r3Ribbon = asset {
+          left: 0px,
+          top: 440px,
+          width: 1440px,
+          height: 480px,
+          contents: liftRibbon
+        }
+
+        r3First = text : kit.body {
+          left: 65px,
+          top: 767px,
+          contents: "85",
+          font-family: "Geist Mono",
+          fill[0].color: k.brand.ink
+        }
+
+        r3Latest = text : kit.body {
+          left: 1351px,
+          top: 627px,
+          contents: "98",
+          font-family: "Geist Mono",
+          fill[0].color: k.brand.ink
+        }
+
+        r3Without = text : kit.body {
+          left: 1351px,
+          top: 858px,
+          contents: "71",
+          font-family: "Geist Mono",
+          fill[0].color: k.brand.muted-on-ink
+        }
+      }
+
+      // What a skill is, by example, before any feature.
+      r3Skill = frame {
+        width: 100%,
+        layout: {item-gap: k.grid.gutter},
+        padding: [144px, 65px, 160px],
+        children: [r3SkillIntro, r3SkillList],
+
+        r3SkillIntro = text : kit.body {
+          width: k.grid.span-4,
+          contents: "AI assistants like Claude Code and Cursor can do a job your way when the way is written down. That page of instructions is a skill. Skills suit work that takes judgement, such as:"
+        }
+
+        r3SkillList = frame {
+          width: k.grid.span-7,
+          layout: {direction: .column, item-gap: 48px},
+          padding: [0px, 0px, 0px, 110.58px],
+          children: [exampleNotes, examplePages, exampleTests],
+
+          exampleNotes = frame : kit.example {}
+
+          examplePages = frame : kit.example {
+            exampleName {
+              contents: "landing pages"
+            }
+
+            exampleText {
+              contents: "Build web pages that work for everyone, read well and feel finished."
+            }
+          }
+
+          exampleTests = frame : kit.example {
+            exampleName {
+              contents: "code changes"
+            }
+
+            exampleText {
+              contents: "Follow the project's conventions: change the code, test it, and show that the test passes."
+            }
+          }
+        }
+      }
+
+      // The pinned walkthrough, as it reads when it pins (state 1 of 6).
+      r3Feature = frame : kit.walkState {}
+
+      r3Install = frame : kit.installBlock {
+        installWords {
+          installStatement {
+            contents: "free for mac, windows and linux",
+            font-size: 44
+          }
+
+          installBody {
+            contents: "Skill Studio works with an AI assistant you already use, Claude Code or Cursor, signed in on your computer. To score results it needs a key from TypeSafe, the scoring service. The app walks you through getting one."
+          }
+        }
+      }
+
+      r3Contribute = frame : kit.repoBlock {
+        repoMain {
+          repoWords {
+            repoStatement {
+              contents: "open source",
+              font-size: 44
+            }
+
+            repoBody {
+              contents: "Anyone can read the code, change it and send changes back, under the MIT license. Fixes and new features are welcome. For anything bigger than a fix, open an issue first so we can agree on the shape."
+            }
+          }
+        }
+      }
+    }
+
+    // The walkthrough's six states. Each window is the whole app, as filmed.
+    r3Board = frame {
+      title: "Lift R3 / walkthrough, six states",
+      caption: "Pinned for six viewport heights, driven by scroll one to one.",
+      layout: {direction: .column, item-gap: 96px},
+      children: [walkSpec, walk1, walk2, walk3, walk4, walk5, walk6],
+
+      walkSpec = frame {
+        width: 1440px,
+        layout: {item-gap: k.grid.gutter},
+        children: [walkSpecTitle, walkSpecBody],
+
+        walkSpecTitle = text : kit.statement {
+          width: k.grid.span-5,
+          contents: "how it works, in six screens",
+          font-size: 44
+        }
+
+        walkSpecBody = text : kit.body {
+          width: k.grid.span-6,
+          contents: "The outline on the left is the heading and the progress at once: three steps, each with its features. The current step is ink, its current feature carries the orange square, the rest wait in grey. Between states, over 40% of a viewport: the window cross-fades and settles from 102% to 100%, and the sentence swaps. Every window is the whole app, never a crop. With reduced motion or on a phone, nothing pins and the six states stack.",
+          fill[0].color: k.brand.muted
+        }
+      }
+
+      walk1 = frame : kit.walkState {}
+
+      walk2 = frame : kit.walkState {
+        walkWindow {
+          fill[0].image.ref: winSuggest
+        }
+
+        walkOutline {
+          oWrite {
+            oWriteFeatures {
+              oRewrites {
+                oRewritesName {
+                  fill[0].color: k.brand.ink
+                }
+
+                oRewritesDot {
+                  fill[0].color: k.brand.spot
+                }
+              }
+
+              oChecks {
+                oChecksName {
+                  fill[0].color: k.brand.muted
+                }
+
+                oChecksDot {
+                  fill[0].color: k.brand.grey-1
+                }
+              }
+            }
+          }
+        }
+
+        walkText {
+          contents: "Select a rule and get three clearer ways to say it. Nothing changes until you pick one, and Undo takes it back."
+        }
+      }
+
+      walk3 = frame : kit.walkState {
+        walkWindow {
+          fill[0].image.ref: winChat
+        }
+
+        walkOutline {
+          oWrite {
+            oWriteFeatures {
+              oAssistant {
+                oAssistantName {
+                  fill[0].color: k.brand.ink
+                }
+
+                oAssistantDot {
+                  fill[0].color: k.brand.spot
+                }
+              }
+
+              oChecks {
+                oChecksName {
+                  fill[0].color: k.brand.muted
+                }
+
+                oChecksDot {
+                  fill[0].color: k.brand.grey-1
+                }
+              }
+            }
+          }
+        }
+
+        walkText {
+          contents: "Or talk it through. The assistant reads your whole skill, points out what is unclear, and suggests changes you apply with a click."
+        }
+      }
+
+      walk4 = frame : kit.walkState {
+        walkWindow {
+          fill[0].image.ref: winCase
+        }
+
+        walkOutline {
+          oTest {
+            oTestFeatures {
+              oTasks {
+                oTasksName {
+                  fill[0].color: k.brand.ink
+                }
+
+                oTasksDot {
+                  fill[0].color: k.brand.spot
+                }
+              }
+            }
+
+            oTestVerb {
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          oWrite {
+            oWriteFeatures {
+              oAssistant {
+                oAssistantName {
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+
+              oRewrites {
+                oRewritesName {
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+
+              oChecks {
+                oChecksName {
+                  fill[0].color: k.brand.field-dim
+                }
+
+                oChecksDot {
+                  fill[0].color: k.brand.grey-1
+                }
+              }
+            }
+
+            oWriteVerb {
+              fill[0].color: k.brand.field-dim
+            }
+          }
+        }
+
+        walkText {
+          contents: "Add a few example tasks, asked the way you really would. Your AI assistant does each one with the skill, so you see what it makes."
+        }
+      }
+
+      walk5 = frame : kit.walkState {
+        walkWindow {
+          fill[0].image.ref: winDesign
+        }
+
+        walkOutline {
+          oCompare {
+            oCompareFeatures {
+              oSide {
+                oSideName {
+                  fill[0].color: k.brand.ink
+                }
+
+                oSideDot {
+                  fill[0].color: k.brand.spot
+                }
+              }
+            }
+
+            oCompareVerb {
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          oWrite {
+            oWriteFeatures {
+              oAssistant {
+                oAssistantName {
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+
+              oRewrites {
+                oRewritesName {
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+
+              oChecks {
+                oChecksName {
+                  fill[0].color: k.brand.field-dim
+                }
+
+                oChecksDot {
+                  fill[0].color: k.brand.grey-1
+                }
+              }
+            }
+
+            oWriteVerb {
+              fill[0].color: k.brand.field-dim
+            }
+          }
+        }
+
+        walkText {
+          contents: "See the old result and the new one next to each other. A web page opens large, and you flip between the two with one key."
+        }
+      }
+
+      walk6 = frame : kit.walkState {
+        walkWindow {
+          fill[0].image.ref: winScores
+        }
+
+        walkOutline {
+          oCompare {
+            oCompareFeatures {
+              oScores {
+                oScoresName {
+                  fill[0].color: k.brand.ink
+                }
+
+                oScoresDot {
+                  fill[0].color: k.brand.spot
+                }
+              }
+
+              oSide {
+                oSideName {
+                  fill[0].color: k.brand.muted
+                }
+              }
+            }
+
+            oCompareVerb {
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          oWrite {
+            oWriteFeatures {
+              oAssistant {
+                oAssistantName {
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+
+              oRewrites {
+                oRewritesName {
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+
+              oChecks {
+                oChecksName {
+                  fill[0].color: k.brand.field-dim
+                }
+
+                oChecksDot {
+                  fill[0].color: k.brand.grey-1
+                }
+              }
+            }
+
+            oWriteVerb {
+              fill[0].color: k.brand.field-dim
+            }
+          }
+        }
+
+        walkText {
+          contents: "Every result gets a score out of 100 for how many of your rules it followed, with a list of what it missed. If you disagree with a mark, change it and the score follows."
+        }
+      }
+    }
+
+    r3Mobile = frame {
+      title: "Lift R3 / 390",
+      caption: "First screen on a phone.",
+      width: 390px,
+      height: 844px,
+      fill: k.brand.ink,
+      children: [m3Nav, m3Head, m3Line, m3Note, m3Readout, m3Caption, m3Ribbon],
+
+      m3Nav = text : kit.body {
+        left: 18px,
+        top: 20px,
+        contents: "miles roxas",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+
+      m3Head = text : kit.hero {
+        left: 18px,
+        top: 96px,
+        width: 354px,
+        contents: "write better\nai skills",
+        font-size: 52,
+        fill[0].color: k.brand.paper
+      }
+
+      m3Line = text : kit.body {
+        left: 18px,
+        top: 228px,
+        width: 350px,
+        contents: "A skill is a page of instructions your AI assistant reads before it does a task for you. Skill Studio helps you write one, then shows whether each change made the results better.",
+        font-size: 16,
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      m3Note = frame {
+        left: 18px,
+        top: 378px,
+        width: 354px,
+        layout: {item-gap: 10px},
+        children: [m3NoteDot, m3NoteText],
+
+        m3NoteDot = frame {
+          width: 6px,
+          height: 6px,
+          fill: k.brand.spot
+        }
+
+        m3NoteText = text : kit.body {
+          width: 330px,
+          contents: "Skill Studio is a desktop app. Open this page on a Mac, Windows or Linux computer to install it.",
+          font-size: 16,
+          fill[0].color: k.brand.paper
+        }
+      }
+
+      m3Readout = text {
+        left: 18px,
+        top: 492px,
+        fill: k.brand.fluoro,
+        contents: "+13",
+        font-size: 72,
+        font-family: "Geist Pixel",
+        line-height: 0.9
+      }
+
+      m3Caption = text : kit.body {
+        left: 18px,
+        top: 568px,
+        width: 340px,
+        contents: "The sample skill went from 85 to 98 out of 100 after one change.",
+        font-size: 16,
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      m3Ribbon = asset {
+        left: -40px,
+        top: 690px,
+        width: 470px,
+        height: 157px,
+        contents: liftRibbon
+      }
+    }
+
+    r3Deltas = frame {
+      title: "Brand changes, round three",
+      caption: "Adds to round two's sheet. Fold into miles-visual-brand once Miles agrees.",
+      width: 960px,
+      layout: {direction: .column, item-gap: 40px},
+      fill: k.brand.paper,
+      padding: 64px,
+      children: [d3Title, d3List],
+
+      d3Title = text : kit.statement {
+        width: 100%,
+        contents: "what changed again",
+        font-size: 44
+      }
+
+      d3List = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 28px},
+        children: [d3a, d3b, d3c, d3d, d3e],
+
+        d3a = text : kit.body {
+          width: 100%,
+          contents: "10. Sizes, refined. Display has two steps on a page: 72 for the opening line and 44 for statements and step names. The pixel readout is 120. Rule 6's floor drops from 8x metadata to 4x. Impact comes from the ground and the contrast, light type in paper on ink, not from size."
+        }
+
+        d3b = text : kit.body {
+          width: 100%,
+          contents: "11. A product screen is shown whole: the full window, as filmed, never a crop of a corner. Focus comes from what the copy beside it says, or from the plates' dimming, never from cutting the rest away."
+        }
+
+        d3c = text : kit.body {
+          width: 100%,
+          contents: "12. Copy assumes a reader new to the product and the field. Every product word (skill, case, grading) is explained the first time it appears, or replaced by a plain one (example task, score). Tool names come after what they do."
+        }
+
+        d3d = text : kit.body {
+          width: 100%,
+          contents: "13. A walkthrough outline may have two levels: steps in display, their features in body. The current feature carries the orange square, the brand's mark for the current item."
+        }
+
+        d3e = text : kit.body {
+          width: 100%,
+          contents: "14. Dim on the grey field is #b4b4b7, the partner of round two's dim ink."
+        }
+      }
+    }
+  }
+}
+
+// How it works, redesigned (2026-11-16). Four patterns for the walkthrough,
+// two states each. Every window is the whole app; text and windows share top
+// edges and sit on the 12-column grid.
+howItWorks = frame {
+  left: -2664px,
+  top: 19500px,
+  layout: {direction: .column, item-gap: 160px},
+  fill: k.brand.grey-1,
+  padding: 120px,
+  children: [hiwIntro, hiwA, hiwB, hiwC, hiwD],
+
+  hiwIntro = frame {
+    width: 1310px,
+    layout: {direction: .column, item-gap: 24px},
+    children: [hiwTitle, hiwNote],
+
+    hiwTitle = text : kit.display {
+      contents: "how it works, four ways",
+      font-size: 88
+    }
+
+    hiwNote = text : kit.body {
+      width: 867.67px,
+      contents: "Round three put the outline at one height, the sentence at another and the window at a third, so a feature's name sat far from what it meant. Each pattern here keeps a feature's name, sentence and window together. A and B pin one stage while you scroll, C slides a strip sideways, D stacks sheets. My pick is B: the pin shows where in the app each feature lives, which a reader new to the product needs most.",
+      fill[0].color: k.brand.muted
+    }
+  }
+
+  hiwA = frame {
+    layout: {item-gap: 288px},
+    children: [hiwANote, hiwA1, hiwA2],
+
+    hiwANote = frame {
+      width: 425.33px,
+      layout: {direction: .column, item-gap: 24px},
+      children: [hiwATitle, hiwABody],
+
+      hiwATitle = text : kit.statement {
+        width: 100%,
+        contents: "a. outline, grouped",
+        font-size: 44
+      }
+
+      hiwABody = text : kit.body {
+        width: 100%,
+        contents: "The walkthrough as a table of contents. The current feature opens in place, its sentence right under its name, so a feature and its description are never apart. Outline and window share a top edge at 179 and the window fills columns 5 to 12. Closest to round three, fixed.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    hiwA1 = frame {
+      title: "A. Outline, grouped / write, rule checks",
+      caption: "write, rule checks",
+      width: 1440px,
+      height: 900px,
+      fill: k.brand.grey-1,
+      children: [hiwA1Outline, hiwA1Window],
+
+      hiwA1Outline = frame {
+        left: 65px,
+        top: 173px,
+        width: 425.33px,
+        layout: {direction: .column, item-gap: 28px},
+        children: [hiwA1S0, hiwA1S1, hiwA1S2],
+
+        hiwA1S0 = frame {
+          layout: {direction: .column, item-gap: 12px},
+          children: [hiwA1S0Verb, hiwA1S0Features],
+
+          hiwA1S0Verb = text : kit.statement {
+            contents: "write",
+            font-size: 44,
+            fill[0].color: k.brand.ink
+          }
+
+          hiwA1S0Features = frame {
+            layout: {direction: .column, item-gap: 6px},
+            children: [hiwA1F0, hiwA1F1, hiwA1F2],
+
+            hiwA1F0 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              padding: [0px, 0px, 8px],
+              children: [hiwA1F0Row, hiwA1F0Indent],
+
+              hiwA1F0Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA1F0Dot, hiwA1F0Name],
+
+                hiwA1F0Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.spot
+                }
+
+                hiwA1F0Name = text : kit.body {
+                  contents: "rule checks",
+                  fill[0].color: k.brand.ink
+                }
+              }
+
+              hiwA1F0Indent = frame {
+                layout: {direction: .row},
+                padding: [0px, 0px, 0px, 20px],
+                children: hiwA1F0Text,
+
+                hiwA1F0Text = text : kit.body {
+                  width: 405.33px,
+                  contents: "Write your instructions as a short list of rules. A rule too vague to follow gets an amber number and a note on how to fix it.",
+                  fill[0].color: k.brand.ink
+                }
+              }
+            }
+
+            hiwA1F1 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA1F1Row,
+
+              hiwA1F1Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA1F1Dot, hiwA1F1Name],
+
+                hiwA1F1Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA1F1Name = text : kit.body {
+                  contents: "suggested rewrites",
+                  fill[0].color: k.brand.muted
+                }
+              }
+            }
+
+            hiwA1F2 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA1F2Row,
+
+              hiwA1F2Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA1F2Dot, hiwA1F2Name],
+
+                hiwA1F2Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA1F2Name = text : kit.body {
+                  contents: "assistant",
+                  fill[0].color: k.brand.muted
+                }
+              }
+            }
+          }
+        }
+
+        hiwA1S1 = frame {
+          layout: {direction: .column, item-gap: 12px},
+          children: [hiwA1S1Verb, hiwA1S1Features],
+
+          hiwA1S1Verb = text : kit.statement {
+            contents: "test",
+            font-size: 44,
+            fill[0].color: k.brand.field-dim
+          }
+
+          hiwA1S1Features = frame {
+            layout: {direction: .column, item-gap: 6px},
+            children: hiwA1F3,
+
+            hiwA1F3 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA1F3Row,
+
+              hiwA1F3Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA1F3Dot, hiwA1F3Name],
+
+                hiwA1F3Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA1F3Name = text : kit.body {
+                  contents: "example tasks",
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+            }
+          }
+        }
+
+        hiwA1S2 = frame {
+          layout: {direction: .column, item-gap: 12px},
+          children: [hiwA1S2Verb, hiwA1S2Features],
+
+          hiwA1S2Verb = text : kit.statement {
+            contents: "compare",
+            font-size: 44,
+            fill[0].color: k.brand.field-dim
+          }
+
+          hiwA1S2Features = frame {
+            layout: {direction: .column, item-gap: 6px},
+            children: [hiwA1F4, hiwA1F5],
+
+            hiwA1F4 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA1F4Row,
+
+              hiwA1F4Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA1F4Dot, hiwA1F4Name],
+
+                hiwA1F4Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA1F4Name = text : kit.body {
+                  contents: "side by side",
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+            }
+
+            hiwA1F5 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA1F5Row,
+
+              hiwA1F5Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA1F5Dot, hiwA1F5Name],
+
+                hiwA1F5Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA1F5Name = text : kit.body {
+                  contents: "scores you can correct",
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+            }
+          }
+        }
+      }
+
+      hiwA1Window = frame {
+        left: 507.33px,
+        top: 179px,
+        width: 867.67px,
+        height: 542.29px,
+        fill: {image: {ref: winChecks}}
+      }
+    }
+
+    hiwA2 = frame {
+      title: "A. Outline, grouped / compare, side by side",
+      caption: "compare, side by side",
+      width: 1440px,
+      height: 900px,
+      fill: k.brand.grey-1,
+      children: [hiwA2Outline, hiwA2Window],
+
+      hiwA2Outline = frame {
+        left: 65px,
+        top: 173px,
+        width: 425.33px,
+        layout: {direction: .column, item-gap: 28px},
+        children: [hiwA2S0, hiwA2S1, hiwA2S2],
+
+        hiwA2S0 = frame {
+          layout: {direction: .column, item-gap: 12px},
+          children: [hiwA2S0Verb, hiwA2S0Features],
+
+          hiwA2S0Verb = text : kit.statement {
+            contents: "write",
+            font-size: 44,
+            fill[0].color: k.brand.field-dim
+          }
+
+          hiwA2S0Features = frame {
+            layout: {direction: .column, item-gap: 6px},
+            children: [hiwA2F0, hiwA2F1, hiwA2F2],
+
+            hiwA2F0 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA2F0Row,
+
+              hiwA2F0Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA2F0Dot, hiwA2F0Name],
+
+                hiwA2F0Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA2F0Name = text : kit.body {
+                  contents: "rule checks",
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+            }
+
+            hiwA2F1 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA2F1Row,
+
+              hiwA2F1Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA2F1Dot, hiwA2F1Name],
+
+                hiwA2F1Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA2F1Name = text : kit.body {
+                  contents: "suggested rewrites",
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+            }
+
+            hiwA2F2 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA2F2Row,
+
+              hiwA2F2Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA2F2Dot, hiwA2F2Name],
+
+                hiwA2F2Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA2F2Name = text : kit.body {
+                  contents: "assistant",
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+            }
+          }
+        }
+
+        hiwA2S1 = frame {
+          layout: {direction: .column, item-gap: 12px},
+          children: [hiwA2S1Verb, hiwA2S1Features],
+
+          hiwA2S1Verb = text : kit.statement {
+            contents: "test",
+            font-size: 44,
+            fill[0].color: k.brand.field-dim
+          }
+
+          hiwA2S1Features = frame {
+            layout: {direction: .column, item-gap: 6px},
+            children: hiwA2F3,
+
+            hiwA2F3 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA2F3Row,
+
+              hiwA2F3Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA2F3Dot, hiwA2F3Name],
+
+                hiwA2F3Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA2F3Name = text : kit.body {
+                  contents: "example tasks",
+                  fill[0].color: k.brand.field-dim
+                }
+              }
+            }
+          }
+        }
+
+        hiwA2S2 = frame {
+          layout: {direction: .column, item-gap: 12px},
+          children: [hiwA2S2Verb, hiwA2S2Features],
+
+          hiwA2S2Verb = text : kit.statement {
+            contents: "compare",
+            font-size: 44,
+            fill[0].color: k.brand.ink
+          }
+
+          hiwA2S2Features = frame {
+            layout: {direction: .column, item-gap: 6px},
+            children: [hiwA2F4, hiwA2F5],
+
+            hiwA2F4 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              padding: [0px, 0px, 8px],
+              children: [hiwA2F4Row, hiwA2F4Indent],
+
+              hiwA2F4Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA2F4Dot, hiwA2F4Name],
+
+                hiwA2F4Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.spot
+                }
+
+                hiwA2F4Name = text : kit.body {
+                  contents: "side by side",
+                  fill[0].color: k.brand.ink
+                }
+              }
+
+              hiwA2F4Indent = frame {
+                layout: {direction: .row},
+                padding: [0px, 0px, 0px, 20px],
+                children: hiwA2F4Text,
+
+                hiwA2F4Text = text : kit.body {
+                  width: 405.33px,
+                  contents: "See the old result and the new one together. A web page opens large, and one key flips between the two.",
+                  fill[0].color: k.brand.ink
+                }
+              }
+            }
+
+            hiwA2F5 = frame {
+              layout: {direction: .column, item-gap: 8px},
+              children: hiwA2F5Row,
+
+              hiwA2F5Row = frame {
+                layout: {align-items: .center, item-gap: 12px},
+                children: [hiwA2F5Dot, hiwA2F5Name],
+
+                hiwA2F5Dot = frame {
+                  width: 8px,
+                  height: 8px,
+                  fill: k.brand.grey-1
+                }
+
+                hiwA2F5Name = text : kit.body {
+                  contents: "scores you can correct",
+                  fill[0].color: k.brand.muted
+                }
+              }
+            }
+          }
+        }
+      }
+
+      hiwA2Window = frame {
+        left: 507.33px,
+        top: 179px,
+        width: 867.67px,
+        height: 542.29px,
+        fill: {image: {ref: winDesign}}
+      }
+    }
+  }
+
+  hiwB = frame {
+    layout: {item-gap: 288px},
+    children: [hiwBNote, hiwB1, hiwB2],
+
+    hiwBNote = frame {
+      width: 425.33px,
+      layout: {direction: .column, item-gap: 24px},
+      children: [hiwBTitle, hiwBBody],
+
+      hiwBTitle = text : kit.statement {
+        width: 100%,
+        contents: "b. chapters and pins",
+        font-size: 44
+      }
+
+      hiwBBody = text : kit.body {
+        width: 100%,
+        contents: "Steps become three tabs across the top, the current one underlined in orange. The window gets nine columns, the largest of the four, and an orange pin sits on the exact control the feature is about. The rail beside it lists only this step's features, numbered to match the pin. Grouping is literal: one tab, its features, one window.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    hiwB1 = frame {
+      title: "B. Chapters and pins / write, suggested rewrites (pin 2 on the rewrites)",
+      caption: "write, suggested rewrites (pin 2 on the rewrites)",
+      width: 1440px,
+      height: 900px,
+      fill: k.brand.grey-1,
+      children: [hiwB1Tabs, hiwB1Window, hiwB1Rail],
+
+      hiwB1Tabs = frame {
+        left: 65px,
+        top: 72px,
+        layout: {align-items: .end, item-gap: 48px},
+        children: [hiwB1TabWrite, hiwB1TabTest, hiwB1TabCompare],
+
+        hiwB1TabWrite = frame {
+          layout: {direction: .column, item-gap: 10px},
+          border: {color: k.brand.spot, width: 3px, sides: .bottom},
+          padding: [0px, 0px, 10px],
+          children: hiwB1TabWriteWord,
+
+          hiwB1TabWriteWord = text : kit.statement {
+            contents: "write",
+            font-size: 44,
+            fill[0].color: k.brand.ink
+          }
+        }
+
+        hiwB1TabTest = frame {
+          layout: {direction: .column, item-gap: 10px},
+          padding: [0px, 0px, 13px],
+          children: hiwB1TabTestWord,
+
+          hiwB1TabTestWord = text : kit.statement {
+            contents: "test",
+            font-size: 44,
+            fill[0].color: k.brand.field-dim
+          }
+        }
+
+        hiwB1TabCompare = frame {
+          layout: {direction: .column, item-gap: 10px},
+          padding: [0px, 0px, 13px],
+          children: hiwB1TabCompareWord,
+
+          hiwB1TabCompareWord = text : kit.statement {
+            contents: "compare",
+            font-size: 44,
+            fill[0].color: k.brand.field-dim
+          }
+        }
+      }
+
+      hiwB1Window = frame {
+        left: 65px,
+        top: 176px,
+        width: 978.25px,
+        height: 611.41px,
+        fill: {image: {ref: winSuggest}},
+        children: hiwB1WindowPin,
+
+        hiwB1WindowPin = frame {
+          left: 345.1px,
+          top: 100.5px,
+          width: 24px,
+          height: 24px,
+          layout: {justify-content: .center, align-items: .center},
+          fill: k.brand.spot,
+          children: hiwB1WindowPinDigit,
+
+          hiwB1WindowPinDigit = text : kit.meta {
+            contents: "2",
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+
+      hiwB1Rail = frame {
+        left: 1060.25px,
+        top: 176px,
+        width: 314.75px,
+        layout: {direction: .column, item-gap: 24px},
+        children: [hiwB1R0, hiwB1R1, hiwB1R2],
+
+        hiwB1R0 = frame {
+          layout: {direction: .column, item-gap: 10px},
+          padding: 0px,
+          children: hiwB1R0Head,
+
+          hiwB1R0Head = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [hiwB1R0Chip, hiwB1R0Name],
+
+            hiwB1R0Chip = frame {
+              width: 24px,
+              height: 24px,
+              layout: {justify-content: .center, align-items: .center},
+              fill: k.brand.grey-1,
+              border: k.brand.field-dim,
+              children: hiwB1R0Digit,
+
+              hiwB1R0Digit = text : kit.meta {
+                contents: "1",
+                fill[0].color: k.brand.muted
+              }
+            }
+
+            hiwB1R0Name = text : kit.body {
+              contents: "rule checks",
+              fill[0].color: k.brand.muted
+            }
+          }
+        }
+
+        hiwB1R1 = frame {
+          layout: {direction: .column, item-gap: 10px},
+          padding: 0px,
+          children: [hiwB1R1Head, hiwB1R1Text],
+
+          hiwB1R1Head = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [hiwB1R1Chip, hiwB1R1Name],
+
+            hiwB1R1Chip = frame {
+              width: 24px,
+              height: 24px,
+              layout: {justify-content: .center, align-items: .center},
+              fill: k.brand.spot,
+              children: hiwB1R1Digit,
+
+              hiwB1R1Digit = text : kit.meta {
+                contents: "2",
+                fill[0].color: k.brand.ink
+              }
+            }
+
+            hiwB1R1Name = text : kit.body {
+              contents: "suggested rewrites",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          hiwB1R1Text = text : kit.body {
+            width: 278.75px,
+            contents: "Select a rule and get three clearer ways to say it. Nothing changes until you pick one.",
+            fill[0].color: k.brand.ink
+          }
+        }
+
+        hiwB1R2 = frame {
+          layout: {direction: .column, item-gap: 10px},
+          padding: 0px,
+          children: hiwB1R2Head,
+
+          hiwB1R2Head = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [hiwB1R2Chip, hiwB1R2Name],
+
+            hiwB1R2Chip = frame {
+              width: 24px,
+              height: 24px,
+              layout: {justify-content: .center, align-items: .center},
+              fill: k.brand.grey-1,
+              border: k.brand.field-dim,
+              children: hiwB1R2Digit,
+
+              hiwB1R2Digit = text : kit.meta {
+                contents: "3",
+                fill[0].color: k.brand.muted
+              }
+            }
+
+            hiwB1R2Name = text : kit.body {
+              contents: "assistant",
+              fill[0].color: k.brand.muted
+            }
+          }
+        }
+      }
+    }
+
+    hiwB2 = frame {
+      title: "B. Chapters and pins / compare, scores (pin 2 on a mark you made)",
+      caption: "compare, scores (pin 2 on a mark you made)",
+      width: 1440px,
+      height: 900px,
+      fill: k.brand.grey-1,
+      children: [hiwB2Tabs, hiwB2Window, hiwB2Rail],
+
+      hiwB2Tabs = frame {
+        left: 65px,
+        top: 72px,
+        layout: {align-items: .end, item-gap: 48px},
+        children: [hiwB2TabWrite, hiwB2TabTest, hiwB2TabCompare],
+
+        hiwB2TabWrite = frame {
+          layout: {direction: .column, item-gap: 10px},
+          padding: [0px, 0px, 13px],
+          children: hiwB2TabWriteWord,
+
+          hiwB2TabWriteWord = text : kit.statement {
+            contents: "write",
+            font-size: 44,
+            fill[0].color: k.brand.field-dim
+          }
+        }
+
+        hiwB2TabTest = frame {
+          layout: {direction: .column, item-gap: 10px},
+          padding: [0px, 0px, 13px],
+          children: hiwB2TabTestWord,
+
+          hiwB2TabTestWord = text : kit.statement {
+            contents: "test",
+            font-size: 44,
+            fill[0].color: k.brand.field-dim
+          }
+        }
+
+        hiwB2TabCompare = frame {
+          layout: {direction: .column, item-gap: 10px},
+          border: {color: k.brand.spot, width: 3px, sides: .bottom},
+          padding: [0px, 0px, 10px],
+          children: hiwB2TabCompareWord,
+
+          hiwB2TabCompareWord = text : kit.statement {
+            contents: "compare",
+            font-size: 44,
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+
+      hiwB2Window = frame {
+        left: 65px,
+        top: 176px,
+        width: 978.25px,
+        height: 611.41px,
+        fill: {image: {ref: winScores}},
+        children: hiwB2WindowPin,
+
+        hiwB2WindowPin = frame {
+          left: 352.8px,
+          top: 303.5px,
+          width: 24px,
+          height: 24px,
+          layout: {justify-content: .center, align-items: .center},
+          fill: k.brand.spot,
+          children: hiwB2WindowPinDigit,
+
+          hiwB2WindowPinDigit = text : kit.meta {
+            contents: "2",
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+
+      hiwB2Rail = frame {
+        left: 1060.25px,
+        top: 176px,
+        width: 314.75px,
+        layout: {direction: .column, item-gap: 24px},
+        children: [hiwB2R4, hiwB2R5],
+
+        hiwB2R4 = frame {
+          layout: {direction: .column, item-gap: 10px},
+          padding: 0px,
+          children: hiwB2R4Head,
+
+          hiwB2R4Head = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [hiwB2R4Chip, hiwB2R4Name],
+
+            hiwB2R4Chip = frame {
+              width: 24px,
+              height: 24px,
+              layout: {justify-content: .center, align-items: .center},
+              fill: k.brand.grey-1,
+              border: k.brand.field-dim,
+              children: hiwB2R4Digit,
+
+              hiwB2R4Digit = text : kit.meta {
+                contents: "1",
+                fill[0].color: k.brand.muted
+              }
+            }
+
+            hiwB2R4Name = text : kit.body {
+              contents: "side by side",
+              fill[0].color: k.brand.muted
+            }
+          }
+        }
+
+        hiwB2R5 = frame {
+          layout: {direction: .column, item-gap: 10px},
+          padding: 0px,
+          children: [hiwB2R5Head, hiwB2R5Text],
+
+          hiwB2R5Head = frame {
+            layout: {align-items: .center, item-gap: 12px},
+            children: [hiwB2R5Chip, hiwB2R5Name],
+
+            hiwB2R5Chip = frame {
+              width: 24px,
+              height: 24px,
+              layout: {justify-content: .center, align-items: .center},
+              fill: k.brand.spot,
+              children: hiwB2R5Digit,
+
+              hiwB2R5Digit = text : kit.meta {
+                contents: "2",
+                fill[0].color: k.brand.ink
+              }
+            }
+
+            hiwB2R5Name = text : kit.body {
+              contents: "scores you can correct",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          hiwB2R5Text = text : kit.body {
+            width: 278.75px,
+            contents: "Every result gets a score out of 100 for how many of your rules it followed, and a list of what it missed. If you disagree with a mark, change it and the score follows.",
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+    }
+  }
+
+  hiwC = frame {
+    layout: {item-gap: 288px},
+    children: [hiwCNote, hiwC1, hiwC2],
+
+    hiwCNote = frame {
+      width: 425.33px,
+      layout: {direction: .column, item-gap: 24px},
+      children: [hiwCTitle, hiwCBody],
+
+      hiwCTitle = text : kit.statement {
+        width: 100%,
+        contents: "c. filmstrip",
+        font-size: 44
+      }
+
+      hiwCBody = text : kit.body {
+        width: 100%,
+        contents: "Scrolling down moves a strip of six stills sideways, two whole windows in view, each with its caption underneath like a contact sheet. Step names ride above the first still of each step and stay at the left edge while their stills pass. Six squares at the foot count the stills. The most cinematic, and every still is read with its caption.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    hiwC1 = frame {
+      title: "C. Filmstrip / stills 1 and 2",
+      caption: "stills 1 and 2",
+      width: 1440px,
+      height: 900px,
+      fill: k.brand.paper,
+      children: [
+        hiwC1Step0,
+        hiwC1Win0,
+        hiwC1Name0,
+        hiwC1Text0,
+        hiwC1Win1,
+        hiwC1Name1,
+        hiwC1Text1,
+        hiwC1Progress
+      ],
+
+      hiwC1Step0 = text : kit.statement {
+        left: 65px,
+        top: 104px,
+        contents: "write",
+        font-size: 44,
+        fill[0].color: k.brand.ink
+      }
+
+      hiwC1Win0 = frame {
+        left: 65px,
+        top: 184px,
+        width: 600px,
+        height: 375px,
+        fill: {image: {ref: winChecks}}
+      }
+
+      hiwC1Name0 = text : kit.body {
+        left: 65px,
+        top: 583px,
+        contents: "rule checks",
+        fill[0].color: k.brand.ink
+      }
+
+      hiwC1Text0 = text : kit.body {
+        left: 65px,
+        top: 611px,
+        width: 536px,
+        contents: "Write your instructions as a short list of rules. A rule too vague to follow gets an amber number and a note on how to fix it.",
+        fill[0].color: k.brand.muted
+      }
+
+      hiwC1Win1 = frame {
+        left: 761px,
+        top: 184px,
+        width: 600px,
+        height: 375px,
+        fill: {image: {ref: winSuggest}}
+      }
+
+      hiwC1Name1 = text : kit.body {
+        left: 761px,
+        top: 583px,
+        contents: "suggested rewrites",
+        fill[0].color: k.brand.ink
+      }
+
+      hiwC1Text1 = text : kit.body {
+        left: 761px,
+        top: 611px,
+        width: 536px,
+        contents: "Select a rule and get three clearer ways to say it. Nothing changes until you pick one.",
+        fill[0].color: k.brand.muted
+      }
+
+      hiwC1Progress = frame {
+        left: 65px,
+        top: 820px,
+        layout: {item-gap: 8px},
+        children: [
+          hiwC1Tick0,
+          hiwC1Tick1,
+          hiwC1Tick2,
+          hiwC1Tick3,
+          hiwC1Tick4,
+          hiwC1Tick5
+        ],
+
+        hiwC1Tick0 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.spot
+        }
+
+        hiwC1Tick1 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.spot
+        }
+
+        hiwC1Tick2 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.field-dim
+        }
+
+        hiwC1Tick3 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.field-dim
+        }
+
+        hiwC1Tick4 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.field-dim
+        }
+
+        hiwC1Tick5 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.field-dim
+        }
+      }
+    }
+
+    hiwC2 = frame {
+      title: "C. Filmstrip / stills 3 and 4, as write hands over to test",
+      caption: "stills 3 and 4, as write hands over to test",
+      width: 1440px,
+      height: 900px,
+      fill: k.brand.paper,
+      children: [
+        hiwC2Step0,
+        hiwC2Win0,
+        hiwC2Name0,
+        hiwC2Text0,
+        hiwC2Step1,
+        hiwC2Win1,
+        hiwC2Name1,
+        hiwC2Text1,
+        hiwC2Progress
+      ],
+
+      hiwC2Step0 = text : kit.statement {
+        left: 65px,
+        top: 104px,
+        contents: "write",
+        font-size: 44,
+        fill[0].color: k.brand.ink
+      }
+
+      hiwC2Win0 = frame {
+        left: 65px,
+        top: 184px,
+        width: 600px,
+        height: 375px,
+        fill: {image: {ref: winChat}}
+      }
+
+      hiwC2Name0 = text : kit.body {
+        left: 65px,
+        top: 583px,
+        contents: "assistant",
+        fill[0].color: k.brand.ink
+      }
+
+      hiwC2Text0 = text : kit.body {
+        left: 65px,
+        top: 611px,
+        width: 536px,
+        contents: "Or talk it through in a chat. The assistant reads your whole skill and suggests changes you apply with a click.",
+        fill[0].color: k.brand.muted
+      }
+
+      hiwC2Step1 = text : kit.statement {
+        left: 761px,
+        top: 104px,
+        contents: "test",
+        font-size: 44,
+        fill[0].color: k.brand.ink
+      }
+
+      hiwC2Win1 = frame {
+        left: 761px,
+        top: 184px,
+        width: 600px,
+        height: 375px,
+        fill: {image: {ref: winCase}}
+      }
+
+      hiwC2Name1 = text : kit.body {
+        left: 761px,
+        top: 583px,
+        contents: "example tasks",
+        fill[0].color: k.brand.ink
+      }
+
+      hiwC2Text1 = text : kit.body {
+        left: 761px,
+        top: 611px,
+        width: 536px,
+        contents: "Add a few example tasks, asked the way you would ask them. Your AI assistant does each one with the skill, so you see what it makes.",
+        fill[0].color: k.brand.muted
+      }
+
+      hiwC2Progress = frame {
+        left: 65px,
+        top: 820px,
+        layout: {item-gap: 8px},
+        children: [
+          hiwC2Tick0,
+          hiwC2Tick1,
+          hiwC2Tick2,
+          hiwC2Tick3,
+          hiwC2Tick4,
+          hiwC2Tick5
+        ],
+
+        hiwC2Tick0 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.ink
+        }
+
+        hiwC2Tick1 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.ink
+        }
+
+        hiwC2Tick2 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.spot
+        }
+
+        hiwC2Tick3 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.spot
+        }
+
+        hiwC2Tick4 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.field-dim
+        }
+
+        hiwC2Tick5 = frame {
+          width: 8px,
+          height: 8px,
+          fill: k.brand.field-dim
+        }
+      }
+    }
+  }
+
+  hiwD = frame {
+    layout: {item-gap: 288px},
+    children: [hiwDNote, hiwD1, hiwD2],
+
+    hiwDNote = frame {
+      width: 425.33px,
+      layout: {direction: .column, item-gap: 24px},
+      children: [hiwDTitle, hiwDBody],
+
+      hiwDTitle = text : kit.statement {
+        width: 100%,
+        contents: "d. stacked sheets",
+        font-size: 44
+      }
+
+      hiwDBody = text : kit.body {
+        width: 100%,
+        contents: "Each feature is a sheet that slides up over the last and leaves a 48px band behind, so the bands pile up into a table of contents as you read. Each step has its own ground (write paper, test grey, compare darker grey), so the bands group by step without a single line.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    hiwD1 = frame {
+      title: "D. Stacked sheets / third sheet: assistant, two write bands above",
+      caption: "third sheet: assistant, two write bands above",
+      width: 1440px,
+      height: 900px,
+      fill: k.brand.grey-2,
+      children: [hiwD1Band0, hiwD1Band1, hiwD1Sheet],
+
+      hiwD1Band0 = frame {
+        left: 0px,
+        top: 0px,
+        width: 1440px,
+        height: 48px,
+        fill: k.brand.paper,
+        children: [hiwD1Band0Step, hiwD1Band0Name],
+
+        hiwD1Band0Step = text : kit.body {
+          left: 65px,
+          top: 13px,
+          contents: "write",
+          font-style: "Light",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD1Band0Name = text : kit.body {
+          left: 507.33px,
+          top: 13px,
+          contents: "rule checks",
+          fill[0].color: k.brand.muted
+        }
+      }
+
+      hiwD1Band1 = frame {
+        left: 0px,
+        top: 48px,
+        width: 1440px,
+        height: 48px,
+        fill: k.brand.paper,
+        children: [hiwD1Band1Step, hiwD1Band1Name],
+
+        hiwD1Band1Step = text : kit.body {
+          left: 65px,
+          top: 13px,
+          contents: "",
+          font-style: "Light",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD1Band1Name = text : kit.body {
+          left: 507.33px,
+          top: 13px,
+          contents: "suggested rewrites",
+          fill[0].color: k.brand.muted
+        }
+      }
+
+      hiwD1Sheet = frame {
+        left: 0px,
+        top: 96px,
+        width: 1440px,
+        height: 804px,
+        fill: k.brand.paper,
+        children: [
+          hiwD1SheetStep,
+          hiwD1SheetFeature,
+          hiwD1SheetText,
+          hiwD1SheetWin
+        ],
+
+        hiwD1SheetStep = text : kit.body {
+          left: 65px,
+          top: 13px,
+          contents: "",
+          font-style: "Light",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD1SheetFeature = text : kit.statement {
+          left: 65px,
+          top: 82px,
+          width: 425.33px,
+          contents: "assistant",
+          font-size: 44,
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD1SheetText = text : kit.body {
+          left: 65px,
+          top: 158px,
+          width: 385.33px,
+          contents: "Or talk it through in a chat. The assistant reads your whole skill and suggests changes you apply with a click.",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD1SheetWin = frame {
+          left: 507.33px,
+          top: 88px,
+          width: 867.67px,
+          height: 542.29px,
+          fill: {image: {ref: winChat}}
+        }
+      }
+    }
+
+    hiwD2 = frame {
+      title: "D. Stacked sheets / last sheet: scores, five bands above",
+      caption: "last sheet: scores, five bands above",
+      width: 1440px,
+      height: 900px,
+      fill: k.brand.grey-2,
+      children: [
+        hiwD2Band0,
+        hiwD2Band1,
+        hiwD2Band2,
+        hiwD2Band3,
+        hiwD2Band4,
+        hiwD2Sheet
+      ],
+
+      hiwD2Band0 = frame {
+        left: 0px,
+        top: 0px,
+        width: 1440px,
+        height: 48px,
+        fill: k.brand.paper,
+        children: [hiwD2Band0Step, hiwD2Band0Name],
+
+        hiwD2Band0Step = text : kit.body {
+          left: 65px,
+          top: 13px,
+          contents: "write",
+          font-style: "Light",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD2Band0Name = text : kit.body {
+          left: 507.33px,
+          top: 13px,
+          contents: "rule checks",
+          fill[0].color: k.brand.muted
+        }
+      }
+
+      hiwD2Band1 = frame {
+        left: 0px,
+        top: 48px,
+        width: 1440px,
+        height: 48px,
+        fill: k.brand.paper,
+        children: [hiwD2Band1Step, hiwD2Band1Name],
+
+        hiwD2Band1Step = text : kit.body {
+          left: 65px,
+          top: 13px,
+          contents: "",
+          font-style: "Light",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD2Band1Name = text : kit.body {
+          left: 507.33px,
+          top: 13px,
+          contents: "suggested rewrites",
+          fill[0].color: k.brand.muted
+        }
+      }
+
+      hiwD2Band2 = frame {
+        left: 0px,
+        top: 96px,
+        width: 1440px,
+        height: 48px,
+        fill: k.brand.paper,
+        children: [hiwD2Band2Step, hiwD2Band2Name],
+
+        hiwD2Band2Step = text : kit.body {
+          left: 65px,
+          top: 13px,
+          contents: "",
+          font-style: "Light",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD2Band2Name = text : kit.body {
+          left: 507.33px,
+          top: 13px,
+          contents: "assistant",
+          fill[0].color: k.brand.muted
+        }
+      }
+
+      hiwD2Band3 = frame {
+        left: 0px,
+        top: 144px,
+        width: 1440px,
+        height: 48px,
+        fill: k.brand.grey-1,
+        children: [hiwD2Band3Step, hiwD2Band3Name],
+
+        hiwD2Band3Step = text : kit.body {
+          left: 65px,
+          top: 13px,
+          contents: "test",
+          font-style: "Light",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD2Band3Name = text : kit.body {
+          left: 507.33px,
+          top: 13px,
+          contents: "example tasks",
+          fill[0].color: k.brand.ink
+        }
+      }
+
+      hiwD2Band4 = frame {
+        left: 0px,
+        top: 192px,
+        width: 1440px,
+        height: 48px,
+        fill: k.brand.grey-2,
+        children: [hiwD2Band4Step, hiwD2Band4Name],
+
+        hiwD2Band4Step = text : kit.body {
+          left: 65px,
+          top: 13px,
+          contents: "compare",
+          font-style: "Light",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD2Band4Name = text : kit.body {
+          left: 507.33px,
+          top: 13px,
+          contents: "side by side",
+          fill[0].color: k.brand.ink
+        }
+      }
+
+      hiwD2Sheet = frame {
+        left: 0px,
+        top: 240px,
+        width: 1440px,
+        height: 660px,
+        fill: k.brand.grey-2,
+        children: [
+          hiwD2SheetStep,
+          hiwD2SheetFeature,
+          hiwD2SheetText,
+          hiwD2SheetWin
+        ],
+
+        hiwD2SheetStep = text : kit.body {
+          left: 65px,
+          top: 13px,
+          contents: "",
+          font-style: "Light",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD2SheetFeature = text : kit.statement {
+          left: 65px,
+          top: 82px,
+          width: 425.33px,
+          contents: "scores you can correct",
+          font-size: 44,
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD2SheetText = text : kit.body {
+          left: 65px,
+          top: 158px,
+          width: 385.33px,
+          contents: "Every result gets a score out of 100 for how many of your rules it followed, and a list of what it missed. If you disagree with a mark, change it and the score follows.",
+          fill[0].color: k.brand.ink
+        }
+
+        hiwD2SheetWin = frame {
+          left: 507.33px,
+          top: 88px,
+          width: 867.67px,
+          height: 542.29px,
+          fill: {image: {ref: winScores}}
+        }
+      }
+    }
+  }
+}
+
+// Workflow sections (2026-11-16). Each step of the loop is its own section,
+// its features behind a switcher of square keys: the key picks the window and
+// the sentence under it, and an orange square sits on the control it means.
+// Sections take turns on paper and the grey field; test mirrors the other two.
+workflowSections = frame {
+  left: -2664px,
+  top: 24800px,
+  layout: {direction: .column, item-gap: 160px},
+  fill: k.brand.grey-2,
+  padding: 120px,
+  children: [wfIntro, wfRow],
+
+  wfIntro = frame {
+    width: 1310px,
+    layout: {direction: .column, item-gap: 24px},
+    children: [wfTitle, wfNote],
+
+    wfTitle = text : kit.display {
+      contents: "one section per step",
+      font-size: 88
+    }
+
+    wfNote = text : kit.body {
+      width: 867.67px,
+      contents: "Write, test and compare each get a section of their own, with their features behind a switcher. The switcher sits on the window it changes. The sentence under the window says what the picked feature does, and an orange square marks where it is in the app. Write has three features, test three, compare four. The page board uses square keys. The variants beside it show a feature switched, and the same section with underlined tabs instead of keys."
+    }
+  }
+
+  wfRow = frame {
+    layout: {item-gap: 384px},
+    children: [wfPage, wfVariants],
+
+    wfPage = frame {
+      title: "Workflow sections / keys",
+      caption: "Write (paper), test (grey, mirrored), compare (paper). First key of each picked.",
+      width: 1440px,
+      layout: {direction: .column},
+      children: [wfWrite, wfTest, wfCompare],
+
+      wfWrite = frame {
+        width: 1440px,
+        height: 958px,
+        fill: k.brand.paper,
+        children: [
+          wfWriteVerb,
+          wfWriteIntro,
+          wfWriteTabs,
+          wfWriteWin,
+          wfWriteCap
+        ],
+
+        wfWriteVerb = text : kit.statement {
+          left: 65px,
+          top: 138px,
+          width: 425.33px,
+          contents: "write",
+          font-size: 44,
+          fill[0].color: k.brand.ink
+        }
+
+        wfWriteIntro = text : kit.body {
+          left: 65px,
+          top: 204px,
+          width: 405.33px,
+          contents: "Write your instructions as a short list of rules. Three helpers keep each rule clear enough to follow.",
+          fill[0].color: k.brand.muted
+        }
+
+        wfWriteTabs = frame {
+          left: 507.33px,
+          top: 144px,
+          layout: {align-items: .end, item-gap: 4px},
+          children: [wfWriteK0, wfWriteK1, wfWriteK2],
+
+          wfWriteK0 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.ink,
+            padding: [0px, 18px],
+            children: wfWriteK0L,
+
+            wfWriteK0L = text : kit.body {
+              contents: "rule checks",
+              fill[0].color: k.brand.paper
+            }
+          }
+
+          wfWriteK1 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfWriteK1L,
+
+            wfWriteK1L = text : kit.body {
+              contents: "suggested rewrites",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          wfWriteK2 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfWriteK2L,
+
+            wfWriteK2L = text : kit.body {
+              contents: "assistant",
+              fill[0].color: k.brand.ink
+            }
+          }
+        }
+
+        wfWriteWin = frame {
+          left: 507.33px,
+          top: 212px,
+          width: 867.67px,
+          height: 542.29px,
+          fill: {image: {ref: winChecks}},
+          children: wfWriteWinPin,
+
+          wfWriteWinPin = frame {
+            left: 354.3px,
+            top: 386.1px,
+            width: 16px,
+            height: 16px,
+            fill: k.brand.spot
+          }
+        }
+
+        wfWriteCap = frame {
+          left: 507.33px,
+          top: 778.29px,
+          width: 646.5px,
+          layout: {item-gap: 12px},
+          children: [wfWriteCapDot, wfWriteCapText],
+
+          wfWriteCapDot = frame {
+            top: 9px,
+            width: 8px,
+            height: 8px,
+            fill: k.brand.spot
+          }
+
+          wfWriteCapText = text : kit.body {
+            width: 626.5px,
+            contents: "A rule too vague to follow gets an amber number and a note on how to fix it.",
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+
+      wfTest = frame {
+        width: 1440px,
+        height: 958px,
+        fill: k.brand.grey-1,
+        children: [wfTestVerb, wfTestIntro, wfTestTabs, wfTestWin, wfTestCap],
+
+        wfTestVerb = text : kit.statement {
+          left: 949.67px,
+          top: 138px,
+          width: 425.33px,
+          contents: "test",
+          font-size: 44,
+          fill[0].color: k.brand.ink
+        }
+
+        wfTestIntro = text : kit.body {
+          left: 949.67px,
+          top: 204px,
+          width: 405.33px,
+          contents: "Give your AI assistant a few example tasks and see what it makes with your skill.",
+          fill[0].color: k.brand.muted
+        }
+
+        wfTestTabs = frame {
+          left: 65px,
+          top: 144px,
+          layout: {align-items: .end, item-gap: 4px},
+          children: [wfTestK0, wfTestK1, wfTestK2],
+
+          wfTestK0 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.ink,
+            padding: [0px, 18px],
+            children: wfTestK0L,
+
+            wfTestK0L = text : kit.body {
+              contents: "example tasks",
+              fill[0].color: k.brand.paper
+            }
+          }
+
+          wfTestK1 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.paper,
+            padding: [0px, 18px],
+            children: wfTestK1L,
+
+            wfTestK1L = text : kit.body {
+              contents: "a good answer",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          wfTestK2 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.paper,
+            padding: [0px, 18px],
+            children: wfTestK2L,
+
+            wfTestK2L = text : kit.body {
+              contents: "run them all",
+              fill[0].color: k.brand.ink
+            }
+          }
+        }
+
+        wfTestWin = frame {
+          left: 65px,
+          top: 212px,
+          width: 867.67px,
+          height: 542.29px,
+          fill: {image: {ref: winCase}},
+          children: wfTestWinPin,
+
+          wfTestWinPin = frame {
+            left: 360px,
+            top: 137.3px,
+            width: 16px,
+            height: 16px,
+            fill: k.brand.spot
+          }
+        }
+
+        wfTestCap = frame {
+          left: 65px,
+          top: 778.29px,
+          width: 646.5px,
+          layout: {item-gap: 12px},
+          children: [wfTestCapDot, wfTestCapText],
+
+          wfTestCapDot = frame {
+            top: 9px,
+            width: 8px,
+            height: 8px,
+            fill: k.brand.spot
+          }
+
+          wfTestCapText = text : kit.body {
+            width: 626.5px,
+            contents: "Write each task the way you would ask for it, and add any file it needs, such as a screenshot.",
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+
+      wfCompare = frame {
+        width: 1440px,
+        height: 958px,
+        fill: k.brand.paper,
+        children: [
+          wfCompareVerb,
+          wfCompareIntro,
+          wfCompareTabs,
+          wfCompareWin,
+          wfCompareCap
+        ],
+
+        wfCompareVerb = text : kit.statement {
+          left: 65px,
+          top: 138px,
+          width: 425.33px,
+          contents: "compare",
+          font-size: 44,
+          fill[0].color: k.brand.ink
+        }
+
+        wfCompareIntro = text : kit.body {
+          left: 65px,
+          top: 204px,
+          width: 405.33px,
+          contents: "Put the old results beside the new ones and see what your change did.",
+          fill[0].color: k.brand.muted
+        }
+
+        wfCompareTabs = frame {
+          left: 507.33px,
+          top: 144px,
+          layout: {align-items: .end, item-gap: 4px},
+          children: [wfCompareK0, wfCompareK1, wfCompareK2, wfCompareK3],
+
+          wfCompareK0 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.ink,
+            padding: [0px, 18px],
+            children: wfCompareK0L,
+
+            wfCompareK0L = text : kit.body {
+              contents: "side by side",
+              fill[0].color: k.brand.paper
+            }
+          }
+
+          wfCompareK1 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfCompareK1L,
+
+            wfCompareK1L = text : kit.body {
+              contents: "word changes",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          wfCompareK2 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfCompareK2L,
+
+            wfCompareK2L = text : kit.body {
+              contents: "scores",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          wfCompareK3 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfCompareK3L,
+
+            wfCompareK3L = text : kit.body {
+              contents: "progress",
+              fill[0].color: k.brand.ink
+            }
+          }
+        }
+
+        wfCompareWin = frame {
+          left: 507.33px,
+          top: 212px,
+          width: 867.67px,
+          height: 542.29px,
+          fill: {image: {ref: winDesign}},
+          children: wfCompareWinPin,
+
+          wfCompareWinPin = frame {
+            left: 360px,
+            top: 151.8px,
+            width: 16px,
+            height: 16px,
+            fill: k.brand.spot
+          }
+        }
+
+        wfCompareCap = frame {
+          left: 507.33px,
+          top: 778.29px,
+          width: 646.5px,
+          layout: {item-gap: 12px},
+          children: [wfCompareCapDot, wfCompareCapText],
+
+          wfCompareCapDot = frame {
+            top: 9px,
+            width: 8px,
+            height: 8px,
+            fill: k.brand.spot
+          }
+
+          wfCompareCapText = text : kit.body {
+            width: 626.5px,
+            contents: "A web page opens large, and one key flips between the old version and the new one.",
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+    }
+
+    wfVariants = frame {
+      layout: {direction: .column, item-gap: 160px},
+      children: [wfWriteAssistant, wfCompareScores, wfCompareTabs],
+
+      wfWriteAssistant = frame {
+        title: "Keys, switched: write, assistant picked",
+        width: 1440px,
+        height: 958px,
+        fill: k.brand.paper,
+        children: [
+          wfWriteAssistantVerb,
+          wfWriteAssistantIntro,
+          wfWriteAssistantTabs,
+          wfWriteAssistantWin,
+          wfWriteAssistantCap
+        ],
+
+        wfWriteAssistantVerb = text : kit.statement {
+          left: 65px,
+          top: 138px,
+          width: 425.33px,
+          contents: "write",
+          font-size: 44,
+          fill[0].color: k.brand.ink
+        }
+
+        wfWriteAssistantIntro = text : kit.body {
+          left: 65px,
+          top: 204px,
+          width: 405.33px,
+          contents: "Write your instructions as a short list of rules. Three helpers keep each rule clear enough to follow.",
+          fill[0].color: k.brand.muted
+        }
+
+        wfWriteAssistantTabs = frame {
+          left: 507.33px,
+          top: 144px,
+          layout: {align-items: .end, item-gap: 4px},
+          children: [wfWriteAssistantK0, wfWriteAssistantK1, wfWriteAssistantK2],
+
+          wfWriteAssistantK0 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfWriteAssistantK0L,
+
+            wfWriteAssistantK0L = text : kit.body {
+              contents: "rule checks",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          wfWriteAssistantK1 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfWriteAssistantK1L,
+
+            wfWriteAssistantK1L = text : kit.body {
+              contents: "suggested rewrites",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          wfWriteAssistantK2 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.ink,
+            padding: [0px, 18px],
+            children: wfWriteAssistantK2L,
+
+            wfWriteAssistantK2L = text : kit.body {
+              contents: "assistant",
+              fill[0].color: k.brand.paper
+            }
+          }
+        }
+
+        wfWriteAssistantWin = frame {
+          left: 507.33px,
+          top: 212px,
+          width: 867.67px,
+          height: 542.29px,
+          fill: {image: {ref: winChat}},
+          children: wfWriteAssistantWinPin,
+
+          wfWriteAssistantWinPin = frame {
+            left: 603.7px,
+            top: 98.3px,
+            width: 16px,
+            height: 16px,
+            fill: k.brand.spot
+          }
+        }
+
+        wfWriteAssistantCap = frame {
+          left: 507.33px,
+          top: 778.29px,
+          width: 646.5px,
+          layout: {item-gap: 12px},
+          children: [wfWriteAssistantCapDot, wfWriteAssistantCapText],
+
+          wfWriteAssistantCapDot = frame {
+            top: 9px,
+            width: 8px,
+            height: 8px,
+            fill: k.brand.spot
+          }
+
+          wfWriteAssistantCapText = text : kit.body {
+            width: 626.5px,
+            contents: "Talk it through in a chat. The assistant reads your whole skill and suggests changes you apply with a click.",
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+
+      wfCompareScores = frame {
+        title: "Keys, switched: compare, scores picked",
+        width: 1440px,
+        height: 958px,
+        fill: k.brand.paper,
+        children: [
+          wfCompareScoresVerb,
+          wfCompareScoresIntro,
+          wfCompareScoresTabs,
+          wfCompareScoresWin,
+          wfCompareScoresCap
+        ],
+
+        wfCompareScoresVerb = text : kit.statement {
+          left: 65px,
+          top: 138px,
+          width: 425.33px,
+          contents: "compare",
+          font-size: 44,
+          fill[0].color: k.brand.ink
+        }
+
+        wfCompareScoresIntro = text : kit.body {
+          left: 65px,
+          top: 204px,
+          width: 405.33px,
+          contents: "Put the old results beside the new ones and see what your change did.",
+          fill[0].color: k.brand.muted
+        }
+
+        wfCompareScoresTabs = frame {
+          left: 507.33px,
+          top: 144px,
+          layout: {align-items: .end, item-gap: 4px},
+          children: [
+            wfCompareScoresK0,
+            wfCompareScoresK1,
+            wfCompareScoresK2,
+            wfCompareScoresK3
+          ],
+
+          wfCompareScoresK0 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfCompareScoresK0L,
+
+            wfCompareScoresK0L = text : kit.body {
+              contents: "side by side",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          wfCompareScoresK1 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfCompareScoresK1L,
+
+            wfCompareScoresK1L = text : kit.body {
+              contents: "word changes",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          wfCompareScoresK2 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.ink,
+            padding: [0px, 18px],
+            children: wfCompareScoresK2L,
+
+            wfCompareScoresK2L = text : kit.body {
+              contents: "scores",
+              fill[0].color: k.brand.paper
+            }
+          }
+
+          wfCompareScoresK3 = frame {
+            height: 44px,
+            layout: {align-items: .center},
+            fill: k.brand.grey-1,
+            padding: [0px, 18px],
+            children: wfCompareScoresK3L,
+
+            wfCompareScoresK3L = text : kit.body {
+              contents: "progress",
+              fill[0].color: k.brand.ink
+            }
+          }
+        }
+
+        wfCompareScoresWin = frame {
+          left: 507.33px,
+          top: 212px,
+          width: 867.67px,
+          height: 542.29px,
+          fill: {image: {ref: winScores}},
+          children: wfCompareScoresWinPin,
+
+          wfCompareScoresWinPin = frame {
+            left: 315.6px,
+            top: 271.8px,
+            width: 16px,
+            height: 16px,
+            fill: k.brand.spot
+          }
+        }
+
+        wfCompareScoresCap = frame {
+          left: 507.33px,
+          top: 778.29px,
+          width: 646.5px,
+          layout: {item-gap: 12px},
+          children: [wfCompareScoresCapDot, wfCompareScoresCapText],
+
+          wfCompareScoresCapDot = frame {
+            top: 9px,
+            width: 8px,
+            height: 8px,
+            fill: k.brand.spot
+          }
+
+          wfCompareScoresCapText = text : kit.body {
+            width: 626.5px,
+            contents: "Every answer gets a score out of 100 for how many of your rules it followed, with what it missed. Disagree with a mark and change it.",
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+
+      wfCompareTabs = frame {
+        title: "Tabs instead of keys: compare, word changes picked",
+        width: 1440px,
+        height: 958px,
+        fill: k.brand.paper,
+        children: [
+          wfCompareTabsVerb,
+          wfCompareTabsIntro,
+          wfCompareTabsTabs,
+          wfCompareTabsWin,
+          wfCompareTabsCap
+        ],
+
+        wfCompareTabsVerb = text : kit.statement {
+          left: 65px,
+          top: 138px,
+          width: 425.33px,
+          contents: "compare",
+          font-size: 44,
+          fill[0].color: k.brand.ink
+        }
+
+        wfCompareTabsIntro = text : kit.body {
+          left: 65px,
+          top: 204px,
+          width: 405.33px,
+          contents: "Put the old results beside the new ones and see what your change did.",
+          fill[0].color: k.brand.muted
+        }
+
+        wfCompareTabsTabs = frame {
+          left: 507.33px,
+          top: 144px,
+          layout: {align-items: .end, item-gap: 32px},
+          children: [
+            wfCompareTabsK0,
+            wfCompareTabsK1,
+            wfCompareTabsK2,
+            wfCompareTabsK3
+          ],
+
+          wfCompareTabsK0 = frame {
+            layout: {direction: .row},
+            padding: [0px, 0px, 10px],
+            children: wfCompareTabsK0L,
+
+            wfCompareTabsK0L = text : kit.body {
+              contents: "side by side",
+              fill[0].color: k.brand.muted
+            }
+          }
+
+          wfCompareTabsK1 = frame {
+            layout: {direction: .row},
+            border: {color: k.brand.spot, width: 3px, sides: .bottom},
+            padding: [0px, 0px, 7px],
+            children: wfCompareTabsK1L,
+
+            wfCompareTabsK1L = text : kit.body {
+              contents: "word changes",
+              fill[0].color: k.brand.ink
+            }
+          }
+
+          wfCompareTabsK2 = frame {
+            layout: {direction: .row},
+            padding: [0px, 0px, 10px],
+            children: wfCompareTabsK2L,
+
+            wfCompareTabsK2L = text : kit.body {
+              contents: "scores",
+              fill[0].color: k.brand.muted
+            }
+          }
+
+          wfCompareTabsK3 = frame {
+            layout: {direction: .row},
+            padding: [0px, 0px, 10px],
+            children: wfCompareTabsK3L,
+
+            wfCompareTabsK3L = text : kit.body {
+              contents: "progress",
+              fill[0].color: k.brand.muted
+            }
+          }
+        }
+
+        wfCompareTabsWin = frame {
+          left: 507.33px,
+          top: 212px,
+          width: 867.67px,
+          height: 542.29px,
+          fill: {image: {ref: winWords}},
+          children: wfCompareTabsWinPin,
+
+          wfCompareTabsWinPin = frame {
+            left: 357.1px,
+            top: 480.1px,
+            width: 16px,
+            height: 16px,
+            fill: k.brand.spot
+          }
+        }
+
+        wfCompareTabsCap = frame {
+          left: 507.33px,
+          top: 778.29px,
+          width: 646.5px,
+          layout: {item-gap: 12px},
+          children: [wfCompareTabsCapDot, wfCompareTabsCapText],
+
+          wfCompareTabsCapDot = frame {
+            top: 9px,
+            width: 8px,
+            height: 8px,
+            fill: k.brand.spot
+          }
+
+          wfCompareTabsCapText = text : kit.body {
+            width: 626.5px,
+            contents: "See exactly which words changed between two answers, then pick the better one.",
+            fill[0].color: k.brand.ink
+          }
+        }
+      }
+    }
+  }
+}

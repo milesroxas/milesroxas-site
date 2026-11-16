@@ -1,0 +1,48 @@
+// The newest brand (2026-11-16, tDR in a TE frame): paper, ink, a grey ramp,
+// signal orange as the one spot and 803 yellow as the one fluoro. Mirrors the
+// miles-visual-brand skill's token table; site tokens in tokens/ still hold the
+// earlier palette, so the Skill Studio sheets read these instead.
+export brand = tokens {
+  paper: #f5f5f5,
+  ink: #0f0e12,
+  muted: #7d7d7f,
+  muted-on-ink: #878688,
+  grey-1: #e6e6e6,
+  grey-2: #cfcfd0,
+  grey-ink: #1d1c21,
+  // A verb not yet reached in the pinned feature: present, not read.
+  ink-dim: #3a393f,
+  // The same, on the grey field.
+  field-dim: #b4b4b7,
+  grid-line: rgb(5.9%, 5.5%, 7.1%, 8%),
+  rule-on-ink: rgb(96%, 96%, 96%, 16%),
+  spot: #f05a24,
+  fluoro: #ffe900,
+  // Skill Studio's own ground, for the app shots and the product-brand option.
+  porcelain: #f3f1ea,
+  studio-ink: #0a1020,
+  studio-signal: #f0f059,
+  sheet: #ebebea
+}
+
+// The 12-column grid at 1440: margin 4.5% (65), gutter 1.2% (17), column 93.58.
+export grid = tokens {
+  page: 1440,
+  margin: 65,
+  gutter: 17,
+  content: 1310,
+  span-1: 93.58,
+  span-2: 204.17,
+  span-3: 314.75,
+  span-4: 425.33,
+  span-5: 535.92,
+  span-6: 646.5,
+  span-7: 757.08,
+  span-8: 867.67,
+  span-9: 978.25,
+  span-10: 1088.83,
+  span-12: 1310,
+  // Section padding: 1.1x the margin, rounded up to the 8px rhythm.
+  section: 72,
+  section-loose: 144
+}
