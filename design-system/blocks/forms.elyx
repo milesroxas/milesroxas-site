@@ -1,0 +1,452 @@
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "resources/icons/apple.svg" as appleMark
+import "resources/icons/windows.svg" as windowsMark
+import "resources/icons/linux.svg" as linuxMark
+import "resources/icons/github.svg" as githubMark
+import "resources/icons/download.svg" as downloadGlyph
+import "resources/icons/arrow-out.svg" as outGlyph
+
+// Forms and CTAs group, the blocks on the composition grid. The legacy Call to
+// action and Form live in legacy.elyx.
+// App download, `appDownload`, Download buttons mode, drawn for a Mac visitor
+// on Apple silicon: copy on the left four columns, actions on the right four.
+// The visitor's platform leads as the ink button (paper in dark), orange only
+// as its arrow; the others sit under "Other systems". Every platform renders as
+// an equal button on the server and on a phone.
+// src/blocks/app-download/Component.tsx, Component.client.tsx
+export appDownload = frame {
+  width: l.lengths.page,
+  layout: {direction: .column},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: grid,
+
+  grid = frame {
+    width: 100%,
+    layout: {item-gap: l.lengths.grid-gap},
+    children: [copyStack, downloadActions, repoActions],
+
+    copyStack = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column},
+      children: [eyebrow, heading, description, version],
+
+      eyebrow = frame {
+        layout: {align-items: .center, item-gap: 8px},
+        padding-bottom: 4px,
+        children: [eyebrowRule, eyebrowText],
+
+        eyebrowRule = frame {
+          width: 16px,
+          height: 1px,
+          fill: c.colors.border
+        }
+
+        eyebrowText = text : t.eyebrow {
+          contents: "Install"
+        }
+      }
+
+      heading = frame {
+        width: 100%,
+        layout: {direction: .column},
+        padding-bottom: 10px,
+        children: headingText,
+
+        headingText = text : t.blockHeading {
+          width: 100%,
+          contents: "Download Skill Studio"
+        }
+      }
+
+      description = text : t.body {
+        width: 100%,
+        contents: "Free under the MIT license. Install it once and the app updates itself after that.",
+        fill[0].color: c.colors.muted-foreground
+      }
+
+      // `Version …` in the eyebrow voice, Download buttons mode only.
+      version = frame {
+        layout: {direction: .column},
+        padding-top: 14px,
+        children: versionText,
+
+        versionText = text : t.eyebrow {
+          contents: "Version 0.15.0",
+          fill[0].color: c.colors.muted-foreground
+        }
+      }
+    }
+
+    downloadActions = frame {
+      width: l.lengths.span-4,
+      layout: {direction: .column, item-gap: 12px},
+      children: [primary, noteRow, othersLabel, others, releases],
+
+      // The visitor's platform: 80px tall, ink ground, the mark at 28px.
+      primary = frame {
+        width: 100%,
+        height: 80px,
+        layout: {align-items: .center, item-gap: 16px},
+        fill: c.colors.foreground,
+        corner-radius: l.lengths.radius-md,
+        padding: [16px, 20px],
+        children: [primaryMark, primaryCopy, primaryArrow],
+
+        primaryMark = asset {
+          width: 28px,
+          height: 28px,
+          fill: c.colors.background,
+          contents: appleMark
+        }
+
+        primaryCopy = frame {
+          width: 476px,
+          layout: {direction: .column},
+          children: [primaryLabel, primaryMeta],
+
+          primaryLabel = text : t.lead {
+            contents: "Download for Mac",
+            line-height: 1.375,
+            fill[0].color: c.colors.background
+          }
+
+          primaryMeta = text : t.mono {
+            contents: "APPLE SILICON / DMG / 126 MB",
+            line-height: 1.33,
+            letter-spacing: 5%,
+            fill[0].color: c.colors.background
+          }
+        }
+
+        primaryArrow = asset {
+          width: 20px,
+          height: 20px,
+          fill: c.colors.brand,
+          contents: downloadGlyph
+        }
+      }
+
+      // The install note, its orange square, and the Apple silicon / Intel
+      // switch with its plate on the detected chip.
+      noteRow = frame {
+        width: 100%,
+        layout: {justify-content: .space-between, align-items: .center},
+        children: [note, archSwitch],
+
+        note = frame {
+          width: 324px,
+          layout: {align-items: .center, item-gap: 8px},
+          children: [noteMark, noteText],
+
+          noteMark = frame {
+            width: 6px,
+            height: 6px,
+            fill: c.colors.brand
+          }
+
+          noteText = text : t.small {
+            width: 310px,
+            contents: "Open the dmg and drag Skill Studio to Applications.",
+            line-height: 1.375,
+            fill[0].color: c.colors.muted-foreground
+          }
+        }
+
+        archSwitch = frame {
+          layout: {direction: .row},
+          border: c.colors.border,
+          corner-radius: l.lengths.radius-md,
+          padding: 2px,
+          children: [archApple, archIntel],
+
+          archApple = frame {
+            width: 125px,
+            height: 32px,
+            layout: {justify-content: .center, align-items: .center},
+            fill: c.colors.foreground,
+            corner-radius: l.lengths.radius-xs,
+            children: archAppleText,
+
+            archAppleText = text : t.mono {
+              contents: "APPLE SILICON",
+              line-height: 1.33,
+              letter-spacing: 5%,
+              fill[0].color: c.colors.background
+            }
+          }
+
+          archIntel = frame {
+            width: 125px,
+            height: 32px,
+            layout: {justify-content: .center, align-items: .center},
+            children: archIntelText,
+
+            archIntelText = text : t.mono {
+              contents: "INTEL",
+              line-height: 1.33,
+              letter-spacing: 5%
+            }
+          }
+        }
+      }
+
+      othersLabel = frame {
+        layout: {direction: .column},
+        padding-top: 16px,
+        children: othersLabelText,
+
+        othersLabelText = text : t.eyebrow {
+          contents: "Other systems",
+          fill[0].color: c.colors.muted-foreground
+        }
+      }
+
+      others = frame {
+        width: 100%,
+        layout: {direction: .column, item-gap: 12px},
+        children: [windows, linux],
+
+        windows = frame {
+          width: 100%,
+          height: 64px,
+          layout: {align-items: .center, item-gap: 12px},
+          border: c.colors.border,
+          corner-radius: l.lengths.radius-md,
+          padding: [12px, 16px],
+          children: [windowsMarkIcon, windowsCopy, windowsArrow],
+
+          windowsMarkIcon = asset {
+            width: 20px,
+            height: 20px,
+            fill: c.colors.foreground,
+            contents: windowsMark
+          }
+
+          windowsCopy = frame {
+            width: 512px,
+            layout: {direction: .column},
+            children: [windowsName, windowsMeta],
+
+            windowsName = text : t.body {
+              contents: "Windows",
+              line-height: 1.375
+            }
+
+            windowsMeta = text : t.mono {
+              contents: "64-BIT / EXE / 126 MB",
+              line-height: 1.33,
+              letter-spacing: 5%
+            }
+          }
+
+          windowsArrow = asset {
+            width: 20px,
+            height: 20px,
+            fill: c.colors.muted-foreground,
+            contents: downloadGlyph
+          }
+        }
+
+        linux = frame {
+          width: 100%,
+          height: 64px,
+          layout: {align-items: .center, item-gap: 12px},
+          border: c.colors.border,
+          corner-radius: l.lengths.radius-md,
+          padding: [12px, 16px],
+          children: [linuxMarkIcon, linuxCopy, linuxArrow],
+
+          linuxMarkIcon = asset {
+            width: 20px,
+            height: 20px,
+            fill: c.colors.foreground,
+            contents: linuxMark
+          }
+
+          linuxCopy = frame {
+            width: 512px,
+            layout: {direction: .column},
+            children: [linuxName, linuxMeta],
+
+            linuxName = text : t.body {
+              contents: "Linux",
+              line-height: 1.375
+            }
+
+            linuxMeta = text : t.mono {
+              contents: "X86-64 / APPIMAGE / 132 MB",
+              line-height: 1.33,
+              letter-spacing: 5%
+            }
+          }
+
+          linuxArrow = asset {
+            width: 20px,
+            height: 20px,
+            fill: c.colors.muted-foreground,
+            contents: downloadGlyph
+          }
+        }
+      }
+
+      // `All releases`: muted, a 2px orange underline 4px under the text.
+      releases = frame {
+        layout: {direction: .column, item-gap: 2px},
+        padding-top: 8px,
+        children: [releasesText, releasesRule],
+
+        releasesText = text : t.small {
+          contents: "All releases",
+          fill[0].color: c.colors.muted-foreground
+        }
+
+        releasesRule = frame {
+          width: 74px,
+          height: 2px,
+          fill: c.colors.brand
+        }
+      }
+    }
+
+    // GitHub repository mode: the repository link and the clone line.
+    repoActions = frame {
+      width: l.lengths.span-4,
+      display: .none,
+      layout: {direction: .column, item-gap: 12px},
+      children: [repoLink, cloneLabel, cloneRow],
+
+      repoLink = frame {
+        width: 100%,
+        height: 80px,
+        layout: {align-items: .center, item-gap: 16px},
+        fill: c.colors.foreground,
+        corner-radius: l.lengths.radius-md,
+        padding: [16px, 20px],
+        children: [repoMark, repoCopy, repoArrow],
+
+        repoMark = asset {
+          width: 28px,
+          height: 28px,
+          fill: c.colors.background,
+          contents: githubMark
+        }
+
+        repoCopy = frame {
+          width: 472px,
+          layout: {direction: .column},
+          children: [repoLabel, repoSlug],
+
+          repoLabel = text : t.lead {
+            contents: "View on GitHub",
+            line-height: 1.375,
+            fill[0].color: c.colors.background
+          }
+
+          repoSlug = text : t.mono {
+            contents: "MILESROXAS/SKILL-STUDIO",
+            line-height: 1.33,
+            letter-spacing: 5%,
+            fill[0].color: c.colors.background
+          }
+        }
+
+        repoArrow = asset {
+          width: 24px,
+          height: 24px,
+          fill: c.colors.brand,
+          contents: outGlyph
+        }
+      }
+
+      cloneLabel = frame {
+        layout: {direction: .column},
+        padding-top: 16px,
+        children: cloneLabelText,
+
+        cloneLabelText = text : t.eyebrow {
+          contents: "Or clone it",
+          fill[0].color: c.colors.muted-foreground
+        }
+      }
+
+      cloneRow = frame {
+        width: 100%,
+        layout: {align-items: .stretch},
+        border: c.colors.border,
+        corner-radius: l.lengths.radius-md,
+        children: [cloneCode, copyButton],
+
+        cloneCode = frame {
+          width: 512px,
+          layout: {align-items: .center},
+          padding: [12px, 16px],
+          children: cloneCodeText,
+
+          cloneCodeText = text : t.small {
+            width: 100%,
+            contents: "git clone https://github.com/milesroxas/skill-studio.git",
+            font-family: "Geist Mono",
+            font-style: "Regular",
+            line-height: 1.375
+          }
+        }
+
+        copyButton = frame {
+          width: 96px,
+          layout: {justify-content: .center, align-items: .center},
+          border: {color: c.colors.border, sides: .left},
+          children: copyButtonText,
+
+          copyButtonText = text : t.mono {
+            contents: "COPY",
+            line-height: 1.33,
+            letter-spacing: 5%,
+            fill[0].color: c.colors.foreground
+          }
+        }
+      }
+    }
+  }
+}
+
+// App download, GitHub repository mode: the repository link and a copyable
+// clone line in place of the download buttons, and no version line.
+@variant
+export appDownloadRepo = frame : appDownload {
+  left: 1600px,
+
+  grid {
+    copyStack {
+      version {
+        display: .none
+      }
+
+      eyebrow {
+        eyebrowText {
+          contents: "Source"
+        }
+      }
+
+      heading {
+        headingText {
+          contents: "Build from source"
+        }
+      }
+
+      description {
+        contents: "The code is on GitHub under the MIT license. It needs Node 24 or later and pnpm."
+      }
+    }
+
+    downloadActions {
+      display: .none
+    }
+
+    repoActions {
+      display: .visible
+    }
+  }
+}

@@ -9,17 +9,20 @@ Design source for milesroxas.com, Miles Roxas's portfolio site. The site is a
 Next.js and Payload CMS app in the parent directory; these files mirror its
 CMS layout blocks so pages can be composed and reviewed as designs.
 
-Start with `screens/design-systems-for-organizational-scale.elyx`: a work
+Start with `screens/works/design-systems-for-organizational-scale copy.elyx`: a work
 page top to bottom at 1440px, as main renders it. The opening (Work hero,
 intro statement) comes first, then the work's Section blocks, then More work.
-`screens/work-opening.elyx` is the first viewport of a work page (1440 by 900)
+`screens/works/work-opening.elyx` is the first viewport of a work page (1440 by 900)
 with the site chrome over it.
 
 ## Structure
 
 - `tokens/colors.elyx`: the light palette, from `palette-light` in
-  `../src/app/(frontend)/globals.css`. `tokens/colors-dark.elyx` derives the
-  dark palette under `theme=dark`.
+  `../src/app/(frontend)/globals.css`: the brand's paper (#f5f5f5), ink
+  (#0f0e12), a neutral grey ramp, signal orange (#f05a24) as accent and brand
+  in both themes, and the 803 yellow `fluoro`. `tokens/colors-dark.elyx`
+  derives the dark palette under `theme=dark`; `colors` registers it with
+  `@variants`.
 - `tokens/lengths.elyx`: the 1440px page, the 8-column composition grid
   (128px columns, 32px gap, 96px gutter) and the band spacing steps.
 - `controls/`: text styles (`type.elyx`), the media placeholder, button,
@@ -30,9 +33,12 @@ with the site chrome over it.
   frame's span or ratio changes.
 - `blocks/`: one exported component per CMS block, grouped by the blocks
   drawer's groups. Each source names the React file it mirrors.
-- `resources/fonts/`: IBM Plex Sans and Geist Mono, loaded by `controls/type.elyx`.
+- `resources/fonts/`: Geist (variable) and Geist Mono, loaded by `controls/type.elyx`.
+  Display, title and heading styles are Geist Light (300); body copy stays
+  Regular (400).
 - `resources/icons/`: the SVGs the site draws (the Logo, Tabler icons, the
-  chrome's Ask mark), imported as `icon` layers and tinted by `fill`. Tabler
+  chrome's Ask mark, and the App download block's platform marks from
+  `../src/blocks/app-download/marks.tsx`), imported as `icon` layers and tinted by `fill`. Tabler
   path data is in `../node_modules/@tabler/icons-react/dist/esm/icons/`.
 - `blocks/opening.elyx`: the work page opening (`workHero` with its
   `workHeroFact`, and `workIntro`, one statement on five columns). `blocks/more-work.elyx`: More work
@@ -41,6 +47,9 @@ with the site chrome over it.
   page sections, not CMS layout blocks.
 - `blocks/home.elyx`: the Home hero (`homeHero`), a page section like the
   work opening. `blocks/statements.elyx` holds the Callout (`callout`).
+- `blocks/forms.elyx`: the Forms and CTAs group on the composition grid:
+  App download (`appDownload`, Download buttons for a Mac visitor, and
+  `appDownloadRepo`). The legacy Call to action and Form are in `legacy.elyx`.
 - `blocks/legacy.elyx` also holds `contentWorks`: Columns as Home arranges it
   (section heading over two work cards), with an Inverted variant.
 - `controls/chrome.elyx`: `topBarOnPage` and `dockOnPage` are the chrome over
@@ -48,11 +57,13 @@ with the site chrome over it.
   `dockOnPage` has Work current (/works), `dockOnPageHome` Home current, and
   `dockOnPageSection` outlines Work for a page under it (a case study). The
   dock's tabs are Home plus the Header global's items (Work, Posts, Contact).
-- `screens/`: one file per screen, composed from blocks and chrome.
+- `screens/`: one file per screen, composed from blocks and chrome. Work
+  pages and /works are in `screens/works/`, other pages in `screens/pages/`.
   `screens/home.elyx` is the home page with its published content.
-  `screens/design-systems-for-organizational-scale.elyx` is the NextStreet
-  work page with its published production content. `screens/works.elyx` is
-  /works on load. `screens/skill-studio.elyx` is the Skill Studio work page
+  `screens/works/design-systems-for-organizational-scale copy.elyx` is the NextStreet
+  work page with its published production content. `screens/works/sas.elyx`
+  is the Suits & Sandals work page (draft). `screens/works/works.elyx` is /works on load.
+  `screens/works/skill-studio.elyx` is the Skill Studio work page
   in progress. Its media are plates in `resources/images/skill-studio/`:
   real app stills, dimmed except the part the block talks about. They are
   made in `~/SITES/tools/skill-studio-design` (`recorder/stills.ts` takes
@@ -76,7 +87,8 @@ with the site chrome over it.
 - Text layers instance a style from `controls/type.elyx` and override
   `contents`, `width` and colour only. A block's `heading` role at Small text
   is `blockHeading` (24px, one rung over its copy); `heading` (30px) is the
-  same role at Large text, plus figure titles, More work rows and tab labels.
+  same role at Large text, plus More work rows. Feature tabs labels are
+  `lead` (18px), a rung under the panel heading they switch.
   Figure titles are `blockHeading` too, over the drawing's left edge, with
   a chart's legend at the end of the title line. Section heading blocks use
   `title`. A text layer that needs `subrange`

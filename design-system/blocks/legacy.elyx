@@ -615,7 +615,7 @@ export contentWorks = frame {
   }
 }
 
-// Columns as Home uses it, Inverted theme: the dark palette, accent green.
+// Columns as Home uses it, Inverted theme: the dark palette, orange still the accent.
 @variant
 export contentWorksInverted = frame : contentWorks {
   left: 12800px,

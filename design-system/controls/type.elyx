@@ -1,17 +1,20 @@
-use "resources/fonts/IBMPlexSans-Variable.ttf"
+use "resources/fonts/Geist-Variable.ttf"
 use "resources/fonts/GeistMono-Regular.ttf"
 use "resources/fonts/GeistMono-Medium.ttf"
 
 import "tokens/colors.elyx" as c
 
 // Text styles at the 1440px end of the fluid type scale (globals.css `@theme`).
+// Geist in two voices: display, title and headings are the light 300 frame
+// voice, body copy stays 400.
 // Blocks instance these and override `contents`, `width` and colour only.
 // `text-display`: the Statement layout.
 export display = text {
   fill: c.colors.foreground,
   contents: "Display",
   font-size: 96,
-  font-family: "IBM Plex Sans",
+  font-family: "Geist",
+  font-style: "Light",
   line-height: 1.05,
   letter-spacing: -2.5%
 }
@@ -22,9 +25,10 @@ export headingOne = text {
   fill: c.colors.foreground,
   contents: "Heading one",
   font-size: 44,
-  font-family: "IBM Plex Sans",
+  font-family: "Geist",
+  font-style: "Light",
   line-height: 1.1,
-  letter-spacing: -2.5%
+  letter-spacing: -2%
 }
 
 // `text-heading-2`: the `title` role, a section opener.
@@ -33,9 +37,10 @@ export title = text {
   fill: c.colors.foreground,
   contents: "Title",
   font-size: 36,
-  font-family: "IBM Plex Sans",
+  font-family: "Geist",
+  font-style: "Light",
   line-height: 1.15,
-  letter-spacing: -2.5%
+  letter-spacing: -1.5%
 }
 
 // `text-title`: the case study title (Work hero, More work).
@@ -44,9 +49,10 @@ export caseTitle = text {
   fill: c.colors.foreground,
   contents: "Case title",
   font-size: 60,
-  font-family: "IBM Plex Sans",
-  line-height: 1.2,
-  letter-spacing: -2.5%
+  font-family: "Geist",
+  font-style: "Light",
+  line-height: 1.1,
+  letter-spacing: -2%
 }
 
 // `text-lead leading-snug`: the `heading` role inside a block at Small text,
@@ -57,19 +63,20 @@ export blockHeading = text {
   fill: c.colors.foreground,
   contents: "Block heading",
   font-size: 24,
-  font-family: "IBM Plex Sans",
+  font-family: "Geist",
   line-height: 1.375
 }
 
-// `text-heading-3`: the `heading` role at Large text, More work rows and tab
-// labels.
+// `text-heading-3`: the `heading` role at Large text and More work rows.
 export heading = text {
   left: 1000px,
   fill: c.colors.foreground,
   contents: "Heading",
   font-size: 30,
-  font-family: "IBM Plex Sans",
-  line-height: 1.3
+  font-family: "Geist",
+  font-style: "Light",
+  line-height: 1.3,
+  letter-spacing: -1%
 }
 
 // `text-lead`: the `statement` role.
@@ -78,17 +85,18 @@ export statement = text {
   fill: c.colors.foreground,
   contents: "Statement",
   font-size: 24,
-  font-family: "IBM Plex Sans",
+  font-family: "Geist",
   line-height: 1.5
 }
 
-// `text-lg`: the `lead` role, an opener deck or an item title.
+// `text-lg`: the `lead` role, an opener deck or an item title, and the
+// Feature tabs strip's labels.
 export lead = text {
   left: 1600px,
   fill: c.colors.foreground,
   contents: "Lead",
   font-size: 18,
-  font-family: "IBM Plex Sans",
+  font-family: "Geist",
   line-height: 1.556
 }
 
@@ -98,7 +106,7 @@ export body = text {
   fill: c.colors.foreground,
   contents: "Body",
   font-size: 16,
-  font-family: "IBM Plex Sans",
+  font-family: "Geist",
   line-height: 1.5
 }
 
@@ -108,7 +116,7 @@ export small = text {
   fill: c.colors.foreground,
   contents: "Small",
   font-size: 14,
-  font-family: "IBM Plex Sans",
+  font-family: "Geist",
   line-height: 1.43
 }
 

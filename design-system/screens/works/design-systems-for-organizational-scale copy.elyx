@@ -589,7 +589,7 @@ designSystemsForOrganizationalScale = frame {
           },
           contents: "Engagement across key tenants moved toward and beyond a 40% benchmark",
           font-size: 18,
-          font-family: "IBM Plex Sans",
+          font-family: "Geist",
           line-height: 1.556
         }
 

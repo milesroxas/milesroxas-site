@@ -1,29 +1,41 @@
-// Site palette, light. Mirrors `palette-light` in src/app/(frontend)/globals.css.
-// The dark palette derives from this group in colors-dark.elyx (theme=dark).
+import "tokens/colors-dark.elyx" as dark
+
+// Site palette, light. Mirrors `palette-light` in src/app/(frontend)/globals.css:
+// the brand's closed set of paper, ink, a neutral grey ramp between them,
+// signal orange as the spot (accent and brand in both themes) and 803 yellow
+// as the fluoro. The dark palette derives from this group in colors-dark.elyx
+// (theme=dark).
+@variants(dark.darkColors)
 export colors = tokens {
-  background: rgb(96.2%, 96.2%, 95.8%),
-  foreground: rgb(4.7%, 4.7%, 5.3%),
-  muted: rgb(95.8%, 95.8%, 96.2%),
-  muted-foreground: rgb(44.16%, 44.16%, 47.84%),
-  border: rgb(89.4%, 89.4%, 90.6%),
-  card: .black,
-  card-foreground: rgb(98%, 98%, 98%),
-  primary: .black,
-  primary-foreground: rgb(98%, 98%, 98%),
-  neutral: rgb(92.4%, 92.4%, 91.6%),
-  neutral-foreground: rgb(4.7%, 4.7%, 5.3%),
-  brand: rgb(91.2%, 35.04%, 4.8%),
-  brand-foreground: rgb(4.7%, 4.7%, 5.3%),
-  accent: rgb(91.2%, 35.04%, 4.8%),
-  accent-foreground: rgb(9.4%, 9.4%, 10.6%),
+  background: .whitesmoke,
+  foreground: rgb(5.88%, 5.49%, 7.0588%),
+  muted: rgb(92.1569%, 92.1569%, 92.1569%),
+  // Darker than the brand's 48% step so text clears 4.5:1 on paper and the
+  // neutral stripe.
+  muted-foreground: rgb(40%, 40%, 41.1765%),
+  border: rgb(88.6274%, 88.6274%, 89.0196%),
+  card: rgb(5.88%, 5.49%, 7.0588%),
+  card-foreground: .whitesmoke,
+  primary: rgb(5.88%, 5.49%, 7.0588%),
+  primary-foreground: .whitesmoke,
+  neutral: rgb(92.1569%, 92.1569%, 92.1569%),
+  neutral-foreground: rgb(5.88%, 5.49%, 7.0588%),
+  brand: rgb(94.1176%, 35.29%, 14.1176%),
+  brand-foreground: rgb(5.88%, 5.49%, 7.0588%),
+  // Orange on paper is 3.1:1: as text, only at 24px or larger.
+  accent: rgb(94.1176%, 35.29%, 14.1176%),
+  accent-foreground: rgb(5.88%, 5.49%, 7.0588%),
+  // The fluoro: one element per view, never text on paper.
+  fluoro: rgb(100%, 91.37%, 0%),
+  fluoro-foreground: rgb(5.88%, 5.49%, 7.0588%),
   // Design-only: stands in for photography, which paints over `muted` on the site.
-  media: rgb(86.56%, 86.56%, 85.44%),
-  media-ink: rgb(44.16%, 44.16%, 47.84%),
-  // The always-dark code panel (`data-band="dark"`), same in both themes.
-  panel: rgb(3.6%, 3.6%, 4.4%),
-  panel-foreground: rgb(98%, 98%, 98%),
-  panel-muted-foreground: rgb(57.7%, 57.7%, 58.2%),
-  panel-border: rgb(100%, 100%, 100%, 12%),
+  media: rgb(86.27%, 86.27%, 86.6667%),
+  media-ink: rgb(40%, 40%, 41.1765%),
+  // The always-dark code panel (`data-band="dark"`, `--tertiary`).
+  panel: rgb(5.88%, 5.49%, 7.0588%),
+  panel-foreground: .whitesmoke,
+  panel-muted-foreground: rgb(58.0392%, 57.6471%, 58.43%),
+  panel-border: rgb(100%, 100%, 100%, 12.1569%),
   syntax-keyword: rgb(43.6388%, 64.3762%, 98.6393%),
   syntax-entity: rgb(42.11%, 84.64%, 86.89%),
   syntax-string: rgb(33.27%, 79.01%, 46.0361%),
@@ -40,34 +52,34 @@ export colors = tokens {
   figure-4: rgb(70.98%, 47.84%, 0%),
   // Hero and chrome over it. The High Impact hero is always a dark surface, so
   // the site chrome above it uses its dark-ground values in both themes.
-  hero-ground: rgb(11.28%, 11.28%, 12.72%),
-  hero-ink: rgb(98%, 98%, 98%),
-  hero-ink-quiet: rgb(63.1373%, 63.1373%, 66.6667%),
-  chrome-glass: rgb(12.549%, 12.549%, 14.1176%, 72%),
-  chrome-selected: rgb(100%, 100%, 100%, 9%),
-  chrome-glyph: rgb(95.6863%, 47.84%, 21.1765%),
-  chrome-hairline: rgb(100%, 100%, 100%, 8%),
+  hero-ground: rgb(10.98%, 10.5882%, 12.549%),
+  hero-ink: .whitesmoke,
+  hero-ink-quiet: rgb(63.5294%, 63.5294%, 64.7059%),
+  chrome-glass: rgb(10.98%, 10.5882%, 12.549%, 72.1569%),
+  chrome-selected: rgb(100%, 100%, 100%, 9.0196%),
+  chrome-glyph: rgb(94.1176%, 35.29%, 14.1176%),
+  chrome-hairline: rgb(100%, 100%, 100%, 7.84%),
   chrome-lift: rgb(0%, 0%, 0%, 40%),
   // Chrome over the page's own ground (Home, works): glass that follows the theme.
-  page-glass: rgb(100%, 100%, 100%, 78%),
-  page-glass-selected: rgb(4.7%, 4.7%, 5.5%, 7%),
-  page-glass-hairline: rgb(4.7%, 4.7%, 5.5%, 8%),
-  page-glass-lift: rgb(4.7%, 4.7%, 5.5%, 14%),
+  page-glass: rgb(100%, 100%, 100%, 78.0392%),
+  page-glass-selected: rgb(5.88%, 5.49%, 7.0588%, 7.0588%),
+  page-glass-hairline: rgb(5.88%, 5.49%, 7.0588%, 7.84%),
+  page-glass-lift: rgb(5.88%, 5.49%, 7.0588%, 14.1176%),
   // `--chrome-ink-quiet` (the clock's city), `--chrome-ring` (the outlined
   // section tab) and `--chrome-glyph` (the Ask mark) over the page ground.
-  page-ink-quiet: rgb(37.25%, 37.25%, 40%),
-  page-ring: rgb(4.7%, 4.7%, 5.5%, 16%),
-  page-glyph: rgb(91.2%, 35.04%, 4.8%),
-  // `foreground/10` hairlines (Carousel tabs' deck index and step buttons) and
-  // the `foreground/6` ring around a stacked deck board.
-  hairline: rgb(4.7%, 4.7%, 5.3%, 10%),
-  board-ring: rgb(4.7%, 4.7%, 5.3%, 6%),
+  page-ink-quiet: rgb(38.0392%, 38.0392%, 39.2157%),
+  page-ring: rgb(5.88%, 5.49%, 7.0588%, 16.0784%),
+  page-glyph: rgb(94.1176%, 35.29%, 14.1176%),
+  // `foreground/10` hairlines (Carousel tabs' deck index and step buttons, the
+  // tab strip's track) and the `foreground/6` ring around a stacked deck board.
+  hairline: rgb(5.88%, 5.49%, 7.0588%, 10.1961%),
+  board-ring: rgb(5.88%, 5.49%, 7.0588%, 5.88%),
   // `bg-accent/10`, the Work badge behind its accent label.
-  accent-tint: rgb(91.2%, 35.04%, 4.8%, 10%),
+  accent-tint: rgb(94.1176%, 35.29%, 14.1176%, 10.1961%),
   // The Inverted band theme paints the opposite palette to the visitor's.
-  inverted-background: rgb(3.6%, 3.6%, 4.4%),
-  inverted-foreground: rgb(98%, 98%, 98%),
-  inverted-muted-foreground: rgb(63.25%, 63.25%, 66.75%),
-  inverted-accent: rgb(13.05%, 76.95%, 36.48%),
-  inverted-accent-tint: rgb(13.05%, 76.95%, 36.48%, 10%)
+  inverted-background: rgb(5.88%, 5.49%, 7.0588%),
+  inverted-foreground: .whitesmoke,
+  inverted-muted-foreground: rgb(56.0784%, 55.6863%, 56.86%),
+  inverted-accent: rgb(94.1176%, 35.29%, 14.1176%),
+  inverted-accent-tint: rgb(94.1176%, 35.29%, 14.1176%, 10.1961%)
 }

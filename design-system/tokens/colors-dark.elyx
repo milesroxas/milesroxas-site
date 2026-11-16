@@ -1,43 +1,41 @@
 import "tokens/colors.elyx" as base
 
-// Site palette, dark. Mirrors `palette-dark` in src/app/(frontend)/globals.css.
+// Site palette, dark. Mirrors `palette-dark` in src/app/(frontend)/globals.css:
+// the ink ground, where foreground and ground swap and orange stays the mark.
 @context(theme="dark")
-__file__
+file {}
 
 export darkColors = tokens : base.colors {
-  background: rgb(3.6%, 3.6%, 4.4%),
-  foreground: rgb(98%, 98%, 98%),
-  muted: rgb(15.36%, 15.36%, 16.64%),
-  muted-foreground: rgb(63.25%, 63.25%, 66.75%),
-  border: rgb(15.36%, 15.36%, 16.64%),
-  card: rgb(98%, 98%, 98%),
-  card-foreground: rgb(1.16%, 2.67%, 6.84%),
-  primary: rgb(98%, 98%, 98%),
-  primary-foreground: rgb(9.4%, 9.4%, 10.6%),
-  neutral: rgb(9.4%, 9.4%, 10.6%),
-  neutral-foreground: rgb(98%, 98%, 98%),
-  media: rgb(15.36%, 15.36%, 16.64%),
-  media-ink: rgb(63.25%, 63.25%, 66.75%),
+  background: rgb(5.88%, 5.49%, 7.0588%),
+  foreground: .whitesmoke,
+  muted: rgb(10.98%, 10.5882%, 12.549%),
+  muted-foreground: rgb(56.0784%, 55.6863%, 56.86%),
+  border: rgb(16.47%, 16.0784%, 18.0392%),
+  card: .whitesmoke,
+  card-foreground: rgb(5.88%, 5.49%, 7.0588%),
+  primary: .whitesmoke,
+  primary-foreground: rgb(5.88%, 5.49%, 7.0588%),
+  neutral: rgb(9.41%, 9.0196%, 10.98%),
+  neutral-foreground: .whitesmoke,
+  media: rgb(10.98%, 10.5882%, 12.549%),
+  media-ink: rgb(56.0784%, 55.6863%, 56.86%),
+  // The panel sits a step below the dark page ground.
+  panel: rgb(3.1373%, 3.1373%, 3.92%),
+  panel-muted-foreground: rgb(56.47%, 56.47%, 56.86%),
   figure-1: rgb(22.35%, 52.94%, 89.8%),
   figure-3: rgb(9.8%, 61.96%, 43.92%),
   figure-4: rgb(78.82%, 52.1569%, 0%),
-  page-glass: rgb(12.549%, 12.549%, 14.1176%, 72%),
-  page-glass-selected: rgb(100%, 100%, 100%, 9%),
-  page-glass-hairline: rgb(100%, 100%, 100%, 8%),
+  page-glass: rgb(10.98%, 10.5882%, 12.549%, 72.1569%),
+  page-glass-selected: rgb(100%, 100%, 100%, 9.0196%),
+  page-glass-hairline: rgb(100%, 100%, 100%, 7.84%),
   page-glass-lift: rgb(0%, 0%, 0%, 40%),
-  page-ink-quiet: rgb(63.14%, 63.14%, 66.67%),
-  page-ring: rgb(100%, 100%, 100%, 18%),
-  page-glyph: rgb(95.69%, 47.84%, 21.18%),
-  hairline: rgb(98%, 98%, 98%, 10%),
-  board-ring: rgb(98%, 98%, 98%, 6%),
-  accent: rgb(13.05%, 76.95%, 36.48%),
-  accent-tint: rgb(13.05%, 76.95%, 36.48%, 10%),
-  inverted-background: rgb(96.2%, 96.2%, 95.8%),
-  inverted-foreground: rgb(4.7%, 4.7%, 5.3%),
-  inverted-muted-foreground: rgb(44.16%, 44.16%, 47.84%),
-  inverted-accent: rgb(91.2%, 35.04%, 4.8%),
-  inverted-accent-tint: rgb(91.2%, 35.04%, 4.8%, 10%),
-  accent-foreground: rgb(98%, 98%, 98%),
+  page-ink-quiet: rgb(63.5294%, 63.5294%, 64.7059%),
+  page-ring: rgb(100%, 100%, 100%, 18.0392%),
+  hairline: rgb(96.0784%, 96.0784%, 96.0784%, 10.1961%),
+  board-ring: rgb(96.0784%, 96.0784%, 96.0784%, 5.88%),
+  inverted-background: .whitesmoke,
+  inverted-foreground: rgb(5.88%, 5.49%, 7.0588%),
+  inverted-muted-foreground: rgb(40%, 40%, 41.1765%),
   prose-body: rgb(82%, 83.5%, 86.3%),
-  prose-heading: rgb(100%, 100%, 100%)
+  prose-heading: .white
 }

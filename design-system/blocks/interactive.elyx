@@ -845,33 +845,77 @@ export carouselTabsSmall = frame : carouselTabs {
   }
 }
 
-// Feature tabs, `featureTabs`: a centred tab strip over a copy and media panel.
-// src/blocks/feature/Tabs/FeatureTabs.tsx
+// Feature tabs, `featureTabs`: a tab strip over a copy and media panel. The
+// strip is a track on a hairline, flush with the panel's grid: equal cells,
+// labels a rung under the panel heading (`text-lg`), 56px tall, and the active
+// cell's 2px ink across its whole width.
+// src/blocks/feature/Tabs/FeatureTabs.tsx, src/blocks/shared/tabs.tsx
 export featureTabs = frame {
   left: 4800px,
   width: l.lengths.page,
-  layout: {direction: .column, align-items: .center, item-gap: 64px},
+  layout: {direction: .column, item-gap: 48px},
   fill: c.colors.background,
   padding: [l.lengths.band-normal, l.lengths.gutter],
   children: [tabStrip, panel],
 
   tabStrip = frame {
-    layout: {align-items: .center, item-gap: 96px},
-    children: [tabOne, tabTwo, tabThree],
+    width: 100%,
+    layout: {direction: .row},
+    children: [track, tabOne, tabTwo, tabThree],
 
-    tabOne = text : t.heading {
-      contents: "Tokens",
-      fill[0].color: c.colors.primary
+    // The hairline the cells sit on; the active ink covers it.
+    track = frame {
+      left: 0px,
+      right: 0px,
+      bottom: 0px,
+      height: 1px,
+      ignore-stack: .true,
+      fill: c.colors.border
     }
 
-    tabTwo = text : t.heading {
-      contents: "Components",
-      fill[0].color: c.colors.muted-foreground
+    tabOne = frame {
+      width: 33.33%,
+      height: 56px,
+      layout: {align-items: .center},
+      children: [tabOneLabel, tabOneInk],
+
+      tabOneLabel = text : t.lead {
+        contents: "Tokens",
+        fill[0].color: c.colors.primary
+      }
+
+      tabOneInk = frame {
+        left: 0px,
+        right: 0px,
+        bottom: 0px,
+        height: 2px,
+        ignore-stack: .true,
+        fill: c.colors.primary
+      }
     }
 
-    tabThree = text : t.heading {
-      contents: "Templates",
-      fill[0].color: c.colors.muted-foreground
+    tabTwo = frame {
+      width: 33.33%,
+      height: 56px,
+      layout: {align-items: .center},
+      children: tabTwoLabel,
+
+      tabTwoLabel = text : t.lead {
+        contents: "Components",
+        fill[0].color: c.colors.muted-foreground
+      }
+    }
+
+    tabThree = frame {
+      width: 33.33%,
+      height: 56px,
+      layout: {align-items: .center},
+      children: tabThreeLabel,
+
+      tabThreeLabel = text : t.lead {
+        contents: "Templates",
+        fill[0].color: c.colors.muted-foreground
+      }
     }
   }
 
@@ -913,9 +957,8 @@ export featureTabs = frame {
           padding-bottom: 12px,
           children: listLabelText,
 
-          listLabelText = text : t.small {
+          listLabelText = text : t.eyebrow {
             contents: "Included",
-            font-family: "Geist Mono",
             fill[0].color: c.colors.muted-foreground
           }
         }
@@ -924,7 +967,7 @@ export featureTabs = frame {
           width: 100%,
           layout: {direction: .column},
           border: {color: c.colors.border, sides: .bottom},
-          padding: [4px, 0px],
+          padding: [6px, 0px],
           children: listOneText,
 
           listOneText = text : t.small {
@@ -936,7 +979,7 @@ export featureTabs = frame {
           width: 100%,
           layout: {direction: .column},
           border: {color: c.colors.border, sides: .bottom},
-          padding: [4px, 0px],
+          padding: [6px, 0px],
           children: listTwoText,
 
           listTwoText = text : t.small {
@@ -947,7 +990,7 @@ export featureTabs = frame {
         listThree = frame {
           width: 100%,
           layout: {direction: .column},
-          padding-top: 4px,
+          padding-top: 6px,
           children: listThreeText,
 
           listThreeText = text : t.small {

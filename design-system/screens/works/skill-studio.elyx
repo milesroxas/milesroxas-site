@@ -1,10 +1,10 @@
 use "resources/fonts/GeistMono-Regular.ttf"
-use "resources/fonts/IBMPlexSans-Variable.ttf"
+use "resources/fonts/Geist-Variable.ttf"
 use "resources/fonts/GeistMono-Medium.ttf"
 
 import "blocks/media-content.elyx" as mc
-import "tokens/lengths.elyx" as l
 import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
 import "controls/type.elyx" as t
 import "controls/chrome.elyx" as chrome
 import "blocks/section-heading.elyx" as headings
@@ -13,7 +13,6 @@ import "blocks/media.elyx" as media
 import "blocks/opening.elyx" as opening
 import "resources/images/image-3.png" as image-3
 import "blocks/interactive.elyx" as interactive
-// Plates edited from app stills: skill-studio-design/plates (render.mjs).
 import "resources/images/skill-studio/skill-studio-intro-library.png" as plateLibrary
 import "resources/images/skill-studio/skill-studio-walkthrough.png" as plateWalkthrough
 import "resources/images/skill-studio/skill-studio-one-screen.png" as plateOneScreen
@@ -51,17 +50,17 @@ skillStudio = frame {
       capabilityRow {
         overrides: [
           insert(
-            capabilityTwo,
-            after = opening.workHero.capabilities.capabilityRow.capabilityRule
+            capabilityRuleTwo,
+            after = opening.workHero.capabilities.capabilityRow.capabilityTwo
           ),
-          remove(opening.workHero.capabilities.capabilityRow.capabilityTwo)
+          insert(capabilityThree, after = capabilityRuleTwo)
         ],
 
+        capabilityTwo {
+          contents: "Engineering"
+        }
+
         capabilityOne {
-          left: 0px,
-          top: 0px,
-          width: 137px,
-          height: 22px,
           contents: "Product Design"
         }
       }
@@ -103,6 +102,14 @@ skillStudio = frame {
         }
       }
     }
+
+    capabilityRuleTwo = frame : opening.workHero.capabilities.capabilityRow.capabilityRule {
+      
+    }
+
+    capabilityThree = text : opening.workHero.capabilities.capabilityRow.capabilityTwo {
+      contents: "Desktop App"
+    }
   }
 
   intro = frame : opening.workIntro {
@@ -141,6 +148,16 @@ skillStudio = frame {
       padding-top: 0px,
       padding-bottom: 0px,
 
+      visual {
+        fill[0].image.ref: plateLibrary,
+        fill[0].image.sizing: .fill,
+        height: 702px,
+
+        mediaLabel {
+          display: .none
+        }
+      }
+
       statementRow {
         left: 96px,
 
@@ -155,15 +172,6 @@ skillStudio = frame {
         width: 1248px,
         height: .auto
       }
-
-      visual {
-        height: 702px,
-        fill: {image: {ref: plateLibrary}},
-
-        mediaLabel {
-          display: .none
-        }
-      }
     }
 
     introSplit = frame : mc.splitContentNarrow {
@@ -173,6 +181,15 @@ skillStudio = frame {
       padding-bottom: 0px,
 
       grid {
+        visual {
+          fill[0].image.ref: plateWalkthrough,
+          fill[0].image.sizing: .fill,
+
+          mediaLabel {
+            display: .none
+          }
+        }
+
         copyStack {
           heading {
             display: .none
@@ -188,14 +205,6 @@ skillStudio = frame {
             contents: "I designed the guided walkthrough to not only show key features of the app but also introduce established practices for structuring skills and writing clear instructions."
           }
         }
-
-        visual {
-          fill: {image: {ref: plateWalkthrough}},
-
-          mediaLabel {
-            display: .none
-          }
-        }
       }
     }
 
@@ -205,17 +214,18 @@ skillStudio = frame {
       padding-top: 0px,
       padding-bottom: 0px,
 
-      cells {
-        copy {
-          contents: "I cut the workflow from ten screens to three. Now, users compare outputs before and after an edit, see which instructions were missed, and easily select the best result."
-        }
-      }
-
       visual {
-        fill: {image: {ref: plateOneScreen}},
+        fill[0].image.ref: plateOneScreen,
+        fill[0].image.sizing: .fill,
 
         mediaLabel {
           display: .none
+        }
+      }
+
+      cells {
+        copy {
+          contents: "I cut the workflow from ten screens to three. Now, users compare outputs before and after an edit, see which instructions were missed, and easily select the best result."
         }
       }
     }
@@ -227,6 +237,15 @@ skillStudio = frame {
       padding-bottom: 0px,
 
       grid {
+        visual {
+          fill[0].image.ref: plateMarkMet,
+          fill[0].image.sizing: .fill,
+
+          mediaLabel {
+            display: .none
+          }
+        }
+
         copyStack {
           heading {
             display: .none
@@ -240,14 +259,6 @@ skillStudio = frame {
 
           copy {
             contents: "They can correct a specific grading mistake without switching context, then get back to the work they came to do."
-          }
-        }
-
-        visual {
-          fill: {image: {ref: plateMarkMet}},
-
-          mediaLabel {
-            display: .none
           }
         }
       }
@@ -491,7 +502,8 @@ export splitImageOffset = frame {
     smallMedia = frame : interactive.m.media {
       width: 100%,
       height: 299px,
-      fill: {image: {ref: plateSelectionTools}},
+      fill[0].image.ref: plateSelectionTools,
+      fill[0].image.sizing: .fill,
 
       mediaLabel {
         display: .none
@@ -514,7 +526,8 @@ export splitImageOffset = frame {
   large = frame : interactive.m.media {
     width: l.lengths.span-5,
     height: 614px,
-    fill: {image: {ref: plateReplaced}},
+    fill[0].image.ref: plateReplaced,
+    fill[0].image.sizing: .fill,
 
     mediaLabel {
       display: .none
@@ -638,7 +651,8 @@ export featureTabs = frame {
     panelMedia = frame : interactive.m.media {
       width: l.lengths.span-5,
       height: 432px,
-      fill: {image: {ref: plateAutoRefine}},
+      fill[0].image.ref: plateAutoRefine,
+      fill[0].image.sizing: .fill,
 
       mediaLabel {
         display: .none
@@ -771,7 +785,8 @@ featureTabs_2 = frame {
     panelMedia = frame : interactive.m.media {
       width: l.lengths.span-5,
       height: 432px,
-      fill: {image: {ref: plateSuggestChanges}},
+      fill[0].image.ref: plateSuggestChanges,
+      fill[0].image.sizing: .fill,
 
       mediaLabel {
         display: .none
@@ -905,7 +920,8 @@ featureTabs_3 = frame {
     panelMedia = frame : interactive.m.media {
       width: l.lengths.span-5,
       height: 432px,
-      fill: {image: {ref: plateHelpMeImprove}},
+      fill[0].image.ref: plateHelpMeImprove,
+      fill[0].image.sizing: .fill,
 
       mediaLabel {
         display: .none
