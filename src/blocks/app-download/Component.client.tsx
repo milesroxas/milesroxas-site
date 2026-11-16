@@ -81,8 +81,16 @@ const CHECK = 'M5 12.5 10 17 19 7'
 const OUT = 'M8 16 17 7M9 7h8v8'
 
 /** The download arrow swaps to a check once the download starts. */
-const DownloadState = ({ done, nudge }: { done: boolean; nudge?: boolean }) => (
-  <span className="relative grid size-6 place-items-center">
+const DownloadState = ({
+  done,
+  nudge,
+  className,
+}: {
+  done: boolean
+  nudge?: boolean
+  className?: string
+}) => (
+  <span className={cn('relative grid size-6 place-items-center', className)}>
     <span
       className={cn(
         'col-start-1 row-start-1 transition-[opacity,transform] duration-300 ease-(--ease-out-quint) motion-reduce:transition-none',
@@ -235,7 +243,7 @@ export function DownloadActions({
       <>
         <a
           aria-label={buildLabel(mine, b)}
-          className="pressable group bg-brand text-brand-foreground focus-visible:outline-foreground flex min-h-20 items-center gap-4 rounded-md px-5 py-4 focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="pressable group bg-foreground text-background focus-visible:outline-foreground flex min-h-20 items-center gap-4 rounded-md px-5 py-4 focus-visible:outline-2 focus-visible:outline-offset-2"
           href={b.url}
           onClick={() => start(mine, b)}
         >
@@ -246,7 +254,7 @@ export function DownloadActions({
             </span>
             <span className={metaClassName}>{buildMeta(b)}</span>
           </span>
-          <DownloadState done={done} nudge />
+          <DownloadState className="text-brand" done={done} nudge />
         </a>
         {mine.note || (mine.id === 'mac' && mine.builds.length > 1) ? (
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
@@ -320,7 +328,7 @@ export function RepoActions({ repoUrl, showClone }: { repoUrl: string; showClone
   return (
     <div className="flex flex-col gap-3">
       <a
-        className="pressable group bg-brand text-brand-foreground focus-visible:outline-foreground flex min-h-20 items-center gap-4 rounded-md px-5 py-4 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="pressable group bg-foreground text-background focus-visible:outline-foreground flex min-h-20 items-center gap-4 rounded-md px-5 py-4 focus-visible:outline-2 focus-visible:outline-offset-2"
         href={repoUrl}
       >
         <BrandMark className="size-7" id="github" />
@@ -329,7 +337,7 @@ export function RepoActions({ repoUrl, showClone }: { repoUrl: string; showClone
           <span className={cn(metaClassName, 'truncate')}>{slug}</span>
         </span>
         <Pict
-          className="size-6 transition-transform duration-300 ease-(--ease-out-quint) group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none"
+          className="text-brand size-6 transition-transform duration-300 ease-(--ease-out-quint) group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none"
           d={OUT}
         />
       </a>
