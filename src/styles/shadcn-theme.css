@@ -149,6 +149,8 @@
   --color-neutral-foreground: var(--neutral-foreground);
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
+  --color-fluoro: var(--fluoro);
+  --color-fluoro-foreground: var(--fluoro-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);

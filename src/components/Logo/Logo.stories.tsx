@@ -26,5 +26,5 @@ export const White: Story = {
 }
 
 export const Accent: Story = {
-  args: { color: 'hsl(21 90% 48%)' },
+  args: { color: '#f05a24' },
 }

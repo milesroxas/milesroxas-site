@@ -2,6 +2,7 @@ import configPromise from '@payload-config'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GeistMono } from 'geist/font/mono'
+import { GeistSans } from 'geist/font/sans'
 import type { Metadata, Viewport } from 'next'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
@@ -15,7 +16,6 @@ import { SiteChrome } from '@/components/SiteChrome/SiteChrome'
 import { Footer } from '@/Footer/Component'
 import { MemberHintSync } from '@/features/members/MemberHint'
 import { MemberHintScript } from '@/features/members/MemberHintScript'
-import { ibmPlexSans } from '@/fonts/ibm-plex-sans'
 import type { SiteInfo } from '@/payload-types'
 import { Providers } from '@/providers'
 import { PostHogProvider } from '@/providers/PostHog'
@@ -56,7 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html
-      className={cn(ibmPlexSans.className, ibmPlexSans.variable, GeistMono.variable)}
+      className={cn(GeistSans.className, GeistSans.variable, GeistMono.variable)}
       lang="en"
       suppressHydrationWarning
     >

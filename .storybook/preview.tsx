@@ -2,10 +2,9 @@ import { withThemeByDataAttribute } from '@storybook/addon-themes'
 import type { Preview } from '@storybook/nextjs-vite'
 
 import '../src/app/(frontend)/globals.css'
-import { ibmPlexSans } from '../src/fonts/ibm-plex-sans'
 import { cursorGlobalTypes, withCursor } from './cursor'
 import { motionSpeedGlobalTypes, withMotionSpeed } from './motion-speed'
-// Provides the Geist Mono variable that RootLayout normally sets via next/font.
+// Provides the Geist and Geist Mono variables that RootLayout normally sets via next/font.
 import './fonts.css'
 
 const preview: Preview = {
@@ -39,9 +38,7 @@ const preview: Preview = {
       parentSelector: 'html',
     }),
     (Story) => (
-      <div
-        className={`${ibmPlexSans.className} ${ibmPlexSans.variable} bg-background text-foreground antialiased`}
-      >
+      <div className="bg-background text-foreground font-sans antialiased">
         <Story />
       </div>
     ),

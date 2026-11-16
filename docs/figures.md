@@ -51,13 +51,13 @@ Four slots, light and dark selected separately (`--figure-1..4`, `globals.css`).
 ```bash
 V=scripts/validate_palette.js   # run from the dataviz skill's directory (the skill is bundled with Claude Code, not on disk here)
 node $V "#2a78d6,#d95926,#15936a,#b57a00" --mode light --surface "#ffffff"   # page (and an inverted band on a dark visit)
-node $V "#2a78d6,#d95926,#15936a,#b57a00" --mode light --surface "#f4f4f5"   # neutral band
-node $V "#3987e5,#d95926,#199e70,#c98500" --mode dark  --surface "#0a0a0a"   # dark theme (and an inverted band on a light visit)
-node $V "#3987e5,#d95926,#199e70,#c98500" --mode dark  --surface "#1b1b1b"   # always-dark panel, light visit
-node $V "#3987e5,#d95926,#199e70,#c98500" --mode dark  --surface "#020202"   # always-dark panel, dark visit
+node $V "#2a78d6,#d95926,#15936a,#b57a00" --mode light --surface "#ebebeb"   # neutral band
+node $V "#3987e5,#d95926,#199e70,#c98500" --mode dark  --surface "#0f0e12"   # dark theme (and an inverted band on a light visit)
+node $V "#3987e5,#d95926,#199e70,#c98500" --mode dark  --surface "#1c1b20"   # always-dark panel, light visit
+node $V "#3987e5,#d95926,#199e70,#c98500" --mode dark  --surface "#08080a"   # always-dark panel, dark visit
 ```
 
-2026-09-19: every check passes on all five. Worst adjacent CVD separation 8.4 (target 8), worst normal-vision separation 18.1 (floor 15), every mark at or above 3:1 against its ground. Re-run before changing a value. A `brand` band is not in the record: avoid charts on it until it is.
+2026-11-16, brand palette grounds: every mark still clears 3:1 for non-text contrast (WCAG ratio only; the separation checks were not re-run): 3.06 to 4.26 on light grounds, 4.41 to 6.26 on dark ones. 2026-09-19: every check passes on all five. Worst adjacent CVD separation 8.4 (target 8), worst normal-vision separation 18.1 (floor 15), every mark at or above 3:1 against its ground. Re-run before changing a value. A `brand` band is not in the record: avoid charts on it until it is.
 
 ## Diagrams
 
@@ -107,7 +107,7 @@ The detail is in the message itself because the MCP tools relay `error.message` 
 
 ## Series colors
 
-`--figure-1..4` and `--figure-reference` in `globals.css`, assigned by series order and never cycled. The two sets live in the two palettes (`palette-light`, `palette-dark`), so the dark set paints on any dark ground (the dark theme, a dark pin, an inverted band on a light visit). They are sas-site's, re-checked against this site's own grounds rather than assumed: every step clears 3:1 for non-text contrast on the light page ground `hsl(60 5% 96%)` (3.36 to 4.06) and on the dark page ground `hsl(240 10% 4%)` (5.12 to 6.47). Re-check both before changing a value; the set follows the ground, not the site theme.
+`--figure-1..4` and `--figure-reference` in `globals.css`, assigned by series order and never cycled. The two sets live in the two palettes (`palette-light`, `palette-dark`), so the dark set paints on any dark ground (the dark theme, a dark pin, an inverted band on a light visit). They are sas-site's, re-checked against this site's own grounds rather than assumed: every step clears 3:1 for non-text contrast on the light page ground `#f5f5f5` (3.35 to 4.05) and on the dark page ground `#0f0e12` (4.95 to 6.26). Re-check both before changing a value; the set follows the ground, not the site theme.
 
 ## Motion
 
