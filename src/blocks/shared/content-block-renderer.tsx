@@ -19,6 +19,7 @@ import { RichTextBlock } from '@/blocks/rich-text/Component'
 import { RichTransitionBlock } from '@/blocks/rich-transition/Component'
 import { SplitContentNarrowBlock } from '@/blocks/split-content/Component'
 import { SplitImageOffsetBlock } from '@/blocks/split-image-offset/Component'
+import { StepListBlock } from '@/blocks/step-list/Component'
 import { YouTubeBlock } from '@/blocks/youtube/Component'
 import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 import { blockReveal } from './reveal-variants'
@@ -59,6 +60,7 @@ export const sectionChildComponents = {
   richTransition: RichTransitionBlock,
   splitContentNarrow: SplitContentNarrowBlock,
   splitImageOffset: SplitImageOffsetBlock,
+  stepList: StepListBlock,
   youtube: YouTubeBlock,
 }
 

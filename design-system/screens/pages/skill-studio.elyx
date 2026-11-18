@@ -211,7 +211,8 @@ skillStudio = frame {
   }
 }
 
-// Skill Studio opening: a full-viewport band on the always-dark hero ground.
+// Skill Studio opening, the Lift hero (src/heros/LiftHero): a full-viewport
+// band on the always-dark hero ground.
 // Copy and the two ways in sit on columns 1 to 4. The lift is the figure: the
 // sample skill's score as a band that steps up from its first runs (v0, 85)
 // to its latest (v1, 98), over a dashed baseline for runs without the skill

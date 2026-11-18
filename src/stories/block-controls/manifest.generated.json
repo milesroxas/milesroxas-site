@@ -2520,9 +2520,39 @@
         "control": "text"
       },
       {
+        "name": "contentType",
+        "label": "Content",
+        "description": "Text sets rich text under the heading. List sets a numbered list of items.",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Text",
+            "value": "body"
+          },
+          {
+            "label": "List",
+            "value": "list"
+          }
+        ],
+        "defaultValue": "body"
+      },
+      {
         "name": "body",
         "label": "Body",
         "description": "Shown when source is \"Custom\", or as a Work or Lab Page override for canonical content.",
+        "if": {
+          "arg": "contentType",
+          "eq": "body"
+        },
+        "control": "none"
+      },
+      {
+        "name": "items",
+        "label": "Items",
+        "if": {
+          "arg": "contentType",
+          "eq": "list"
+        },
         "control": "none"
       },
       {
@@ -2701,6 +2731,62 @@
           }
         ],
         "defaultValue": "left"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
+  "stepList": {
+    "slug": "stepList",
+    "label": "Step list",
+    "fields": [
+      {
+        "name": "steps",
+        "label": "Steps",
+        "description": "Two to four steps, numbered in order. They share one row at equal widths.",
+        "control": "none"
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
       },
       {
         "name": "theme",

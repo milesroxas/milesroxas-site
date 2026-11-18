@@ -20,6 +20,7 @@ import { RichTextBlock } from '@/blocks/rich-text/config'
 import { RichTransition } from '@/blocks/rich-transition/config'
 import { SplitContentNarrow } from '@/blocks/split-content/config'
 import { SplitImageOffset } from '@/blocks/split-image-offset/config'
+import { StepList } from '@/blocks/step-list/config'
 import { YouTube } from '@/blocks/youtube/config'
 
 /**
@@ -66,6 +67,7 @@ export const sectionNestableBlocks: Block[] = [
   FeatureTabs,
   // Lists
   InsightList,
+  StepList,
   // Forms & CTAs
   AppDownload,
 ]

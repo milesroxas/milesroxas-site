@@ -498,7 +498,7 @@ export archiveWorks = frame : archive {
   }
 }
 
-// Proposed, no Payload block yet. Step card: one item of a Step list, its
+// Step card: one item of a Step list, its
 // ordinal top left and its title and body at the foot of a hairline frame.
 // Override `ordinal`, `stepTitle` and `stepBody`.
 export step = frame {
@@ -534,7 +534,7 @@ export step = frame {
   }
 }
 
-// Proposed, no Payload block yet. Step list, `stepList`: a numbered run of
+// Step list, `stepList`, src/blocks/step-list/Component.tsx: a numbered run of
 // three steps across the page column, equal widths, a grid gap apart. Pair it
 // with a section heading for a title.
 export stepList = frame {

@@ -440,7 +440,7 @@ export fullMediaNoContent = frame : fullMedia {
   }
 }
 
-// Proposed, not in Payload yet. List item: one entry of a Split narrow list,
+// List item: one entry of a Split narrow list,
 // a top rule, the ordinal on an ink square beside the title, then the body.
 // Override `ordinal`, `listItemTitle` and `listItemBody`.
 export listItem = frame {
@@ -482,7 +482,8 @@ export listItem = frame {
   }
 }
 
-// Proposed, not in Payload yet. Split narrow with a list as its content:
+// Split narrow with Content set to List (`contentType: list`),
+// src/blocks/split-content/SplitContentNarrow.tsx:
 // the same visual and narrow column, the visual at 5:4, and a styled list
 // in place of the body.
 export splitContentNarrowList = frame : splitContentNarrow {

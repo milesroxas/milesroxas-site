@@ -48,6 +48,7 @@ const blockRevealVariants = {
   richTransition: 'intro',
   slider: 'frame',
   splitImageOffset: 'underMedia',
+  stepList: 'intro',
   tabs: 'frame',
   youtube: 'frame',
 } as const satisfies Record<string, ScrollRevealVariant | 'frame' | 'self'>

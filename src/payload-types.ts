@@ -213,7 +213,7 @@ export interface Page {
   id: number;
   title: string;
   hero: {
-    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact' | 'field' | 'instrument';
+    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact' | 'field' | 'instrument' | 'lift';
     showContent?: boolean | null;
     richText?: {
       root: {
@@ -261,6 +261,37 @@ export interface Page {
      */
     visualType?: ('media' | 'streakField' | 'lightLeak') | null;
     shader?: PlacedVisualConfig;
+    lift?: {
+      /**
+       * A short kicker above the headline, e.g. "A desktop app for…".
+       */
+      eyebrow?: string | null;
+      /**
+       * Names what the gain measures, under the readout, e.g. "/brand-design, v0 to v1". The readout is the latest score less the first.
+       */
+      readoutLabel?: string | null;
+      /**
+       * The low step, on the left, e.g. "First runs, v0" at 85.
+       */
+      first: {
+        label: string;
+        score: number;
+      };
+      /**
+       * The high step, on the right, e.g. "Latest runs, v1" at 98.
+       */
+      latest: {
+        label: string;
+        score: number;
+      };
+      /**
+       * The dashed line under both, e.g. "Without the skill" at 71. Its score is shown after the label.
+       */
+      baseline: {
+        label: string;
+        score: number;
+      };
+    };
   };
   layout: (
     | PageSectionBlock
@@ -284,6 +315,7 @@ export interface Page {
     | CarouselTabsBlock
     | FeatureTabsBlock
     | InsightListBlock
+    | StepListBlock
     | AppDownloadBlock
     | SliderBlock
     | CallOutBlock
@@ -438,6 +470,7 @@ export interface Post {
         | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
+        | StepListBlock
         | AppDownloadBlock
       )[]
     | null;
@@ -858,6 +891,7 @@ export interface PostSectionBlock {
         | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
+        | StepListBlock
         | AppDownloadBlock
         | ContentBlock
       )[]
@@ -1142,6 +1176,10 @@ export interface SplitContentNarrowBlock {
   eyebrow?: string | null;
   heading?: string | null;
   /**
+   * Text sets rich text under the heading. List sets a numbered list of items.
+   */
+  contentType?: ('body' | 'list') | null;
+  /**
    * Shown when source is "Custom", or as a Work or Lab Page override for canonical content.
    */
   body?: {
@@ -1159,6 +1197,16 @@ export interface SplitContentNarrowBlock {
     };
     [k: string]: unknown;
   } | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * One or two lines that explain the item.
+         */
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.
    */
@@ -4534,6 +4582,34 @@ export interface InsightListBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StepListBlock".
+ */
+export interface StepListBlock {
+  /**
+   * Two to four steps, numbered in order. They share one row at equal widths.
+   */
+  steps: {
+    title: string;
+    /**
+     * One or two lines. Keep the steps about the same length.
+     */
+    description?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Large sets the heading and copy one step up the type scale.
+   */
+  textSize?: ('small' | 'large') | null;
+  /**
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
+   */
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'stepList';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "AppDownloadBlock".
  */
 export interface AppDownloadBlock {
@@ -4846,6 +4922,7 @@ export interface Work {
     | CarouselTabsBlock
     | FeatureTabsBlock
     | InsightListBlock
+    | StepListBlock
     | AppDownloadBlock
     | SliderBlock
     | TabsBlock
@@ -4975,6 +5052,7 @@ export interface WorkSectionBlock {
         | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
+        | StepListBlock
         | AppDownloadBlock
         | ContentBlock
       )[]
@@ -5504,6 +5582,7 @@ export interface PageSectionBlock {
         | CarouselTabsBlock
         | FeatureTabsBlock
         | InsightListBlock
+        | StepListBlock
         | AppDownloadBlock
         | ContentBlock
       )[]
@@ -6151,6 +6230,30 @@ export interface PagesSelect<T extends boolean = true> {
         media?: T;
         visualType?: T;
         shader?: T | PlacedVisualConfigSelect<T>;
+        lift?:
+          | T
+          | {
+              eyebrow?: T;
+              readoutLabel?: T;
+              first?:
+                | T
+                | {
+                    label?: T;
+                    score?: T;
+                  };
+              latest?:
+                | T
+                | {
+                    label?: T;
+                    score?: T;
+                  };
+              baseline?:
+                | T
+                | {
+                    label?: T;
+                    score?: T;
+                  };
+            };
       };
   layout?:
     | T
@@ -6176,6 +6279,7 @@ export interface PagesSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         callout?: T | CallOutBlockSelect<T>;
@@ -6254,6 +6358,7 @@ export interface PageSectionBlockSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
@@ -6344,7 +6449,15 @@ export interface SplitContentNarrowBlockSelect<T extends boolean = true> {
   showEyebrow?: T;
   eyebrow?: T;
   heading?: T;
+  contentType?: T;
   body?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
   playVideo?: T;
   video?: T;
   media?: T;
@@ -6653,6 +6766,23 @@ export interface InsightListBlockSelect<T extends boolean = true> {
   textSize?: T;
   layout?: T;
   markSize?: T;
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StepListBlock_select".
+ */
+export interface StepListBlockSelect<T extends boolean = true> {
+  steps?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  textSize?: T;
   theme?: T;
   id?: T;
   blockName?: T;
@@ -7013,6 +7143,7 @@ export interface PostsSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
       };
   relatedPosts?: T;
@@ -7084,6 +7215,7 @@ export interface PostSectionBlockSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
@@ -7132,6 +7264,7 @@ export interface WorksSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         tabs?: T | TabsBlockSelect<T>;
@@ -7202,6 +7335,7 @@ export interface WorkSectionBlockSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
@@ -7970,6 +8104,7 @@ export interface Home {
     | CarouselTabsBlock
     | FeatureTabsBlock
     | InsightListBlock
+    | StepListBlock
     | AppDownloadBlock
     | SliderBlock
     | CallOutBlock
@@ -8277,6 +8412,7 @@ export interface HomeSelect<T extends boolean = true> {
         carouselTabs?: T | CarouselTabsBlockSelect<T>;
         featureTabs?: T | FeatureTabsBlockSelect<T>;
         insightList?: T | InsightListBlockSelect<T>;
+        stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         callout?: T | CallOutBlockSelect<T>;

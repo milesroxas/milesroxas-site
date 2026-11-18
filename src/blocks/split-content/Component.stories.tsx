@@ -76,3 +76,29 @@ export const StreakField: Story = {
     shader: { preset: 'depth-map-v1', seed: 8 },
   },
 }
+
+/** List content: the Skill Studio tour, a numbered list in place of the body. */
+export const List: Story = {
+  args: {
+    imagePosition: 'left',
+    contentType: 'list',
+    heading: 'A simple loop to get consistent, high quality results from your custom AI skills.',
+    items: [
+      {
+        id: 'assistant',
+        title: 'AI Assistant',
+        description: 'AI assisted workflow for writing and refining your files.',
+      },
+      {
+        id: 'grading',
+        title: 'Grading',
+        description: 'Create multiple scenarios and define what a good response would be.',
+      },
+      {
+        id: 'versions',
+        title: 'Version control',
+        description: 'Evaluate the output side by side and understand how the AI performed.',
+      },
+    ],
+  },
+}
