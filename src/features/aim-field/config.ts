@@ -61,8 +61,6 @@ export type ShaderConfig = {
   follow: number
   crosshair: boolean
   spotCore: boolean
-  trail: boolean
-  trailLife: number
   ripple: boolean
   rippleRound: boolean
   rippleSpeed: number
@@ -112,8 +110,6 @@ export const DEFAULT_SHADER: ShaderConfig = {
   follow: 90,
   crosshair: true,
   spotCore: true,
-  trail: true,
-  trailLife: 1.1,
   ripple: true,
   rippleRound: true,
   rippleSpeed: 480,
@@ -176,8 +172,6 @@ export function normalizeShader(input: Partial<ShaderConfig> | null | undefined)
     follow: clamp(c.follow, 0, 400, d.follow),
     crosshair: bool(c.crosshair, d.crosshair),
     spotCore: bool(c.spotCore, d.spotCore),
-    trail: bool(c.trail, d.trail),
-    trailLife: clamp(c.trailLife, 0.2, 3, d.trailLife),
     ripple: bool(c.ripple, d.ripple),
     rippleRound: bool(c.rippleRound, d.rippleRound),
     rippleSpeed: clamp(c.rippleSpeed, 200, 1600, d.rippleSpeed),

@@ -24,13 +24,30 @@ const heroMediaSlot = (): Field[] =>
   )
 
 /**
+ * The openings that paint the aim field (`@/features/aim-field`): `field`
+ * grounds the whole band, `instrument` holds it in one ink panel beside the
+ * copy. Neither shows media.
+ */
+const aimFieldHeroOptions = [
+  { label: 'Field', value: 'field' },
+  { label: 'Instrument', value: 'instrument' },
+]
+
+/**
  * The page hero shared by Pages and Posts. A factory, not a literal:
  * Payload mutates field configs while sanitizing them, and the visual slot
  * must not be shared between collections. `editorial` adds the post opening
- * (`src/heros/PostHero`), which only a post renders. The home opening is the
- * Home global's own (`homeHeroField`), so it is not a type here.
+ * (`src/heros/PostHero`), which only a post renders; `aimField` adds the aim
+ * field openings, which only `RenderHero` (Pages) renders. The home opening
+ * is the Home global's own (`homeHeroField`), so it is not a type here.
  */
-export const heroField = ({ editorial = false }: { editorial?: boolean } = {}): Field => ({
+export const heroField = ({
+  editorial = false,
+  aimField = false,
+}: {
+  editorial?: boolean
+  aimField?: boolean
+} = {}): Field => ({
   name: 'hero',
   type: 'group',
   fields: [
@@ -57,6 +74,7 @@ export const heroField = ({ editorial = false }: { editorial?: boolean } = {}): 
           label: 'Low Impact',
           value: 'lowImpact',
         },
+        ...(aimField ? aimFieldHeroOptions : []),
       ],
       required: true,
     },

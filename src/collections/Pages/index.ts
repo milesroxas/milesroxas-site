@@ -51,7 +51,7 @@ export const Pages: CollectionConfig<'pages'> = {
       type: 'tabs',
       tabs: [
         {
-          fields: [heroField()],
+          fields: [heroField({ aimField: true })],
           label: 'Opening',
         },
         {

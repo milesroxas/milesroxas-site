@@ -93,8 +93,6 @@ export const SHADER_KNOBS: { title: string; knobs: ShaderKnob[] }[] = [
       { kind: 'range', key: 'spread', label: 'move spread px', min: 0, max: 40, step: 1 },
       { kind: 'range', key: 'recoil', label: 'recoil px', min: 0, max: 30, step: 1 },
       { kind: 'toggle', key: 'hideCursor', label: 'hide os cursor' },
-      { kind: 'toggle', key: 'trail', label: 'trail' },
-      { kind: 'range', key: 'trailLife', label: 'trail s', min: 0.2, max: 3, step: 0.1 },
     ],
   },
   {

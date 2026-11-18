@@ -7,7 +7,6 @@
  */
 import { CURSORS, FILLS, MIXES, PAPERS, SHADER_COLORS, SHAPES, type ShaderConfig } from './config'
 
-const TRAIL = 24
 const RIPPLES = 6
 
 const ACT = 'a[href], button, input, select, textarea, summary, [role="button"], [data-aim="act"]'
@@ -33,7 +32,6 @@ uniform vec2 uAim;
 uniform float uR;
 uniform vec4 uBox;
 uniform float uLocked;
-uniform vec3 uTrail[${TRAIL}];
 uniform vec3 uRipple[${RIPPLES}];
 uniform vec3 uGround;
 uniform vec3 uFg;
@@ -61,7 +59,6 @@ uniform int uCursor;
 uniform float uRings;
 uniform float uCrosshair;
 uniform float uSpotCore;
-uniform float uTrailLife;
 uniform float uRippleSpeed;
 uniform float uWave;
 uniform float uRippleRings;
@@ -197,20 +194,6 @@ void main() {
   vec2 pc = floor(uPointer.xy / uCell);
   float d = cheb(cid, pc);
   bool inside = uLocked < 0.5 && strength > 0.01 && uR >= 1.0 && d <= uR;
-
-  if (uTrailLife > 0.0) {
-    float trail = 0.0;
-    for (int k = 0; k < ${TRAIL}; k++) {
-      vec3 tp = uTrail[k];
-      if (tp.z < 0.0 || tp.z > uTrailLife) continue;
-      float life = 1.0 - tp.z / uTrailLife;
-      if (cheb(cid, floor(tp.xy / uCell)) <= floor(life * 1.99)) trail = max(trail, life);
-    }
-    if (trail > 0.0 && !inside) {
-      q = max(q, ceil(trail * uLevels) / uLevels);
-      ink = lineTone;
-    }
-  }
 
   if (inside) {
     float ring = floor(d / (uR + 1.0) * uRings);
@@ -491,9 +474,7 @@ export function createShaderField(
   let kick = 0
   let pressed = false
   let hitAt = -1
-  const trail: { x: number; y: number; born: number }[] = []
   const ripples: { x: number; y: number; born: number }[] = []
-  let lastTrail = 0
   let time = 0
   let clock = 0
   let last = performance.now()
@@ -565,7 +546,6 @@ export function createShaderField(
   document.documentElement.addEventListener('pointerleave', onLeave)
   window.addEventListener('blur', onLeave)
 
-  const trailData = new Float32Array(TRAIL * 3)
   const rippleData = new Float32Array(RIPPLES * 3)
   let lastKey = ''
 
@@ -682,11 +662,6 @@ export function createShaderField(
     gap += (spreadGoal - gap) * approach(60)
 
     const key = `${cellX}:${cellY}:${lock?.kind ?? 'free'}`
-    if (config.trail && !still && target.on > 0 && key !== lastKey && clock - lastTrail > 0.03) {
-      trail.push({ x: smooth.x, y: smooth.y, born: clock })
-      if (trail.length > TRAIL) trail.shift()
-      lastTrail = clock
-    }
     if (key !== lastKey) {
       lastKey = key
       options.onPointer?.({
@@ -699,12 +674,6 @@ export function createShaderField(
       })
     }
 
-    trailData.fill(-1)
-    if (config.trail) {
-      trail.forEach((t, i) => {
-        trailData.set([t.x, t.y, clock - t.born], i * 3)
-      })
-    }
     while (ripples.length && clock - (ripples[0]?.born ?? 0) > config.rippleDecay * 4 + 2) {
       ripples.shift()
     }
@@ -730,7 +699,6 @@ export function createShaderField(
     gl.uniform1f(u('uR'), r)
     gl.uniform4f(u('uBox'), box.x0, box.y0, box.x1, box.y1)
     gl.uniform1f(u('uLocked'), locked ? 1 : 0)
-    gl.uniform3fv(u('uTrail'), trailData)
     gl.uniform3fv(u('uRipple'), rippleData)
     gl.uniform3fv(u('uGround'), rgb(ground))
     gl.uniform3fv(u('uFg'), rgb(fg))
@@ -758,7 +726,6 @@ export function createShaderField(
     gl.uniform1f(u('uRings'), config.rings)
     gl.uniform1f(u('uCrosshair'), config.crosshair ? 1 : 0)
     gl.uniform1f(u('uSpotCore'), config.spotCore ? 1 : 0)
-    gl.uniform1f(u('uTrailLife'), config.trail ? config.trailLife : 0)
     gl.uniform1f(u('uRippleSpeed'), config.rippleSpeed)
     gl.uniform1f(u('uWave'), config.wavelength)
     gl.uniform1f(u('uRippleRings'), config.rippleRings)
