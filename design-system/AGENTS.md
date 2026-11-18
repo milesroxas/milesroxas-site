@@ -68,6 +68,13 @@ with the site chrome over it.
   real app stills, dimmed except the part the block talks about. They are
   made in `~/SITES/tools/skill-studio-design` (`recorder/stills.ts` takes
   the stills, `plates/render.mjs` edits them); never redraw the app in Elyx.
+  `screens/pages/skill-studio.elyx` is the Skill Studio page (`skillStudio`),
+  promoted from the `sketch` board in `exploration/skill-studio.elyx`, with
+  its opening, `skillStudioHero`, beside the screen. Its other sections are
+  proposed blocks, named as Payload blocks would be but not built yet:
+  `stepList` (with `step`) in `blocks/lists.elyx`, and
+  `splitContentNarrowList` (Split narrow with a styled list of `listItem`s in
+  place of the body) in `blocks/media-content.elyx`.
   `screens/section-headings.elyx` is the specimen sheet for the two Section
   heading blocks: every variant their Payload settings produce, labelled.
 - `exploration/`: proposal sheets, not screens as built. `works-summary.elyx`

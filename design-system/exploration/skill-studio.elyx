@@ -25,6 +25,13 @@ import "resources/images/skill-studio/windows/case-end.jpg" as winCase
 import "resources/images/skill-studio/windows/design-end.jpg" as winDesign
 import "resources/images/skill-studio/windows/results-marked.jpg" as winScores
 import "resources/images/skill-studio/windows/compare-end.jpg" as winWords
+import "blocks/section.elyx" as section
+import "tokens/lengths.elyx" as lengths
+import "blocks/section-heading.elyx" as section-heading
+import "blocks/media.elyx" as media
+import "blocks/statements.elyx" as statements
+import "blocks/media-content.elyx" as media-content
+import "blocks/forms.elyx" as forms
 
 file {
   draw-connections: .true
@@ -37,14 +44,14 @@ file {
 // README, CONTRIBUTING and the promo lines Miles approved; numbers are the
 // sample skill's (release-notes). Nothing here is built.
 skillStudioMarketing = frame {
-  layout: {direction: .column, item-gap: 192px},
+  layout: {stack: {direction: .column, item-gap: 192px}},
   fill: k.brand.grey-1,
   padding: 120px,
   children: [intro, flowSheet, boards, blocksSheet],
 
   intro = frame {
     width: 1310px,
-    layout: {direction: .column, item-gap: 24px},
+    layout: {stack: {direction: .column, item-gap: 24px}},
     children: [introCode, introTitle, introNote],
 
     introCode = text : kit.meta {
@@ -65,12 +72,12 @@ skillStudioMarketing = frame {
   // The app as it ships (v0.16.0), in the order a new skill goes round the
   // loop. The page's sections borrow this order: write, run, compare.
   flowSheet = frame {
-    layout: {direction: .column, item-gap: 48px},
+    layout: {stack: {direction: .column, item-gap: 48px}},
     children: [flowHead, flowRow],
 
     flowHead = frame {
       width: 1310px,
-      layout: {direction: .column, item-gap: 16px},
+      layout: {stack: {direction: .column, item-gap: 16px}},
       children: [flowCode, flowTitle, flowNote],
 
       flowCode = text : kit.meta {
@@ -89,7 +96,7 @@ skillStudioMarketing = frame {
     }
 
     flowRow = frame {
-      layout: {item-gap: 120px},
+      layout: {stack: {item-gap: 120px}},
       children: [
         flowLibrary,
         flowSkill,
@@ -197,14 +204,18 @@ skillStudioMarketing = frame {
   }
 
   boards = frame {
-    layout: {item-gap: 384px},
+    left: 120px,
+    top: 1555px,
+    width: 5088px,
+    height: 5064px,
+    layout: {stack: {item-gap: 384px}},
     children: [optionA, optionB, optionC],
 
     // A. Spec sheet. The brand as written: a spec-bar nav, one slogan-stack
     // moment in the opening with the lift panel on an ink field that runs off
     // three edges, then frame-only sections in the app's own order.
     optionA = frame {
-      layout: {direction: .column, item-gap: 32px},
+      layout: {stack: {direction: .column, item-gap: 32px}},
       children: [labelA, noteA, iaA, boardA],
 
       labelA = text : kit.lead {
@@ -226,7 +237,7 @@ skillStudioMarketing = frame {
         title: "A. Spec sheet",
         caption: "The page at 1440px, top to bottom. One moment, in the opening.",
         width: k.grid.page,
-        layout: {direction: .column},
+        layout: {stack: {direction: .column}},
         fill: k.brand.paper,
         children: [
           navA,
@@ -251,7 +262,7 @@ skillStudioMarketing = frame {
             top: 0px,
             width: 601px,
             height: 100%,
-            layout: {direction: .column, justify-content: .center},
+            layout: {stack: {direction: .column, justify-content: .center}},
             fill: k.brand.ink,
             children: liftBandA,
 
@@ -301,7 +312,7 @@ skillStudioMarketing = frame {
           ctaA = frame {
             left: 65px,
             top: 636px,
-            layout: {align-items: .center, item-gap: 32px},
+            layout: {stack: {align-items: .center, item-gap: 32px}},
             children: [downloadA, repoLinkA],
 
             downloadA = frame : kit.downloadButton {}
@@ -323,7 +334,7 @@ skillStudioMarketing = frame {
 
         loopA = frame {
           width: 100%,
-          layout: {direction: .column, item-gap: 56px},
+          layout: {stack: {direction: .column, item-gap: 56px}},
           border: {color: k.brand.ink, sides: .top},
           padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
           children: [loopHeadA, loopColsA],
@@ -340,7 +351,7 @@ skillStudioMarketing = frame {
 
           loopColsA = frame {
             width: 100%,
-            layout: {item-gap: k.grid.gutter},
+            layout: {stack: {item-gap: k.grid.gutter}},
             children: [stepWriteA, stepRunA, stepCompareA],
 
             stepWriteA = frame : kit.stepColumn {
@@ -405,7 +416,7 @@ skillStudioMarketing = frame {
 
         proofA = frame {
           width: 100%,
-          layout: {direction: .column, item-gap: 56px},
+          layout: {stack: {direction: .column, item-gap: 56px}},
           padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
           children: [proofHeadA, proofRowA],
 
@@ -421,12 +432,12 @@ skillStudioMarketing = frame {
 
           proofRowA = frame {
             width: 100%,
-            layout: {item-gap: k.grid.gutter},
+            layout: {stack: {item-gap: k.grid.gutter}},
             children: [specsA, verdictA],
 
             specsA = frame {
               width: k.grid.span-4,
-              layout: {direction: .column, item-gap: 40px},
+              layout: {stack: {direction: .column, item-gap: 40px}},
               children: [specWithout, specFirst, specLatest, proofTextA],
 
               specWithout = frame : kit.specNumber {
@@ -492,7 +503,9 @@ skillStudioMarketing = frame {
     // pixel readout. The headline drops to light display so the figure is the
     // one moment. The loop is one annotated window instead of three crops.
     optionB = frame {
-      layout: {direction: .column, item-gap: 32px},
+      width: 1440px,
+      height: 4639.6px,
+      layout: {stack: {direction: .column, item-gap: 32px}},
       children: [labelB, noteB, iaB, boardB],
 
       labelB = text : kit.lead {
@@ -514,7 +527,7 @@ skillStudioMarketing = frame {
         title: "B. Lift",
         caption: "The page at 1440px. The moment is the figure, not the headline.",
         width: k.grid.page,
-        layout: {direction: .column},
+        layout: {stack: {direction: .column}},
         fill: k.brand.paper,
         children: [
           navB,
@@ -602,7 +615,7 @@ skillStudioMarketing = frame {
           ctaB = frame {
             left: 65px,
             top: 380px,
-            layout: {align-items: .center, item-gap: 32px},
+            layout: {stack: {align-items: .center, item-gap: 32px}},
             children: [downloadB, repoLinkB],
 
             downloadB = frame : kit.downloadButton {
@@ -691,7 +704,7 @@ skillStudioMarketing = frame {
 
         windowB = frame {
           width: 100%,
-          layout: {direction: .column, item-gap: 56px},
+          layout: {stack: {direction: .column, item-gap: 56px}},
           padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
           children: [windowHeadB, windowRowB],
 
@@ -707,12 +720,12 @@ skillStudioMarketing = frame {
 
           windowRowB = frame {
             width: 100%,
-            layout: {item-gap: k.grid.gutter},
+            layout: {stack: {item-gap: k.grid.gutter}},
             children: [keysB, appShotB],
 
             keysB = frame {
               width: k.grid.span-3,
-              layout: {direction: .column, item-gap: 32px},
+              layout: {stack: {direction: .column, item-gap: 32px}},
               children: [keyWriteB, keyRunB, keyCompareB],
 
               keyWriteB = frame : kit.legendKey {
@@ -775,7 +788,7 @@ skillStudioMarketing = frame {
               height: 782.6px,
               fill: {image: {ref: shotApp}},
               border: {color: k.brand.ink, position: .outside},
-              children: [pinWriteB, pinRunB, pinCompareB],
+              children: [pinWriteB, pinRunB],
 
               pinWriteB = frame : kit.keyChip {
                 left: 118px,
@@ -794,22 +807,13 @@ skillStudioMarketing = frame {
                   contents: "02"
                 }
               }
-
-              pinCompareB = frame : kit.keyChip {
-                left: 506px,
-                top: 152px,
-
-                keyDigit {
-                  contents: "03"
-                }
-              }
             }
           }
         }
 
         verdictB = frame {
           width: 100%,
-          layout: {item-gap: k.grid.gutter},
+          layout: {stack: {item-gap: k.grid.gutter}},
           padding: [k.grid.section, k.grid.margin, k.grid.section-loose],
           children: [verdictShotB, verdictTextB],
 
@@ -827,7 +831,7 @@ skillStudioMarketing = frame {
 
           verdictTextB = frame {
             width: k.grid.span-6,
-            layout: {direction: .column, item-gap: 32px},
+            layout: {stack: {direction: .column, item-gap: 32px}},
             padding: [0px, 0px, 0px, 111px],
             children: [verdictCodeB, verdictLeadB, verdictBodyB, verdictSpecsB],
 
@@ -848,7 +852,7 @@ skillStudioMarketing = frame {
 
             verdictSpecsB = frame {
               width: 100%,
-              layout: {direction: .column},
+              layout: {stack: {direction: .column}},
               children: [specFilesB, specSuitsB],
 
               specFilesB = frame : kit.needRow {
@@ -891,7 +895,7 @@ skillStudioMarketing = frame {
     // skills, BUILD IT on ink for people who build tools, with the Flow mark
     // cropped by the corner. Below, a field manual and a deadpan receipt.
     optionC = frame {
-      layout: {direction: .column, item-gap: 32px},
+      layout: {stack: {direction: .column, item-gap: 32px}},
       children: [labelC, noteC, iaC, boardC],
 
       labelC = text : kit.lead {
@@ -913,7 +917,7 @@ skillStudioMarketing = frame {
         title: "C. Two doors",
         caption: "The page at 1440px. The first view forks into use and build.",
         width: k.grid.page,
-        layout: {direction: .column},
+        layout: {stack: {direction: .column}},
         fill: k.brand.paper,
         children: [navC, doorsC, manualC, receiptC, installC, colophonC],
 
@@ -922,7 +926,7 @@ skillStudioMarketing = frame {
         doorsC = frame {
           width: 100%,
           height: 860px,
-          layout: {direction: .row},
+          layout: {stack: {}},
           children: [doorUse, doorBuild],
 
           doorUse = frame {
@@ -1034,7 +1038,7 @@ skillStudioMarketing = frame {
 
         manualC = frame {
           width: 100%,
-          layout: {direction: .column, item-gap: 96px},
+          layout: {stack: {direction: .column, item-gap: 96px}},
           padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
           children: [
             manualHeadC,
@@ -1126,14 +1130,14 @@ skillStudioMarketing = frame {
 
         receiptC = frame {
           width: 100%,
-          layout: {item-gap: k.grid.gutter},
+          layout: {stack: {item-gap: k.grid.gutter}},
           border: {color: k.brand.ink, sides: .top},
           padding: [k.grid.section, k.grid.margin, k.grid.section-loose],
           children: [receiptHeadC, receiptListC, readoutC],
 
           receiptHeadC = frame {
             width: k.grid.span-3,
-            layout: {direction: .column, item-gap: 16px},
+            layout: {stack: {direction: .column, item-gap: 16px}},
             children: [receiptCodeC, receiptNoteC],
 
             receiptCodeC = text : kit.meta {
@@ -1149,7 +1153,7 @@ skillStudioMarketing = frame {
 
           receiptListC = frame {
             width: k.grid.span-5,
-            layout: {direction: .column},
+            layout: {stack: {direction: .column}},
             children: [
               lineFree,
               lineLicense,
@@ -1257,7 +1261,9 @@ skillStudioMarketing = frame {
           readoutC = frame {
             width: k.grid.span-4,
             height: 320px,
-            layout: {direction: .column, justify-content: .space-between},
+            layout: {
+              stack: {direction: .column, justify-content: .space-between}
+            },
             fill: k.brand.ink,
             padding: 24px,
             children: [readoutTopC, readoutDigitsC],
@@ -1289,12 +1295,16 @@ skillStudioMarketing = frame {
   // per file, the detected system marked in orange) or four keys (B). GitHub repository becomes
   // a parts list: what is welcome, where it lives, and the three commands.
   blocksSheet = frame {
-    layout: {direction: .column, item-gap: 48px},
+    left: 120px,
+    top: 6811px,
+    width: 1440px,
+    height: 2615px,
+    layout: {stack: {direction: .column, item-gap: 48px}},
     children: [blocksHead, blocksRow],
 
     blocksHead = frame {
       width: 1310px,
-      layout: {direction: .column, item-gap: 16px},
+      layout: {stack: {direction: .column, item-gap: 16px}},
       children: [blocksCode, blocksTitle, blocksNote],
 
       blocksCode = text : kit.meta {
@@ -1313,7 +1323,11 @@ skillStudioMarketing = frame {
     }
 
     blocksRow = frame {
-      layout: {direction: .column, item-gap: 96px},
+      left: 0px,
+      top: 208px,
+      width: 1440px,
+      height: 2407px,
+      layout: {stack: {direction: .column, item-gap: 96px}},
       children: [blockReceipt, blockKeys, blockRepo],
 
       blockReceipt = frame : kit.appDownloadReceipt {
@@ -1337,7 +1351,7 @@ skillStudioMarketing = frame {
 kit = frame {
   left: 3800px,
   top: -4705px,
-  layout: {direction: .column, item-gap: 64px},
+  layout: {stack: {direction: .column, item-gap: 64px}},
   fill: k.brand.grey-1,
   padding: 64px,
   children: [
@@ -1428,7 +1442,7 @@ kit = frame {
 
   // A link under 24px is ink text over a 3px orange rule (orange text needs 24px).
   textLink = frame {
-    layout: {direction: .column, item-gap: 2px},
+    layout: {stack: {direction: .column, item-gap: 2px}},
     border: {color: k.brand.spot, width: 3px, sides: .bottom},
     padding: [0px, 0px, 2px],
     children: linkLabel,
@@ -1440,7 +1454,7 @@ kit = frame {
 
   // Ink is the button; orange is only the glyph, as the block now ships.
   downloadButton = frame {
-    layout: {align-items: .center, item-gap: 12px},
+    layout: {stack: {align-items: .center, item-gap: 12px}},
     fill: k.brand.ink,
     padding: [16px, 24px],
     children: [downloadIcon, downloadLabel, downloadMeta],
@@ -1467,7 +1481,7 @@ kit = frame {
   specBar = frame {
     width: 1440px,
     height: 64px,
-    layout: {justify-content: .space-between, align-items: .center},
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
     fill: k.brand.paper,
     border: {color: k.brand.ink, sides: .bottom},
     padding: [0px, 65px],
@@ -1479,7 +1493,7 @@ kit = frame {
     }
 
     barLinks = frame {
-      layout: {align-items: .center, item-gap: 32px},
+      layout: {stack: {align-items: .center, item-gap: 32px}},
       children: [linkHow, linkInstall, linkContribute, linkGuide],
 
       linkHow = text : body {
@@ -1512,7 +1526,7 @@ kit = frame {
   // statement from column four.
   sectionHead = frame {
     width: 1310px,
-    layout: {item-gap: k.grid.gutter},
+    layout: {stack: {item-gap: k.grid.gutter}},
     children: [sectionCode, sectionLead],
 
     sectionCode = text : meta {
@@ -1528,12 +1542,12 @@ kit = frame {
 
   stepColumn = frame {
     width: k.grid.span-4,
-    layout: {direction: .column, item-gap: 16px},
+    layout: {stack: {direction: .column, item-gap: 16px}},
     children: [stepTop, stepText, stepShot],
 
     stepTop = frame {
       width: 100%,
-      layout: {item-gap: 16px},
+      layout: {stack: {item-gap: 16px}},
       border: {color: k.brand.ink, sides: .top},
       padding: [16px, 0px, 0px],
       children: [stepNumber, stepName],
@@ -1564,7 +1578,7 @@ kit = frame {
   // A spec block: label above value, the value in light display.
   specNumber = frame {
     width: 100%,
-    layout: {direction: .column, item-gap: 8px},
+    layout: {stack: {direction: .column, item-gap: 8px}},
     border: {color: k.brand.ink, sides: .top},
     padding: [12px, 0px, 0px],
     children: [specLabel, specValue],
@@ -1580,7 +1594,7 @@ kit = frame {
 
   flowCard = frame {
     width: 533px,
-    layout: {direction: .column, item-gap: 16px},
+    layout: {stack: {direction: .column, item-gap: 16px}},
     children: [flowShot, flowStep, flowWhat],
 
     flowShot = frame {
@@ -1604,14 +1618,14 @@ kit = frame {
   // App download, Download buttons mode, as a receipt.
   appDownloadReceipt = frame {
     width: 1440px,
-    layout: {item-gap: k.grid.gutter},
+    layout: {stack: {item-gap: k.grid.gutter}},
     fill: k.brand.paper,
     padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
     children: [receiptIntro, receiptBody],
 
     receiptIntro = frame {
       width: k.grid.span-4,
-      layout: {direction: .column, item-gap: 24px},
+      layout: {stack: {direction: .column, item-gap: 24px}},
       children: [receiptCode, receiptHeading, receiptText],
 
       receiptCode = text : meta {
@@ -1632,7 +1646,7 @@ kit = frame {
 
     receiptBody = frame {
       width: k.grid.span-8,
-      layout: {direction: .column},
+      layout: {stack: {direction: .column}},
       children: [
         receiptVersion,
         rowMacArm,
@@ -1648,7 +1662,7 @@ kit = frame {
 
       receiptVersion = frame {
         width: 100%,
-        layout: {justify-content: .space-between},
+        layout: {stack: {justify-content: .space-between}},
         border: {color: k.brand.ink, sides: .bottom},
         padding: [0px, 0px, 12px],
         children: [versionLabel, versionValue],
@@ -1665,7 +1679,7 @@ kit = frame {
       rowMacArm = frame {
         width: 100%,
         height: 72px,
-        layout: {align-items: .center, item-gap: 16px},
+        layout: {stack: {align-items: .center, item-gap: 16px}},
         border: {color: k.brand.grey-2, sides: .bottom},
         children: [armMark, armSystem, armLeader, armFile, armButton],
 
@@ -1761,7 +1775,7 @@ kit = frame {
 
       receiptFoot = frame {
         width: 100%,
-        layout: {item-gap: 32px},
+        layout: {stack: {item-gap: 32px}},
         padding: [32px, 0px, 0px],
         children: [allReleases, checkDownload],
 
@@ -1786,7 +1800,7 @@ kit = frame {
   // App download, GitHub repository mode, as a parts list.
   appDownloadRepo = frame {
     width: 1440px,
-    layout: {item-gap: k.grid.gutter},
+    layout: {stack: {item-gap: k.grid.gutter}},
     fill: k.brand.paper,
     border: {color: k.brand.ink, sides: .top},
     padding: [k.grid.section-loose, k.grid.margin],
@@ -1794,7 +1808,7 @@ kit = frame {
 
     repoIntro = frame {
       width: k.grid.span-4,
-      layout: {direction: .column, item-gap: 24px},
+      layout: {stack: {direction: .column, item-gap: 24px}},
       children: [repoCode, repoHeading, repoText, repoLinks],
 
       repoCode = text : meta {
@@ -1813,7 +1827,7 @@ kit = frame {
       }
 
       repoLinks = frame {
-        layout: {direction: .column, item-gap: 16px},
+        layout: {stack: {direction: .column, item-gap: 16px}},
         padding: [16px, 0px, 0px],
         children: [repoGitHub, repoGuide],
 
@@ -1832,12 +1846,12 @@ kit = frame {
 
     repoBody = frame {
       width: k.grid.span-8,
-      layout: {direction: .column, item-gap: 48px},
+      layout: {stack: {direction: .column, item-gap: 48px}},
       children: [partsList, cloneBlock],
 
       partsList = frame {
         width: 100%,
-        layout: {direction: .column},
+        layout: {stack: {direction: .column}},
         children: [partsHead, partJudge, partEngine, partUi, partFix],
 
         partsHead = frame : partRow {
@@ -1922,14 +1936,14 @@ kit = frame {
 
       cloneBlock = frame {
         width: 100%,
-        layout: {direction: .column, item-gap: 16px},
+        layout: {stack: {direction: .column, item-gap: 16px}},
         fill: k.brand.ink,
         padding: 32px,
         children: [cloneHead, cloneLines],
 
         cloneHead = frame {
           width: 100%,
-          layout: {justify-content: .space-between},
+          layout: {stack: {justify-content: .space-between}},
           children: [cloneLabel, cloneCopy],
 
           cloneLabel = text : meta {
@@ -1957,7 +1971,7 @@ kit = frame {
   receiptRow = frame {
     width: 100%,
     height: 72px,
-    layout: {align-items: .center, item-gap: 16px},
+    layout: {stack: {align-items: .center, item-gap: 16px}},
     border: {color: k.brand.grey-2, sides: .bottom},
     children: [rowSpacer, rowSystem, rowLeader, rowFile, rowAction],
 
@@ -1989,7 +2003,7 @@ kit = frame {
 
   needRow = frame {
     width: 100%,
-    layout: {item-gap: k.grid.gutter},
+    layout: {stack: {item-gap: k.grid.gutter}},
     border: {color: k.brand.grey-2, sides: .top},
     padding: [14px, 0px],
     children: [needLabel, needValue],
@@ -2007,7 +2021,7 @@ kit = frame {
 
   partRow = frame {
     width: 100%,
-    layout: {item-gap: k.grid.gutter},
+    layout: {stack: {item-gap: k.grid.gutter}},
     border: {color: k.brand.grey-2, sides: .bottom},
     padding: [18px, 0px],
     children: [partNumber, partName, partWhere],
@@ -2029,13 +2043,13 @@ kit = frame {
 
   legendKey = frame {
     width: 100%,
-    layout: {direction: .column, item-gap: 12px},
+    layout: {stack: {direction: .column, item-gap: 12px}},
     border: {color: k.brand.ink, sides: .top},
     padding: [16px, 0px, 0px],
     children: [keyTop, keyText],
 
     keyTop = frame {
-      layout: {align-items: .center, item-gap: 12px},
+      layout: {stack: {align-items: .center, item-gap: 12px}},
       children: [keyChip, keyName],
 
       keyChip = frame : kit.keyChip {}
@@ -2057,7 +2071,7 @@ kit = frame {
   keyChip = frame {
     width: 28px,
     height: 28px,
-    layout: {justify-content: .center, align-items: .center},
+    layout: {stack: {justify-content: .center, align-items: .center}},
     fill: k.brand.ink,
     children: keyDigit,
 
@@ -2069,7 +2083,7 @@ kit = frame {
 
   chapter = frame {
     width: 1310px,
-    layout: {item-gap: k.grid.gutter},
+    layout: {stack: {item-gap: k.grid.gutter}},
     children: [chapterNumber, chapterWords, chapterShot],
 
     chapterNumber = text : display {
@@ -2081,7 +2095,7 @@ kit = frame {
 
     chapterWords = frame {
       width: k.grid.span-3,
-      layout: {direction: .column, item-gap: 16px},
+      layout: {stack: {direction: .column, item-gap: 16px}},
       border: {color: k.brand.ink, sides: .top},
       padding: [16px, 0px, 0px],
       children: [chapterName, chapterText],
@@ -2108,7 +2122,7 @@ kit = frame {
   receiptLine = frame {
     width: 100%,
     height: 44px,
-    layout: {align-items: .center, item-gap: 12px},
+    layout: {stack: {align-items: .center, item-gap: 12px}},
     children: [lineLabel, lineLeader, lineValue],
 
     lineLabel = text : meta {
@@ -2130,7 +2144,7 @@ kit = frame {
   // detected one pressed (ink, an orange rule on top).
   appDownloadKeys = frame {
     width: 1440px,
-    layout: {item-gap: k.grid.gutter},
+    layout: {stack: {item-gap: k.grid.gutter}},
     fill: k.brand.paper,
     border: {color: k.brand.ink, sides: .top},
     padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
@@ -2138,7 +2152,7 @@ kit = frame {
 
     keysIntro = frame {
       width: k.grid.span-4,
-      layout: {direction: .column, item-gap: 24px},
+      layout: {stack: {direction: .column, item-gap: 24px}},
       children: [keysCode, keysHeading, keysText],
 
       keysCode = text : meta {
@@ -2159,12 +2173,12 @@ kit = frame {
 
     keysBody = frame {
       width: k.grid.span-8,
-      layout: {direction: .column, item-gap: 24px},
+      layout: {stack: {direction: .column, item-gap: 24px}},
       children: [keysRow, keysFoot],
 
       keysRow = frame {
         width: 100%,
-        layout: {item-gap: k.grid.gutter},
+        layout: {stack: {item-gap: k.grid.gutter}},
         children: [keyMacArm, keyMacIntel, keyWindows, keyLinux],
 
         keyMacArm = frame : osKey {
@@ -2236,7 +2250,7 @@ kit = frame {
 
       keysFoot = frame {
         width: 100%,
-        layout: {justify-content: .space-between, align-items: .center},
+        layout: {stack: {justify-content: .space-between, align-items: .center}},
         border: {color: k.brand.ink, sides: .top},
         padding: [16px, 0px, 0px],
         children: [keysFile, keysButton],
@@ -2262,7 +2276,7 @@ kit = frame {
   osKey = frame {
     width: k.grid.span-2,
     height: 204px,
-    layout: {direction: .column, justify-content: .space-between},
+    layout: {stack: {direction: .column, justify-content: .space-between}},
     border: k.brand.ink,
     padding: 16px,
     children: [osNumber, osWords],
@@ -2272,7 +2286,7 @@ kit = frame {
     }
 
     osWords = frame {
-      layout: {direction: .column, item-gap: 4px},
+      layout: {stack: {direction: .column, item-gap: 4px}},
       children: [osName, osArch],
 
       osName = text : body {
@@ -2299,7 +2313,7 @@ kit = frame {
   navOnInk = frame {
     width: 1440px,
     height: 72px,
-    layout: {justify-content: .space-between, align-items: .center},
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
     padding: [0px, 65px],
     children: [navName, navLinks],
 
@@ -2310,7 +2324,7 @@ kit = frame {
     }
 
     navLinks = frame {
-      layout: {item-gap: 32px},
+      layout: {stack: {item-gap: 32px}},
       children: [navWork, navPosts, navContact],
 
       navWork = text : body {
@@ -2357,7 +2371,7 @@ kit = frame {
     featVerbs = frame {
       left: 65px,
       top: 144px,
-      layout: {direction: .column},
+      layout: {stack: {direction: .column}},
       children: [verbWrite, verbRun, verbCompare],
 
       verbWrite = text : statement {
@@ -2398,7 +2412,7 @@ kit = frame {
 
   example = frame {
     width: 100%,
-    layout: {direction: .column, item-gap: 10px},
+    layout: {stack: {direction: .column, item-gap: 10px}},
     children: [exampleName, exampleText],
 
     exampleName = text : statement {
@@ -2425,11 +2439,11 @@ kit = frame {
       left: 65px,
       top: 150px,
       width: k.grid.span-4,
-      layout: {direction: .column, item-gap: 28px},
+      layout: {stack: {direction: .column, item-gap: 28px}},
       children: [oWrite, oTest, oCompare],
 
       oWrite = frame {
-        layout: {direction: .column, item-gap: 10px},
+        layout: {stack: {direction: .column, item-gap: 10px}},
         children: [oWriteVerb, oWriteFeatures],
 
         oWriteVerb = text : statement {
@@ -2438,11 +2452,11 @@ kit = frame {
         }
 
         oWriteFeatures = frame {
-          layout: {direction: .column, item-gap: 4px},
+          layout: {stack: {direction: .column, item-gap: 4px}},
           children: [oChecks, oRewrites, oAssistant],
 
           oChecks = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [oChecksDot, oChecksName],
 
             oChecksDot = frame {
@@ -2457,7 +2471,7 @@ kit = frame {
           }
 
           oRewrites = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [oRewritesDot, oRewritesName],
 
             oRewritesDot = frame {
@@ -2473,7 +2487,7 @@ kit = frame {
           }
 
           oAssistant = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [oAssistantDot, oAssistantName],
 
             oAssistantDot = frame {
@@ -2491,7 +2505,7 @@ kit = frame {
       }
 
       oTest = frame {
-        layout: {direction: .column, item-gap: 10px},
+        layout: {stack: {direction: .column, item-gap: 10px}},
         children: [oTestVerb, oTestFeatures],
 
         oTestVerb = text : statement {
@@ -2501,11 +2515,11 @@ kit = frame {
         }
 
         oTestFeatures = frame {
-          layout: {direction: .column, item-gap: 4px},
+          layout: {stack: {direction: .column, item-gap: 4px}},
           children: oTasks,
 
           oTasks = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [oTasksDot, oTasksName],
 
             oTasksDot = frame {
@@ -2523,7 +2537,7 @@ kit = frame {
       }
 
       oCompare = frame {
-        layout: {direction: .column, item-gap: 10px},
+        layout: {stack: {direction: .column, item-gap: 10px}},
         children: [oCompareVerb, oCompareFeatures],
 
         oCompareVerb = text : statement {
@@ -2533,11 +2547,11 @@ kit = frame {
         }
 
         oCompareFeatures = frame {
-          layout: {direction: .column, item-gap: 4px},
+          layout: {stack: {direction: .column, item-gap: 4px}},
           children: [oSide, oScores],
 
           oSide = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [oSideDot, oSideName],
 
             oSideDot = frame {
@@ -2553,7 +2567,7 @@ kit = frame {
           }
 
           oScores = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [oScoresDot, oScoresName],
 
             oScoresDot = frame {
@@ -2593,13 +2607,13 @@ kit = frame {
   dlPrimary = frame {
     width: 646.5px,
     height: 80px,
-    layout: {justify-content: .space-between, align-items: .center},
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
     fill: k.brand.ink,
     padding: [16px, 20px],
     children: [dlLead, dlArrow],
 
     dlLead = frame {
-      layout: {align-items: .center, item-gap: 16px},
+      layout: {stack: {align-items: .center, item-gap: 16px}},
       children: [dlMark, dlWords],
 
       dlMark = asset {
@@ -2610,7 +2624,7 @@ kit = frame {
       }
 
       dlWords = frame {
-        layout: {direction: .column, item-gap: 4px},
+        layout: {stack: {direction: .column, item-gap: 4px}},
         children: [dlTitle, dlMeta],
 
         dlTitle = text : body {
@@ -2636,13 +2650,13 @@ kit = frame {
   dlSecondary = frame {
     width: 646.5px,
     height: 60px,
-    layout: {justify-content: .space-between, align-items: .center},
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
     border: k.brand.grey-2,
     padding: [12px, 16px],
     children: [dlsLead, dlsArrow],
 
     dlsLead = frame {
-      layout: {align-items: .center, item-gap: 12px},
+      layout: {stack: {align-items: .center, item-gap: 12px}},
       children: [dlsMark, dlsWords],
 
       dlsMark = asset {
@@ -2653,7 +2667,7 @@ kit = frame {
       }
 
       dlsWords = frame {
-        layout: {direction: .column, item-gap: 2px},
+        layout: {stack: {direction: .column, item-gap: 2px}},
         children: [dlsTitle, dlsMeta],
 
         dlsTitle = text : body {
@@ -2675,14 +2689,14 @@ kit = frame {
   }
 
   archSwitch = frame {
-    layout: {direction: .row},
+    layout: {stack: {}},
     border: k.brand.grey-2,
     padding: 2px,
     children: [archOn, archOff],
 
     archOn = frame {
       height: 32px,
-      layout: {align-items: .center},
+      layout: {stack: {align-items: .center}},
       fill: k.brand.ink,
       padding: [0px, 12px],
       children: archOnLabel,
@@ -2695,7 +2709,7 @@ kit = frame {
 
     archOff = frame {
       height: 32px,
-      layout: {align-items: .center},
+      layout: {stack: {align-items: .center}},
       padding: [0px, 12px],
       children: archOffLabel,
 
@@ -2707,14 +2721,14 @@ kit = frame {
 
   installBlock = frame {
     width: 1440px,
-    layout: {item-gap: k.grid.gutter},
+    layout: {stack: {item-gap: k.grid.gutter}},
     fill: k.brand.paper,
     padding: [144px, 65px, 160px],
     children: [installWords, installActions],
 
     installWords = frame {
       width: k.grid.span-6,
-      layout: {direction: .column, item-gap: 32px},
+      layout: {stack: {direction: .column, item-gap: 32px}},
       children: [installStatement, installBody, installVersion],
 
       installStatement = text : statement {
@@ -2735,7 +2749,7 @@ kit = frame {
 
     installActions = frame {
       width: k.grid.span-6,
-      layout: {direction: .column, item-gap: 12px},
+      layout: {stack: {direction: .column, item-gap: 12px}},
       children: [
         installPrimary,
         installNoteRow,
@@ -2750,12 +2764,12 @@ kit = frame {
 
       installNoteRow = frame {
         width: 100%,
-        layout: {justify-content: .space-between, align-items: .center},
+        layout: {stack: {justify-content: .space-between, align-items: .center}},
         padding: [4px, 0px, 28px],
         children: [installNote, installArch],
 
         installNote = frame {
-          layout: {align-items: .center, item-gap: 8px},
+          layout: {stack: {align-items: .center, item-gap: 8px}},
           children: [installNoteDot, installNoteText],
 
           installNoteDot = frame {
@@ -2814,19 +2828,19 @@ kit = frame {
   // App download, repository mode (RepoActions), on ink, with the page's close.
   repoBlock = frame {
     width: 1440px,
-    layout: {direction: .column, item-gap: 160px},
+    layout: {stack: {direction: .column, item-gap: 160px}},
     fill: k.brand.ink,
     padding: [144px, 65px, 48px],
     children: [repoMain, repoClose],
 
     repoMain = frame {
       width: 100%,
-      layout: {item-gap: k.grid.gutter},
+      layout: {stack: {item-gap: k.grid.gutter}},
       children: [repoWords, repoActions],
 
       repoWords = frame {
         width: k.grid.span-6,
-        layout: {direction: .column, item-gap: 32px},
+        layout: {stack: {direction: .column, item-gap: 32px}},
         children: [repoStatement, repoBody],
 
         repoStatement = text : statement {
@@ -2844,7 +2858,7 @@ kit = frame {
 
       repoActions = frame {
         width: k.grid.span-6,
-        layout: {direction: .column, item-gap: 12px},
+        layout: {stack: {direction: .column, item-gap: 12px}},
         children: [repoPrimary, repoClone],
 
         repoPrimary = frame : dlPrimary {
@@ -2878,7 +2892,9 @@ kit = frame {
         repoClone = frame {
           width: 100%,
           height: 52px,
-          layout: {justify-content: .space-between, align-items: .center},
+          layout: {
+            stack: {justify-content: .space-between, align-items: .center}
+          },
           border: k.brand.rule-on-ink,
           padding: [0px, 0px, 0px, 16px],
           children: [repoCloneCode, repoCopy],
@@ -2893,7 +2909,7 @@ kit = frame {
           repoCopy = frame {
             width: 96px,
             height: 100%,
-            layout: {justify-content: .center, align-items: .center},
+            layout: {stack: {justify-content: .center, align-items: .center}},
             fill: k.brand.grey-ink,
             children: repoCopyLabel,
 
@@ -2908,7 +2924,7 @@ kit = frame {
 
     repoClose = frame {
       width: 100%,
-      layout: {justify-content: .space-between, align-items: .end},
+      layout: {stack: {justify-content: .space-between, align-items: .end}},
       children: [repoCredit, repoLinks],
 
       repoCredit = text : body {
@@ -2926,7 +2942,7 @@ kit = frame {
 
   colophon = frame {
     width: 1440px,
-    layout: {direction: .column, item-gap: 24px},
+    layout: {stack: {direction: .column, item-gap: 24px}},
     fill: k.brand.paper,
     border: {color: k.brand.ink, sides: .top},
     padding: [k.grid.section, k.grid.margin, 48px],
@@ -2934,7 +2950,7 @@ kit = frame {
 
     colophonTop = frame {
       width: 100%,
-      layout: {item-gap: k.grid.gutter},
+      layout: {stack: {item-gap: k.grid.gutter}},
       children: [colophonName, colophonCredit],
 
       colophonName = text : body {
@@ -2952,7 +2968,7 @@ kit = frame {
 
     colophonBottom = frame {
       width: 100%,
-      layout: {justify-content: .space-between},
+      layout: {stack: {justify-content: .space-between}},
       children: [colophonLeft, colophonRight],
 
       colophonLeft = text : meta {
@@ -2974,14 +2990,14 @@ kit = frame {
 round2 = frame {
   left: -2664px,
   top: 5905px,
-  layout: {direction: .column, item-gap: 96px},
+  layout: {stack: {direction: .column, item-gap: 96px}},
   fill: k.brand.grey-1,
   padding: 120px,
   children: [r2Intro, r2Row],
 
   r2Intro = frame {
     width: 1310px,
-    layout: {direction: .column, item-gap: 24px},
+    layout: {stack: {direction: .column, item-gap: 24px}},
     children: [r2Title, r2Note],
 
     r2Title = text : kit.display {
@@ -2997,14 +3013,14 @@ round2 = frame {
   }
 
   r2Row = frame {
-    layout: {item-gap: 384px},
+    layout: {stack: {item-gap: 384px}},
     children: [liftDesktop, featureBoard, liftMobile, brandDeltas],
 
     liftDesktop = frame {
       title: "Lift R2 / 1440",
       caption: "The page top to bottom. Ink (opening, then the pinned feature), field, paper, ink.",
       width: k.grid.page,
-      layout: {direction: .column},
+      layout: {stack: {direction: .column}},
       fill: k.brand.paper,
       children: [r2Opening, r2Feature, r2Verdict, r2Install, r2Contribute],
 
@@ -3049,7 +3065,7 @@ round2 = frame {
         r2Cta = frame {
           left: 65px,
           top: 428px,
-          layout: {align-items: .center, item-gap: 32px},
+          layout: {stack: {align-items: .center, item-gap: 32px}},
           children: [r2Download, r2Source],
 
           r2Download = frame : kit.dlPrimary {
@@ -3159,7 +3175,7 @@ round2 = frame {
           left: 839.08px,
           top: 144px,
           width: k.grid.span-5,
-          layout: {direction: .column, item-gap: 32px},
+          layout: {stack: {direction: .column, item-gap: 32px}},
           children: [verdictStatement, verdictBody],
 
           verdictStatement = text : kit.statement {
@@ -3183,12 +3199,12 @@ round2 = frame {
     featureBoard = frame {
       title: "Lift R2 / feature, three beats",
       caption: "Scroll-linked. Nothing moves unless the reader scrolls.",
-      layout: {direction: .column, item-gap: 96px},
+      layout: {stack: {direction: .column, item-gap: 96px}},
       children: [featureSpec, beatWrite, beatRun, beatCompare],
 
       featureSpec = frame {
         width: 1440px,
-        layout: {item-gap: k.grid.gutter},
+        layout: {stack: {item-gap: k.grid.gutter}},
         children: [featureSpecTitle, featureSpecBody],
 
         featureSpecTitle = text : kit.statement {
@@ -3289,7 +3305,7 @@ round2 = frame {
         left: 18px,
         top: 478px,
         width: 354px,
-        layout: {item-gap: 10px},
+        layout: {stack: {item-gap: 10px}},
         children: [mNoteDot, mNoteText],
 
         mNoteDot = frame {
@@ -3330,7 +3346,7 @@ round2 = frame {
       title: "Brand changes, round two",
       caption: "What this page changed in the new brand. Fold into miles-visual-brand once Miles agrees.",
       width: 960px,
-      layout: {direction: .column, item-gap: 40px},
+      layout: {stack: {direction: .column, item-gap: 40px}},
       fill: k.brand.paper,
       padding: 64px,
       children: [deltaTitle, deltaList],
@@ -3342,7 +3358,7 @@ round2 = frame {
 
       deltaList = frame {
         width: 100%,
-        layout: {direction: .column, item-gap: 28px},
+        layout: {stack: {direction: .column, item-gap: 28px}},
         children: [
           delta1,
           delta2,
@@ -3411,14 +3427,14 @@ round2 = frame {
 round3 = frame {
   left: -2664px,
   top: 11600px,
-  layout: {direction: .column, item-gap: 96px},
+  layout: {stack: {direction: .column, item-gap: 96px}},
   fill: k.brand.grey-1,
   padding: 120px,
   children: [r3Intro, r3Row],
 
   r3Intro = frame {
     width: 1310px,
-    layout: {direction: .column, item-gap: 24px},
+    layout: {stack: {direction: .column, item-gap: 24px}},
     children: [r3Title, r3Note],
 
     r3Title = text : kit.display {
@@ -3434,14 +3450,14 @@ round3 = frame {
   }
 
   r3Row = frame {
-    layout: {item-gap: 384px},
+    layout: {stack: {item-gap: 384px}},
     children: [r3Desktop, r3Board, r3Mobile, r3Deltas],
 
     r3Desktop = frame {
       title: "Lift R3 / 1440",
       caption: "Ink, paper, the grey field (pinned), paper, ink.",
       width: k.grid.page,
-      layout: {direction: .column},
+      layout: {stack: {direction: .column}},
       fill: k.brand.paper,
       children: [r3Opening, r3Skill, r3Feature, r3Install, r3Contribute],
 
@@ -3486,7 +3502,7 @@ round3 = frame {
         r3Cta = frame {
           left: 65px,
           top: 452px,
-          layout: {align-items: .center, item-gap: 32px},
+          layout: {stack: {align-items: .center, item-gap: 32px}},
           children: [r3Download, r3Source],
 
           r3Download = frame : kit.dlPrimary {
@@ -3572,7 +3588,7 @@ round3 = frame {
       // What a skill is, by example, before any feature.
       r3Skill = frame {
         width: 100%,
-        layout: {item-gap: k.grid.gutter},
+        layout: {stack: {item-gap: k.grid.gutter}},
         padding: [144px, 65px, 160px],
         children: [r3SkillIntro, r3SkillList],
 
@@ -3583,7 +3599,7 @@ round3 = frame {
 
         r3SkillList = frame {
           width: k.grid.span-7,
-          layout: {direction: .column, item-gap: 48px},
+          layout: {stack: {direction: .column, item-gap: 48px}},
           padding: [0px, 0px, 0px, 110.58px],
           children: [exampleNotes, examplePages, exampleTests],
 
@@ -3647,12 +3663,12 @@ round3 = frame {
     r3Board = frame {
       title: "Lift R3 / walkthrough, six states",
       caption: "Pinned for six viewport heights, driven by scroll one to one.",
-      layout: {direction: .column, item-gap: 96px},
+      layout: {stack: {direction: .column, item-gap: 96px}},
       children: [walkSpec, walk1, walk2, walk3, walk4, walk5, walk6],
 
       walkSpec = frame {
         width: 1440px,
-        layout: {item-gap: k.grid.gutter},
+        layout: {stack: {item-gap: k.grid.gutter}},
         children: [walkSpecTitle, walkSpecBody],
 
         walkSpecTitle = text : kit.statement {
@@ -3967,7 +3983,7 @@ round3 = frame {
         left: 18px,
         top: 378px,
         width: 354px,
-        layout: {item-gap: 10px},
+        layout: {stack: {item-gap: 10px}},
         children: [m3NoteDot, m3NoteText],
 
         m3NoteDot = frame {
@@ -4016,7 +4032,7 @@ round3 = frame {
       title: "Brand changes, round three",
       caption: "Adds to round two's sheet. Fold into miles-visual-brand once Miles agrees.",
       width: 960px,
-      layout: {direction: .column, item-gap: 40px},
+      layout: {stack: {direction: .column, item-gap: 40px}},
       fill: k.brand.paper,
       padding: 64px,
       children: [d3Title, d3List],
@@ -4029,7 +4045,7 @@ round3 = frame {
 
       d3List = frame {
         width: 100%,
-        layout: {direction: .column, item-gap: 28px},
+        layout: {stack: {direction: .column, item-gap: 28px}},
         children: [d3a, d3b, d3c, d3d, d3e],
 
         d3a = text : kit.body {
@@ -4067,14 +4083,14 @@ round3 = frame {
 howItWorks = frame {
   left: -2664px,
   top: 19500px,
-  layout: {direction: .column, item-gap: 160px},
+  layout: {stack: {direction: .column, item-gap: 160px}},
   fill: k.brand.grey-1,
   padding: 120px,
   children: [hiwIntro, hiwA, hiwB, hiwC, hiwD],
 
   hiwIntro = frame {
     width: 1310px,
-    layout: {direction: .column, item-gap: 24px},
+    layout: {stack: {direction: .column, item-gap: 24px}},
     children: [hiwTitle, hiwNote],
 
     hiwTitle = text : kit.display {
@@ -4090,12 +4106,12 @@ howItWorks = frame {
   }
 
   hiwA = frame {
-    layout: {item-gap: 288px},
+    layout: {stack: {item-gap: 288px}},
     children: [hiwANote, hiwA1, hiwA2],
 
     hiwANote = frame {
       width: 425.33px,
-      layout: {direction: .column, item-gap: 24px},
+      layout: {stack: {direction: .column, item-gap: 24px}},
       children: [hiwATitle, hiwABody],
 
       hiwATitle = text : kit.statement {
@@ -4123,11 +4139,11 @@ howItWorks = frame {
         left: 65px,
         top: 173px,
         width: 425.33px,
-        layout: {direction: .column, item-gap: 28px},
+        layout: {stack: {direction: .column, item-gap: 28px}},
         children: [hiwA1S0, hiwA1S1, hiwA1S2],
 
         hiwA1S0 = frame {
-          layout: {direction: .column, item-gap: 12px},
+          layout: {stack: {direction: .column, item-gap: 12px}},
           children: [hiwA1S0Verb, hiwA1S0Features],
 
           hiwA1S0Verb = text : kit.statement {
@@ -4137,16 +4153,16 @@ howItWorks = frame {
           }
 
           hiwA1S0Features = frame {
-            layout: {direction: .column, item-gap: 6px},
+            layout: {stack: {direction: .column, item-gap: 6px}},
             children: [hiwA1F0, hiwA1F1, hiwA1F2],
 
             hiwA1F0 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               padding: [0px, 0px, 8px],
               children: [hiwA1F0Row, hiwA1F0Indent],
 
               hiwA1F0Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA1F0Dot, hiwA1F0Name],
 
                 hiwA1F0Dot = frame {
@@ -4162,7 +4178,7 @@ howItWorks = frame {
               }
 
               hiwA1F0Indent = frame {
-                layout: {direction: .row},
+                layout: {stack: {}},
                 padding: [0px, 0px, 0px, 20px],
                 children: hiwA1F0Text,
 
@@ -4175,11 +4191,11 @@ howItWorks = frame {
             }
 
             hiwA1F1 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA1F1Row,
 
               hiwA1F1Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA1F1Dot, hiwA1F1Name],
 
                 hiwA1F1Dot = frame {
@@ -4196,11 +4212,11 @@ howItWorks = frame {
             }
 
             hiwA1F2 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA1F2Row,
 
               hiwA1F2Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA1F2Dot, hiwA1F2Name],
 
                 hiwA1F2Dot = frame {
@@ -4219,7 +4235,7 @@ howItWorks = frame {
         }
 
         hiwA1S1 = frame {
-          layout: {direction: .column, item-gap: 12px},
+          layout: {stack: {direction: .column, item-gap: 12px}},
           children: [hiwA1S1Verb, hiwA1S1Features],
 
           hiwA1S1Verb = text : kit.statement {
@@ -4229,15 +4245,15 @@ howItWorks = frame {
           }
 
           hiwA1S1Features = frame {
-            layout: {direction: .column, item-gap: 6px},
+            layout: {stack: {direction: .column, item-gap: 6px}},
             children: hiwA1F3,
 
             hiwA1F3 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA1F3Row,
 
               hiwA1F3Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA1F3Dot, hiwA1F3Name],
 
                 hiwA1F3Dot = frame {
@@ -4256,7 +4272,7 @@ howItWorks = frame {
         }
 
         hiwA1S2 = frame {
-          layout: {direction: .column, item-gap: 12px},
+          layout: {stack: {direction: .column, item-gap: 12px}},
           children: [hiwA1S2Verb, hiwA1S2Features],
 
           hiwA1S2Verb = text : kit.statement {
@@ -4266,15 +4282,15 @@ howItWorks = frame {
           }
 
           hiwA1S2Features = frame {
-            layout: {direction: .column, item-gap: 6px},
+            layout: {stack: {direction: .column, item-gap: 6px}},
             children: [hiwA1F4, hiwA1F5],
 
             hiwA1F4 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA1F4Row,
 
               hiwA1F4Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA1F4Dot, hiwA1F4Name],
 
                 hiwA1F4Dot = frame {
@@ -4291,11 +4307,11 @@ howItWorks = frame {
             }
 
             hiwA1F5 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA1F5Row,
 
               hiwA1F5Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA1F5Dot, hiwA1F5Name],
 
                 hiwA1F5Dot = frame {
@@ -4335,11 +4351,11 @@ howItWorks = frame {
         left: 65px,
         top: 173px,
         width: 425.33px,
-        layout: {direction: .column, item-gap: 28px},
+        layout: {stack: {direction: .column, item-gap: 28px}},
         children: [hiwA2S0, hiwA2S1, hiwA2S2],
 
         hiwA2S0 = frame {
-          layout: {direction: .column, item-gap: 12px},
+          layout: {stack: {direction: .column, item-gap: 12px}},
           children: [hiwA2S0Verb, hiwA2S0Features],
 
           hiwA2S0Verb = text : kit.statement {
@@ -4349,15 +4365,15 @@ howItWorks = frame {
           }
 
           hiwA2S0Features = frame {
-            layout: {direction: .column, item-gap: 6px},
+            layout: {stack: {direction: .column, item-gap: 6px}},
             children: [hiwA2F0, hiwA2F1, hiwA2F2],
 
             hiwA2F0 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA2F0Row,
 
               hiwA2F0Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA2F0Dot, hiwA2F0Name],
 
                 hiwA2F0Dot = frame {
@@ -4374,11 +4390,11 @@ howItWorks = frame {
             }
 
             hiwA2F1 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA2F1Row,
 
               hiwA2F1Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA2F1Dot, hiwA2F1Name],
 
                 hiwA2F1Dot = frame {
@@ -4395,11 +4411,11 @@ howItWorks = frame {
             }
 
             hiwA2F2 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA2F2Row,
 
               hiwA2F2Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA2F2Dot, hiwA2F2Name],
 
                 hiwA2F2Dot = frame {
@@ -4418,7 +4434,7 @@ howItWorks = frame {
         }
 
         hiwA2S1 = frame {
-          layout: {direction: .column, item-gap: 12px},
+          layout: {stack: {direction: .column, item-gap: 12px}},
           children: [hiwA2S1Verb, hiwA2S1Features],
 
           hiwA2S1Verb = text : kit.statement {
@@ -4428,15 +4444,15 @@ howItWorks = frame {
           }
 
           hiwA2S1Features = frame {
-            layout: {direction: .column, item-gap: 6px},
+            layout: {stack: {direction: .column, item-gap: 6px}},
             children: hiwA2F3,
 
             hiwA2F3 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA2F3Row,
 
               hiwA2F3Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA2F3Dot, hiwA2F3Name],
 
                 hiwA2F3Dot = frame {
@@ -4455,7 +4471,7 @@ howItWorks = frame {
         }
 
         hiwA2S2 = frame {
-          layout: {direction: .column, item-gap: 12px},
+          layout: {stack: {direction: .column, item-gap: 12px}},
           children: [hiwA2S2Verb, hiwA2S2Features],
 
           hiwA2S2Verb = text : kit.statement {
@@ -4465,16 +4481,16 @@ howItWorks = frame {
           }
 
           hiwA2S2Features = frame {
-            layout: {direction: .column, item-gap: 6px},
+            layout: {stack: {direction: .column, item-gap: 6px}},
             children: [hiwA2F4, hiwA2F5],
 
             hiwA2F4 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               padding: [0px, 0px, 8px],
               children: [hiwA2F4Row, hiwA2F4Indent],
 
               hiwA2F4Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA2F4Dot, hiwA2F4Name],
 
                 hiwA2F4Dot = frame {
@@ -4490,7 +4506,7 @@ howItWorks = frame {
               }
 
               hiwA2F4Indent = frame {
-                layout: {direction: .row},
+                layout: {stack: {}},
                 padding: [0px, 0px, 0px, 20px],
                 children: hiwA2F4Text,
 
@@ -4503,11 +4519,11 @@ howItWorks = frame {
             }
 
             hiwA2F5 = frame {
-              layout: {direction: .column, item-gap: 8px},
+              layout: {stack: {direction: .column, item-gap: 8px}},
               children: hiwA2F5Row,
 
               hiwA2F5Row = frame {
-                layout: {align-items: .center, item-gap: 12px},
+                layout: {stack: {align-items: .center, item-gap: 12px}},
                 children: [hiwA2F5Dot, hiwA2F5Name],
 
                 hiwA2F5Dot = frame {
@@ -4537,12 +4553,12 @@ howItWorks = frame {
   }
 
   hiwB = frame {
-    layout: {item-gap: 288px},
+    layout: {stack: {item-gap: 288px}},
     children: [hiwBNote, hiwB1, hiwB2],
 
     hiwBNote = frame {
       width: 425.33px,
-      layout: {direction: .column, item-gap: 24px},
+      layout: {stack: {direction: .column, item-gap: 24px}},
       children: [hiwBTitle, hiwBBody],
 
       hiwBTitle = text : kit.statement {
@@ -4569,11 +4585,11 @@ howItWorks = frame {
       hiwB1Tabs = frame {
         left: 65px,
         top: 72px,
-        layout: {align-items: .end, item-gap: 48px},
+        layout: {stack: {align-items: .end, item-gap: 48px}},
         children: [hiwB1TabWrite, hiwB1TabTest, hiwB1TabCompare],
 
         hiwB1TabWrite = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           border: {color: k.brand.spot, width: 3px, sides: .bottom},
           padding: [0px, 0px, 10px],
           children: hiwB1TabWriteWord,
@@ -4586,7 +4602,7 @@ howItWorks = frame {
         }
 
         hiwB1TabTest = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           padding: [0px, 0px, 13px],
           children: hiwB1TabTestWord,
 
@@ -4598,7 +4614,7 @@ howItWorks = frame {
         }
 
         hiwB1TabCompare = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           padding: [0px, 0px, 13px],
           children: hiwB1TabCompareWord,
 
@@ -4623,7 +4639,7 @@ howItWorks = frame {
           top: 100.5px,
           width: 24px,
           height: 24px,
-          layout: {justify-content: .center, align-items: .center},
+          layout: {stack: {justify-content: .center, align-items: .center}},
           fill: k.brand.spot,
           children: hiwB1WindowPinDigit,
 
@@ -4638,22 +4654,22 @@ howItWorks = frame {
         left: 1060.25px,
         top: 176px,
         width: 314.75px,
-        layout: {direction: .column, item-gap: 24px},
+        layout: {stack: {direction: .column, item-gap: 24px}},
         children: [hiwB1R0, hiwB1R1, hiwB1R2],
 
         hiwB1R0 = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           padding: 0px,
           children: hiwB1R0Head,
 
           hiwB1R0Head = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [hiwB1R0Chip, hiwB1R0Name],
 
             hiwB1R0Chip = frame {
               width: 24px,
               height: 24px,
-              layout: {justify-content: .center, align-items: .center},
+              layout: {stack: {justify-content: .center, align-items: .center}},
               fill: k.brand.grey-1,
               border: k.brand.field-dim,
               children: hiwB1R0Digit,
@@ -4672,18 +4688,18 @@ howItWorks = frame {
         }
 
         hiwB1R1 = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           padding: 0px,
           children: [hiwB1R1Head, hiwB1R1Text],
 
           hiwB1R1Head = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [hiwB1R1Chip, hiwB1R1Name],
 
             hiwB1R1Chip = frame {
               width: 24px,
               height: 24px,
-              layout: {justify-content: .center, align-items: .center},
+              layout: {stack: {justify-content: .center, align-items: .center}},
               fill: k.brand.spot,
               children: hiwB1R1Digit,
 
@@ -4707,18 +4723,18 @@ howItWorks = frame {
         }
 
         hiwB1R2 = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           padding: 0px,
           children: hiwB1R2Head,
 
           hiwB1R2Head = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [hiwB1R2Chip, hiwB1R2Name],
 
             hiwB1R2Chip = frame {
               width: 24px,
               height: 24px,
-              layout: {justify-content: .center, align-items: .center},
+              layout: {stack: {justify-content: .center, align-items: .center}},
               fill: k.brand.grey-1,
               border: k.brand.field-dim,
               children: hiwB1R2Digit,
@@ -4749,11 +4765,11 @@ howItWorks = frame {
       hiwB2Tabs = frame {
         left: 65px,
         top: 72px,
-        layout: {align-items: .end, item-gap: 48px},
+        layout: {stack: {align-items: .end, item-gap: 48px}},
         children: [hiwB2TabWrite, hiwB2TabTest, hiwB2TabCompare],
 
         hiwB2TabWrite = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           padding: [0px, 0px, 13px],
           children: hiwB2TabWriteWord,
 
@@ -4765,7 +4781,7 @@ howItWorks = frame {
         }
 
         hiwB2TabTest = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           padding: [0px, 0px, 13px],
           children: hiwB2TabTestWord,
 
@@ -4777,7 +4793,7 @@ howItWorks = frame {
         }
 
         hiwB2TabCompare = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           border: {color: k.brand.spot, width: 3px, sides: .bottom},
           padding: [0px, 0px, 10px],
           children: hiwB2TabCompareWord,
@@ -4803,7 +4819,7 @@ howItWorks = frame {
           top: 303.5px,
           width: 24px,
           height: 24px,
-          layout: {justify-content: .center, align-items: .center},
+          layout: {stack: {justify-content: .center, align-items: .center}},
           fill: k.brand.spot,
           children: hiwB2WindowPinDigit,
 
@@ -4818,22 +4834,22 @@ howItWorks = frame {
         left: 1060.25px,
         top: 176px,
         width: 314.75px,
-        layout: {direction: .column, item-gap: 24px},
+        layout: {stack: {direction: .column, item-gap: 24px}},
         children: [hiwB2R4, hiwB2R5],
 
         hiwB2R4 = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           padding: 0px,
           children: hiwB2R4Head,
 
           hiwB2R4Head = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [hiwB2R4Chip, hiwB2R4Name],
 
             hiwB2R4Chip = frame {
               width: 24px,
               height: 24px,
-              layout: {justify-content: .center, align-items: .center},
+              layout: {stack: {justify-content: .center, align-items: .center}},
               fill: k.brand.grey-1,
               border: k.brand.field-dim,
               children: hiwB2R4Digit,
@@ -4852,18 +4868,18 @@ howItWorks = frame {
         }
 
         hiwB2R5 = frame {
-          layout: {direction: .column, item-gap: 10px},
+          layout: {stack: {direction: .column, item-gap: 10px}},
           padding: 0px,
           children: [hiwB2R5Head, hiwB2R5Text],
 
           hiwB2R5Head = frame {
-            layout: {align-items: .center, item-gap: 12px},
+            layout: {stack: {align-items: .center, item-gap: 12px}},
             children: [hiwB2R5Chip, hiwB2R5Name],
 
             hiwB2R5Chip = frame {
               width: 24px,
               height: 24px,
-              layout: {justify-content: .center, align-items: .center},
+              layout: {stack: {justify-content: .center, align-items: .center}},
               fill: k.brand.spot,
               children: hiwB2R5Digit,
 
@@ -4890,12 +4906,12 @@ howItWorks = frame {
   }
 
   hiwC = frame {
-    layout: {item-gap: 288px},
+    layout: {stack: {item-gap: 288px}},
     children: [hiwCNote, hiwC1, hiwC2],
 
     hiwCNote = frame {
       width: 425.33px,
-      layout: {direction: .column, item-gap: 24px},
+      layout: {stack: {direction: .column, item-gap: 24px}},
       children: [hiwCTitle, hiwCBody],
 
       hiwCTitle = text : kit.statement {
@@ -4985,7 +5001,7 @@ howItWorks = frame {
       hiwC1Progress = frame {
         left: 65px,
         top: 820px,
-        layout: {item-gap: 8px},
+        layout: {stack: {item-gap: 8px}},
         children: [
           hiwC1Tick0,
           hiwC1Tick1,
@@ -5116,7 +5132,7 @@ howItWorks = frame {
       hiwC2Progress = frame {
         left: 65px,
         top: 820px,
-        layout: {item-gap: 8px},
+        layout: {stack: {item-gap: 8px}},
         children: [
           hiwC2Tick0,
           hiwC2Tick1,
@@ -5166,12 +5182,12 @@ howItWorks = frame {
   }
 
   hiwD = frame {
-    layout: {item-gap: 288px},
+    layout: {stack: {item-gap: 288px}},
     children: [hiwDNote, hiwD1, hiwD2],
 
     hiwDNote = frame {
       width: 425.33px,
-      layout: {direction: .column, item-gap: 24px},
+      layout: {stack: {direction: .column, item-gap: 24px}},
       children: [hiwDTitle, hiwDBody],
 
       hiwDTitle = text : kit.statement {
@@ -5483,14 +5499,14 @@ howItWorks = frame {
 workflowSections = frame {
   left: -2664px,
   top: 24800px,
-  layout: {direction: .column, item-gap: 160px},
+  layout: {stack: {direction: .column, item-gap: 160px}},
   fill: k.brand.grey-2,
   padding: 120px,
   children: [wfIntro, wfRow],
 
   wfIntro = frame {
     width: 1310px,
-    layout: {direction: .column, item-gap: 24px},
+    layout: {stack: {direction: .column, item-gap: 24px}},
     children: [wfTitle, wfNote],
 
     wfTitle = text : kit.display {
@@ -5505,14 +5521,14 @@ workflowSections = frame {
   }
 
   wfRow = frame {
-    layout: {item-gap: 384px},
+    layout: {stack: {item-gap: 384px}},
     children: [wfPage, wfVariants],
 
     wfPage = frame {
       title: "Workflow sections / keys",
       caption: "Write (paper), test (grey, mirrored), compare (paper). First key of each picked.",
       width: 1440px,
-      layout: {direction: .column},
+      layout: {stack: {direction: .column}},
       children: [wfWrite, wfTest, wfCompare],
 
       wfWrite = frame {
@@ -5547,12 +5563,12 @@ workflowSections = frame {
         wfWriteTabs = frame {
           left: 507.33px,
           top: 144px,
-          layout: {align-items: .end, item-gap: 4px},
+          layout: {stack: {align-items: .end, item-gap: 4px}},
           children: [wfWriteK0, wfWriteK1, wfWriteK2],
 
           wfWriteK0 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.ink,
             padding: [0px, 18px],
             children: wfWriteK0L,
@@ -5565,7 +5581,7 @@ workflowSections = frame {
 
           wfWriteK1 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfWriteK1L,
@@ -5578,7 +5594,7 @@ workflowSections = frame {
 
           wfWriteK2 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfWriteK2L,
@@ -5611,7 +5627,7 @@ workflowSections = frame {
           left: 507.33px,
           top: 778.29px,
           width: 646.5px,
-          layout: {item-gap: 12px},
+          layout: {stack: {item-gap: 12px}},
           children: [wfWriteCapDot, wfWriteCapText],
 
           wfWriteCapDot = frame {
@@ -5655,12 +5671,12 @@ workflowSections = frame {
         wfTestTabs = frame {
           left: 65px,
           top: 144px,
-          layout: {align-items: .end, item-gap: 4px},
+          layout: {stack: {align-items: .end, item-gap: 4px}},
           children: [wfTestK0, wfTestK1, wfTestK2],
 
           wfTestK0 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.ink,
             padding: [0px, 18px],
             children: wfTestK0L,
@@ -5673,7 +5689,7 @@ workflowSections = frame {
 
           wfTestK1 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.paper,
             padding: [0px, 18px],
             children: wfTestK1L,
@@ -5686,7 +5702,7 @@ workflowSections = frame {
 
           wfTestK2 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.paper,
             padding: [0px, 18px],
             children: wfTestK2L,
@@ -5719,7 +5735,7 @@ workflowSections = frame {
           left: 65px,
           top: 778.29px,
           width: 646.5px,
-          layout: {item-gap: 12px},
+          layout: {stack: {item-gap: 12px}},
           children: [wfTestCapDot, wfTestCapText],
 
           wfTestCapDot = frame {
@@ -5769,12 +5785,12 @@ workflowSections = frame {
         wfCompareTabs = frame {
           left: 507.33px,
           top: 144px,
-          layout: {align-items: .end, item-gap: 4px},
+          layout: {stack: {align-items: .end, item-gap: 4px}},
           children: [wfCompareK0, wfCompareK1, wfCompareK2, wfCompareK3],
 
           wfCompareK0 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.ink,
             padding: [0px, 18px],
             children: wfCompareK0L,
@@ -5787,7 +5803,7 @@ workflowSections = frame {
 
           wfCompareK1 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfCompareK1L,
@@ -5800,7 +5816,7 @@ workflowSections = frame {
 
           wfCompareK2 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfCompareK2L,
@@ -5813,7 +5829,7 @@ workflowSections = frame {
 
           wfCompareK3 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfCompareK3L,
@@ -5846,7 +5862,7 @@ workflowSections = frame {
           left: 507.33px,
           top: 778.29px,
           width: 646.5px,
-          layout: {item-gap: 12px},
+          layout: {stack: {item-gap: 12px}},
           children: [wfCompareCapDot, wfCompareCapText],
 
           wfCompareCapDot = frame {
@@ -5866,7 +5882,7 @@ workflowSections = frame {
     }
 
     wfVariants = frame {
-      layout: {direction: .column, item-gap: 160px},
+      layout: {stack: {direction: .column, item-gap: 160px}},
       children: [wfWriteAssistant, wfCompareScores, wfCompareTabs],
 
       wfWriteAssistant = frame {
@@ -5902,12 +5918,12 @@ workflowSections = frame {
         wfWriteAssistantTabs = frame {
           left: 507.33px,
           top: 144px,
-          layout: {align-items: .end, item-gap: 4px},
+          layout: {stack: {align-items: .end, item-gap: 4px}},
           children: [wfWriteAssistantK0, wfWriteAssistantK1, wfWriteAssistantK2],
 
           wfWriteAssistantK0 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfWriteAssistantK0L,
@@ -5920,7 +5936,7 @@ workflowSections = frame {
 
           wfWriteAssistantK1 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfWriteAssistantK1L,
@@ -5933,7 +5949,7 @@ workflowSections = frame {
 
           wfWriteAssistantK2 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.ink,
             padding: [0px, 18px],
             children: wfWriteAssistantK2L,
@@ -5966,7 +5982,7 @@ workflowSections = frame {
           left: 507.33px,
           top: 778.29px,
           width: 646.5px,
-          layout: {item-gap: 12px},
+          layout: {stack: {item-gap: 12px}},
           children: [wfWriteAssistantCapDot, wfWriteAssistantCapText],
 
           wfWriteAssistantCapDot = frame {
@@ -6017,7 +6033,7 @@ workflowSections = frame {
         wfCompareScoresTabs = frame {
           left: 507.33px,
           top: 144px,
-          layout: {align-items: .end, item-gap: 4px},
+          layout: {stack: {align-items: .end, item-gap: 4px}},
           children: [
             wfCompareScoresK0,
             wfCompareScoresK1,
@@ -6027,7 +6043,7 @@ workflowSections = frame {
 
           wfCompareScoresK0 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfCompareScoresK0L,
@@ -6040,7 +6056,7 @@ workflowSections = frame {
 
           wfCompareScoresK1 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfCompareScoresK1L,
@@ -6053,7 +6069,7 @@ workflowSections = frame {
 
           wfCompareScoresK2 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.ink,
             padding: [0px, 18px],
             children: wfCompareScoresK2L,
@@ -6066,7 +6082,7 @@ workflowSections = frame {
 
           wfCompareScoresK3 = frame {
             height: 44px,
-            layout: {align-items: .center},
+            layout: {stack: {align-items: .center}},
             fill: k.brand.grey-1,
             padding: [0px, 18px],
             children: wfCompareScoresK3L,
@@ -6099,7 +6115,7 @@ workflowSections = frame {
           left: 507.33px,
           top: 778.29px,
           width: 646.5px,
-          layout: {item-gap: 12px},
+          layout: {stack: {item-gap: 12px}},
           children: [wfCompareScoresCapDot, wfCompareScoresCapText],
 
           wfCompareScoresCapDot = frame {
@@ -6150,7 +6166,7 @@ workflowSections = frame {
         wfCompareTabsTabs = frame {
           left: 507.33px,
           top: 144px,
-          layout: {align-items: .end, item-gap: 32px},
+          layout: {stack: {align-items: .end, item-gap: 32px}},
           children: [
             wfCompareTabsK0,
             wfCompareTabsK1,
@@ -6159,7 +6175,7 @@ workflowSections = frame {
           ],
 
           wfCompareTabsK0 = frame {
-            layout: {direction: .row},
+            layout: {stack: {}},
             padding: [0px, 0px, 10px],
             children: wfCompareTabsK0L,
 
@@ -6170,7 +6186,7 @@ workflowSections = frame {
           }
 
           wfCompareTabsK1 = frame {
-            layout: {direction: .row},
+            layout: {stack: {}},
             border: {color: k.brand.spot, width: 3px, sides: .bottom},
             padding: [0px, 0px, 7px],
             children: wfCompareTabsK1L,
@@ -6182,7 +6198,7 @@ workflowSections = frame {
           }
 
           wfCompareTabsK2 = frame {
-            layout: {direction: .row},
+            layout: {stack: {}},
             padding: [0px, 0px, 10px],
             children: wfCompareTabsK2L,
 
@@ -6193,7 +6209,7 @@ workflowSections = frame {
           }
 
           wfCompareTabsK3 = frame {
-            layout: {direction: .row},
+            layout: {stack: {}},
             padding: [0px, 0px, 10px],
             children: wfCompareTabsK3L,
 
@@ -6225,7 +6241,7 @@ workflowSections = frame {
           left: 507.33px,
           top: 778.29px,
           width: 646.5px,
-          layout: {item-gap: 12px},
+          layout: {stack: {item-gap: 12px}},
           children: [wfCompareTabsCapDot, wfCompareTabsCapText],
 
           wfCompareTabsCapDot = frame {
@@ -6241,6 +6257,4109 @@ workflowSections = frame {
             fill[0].color: k.brand.ink
           }
         }
+      }
+    }
+  }
+}
+
+// B. Lift. The product's own figure carries the opening: the lift ribbon
+// from Results, drawn edge to edge on ink, with the change as a yellow
+// pixel readout. The headline drops to light display so the figure is the
+// one moment. The loop is one annotated window instead of three crops.
+optionB_2 = frame {
+  left: 11655.2666px,
+  top: -2655.5479px,
+  width: 1440px,
+  height: 4639.6px,
+  layout: {stack: {direction: .column, item-gap: 32px}},
+  children: [labelB, noteB, iaB, boardB],
+
+  labelB = text : kit.lead {
+    contents: "b. lift"
+  }
+
+  noteB = text : kit.body {
+    width: k.grid.span-9,
+    contents: "Proof first. The opening is ink, and the moment is the lift itself: the ribbon from Results drawn edge to edge (the view's one break), 85 rising to 98 over the dashed line at 71, the +13 as the one yellow readout. The headline is quiet light display, so nothing competes with the figure. The loop is one window with three numbered keys, and install becomes four keys, one per system.",
+    fill[0].color: k.brand.muted
+  }
+
+  iaB = text : kit.meta {
+    width: k.grid.span-12,
+    contents: "IA / NAV ON INK / 01 OPENING: HEADLINE, DOWNLOAD, THE LIFT / 02 ONE WINDOW: 01 WRITE, 02 RUN, 03 COMPARE / 03 THE LAST WORD IS YOURS / 04 INSTALL: FOUR KEYS / 05 CONTRIBUTE / COLOPHON"
+  }
+
+  boardB = frame {
+    title: "B. Lift",
+    caption: "The page at 1440px. The moment is the figure, not the headline.",
+    width: k.grid.page,
+    layout: {stack: {direction: .column}},
+    fill: k.brand.paper,
+    children: [
+      navB,
+      openingB,
+      windowB,
+      verdictB,
+      installB,
+      contributeB,
+      colophonB
+    ],
+
+    navB = frame : kit.specBar {
+      border[0].color: k.brand.rule-on-ink,
+      fill[0].color: k.brand.ink,
+
+      barCode {
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      barLinks {
+        linkGuide {
+          fill[0].color: k.brand.paper
+        }
+
+        linkContribute {
+          fill[0].color: k.brand.paper
+        }
+
+        linkInstall {
+          fill[0].color: k.brand.paper
+        }
+
+        linkHow {
+          fill[0].color: k.brand.paper
+        }
+      }
+
+      barName {
+        fill[0].color: k.brand.paper
+      }
+    }
+
+    openingB = frame {
+      width: 100%,
+      height: 900px,
+      fill: k.brand.ink,
+      children: [
+        codeB,
+        headB,
+        lineB,
+        ctaB,
+        readoutB,
+        readoutLabelB,
+        ribbonB,
+        firstLabelB,
+        firstValueB,
+        latestLabelB,
+        latestValueB,
+        withoutLabelB
+      ],
+
+      codeB = text : kit.meta {
+        left: 65px,
+        top: 56px,
+        contents: "01 / A DESKTOP APP FOR WRITING AGENT SKILLS",
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      headB = text : kit.display {
+        left: 65px,
+        top: 104px,
+        width: k.grid.span-7,
+        contents: "write better\nai skills",
+        fill[0].color: k.brand.paper
+      }
+
+      lineB = text : kit.body {
+        left: 65px,
+        top: 300px,
+        width: k.grid.span-5,
+        contents: "Write the instructions your AI agent follows,\nthen test every change on real work.",
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      ctaB = frame {
+        left: 65px,
+        top: 380px,
+        layout: {stack: {align-items: .center, item-gap: 32px}},
+        children: [downloadB, repoLinkB],
+
+        downloadB = frame : kit.downloadButton {
+          fill[0].color: k.brand.paper,
+
+          downloadMeta {
+            fill[0].color: k.brand.muted
+          }
+
+          downloadLabel {
+            fill[0].color: k.brand.ink
+          }
+        }
+
+        repoLinkB = frame : kit.textLink {
+          linkLabel {
+            fill[0].color: k.brand.paper,
+            contents: "Contribute on GitHub"
+          }
+        }
+      }
+
+      readoutB = text {
+        left: 1006px,
+        top: 96px,
+        fill: k.brand.fluoro,
+        contents: "+13",
+        font-size: 176,
+        font-family: "Geist Pixel",
+        line-height: 0.9
+      }
+
+      readoutLabelB = text : kit.meta {
+        left: 1012px,
+        top: 268px,
+        width: 360px,
+        contents: "SINCE EACH CASE'S FIRST RUN\nTHE SAMPLE SKILL, 3 CASES",
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      ribbonB = asset {
+        left: 0px,
+        top: 400px,
+        width: 1440px,
+        height: 480px,
+        contents: liftRibbon
+      }
+
+      firstLabelB = text : kit.meta {
+        left: 65px,
+        top: 674px,
+        contents: "FIRST RUNS, V0",
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      firstValueB = text : kit.body {
+        left: 65px,
+        top: 727px,
+        contents: "85",
+        font-family: "Geist Mono"
+      }
+
+      latestLabelB = text : kit.meta {
+        left: 1263px,
+        top: 534px,
+        contents: "LATEST RUNS, V1",
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      latestValueB = text : kit.body {
+        left: 1351px,
+        top: 587px,
+        contents: "98",
+        font-family: "Geist Mono"
+      }
+
+      withoutLabelB = text : kit.meta {
+        left: 1220px,
+        top: 826px,
+        contents: "WITHOUT THE SKILL, 71",
+        fill[0].color: k.brand.muted-on-ink
+      }
+    }
+
+    windowB = frame {
+      width: 100%,
+      layout: {stack: {direction: .column, item-gap: 56px}},
+      padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+      children: [windowHeadB, windowRowB],
+
+      windowHeadB = frame : kit.sectionHead {
+        sectionLead {
+          contents: "The rules, the test tasks and the scores sit in one window, so an edit and its result are one click apart."
+        }
+
+        sectionCode {
+          contents: "02 / ONE WINDOW"
+        }
+      }
+
+      windowRowB = frame {
+        width: 100%,
+        layout: {stack: {item-gap: k.grid.gutter}},
+        children: [keysB, appShotB],
+
+        keysB = frame {
+          width: k.grid.span-3,
+          layout: {stack: {direction: .column, item-gap: 32px}},
+          children: [keyWriteB, keyRunB, keyCompareB],
+
+          keyWriteB = frame : kit.legendKey {
+            keyText {
+              contents: "The Skill screen: the rules, numbered, and every version with its score."
+            }
+          }
+
+          keyRunB = frame : kit.legendKey {
+            keyText {
+              contents: "Run v1 sends each case to Claude Code or Cursor with the skill installed."
+            }
+
+            keyTop {
+              keyName {
+                contents: "run"
+              }
+
+              keyChip {
+                keyDigit {
+                  contents: "02"
+                }
+              }
+            }
+          }
+
+          keyCompareB = frame : kit.legendKey {
+            keyText {
+              contents: "Results: two versions side by side, with what each one missed."
+            }
+
+            keyTop {
+              keyName {
+                contents: "compare"
+              }
+
+              keyChip {
+                keyDigit {
+                  contents: "03"
+                }
+              }
+            }
+          }
+        }
+
+        appShotB = frame {
+          width: k.grid.span-9,
+          height: 782.6px,
+          fill: {image: {ref: shotApp}},
+          border: {color: k.brand.ink, position: .outside},
+          children: [pinWriteB, pinRunB],
+
+          pinWriteB = frame : kit.keyChip {
+            left: 118px,
+            top: 84px
+          }
+
+          pinRunB = frame : kit.keyChip {
+            left: 770px,
+            top: 6px,
+
+            keyDigit {
+              contents: "02"
+            }
+          }
+        }
+      }
+    }
+
+    verdictB = frame {
+      width: 100%,
+      layout: {stack: {item-gap: k.grid.gutter}},
+      padding: [k.grid.section, k.grid.margin, k.grid.section-loose],
+      children: [verdictShotB, verdictTextB],
+
+      verdictShotB = frame {
+        width: k.grid.span-6,
+        height: 517px,
+        fill: {
+          image: {
+            ref: shotResults,
+            sizing: {scale: 0.92, offset: [145.9px, 192.2px]}
+          }
+        },
+        border: {color: k.brand.ink, sides: .top}
+      }
+
+      verdictTextB = frame {
+        width: k.grid.span-6,
+        layout: {stack: {direction: .column, item-gap: 32px}},
+        padding: [0px, 0px, 0px, 111px],
+        children: [verdictCodeB, verdictLeadB, verdictBodyB, verdictSpecsB],
+
+        verdictCodeB = text : kit.meta {
+          contents: "03 / THE LAST WORD"
+        }
+
+        verdictLeadB = text : kit.lead {
+          width: 100%,
+          contents: "Jev grades every answer. Where you disagree, your mark wins."
+        }
+
+        verdictBodyB = text : kit.body {
+          width: 100%,
+          contents: "TypeSafe's Jev grades each answer against your rules and each case's checks. A score counts the rules and checks met. Mark a verdict and the score follows.",
+          fill[0].color: k.brand.muted
+        }
+
+        verdictSpecsB = frame {
+          width: 100%,
+          layout: {stack: {direction: .column}},
+          children: [specFilesB, specSuitsB],
+
+          specFilesB = frame : kit.needRow {
+            needValue {
+              width: 424px,
+              contents: "Runs, scores and your corrections are plain files in the skill's evals/ folder."
+            }
+
+            needLabel {
+              width: k.grid.span-1,
+              contents: "FILES"
+            }
+          }
+
+          specSuitsB = frame : kit.needRow {
+            needValue {
+              width: 424px,
+              contents: "Work that is a matter of judgement: writing, web pages, agent process."
+            }
+
+            needLabel {
+              width: k.grid.span-1,
+              contents: "SUITS"
+            }
+          }
+        }
+      }
+    }
+
+    installB = frame : kit.appDownloadKeys {}
+
+    contributeB = frame : kit.appDownloadRepo {}
+
+    colophonB = frame : kit.colophon {}
+  }
+}
+
+// B. Lift. The product's own figure carries the opening: the lift ribbon
+// from Results, drawn edge to edge on ink, with the change as a yellow
+// pixel readout. The headline drops to light display so the figure is the
+// one moment. The loop is one annotated window instead of three crops.
+sketch = frame {
+  left: 2794px,
+  top: 20728px,
+  width: 1440px,
+  height: .auto,
+  layout: {stack: {direction: .column}},
+  children: [openingB, section],
+
+  openingB = frame {
+    left: 0px,
+    top: 0px,
+    width: 100%,
+    height: 900px,
+    fill: k.brand.ink,
+    children: [
+      codeB,
+      headB,
+      lineB,
+      ctaB,
+      readoutB,
+      readoutLabelB,
+      ribbonB,
+      firstLabelB,
+      firstValueB,
+      latestLabelB,
+      latestValueB,
+      withoutLabelB
+    ],
+
+    codeB = text : kit.meta {
+      left: 65px,
+      top: 56px,
+      contents: "A DESKTOP APP FOR IMPROVING AI SKILLS",
+      fill[0].color: k.brand.muted-on-ink
+    }
+
+    headB = text : kit.display {
+      left: 65px,
+      top: 104px,
+      width: k.grid.span-7,
+      contents: "write better\nai skills",
+      fill[0].color: k.brand.paper
+    }
+
+    lineB = text : kit.body {
+      left: 65px,
+      top: 300px,
+      width: 398.92px,
+      contents: "Compare, grade, and track changes to improve your skill files confidently.",
+      fill[0].color: k.brand.muted-on-ink
+    }
+
+    ctaB = frame {
+      left: 65px,
+      top: 380px,
+      layout: {stack: {align-items: .center, item-gap: 32px}},
+      children: [downloadB, repoLinkB],
+
+      downloadB = frame : kit.downloadButton {
+        fill[0].color: k.brand.paper,
+
+        downloadMeta {
+          fill[0].color: k.brand.muted
+        }
+
+        downloadLabel {
+          fill[0].color: k.brand.ink
+        }
+      }
+
+      repoLinkB = frame : kit.textLink {
+        linkLabel {
+          fill[0].color: k.brand.paper,
+          contents: "Contribute on GitHub"
+        }
+      }
+    }
+
+    readoutB = text {
+      left: 1006px,
+      top: 96px,
+      fill: k.brand.fluoro,
+      contents: "+13",
+      font-size: 176,
+      font-family: "Geist Pixel",
+      line-height: 0.9
+    }
+
+    readoutLabelB = text : kit.meta {
+      left: 1012px,
+      top: 268px,
+      width: 360px,
+      contents: "/brand-design",
+      fill[0].color: k.brand.muted-on-ink
+    }
+
+    ribbonB = asset {
+      left: 0px,
+      top: 400px,
+      width: 1440px,
+      height: 480px,
+      contents: liftRibbon
+    }
+
+    firstLabelB = text : kit.meta {
+      left: 65px,
+      top: 674px,
+      contents: "FIRST RUNS, V0",
+      fill[0].color: k.brand.muted-on-ink
+    }
+
+    firstValueB = text : kit.body {
+      left: 65px,
+      top: 727px,
+      contents: "85",
+      font-family: "Geist Mono"
+    }
+
+    latestLabelB = text : kit.meta {
+      left: 1263px,
+      top: 534px,
+      contents: "LATEST RUNS, V1",
+      fill[0].color: k.brand.muted-on-ink
+    }
+
+    latestValueB = text : kit.body {
+      left: 1351px,
+      top: 587px,
+      contents: "98",
+      font-family: "Geist Mono"
+    }
+
+    withoutLabelB = text : kit.meta {
+      left: 1220px,
+      top: 826px,
+      contents: "WITHOUT THE SKILL, 71",
+      fill[0].color: k.brand.muted-on-ink
+    }
+  }
+
+  windowB = frame {
+    left: 0px,
+    top: 1621px,
+    width: 1440px,
+    height: 908.6px,
+    layout: {stack: {direction: .column, item-gap: 56px}},
+    padding: [0px, lengths.lengths.gutter],
+    children: [windowHeadB, windowRowB],
+
+    windowHeadB = frame : kit.sectionHead {
+      overrides: [remove(kit.sectionHead.sectionCode)],
+
+      sectionLead {
+        left: 0px,
+        top: 0px,
+        width: 424.08px,
+        height: 70px,
+        contents: "A simple loop to get consistent and high quality results from your custom AI skills."
+      }
+    }
+
+    windowRowB = frame {
+      left: 96px,
+      top: 126px,
+      width: 1248px,
+      height: 782.6px,
+      layout: {stack: {item-gap: k.grid.gutter}},
+      children: [appShotB, keysB],
+
+      keysB = frame {
+        width: k.grid.span-3,
+        layout: {stack: {direction: .column, item-gap: 32px}},
+        children: [keyWriteB, keyRunB, keyCompareB],
+
+        keyWriteB = frame : kit.legendKey {
+          keyText {
+            contents: "AI assisted workflow for writing and refining your files."
+          }
+
+          keyTop {
+            keyName {
+              contents: "AI Assistant"
+            }
+          }
+        }
+
+        keyRunB = frame : kit.legendKey {
+          keyText {
+            contents: "Create multiple scenarios and define what a good response would be."
+          }
+
+          keyTop {
+            keyName {
+              contents: "Grading"
+            }
+
+            keyChip {
+              keyDigit {
+                contents: "02"
+              }
+            }
+          }
+        }
+
+        keyCompareB = frame : kit.legendKey {
+          keyText {
+            contents: "Evaluate the output side-by-side and understand how the AI performed."
+          }
+
+          keyTop {
+            keyName {
+              contents: "Version Control"
+            }
+
+            keyChip {
+              keyDigit {
+                contents: "03"
+              }
+            }
+          }
+        }
+      }
+
+      appShotB = frame {
+        left: 331.75px,
+        top: 0px,
+        width: 100%,
+        height: 782.6px,
+        fill: {image: {ref: shotApp}},
+        border: {color: k.brand.ink, position: .outside},
+        children: [pinWriteB, pinRunB],
+
+        pinWriteB = frame : kit.keyChip {
+          left: 118px,
+          top: 84px
+        }
+
+        pinRunB = frame : kit.keyChip {
+          left: 770px,
+          top: 6px,
+
+          keyDigit {
+            contents: "02"
+          }
+        }
+      }
+    }
+  }
+
+  section = frame : ::section.section {
+    left: 0px,
+    top: 900px,
+    layout.stack.item-gap: lengths.lengths.band-normal,
+    overrides: [
+      insert(opener, after = .nil),
+      insert(statement, after = opener),
+      insert(columns, after = statement),
+      insert(windowB, after = columns),
+      insert(appDownload, after = windowB),
+      remove(::section.section.opening)
+    ]
+  }
+
+  columns = frame {
+    left: 7.9966px,
+    top: 1055.38px,
+    width: 1440px,
+    height: 319px,
+    layout: {stack: {direction: .column, align-items: .center, item-gap: 24px}},
+    padding-left: lengths.lengths.band-normal,
+    padding-right: lengths.lengths.band-normal,
+    children: keysRow,
+
+    keysRow = frame {
+      left: 0px,
+      top: 0px,
+      width: 100%,
+      height: .auto,
+      layout: {stack: {item-gap: k.grid.gutter}},
+      children: [keyMacIntel, keyMacIntel_2, keyWindows]
+    }
+
+    keyMacIntel = frame {
+      left: 0px,
+      top: 0px,
+      width: 100%,
+      height: 319px,
+      layout: {stack: {direction: .column, justify-content: .space-between}},
+      border: k.brand.ink,
+      padding: 16px,
+      children: [osNumber, osWords],
+
+      osNumber = text : kit.meta {
+        contents: "01"
+      }
+
+      osWords = frame {
+        layout: {stack: {direction: .column, item-gap: 4px}},
+        children: [osName, osArch]
+      }
+
+      osName = text : kit.body {
+        contents: "Write",
+        font-size: 32
+      }
+
+      osArch = text : kit.meta {
+        width: 100%,
+        contents: "AI assisted workflow for writing and refining your files."
+      }
+    }
+
+    keyMacIntel_2 = frame {
+      left: 683.5px,
+      top: 20px,
+      width: 100%,
+      height: 319px,
+      transform: [1, 0, 0, 0, 1, 0],
+      layout: {stack: {direction: .column, justify-content: .space-between}},
+      border: k.brand.ink,
+      padding: 16px,
+      children: [osNumber, osWords],
+
+      osNumber = text : kit.meta {
+        contents: "02"
+      }
+
+      osWords = frame {
+        layout: {stack: {direction: .column, item-gap: 4px}},
+        children: [osName, osArch]
+      }
+
+      osName = text : kit.body {
+        contents: "Run",
+        font-size: 32
+      }
+
+      osArch = text : kit.meta {
+        width: 100%,
+        contents: "Create multiple scenarios and define what a good response would be."
+      }
+    }
+
+    keyWindows = frame {
+      left: 0px,
+      top: 0px,
+      width: 100%,
+      height: 319px,
+      transform: [1, 0, 0, 0, 1, 0],
+      layout: {stack: {direction: .column, justify-content: .space-between}},
+      border: k.brand.ink,
+      padding: 16px,
+      children: [osNumber, osWords],
+
+      osNumber = text : kit.meta {
+        contents: "03"
+      }
+
+      osWords = frame {
+        layout: {stack: {direction: .column, item-gap: 4px}},
+        children: [osName, osArch]
+      }
+
+      osName = text : kit.body {
+        contents: "Compare",
+        font-size: 32
+      }
+
+      osArch = text : kit.meta {
+        width: 100%,
+        contents: "Evaluate the output side-by-side and understand how the AI performed."
+      }
+    }
+  }
+
+  opener = frame : statements.callout {
+    left: 0px,
+    top: 96px,
+    height: .auto,
+    padding-top: 0px,
+
+    statement {
+      contents: "Tracking how you actually know if your changes improved your custom skills across iterations deserves it's own workspace."
+    }
+
+    section-heading.featureHeadingOffset.grid {
+      deckCell {
+        deck {
+          contents: "Tracking how you actually know if your changes improved your custom skills across iterations deserves it's own workspace."
+        }
+      }
+
+      opener {
+        overrides: [
+          remove(section-heading.featureHeadingOffset.grid.opener.eyebrow)
+        ],
+
+        heading {
+          contents: "Take the guess work out of the equation."
+        }
+      }
+    }
+  }
+
+  statement = frame : media.caption {
+    left: 0px,
+    top: 504px,
+    padding-top: 0px,
+    padding-bottom: 0px,
+    overrides: [remove(media.caption.captionText)]
+  }
+
+  appDownload = frame : forms.appDownload {}
+}
+
+// Parts the sheets instance. Text styles follow the brand's three size classes:
+// metadata 11, body 17, large (moment or display) at 8x metadata or more, plus
+// the 1.9x body lead the site's sections allow.
+kit_4 = frame {
+  left: 3800px,
+  top: -4705px,
+  layout: {stack: {direction: .column, item-gap: 64px}},
+  fill: k.brand.grey-1,
+  padding: 64px,
+  children: [
+    display,
+    moment,
+    textLink,
+    downloadButton,
+    specBar,
+    sectionHead,
+    stepColumn,
+    specNumber,
+    flowCard,
+    appDownloadReceipt,
+    appDownloadRepo,
+    receiptRow,
+    needRow,
+    partRow,
+    legendKey,
+    keyChip,
+    chapter,
+    receiptLine,
+    appDownloadKeys,
+    osKey,
+    statement,
+    navOnInk,
+    featureState,
+    hero,
+    example,
+    walkState,
+    dlPrimary,
+    dlSecondary,
+    archSwitch,
+    installBlock,
+    repoBlock,
+    colophon
+  ],
+
+  display = text {
+    fill: k.brand.ink,
+    contents: "display",
+    font-size: 88,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 0.98,
+    letter-spacing: -3.5%
+  }
+
+  moment = text {
+    fill: k.brand.spot,
+    contents: "MOMENT",
+    font-size: 154,
+    font-family: "Geist",
+    font-style: "Black",
+    line-height: 0.88,
+    letter-spacing: -5%
+  }
+
+  // A link under 24px is ink text over a 3px orange rule (orange text needs 24px).
+  textLink = frame {
+    layout: {stack: {direction: .column, item-gap: 2px}},
+    border: {color: k.brand.spot, width: 3px, sides: .bottom},
+    padding: [0px, 0px, 2px],
+    children: linkLabel,
+
+    linkLabel = text : kit.body {
+      contents: "Read CONTRIBUTING.md"
+    }
+  }
+
+  // Ink is the button; orange is only the glyph, as the block now ships.
+  downloadButton = frame {
+    layout: {stack: {align-items: .center, item-gap: 12px}},
+    fill: k.brand.ink,
+    padding: [16px, 24px],
+    children: [downloadIcon, downloadLabel, downloadMeta],
+
+    downloadIcon = asset {
+      width: 20px,
+      height: 20px,
+      fill: k.brand.spot,
+      contents: downloadGlyph
+    }
+
+    downloadLabel = text : kit.body {
+      contents: "Download for Mac",
+      fill[0].color: k.brand.paper
+    }
+
+    downloadMeta = text : kit.meta {
+      contents: "APPLE SILICON",
+      fill[0].color: k.brand.muted-on-ink
+    }
+  }
+
+  // Spec-bar nav: name left, lowercase links, code right, a 1px rule below.
+  specBar = frame {
+    width: 1440px,
+    height: 64px,
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .bottom},
+    padding: [0px, 65px],
+    children: [barName, barLinks, barCode],
+
+    barName = text : kit.body {
+      contents: "skill studio",
+      font-style: "Light"
+    }
+
+    barLinks = frame {
+      layout: {stack: {align-items: .center, item-gap: 32px}},
+      children: [linkHow, linkInstall, linkContribute, linkGuide],
+
+      linkHow = text : kit.body {
+        contents: "how it works",
+        font-style: "Light"
+      }
+
+      linkInstall = text : kit.body {
+        contents: "install",
+        font-style: "Light"
+      }
+
+      linkContribute = text : kit.body {
+        contents: "contribute",
+        font-style: "Light"
+      }
+
+      linkGuide = text : kit.body {
+        contents: "guide",
+        font-style: "Light"
+      }
+    }
+
+    barCode = text : kit.meta {
+      contents: "V0.16.0 / 2026-11-15"
+    }
+  }
+
+  // A section's head: the numbered code over three columns, the lead
+  // statement from column four.
+  sectionHead = frame {
+    width: 1310px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    children: [sectionCode, sectionLead],
+
+    sectionCode = text : kit.meta {
+      width: k.grid.span-3,
+      contents: "00 / SECTION"
+    }
+
+    sectionLead = text : kit.lead {
+      width: k.grid.span-7
+    }
+  }
+
+  stepColumn = frame {
+    width: k.grid.span-4,
+    layout: {stack: {direction: .column, item-gap: 16px}},
+    children: [stepTop, stepText, stepShot],
+
+    stepTop = frame {
+      width: 100%,
+      layout: {stack: {item-gap: 16px}},
+      border: {color: k.brand.ink, sides: .top},
+      padding: [16px, 0px, 0px],
+      children: [stepNumber, stepName],
+
+      stepNumber = text : kit.meta {
+        contents: "01"
+      }
+
+      stepName = text : kit.body {
+        contents: "step",
+        font-style: "Light"
+      }
+    }
+
+    stepText = text : kit.body {
+      width: 100%,
+      height: 104px,
+      contents: "What the step does."
+    }
+
+    stepShot = frame {
+      width: 100%,
+      height: 416px,
+      fill: {image: {ref: shotEditor}}
+    }
+  }
+
+  // A spec block: label above value, the value in light display.
+  specNumber = frame {
+    width: 100%,
+    layout: {stack: {direction: .column, item-gap: 8px}},
+    border: {color: k.brand.ink, sides: .top},
+    padding: [12px, 0px, 0px],
+    children: [specLabel, specValue],
+
+    specLabel = text : kit.meta {
+      contents: "LABEL"
+    }
+
+    specValue = text : display {
+      contents: "00"
+    }
+  }
+
+  flowCard = frame {
+    width: 533px,
+    layout: {stack: {direction: .column, item-gap: 16px}},
+    children: [flowShot, flowStep, flowWhat],
+
+    flowShot = frame {
+      width: 533px,
+      height: 426px,
+      fill: {image: {ref: shotLibrary}},
+      border: {color: k.brand.grey-2, position: .outside}
+    }
+
+    flowStep = text : kit.meta {
+      contents: "00 SCREEN",
+      fill[0].color: k.brand.ink
+    }
+
+    flowWhat = text : kit.body {
+      width: 100%,
+      contents: "What happens here."
+    }
+  }
+
+  // App download, Download buttons mode, as a receipt.
+  appDownloadReceipt = frame {
+    width: 1440px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    fill: k.brand.paper,
+    padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+    children: [receiptIntro, receiptBody],
+
+    receiptIntro = frame {
+      width: k.grid.span-4,
+      layout: {stack: {direction: .column, item-gap: 24px}},
+      children: [receiptCode, receiptHeading, receiptText],
+
+      receiptCode = text : kit.meta {
+        contents: "04 / INSTALL"
+      }
+
+      receiptHeading = text : kit.lead {
+        width: 100%,
+        contents: "download for your computer"
+      }
+
+      receiptText = text : kit.body {
+        width: 100%,
+        contents: "The app updates itself after that. Every version is on Releases.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    receiptBody = frame {
+      width: k.grid.span-8,
+      layout: {stack: {direction: .column}},
+      children: [
+        receiptVersion,
+        rowMacArm,
+        rowMacIntel,
+        rowWindows,
+        rowLinux,
+        receiptNeeds,
+        needAgent,
+        needKey,
+        needWriter,
+        receiptFoot
+      ],
+
+      receiptVersion = frame {
+        width: 100%,
+        layout: {stack: {justify-content: .space-between}},
+        border: {color: k.brand.ink, sides: .bottom},
+        padding: [0px, 0px, 12px],
+        children: [versionLabel, versionValue],
+
+        versionLabel = text : kit.meta {
+          contents: "FILE"
+        }
+
+        versionValue = text : kit.meta {
+          contents: "V0.16.0 / 2026-11-15"
+        }
+      }
+
+      rowMacArm = frame {
+        width: 100%,
+        height: 72px,
+        layout: {stack: {align-items: .center, item-gap: 16px}},
+        border: {color: k.brand.grey-2, sides: .bottom},
+        children: [armMark, armSystem, armLeader, armFile, armButton],
+
+        armMark = frame {
+          width: 11px,
+          height: 11px,
+          fill: k.brand.spot
+        }
+
+        armSystem = text : kit.body {
+          contents: "macOS, Apple silicon"
+        }
+
+        armLeader = frame {
+          height: 1px,
+          border: {color: k.brand.muted, dash: [1px, 5px], sides: .top}
+        }
+
+        armFile = text : kit.meta {
+          contents: "SKILL-STUDIO-MAC-ARM64.DMG",
+          fill[0].color: k.brand.ink
+        }
+
+        armButton = frame : downloadButton {
+          padding-top: 12px,
+          padding-left: 20px,
+          padding-bottom: 12px,
+          padding-right: 20px,
+
+          downloadMeta {
+            contents: "DETECTED"
+          }
+
+          downloadLabel {
+            contents: "Download"
+          }
+        }
+      }
+
+      rowMacIntel = frame : receiptRow {}
+
+      rowWindows = frame : receiptRow {
+        rowFile {
+          contents: "SKILL-STUDIO-WIN-X64.EXE"
+        }
+
+        rowSystem {
+          contents: "Windows, 64-bit"
+        }
+      }
+
+      rowLinux = frame : receiptRow {
+        rowFile {
+          contents: "SKILL-STUDIO-LINUX-X86_64.APPIMAGE"
+        }
+
+        rowSystem {
+          contents: "Linux, x86-64"
+        }
+      }
+
+      receiptNeeds = frame {
+        width: 100%,
+        padding: [56px, 0px, 12px],
+        children: needsLabel,
+
+        needsLabel = text : kit.meta {
+          contents: "YOU ALSO NEED"
+        }
+      }
+
+      needAgent = frame : needRow {}
+
+      needKey = frame : needRow {
+        needValue {
+          contents: "A TypeSafe API key, added under Settings. Without it, no rule or check is marked."
+        }
+
+        needLabel {
+          contents: "GRADER"
+        }
+      }
+
+      needWriter = frame : needRow {
+        needValue {
+          contents: "To write with AI: the claude or codex CLI signed in, or an Anthropic or OpenAI API key."
+        }
+
+        needLabel {
+          contents: "OPTIONAL"
+        }
+      }
+
+      receiptFoot = frame {
+        width: 100%,
+        layout: {stack: {item-gap: 32px}},
+        padding: [32px, 0px, 0px],
+        children: [allReleases, checkDownload],
+
+        allReleases = frame : textLink {
+          linkLabel {
+            contents: "All releases"
+          }
+        }
+
+        checkDownload = frame : textLink {
+          border[0].color: k.brand.grey-2,
+          border[0].width: 1,
+
+          linkLabel {
+            contents: "Check a download"
+          }
+        }
+      }
+    }
+  }
+
+  receiptRow = frame {
+    width: 100%,
+    height: 72px,
+    layout: {stack: {align-items: .center, item-gap: 16px}},
+    border: {color: k.brand.grey-2, sides: .bottom},
+    children: [rowSpacer, rowSystem, rowLeader, rowFile, rowAction],
+
+    rowSpacer = frame {
+      width: 11px,
+      height: 11px
+    }
+
+    rowSystem = text : kit.body {
+      contents: "macOS, Intel"
+    }
+
+    rowLeader = frame {
+      height: 1px,
+      border: {color: k.brand.muted, dash: [1px, 5px], sides: .top}
+    }
+
+    rowFile = text : kit.meta {
+      contents: "SKILL-STUDIO-MAC-X64.DMG",
+      fill[0].color: k.brand.ink
+    }
+
+    rowAction = frame : textLink {
+      linkLabel {
+        contents: "Download"
+      }
+    }
+  }
+
+  needRow = frame {
+    width: 100%,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    border: {color: k.brand.grey-2, sides: .top},
+    padding: [14px, 0px],
+    children: [needLabel, needValue],
+
+    needLabel = text : kit.meta {
+      width: k.grid.span-2,
+      contents: "AGENT"
+    }
+
+    needValue = text : kit.body {
+      width: 646.5px,
+      contents: "The claude or cursor-agent CLI, installed and signed in. The agent writes the answers."
+    }
+  }
+
+  // App download, GitHub repository mode, as a parts list.
+  appDownloadRepo = frame {
+    width: 1440px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .top},
+    padding: [k.grid.section-loose, k.grid.margin],
+    children: [repoIntro, repoBody],
+
+    repoIntro = frame {
+      width: k.grid.span-4,
+      layout: {stack: {direction: .column, item-gap: 24px}},
+      children: [repoCode, repoHeading, repoText, repoLinks],
+
+      repoCode = text : kit.meta {
+        contents: "05 / CONTRIBUTE"
+      }
+
+      repoHeading = text : kit.lead {
+        width: 100%,
+        contents: "open source, MIT"
+      }
+
+      repoText = text : kit.body {
+        width: 100%,
+        contents: "Fixes and new parts are welcome. For anything larger than a fix, open an issue first so we can agree on the shape.",
+        fill[0].color: k.brand.muted
+      }
+
+      repoLinks = frame {
+        layout: {stack: {direction: .column, item-gap: 16px}},
+        padding: [16px, 0px, 0px],
+        children: [repoGitHub, repoGuide],
+
+        repoGitHub = frame : textLink {
+          linkLabel {
+            contents: "Open the repository"
+          }
+        }
+
+        repoGuide = frame : textLink {
+          border[0].color: k.brand.grey-2,
+          border[0].width: 1
+        }
+      }
+    }
+
+    repoBody = frame {
+      width: k.grid.span-8,
+      layout: {stack: {direction: .column, item-gap: 48px}},
+      children: [partsList, cloneBlock],
+
+      partsList = frame {
+        width: 100%,
+        layout: {stack: {direction: .column}},
+        children: [partsHead, partJudge, partEngine, partUi, partFix],
+
+        partsHead = frame : partRow {
+          padding-top: 0px,
+          padding-bottom: 12px,
+          border[0].color: k.brand.ink,
+
+          partWhere {
+            fill[0].color: k.brand.muted,
+            contents: "WHERE"
+          }
+
+          partName {
+            fill[0].color: k.brand.muted,
+            contents: "PART",
+            font-size: 11,
+            font-family: "Geist Mono",
+            letter-spacing: 6%
+          }
+
+          partNumber {
+            contents: "NO."
+          }
+        }
+
+        partJudge = frame : partRow {
+          partWhere {
+            contents: "SRC/JUDGES"
+          }
+
+          partName {
+            contents: "A judge pack: how answers of one kind are graded"
+          }
+        }
+
+        partEngine = frame : partRow {
+          partWhere {
+            contents: "SRC/INFRASTRUCTURE/ENGINES"
+          }
+
+          partName {
+            contents: "An engine adapter: one more agent CLI to run"
+          }
+
+          partNumber {
+            contents: "02"
+          }
+        }
+
+        partUi = frame : partRow {
+          partWhere {
+            contents: "SRC/RENDERER"
+          }
+
+          partName {
+            contents: "A UI improvement"
+          }
+
+          partNumber {
+            contents: "03"
+          }
+        }
+
+        partFix = frame : partRow {
+          partWhere {
+            contents: "ANYWHERE"
+          }
+
+          partName {
+            contents: "A bug fix, with a test beside the code"
+          }
+
+          partNumber {
+            contents: "04"
+          }
+        }
+      }
+
+      cloneBlock = frame {
+        width: 100%,
+        layout: {stack: {direction: .column, item-gap: 16px}},
+        fill: k.brand.ink,
+        padding: 32px,
+        children: [cloneHead, cloneLines],
+
+        cloneHead = frame {
+          width: 100%,
+          layout: {stack: {justify-content: .space-between}},
+          children: [cloneLabel, cloneCopy],
+
+          cloneLabel = text : kit.meta {
+            contents: "NODE 24 OR LATER, PNPM",
+            fill[0].color: k.brand.muted-on-ink
+          }
+
+          cloneCopy = text : kit.meta {
+            contents: "COPY",
+            fill[0].color: k.brand.paper
+          }
+        }
+
+        cloneLines = text : kit.body {
+          width: 100%,
+          contents: "git clone github.com/milesroxas/skill-studio\npnpm install\npnpm dev      # the app, with hot reloading\npnpm check    # typecheck, Biome, fallow, tests",
+          font-family: "Geist Mono",
+          line-height: 1.7,
+          fill[0].color: k.brand.paper
+        }
+      }
+    }
+  }
+
+  partRow = frame {
+    width: 100%,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    border: {color: k.brand.grey-2, sides: .bottom},
+    padding: [18px, 0px],
+    children: [partNumber, partName, partWhere],
+
+    partNumber = text : kit.meta {
+      width: k.grid.span-1,
+      contents: "01"
+    }
+
+    partName = text : kit.body {
+      contents: "Part"
+    }
+
+    partWhere = text : kit.meta {
+      contents: "SRC",
+      fill[0].color: k.brand.ink
+    }
+  }
+
+  legendKey = frame {
+    width: 100%,
+    layout: {stack: {direction: .column, item-gap: 12px}},
+    border: {color: k.brand.ink, sides: .top},
+    padding: [16px, 0px, 0px],
+    children: [keyTop, keyText],
+
+    keyTop = frame {
+      layout: {stack: {align-items: .center, item-gap: 12px}},
+      children: [keyChip, keyName],
+
+      keyChip = frame : kit_4.keyChip {}
+
+      keyName = text : kit.body {
+        contents: "write",
+        font-style: "Light"
+      }
+    }
+
+    keyText = text : kit.body {
+      width: 100%,
+      contents: "What this part of the window holds.",
+      fill[0].color: k.brand.muted
+    }
+  }
+
+  // A numbered key pinned on a screenshot, matched by its legend.
+  keyChip = frame {
+    width: 28px,
+    height: 28px,
+    layout: {stack: {justify-content: .center, align-items: .center}},
+    fill: k.brand.ink,
+    children: keyDigit,
+
+    keyDigit = text : kit.meta {
+      contents: "01",
+      fill[0].color: k.brand.paper
+    }
+  }
+
+  chapter = frame {
+    width: 1310px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    children: [chapterNumber, chapterWords, chapterShot],
+
+    chapterNumber = text : display {
+      width: k.grid.span-2,
+      contents: "01",
+      font-size: 154,
+      line-height: 0.86
+    }
+
+    chapterWords = frame {
+      width: k.grid.span-3,
+      layout: {stack: {direction: .column, item-gap: 16px}},
+      border: {color: k.brand.ink, sides: .top},
+      padding: [16px, 0px, 0px],
+      children: [chapterName, chapterText],
+
+      chapterName = text : kit.lead {
+        contents: "write"
+      }
+
+      chapterText = text : kit.body {
+        width: 100%,
+        contents: "What the step does."
+      }
+    }
+
+    chapterShot = frame {
+      width: k.grid.span-7,
+      height: 540px,
+      fill: {image: {ref: shotEditor}},
+      border: {color: k.brand.ink, sides: .top}
+    }
+  }
+
+  // One receipt row: label, a dotted leader, the value.
+  receiptLine = frame {
+    width: 100%,
+    height: 44px,
+    layout: {stack: {align-items: .center, item-gap: 12px}},
+    children: [lineLabel, lineLeader, lineValue],
+
+    lineLabel = text : kit.meta {
+      contents: "PRICE"
+    }
+
+    lineLeader = frame {
+      height: 1px,
+      border: {color: k.brand.muted, dash: [1px, 5px], sides: .top}
+    }
+
+    lineValue = text : kit.body {
+      contents: "FREE",
+      font-family: "Geist Mono"
+    }
+  }
+
+  // App download, Download buttons mode, as four keys: one per system, the
+  // detected one pressed (ink, an orange rule on top).
+  appDownloadKeys = frame {
+    width: 1440px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .top},
+    padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+    children: [keysIntro, keysBody],
+
+    keysIntro = frame {
+      width: k.grid.span-4,
+      layout: {stack: {direction: .column, item-gap: 24px}},
+      children: [keysCode, keysHeading, keysText],
+
+      keysCode = text : kit.meta {
+        contents: "04 / INSTALL"
+      }
+
+      keysHeading = text : kit.lead {
+        width: 100%,
+        contents: "pick your computer"
+      }
+
+      keysText = text : kit.body {
+        width: 100%,
+        contents: "Free, and it updates itself after that. You also need the claude or cursor-agent CLI signed in, and a TypeSafe API key.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    keysBody = frame {
+      width: k.grid.span-8,
+      layout: {stack: {direction: .column, item-gap: 24px}},
+      children: [keysRow, keysFoot],
+
+      keysRow = frame {
+        width: 100%,
+        layout: {stack: {item-gap: k.grid.gutter}},
+        children: [keyMacArm, keyMacIntel, keyWindows, keyLinux],
+
+        keyMacArm = frame : osKey {
+          border[0].color: k.brand.spot,
+          border[0].sides: .top,
+          border[0].width: 4px,
+          fill[0].color: k.brand.ink,
+
+          osWords {
+            osArch {
+              fill[0].color: k.brand.muted-on-ink
+            }
+
+            osName {
+              fill[0].color: k.brand.paper
+            }
+          }
+
+          osNumber {
+            fill[0].color: k.brand.muted-on-ink,
+            contents: "01 / DETECTED"
+          }
+        }
+
+        keyMacIntel = frame : osKey {
+          osWords {
+            osArch {
+              contents: "INTEL"
+            }
+          }
+
+          osNumber {
+            contents: "02"
+          }
+        }
+
+        keyWindows = frame : osKey {
+          osWords {
+            osArch {
+              contents: "64-BIT, NOT SIGNED"
+            }
+
+            osName {
+              contents: "Windows"
+            }
+          }
+
+          osNumber {
+            contents: "03"
+          }
+        }
+
+        keyLinux = frame : osKey {
+          osWords {
+            osArch {
+              contents: "X86-64, APPIMAGE"
+            }
+
+            osName {
+              contents: "Linux"
+            }
+          }
+
+          osNumber {
+            contents: "04"
+          }
+        }
+      }
+
+      keysFoot = frame {
+        width: 100%,
+        layout: {stack: {justify-content: .space-between, align-items: .center}},
+        border: {color: k.brand.ink, sides: .top},
+        padding: [16px, 0px, 0px],
+        children: [keysFile, keysButton],
+
+        keysFile = text : kit.meta {
+          contents: "SKILL-STUDIO-MAC-ARM64.DMG / V0.16.0 / 2026-11-15",
+          fill[0].color: k.brand.ink
+        }
+
+        keysButton = frame : downloadButton {
+          downloadMeta {
+            contents: "FREE"
+          }
+
+          downloadLabel {
+            contents: "Download"
+          }
+        }
+      }
+    }
+  }
+
+  osKey = frame {
+    width: k.grid.span-2,
+    height: 204px,
+    layout: {stack: {direction: .column, justify-content: .space-between}},
+    border: k.brand.ink,
+    padding: 16px,
+    children: [osNumber, osWords],
+
+    osNumber = text : kit.meta {
+      contents: "01"
+    }
+
+    osWords = frame {
+      layout: {stack: {direction: .column, item-gap: 4px}},
+      children: [osName, osArch],
+
+      osName = text : kit.body {
+        contents: "macOS"
+      }
+
+      osArch = text : kit.meta {
+        contents: "APPLE SILICON"
+      }
+    }
+  }
+
+  // Round two parts.
+  statement = text {
+    fill: k.brand.ink,
+    contents: "statement",
+    font-size: 88,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 0.98,
+    letter-spacing: -3.5%
+  }
+
+  navOnInk = frame {
+    width: 1440px,
+    height: 72px,
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
+    padding: [0px, 65px],
+    children: [navName, navLinks],
+
+    navName = text : kit.body {
+      contents: "miles roxas",
+      font-style: "Light",
+      fill[0].color: k.brand.paper
+    }
+
+    navLinks = frame {
+      layout: {stack: {item-gap: 32px}},
+      children: [navWork, navPosts, navContact],
+
+      navWork = text : kit.body {
+        contents: "work",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+
+      navPosts = text : kit.body {
+        contents: "posts",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+
+      navContact = text : kit.body {
+        contents: "contact",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+    }
+  }
+
+  // The pinned feature, one beat. The screen bleeds off the top, right and
+  // bottom; the verbs are the heading and the progress at once.
+  featureState = frame {
+    width: 1440px,
+    height: 900px,
+    fill: k.brand.ink,
+    children: [featScreen, featVerbs, featText],
+
+    featScreen = frame {
+      left: 618px,
+      top: 0px,
+      width: 822px,
+      height: 900px,
+      fill: {
+        image: {
+          ref: shotEditor,
+          sizing: {scale: 0.7755, offset: [277.6px, -23.5px]}
+        }
+      }
+    }
+
+    featVerbs = frame {
+      left: 65px,
+      top: 144px,
+      layout: {stack: {direction: .column}},
+      children: [verbWrite, verbRun, verbCompare],
+
+      verbWrite = text : statement {
+        contents: "write",
+        fill[0].color: k.brand.paper
+      }
+
+      verbRun = text : statement {
+        contents: "run",
+        fill[0].color: k.brand.ink-dim
+      }
+
+      verbCompare = text : statement {
+        contents: "compare",
+        fill[0].color: k.brand.ink-dim
+      }
+    }
+
+    featText = text : kit.body {
+      left: 65px,
+      top: 476px,
+      width: k.grid.span-4,
+      contents: "Write the rules in an editor that numbers them and flags a vague one. Every version keeps its score, so you can see which edit helped.",
+      fill[0].color: k.brand.muted-on-ink
+    }
+  }
+
+  // Round three type: the opening line and the statement, refined down.
+  hero = text {
+    fill: k.brand.ink,
+    contents: "hero",
+    font-size: 72,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 1,
+    letter-spacing: -3.5%
+  }
+
+  example = frame {
+    width: 100%,
+    layout: {stack: {direction: .column, item-gap: 10px}},
+    children: [exampleName, exampleText],
+
+    exampleName = text : statement {
+      contents: "release notes",
+      font-size: 44
+    }
+
+    exampleText = text : kit.body {
+      width: k.grid.span-5,
+      contents: "Tell the people who use the software what changed, in plain words.",
+      fill[0].color: k.brand.muted
+    }
+  }
+
+  // The pinned walkthrough, state 1: write, rule checks. Grey field, the
+  // whole app window on the right.
+  walkState = frame {
+    width: 1440px,
+    height: 900px,
+    fill: k.brand.grey-1,
+    children: [walkOutline, walkText, walkWindow],
+
+    walkOutline = frame {
+      left: 65px,
+      top: 150px,
+      width: k.grid.span-4,
+      layout: {stack: {direction: .column, item-gap: 28px}},
+      children: [oWrite, oTest, oCompare],
+
+      oWrite = frame {
+        layout: {stack: {direction: .column, item-gap: 10px}},
+        children: [oWriteVerb, oWriteFeatures],
+
+        oWriteVerb = text : statement {
+          contents: "write",
+          font-size: 44
+        }
+
+        oWriteFeatures = frame {
+          layout: {stack: {direction: .column, item-gap: 4px}},
+          children: [oChecks, oRewrites, oAssistant],
+
+          oChecks = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oChecksDot, oChecksName],
+
+            oChecksDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.spot
+            }
+
+            oChecksName = text : kit.body {
+              contents: "rule checks"
+            }
+          }
+
+          oRewrites = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oRewritesDot, oRewritesName],
+
+            oRewritesDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oRewritesName = text : kit.body {
+              contents: "suggested rewrites",
+              fill[0].color: k.brand.muted
+            }
+          }
+
+          oAssistant = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oAssistantDot, oAssistantName],
+
+            oAssistantDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oAssistantName = text : kit.body {
+              contents: "assistant",
+              fill[0].color: k.brand.muted
+            }
+          }
+        }
+      }
+
+      oTest = frame {
+        layout: {stack: {direction: .column, item-gap: 10px}},
+        children: [oTestVerb, oTestFeatures],
+
+        oTestVerb = text : statement {
+          contents: "test",
+          font-size: 44,
+          fill[0].color: k.brand.field-dim
+        }
+
+        oTestFeatures = frame {
+          layout: {stack: {direction: .column, item-gap: 4px}},
+          children: oTasks,
+
+          oTasks = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oTasksDot, oTasksName],
+
+            oTasksDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oTasksName = text : kit.body {
+              contents: "example tasks",
+              fill[0].color: k.brand.field-dim
+            }
+          }
+        }
+      }
+
+      oCompare = frame {
+        layout: {stack: {direction: .column, item-gap: 10px}},
+        children: [oCompareVerb, oCompareFeatures],
+
+        oCompareVerb = text : statement {
+          contents: "compare",
+          font-size: 44,
+          fill[0].color: k.brand.field-dim
+        }
+
+        oCompareFeatures = frame {
+          layout: {stack: {direction: .column, item-gap: 4px}},
+          children: [oSide, oScores],
+
+          oSide = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oSideDot, oSideName],
+
+            oSideDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oSideName = text : kit.body {
+              contents: "side by side",
+              fill[0].color: k.brand.field-dim
+            }
+          }
+
+          oScores = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oScoresDot, oScoresName],
+
+            oScoresDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oScoresName = text : kit.body {
+              contents: "scores you can correct",
+              fill[0].color: k.brand.field-dim
+            }
+          }
+        }
+      }
+    }
+
+    walkText = text : kit.body {
+      left: 65px,
+      top: 640px,
+      width: k.grid.span-4,
+      contents: "Write your instructions as a short list of rules. A rule too vague to follow gets an amber number, with a note on how to fix it."
+    }
+
+    walkWindow = frame {
+      left: 507.3px,
+      top: 179px,
+      width: 867.67px,
+      height: 542.3px,
+      fill: {image: {ref: winChecks}}
+    }
+  }
+
+  // App download, as it ships (DownloadActions in Component.client.tsx),
+  // drawn in the new brand: square, body 17. A Mac visitor on Apple silicon.
+  dlPrimary = frame {
+    width: 646.5px,
+    height: 80px,
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
+    fill: k.brand.ink,
+    padding: [16px, 20px],
+    children: [dlLead, dlArrow],
+
+    dlLead = frame {
+      layout: {stack: {align-items: .center, item-gap: 16px}},
+      children: [dlMark, dlWords],
+
+      dlMark = asset {
+        width: 28px,
+        height: 28px,
+        fill: k.brand.paper,
+        contents: macMark
+      }
+
+      dlWords = frame {
+        layout: {stack: {direction: .column, item-gap: 4px}},
+        children: [dlTitle, dlMeta],
+
+        dlTitle = text : kit.body {
+          contents: "Download for Mac",
+          fill[0].color: k.brand.paper
+        }
+
+        dlMeta = text : kit.meta {
+          contents: "APPLE SILICON / .DMG",
+          fill[0].color: k.brand.muted-on-ink
+        }
+      }
+    }
+
+    dlArrow = asset {
+      width: 24px,
+      height: 24px,
+      fill: k.brand.spot,
+      contents: downloadGlyph
+    }
+  }
+
+  dlSecondary = frame {
+    width: 646.5px,
+    height: 60px,
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
+    border: k.brand.grey-2,
+    padding: [12px, 16px],
+    children: [dlsLead, dlsArrow],
+
+    dlsLead = frame {
+      layout: {stack: {align-items: .center, item-gap: 12px}},
+      children: [dlsMark, dlsWords],
+
+      dlsMark = asset {
+        width: 20px,
+        height: 20px,
+        fill: k.brand.ink,
+        contents: windowsMark
+      }
+
+      dlsWords = frame {
+        layout: {stack: {direction: .column, item-gap: 2px}},
+        children: [dlsTitle, dlsMeta],
+
+        dlsTitle = text : kit.body {
+          contents: "Windows"
+        }
+
+        dlsMeta = text : kit.meta {
+          contents: "64-BIT / .EXE"
+        }
+      }
+    }
+
+    dlsArrow = asset {
+      width: 24px,
+      height: 24px,
+      fill: k.brand.muted,
+      contents: downloadGlyph
+    }
+  }
+
+  archSwitch = frame {
+    layout: {stack: {}},
+    border: k.brand.grey-2,
+    padding: 2px,
+    children: [archOn, archOff],
+
+    archOn = frame {
+      height: 32px,
+      layout: {stack: {align-items: .center}},
+      fill: k.brand.ink,
+      padding: [0px, 12px],
+      children: archOnLabel,
+
+      archOnLabel = text : kit.meta {
+        contents: "APPLE SILICON",
+        fill[0].color: k.brand.paper
+      }
+    }
+
+    archOff = frame {
+      height: 32px,
+      layout: {stack: {align-items: .center}},
+      padding: [0px, 12px],
+      children: archOffLabel,
+
+      archOffLabel = text : kit.meta {
+        contents: "INTEL"
+      }
+    }
+  }
+
+  installBlock = frame {
+    width: 1440px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    fill: k.brand.paper,
+    padding: [144px, 65px, 160px],
+    children: [installWords, installActions],
+
+    installWords = frame {
+      width: k.grid.span-6,
+      layout: {stack: {direction: .column, item-gap: 32px}},
+      children: [installStatement, installBody, installVersion],
+
+      installStatement = text : statement {
+        width: 100%,
+        contents: "free for mac, windows and linux"
+      }
+
+      installBody = text : kit.body {
+        width: k.grid.span-4,
+        contents: "It updates itself after that. You also need the claude or cursor-agent CLI, signed in, and a TypeSafe API key for grading.",
+        fill[0].color: k.brand.muted
+      }
+
+      installVersion = text : kit.meta {
+        contents: "VERSION 0.16.0"
+      }
+    }
+
+    installActions = frame {
+      width: k.grid.span-6,
+      layout: {stack: {direction: .column, item-gap: 12px}},
+      children: [
+        installPrimary,
+        installNoteRow,
+        installWindows,
+        installLinux,
+        installReleases
+      ],
+
+      installPrimary = frame : dlPrimary {
+        width: 100%
+      }
+
+      installNoteRow = frame {
+        width: 100%,
+        layout: {stack: {justify-content: .space-between, align-items: .center}},
+        padding: [4px, 0px, 28px],
+        children: [installNote, installArch],
+
+        installNote = frame {
+          layout: {stack: {align-items: .center, item-gap: 8px}},
+          children: [installNoteDot, installNoteText],
+
+          installNoteDot = frame {
+            width: 6px,
+            height: 6px,
+            fill: k.brand.spot
+          }
+
+          installNoteText = text : kit.body {
+            contents: "Drag it to Applications.",
+            fill[0].color: k.brand.muted
+          }
+        }
+
+        installArch = frame : archSwitch {}
+      }
+
+      installWindows = frame : dlSecondary {
+        width: 100%
+      }
+
+      installLinux = frame : dlSecondary {
+        width: 100%,
+
+        dlsLead {
+          dlsMark {
+            contents: linuxMark
+          }
+
+          dlsWords {
+            dlsMeta {
+              contents: "X86-64 / .APPIMAGE"
+            }
+
+            dlsTitle {
+              contents: "Linux"
+            }
+          }
+        }
+      }
+
+      installReleases = frame : textLink {
+        padding-top: 12px,
+
+        linkLabel {
+          fill[0].color: k.brand.muted,
+          contents: "All releases"
+        }
+      }
+    }
+  }
+
+  // App download, repository mode (RepoActions), on ink, with the page's close.
+  repoBlock = frame {
+    width: 1440px,
+    layout: {stack: {direction: .column, item-gap: 160px}},
+    fill: k.brand.ink,
+    padding: [144px, 65px, 48px],
+    children: [repoMain, repoClose],
+
+    repoMain = frame {
+      width: 100%,
+      layout: {stack: {item-gap: k.grid.gutter}},
+      children: [repoWords, repoActions],
+
+      repoWords = frame {
+        width: k.grid.span-6,
+        layout: {stack: {direction: .column, item-gap: 32px}},
+        children: [repoStatement, repoBody],
+
+        repoStatement = text : statement {
+          width: 100%,
+          contents: "open source, MIT",
+          fill[0].color: k.brand.paper
+        }
+
+        repoBody = text : kit.body {
+          width: k.grid.span-4,
+          contents: "Fixes, judge packs, engine adapters and interface work are welcome. For anything bigger than a fix, open an issue first so we can agree on the shape.",
+          fill[0].color: k.brand.muted-on-ink
+        }
+      }
+
+      repoActions = frame {
+        width: k.grid.span-6,
+        layout: {stack: {direction: .column, item-gap: 12px}},
+        children: [repoPrimary, repoClone],
+
+        repoPrimary = frame : dlPrimary {
+          width: 100%,
+          fill[0].color: k.brand.paper,
+
+          dlLead {
+            dlWords {
+              dlMeta {
+                fill[0].color: k.brand.muted,
+                contents: "MILESROXAS/SKILL-STUDIO"
+              }
+
+              dlTitle {
+                fill[0].color: k.brand.ink,
+                contents: "View on GitHub"
+              }
+            }
+
+            dlMark {
+              fill[0].color: k.brand.ink,
+              contents: githubMark
+            }
+          }
+
+          dlArrow {
+            contents: outGlyph
+          }
+        }
+
+        repoClone = frame {
+          width: 100%,
+          height: 52px,
+          layout: {
+            stack: {justify-content: .space-between, align-items: .center}
+          },
+          border: k.brand.rule-on-ink,
+          padding: [0px, 0px, 0px, 16px],
+          children: [repoCloneCode, repoCopy],
+
+          repoCloneCode = text : kit.body {
+            contents: "git clone https://github.com/milesroxas/skill-studio.git",
+            font-size: 15,
+            font-family: "Geist Mono",
+            fill[0].color: k.brand.paper
+          }
+
+          repoCopy = frame {
+            width: 96px,
+            height: 100%,
+            layout: {stack: {justify-content: .center, align-items: .center}},
+            fill: k.brand.grey-ink,
+            children: repoCopyLabel,
+
+            repoCopyLabel = text : kit.meta {
+              contents: "COPY",
+              fill[0].color: k.brand.paper
+            }
+          }
+        }
+      }
+    }
+
+    repoClose = frame {
+      width: 100%,
+      layout: {stack: {justify-content: .space-between, align-items: .end}},
+      children: [repoCredit, repoLinks],
+
+      repoCredit = text : kit.body {
+        width: k.grid.span-6,
+        contents: "Skill Studio was made possible by Emil Kowalski's course AI for Designers and Engineers, which teaches turning taste into rules an agent follows.",
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      repoLinks = text : kit.body {
+        contents: "privacy   security   changelog",
+        fill[0].color: k.brand.muted-on-ink
+      }
+    }
+  }
+
+  colophon = frame {
+    width: 1440px,
+    layout: {stack: {direction: .column, item-gap: 24px}},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .top},
+    padding: [k.grid.section, k.grid.margin, 48px],
+    children: [colophonTop, colophonBottom],
+
+    colophonTop = frame {
+      width: 100%,
+      layout: {stack: {item-gap: k.grid.gutter}},
+      children: [colophonName, colophonCredit],
+
+      colophonName = text : kit.body {
+        width: k.grid.span-4,
+        contents: "skill studio",
+        font-style: "Light"
+      }
+
+      colophonCredit = text : kit.body {
+        width: k.grid.span-6,
+        contents: "Made possible by Emil Kowalski's course AI for Designers and Engineers, which teaches turning taste into rules an agent follows.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    colophonBottom = frame {
+      width: 100%,
+      layout: {stack: {justify-content: .space-between}},
+      children: [colophonLeft, colophonRight],
+
+      colophonLeft = text : kit.meta {
+        contents: "MILES ROXAS / MIT LICENSE / V0.16.0"
+      }
+
+      colophonRight = text : kit.meta {
+        contents: "PRIVACY / SECURITY / CHANGELOG / GITHUB"
+      }
+    }
+  }
+}
+
+// Customised to the Neutral theme. A painted band shows its edge, so where the
+// surface changes it adds one normal step (96px) inside itself (`band-painted`).
+@variant
+export sectionNeutral = frame : section_2 {
+  left: 4379.52px,
+  top: 8152px,
+  height: 1356px,
+  padding-top: 192px,
+  padding-bottom: 192px,
+  fill[0].color: forms.c.colors.neutral,
+
+  opening {
+    statement {
+      fill[0].color: forms.c.colors.neutral
+    }
+
+    opener {
+      fill[0].color: forms.c.colors.neutral
+    }
+
+    left: 0px,
+    top: 192px,
+    width: 1440px,
+    height: 972px
+  }
+}
+
+// Structure group.
+// Section, `section`: one band that groups a run of blocks under a single
+// surface. Customize is off, so it paints the page ground with normal spacing;
+// nested blocks render bare (no band of their own) and sit 192px apart. A
+// section heading sits half that step (96px) above the block after it, so it
+// titles the whole run (`STACK_OPENER`); `opening` pairs the two, drawn 89px
+// because Elyx can't trim the deck's line box to its baseline.
+// src/blocks/section/SectionBand.tsx, src/blocks/shared/section.tsx
+export section_2 = frame {
+  width: lengths.lengths.page,
+  layout: {stack: {direction: .column, item-gap: lengths.lengths.band-loose}},
+  fill: forms.c.colors.background,
+  slot: .true,
+  padding: [lengths.lengths.band-normal, 0px],
+  children: opening,
+
+  opening = frame {
+    width: 100%,
+    layout: {stack: {direction: .column, item-gap: 89px}},
+    children: [opener, statement],
+
+    opener = frame : section-heading.featureHeadingOffset {
+      padding-top: 0px
+    }
+
+    statement = frame : media.featureImageStatement {
+      padding-top: 0px,
+      padding-bottom: 0px
+    }
+  }
+}
+
+statement_3 = frame : media-content.splitContentNarrow {
+  left: 5483.34px,
+  top: 23265.877px,
+  height: 619px,
+  padding-top: 0px,
+  padding-bottom: 0px,
+  overrides: [remove(media.caption.captionText)],
+
+  grid {
+    overrides: [
+      insert(copyStack, after = .nil),
+      remove(media-content.splitContentNarrow.grid.copyStack)
+    ],
+
+    visual {
+      left: 0px,
+      top: 0px
+    }
+  }
+
+  copyStack = frame {
+    width: lengths.lengths.span-2,
+    layout: {stack: {direction: .column}},
+    children: [heading, copy]
+  }
+
+  heading = frame {
+    width: 100%,
+    layout: {stack: {direction: .column}},
+    padding: [0px, 0px, 10px],
+    children: headingText
+  }
+
+  headingText = text : forms.t.blockHeading {
+    width: 100%,
+    contents: "MEDIA 16:9"
+  }
+
+  copy = text : forms.t.body {
+    width: 100%,
+    contents: "Address, delivery and payment now sit on a single screen. Completion rose in the first month after release."
+  }
+}
+
+// Parts the sheets instance. Text styles follow the brand's three size classes:
+// metadata 11, body 17, large (moment or display) at 8x metadata or more, plus
+// the 1.9x body lead the site's sections allow.
+kit_3 = frame {
+  left: 3800px,
+  top: -4705px,
+  layout: {stack: {direction: .column, item-gap: 64px}},
+  fill: k.brand.grey-1,
+  padding: 64px,
+  children: [
+    lead,
+    display,
+    moment,
+    textLink,
+    downloadButton,
+    specBar,
+    sectionHead,
+    stepColumn,
+    specNumber,
+    flowCard,
+    appDownloadReceipt,
+    appDownloadRepo,
+    receiptRow,
+    needRow,
+    partRow,
+    legendKey,
+    keyChip,
+    chapter,
+    receiptLine,
+    appDownloadKeys,
+    osKey,
+    statement,
+    navOnInk,
+    featureState,
+    hero,
+    example,
+    walkState,
+    dlPrimary,
+    dlSecondary,
+    archSwitch,
+    installBlock,
+    repoBlock,
+    colophon
+  ],
+
+  lead = text {
+    fill: k.brand.ink,
+    contents: "lead statement",
+    font-size: 32,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 1.1,
+    letter-spacing: -2%
+  }
+
+  display = text {
+    fill: k.brand.ink,
+    contents: "display",
+    font-size: 88,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 0.98,
+    letter-spacing: -3.5%
+  }
+
+  moment = text {
+    fill: k.brand.spot,
+    contents: "MOMENT",
+    font-size: 154,
+    font-family: "Geist",
+    font-style: "Black",
+    line-height: 0.88,
+    letter-spacing: -5%
+  }
+
+  // A link under 24px is ink text over a 3px orange rule (orange text needs 24px).
+  textLink = frame {
+    layout: {stack: {direction: .column, item-gap: 2px}},
+    border: {color: k.brand.spot, width: 3px, sides: .bottom},
+    padding: [0px, 0px, 2px],
+    children: linkLabel,
+
+    linkLabel = text : kit.body {
+      contents: "Read CONTRIBUTING.md"
+    }
+  }
+
+  // Ink is the button; orange is only the glyph, as the block now ships.
+  downloadButton = frame {
+    layout: {stack: {align-items: .center, item-gap: 12px}},
+    fill: k.brand.ink,
+    padding: [16px, 24px],
+    children: [downloadIcon, downloadLabel, downloadMeta],
+
+    downloadIcon = asset {
+      width: 20px,
+      height: 20px,
+      fill: k.brand.spot,
+      contents: downloadGlyph
+    }
+
+    downloadLabel = text : kit.body {
+      contents: "Download for Mac",
+      fill[0].color: k.brand.paper
+    }
+
+    downloadMeta = text : kit.meta {
+      contents: "APPLE SILICON",
+      fill[0].color: k.brand.muted-on-ink
+    }
+  }
+
+  // Spec-bar nav: name left, lowercase links, code right, a 1px rule below.
+  specBar = frame {
+    width: 1440px,
+    height: 64px,
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .bottom},
+    padding: [0px, 65px],
+    children: [barName, barLinks, barCode],
+
+    barName = text : kit.body {
+      contents: "skill studio",
+      font-style: "Light"
+    }
+
+    barLinks = frame {
+      layout: {stack: {align-items: .center, item-gap: 32px}},
+      children: [linkHow, linkInstall, linkContribute, linkGuide],
+
+      linkHow = text : kit.body {
+        contents: "how it works",
+        font-style: "Light"
+      }
+
+      linkInstall = text : kit.body {
+        contents: "install",
+        font-style: "Light"
+      }
+
+      linkContribute = text : kit.body {
+        contents: "contribute",
+        font-style: "Light"
+      }
+
+      linkGuide = text : kit.body {
+        contents: "guide",
+        font-style: "Light"
+      }
+    }
+
+    barCode = text : kit.meta {
+      contents: "V0.16.0 / 2026-11-15"
+    }
+  }
+
+  // A section's head: the numbered code over three columns, the lead
+  // statement from column four.
+  sectionHead = frame {
+    width: 1310px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    children: [sectionCode, sectionLead],
+
+    sectionCode = text : kit.meta {
+      width: k.grid.span-3,
+      contents: "00 / SECTION"
+    }
+
+    sectionLead = text : lead {
+      width: k.grid.span-7
+    }
+  }
+
+  stepColumn = frame {
+    width: k.grid.span-4,
+    layout: {stack: {direction: .column, item-gap: 16px}},
+    children: [stepTop, stepText, stepShot],
+
+    stepTop = frame {
+      width: 100%,
+      layout: {stack: {item-gap: 16px}},
+      border: {color: k.brand.ink, sides: .top},
+      padding: [16px, 0px, 0px],
+      children: [stepNumber, stepName],
+
+      stepNumber = text : kit.meta {
+        contents: "01"
+      }
+
+      stepName = text : kit.body {
+        contents: "step",
+        font-style: "Light"
+      }
+    }
+
+    stepText = text : kit.body {
+      width: 100%,
+      height: 104px,
+      contents: "What the step does."
+    }
+
+    stepShot = frame {
+      width: 100%,
+      height: 416px,
+      fill: {image: {ref: shotEditor}}
+    }
+  }
+
+  // A spec block: label above value, the value in light display.
+  specNumber = frame {
+    width: 100%,
+    layout: {stack: {direction: .column, item-gap: 8px}},
+    border: {color: k.brand.ink, sides: .top},
+    padding: [12px, 0px, 0px],
+    children: [specLabel, specValue],
+
+    specLabel = text : kit.meta {
+      contents: "LABEL"
+    }
+
+    specValue = text : display {
+      contents: "00"
+    }
+  }
+
+  flowCard = frame {
+    width: 533px,
+    layout: {stack: {direction: .column, item-gap: 16px}},
+    children: [flowShot, flowStep, flowWhat],
+
+    flowShot = frame {
+      width: 533px,
+      height: 426px,
+      fill: {image: {ref: shotLibrary}},
+      border: {color: k.brand.grey-2, position: .outside}
+    }
+
+    flowStep = text : kit.meta {
+      contents: "00 SCREEN",
+      fill[0].color: k.brand.ink
+    }
+
+    flowWhat = text : kit.body {
+      width: 100%,
+      contents: "What happens here."
+    }
+  }
+
+  // App download, Download buttons mode, as a receipt.
+  appDownloadReceipt = frame {
+    width: 1440px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    fill: k.brand.paper,
+    padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+    children: [receiptIntro, receiptBody],
+
+    receiptIntro = frame {
+      width: k.grid.span-4,
+      layout: {stack: {direction: .column, item-gap: 24px}},
+      children: [receiptCode, receiptHeading, receiptText],
+
+      receiptCode = text : kit.meta {
+        contents: "04 / INSTALL"
+      }
+
+      receiptHeading = text : lead {
+        width: 100%,
+        contents: "download for your computer"
+      }
+
+      receiptText = text : kit.body {
+        width: 100%,
+        contents: "The app updates itself after that. Every version is on Releases.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    receiptBody = frame {
+      width: k.grid.span-8,
+      layout: {stack: {direction: .column}},
+      children: [
+        receiptVersion,
+        rowMacArm,
+        rowMacIntel,
+        rowWindows,
+        rowLinux,
+        receiptNeeds,
+        needAgent,
+        needKey,
+        needWriter,
+        receiptFoot
+      ],
+
+      receiptVersion = frame {
+        width: 100%,
+        layout: {stack: {justify-content: .space-between}},
+        border: {color: k.brand.ink, sides: .bottom},
+        padding: [0px, 0px, 12px],
+        children: [versionLabel, versionValue],
+
+        versionLabel = text : kit.meta {
+          contents: "FILE"
+        }
+
+        versionValue = text : kit.meta {
+          contents: "V0.16.0 / 2026-11-15"
+        }
+      }
+
+      rowMacArm = frame {
+        width: 100%,
+        height: 72px,
+        layout: {stack: {align-items: .center, item-gap: 16px}},
+        border: {color: k.brand.grey-2, sides: .bottom},
+        children: [armMark, armSystem, armLeader, armFile, armButton],
+
+        armMark = frame {
+          width: 11px,
+          height: 11px,
+          fill: k.brand.spot
+        }
+
+        armSystem = text : kit.body {
+          contents: "macOS, Apple silicon"
+        }
+
+        armLeader = frame {
+          height: 1px,
+          border: {color: k.brand.muted, dash: [1px, 5px], sides: .top}
+        }
+
+        armFile = text : kit.meta {
+          contents: "SKILL-STUDIO-MAC-ARM64.DMG",
+          fill[0].color: k.brand.ink
+        }
+
+        armButton = frame : downloadButton {
+          padding-top: 12px,
+          padding-left: 20px,
+          padding-bottom: 12px,
+          padding-right: 20px,
+
+          downloadMeta {
+            contents: "DETECTED"
+          }
+
+          downloadLabel {
+            contents: "Download"
+          }
+        }
+      }
+
+      rowMacIntel = frame : receiptRow {}
+
+      rowWindows = frame : receiptRow {
+        rowFile {
+          contents: "SKILL-STUDIO-WIN-X64.EXE"
+        }
+
+        rowSystem {
+          contents: "Windows, 64-bit"
+        }
+      }
+
+      rowLinux = frame : receiptRow {
+        rowFile {
+          contents: "SKILL-STUDIO-LINUX-X86_64.APPIMAGE"
+        }
+
+        rowSystem {
+          contents: "Linux, x86-64"
+        }
+      }
+
+      receiptNeeds = frame {
+        width: 100%,
+        padding: [56px, 0px, 12px],
+        children: needsLabel,
+
+        needsLabel = text : kit.meta {
+          contents: "YOU ALSO NEED"
+        }
+      }
+
+      needAgent = frame : needRow {}
+
+      needKey = frame : needRow {
+        needValue {
+          contents: "A TypeSafe API key, added under Settings. Without it, no rule or check is marked."
+        }
+
+        needLabel {
+          contents: "GRADER"
+        }
+      }
+
+      needWriter = frame : needRow {
+        needValue {
+          contents: "To write with AI: the claude or codex CLI signed in, or an Anthropic or OpenAI API key."
+        }
+
+        needLabel {
+          contents: "OPTIONAL"
+        }
+      }
+
+      receiptFoot = frame {
+        width: 100%,
+        layout: {stack: {item-gap: 32px}},
+        padding: [32px, 0px, 0px],
+        children: [allReleases, checkDownload],
+
+        allReleases = frame : textLink {
+          linkLabel {
+            contents: "All releases"
+          }
+        }
+
+        checkDownload = frame : textLink {
+          border[0].color: k.brand.grey-2,
+          border[0].width: 1,
+
+          linkLabel {
+            contents: "Check a download"
+          }
+        }
+      }
+    }
+  }
+
+  receiptRow = frame {
+    width: 100%,
+    height: 72px,
+    layout: {stack: {align-items: .center, item-gap: 16px}},
+    border: {color: k.brand.grey-2, sides: .bottom},
+    children: [rowSpacer, rowSystem, rowLeader, rowFile, rowAction],
+
+    rowSpacer = frame {
+      width: 11px,
+      height: 11px
+    }
+
+    rowSystem = text : kit.body {
+      contents: "macOS, Intel"
+    }
+
+    rowLeader = frame {
+      height: 1px,
+      border: {color: k.brand.muted, dash: [1px, 5px], sides: .top}
+    }
+
+    rowFile = text : kit.meta {
+      contents: "SKILL-STUDIO-MAC-X64.DMG",
+      fill[0].color: k.brand.ink
+    }
+
+    rowAction = frame : textLink {
+      linkLabel {
+        contents: "Download"
+      }
+    }
+  }
+
+  needRow = frame {
+    width: 100%,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    border: {color: k.brand.grey-2, sides: .top},
+    padding: [14px, 0px],
+    children: [needLabel, needValue],
+
+    needLabel = text : kit.meta {
+      width: k.grid.span-2,
+      contents: "AGENT"
+    }
+
+    needValue = text : kit.body {
+      width: 646.5px,
+      contents: "The claude or cursor-agent CLI, installed and signed in. The agent writes the answers."
+    }
+  }
+
+  // App download, GitHub repository mode, as a parts list.
+  appDownloadRepo = frame {
+    width: 1440px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .top},
+    padding: [k.grid.section-loose, k.grid.margin],
+    children: [repoIntro, repoBody],
+
+    repoIntro = frame {
+      width: k.grid.span-4,
+      layout: {stack: {direction: .column, item-gap: 24px}},
+      children: [repoCode, repoHeading, repoText, repoLinks],
+
+      repoCode = text : kit.meta {
+        contents: "05 / CONTRIBUTE"
+      }
+
+      repoHeading = text : lead {
+        width: 100%,
+        contents: "open source, MIT"
+      }
+
+      repoText = text : kit.body {
+        width: 100%,
+        contents: "Fixes and new parts are welcome. For anything larger than a fix, open an issue first so we can agree on the shape.",
+        fill[0].color: k.brand.muted
+      }
+
+      repoLinks = frame {
+        layout: {stack: {direction: .column, item-gap: 16px}},
+        padding: [16px, 0px, 0px],
+        children: [repoGitHub, repoGuide],
+
+        repoGitHub = frame : textLink {
+          linkLabel {
+            contents: "Open the repository"
+          }
+        }
+
+        repoGuide = frame : textLink {
+          border[0].color: k.brand.grey-2,
+          border[0].width: 1
+        }
+      }
+    }
+
+    repoBody = frame {
+      width: k.grid.span-8,
+      layout: {stack: {direction: .column, item-gap: 48px}},
+      children: [partsList, cloneBlock],
+
+      partsList = frame {
+        width: 100%,
+        layout: {stack: {direction: .column}},
+        children: [partsHead, partJudge, partEngine, partUi, partFix],
+
+        partsHead = frame : partRow {
+          padding-top: 0px,
+          padding-bottom: 12px,
+          border[0].color: k.brand.ink,
+
+          partWhere {
+            fill[0].color: k.brand.muted,
+            contents: "WHERE"
+          }
+
+          partName {
+            fill[0].color: k.brand.muted,
+            contents: "PART",
+            font-size: 11,
+            font-family: "Geist Mono",
+            letter-spacing: 6%
+          }
+
+          partNumber {
+            contents: "NO."
+          }
+        }
+
+        partJudge = frame : partRow {
+          partWhere {
+            contents: "SRC/JUDGES"
+          }
+
+          partName {
+            contents: "A judge pack: how answers of one kind are graded"
+          }
+        }
+
+        partEngine = frame : partRow {
+          partWhere {
+            contents: "SRC/INFRASTRUCTURE/ENGINES"
+          }
+
+          partName {
+            contents: "An engine adapter: one more agent CLI to run"
+          }
+
+          partNumber {
+            contents: "02"
+          }
+        }
+
+        partUi = frame : partRow {
+          partWhere {
+            contents: "SRC/RENDERER"
+          }
+
+          partName {
+            contents: "A UI improvement"
+          }
+
+          partNumber {
+            contents: "03"
+          }
+        }
+
+        partFix = frame : partRow {
+          partWhere {
+            contents: "ANYWHERE"
+          }
+
+          partName {
+            contents: "A bug fix, with a test beside the code"
+          }
+
+          partNumber {
+            contents: "04"
+          }
+        }
+      }
+
+      cloneBlock = frame {
+        width: 100%,
+        layout: {stack: {direction: .column, item-gap: 16px}},
+        fill: k.brand.ink,
+        padding: 32px,
+        children: [cloneHead, cloneLines],
+
+        cloneHead = frame {
+          width: 100%,
+          layout: {stack: {justify-content: .space-between}},
+          children: [cloneLabel, cloneCopy],
+
+          cloneLabel = text : kit.meta {
+            contents: "NODE 24 OR LATER, PNPM",
+            fill[0].color: k.brand.muted-on-ink
+          }
+
+          cloneCopy = text : kit.meta {
+            contents: "COPY",
+            fill[0].color: k.brand.paper
+          }
+        }
+
+        cloneLines = text : kit.body {
+          width: 100%,
+          contents: "git clone github.com/milesroxas/skill-studio\npnpm install\npnpm dev      # the app, with hot reloading\npnpm check    # typecheck, Biome, fallow, tests",
+          font-family: "Geist Mono",
+          line-height: 1.7,
+          fill[0].color: k.brand.paper
+        }
+      }
+    }
+  }
+
+  partRow = frame {
+    width: 100%,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    border: {color: k.brand.grey-2, sides: .bottom},
+    padding: [18px, 0px],
+    children: [partNumber, partName, partWhere],
+
+    partNumber = text : kit.meta {
+      width: k.grid.span-1,
+      contents: "01"
+    }
+
+    partName = text : kit.body {
+      contents: "Part"
+    }
+
+    partWhere = text : kit.meta {
+      contents: "SRC",
+      fill[0].color: k.brand.ink
+    }
+  }
+
+  legendKey = frame {
+    width: 100%,
+    layout: {stack: {direction: .column, item-gap: 12px}},
+    border: {color: k.brand.ink, sides: .top},
+    padding: [16px, 0px, 0px],
+    children: [keyTop, keyText],
+
+    keyTop = frame {
+      layout: {stack: {align-items: .center, item-gap: 12px}},
+      children: [keyChip, keyName],
+
+      keyChip = frame : kit_3.keyChip {}
+
+      keyName = text : kit.body {
+        contents: "write",
+        font-style: "Light"
+      }
+    }
+
+    keyText = text : kit.body {
+      width: 100%,
+      contents: "What this part of the window holds.",
+      fill[0].color: k.brand.muted
+    }
+  }
+
+  // A numbered key pinned on a screenshot, matched by its legend.
+  keyChip = frame {
+    width: 28px,
+    height: 28px,
+    layout: {stack: {justify-content: .center, align-items: .center}},
+    fill: k.brand.ink,
+    children: keyDigit,
+
+    keyDigit = text : kit.meta {
+      contents: "01",
+      fill[0].color: k.brand.paper
+    }
+  }
+
+  chapter = frame {
+    width: 1310px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    children: [chapterNumber, chapterWords, chapterShot],
+
+    chapterNumber = text : display {
+      width: k.grid.span-2,
+      contents: "01",
+      font-size: 154,
+      line-height: 0.86
+    }
+
+    chapterWords = frame {
+      width: k.grid.span-3,
+      layout: {stack: {direction: .column, item-gap: 16px}},
+      border: {color: k.brand.ink, sides: .top},
+      padding: [16px, 0px, 0px],
+      children: [chapterName, chapterText],
+
+      chapterName = text : lead {
+        contents: "write"
+      }
+
+      chapterText = text : kit.body {
+        width: 100%,
+        contents: "What the step does."
+      }
+    }
+
+    chapterShot = frame {
+      width: k.grid.span-7,
+      height: 540px,
+      fill: {image: {ref: shotEditor}},
+      border: {color: k.brand.ink, sides: .top}
+    }
+  }
+
+  // One receipt row: label, a dotted leader, the value.
+  receiptLine = frame {
+    width: 100%,
+    height: 44px,
+    layout: {stack: {align-items: .center, item-gap: 12px}},
+    children: [lineLabel, lineLeader, lineValue],
+
+    lineLabel = text : kit.meta {
+      contents: "PRICE"
+    }
+
+    lineLeader = frame {
+      height: 1px,
+      border: {color: k.brand.muted, dash: [1px, 5px], sides: .top}
+    }
+
+    lineValue = text : kit.body {
+      contents: "FREE",
+      font-family: "Geist Mono"
+    }
+  }
+
+  // App download, Download buttons mode, as four keys: one per system, the
+  // detected one pressed (ink, an orange rule on top).
+  appDownloadKeys = frame {
+    width: 1440px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .top},
+    padding: [k.grid.section-loose, k.grid.margin, k.grid.section],
+    children: [keysIntro, keysBody],
+
+    keysIntro = frame {
+      width: k.grid.span-4,
+      layout: {stack: {direction: .column, item-gap: 24px}},
+      children: [keysCode, keysHeading, keysText],
+
+      keysCode = text : kit.meta {
+        contents: "04 / INSTALL"
+      }
+
+      keysHeading = text : lead {
+        width: 100%,
+        contents: "pick your computer"
+      }
+
+      keysText = text : kit.body {
+        width: 100%,
+        contents: "Free, and it updates itself after that. You also need the claude or cursor-agent CLI signed in, and a TypeSafe API key.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    keysBody = frame {
+      width: k.grid.span-8,
+      layout: {stack: {direction: .column, item-gap: 24px}},
+      children: [keysRow, keysFoot],
+
+      keysRow = frame {
+        width: 100%,
+        layout: {stack: {item-gap: k.grid.gutter}},
+        children: [keyMacArm, keyMacIntel, keyWindows, keyLinux],
+
+        keyMacArm = frame : osKey {
+          border[0].color: k.brand.spot,
+          border[0].sides: .top,
+          border[0].width: 4px,
+          fill[0].color: k.brand.ink,
+
+          osWords {
+            osArch {
+              fill[0].color: k.brand.muted-on-ink
+            }
+
+            osName {
+              fill[0].color: k.brand.paper
+            }
+          }
+
+          osNumber {
+            fill[0].color: k.brand.muted-on-ink,
+            contents: "01 / DETECTED"
+          }
+        }
+
+        keyMacIntel = frame : osKey {
+          osWords {
+            osArch {
+              contents: "INTEL"
+            }
+          }
+
+          osNumber {
+            contents: "02"
+          }
+        }
+
+        keyWindows = frame : osKey {
+          osWords {
+            osArch {
+              contents: "64-BIT, NOT SIGNED"
+            }
+
+            osName {
+              contents: "Windows"
+            }
+          }
+
+          osNumber {
+            contents: "03"
+          }
+        }
+
+        keyLinux = frame : osKey {
+          osWords {
+            osArch {
+              contents: "X86-64, APPIMAGE"
+            }
+
+            osName {
+              contents: "Linux"
+            }
+          }
+
+          osNumber {
+            contents: "04"
+          }
+        }
+      }
+
+      keysFoot = frame {
+        width: 100%,
+        layout: {stack: {justify-content: .space-between, align-items: .center}},
+        border: {color: k.brand.ink, sides: .top},
+        padding: [16px, 0px, 0px],
+        children: [keysFile, keysButton],
+
+        keysFile = text : kit.meta {
+          contents: "SKILL-STUDIO-MAC-ARM64.DMG / V0.16.0 / 2026-11-15",
+          fill[0].color: k.brand.ink
+        }
+
+        keysButton = frame : downloadButton {
+          downloadMeta {
+            contents: "FREE"
+          }
+
+          downloadLabel {
+            contents: "Download"
+          }
+        }
+      }
+    }
+  }
+
+  osKey = frame {
+    width: k.grid.span-2,
+    height: 204px,
+    layout: {stack: {direction: .column, justify-content: .space-between}},
+    border: k.brand.ink,
+    padding: 16px,
+    children: [osNumber, osWords],
+
+    osNumber = text : kit.meta {
+      contents: "01"
+    }
+
+    osWords = frame {
+      layout: {stack: {direction: .column, item-gap: 4px}},
+      children: [osName, osArch],
+
+      osName = text : kit.body {
+        contents: "macOS"
+      }
+
+      osArch = text : kit.meta {
+        contents: "APPLE SILICON"
+      }
+    }
+  }
+
+  // Round two parts.
+  statement = text {
+    fill: k.brand.ink,
+    contents: "statement",
+    font-size: 88,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 0.98,
+    letter-spacing: -3.5%
+  }
+
+  navOnInk = frame {
+    width: 1440px,
+    height: 72px,
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
+    padding: [0px, 65px],
+    children: [navName, navLinks],
+
+    navName = text : kit.body {
+      contents: "miles roxas",
+      font-style: "Light",
+      fill[0].color: k.brand.paper
+    }
+
+    navLinks = frame {
+      layout: {stack: {item-gap: 32px}},
+      children: [navWork, navPosts, navContact],
+
+      navWork = text : kit.body {
+        contents: "work",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+
+      navPosts = text : kit.body {
+        contents: "posts",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+
+      navContact = text : kit.body {
+        contents: "contact",
+        font-style: "Light",
+        fill[0].color: k.brand.paper
+      }
+    }
+  }
+
+  // The pinned feature, one beat. The screen bleeds off the top, right and
+  // bottom; the verbs are the heading and the progress at once.
+  featureState = frame {
+    width: 1440px,
+    height: 900px,
+    fill: k.brand.ink,
+    children: [featScreen, featVerbs, featText],
+
+    featScreen = frame {
+      left: 618px,
+      top: 0px,
+      width: 822px,
+      height: 900px,
+      fill: {
+        image: {
+          ref: shotEditor,
+          sizing: {scale: 0.7755, offset: [277.6px, -23.5px]}
+        }
+      }
+    }
+
+    featVerbs = frame {
+      left: 65px,
+      top: 144px,
+      layout: {stack: {direction: .column}},
+      children: [verbWrite, verbRun, verbCompare],
+
+      verbWrite = text : statement {
+        contents: "write",
+        fill[0].color: k.brand.paper
+      }
+
+      verbRun = text : statement {
+        contents: "run",
+        fill[0].color: k.brand.ink-dim
+      }
+
+      verbCompare = text : statement {
+        contents: "compare",
+        fill[0].color: k.brand.ink-dim
+      }
+    }
+
+    featText = text : kit.body {
+      left: 65px,
+      top: 476px,
+      width: k.grid.span-4,
+      contents: "Write the rules in an editor that numbers them and flags a vague one. Every version keeps its score, so you can see which edit helped.",
+      fill[0].color: k.brand.muted-on-ink
+    }
+  }
+
+  // Round three type: the opening line and the statement, refined down.
+  hero = text {
+    fill: k.brand.ink,
+    contents: "hero",
+    font-size: 72,
+    font-family: "Geist",
+    font-style: "Light",
+    line-height: 1,
+    letter-spacing: -3.5%
+  }
+
+  example = frame {
+    width: 100%,
+    layout: {stack: {direction: .column, item-gap: 10px}},
+    children: [exampleName, exampleText],
+
+    exampleName = text : statement {
+      contents: "release notes",
+      font-size: 44
+    }
+
+    exampleText = text : kit.body {
+      width: k.grid.span-5,
+      contents: "Tell the people who use the software what changed, in plain words.",
+      fill[0].color: k.brand.muted
+    }
+  }
+
+  // The pinned walkthrough, state 1: write, rule checks. Grey field, the
+  // whole app window on the right.
+  walkState = frame {
+    width: 1440px,
+    height: 900px,
+    fill: k.brand.grey-1,
+    children: [walkOutline, walkText, walkWindow],
+
+    walkOutline = frame {
+      left: 65px,
+      top: 150px,
+      width: k.grid.span-4,
+      layout: {stack: {direction: .column, item-gap: 28px}},
+      children: [oWrite, oTest, oCompare],
+
+      oWrite = frame {
+        layout: {stack: {direction: .column, item-gap: 10px}},
+        children: [oWriteVerb, oWriteFeatures],
+
+        oWriteVerb = text : statement {
+          contents: "write",
+          font-size: 44
+        }
+
+        oWriteFeatures = frame {
+          layout: {stack: {direction: .column, item-gap: 4px}},
+          children: [oChecks, oRewrites, oAssistant],
+
+          oChecks = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oChecksDot, oChecksName],
+
+            oChecksDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.spot
+            }
+
+            oChecksName = text : kit.body {
+              contents: "rule checks"
+            }
+          }
+
+          oRewrites = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oRewritesDot, oRewritesName],
+
+            oRewritesDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oRewritesName = text : kit.body {
+              contents: "suggested rewrites",
+              fill[0].color: k.brand.muted
+            }
+          }
+
+          oAssistant = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oAssistantDot, oAssistantName],
+
+            oAssistantDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oAssistantName = text : kit.body {
+              contents: "assistant",
+              fill[0].color: k.brand.muted
+            }
+          }
+        }
+      }
+
+      oTest = frame {
+        layout: {stack: {direction: .column, item-gap: 10px}},
+        children: [oTestVerb, oTestFeatures],
+
+        oTestVerb = text : statement {
+          contents: "test",
+          font-size: 44,
+          fill[0].color: k.brand.field-dim
+        }
+
+        oTestFeatures = frame {
+          layout: {stack: {direction: .column, item-gap: 4px}},
+          children: oTasks,
+
+          oTasks = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oTasksDot, oTasksName],
+
+            oTasksDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oTasksName = text : kit.body {
+              contents: "example tasks",
+              fill[0].color: k.brand.field-dim
+            }
+          }
+        }
+      }
+
+      oCompare = frame {
+        layout: {stack: {direction: .column, item-gap: 10px}},
+        children: [oCompareVerb, oCompareFeatures],
+
+        oCompareVerb = text : statement {
+          contents: "compare",
+          font-size: 44,
+          fill[0].color: k.brand.field-dim
+        }
+
+        oCompareFeatures = frame {
+          layout: {stack: {direction: .column, item-gap: 4px}},
+          children: [oSide, oScores],
+
+          oSide = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oSideDot, oSideName],
+
+            oSideDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oSideName = text : kit.body {
+              contents: "side by side",
+              fill[0].color: k.brand.field-dim
+            }
+          }
+
+          oScores = frame {
+            layout: {stack: {align-items: .center, item-gap: 12px}},
+            children: [oScoresDot, oScoresName],
+
+            oScoresDot = frame {
+              width: 8px,
+              height: 8px,
+              fill: k.brand.grey-1
+            }
+
+            oScoresName = text : kit.body {
+              contents: "scores you can correct",
+              fill[0].color: k.brand.field-dim
+            }
+          }
+        }
+      }
+    }
+
+    walkText = text : kit.body {
+      left: 65px,
+      top: 640px,
+      width: k.grid.span-4,
+      contents: "Write your instructions as a short list of rules. A rule too vague to follow gets an amber number, with a note on how to fix it."
+    }
+
+    walkWindow = frame {
+      left: 507.3px,
+      top: 179px,
+      width: 867.67px,
+      height: 542.3px,
+      fill: {image: {ref: winChecks}}
+    }
+  }
+
+  // App download, as it ships (DownloadActions in Component.client.tsx),
+  // drawn in the new brand: square, body 17. A Mac visitor on Apple silicon.
+  dlPrimary = frame {
+    width: 646.5px,
+    height: 80px,
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
+    fill: k.brand.ink,
+    padding: [16px, 20px],
+    children: [dlLead, dlArrow],
+
+    dlLead = frame {
+      layout: {stack: {align-items: .center, item-gap: 16px}},
+      children: [dlMark, dlWords],
+
+      dlMark = asset {
+        width: 28px,
+        height: 28px,
+        fill: k.brand.paper,
+        contents: macMark
+      }
+
+      dlWords = frame {
+        layout: {stack: {direction: .column, item-gap: 4px}},
+        children: [dlTitle, dlMeta],
+
+        dlTitle = text : kit.body {
+          contents: "Download for Mac",
+          fill[0].color: k.brand.paper
+        }
+
+        dlMeta = text : kit.meta {
+          contents: "APPLE SILICON / .DMG",
+          fill[0].color: k.brand.muted-on-ink
+        }
+      }
+    }
+
+    dlArrow = asset {
+      width: 24px,
+      height: 24px,
+      fill: k.brand.spot,
+      contents: downloadGlyph
+    }
+  }
+
+  dlSecondary = frame {
+    width: 646.5px,
+    height: 60px,
+    layout: {stack: {justify-content: .space-between, align-items: .center}},
+    border: k.brand.grey-2,
+    padding: [12px, 16px],
+    children: [dlsLead, dlsArrow],
+
+    dlsLead = frame {
+      layout: {stack: {align-items: .center, item-gap: 12px}},
+      children: [dlsMark, dlsWords],
+
+      dlsMark = asset {
+        width: 20px,
+        height: 20px,
+        fill: k.brand.ink,
+        contents: windowsMark
+      }
+
+      dlsWords = frame {
+        layout: {stack: {direction: .column, item-gap: 2px}},
+        children: [dlsTitle, dlsMeta],
+
+        dlsTitle = text : kit.body {
+          contents: "Windows"
+        }
+
+        dlsMeta = text : kit.meta {
+          contents: "64-BIT / .EXE"
+        }
+      }
+    }
+
+    dlsArrow = asset {
+      width: 24px,
+      height: 24px,
+      fill: k.brand.muted,
+      contents: downloadGlyph
+    }
+  }
+
+  archSwitch = frame {
+    layout: {stack: {}},
+    border: k.brand.grey-2,
+    padding: 2px,
+    children: [archOn, archOff],
+
+    archOn = frame {
+      height: 32px,
+      layout: {stack: {align-items: .center}},
+      fill: k.brand.ink,
+      padding: [0px, 12px],
+      children: archOnLabel,
+
+      archOnLabel = text : kit.meta {
+        contents: "APPLE SILICON",
+        fill[0].color: k.brand.paper
+      }
+    }
+
+    archOff = frame {
+      height: 32px,
+      layout: {stack: {align-items: .center}},
+      padding: [0px, 12px],
+      children: archOffLabel,
+
+      archOffLabel = text : kit.meta {
+        contents: "INTEL"
+      }
+    }
+  }
+
+  installBlock = frame {
+    width: 1440px,
+    layout: {stack: {item-gap: k.grid.gutter}},
+    fill: k.brand.paper,
+    padding: [144px, 65px, 160px],
+    children: [installWords, installActions],
+
+    installWords = frame {
+      width: k.grid.span-6,
+      layout: {stack: {direction: .column, item-gap: 32px}},
+      children: [installStatement, installBody, installVersion],
+
+      installStatement = text : statement {
+        width: 100%,
+        contents: "free for mac, windows and linux"
+      }
+
+      installBody = text : kit.body {
+        width: k.grid.span-4,
+        contents: "It updates itself after that. You also need the claude or cursor-agent CLI, signed in, and a TypeSafe API key for grading.",
+        fill[0].color: k.brand.muted
+      }
+
+      installVersion = text : kit.meta {
+        contents: "VERSION 0.16.0"
+      }
+    }
+
+    installActions = frame {
+      width: k.grid.span-6,
+      layout: {stack: {direction: .column, item-gap: 12px}},
+      children: [
+        installPrimary,
+        installNoteRow,
+        installWindows,
+        installLinux,
+        installReleases
+      ],
+
+      installPrimary = frame : dlPrimary {
+        width: 100%
+      }
+
+      installNoteRow = frame {
+        width: 100%,
+        layout: {stack: {justify-content: .space-between, align-items: .center}},
+        padding: [4px, 0px, 28px],
+        children: [installNote, installArch],
+
+        installNote = frame {
+          layout: {stack: {align-items: .center, item-gap: 8px}},
+          children: [installNoteDot, installNoteText],
+
+          installNoteDot = frame {
+            width: 6px,
+            height: 6px,
+            fill: k.brand.spot
+          }
+
+          installNoteText = text : kit.body {
+            contents: "Drag it to Applications.",
+            fill[0].color: k.brand.muted
+          }
+        }
+
+        installArch = frame : archSwitch {}
+      }
+
+      installWindows = frame : dlSecondary {
+        width: 100%
+      }
+
+      installLinux = frame : dlSecondary {
+        width: 100%,
+
+        dlsLead {
+          dlsMark {
+            contents: linuxMark
+          }
+
+          dlsWords {
+            dlsMeta {
+              contents: "X86-64 / .APPIMAGE"
+            }
+
+            dlsTitle {
+              contents: "Linux"
+            }
+          }
+        }
+      }
+
+      installReleases = frame : textLink {
+        padding-top: 12px,
+
+        linkLabel {
+          fill[0].color: k.brand.muted,
+          contents: "All releases"
+        }
+      }
+    }
+  }
+
+  // App download, repository mode (RepoActions), on ink, with the page's close.
+  repoBlock = frame {
+    width: 1440px,
+    layout: {stack: {direction: .column, item-gap: 160px}},
+    fill: k.brand.ink,
+    padding: [144px, 65px, 48px],
+    children: [repoMain, repoClose],
+
+    repoMain = frame {
+      width: 100%,
+      layout: {stack: {item-gap: k.grid.gutter}},
+      children: [repoWords, repoActions],
+
+      repoWords = frame {
+        width: k.grid.span-6,
+        layout: {stack: {direction: .column, item-gap: 32px}},
+        children: [repoStatement, repoBody],
+
+        repoStatement = text : statement {
+          width: 100%,
+          contents: "open source, MIT",
+          fill[0].color: k.brand.paper
+        }
+
+        repoBody = text : kit.body {
+          width: k.grid.span-4,
+          contents: "Fixes, judge packs, engine adapters and interface work are welcome. For anything bigger than a fix, open an issue first so we can agree on the shape.",
+          fill[0].color: k.brand.muted-on-ink
+        }
+      }
+
+      repoActions = frame {
+        width: k.grid.span-6,
+        layout: {stack: {direction: .column, item-gap: 12px}},
+        children: [repoPrimary, repoClone],
+
+        repoPrimary = frame : dlPrimary {
+          width: 100%,
+          fill[0].color: k.brand.paper,
+
+          dlLead {
+            dlWords {
+              dlMeta {
+                fill[0].color: k.brand.muted,
+                contents: "MILESROXAS/SKILL-STUDIO"
+              }
+
+              dlTitle {
+                fill[0].color: k.brand.ink,
+                contents: "View on GitHub"
+              }
+            }
+
+            dlMark {
+              fill[0].color: k.brand.ink,
+              contents: githubMark
+            }
+          }
+
+          dlArrow {
+            contents: outGlyph
+          }
+        }
+
+        repoClone = frame {
+          width: 100%,
+          height: 52px,
+          layout: {
+            stack: {justify-content: .space-between, align-items: .center}
+          },
+          border: k.brand.rule-on-ink,
+          padding: [0px, 0px, 0px, 16px],
+          children: [repoCloneCode, repoCopy],
+
+          repoCloneCode = text : kit.body {
+            contents: "git clone https://github.com/milesroxas/skill-studio.git",
+            font-size: 15,
+            font-family: "Geist Mono",
+            fill[0].color: k.brand.paper
+          }
+
+          repoCopy = frame {
+            width: 96px,
+            height: 100%,
+            layout: {stack: {justify-content: .center, align-items: .center}},
+            fill: k.brand.grey-ink,
+            children: repoCopyLabel,
+
+            repoCopyLabel = text : kit.meta {
+              contents: "COPY",
+              fill[0].color: k.brand.paper
+            }
+          }
+        }
+      }
+    }
+
+    repoClose = frame {
+      width: 100%,
+      layout: {stack: {justify-content: .space-between, align-items: .end}},
+      children: [repoCredit, repoLinks],
+
+      repoCredit = text : kit.body {
+        width: k.grid.span-6,
+        contents: "Skill Studio was made possible by Emil Kowalski's course AI for Designers and Engineers, which teaches turning taste into rules an agent follows.",
+        fill[0].color: k.brand.muted-on-ink
+      }
+
+      repoLinks = text : kit.body {
+        contents: "privacy   security   changelog",
+        fill[0].color: k.brand.muted-on-ink
+      }
+    }
+  }
+
+  colophon = frame {
+    width: 1440px,
+    layout: {stack: {direction: .column, item-gap: 24px}},
+    fill: k.brand.paper,
+    border: {color: k.brand.ink, sides: .top},
+    padding: [k.grid.section, k.grid.margin, 48px],
+    children: [colophonTop, colophonBottom],
+
+    colophonTop = frame {
+      width: 100%,
+      layout: {stack: {item-gap: k.grid.gutter}},
+      children: [colophonName, colophonCredit],
+
+      colophonName = text : kit.body {
+        width: k.grid.span-4,
+        contents: "skill studio",
+        font-style: "Light"
+      }
+
+      colophonCredit = text : kit.body {
+        width: k.grid.span-6,
+        contents: "Made possible by Emil Kowalski's course AI for Designers and Engineers, which teaches turning taste into rules an agent follows.",
+        fill[0].color: k.brand.muted
+      }
+    }
+
+    colophonBottom = frame {
+      width: 100%,
+      layout: {stack: {justify-content: .space-between}},
+      children: [colophonLeft, colophonRight],
+
+      colophonLeft = text : kit.meta {
+        contents: "MILES ROXAS / MIT LICENSE / V0.16.0"
+      }
+
+      colophonRight = text : kit.meta {
+        contents: "PRIVACY / SECURITY / CHANGELOG / GITHUB"
       }
     }
   }

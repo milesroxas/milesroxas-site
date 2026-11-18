@@ -497,3 +497,72 @@ export archiveWorks = frame : archive {
     display: .visible
   }
 }
+
+// Proposed, no Payload block yet. Step card: one item of a Step list, its
+// ordinal top left and its title and body at the foot of a hairline frame.
+// Override `ordinal`, `stepTitle` and `stepBody`.
+export step = frame {
+  left: 4960px,
+  top: 600px,
+  width: 394px,
+  height: 320px,
+  layout: {stack: {direction: .column, justify-content: .space-between}},
+  border: c.colors.foreground,
+  padding: 20px,
+  children: [ordinal, stepCopy],
+
+  ordinal = text : t.mono {
+    contents: "01"
+  }
+
+  stepCopy = frame {
+    width: 100%,
+    layout: {stack: {direction: .column, item-gap: 8px}},
+    children: [stepTitle, stepBody],
+
+    stepTitle = text : t.heading {
+      contents: "Step title"
+    }
+
+    // Two lines tall, so titles line up across a row.
+    stepBody = text : t.small {
+      width: 100%,
+      height: 40px,
+      contents: "Step description, one or two lines.",
+      fill[0].color: c.colors.muted-foreground
+    }
+  }
+}
+
+// Proposed, no Payload block yet. Step list, `stepList`: a numbered run of
+// three steps across the page column, equal widths, a grid gap apart. Pair it
+// with a section heading for a title.
+export stepList = frame {
+  left: 4960px,
+  top: -208px,
+  width: l.lengths.page,
+  layout: {stack: {item-gap: l.lengths.grid-gap}},
+  fill: c.colors.background,
+  padding: [l.lengths.band-normal, l.lengths.gutter],
+  children: [stepOne, stepTwo, stepThree],
+
+  stepOne = frame : step {
+    width: 100%
+  }
+
+  stepTwo = frame : step {
+    width: 100%,
+
+    ordinal {
+      contents: "02"
+    }
+  }
+
+  stepThree = frame : step {
+    width: 100%,
+
+    ordinal {
+      contents: "03"
+    }
+  }
+}

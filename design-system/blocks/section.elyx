@@ -13,7 +13,7 @@ import "blocks/media.elyx" as media
 // src/blocks/section/SectionBand.tsx, src/blocks/shared/section.tsx
 export section = frame {
   width: l.lengths.page,
-  layout: {direction: .column, item-gap: l.lengths.band-loose},
+  layout: {stack: {direction: .column, item-gap: l.lengths.band-loose}},
   fill: c.colors.background,
   slot: .true,
   padding: [l.lengths.band-normal, 0px],
@@ -21,7 +21,7 @@ export section = frame {
 
   opening = frame {
     width: 100%,
-    layout: {direction: .column, item-gap: 89px},
+    layout: {stack: {direction: .column, item-gap: 89px}},
     children: [opener, statement],
 
     opener = frame : headings.featureHeadingOffset {
@@ -43,18 +43,21 @@ export section = frame {
 export sectionNeutral = frame : section {
   left: 1600px,
   padding-top: 192px,
-  padding-left: 0px,
   padding-bottom: 192px,
-  padding-right: 0px,
   fill[0].color: c.colors.neutral,
 
   opening {
+    statement {
+      fill[0].color: c.colors.neutral
+    }
+
     opener {
       fill[0].color: c.colors.neutral
     }
 
-    statement {
-      fill[0].color: c.colors.neutral
-    }
+    left: 0px,
+    top: 192px,
+    width: 1440px,
+    height: 972px
   }
 }

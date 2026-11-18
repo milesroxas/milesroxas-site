@@ -1,0 +1,393 @@
+use "resources/fonts/Geist-Variable.ttf"
+use "resources/fonts/GeistMono-Regular.ttf"
+use "resources/fonts/GeistMono-Medium.ttf"
+use "resources/fonts/GeistPixel-Square.woff2"
+
+import "tokens/colors.elyx" as c
+import "tokens/lengths.elyx" as l
+import "controls/type.elyx" as t
+import "controls/chrome.elyx" as chrome
+import "blocks/section.elyx" as band
+import "blocks/media.elyx" as media
+import "blocks/statements.elyx" as statements
+import "blocks/forms.elyx" as forms
+import "resources/icons/download.svg" as downloadGlyph
+import "blocks/lists.elyx" as lists
+import "blocks/media-content.elyx" as mc
+import "resources/images/skill-studio/lift-band.svg" as liftBand
+import "resources/images/skill-studio/app/app.png" as shotApp
+
+// The Skill Studio page at 1440px, promoted from the `sketch` board in
+// exploration/skill-studio.elyx: the Lift opening, then one Section of a
+// Callout, the walkthrough video, a Step list, Split narrow with a list
+// beside the app window, and App download. The chrome sits as it does on load, over the dark
+// opening, with no tab current (a page, not a work).
+skillStudio = frame {
+  title: "Skill Studio",
+  caption: "/skill-studio on load, top to bottom",
+  left: 0px,
+  top: 0px,
+  width: l.lengths.page,
+  layout: {stack: {direction: .column}},
+  fill: c.colors.background,
+  children: [opening, content, topBar, dockRail],
+
+  opening = frame : skillStudioHero {}
+
+  content = frame : band.section {
+    layout.stack.item-gap: l.lengths.band-normal,
+    overrides: [
+      insert(callout, after = .nil),
+      insert(walkthrough, after = callout),
+      insert(steps, after = walkthrough),
+      insert(tour, after = steps),
+      insert(install, after = tour),
+      remove(band.section.opening)
+    ]
+  }
+
+  callout = frame : statements.callout {
+    height: .auto,
+    overrides: [remove(statements.callout.veil)],
+
+    statement {
+      contents: "Tracking how you actually know if your changes improved your custom skills across iterations deserves its own workspace."
+    }
+  }
+
+  // Caption with its text off: the walkthrough film, contained, 16:9.
+  walkthrough = frame : media.caption {
+    padding-top: 0px,
+    padding-bottom: 0px,
+    overrides: [remove(media.caption.captionText)],
+
+    visual {
+      mediaLabel {
+        contents: "VIDEO 16:9"
+      }
+    }
+  }
+
+  // The loop: write, run, compare.
+  steps = frame : lists.stepList {
+    padding-top: 0px,
+    padding-bottom: 0px,
+
+    stepOne {
+      stepCopy {
+        stepTitle {
+          contents: "Write"
+        }
+
+        stepBody {
+          contents: "AI assisted workflow for writing and refining your files."
+        }
+      }
+    }
+
+    stepTwo {
+      stepCopy {
+        stepTitle {
+          contents: "Run"
+        }
+
+        stepBody {
+          contents: "Create multiple scenarios and define what a good response would be."
+        }
+      }
+    }
+
+    stepThree {
+      stepCopy {
+        stepTitle {
+          contents: "Compare"
+        }
+
+        stepBody {
+          contents: "Evaluate the output side by side and understand how the AI performed."
+        }
+      }
+    }
+  }
+
+  // The app window beside the three parts of the loop, as a list.
+  tour = frame : mc.splitContentNarrowList {
+    padding-top: 0px,
+    padding-bottom: 0px,
+
+    grid {
+      visual {
+        fill[0].image.ref: shotApp,
+        fill[0].image.sizing: .fill,
+
+        mediaLabel {
+          display: .none
+        }
+      }
+
+      copyStack {
+        eyebrow {
+          display: .none
+        }
+
+        heading {
+          headingText {
+            contents: "A simple loop to get consistent, high quality results from your custom AI skills."
+          }
+        }
+
+        list {
+          itemOne {
+            listItemHead {
+              listItemTitle {
+                contents: "AI Assistant"
+              }
+            }
+
+            listItemBody {
+              contents: "AI assisted workflow for writing and refining your files."
+            }
+          }
+
+          itemTwo {
+            listItemHead {
+              listItemTitle {
+                contents: "Grading"
+              }
+            }
+
+            listItemBody {
+              contents: "Create multiple scenarios and define what a good response would be."
+            }
+          }
+
+          itemThree {
+            listItemHead {
+              listItemTitle {
+                contents: "Version control"
+              }
+            }
+
+            listItemBody {
+              contents: "Evaluate the output side by side and understand how the AI performed."
+            }
+          }
+        }
+      }
+    }
+  }
+
+  install = frame : forms.appDownload {
+    padding-top: 0px,
+    padding-bottom: 0px
+  }
+
+  topBar = frame : chrome.topBar {
+    left: 0px,
+    top: 0px,
+    ignore-stack: .true
+  }
+
+  // Fixed 24px above the first viewport's bottom edge.
+  dockRail = frame {
+    left: 0px,
+    top: 836px,
+    width: 100%,
+    ignore-stack: .true,
+    layout: {stack: {justify-content: .center}},
+    children: dock,
+
+    dock = frame : chrome.dock {
+      dockTabs {
+        tabWork {
+          fill[0]: .nil,
+
+          tabLabel {
+            font-style: "Medium"
+          }
+        }
+      }
+    }
+  }
+}
+
+// Skill Studio opening: a full-viewport band on the always-dark hero ground.
+// Copy and the two ways in sit on columns 1 to 4. The lift is the figure: the
+// sample skill's score as a band that steps up from its first runs (v0, 85)
+// to its latest (v1, 98), over a dashed baseline for runs without the skill
+// (71). The fluoro readout is the one fluoro in the view.
+export skillStudioHero = frame {
+  left: 1824px,
+  top: 0px,
+  width: l.lengths.page,
+  height: l.lengths.viewport,
+  fill: c.colors.hero-ground,
+  children: [
+    heroCopy,
+    readout,
+    lift,
+    baseline,
+    firstLabel,
+    firstValue,
+    latestLabel,
+    latestValue,
+    withoutLabel
+  ],
+
+  heroCopy = frame {
+    left: l.lengths.gutter,
+    top: 144px,
+    width: l.lengths.span-5,
+    layout: {stack: {direction: .column, item-gap: 24px}},
+    children: [eyebrow, headline, deck, actions],
+
+    eyebrow = text : t.mono {
+      contents: "A DESKTOP APP FOR IMPROVING AI SKILLS",
+      fill[0].color: c.colors.hero-ink-quiet
+    }
+
+    headline = text : t.display {
+      width: 100%,
+      contents: "write better\nai skills",
+      fill[0].color: c.colors.hero-ink
+    }
+
+    deck = text : t.lead {
+      width: l.lengths.span-3,
+      contents: "Compare, grade and track changes to improve your skill files with confidence.",
+      fill[0].color: c.colors.hero-ink-quiet
+    }
+
+    actions = frame {
+      layout: {stack: {align-items: .center, item-gap: 32px}},
+      padding-top: 16px,
+      children: [download, contribute],
+
+      // The `xl` button inverted for the dark ground: paper, orange only as
+      // the glyph, the chip after the label.
+      download = frame {
+        height: 44px,
+        layout: {stack: {align-items: .center, item-gap: 12px}},
+        fill: c.colors.hero-ink,
+        corner-radius: l.lengths.radius-md,
+        padding: [0px, 20px],
+        children: [downloadIcon, downloadLabel, downloadChip],
+
+        downloadIcon = asset {
+          width: 16px,
+          height: 16px,
+          fill: c.colors.brand,
+          contents: downloadGlyph
+        }
+
+        downloadLabel = text : t.small {
+          contents: "Download for Mac",
+          font-style: "Medium",
+          fill[0].color: c.colors.hero-ground
+        }
+
+        downloadChip = text : t.mono {
+          contents: "APPLE SILICON",
+          font-size: 11
+        }
+      }
+
+      // Ink-ground link: paper text over a 2px orange rule, as All releases.
+      contribute = frame {
+        layout: {stack: {direction: .column, item-gap: 4px}},
+        children: [contributeText, contributeRule],
+
+        contributeText = text : t.small {
+          contents: "Contribute on GitHub",
+          font-style: "Medium",
+          fill[0].color: c.colors.hero-ink
+        }
+
+        contributeRule = frame {
+          width: 100%,
+          height: 2px,
+          fill: c.colors.brand
+        }
+      }
+    }
+  }
+
+  // Right edge on column 8.
+  readout = frame {
+    top: 144px,
+    right: l.lengths.gutter,
+    layout: {stack: {direction: .column, align-items: .end, item-gap: 16px}},
+    children: [readoutValue, readoutLabel],
+
+    readoutValue = text {
+      fill: c.colors.fluoro,
+      contents: "+13",
+      font-size: 176,
+      font-family: "Geist Pixel",
+      line-height: 0.9
+    }
+
+    readoutLabel = text : t.mono {
+      contents: "/BRAND-DESIGN, V0 TO V1",
+      fill[0].color: c.colors.hero-ink-quiet
+    }
+  }
+
+  // Low band 700 to 780 (v0), high band 560 to 640 (v1), the step between
+  // columns 4 and 6.
+  lift = asset {
+    left: 0px,
+    top: 560px,
+    width: 100%,
+    height: 220px,
+    fill: c.colors.hero-ink,
+    contents: liftBand
+  }
+
+  baseline = frame {
+    left: 0px,
+    top: 852px,
+    width: 100%,
+    height: 0px,
+    border: {color: c.colors.hero-ink-quiet, dash: [6px, 6px], sides: .top}
+  }
+
+  firstLabel = text : t.mono {
+    left: l.lengths.gutter,
+    top: 672px,
+    contents: "FIRST RUNS, V0",
+    fill[0].color: c.colors.hero-ink-quiet
+  }
+
+  firstValue = text : t.mono {
+    left: l.lengths.gutter,
+    top: 728px,
+    contents: "85",
+    font-size: 16,
+    letter-spacing: 0,
+    fill[0].color: c.colors.hero-ground
+  }
+
+  latestLabel = text : t.mono {
+    top: 532px,
+    right: l.lengths.gutter,
+    contents: "LATEST RUNS, V1",
+    fill[0].color: c.colors.hero-ink-quiet
+  }
+
+  latestValue = text : t.mono {
+    top: 588px,
+    right: l.lengths.gutter,
+    contents: "98",
+    font-size: 16,
+    letter-spacing: 0,
+    fill[0].color: c.colors.hero-ground
+  }
+
+  withoutLabel = text : t.mono {
+    top: 824px,
+    right: l.lengths.gutter,
+    contents: "WITHOUT THE SKILL, 71",
+    fill[0].color: c.colors.hero-ink-quiet
+  }
+}
