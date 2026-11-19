@@ -30,17 +30,20 @@ const and =
   (data, siblingData, ctx) =>
     conditions.every((condition) => !condition || Boolean(condition(data, siblingData, ctx)))
 
-export const videoFields = ({ condition }: { condition?: Condition } = {}): Field[] => [
+export const videoFields = ({
+  condition,
+  description = 'A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.',
+}: {
+  condition?: Condition
+  /** What the switch does in this block, when a click there does something else. */
+  description?: string
+} = {}): Field[] => [
   {
     name: 'playVideo',
     type: 'checkbox',
     label: 'Play a video',
     defaultValue: false,
-    admin: {
-      condition,
-      description:
-        'A full-length video in place of the media: a few seconds loop muted, and a click plays it all with sound.',
-    },
+    admin: { condition, description },
   },
   {
     name: 'video',

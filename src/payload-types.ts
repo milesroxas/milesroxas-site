@@ -4772,15 +4772,16 @@ export interface CtaLinkBlock {
    * Instrument suits a work with a strong picture. Field closes a page with weight; it is the page's one full-bleed break. Strip sits quietly between sections.
    */
   variant: 'instrument' | 'field' | 'strip';
-  targetType: 'work' | 'post' | 'external';
+  targetType: 'work' | 'post' | 'page' | 'external';
   /**
    * A protected work shows its public fallback; with none, the block hides.
    */
   work?: (number | null) | Work;
   post?: (number | null) | Post;
+  page?: (number | null) | Page;
   url?: string | null;
   /**
-   * Leave empty to use the work's or post's title. An external link needs one.
+   * Leave empty to use the work's, post's or page's title. An external link needs one.
    */
   title?: string | null;
   /**
@@ -4788,15 +4789,20 @@ export interface CtaLinkBlock {
    */
   description?: string | null;
   /**
-   * The picture Instrument paints in. Leave empty to use the work's opening picture or the post's share image.
+   * A full-length video in place of the media. Its loop plays muted in Instrument's panel; a click still opens the target.
    */
-  image?: (number | null) | Media;
+  playVideo?: boolean | null;
+  video?: (number | null) | Video;
   /**
-   * The call to action. Defaults to "Read the case study", "Read the post" or "Visit" and the site.
+   * The image or video Instrument paints in. Leave empty to use the work's or page's opening media, or the post's share image.
+   */
+  media?: (number | null) | Media;
+  /**
+   * The call to action. Defaults to "Read the case study", "Read the post", "Open the page" or "Visit" and the site.
    */
   action?: string | null;
   /**
-   * Up to three label and value pairs under Instrument's copy. Leave empty to use the work's client, industry and scope, or the post's date, length and topic.
+   * Up to three label and value pairs under Instrument's copy. Leave empty to use the work's client, industry and scope, or the post's date, length and topic. A page has none of its own.
    */
   facts?:
     | {
@@ -6981,10 +6987,13 @@ export interface CtaLinkBlockSelect<T extends boolean = true> {
   targetType?: T;
   work?: T;
   post?: T;
+  page?: T;
   url?: T;
   title?: T;
   description?: T;
-  image?: T;
+  playVideo?: T;
+  video?: T;
+  media?: T;
   action?: T;
   facts?:
     | T

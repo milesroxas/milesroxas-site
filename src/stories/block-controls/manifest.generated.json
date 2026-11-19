@@ -949,6 +949,10 @@
             "value": "post"
           },
           {
+            "label": "A page",
+            "value": "page"
+          },
+          {
             "label": "An external link",
             "value": "external"
           }
@@ -975,6 +979,15 @@
         "control": "none"
       },
       {
+        "name": "page",
+        "label": "Page",
+        "if": {
+          "arg": "targetType",
+          "eq": "page"
+        },
+        "control": "none"
+      },
+      {
         "name": "url",
         "label": "URL",
         "if": {
@@ -986,7 +999,7 @@
       {
         "name": "title",
         "label": "Title",
-        "description": "Leave empty to use the work's or post's title. An external link needs one.",
+        "description": "Leave empty to use the work's, post's or page's title. An external link needs one.",
         "control": "text"
       },
       {
@@ -996,21 +1009,41 @@
         "control": "text"
       },
       {
-        "name": "image",
-        "label": "Image",
-        "description": "The picture Instrument paints in. Leave empty to use the work's opening picture or the post's share image.",
+        "name": "playVideo",
+        "label": "Play a video",
+        "description": "A full-length video in place of the media. Its loop plays muted in Instrument's panel; a click still opens the target.",
+        "control": "boolean",
+        "defaultValue": false
+      },
+      {
+        "name": "video",
+        "label": "Video",
+        "if": {
+          "arg": "playVideo",
+          "truthy": true
+        },
+        "control": "none"
+      },
+      {
+        "name": "media",
+        "label": "Media",
+        "description": "The image or video Instrument paints in. Leave empty to use the work's or page's opening media, or the post's share image.",
+        "if": {
+          "arg": "playVideo",
+          "truthy": false
+        },
         "control": "none"
       },
       {
         "name": "action",
         "label": "Action",
-        "description": "The call to action. Defaults to \"Read the case study\", \"Read the post\" or \"Visit\" and the site.",
+        "description": "The call to action. Defaults to \"Read the case study\", \"Read the post\", \"Open the page\" or \"Visit\" and the site.",
         "control": "text"
       },
       {
         "name": "facts",
         "label": "Facts",
-        "description": "Up to three label and value pairs under Instrument's copy. Leave empty to use the work's client, industry and scope, or the post's date, length and topic.",
+        "description": "Up to three label and value pairs under Instrument's copy. Leave empty to use the work's client, industry and scope, or the post's date, length and topic. A page has none of its own.",
         "control": "none"
       },
       {

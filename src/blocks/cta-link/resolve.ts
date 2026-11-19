@@ -1,12 +1,14 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
+import { loopSource } from '@/components/VideoPlayer/loop'
 import { isMembersOnly } from '@/fields/visibility'
-import type { CtaLinkBlock, Media, Post, Work } from '@/payload-types'
+import type { CtaLinkBlock, Media, Page, Post, Video, Work } from '@/payload-types'
 import { readingTimeMinutes } from '@/shared/content/reading-time'
 import { hasWorkAccess } from '@/utilities/checkWorkAccess'
 import { cloudflareImageLoader, isCloudflareImageUrl } from '@/utilities/cloudflareImageLoader'
 import { resolveVisibleWork } from '@/utilities/resolveVisibleWork'
-import type { CtaTarget } from './look'
+import { streamPosterUrl } from '@/utilities/streamPoster'
+import type { CtaMedia, CtaTarget } from './look'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const title = (doc: unknown) =>
@@ -18,19 +20,59 @@ const id = (rel: unknown) =>
       ? Number(rel.id)
       : null
 
-/** A still picture for Instrument's paint: a Cloudflare variant sized for the panel, or the file. */
-const picture = (media: unknown): CtaTarget['image'] => {
+const POSTER_WIDTH = 1280
+
+const still = (src: string, width: number, height: number): CtaMedia => ({
+  kind: 'image',
+  src: isCloudflareImageUrl(src) ? cloudflareImageLoader({ src, width: 1600 }) : src,
+  width,
+  height,
+})
+
+/**
+ * What Instrument paints in, from a Media upload: an image as a Cloudflare
+ * variant sized for the panel, or a video as its muted loop with Stream's
+ * frame to paint until the loop has frames.
+ */
+const picture = (media: unknown): CtaMedia | undefined => {
   if (!media || typeof media !== 'object') return undefined
   const m = media as Media
+  if (m.mimeType?.startsWith('video/')) {
+    if (!m.url && !m.cloudflareStreamPlaybackUrl) return undefined
+    const thumbnail = m.cloudflareStreamThumbnailUrl
+    return {
+      kind: 'video',
+      resource: {
+        cloudflareStreamPlaybackUrl: m.cloudflareStreamPlaybackUrl,
+        cloudflareStreamReady: m.cloudflareStreamReady,
+        cloudflareStreamThumbnailUrl: m.cloudflareStreamThumbnailUrl,
+        filesize: m.filesize,
+        thumbnailURL: m.thumbnailURL,
+        url: m.url,
+      },
+      poster: thumbnail ? streamPosterUrl(thumbnail, POSTER_WIDTH) : undefined,
+    }
+  }
   if (m.mimeType && !m.mimeType.startsWith('image/')) return undefined
   const src = m.cloudflareImageUrl ?? m.url
   if (!src || !m.width || !m.height) return undefined
-  return {
-    src: isCloudflareImageUrl(src) ? cloudflareImageLoader({ src, width: 1600 }) : src,
-    width: m.width,
-    height: m.height,
-  }
+  return still(src, m.width, m.height)
 }
+
+/** A full-length video's loop; while Stream is still at work, its frame as a still. */
+const videoLoop = (video: unknown): CtaMedia | undefined => {
+  if (!video || typeof video !== 'object') return undefined
+  const v = video as Video
+  const loop = loopSource(v)
+  const thumbnail = loop?.cloudflareStreamThumbnailUrl ?? v.cloudflareStreamThumbnailUrl
+  const poster = thumbnail ? streamPosterUrl(thumbnail, POSTER_WIDTH) : undefined
+  if (loop) return { kind: 'video', resource: loop, poster }
+  return poster && v.width && v.height ? still(poster, v.width, v.height) : undefined
+}
+
+/** The block's own media, when the editor set one. */
+const ownMedia = (block: CtaLinkBlock) =>
+  block.playVideo ? videoLoop(block.video) : picture(block.media)
 
 const date = (iso?: string | null) => (iso ? iso.slice(0, 10) : undefined)
 
@@ -77,7 +119,7 @@ async function fromWork(block: CtaLinkBlock): Promise<CtaTarget | null> {
     action: 'Read the case study',
     href: `/works/${work.slug}`,
     external: false,
-    image: picture(work.hero?.media),
+    media: picture(work.hero?.media),
   }
 }
 
@@ -109,7 +151,32 @@ async function fromPost(block: CtaLinkBlock): Promise<CtaTarget | null> {
     action: 'Read the post',
     href: externalUrl || `/posts/${post.slug}`,
     external: Boolean(externalUrl),
-    image: picture(post.meta?.image),
+    media: picture(post.meta?.image),
+  }
+}
+
+async function fromPage(block: CtaLinkBlock): Promise<CtaTarget | null> {
+  const pageId = id(block.page)
+  if (!pageId) return null
+  const payload = await getPayload({ config: configPromise })
+  // Public read: drafts and members-only pages stay out.
+  const page = (await payload
+    .findByID({ collection: 'pages', id: pageId, depth: 1, draft: false, overrideAccess: false })
+    .catch(() => null)) as Page | null
+  if (!page?.slug || page._status !== 'published' || isMembersOnly(page)) return null
+
+  const href = `/${page.slug}`
+  return {
+    kind: 'page',
+    label: 'page',
+    code: href,
+    title: page.title,
+    line: page.meta?.description ?? undefined,
+    facts: [],
+    action: 'Open the page',
+    href,
+    external: false,
+    media: picture(page.hero?.media) ?? picture(page.meta?.image),
   }
 }
 
@@ -141,7 +208,9 @@ export async function resolveCtaTarget(block: CtaLinkBlock): Promise<CtaTarget |
       ? await fromWork(block)
       : kind === 'post'
         ? await fromPost(block)
-        : fromUrl(block)
+        : kind === 'page'
+          ? await fromPage(block)
+          : fromUrl(block)
   if (!base) return null
   const facts = (block.facts ?? [])
     .filter((f) => f.label && f.value)
@@ -151,7 +220,7 @@ export async function resolveCtaTarget(block: CtaLinkBlock): Promise<CtaTarget |
     title: block.title || base.title,
     line: block.description || base.line,
     action: block.action || base.action,
-    image: picture(block.image) ?? base.image,
+    media: ownMedia(block) ?? base.media,
     facts: facts.length ? facts : base.facts,
   }
 }

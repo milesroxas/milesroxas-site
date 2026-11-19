@@ -1,9 +1,10 @@
 import type { Block, Condition, TextFieldSingleValidation } from 'payload'
 import { designFields, themeField } from '@/blocks/shared/fields'
 import { BLOCK_GROUPS } from '@/blocks/shared/groups'
+import { noVideo, videoFields } from '@/fields/video'
 
 /**
- * CTA link: one call to action that opens a work, a post or an external link,
+ * CTA link: one call to action that opens a work, a post, a page or an external link,
  * in the brand's aim-field language (decided from the /proto/cta picker,
  * docs/cta-link.md). Three looks:
  *
@@ -13,13 +14,16 @@ import { BLOCK_GROUPS } from '@/blocks/shared/groups'
  *   title as display type.
  * - Strip: one quiet index row; the field opens behind it on intent.
  *
- * A work or post fills the copy, picture and facts from its own fields; every
- * one of them can be overridden here. An external link needs its own title.
+ * A work, post or page fills the copy, picture and facts from its own fields;
+ * every one of them can be overridden here. An external link needs its own
+ * title. The media slot is the site's usual one: an image or a Media video,
+ * or a full-length video behind "Play a video" (`fields/video`), whose loop is
+ * what plays here, since a click opens the target.
  * `title` and `description` are TEXT_KEYS names, so the copy reaches Ask and
  * llms.txt.
  */
 
-type Kind = 'work' | 'post' | 'external'
+type Kind = 'work' | 'post' | 'page' | 'external'
 const kindIs =
   (kind: Kind): Condition =>
   (_, siblingData) =>
@@ -69,6 +73,7 @@ export const CtaLink: Block = {
       options: [
         { label: 'A work', value: 'work' },
         { label: 'A post', value: 'post' },
+        { label: 'A page', value: 'page' },
         { label: 'An external link', value: 'external' },
       ],
       admin: { layout: 'horizontal' },
@@ -93,6 +98,14 @@ export const CtaLink: Block = {
         siblingData?.targetType !== 'post' || value ? true : 'Pick a post.',
     },
     {
+      name: 'page',
+      type: 'relationship',
+      relationTo: 'pages',
+      admin: { condition: kindIs('page') },
+      validate: (value: unknown, { siblingData }: { siblingData: { targetType?: Kind } }) =>
+        siblingData?.targetType !== 'page' || value ? true : 'Pick a page.',
+    },
+    {
       name: 'url',
       type: 'text',
       label: 'URL',
@@ -103,7 +116,8 @@ export const CtaLink: Block = {
       name: 'title',
       type: 'text',
       admin: {
-        description: "Leave empty to use the work's or post's title. An external link needs one.",
+        description:
+          "Leave empty to use the work's, post's or page's title. An external link needs one.",
       },
       validate: (value: unknown, { siblingData }: { siblingData: { targetType?: Kind } }) =>
         siblingData?.targetType !== 'external' || value ? true : 'An external link needs a title.',
@@ -115,13 +129,18 @@ export const CtaLink: Block = {
         description: 'One or two sentences. Leave empty to use its search description.',
       },
     },
+    ...videoFields({
+      description:
+        "A full-length video in place of the media. Its loop plays muted in Instrument's panel; a click still opens the target.",
+    }),
     {
-      name: 'image',
+      name: 'media',
       type: 'upload',
       relationTo: 'media',
       admin: {
+        condition: noVideo,
         description:
-          "The picture Instrument paints in. Leave empty to use the work's opening picture or the post's share image.",
+          "The image or video Instrument paints in. Leave empty to use the work's or page's opening media, or the post's share image.",
       },
     },
     {
@@ -129,7 +148,7 @@ export const CtaLink: Block = {
       type: 'text',
       admin: {
         description:
-          'The call to action. Defaults to "Read the case study", "Read the post" or "Visit" and the site.',
+          'The call to action. Defaults to "Read the case study", "Read the post", "Open the page" or "Visit" and the site.',
       },
     },
     {
@@ -140,7 +159,7 @@ export const CtaLink: Block = {
       admin: {
         initCollapsed: true,
         description:
-          "Up to three label and value pairs under Instrument's copy. Leave empty to use the work's client, industry and scope, or the post's date, length and topic.",
+          "Up to three label and value pairs under Instrument's copy. Leave empty to use the work's client, industry and scope, or the post's date, length and topic. A page has none of its own.",
       },
       fields: [
         {

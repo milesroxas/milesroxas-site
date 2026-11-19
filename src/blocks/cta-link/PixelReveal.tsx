@@ -7,10 +7,13 @@
  * `completeAt` per cent revealed, or on `fill` (a click, keyboard focus),
  * the rest floods in from the pointer. A ring on the pointer, inverted
  * against what is under it, shows where the brush is. Touch has no hover, so
- * it shows the plain picture.
+ * it shows the plain picture. A video paints its live frames the same way,
+ * from its poster until the loop has data, and plays only while `playing`.
  */
 
 import { useEffect, useRef, useState } from 'react'
+import { VideoMedia } from '@/components/Media/VideoMedia'
+import type { CtaMedia } from './look'
 
 export type PaintParams = {
   cell: number
@@ -27,21 +30,25 @@ export type PaintParams = {
   ring: 'site' | 'brush' | 'off'
 }
 
-type Img = { src: string; width: number; height: number }
-
 export function PixelReveal({
-  image,
+  media,
   params,
   fill,
+  playing,
   readout,
 }: {
-  image: Img
+  media: CtaMedia
   params: PaintParams
   fill: boolean
+  /** A video plays while this holds: the block is pointed at, focused or committed. */
+  playing: boolean
   readout?: React.RefObject<HTMLElement | null>
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const brushRef = useRef<HTMLCanvasElement>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const stillSrc = media.kind === 'image' ? media.src : media.poster
+  const isVideo = media.kind === 'video'
   const paramsRef = useRef(params)
   paramsRef.current = params
   const fillRef = useRef(fill)
@@ -53,6 +60,13 @@ export function PixelReveal({
   }, [])
 
   useEffect(() => {
+    const video = videoRef.current
+    if (!video || !canHover) return
+    if (playing) video.play().catch(() => {})
+    else video.pause()
+  }, [playing, canHover])
+
+  useEffect(() => {
     const canvas = canvasRef.current
     const host = canvas?.parentElement
     const ctx = canvas?.getContext('2d')
@@ -62,8 +76,9 @@ export function PixelReveal({
 
     const img = new Image()
     img.decoding = 'async'
-    img.src = image.src
+    if (stillSrc) img.src = stillSrc
     let ready = false
+    let frameAt = -1
 
     const sharp = document.createElement('canvas')
     const small = document.createElement('canvas')
@@ -76,18 +91,34 @@ export function PixelReveal({
     let value = new Float32Array(0)
     let painted = new Float64Array(0)
 
+    /** The live video once it has a frame, else the still. */
+    const source = (): [CanvasImageSource, number, number] | null => {
+      const video = videoRef.current
+      if (video && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && video.videoWidth) {
+        return [video, video.videoWidth, video.videoHeight]
+      }
+      return img.complete && img.naturalWidth ? [img, img.naturalWidth, img.naturalHeight] : null
+    }
+
     const bake = () => {
-      if (!ready || !w || !h) return
-      sharp.width = w
-      sharp.height = h
+      const from = source()
+      if (!from || !w || !h) return
+      ready = true
+      const [src, nw, nh] = from
+      if (sharp.width !== w || sharp.height !== h) {
+        sharp.width = w
+        sharp.height = h
+      }
       const s = sharp.getContext('2d')
       if (!s) return
-      const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight)
-      const dw = img.naturalWidth * scale
-      const dh = img.naturalHeight * scale
-      s.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh)
-      small.width = cols
-      small.height = rows
+      const scale = Math.max(w / nw, h / nh)
+      const dw = nw * scale
+      const dh = nh * scale
+      s.drawImage(src, (w - dw) / 2, (h - dh) / 2, dw, dh)
+      if (small.width !== cols || small.height !== rows) {
+        small.width = cols
+        small.height = rows
+      }
       const m = small.getContext('2d')
       if (!m) return
       m.imageSmoothingEnabled = true
@@ -113,10 +144,7 @@ export function PixelReveal({
       painted = new Float64Array(cols * rows).fill(-1)
       bake()
     }
-    img.onload = () => {
-      ready = true
-      bake()
-    }
+    img.onload = () => bake()
     const ro = new ResizeObserver(layout)
     ro.observe(host)
     layout()
@@ -178,6 +206,15 @@ export function PixelReveal({
       prev = now
       const p = paramsRef.current
       const still = reduced.matches
+
+      // A playing video re-bakes on each new frame, so painted cells show it live.
+      const video = videoRef.current
+      if (video && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        if (video.currentTime !== frameAt) {
+          frameAt = video.currentTime
+          bake()
+        }
+      }
 
       const filling = fillRef.current || complete
       if (filling && floodAt < 0) {
@@ -265,22 +302,34 @@ export function PixelReveal({
       window.removeEventListener('pointermove', onMove)
       document.documentElement.removeEventListener('pointerleave', onLeave)
     }
-  }, [image.src, params.cell, canHover, readout])
+  }, [stillSrc, isVideo, params.cell, canHover, readout])
 
   if (!canHover) {
+    if (media.kind === 'video') return <VideoMedia fill resource={media.resource} />
     return (
       // biome-ignore lint/performance/noImgElement: prototype
       <img
         alt=""
         className="absolute inset-0 size-full object-cover"
-        height={image.height}
-        src={image.src}
-        width={image.width}
+        height={media.height}
+        src={media.src}
+        width={media.width}
       />
     )
   }
   return (
     <>
+      {media.kind === 'video' && (
+        // The source the canvas samples; it never shows itself.
+        <VideoMedia
+          autoPlay={false}
+          crossOrigin="anonymous"
+          fill
+          ref={videoRef}
+          resource={media.resource}
+          videoClassName="pointer-events-none opacity-0"
+        />
+      )}
       <canvas
         aria-hidden
         className="pointer-events-none absolute inset-0 size-full"

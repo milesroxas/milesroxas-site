@@ -4,12 +4,22 @@
  * one system; change a feel here, not at a call site.
  */
 
+import type { VideoResource } from '@/components/Media/types'
+
+/**
+ * What Instrument paints in: a still, or a muted loop with a still (its
+ * poster) to paint until the loop has frames.
+ */
+export type CtaMedia =
+  | { kind: 'image'; src: string; width: number; height: number }
+  | { kind: 'video'; resource: VideoResource; poster?: string }
+
 /** Plain data handed from the server block to the client looks. */
 export type CtaTarget = {
-  kind: 'work' | 'post' | 'external'
-  /** Eyebrow after "next /": case study, post, or external. */
+  kind: 'work' | 'post' | 'page' | 'external'
+  /** Eyebrow after "next /": case study, post, page, or external. */
   label: string
-  /** Part number in the metadata band: MR–16–W06, P–04, or the link's host. */
+  /** Part number in the metadata band: MR–16–W06, P–04, the page's path, or the link's host. */
   code: string
   title: string
   line?: string
@@ -17,7 +27,7 @@ export type CtaTarget = {
   action: string
   href: string
   external: boolean
-  image?: { src: string; width: number; height: number }
+  media?: CtaMedia
 }
 
 /** The reticle every look shares: snaps to the pointer, corners scale with the lock. */

@@ -1,6 +1,6 @@
 # CTA link
 
-One call to action that opens a work, a post or an external link, in the aim-field language. Block `ctaLink` (`src/blocks/cta-link`), in the Section run, so Pages, Works, Posts and the Home global all offer it (Forms & CTAs group).
+One call to action that opens a work, a post, a page or an external link, in the aim-field language. Block `ctaLink` (`src/blocks/cta-link`), in the Section run, so Pages, Works, Posts and the Home global all offer it (Forms & CTAs group).
 
 Decided 2026-11-19 from the `/proto/cta` picker (DialKit on each look). All three looks shipped as the block's `variant`; the tuned values live in `src/blocks/cta-link/look.ts`.
 
@@ -20,7 +20,8 @@ Decided 2026-11-19 from the `/proto/cta` picker (DialKit on each look). All thre
 - Reticle lines are white under `mix-blend-mode: difference`, so they read on paper, ink and pictures; over Instrument's panel they are signal orange. The crosshair is DOM over the content, 20% opacity, 12px clear of the pointer.
 - The cursor cluster is radius 1 (3×3 cells) with an orange core.
 - The site cursor is cut at the block's edge (`[data-cursor-zone]`, `src/providers/Cursor/zones.ts`), so it hands over to the reticle instead of swapping.
-- A work resolves through `resolveVisibleWork` (a protected work shows its fallback, or the block hides); members-only and draft targets hide it. Part numbers: `MR–16–W` + the work's place in the visible work list, `P–` + the post id.
+- Media: the block's slot is the site's usual one. **Media** takes an image or a Media video; **Play a video** swaps it for a full-length Videos document (`fields/video`), whose Stream loop is what plays, since a click opens the target. Empty, the target's own media fills in: the work's or page's opening media, or the post's share image (a page falls back to its share image too). Instrument paints a video's live frames through the cells, its Stream poster until the loop has data, and plays it only while the block is pointed at, focused or committed; touch shows the loop plain.
+- A work resolves through `resolveVisibleWork` (a protected work shows its fallback, or the block hides); members-only and draft targets (works, posts and pages) hide it. Part numbers: `MR–16–W` + the work's place in the visible work list, `P–` + the post id, a page's path (`/about`), a link's host.
 
 ## Engine options added to the aim field
 

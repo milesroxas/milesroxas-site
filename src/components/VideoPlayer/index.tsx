@@ -4,13 +4,15 @@ import { IconPlayerPlayFilled } from '@tabler/icons-react'
 import NextImage from 'next/image'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { formatSeconds, stageOf } from '@/collections/Videos/stage'
-import type { VideoResource } from '@/components/Media/types'
+import { formatSeconds } from '@/collections/Videos/stage'
 import { VideoMedia } from '@/components/Media/VideoMedia'
 import type { Video } from '@/payload-types'
 import { cursorTarget } from '@/providers/Cursor/variants'
 import { streamPosterLoader } from '@/utilities/streamPoster'
 import { cn } from '@/utilities/ui'
+import { fullSource, loopSource } from './loop'
+
+export { loopSource } from './loop'
 
 /**
  * A full-length video in a block (docs/media.md, "Videos"): its loop plays
@@ -28,31 +30,6 @@ export type VideoPlayerProps = {
   priority?: boolean
   posterWidth?: number
   videoClassName?: string
-}
-
-/** The whole video as `VideoMedia` plays it: Stream's manifest once encoded, the stored file before. */
-const fullSource = (video: Video): VideoResource => ({
-  cloudflareStreamPlaybackUrl: video.cloudflareStreamPlaybackUrl,
-  cloudflareStreamReady: video.cloudflareStreamReady,
-  cloudflareStreamThumbnailUrl: video.cloudflareStreamThumbnailUrl,
-  filesize: video.filesize,
-  url: video.url,
-})
-
-/**
- * The loop: the clip Stream cut, with its own first frame as the poster, or
- * the source itself when it is short enough to loop whole. `null` until
- * Stream has finished, so a long video never streams whole to fill a frame.
- */
-export const loopSource = (video: Video): VideoResource | null => {
-  if (stageOf(video) !== 'ready') return null
-  if (!video.loopUid) return fullSource(video)
-  return {
-    cloudflareStreamPlaybackUrl: video.loopPlaybackUrl,
-    cloudflareStreamReady: true,
-    cloudflareStreamThumbnailUrl: video.loopThumbnailUrl ?? video.cloudflareStreamThumbnailUrl,
-    url: video.url,
-  }
 }
 
 const DEFAULT_RATIO = '16 / 9'

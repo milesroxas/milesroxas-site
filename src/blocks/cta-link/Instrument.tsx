@@ -13,7 +13,7 @@ const readout =
 
 /**
  * Instrument: a spec sheet beside an ink panel running the field. Pointing
- * wakes the panel and paints the preview picture in through large cells; the
+ * wakes the panel and paints the preview picture or video in through large cells; the
  * yellow readout counts how much of it shows. The reticle locks on every part
  * of the sheet as a whole (`data-aim="block"`), and turns orange over the
  * panel. A target with no picture keeps the panel as field and coordinates.
@@ -25,7 +25,7 @@ export function CtaInstrument({ target }: { target: CtaTarget }) {
   const [keyboard, setKeyboard] = useState(false)
   const revealRef = useRef<HTMLSpanElement>(null)
   const { aim, panel, paint, panelGap } = INSTRUMENT_LOOK
-  const image = target.image
+  const media = target.media
 
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents lint/a11y/noStaticElementInteractions: the title link is the keyboard path
@@ -118,11 +118,12 @@ export function CtaInstrument({ target }: { target: CtaTarget }) {
             }}
             reticle={false}
           />
-          {image && (
+          {media && (
             <PixelReveal
               fill={committed || keyboard}
-              image={image}
+              media={media}
               params={paint}
+              playing={awake || committed}
               readout={revealRef}
             />
           )}
@@ -130,8 +131,8 @@ export function CtaInstrument({ target }: { target: CtaTarget }) {
             aria-hidden
             className="pointer-events-none absolute inset-x-3.5 top-3 z-20 flex items-start justify-between"
           >
-            <span className={ctaMeta}>{image ? 'reveal' : 'x / y'}</span>
-            {image ? (
+            <span className={ctaMeta}>{media ? 'reveal' : 'x / y'}</span>
+            {media ? (
               <span className={readout} ref={revealRef}>
                 000/100
               </span>
@@ -148,7 +149,7 @@ export function CtaInstrument({ target }: { target: CtaTarget }) {
             <span className={ctaMeta}>
               {committed ? 'fire / open' : awake ? 'lock / open' : 'standby'}
             </span>
-            {image ? (
+            {media ? (
               <span className={ctaMeta}>
                 x / y <span data-aim-out="cell">000·000</span>
               </span>
