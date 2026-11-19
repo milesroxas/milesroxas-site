@@ -4,6 +4,7 @@ import { gsap } from 'gsap'
 import { useEffect, useRef, useState } from 'react'
 import styles from './cursor.module.css'
 import { CURSOR_LABELS, type CursorVariant, isCursorVariant } from './variants'
+import { cursorZones } from './zones'
 
 const VARIANTS = Object.keys(CURSOR_LABELS) as CursorVariant[]
 // Long enough to cross the gutter between two cards without the ring closing.
@@ -47,6 +48,7 @@ export function Cursor() {
     let current: CursorVariant | null = null
     let leaveTimer: number | undefined
     let placed = false
+    const zones = cursorZones([ring, dot])
     let x = 0
     let y = 0
 
@@ -83,6 +85,7 @@ export function Cursor() {
       dot.style.transform = `translate3d(${x}px, ${y}px, 0)`
       ringX(x)
       ringY(y)
+      zones.wake()
       // A band running the aim field draws its own reticle there.
       if (e.target instanceof Element && e.target.closest('[data-aim-host]')) {
         delete root.dataset.visible
@@ -113,6 +116,7 @@ export function Cursor() {
       window.removeEventListener('scroll', recheck)
       html.removeEventListener('mouseleave', onLeave)
       window.clearTimeout(leaveTimer)
+      zones.destroy()
       gsap.killTweensOf(ring)
     }
   }, [finePointer])

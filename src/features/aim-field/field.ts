@@ -514,8 +514,24 @@ export function createShaderField(
     const y0 = box.y0 / dpr
     const x1 = box.x1 / dpr
     const y1 = box.y1 / dpr
-    const arm = Math.max(3, Math.min(config.reticle * 2, Math.min(x1 - x0, y1 - y0) * 0.25))
+    const short = Math.min(x1 - x0, y1 - y0)
+    const arm =
+      config.armRatio > 0
+        ? Math.max(config.armMin, Math.min(config.armRatio * short, config.armMax, short / 2))
+        : Math.max(3, Math.min(config.reticle * 2, short * 0.25))
     const showBox = x1 - x0 > 4 && y1 - y0 > 4
+    // The host may ask for a tone on the root: `invert` draws the lines white
+    // under difference so they read on any ground (orange stays orange),
+    // `spot` draws them all in signal orange.
+    const tone = reticle.root.dataset.tone
+    const ink = (color: string) =>
+      tone === 'spot'
+        ? SHADER_COLORS.spot
+        : tone === 'invert' && color !== SHADER_COLORS.spot
+          ? '#fff'
+          : color
+    const blend = (color: string) =>
+      tone === 'invert' && color !== SHADER_COLORS.spot ? 'difference' : ''
     const cornerColor = locked && lock?.kind === 'act' ? SHADER_COLORS.spot : fg
     reticle.corners.forEach((el, i) => {
       const [v, h] = CORNER_SIDES[i] ?? CORNER_SIDES[0]
@@ -524,7 +540,8 @@ export function createShaderField(
       el.style.display = showBox ? 'block' : 'none'
       el.style.width = `${arm}px`
       el.style.height = `${arm}px`
-      el.style.borderColor = cornerColor
+      el.style.borderColor = ink(cornerColor)
+      el.style.mixBlendMode = blend(cornerColor)
       el.style.borderWidth = '0'
       el.style.setProperty(`border-${v}-width`, `${stroke}px`)
       el.style.setProperty(`border-${h}-width`, `${stroke}px`)
@@ -537,7 +554,8 @@ export function createShaderField(
     reticle.ticks.forEach((el, i) => {
       el.style.width = `${tick}px`
       el.style.height = `${stroke}px`
-      el.style.background = fg
+      el.style.background = ink(fg)
+      el.style.mixBlendMode = blend(fg)
       el.style.transform = `translate(${ax}px, ${ay}px) rotate(${i * 90}deg) translate(${gap}px, ${-stroke / 2}px)`
     })
     reticle.hits.forEach((el, i) => {
@@ -550,7 +568,9 @@ export function createShaderField(
     const ds = Math.max(2, stroke * 1.5)
     reticle.dot.style.width = `${ds}px`
     reticle.dot.style.height = `${ds}px`
-    reticle.dot.style.background = hitOn ? SHADER_COLORS.spot : fg
+    const dotColor = hitOn ? SHADER_COLORS.spot : fg
+    reticle.dot.style.background = ink(dotColor)
+    reticle.dot.style.mixBlendMode = blend(dotColor)
     reticle.dot.style.transform = `translate(${ax - ds / 2}px, ${ay - ds / 2}px)`
   }
 

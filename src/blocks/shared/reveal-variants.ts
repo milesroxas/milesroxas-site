@@ -31,6 +31,7 @@ const blockRevealVariants = {
   code: 'frame',
   content: 'intro',
   cta: 'frame',
+  ctaLink: 'intro',
   diagram: 'underMedia',
 
   faq: 'intro',

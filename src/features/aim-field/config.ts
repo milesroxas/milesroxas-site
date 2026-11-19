@@ -69,10 +69,18 @@ export type ShaderConfig = {
   rippleDecay: number
   rippleFalloff: number
   aimLock: boolean
+  /** How fast the reticle box moves to its goal, ms. 0 snaps: the box never trails the pointer. */
   lockMs: number
   spread: number
   recoil: number
   reticle: number
+  /**
+   * Lock corner length as a share of the box's shorter side, clamped to
+   * armMin and armMax px. 0 keeps the fixed arm: min(reticle * 2, side / 4).
+   */
+  armRatio: number
+  armMin: number
+  armMax: number
   hideCursor: boolean
   yellow: Yellow
   dpr: number
@@ -122,6 +130,9 @@ export const DEFAULT_SHADER: ShaderConfig = {
   spread: 8,
   recoil: 5,
   reticle: 4,
+  armRatio: 0,
+  armMin: 3,
+  armMax: 400,
   hideCursor: true,
   yellow: 'readout',
   dpr: 1.5,
@@ -180,10 +191,13 @@ export function normalizeShader(input: Partial<ShaderConfig> | null | undefined)
     rippleDecay: clamp(c.rippleDecay, 0.3, 3, d.rippleDecay),
     rippleFalloff: clamp(c.rippleFalloff, 0, 0.3, d.rippleFalloff),
     aimLock: bool(c.aimLock, d.aimLock),
-    lockMs: clamp(c.lockMs, 40, 600, d.lockMs),
+    lockMs: clamp(c.lockMs, 0, 600, d.lockMs),
     spread: clamp(c.spread, 0, 40, d.spread),
     recoil: clamp(c.recoil, 0, 30, d.recoil),
     reticle: clamp(c.reticle, 2, 16, d.reticle),
+    armRatio: clamp(c.armRatio, 0, 0.5, d.armRatio),
+    armMin: clamp(c.armMin, 2, 40, d.armMin),
+    armMax: clamp(c.armMax, 4, 400, d.armMax),
     hideCursor: bool(c.hideCursor, d.hideCursor),
     yellow: oneOf(c.yellow, YELLOWS, d.yellow),
     dpr: clamp(c.dpr, 1, 2, d.dpr),

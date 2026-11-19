@@ -1,0 +1,35 @@
+/* The crosshair: neutral white inverted against whatever is under it, so it
+   reads on paper, ink and a picture alike; dim, since it spans the block. */
+.crosshair > span {
+  background-color: #fff;
+  mix-blend-mode: difference;
+  opacity: 0.2;
+}
+
+/* Strip: the field opens from where the pointer came in (`--x`), on hover or
+   focus, and closes faster than it opens. Touch has no hover: the field shows. */
+.stripField {
+  clip-path: inset(0 calc(100% - var(--x, 0%)) 0 var(--x, 0%));
+  transition: clip-path var(--reveal-out) var(--reveal-ease);
+}
+.strip:hover .stripField,
+.strip:focus-within .stripField {
+  clip-path: inset(0 0 0 0);
+  transition-duration: var(--reveal-in);
+}
+@media (hover: none) {
+  .stripField {
+    clip-path: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .strip .stripField {
+    clip-path: none;
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+  }
+  .strip:hover .stripField,
+  .strip:focus-within .stripField {
+    opacity: 1;
+  }
+}

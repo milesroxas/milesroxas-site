@@ -5,6 +5,7 @@ import { CodeSectionBlock } from '@/blocks/Code/Section'
 import { CaptionBlock } from '@/blocks/caption/Component'
 import { CarouselSplitBlock } from '@/blocks/carousel-split/Component'
 import { CarouselTabsBlock } from '@/blocks/carousel-tabs/Component'
+import { CtaLinkBlock } from '@/blocks/cta-link/Component'
 import { FaqBlock } from '@/blocks/faq/Component'
 import { FeatureHeadingOffsetBlock } from '@/blocks/feature/HeadingOffset/Component'
 import { FeatureImageStatementBlock } from '@/blocks/feature/ImageStatement/Component'
@@ -48,6 +49,7 @@ export const sectionChildComponents = {
   carouselTabs: CarouselTabsBlock,
   chart: ChartBlock,
   code: CodeSectionBlock,
+  ctaLink: CtaLinkBlock,
   diagram: DiagramBlock,
   faq: FaqBlock,
   featureHeadingOffset: FeatureHeadingOffsetBlock,

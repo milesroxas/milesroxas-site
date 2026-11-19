@@ -318,6 +318,7 @@ export interface Page {
     | InsightListBlock
     | StepListBlock
     | AppDownloadBlock
+    | CtaLinkBlock
     | SliderBlock
     | CallOutBlock
     | ArchiveBlock
@@ -474,6 +475,7 @@ export interface Post {
         | InsightListBlock
         | StepListBlock
         | AppDownloadBlock
+        | CtaLinkBlock
       )[]
     | null;
   relatedPosts?: (number | Post)[] | null;
@@ -896,6 +898,7 @@ export interface PostSectionBlock {
         | InsightListBlock
         | StepListBlock
         | AppDownloadBlock
+        | CtaLinkBlock
         | ContentBlock
       )[]
     | null;
@@ -4760,6 +4763,264 @@ export interface AppDownloadBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaLinkBlock".
+ */
+export interface CtaLinkBlock {
+  /**
+   * Instrument suits a work with a strong picture. Field closes a page with weight; it is the page's one full-bleed break. Strip sits quietly between sections.
+   */
+  variant: 'instrument' | 'field' | 'strip';
+  targetType: 'work' | 'post' | 'external';
+  /**
+   * A protected work shows its public fallback; with none, the block hides.
+   */
+  work?: (number | null) | Work;
+  post?: (number | null) | Post;
+  url?: string | null;
+  /**
+   * Leave empty to use the work's or post's title. An external link needs one.
+   */
+  title?: string | null;
+  /**
+   * One or two sentences. Leave empty to use its search description.
+   */
+  description?: string | null;
+  /**
+   * The picture Instrument paints in. Leave empty to use the work's opening picture or the post's share image.
+   */
+  image?: (number | null) | Media;
+  /**
+   * The call to action. Defaults to "Read the case study", "Read the post" or "Visit" and the site.
+   */
+  action?: string | null;
+  /**
+   * Up to three label and value pairs under Instrument's copy. Leave empty to use the work's client, industry and scope, or the post's date, length and topic.
+   */
+  facts?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Flips this band against its neighbours. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it.
+   */
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ctaLink';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "works".
+ */
+export interface Work {
+  id: number;
+  _order?: string | null;
+  title: string;
+  hero?: {
+    /**
+     * The picture centered in the opening. A work card opens into it, so use the card image.
+     */
+    media?: (number | null) | Media;
+    /**
+     * One or two sentences on the work. Cards and search show it; the hero does not.
+     */
+    richText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  /**
+   * Shown above the title as "<Client> Case Study". Pick a client, or add a new one here.
+   */
+  client?: (number | null) | Client;
+  industry?: string | null;
+  role?: string | null;
+  /**
+   * Listed in the hero in this order: drag to reorder. Pick a capability, or add a new one here.
+   */
+  capabilities?: (number | Capability)[] | null;
+  intro?: WorkIntro;
+  layout: (
+    | WorkSectionBlock
+    | RichTransitionBlock
+    | FeatureHeadingOffsetBlock
+    | FullMediaBlock
+    | MediaContentSplitBlock
+    | SplitContentNarrowBlock
+    | MediaListBlock
+    | CarouselSplitBlock
+    | ImagePairBlock
+    | SplitImageOffsetBlock
+    | FeatureImageStatementBlock
+    | CaptionBlock
+    | YouTubeBlock
+    | RichTextBlock
+    | CodeBlock
+    | ChartBlock
+    | DiagramBlock
+    | FaqBlock
+    | CarouselBlock
+    | CarouselTabsBlock
+    | FeatureTabsBlock
+    | InsightListBlock
+    | StepListBlock
+    | AppDownloadBlock
+    | CtaLinkBlock
+    | SliderBlock
+    | TabsBlock
+    | ArchiveBlock
+    | CallToActionBlock
+    | FormBlock
+    | MediaBlock
+    | ContentBlock
+  )[];
+  /**
+   * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
+   */
+  showContents?: boolean | null;
+  status?: ('coming-soon' | 'live') | null;
+  /**
+   * Where the work lives now. With a URL, the site chrome offers a "Visit" button on this case study.
+   */
+  link?: {
+    url?: string | null;
+    /**
+     * Optional, keep it short: it must fit beside the phone menu. Default: "Visit <host>", or "Visit site" when the host is over 16 characters.
+     */
+    label?: string | null;
+  };
+  /**
+   * Requires query param to access this work
+   */
+  isProtected?: boolean | null;
+  /**
+   * Public work to display when user does not have access
+   */
+  fallbackWork?: (number | null) | Work;
+  relatedWorks?: (number | Work)[] | null;
+  categories?: (number | Category)[] | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+    /**
+     * Prevent search engines from indexing this page
+     */
+    noIndex?: boolean | null;
+  };
+  publishedAt?: string | null;
+  /**
+   * Members-only pages show a sign-in gate to everyone else.
+   */
+  visibility: 'public' | 'members';
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients".
+ */
+export interface Client {
+  id: number;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "capabilities".
+ */
+export interface Capability {
+  id: number;
+  _order?: string | null;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkSectionBlock".
+ */
+export interface WorkSectionBlock {
+  /**
+   * Override the surface, band padding, and space between blocks. Off uses the page surface and default rhythm.
+   */
+  customize?: boolean | null;
+  /**
+   * The band this section paints. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it, to flip this section against its neighbours.
+   */
+  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
+  /**
+   * An interactive field behind the blocks, in the band's colours. The cursor becomes a reticle that locks onto text, images and links. Use on one section per page at most.
+   */
+  background?: ('none' | 'field') | null;
+  /**
+   * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
+   */
+  spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
+  /**
+   * Space between nested blocks. Independent of Band. "None" sits them flush.
+   */
+  stack?: ('default' | 'tight' | 'loose' | 'none') | null;
+  blocks?:
+    | (
+        | RichTransitionBlock
+        | FeatureHeadingOffsetBlock
+        | FullMediaBlock
+        | MediaContentSplitBlock
+        | SplitContentNarrowBlock
+        | MediaListBlock
+        | CarouselSplitBlock
+        | ImagePairBlock
+        | SplitImageOffsetBlock
+        | FeatureImageStatementBlock
+        | CaptionBlock
+        | YouTubeBlock
+        | RichTextBlock
+        | CodeBlock
+        | ChartBlock
+        | DiagramBlock
+        | FaqBlock
+        | CarouselBlock
+        | CarouselTabsBlock
+        | FeatureTabsBlock
+        | InsightListBlock
+        | StepListBlock
+        | AppDownloadBlock
+        | CtaLinkBlock
+        | ContentBlock
+      )[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'section';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
@@ -4906,212 +5167,6 @@ export interface ContentBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "works".
- */
-export interface Work {
-  id: number;
-  _order?: string | null;
-  title: string;
-  hero?: {
-    /**
-     * The picture centered in the opening. A work card opens into it, so use the card image.
-     */
-    media?: (number | null) | Media;
-    /**
-     * One or two sentences on the work. Cards and search show it; the hero does not.
-     */
-    richText?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  /**
-   * Shown above the title as "<Client> Case Study". Pick a client, or add a new one here.
-   */
-  client?: (number | null) | Client;
-  industry?: string | null;
-  role?: string | null;
-  /**
-   * Listed in the hero in this order: drag to reorder. Pick a capability, or add a new one here.
-   */
-  capabilities?: (number | Capability)[] | null;
-  intro?: WorkIntro;
-  layout: (
-    | WorkSectionBlock
-    | RichTransitionBlock
-    | FeatureHeadingOffsetBlock
-    | FullMediaBlock
-    | MediaContentSplitBlock
-    | SplitContentNarrowBlock
-    | MediaListBlock
-    | CarouselSplitBlock
-    | ImagePairBlock
-    | SplitImageOffsetBlock
-    | FeatureImageStatementBlock
-    | CaptionBlock
-    | YouTubeBlock
-    | RichTextBlock
-    | CodeBlock
-    | ChartBlock
-    | DiagramBlock
-    | FaqBlock
-    | CarouselBlock
-    | CarouselTabsBlock
-    | FeatureTabsBlock
-    | InsightListBlock
-    | StepListBlock
-    | AppDownloadBlock
-    | SliderBlock
-    | TabsBlock
-    | ArchiveBlock
-    | CallToActionBlock
-    | FormBlock
-    | MediaBlock
-    | ContentBlock
-  )[];
-  /**
-   * Adds a floating Contents button that lists the section headings on this page and jumps between them. Pages with fewer than three section headings never show it.
-   */
-  showContents?: boolean | null;
-  status?: ('coming-soon' | 'live') | null;
-  /**
-   * Where the work lives now. With a URL, the site chrome offers a "Visit" button on this case study.
-   */
-  link?: {
-    url?: string | null;
-    /**
-     * Optional, keep it short: it must fit beside the phone menu. Default: "Visit <host>", or "Visit site" when the host is over 16 characters.
-     */
-    label?: string | null;
-  };
-  /**
-   * Requires query param to access this work
-   */
-  isProtected?: boolean | null;
-  /**
-   * Public work to display when user does not have access
-   */
-  fallbackWork?: (number | null) | Work;
-  relatedWorks?: (number | Work)[] | null;
-  categories?: (number | Category)[] | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
-    /**
-     * Prevent search engines from indexing this page
-     */
-    noIndex?: boolean | null;
-  };
-  publishedAt?: string | null;
-  /**
-   * Members-only pages show a sign-in gate to everyone else.
-   */
-  visibility: 'public' | 'members';
-  slug?: string | null;
-  slugLock?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "clients".
- */
-export interface Client {
-  id: number;
-  title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "capabilities".
- */
-export interface Capability {
-  id: number;
-  _order?: string | null;
-  title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "WorkSectionBlock".
- */
-export interface WorkSectionBlock {
-  /**
-   * Override the surface, band padding, and space between blocks. Off uses the page surface and default rhythm.
-   */
-  customize?: boolean | null;
-  /**
-   * The band this section paints. "Default" follows the visitor's light or dark preference; "Inverted" paints the opposite of it, to flip this section against its neighbours.
-   */
-  theme?: ('default' | 'inverted' | 'neutral' | 'brand') | null;
-  /**
-   * An interactive field behind the blocks, in the band's colours. The cursor becomes a reticle that locks onto text, images and links. Use on one section per page at most.
-   */
-  background?: ('none' | 'field') | null;
-  /**
-   * Top and bottom padding of the section. "None" is for a section whose content owns its shell.
-   */
-  spacing?: ('default' | 'tight' | 'loose' | 'none') | null;
-  /**
-   * Space between nested blocks. Independent of Band. "None" sits them flush.
-   */
-  stack?: ('default' | 'tight' | 'loose' | 'none') | null;
-  blocks?:
-    | (
-        | RichTransitionBlock
-        | FeatureHeadingOffsetBlock
-        | FullMediaBlock
-        | MediaContentSplitBlock
-        | SplitContentNarrowBlock
-        | MediaListBlock
-        | CarouselSplitBlock
-        | ImagePairBlock
-        | SplitImageOffsetBlock
-        | FeatureImageStatementBlock
-        | CaptionBlock
-        | YouTubeBlock
-        | RichTextBlock
-        | CodeBlock
-        | ChartBlock
-        | DiagramBlock
-        | FaqBlock
-        | CarouselBlock
-        | CarouselTabsBlock
-        | FeatureTabsBlock
-        | InsightListBlock
-        | StepListBlock
-        | AppDownloadBlock
-        | ContentBlock
-      )[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'section';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -5637,6 +5692,7 @@ export interface PageSectionBlock {
         | InsightListBlock
         | StepListBlock
         | AppDownloadBlock
+        | CtaLinkBlock
         | ContentBlock
       )[]
     | null;
@@ -6335,6 +6391,7 @@ export interface PagesSelect<T extends boolean = true> {
         insightList?: T | InsightListBlockSelect<T>;
         stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
+        ctaLink?: T | CtaLinkBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         callout?: T | CallOutBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
@@ -6415,6 +6472,7 @@ export interface PageSectionBlockSelect<T extends boolean = true> {
         insightList?: T | InsightListBlockSelect<T>;
         stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
+        ctaLink?: T | CtaLinkBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
   id?: T;
@@ -6910,6 +6968,31 @@ export interface AppDownloadBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaLinkBlock_select".
+ */
+export interface CtaLinkBlockSelect<T extends boolean = true> {
+  variant?: T;
+  targetType?: T;
+  work?: T;
+  post?: T;
+  url?: T;
+  title?: T;
+  description?: T;
+  image?: T;
+  action?: T;
+  facts?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  theme?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContentBlock_select".
  */
 export interface ContentBlockSelect<T extends boolean = true> {
@@ -7225,6 +7308,7 @@ export interface PostsSelect<T extends boolean = true> {
         insightList?: T | InsightListBlockSelect<T>;
         stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
+        ctaLink?: T | CtaLinkBlockSelect<T>;
       };
   relatedPosts?: T;
   hideRelatedPosts?: T;
@@ -7298,6 +7382,7 @@ export interface PostSectionBlockSelect<T extends boolean = true> {
         insightList?: T | InsightListBlockSelect<T>;
         stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
+        ctaLink?: T | CtaLinkBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
   id?: T;
@@ -7348,6 +7433,7 @@ export interface WorksSelect<T extends boolean = true> {
         insightList?: T | InsightListBlockSelect<T>;
         stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
+        ctaLink?: T | CtaLinkBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         tabs?: T | TabsBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
@@ -7420,6 +7506,7 @@ export interface WorkSectionBlockSelect<T extends boolean = true> {
         insightList?: T | InsightListBlockSelect<T>;
         stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
+        ctaLink?: T | CtaLinkBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
       };
   id?: T;
@@ -8190,6 +8277,7 @@ export interface Home {
     | InsightListBlock
     | StepListBlock
     | AppDownloadBlock
+    | CtaLinkBlock
     | SliderBlock
     | CallOutBlock
     | ArchiveBlock
@@ -8499,6 +8587,7 @@ export interface HomeSelect<T extends boolean = true> {
         insightList?: T | InsightListBlockSelect<T>;
         stepList?: T | StepListBlockSelect<T>;
         appDownload?: T | AppDownloadBlockSelect<T>;
+        ctaLink?: T | CtaLinkBlockSelect<T>;
         slider?: T | SliderBlockSelect<T>;
         callout?: T | CallOutBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;

@@ -1,12 +1,15 @@
 /**
  * What the aim locks onto, shared by the field's reticle (`field.ts`) and the
- * standalone one (`AimReticle`): a control, then media, then the line of text
- * under the point. `[data-aim="off"]` opts a subtree out.
+ * standalone one (`AimReticle`): a control, then a whole block, then media,
+ * then the line of text under the point. `[data-aim="block"]` locks a group
+ * (a paragraph, a label and its value) as one text box instead of by line.
+ * `[data-aim="off"]` opts a subtree out.
  */
 export type AimTarget = 'free' | 'text' | 'media' | 'act'
 export type AimLock = { kind: Exclude<AimTarget, 'free'>; rect: () => DOMRect }
 
 const ACT = 'a[href], button, input, select, textarea, summary, [role="button"], [data-aim="act"]'
+const BLOCK = '[data-aim="block"]'
 const MEDIA = 'img, picture, video, svg, figure, [data-aim="media"]'
 const TEXT =
   'h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption, label, dt, dd, [data-aim="text"]'
@@ -38,6 +41,8 @@ export function lockAt(hit: Element | null, x: number, y: number): AimLock | nul
   if (!hit || hit.closest('[data-aim="off"]')) return null
   const act = hit.closest(ACT)
   if (act) return { kind: 'act', rect: () => act.getBoundingClientRect() }
+  const block = hit.closest(BLOCK)
+  if (block) return { kind: 'text', rect: () => block.getBoundingClientRect() }
   const media = hit.closest(MEDIA)
   if (media) return { kind: 'media', rect: () => media.getBoundingClientRect() }
   const text = hit.closest(TEXT)

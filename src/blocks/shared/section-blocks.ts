@@ -6,6 +6,7 @@ import { Content } from '@/blocks/Content/config'
 import { Caption } from '@/blocks/caption/config'
 import { CarouselSplit } from '@/blocks/carousel-split/config'
 import { CarouselTabs } from '@/blocks/carousel-tabs/config'
+import { CtaLink } from '@/blocks/cta-link/config'
 import { Faq } from '@/blocks/faq/config'
 import { FeatureHeadingOffset } from '@/blocks/feature/HeadingOffset/config'
 import { FeatureImageStatement } from '@/blocks/feature/ImageStatement/config'
@@ -72,6 +73,7 @@ export const sectionNestableBlocks: Block[] = [
   StepList,
   // Forms & CTAs
   AppDownload,
+  CtaLink,
 ]
 
 /**

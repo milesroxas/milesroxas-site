@@ -910,6 +910,137 @@
       }
     ]
   },
+  "ctaLink": {
+    "slug": "ctaLink",
+    "label": "CTA link",
+    "fields": [
+      {
+        "name": "variant",
+        "label": "Variant",
+        "description": "Instrument suits a work with a strong picture. Field closes a page with weight; it is the page's one full-bleed break. Strip sits quietly between sections.",
+        "control": "select",
+        "options": [
+          {
+            "label": "Instrument: spec sheet and paint panel",
+            "value": "instrument"
+          },
+          {
+            "label": "Field: full-bleed band",
+            "value": "field"
+          },
+          {
+            "label": "Strip: one quiet row",
+            "value": "strip"
+          }
+        ],
+        "defaultValue": "instrument"
+      },
+      {
+        "name": "targetType",
+        "label": "Opens",
+        "control": "radio",
+        "options": [
+          {
+            "label": "A work",
+            "value": "work"
+          },
+          {
+            "label": "A post",
+            "value": "post"
+          },
+          {
+            "label": "An external link",
+            "value": "external"
+          }
+        ],
+        "defaultValue": "work"
+      },
+      {
+        "name": "work",
+        "label": "Work",
+        "description": "A protected work shows its public fallback; with none, the block hides.",
+        "if": {
+          "arg": "targetType",
+          "eq": "work"
+        },
+        "control": "none"
+      },
+      {
+        "name": "post",
+        "label": "Post",
+        "if": {
+          "arg": "targetType",
+          "eq": "post"
+        },
+        "control": "none"
+      },
+      {
+        "name": "url",
+        "label": "URL",
+        "if": {
+          "arg": "targetType",
+          "eq": "external"
+        },
+        "control": "text"
+      },
+      {
+        "name": "title",
+        "label": "Title",
+        "description": "Leave empty to use the work's or post's title. An external link needs one.",
+        "control": "text"
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "description": "One or two sentences. Leave empty to use its search description.",
+        "control": "text"
+      },
+      {
+        "name": "image",
+        "label": "Image",
+        "description": "The picture Instrument paints in. Leave empty to use the work's opening picture or the post's share image.",
+        "control": "none"
+      },
+      {
+        "name": "action",
+        "label": "Action",
+        "description": "The call to action. Defaults to \"Read the case study\", \"Read the post\" or \"Visit\" and the site.",
+        "control": "text"
+      },
+      {
+        "name": "facts",
+        "label": "Facts",
+        "description": "Up to three label and value pairs under Instrument's copy. Leave empty to use the work's client, industry and scope, or the post's date, length and topic.",
+        "control": "none"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
   "diagram": {
     "slug": "diagram",
     "label": "Diagram",
