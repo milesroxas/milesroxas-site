@@ -26,6 +26,17 @@
   translate: -50% -50%;
 }
 
+/* Zero-size at the pointer, so `scale` squeezes the ring around its centre.
+   Press lands fast; release springs back a little slower. */
+.press {
+  transition: scale 300ms var(--ease-out-quint);
+}
+
+.cursor[data-pressed] .press {
+  scale: 0.8;
+  transition-duration: 120ms;
+}
+
 .ring {
   width: 40px;
   height: 40px;
@@ -79,6 +90,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .press,
   .ring {
     transition: none;
   }

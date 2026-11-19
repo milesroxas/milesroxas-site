@@ -48,6 +48,7 @@ export function Cursor() {
     let current: CursorVariant | null = null
     let leaveTimer: number | undefined
     let placed = false
+    let pressed = false
     const zones = cursorZones([ring, dot])
     let x = 0
     let y = 0
@@ -62,6 +63,8 @@ export function Cursor() {
     // Opening is immediate; closing waits out the grace period, so hopping
     // card to card keeps the ring open and only a new label crossfades.
     const show = (variant: CursorVariant | null) => {
+      // A held press keeps its label: a drag that runs off the deck still says Drag.
+      if (pressed && current) return
       if (variant) {
         window.clearTimeout(leaveTimer)
         leaveTimer = undefined
@@ -100,12 +103,28 @@ export function Cursor() {
     const recheck = () => show(variantAt(document.elementFromPoint(x, y)))
     const onClick = () => requestAnimationFrame(recheck)
     const onLeave = () => delete root.dataset.visible
+    const onPress = (e: PointerEvent) => {
+      if (!e.isPrimary || e.button !== 0) return
+      pressed = true
+      root.dataset.pressed = ''
+    }
+    const onRelease = () => {
+      if (!pressed) return
+      pressed = false
+      delete root.dataset.pressed
+      recheck()
+    }
 
     const html = document.documentElement
     // Hides the native cursor (globals.css) only while this one is mounted.
     html.dataset.customCursor = ''
     document.addEventListener('mousemove', onMove, { passive: true })
     document.addEventListener('click', onClick, { passive: true })
+    // Capture phase, so a carousel's own drag handler can't swallow them.
+    document.addEventListener('pointerdown', onPress, { capture: true, passive: true })
+    document.addEventListener('pointerup', onRelease, { capture: true, passive: true })
+    document.addEventListener('pointercancel', onRelease, { capture: true, passive: true })
+    window.addEventListener('blur', onRelease)
     window.addEventListener('scroll', recheck, { passive: true })
     html.addEventListener('mouseleave', onLeave)
 
@@ -113,6 +132,10 @@ export function Cursor() {
       delete html.dataset.customCursor
       document.removeEventListener('mousemove', onMove)
       document.removeEventListener('click', onClick)
+      document.removeEventListener('pointerdown', onPress, { capture: true })
+      document.removeEventListener('pointerup', onRelease, { capture: true })
+      document.removeEventListener('pointercancel', onRelease, { capture: true })
+      window.removeEventListener('blur', onRelease)
       window.removeEventListener('scroll', recheck)
       html.removeEventListener('mouseleave', onLeave)
       window.clearTimeout(leaveTimer)
@@ -125,17 +148,22 @@ export function Cursor() {
 
   return (
     <div ref={rootRef} aria-hidden className={styles.cursor}>
+      {/* Position lives on the follower, press on `.press`, state on the ring and dot:
+          three `scale`s that compose instead of overwriting each other. */}
       <div ref={ringRef} className={styles.follower}>
-        <div className={styles.ring} />
-        {VARIANTS.map((variant) => (
-          <span key={variant} className={styles.label} data-variant={variant}>
-            {CURSOR_LABELS[variant]}
-          </span>
-        ))}
+        <div className={styles.press}>
+          <div className={styles.ring} />
+          {VARIANTS.map((variant) => (
+            <span key={variant} className={styles.label} data-variant={variant}>
+              {CURSOR_LABELS[variant]}
+            </span>
+          ))}
+        </div>
       </div>
-      {/* Position lives on a wrapper: the dot's own `scale` would otherwise scale it too. */}
       <div ref={dotRef} className={styles.follower}>
-        <div className={styles.dot} />
+        <div className={styles.press}>
+          <div className={styles.dot} />
+        </div>
       </div>
     </div>
   )
