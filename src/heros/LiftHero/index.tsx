@@ -173,7 +173,7 @@ export const LiftHero: React.FC<Hero> = ({ lift, links, richText }) => {
         </BlockGrid>
       </div>
       {lift ? (
-        <div className="mt-auto pb-8">
+        <div className="mt-auto pb-[calc(var(--dock-clearance)+--spacing(8))]">
           <LiftFigure lift={lift} />
         </div>
       ) : null}
