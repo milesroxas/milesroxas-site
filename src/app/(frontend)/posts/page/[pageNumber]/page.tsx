@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next/types'
 import { getPayload } from 'payload'
 import { MEMBERS_TEASER } from '@/access/members'
+import { postsIndexTitle, queryPostsIndex } from '@/app/(frontend)/posts/query-index'
 import { Pagination } from '@/components/Pagination'
 import {
   type MorePostsDoc,
@@ -31,22 +32,25 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   if (!Number.isInteger(sanitizedPageNumber)) notFound()
 
-  const posts = await payload.find({
-    collection: 'posts',
-    depth: 1,
-    limit: POSTS_PER_PAGE,
-    page: sanitizedPageNumber,
-    context: MEMBERS_TEASER,
-    overrideAccess: false,
-    select: POST_ITEM_SELECT,
-  })
+  const [posts, index] = await Promise.all([
+    payload.find({
+      collection: 'posts',
+      depth: 1,
+      limit: POSTS_PER_PAGE,
+      page: sanitizedPageNumber,
+      context: MEMBERS_TEASER,
+      overrideAccess: false,
+      select: POST_ITEM_SELECT,
+    }),
+    queryPostsIndex(),
+  ])
 
   const items = (posts.docs as MorePostsDoc[])
     .map(toPostItem)
     .filter((item): item is MorePostsItem => item !== null)
 
   return (
-    <PostsIndex items={items} title="Posts" total={posts.totalDocs}>
+    <PostsIndex items={items} title={postsIndexTitle(index)} total={posts.totalDocs}>
       {posts.page && posts.totalPages > 1 && (
         <Pagination className="pb-24" page={posts.page} totalPages={posts.totalPages} />
       )}
@@ -55,10 +59,10 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { pageNumber } = await paramsPromise
+  const [{ pageNumber }, index] = await Promise.all([paramsPromise, queryPostsIndex()])
   // Page 1 is the index itself; later pages are their own canonical URLs.
   const pathname = pageNumber === '1' ? '/posts' : `/posts/page/${pageNumber}`
-  return generateMeta({ doc: { title: `Posts, page ${pageNumber}` }, pathname })
+  return generateMeta({ doc: { title: `${postsIndexTitle(index)}, page ${pageNumber}` }, pathname })
 }
 
 export async function generateStaticParams() {

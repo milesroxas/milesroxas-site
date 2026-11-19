@@ -165,6 +165,11 @@ const globals: MCPPluginConfig['globals'] = {
       'The works landing page at /works: its heading, lead and SEO. The list of works is automatic (published works in collection order)',
     enabled: { find: true, update: true },
   },
+  'posts-index': {
+    description:
+      'The posts landing page at /posts: its heading and SEO. The list of posts is automatic (newest first)',
+    enabled: { find: true, update: true },
+  },
 }
 
 const CONTROLS_COMPONENT = '@/components/McpCapabilityControls'

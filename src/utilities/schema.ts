@@ -19,6 +19,7 @@ import type {
   Client,
   Page,
   Post,
+  PostsIndex,
   SiteInfo,
   Work,
   WorksIndex,
@@ -229,6 +230,18 @@ export const worksIndexSchema = (
     path: '/works',
     name: index.meta?.title || index.title || defaults.heading,
     description: index.meta?.description || index.lead,
+    items,
+  })
+
+export const postsIndexSchema = (
+  index: Partial<PostsIndex>,
+  defaults: { path: string; heading: string; description: string },
+  items: ListedItem[] = [],
+) =>
+  collectionPageSchema({
+    path: defaults.path,
+    name: index.meta?.title || index.title || defaults.heading,
+    description: index.meta?.description || defaults.description,
     items,
   })
 

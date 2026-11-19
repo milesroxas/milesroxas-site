@@ -286,12 +286,18 @@ export const SEO_TARGETS = {
   works: SEO_FIELDS,
   home: SEO_FIELDS,
   'works-index': SEO_FIELDS,
+  'posts-index': SEO_FIELDS,
   'contact-page': ['title', 'description'],
 } as const satisfies Record<string, readonly (typeof SEO_FIELDS)[number][]>
 
 type SeoTarget = keyof typeof SEO_TARGETS
 
-const SEO_GLOBAL_TARGETS: ReadonlySet<SeoTarget> = new Set(['home', 'works-index', 'contact-page'])
+const SEO_GLOBAL_TARGETS: ReadonlySet<SeoTarget> = new Set([
+  'home',
+  'works-index',
+  'posts-index',
+  'contact-page',
+])
 
 /** Targets without drafts save straight to the live document. */
 const SEO_UNVERSIONED: ReadonlySet<SeoTarget> = new Set(['contact-page'])
@@ -321,7 +327,7 @@ const seoRefusal = ({ collection, id, meta }: SeoArgs): string | null => {
 const updateSeo: SiteTool = {
   name: 'updateSeo',
   description:
-    'Set the SEO fields (`meta`) of a page, post, work, the home page (`home`), the works index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.',
+    'Set the SEO fields (`meta`) of a page, post, work, the home page (`home`), the works index, the posts index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.',
   parameters: {
     collection: z
       .enum(Object.keys(SEO_TARGETS) as [SeoTarget, ...SeoTarget[]])
@@ -358,7 +364,10 @@ const updateSeo: SiteTool = {
     }
     try {
       const saved = (isGlobal
-        ? await req.payload.updateGlobal({ ...common, slug: collection as 'works-index' })
+        ? await req.payload.updateGlobal({
+            ...common,
+            slug: collection as 'works-index' | 'posts-index',
+          })
         : await req.payload.update({
             ...common,
             collection: collection as CollectionTarget,

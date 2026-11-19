@@ -1,5 +1,5 @@
 import type { Payload } from 'payload'
-import type { ContactPage, SiteInfo, WorksIndex } from '@/payload-types'
+import type { ContactPage, PostsIndex, SiteInfo, WorksIndex } from '@/payload-types'
 import {
   type ContactPageCopy,
   fillContactTokens,
@@ -7,7 +7,7 @@ import {
   resolveContactCv,
 } from '@/shared/content/contact'
 import { inquiryResponseTime } from '@/shared/content/inquiry'
-import { POSTS_INDEX, readPostsIndexMeta } from '@/shared/content/postsIndex'
+import { POSTS_INDEX_DEFAULTS } from '@/shared/content/postsIndex'
 import { surfaceByCollection } from '@/shared/content/surfaces'
 import { WORKS_INDEX_DEFAULTS } from '@/shared/content/worksIndex'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -58,9 +58,21 @@ async function worksIndexPage(payload: Payload): Promise<IndexPage | null> {
   }
 }
 
-async function postsIndexPage(payload: Payload): Promise<IndexPage> {
-  const { description } = await readPostsIndexMeta(payload)
-  return { title: POSTS_INDEX.title, path: POSTS_INDEX.path, description }
+/** The posts index's heading and description, from its global once it is published (posts/page.tsx). */
+async function postsIndexPage(payload: Payload): Promise<IndexPage | null> {
+  const index = (await payload.findGlobal({
+    slug: 'posts-index',
+    depth: 0,
+    draft: false,
+    overrideAccess: false,
+  })) as PostsIndex | null
+  const published = index?._status === 'published' ? index : null
+  if (published?.meta?.noIndex) return null
+  return {
+    title: published?.title || POSTS_INDEX_DEFAULTS.heading,
+    path: POSTS_INDEX_DEFAULTS.path,
+    description: published?.meta?.description || POSTS_INDEX_DEFAULTS.description,
+  }
 }
 
 const INDEX_READERS: Record<string, (payload: Payload) => Promise<IndexPage | null>> = {

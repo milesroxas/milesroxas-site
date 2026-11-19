@@ -133,6 +133,7 @@ export interface Config {
     'site-info': SiteInfo;
     'contact-page': ContactPage;
     'works-index': WorksIndex;
+    'posts-index': PostsIndex;
   };
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
@@ -140,6 +141,7 @@ export interface Config {
     'site-info': SiteInfoSelect<false> | SiteInfoSelect<true>;
     'contact-page': ContactPageSelect<false> | ContactPageSelect<true>;
     'works-index': WorksIndexSelect<false> | WorksIndexSelect<true>;
+    'posts-index': PostsIndexSelect<false> | PostsIndexSelect<true>;
   };
   locale: null;
   widgets: {
@@ -6082,6 +6084,10 @@ export interface PayloadMcpApiKey {
     find?: boolean | null;
     update?: boolean | null;
   };
+  postsIndex?: {
+    find?: boolean | null;
+    update?: boolean | null;
+  };
   'payload-mcp-tool'?: {
     /**
      * Where the published site talks about a topic, across Home, Pages, Works, Posts and Site Info, judged on the server (a vector search over the site, then one Jev check per passage), so no page reaches you. Answers with passages best first: collection, document id, title, url, section heading, a snippet, and `focus`: how much of the passage is about the topic (`subject`, `part` or `passing`). Published copy only, protected works never included: before editing, locateBlock the document by id with the user's words. Send the topic as the user put it.
@@ -6104,7 +6110,7 @@ export interface PayloadMcpApiKey {
      */
     patchBlock?: boolean | null;
     /**
-     * Set the SEO fields (`meta`) of a page, post, work, the home page (`home`), the works index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.
+     * Set the SEO fields (`meta`) of a page, post, work, the home page (`home`), the works index, the posts index or the contact page, without sending the rest of the document. Send only the fields to change; null clears one. `title` is the page title without the " | Miles Roxas" suffix, `description` the search and share summary (about 150 characters), `image` a media id for the share card, `noIndex` keeps the page out of search. The contact page takes only `title` and `description`. Saves a draft unless `draft` is false, which publishes the document with any other unpublished edits it holds; the contact page has no drafts and saves live. Returns the saved `meta`.
      */
     updateSeo?: boolean | null;
     /**
@@ -8157,6 +8163,12 @@ export interface PayloadMcpApiKeysSelect<T extends boolean = true> {
         find?: T;
         update?: T;
       };
+  postsIndex?:
+    | T
+    | {
+        find?: T;
+        update?: T;
+      };
   'payload-mcp-tool'?:
     | T
     | {
@@ -8550,6 +8562,34 @@ export interface WorksIndex {
   createdAt?: string | null;
 }
 /**
+ * The posts landing page at /posts. Heading and SEO: the list is automatic.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts-index".
+ */
+export interface PostsIndex {
+  id: number;
+  /**
+   * The heading above the list.
+   */
+  title: string;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+    /**
+     * Prevent search engines from indexing this page
+     */
+    noIndex?: boolean | null;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home_select".
  */
@@ -8728,6 +8768,25 @@ export interface ContactPageSelect<T extends boolean = true> {
 export interface WorksIndexSelect<T extends boolean = true> {
   title?: T;
   lead?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+        noIndex?: T;
+      };
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts-index_select".
+ */
+export interface PostsIndexSelect<T extends boolean = true> {
+  title?: T;
   meta?:
     | T
     | {

@@ -83,7 +83,7 @@ The source of truth is `mcp.ts`; this table mirrors it.
 | Assets | `media` | **Read-only**. New images and muted loops go through `pnpm cms:upload` |
 | Full-length videos | `videos` | **Read-only**. New ones go through `pnpm cms:upload` ([Adding images and videos](#adding-images-and-videos)); the loop is set there or in the admin ([media.md](media.md), Videos); a block plays one with `playVideo: true` and `video: <id>` |
 | Visitor records | `inquiries`, `form-submissions`, `ask-questions` | **Read-only** |
-| Globals | `home`, `site-info`, `header`, `contact-page`, `works-index` | Find and update |
+| Globals | `home`, `site-info`, `header`, `contact-page`, `works-index`, `posts-index` | Find and update |
 
 A new surface added to `CONTENT_SURFACES` is exposed automatically. Any other new collection or
 global is **not** exposed until it is listed in `mcp.ts`, and the capability columns it adds need a

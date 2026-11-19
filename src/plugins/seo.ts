@@ -7,7 +7,7 @@ import { getServerSideURL } from '@/utilities/getURL'
 
 /** Documents that carry the manual SEO tab (`src/collections/shared/seoTab.ts`). */
 export const SEO_COLLECTIONS: CollectionSlug[] = ['pages', 'posts', 'works']
-export const SEO_GLOBALS: GlobalSlug[] = [HOME_SURFACE.global, 'works-index']
+export const SEO_GLOBALS: GlobalSlug[] = [HOME_SURFACE.global, 'works-index', 'posts-index']
 
 /** The page's own title: the root layout's title template adds " | Miles Roxas". */
 export const generateTitle: GenerateTitle<Post | Page | Work | Home> = ({ doc }) => doc?.title ?? ''
@@ -16,6 +16,7 @@ export const generateTitle: GenerateTitle<Post | Page | Work | Home> = ({ doc })
 const GLOBAL_PATHS: Partial<Record<GlobalSlug, string>> = {
   [HOME_SURFACE.global]: HOME_SURFACE.path,
   'works-index': '/works',
+  'posts-index': '/posts',
 }
 
 /** The document's public URL: a global at its path, a document by its collection's surface. */

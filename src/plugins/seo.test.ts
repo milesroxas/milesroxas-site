@@ -49,5 +49,6 @@ describe('generateURL', () => {
     )
     expect(generateURL({ doc: {}, globalSlug: 'home' } as never)).toMatch(/^https?:\/\/[^/]+\/$/)
     expect(generateURL({ doc: {}, globalSlug: 'works-index' } as never)).toMatch(/\/works$/)
+    expect(generateURL({ doc: {}, globalSlug: 'posts-index' } as never)).toMatch(/\/posts$/)
   })
 })
