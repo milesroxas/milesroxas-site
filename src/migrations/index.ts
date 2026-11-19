@@ -46,6 +46,7 @@ import * as migration_20261115_215255_app_download_block from './20261115_215255
 import * as migration_20261118_001751_aim_field_heroes from './20261118_001751_aim_field_heroes';
 import * as migration_20261118_233456_lift_hero_step_list_split_list from './20261118_233456_lift_hero_step_list_split_list';
 import * as migration_20261119_182549_media_list_block from './20261119_182549_media_list_block';
+import * as migration_20261119_184153_cta_link_block from './20261119_184153_cta_link_block';
 
 export const migrations = [
   {
@@ -286,6 +287,11 @@ export const migrations = [
   {
     up: migration_20261119_182549_media_list_block.up,
     down: migration_20261119_182549_media_list_block.down,
-    name: '20261119_182549_media_list_block'
+    name: '20261119_182549_media_list_block',
+  },
+  {
+    up: migration_20261119_184153_cta_link_block.up,
+    down: migration_20261119_184153_cta_link_block.down,
+    name: '20261119_184153_cta_link_block'
   },
 ];
