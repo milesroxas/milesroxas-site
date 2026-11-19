@@ -2131,6 +2131,103 @@
       }
     ]
   },
+  "mediaList": {
+    "slug": "mediaList",
+    "label": "Media list",
+    "fields": [
+      {
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "A short kicker above the heading. Most headings read better without one.",
+        "control": "text"
+      },
+      {
+        "name": "heading",
+        "label": "Heading",
+        "control": "text"
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "description": "One or two sentences under the heading.",
+        "control": "text"
+      },
+      {
+        "name": "items",
+        "label": "Items",
+        "description": "Each item swaps the frame to its own media. Two to six.",
+        "control": "none"
+      },
+      {
+        "name": "showNumbers",
+        "label": "Show numbers",
+        "control": "boolean",
+        "defaultValue": true
+      },
+      {
+        "name": "textSize",
+        "label": "Text size",
+        "description": "Large sets the heading and copy one step up the type scale.",
+        "group": "Design",
+        "control": "radio",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ],
+        "defaultValue": "small"
+      },
+      {
+        "name": "imagePosition",
+        "label": "Layout",
+        "description": "Arrange the media on the left or the right of the list.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "left",
+            "value": "left"
+          },
+          {
+            "label": "right",
+            "value": "right"
+          }
+        ],
+        "defaultValue": "left"
+      },
+      {
+        "name": "theme",
+        "label": "Theme",
+        "description": "Flips this band against its neighbours. \"Default\" follows the visitor's light or dark preference; \"Inverted\" paints the opposite of it.",
+        "group": "Design",
+        "control": "select",
+        "options": [
+          {
+            "label": "Default",
+            "value": "default"
+          },
+          {
+            "label": "Inverted",
+            "value": "inverted"
+          },
+          {
+            "label": "Neutral",
+            "value": "neutral"
+          },
+          {
+            "label": "Brand",
+            "value": "brand"
+          }
+        ],
+        "defaultValue": "default"
+      }
+    ]
+  },
   "richText": {
     "slug": "richText",
     "label": "Rich text",

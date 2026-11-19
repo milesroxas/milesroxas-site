@@ -5,14 +5,10 @@
  * The cursor is an aiming device: a reticle layer above the content that locks
  * onto text lines, media and controls, and clears the field under the lock.
  */
+import { type AimLock, type AimTarget, lockAt } from './aim'
 import { CURSORS, FILLS, MIXES, PAPERS, SHADER_COLORS, SHAPES, type ShaderConfig } from './config'
 
 const RIPPLES = 6
-
-const ACT = 'a[href], button, input, select, textarea, summary, [role="button"], [data-aim="act"]'
-const MEDIA = 'img, picture, video, svg, figure, [data-aim="media"]'
-const TEXT =
-  'h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption, label, dt, dd, [data-aim="text"]'
 
 const VERT = `#version 300 es
 void main() {
@@ -287,7 +283,7 @@ function cssToRgb(color: string, probe: CanvasRenderingContext2D): Rgb | null {
   return [(r ?? 0) / 255, (g ?? 0) / 255, (b ?? 0) / 255]
 }
 
-export type AimTarget = 'free' | 'text' | 'media' | 'act'
+export type { AimTarget }
 export type FieldPointer = {
   x: number
   y: number
@@ -314,51 +310,10 @@ function compile(gl: WebGL2RenderingContext, type: number, source: string) {
 }
 
 type Rect = { x0: number; y0: number; x1: number; y1: number }
-type Lock = { kind: Exclude<AimTarget, 'free'>; rect: () => DOMRect }
-
-/** The line box of text under the point, or null between lines. */
-function textLine(el: Element, x: number, y: number): DOMRect | null {
-  const range = document.createRange()
-  range.selectNodeContents(el)
-  let hit: Rect | null = null
-  for (const r of Array.from(range.getClientRects())) {
-    if (r.width === 0 || y < r.top || y > r.bottom) continue
-    hit = hit
-      ? {
-          x0: Math.min(hit.x0, r.left),
-          y0: Math.min(hit.y0, r.top),
-          x1: Math.max(hit.x1, r.right),
-          y1: Math.max(hit.y1, r.bottom),
-        }
-      : { x0: r.left, y0: r.top, x1: r.right, y1: r.bottom }
-  }
-  if (!hit || x < hit.x0 - 8 || x > hit.x1 + 8) return null
-  return new DOMRect(hit.x0, hit.y0, hit.x1 - hit.x0, hit.y1 - hit.y0)
-}
-
 /** What the aim is over: a live rect in client px, or null for free aim. */
-function acquire(x: number, y: number, canvas: HTMLCanvasElement): Lock | null {
+function acquire(x: number, y: number, canvas: HTMLCanvasElement): AimLock | null {
   const hit = document.elementFromPoint(x, y)
-  if (!hit || hit === canvas || hit.closest('[data-aim="off"]')) return null
-  const act = hit.closest(ACT)
-  if (act) return { kind: 'act', rect: () => act.getBoundingClientRect() }
-  const media = hit.closest(MEDIA)
-  if (media) return { kind: 'media', rect: () => media.getBoundingClientRect() }
-  const text = hit.closest(TEXT)
-  if (!text) return null
-  const line = textLine(text, x, y)
-  if (!line) return null
-  // Keep the line pinned to its element when the page scrolls under the lock.
-  const anchor = text.getBoundingClientRect()
-  const dx = line.x - anchor.x
-  const dy = line.y - anchor.y
-  return {
-    kind: 'text',
-    rect: () => {
-      const now = text.getBoundingClientRect()
-      return new DOMRect(now.x + dx, now.y + dy, line.width, line.height)
-    },
-  }
+  return hit === canvas ? null : lockAt(hit, x, y)
 }
 
 /** The reticle: plain DOM above the content, so it reads over text and images. */
@@ -467,7 +422,7 @@ export function createShaderField(
   const smooth = { x: 0, y: 0, on: 0 }
   const box: Rect = { x0: 0, y0: 0, x1: 0, y1: 0 }
   let boxLive = false
-  let lock: Lock | null = null
+  let lock: AimLock | null = null
   let aimDirty = true
   let speed = 0
   let gap = 0

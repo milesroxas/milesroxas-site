@@ -33,6 +33,19 @@ describe('collectVisualMediaRefs', () => {
     expect(refs).toEqual([1, 2, 3, 4])
   })
 
+  it('walks each Media list item', () => {
+    const refs = collectVisualMediaRefs([
+      {
+        blockType: 'mediaList',
+        items: [
+          { title: 'a', media: 1 },
+          { title: 'b', media: 2 },
+        ],
+      },
+    ])
+    expect(refs).toEqual([1, 2])
+  })
+
   it('tolerates empty and malformed layouts', () => {
     expect(collectVisualMediaRefs(null)).toEqual([])
     expect(collectVisualMediaRefs([null, 'x', { blocks: 'nope' }])).toEqual([])

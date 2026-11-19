@@ -4,7 +4,8 @@
  * Every upload field on a layout block ends in "media" (media, portraitMedia,
  * largeMedia, posterMedia inside a shader group, …); non-upload matches like
  * `browseAllMedia` are booleans and fall out of the later `relationshipIds`
- * pass. Repeating rows (carousel `slides[]`, the tabs blocks' `tabs[]`) are
+ * pass. Repeating rows (carousel `slides[]`, the tabs blocks' `tabs[]`, Media
+ * list `items[]`) are
  * walked with the same rules, and Section `blocks[]` recurse, so a block
  * nested in a Section is gated like a top-level one. Hidden but retained
  * references (an upload kept beside a shader choice) are included on
@@ -13,7 +14,7 @@
 type BlockLike = Record<string, unknown>
 
 /** The repeating fields whose rows carry their own media or visual slot. */
-const ROW_KEYS = ['slides', 'tabs'] as const
+const ROW_KEYS = ['slides', 'tabs', 'items'] as const
 
 const mediaKeys = (block: BlockLike): unknown[] =>
   Object.entries(block).flatMap(([key, value]) => {

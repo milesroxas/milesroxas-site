@@ -15,6 +15,7 @@ import { FullMediaBlock } from '@/blocks/full-media/Component'
 import { ImagePairBlock } from '@/blocks/image-pair/Component'
 import { InsightListBlock } from '@/blocks/insight-list/Component'
 import { MediaContentSplitBlock } from '@/blocks/media-content-split/Component'
+import { MediaListBlock } from '@/blocks/media-list/Component'
 import { RichTextBlock } from '@/blocks/rich-text/Component'
 import { RichTransitionBlock } from '@/blocks/rich-transition/Component'
 import { SplitContentNarrowBlock } from '@/blocks/split-content/Component'
@@ -56,6 +57,7 @@ export const sectionChildComponents = {
   imagePair: ImagePairBlock,
   insightList: InsightListBlock,
   mediaContentSplit: MediaContentSplitBlock,
+  mediaList: MediaListBlock,
   richText: RichTextBlock,
   richTransition: RichTransitionBlock,
   splitContentNarrow: SplitContentNarrowBlock,

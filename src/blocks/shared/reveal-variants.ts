@@ -44,6 +44,7 @@ const blockRevealVariants = {
   insightList: 'intro',
   mediaBlock: 'frame',
   mediaContentSplit: 'underMedia',
+  mediaList: 'underMedia',
   richText: 'intro',
   richTransition: 'intro',
   slider: 'frame',

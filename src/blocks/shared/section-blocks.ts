@@ -16,6 +16,7 @@ import { FullMedia } from '@/blocks/full-media/config'
 import { ImagePair } from '@/blocks/image-pair/config'
 import { InsightList } from '@/blocks/insight-list/config'
 import { MediaContentSplit } from '@/blocks/media-content-split/config'
+import { MediaList } from '@/blocks/media-list/config'
 import { RichTextBlock } from '@/blocks/rich-text/config'
 import { RichTransition } from '@/blocks/rich-transition/config'
 import { SplitContentNarrow } from '@/blocks/split-content/config'
@@ -48,6 +49,7 @@ export const sectionNestableBlocks: Block[] = [
   FullMedia,
   MediaContentSplit,
   SplitContentNarrow,
+  MediaList,
   CarouselSplit,
   ImagePair,
   SplitImageOffset,
