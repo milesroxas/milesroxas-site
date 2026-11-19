@@ -1006,6 +1006,61 @@
   }
 }
 
+/* The Lift opening's figure (src/heros/LiftHero, `BEAT`): the baseline
+   traces and the band draws from left to right, clipped, never reshaped.
+   The readout's digit strips roll on the band's exact curve and length, so
+   the count lands as the line does. Labels take `hero-in` on `transform`,
+   because they sit on their own `translate`. Reduced motion fades each part
+   in, capped at 300ms of delay. */
+@theme inline {
+  --animate-lift-trace: lift-wipe 1100ms var(--ease-out-quint) var(--enter-at, 0ms) both;
+  --animate-lift-draw: lift-wipe 1800ms cubic-bezier(0.5, 0, 0.2, 1) var(--enter-at, 0ms) both;
+  --animate-lift-count: lift-count 1800ms cubic-bezier(0.5, 0, 0.2, 1) var(--enter-at, 0ms) both;
+  --animate-lift-power: lift-power 380ms linear var(--enter-at, 0ms) both;
+  --animate-lift-in: lift-in 700ms var(--ease-out-quint) var(--enter-at, 0ms) both;
+  --animate-lift-fade: hero-fade 300ms ease min(var(--enter-at, 0ms), 300ms) both;
+
+  @keyframes lift-wipe {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  /* To the strip's own resting `translate`, the gain. */
+  @keyframes lift-count {
+    from {
+      translate: 0 0;
+    }
+  }
+  /* A pixel display switching on: two hard flickers, then lit. */
+  @keyframes lift-power {
+    0%,
+    35% {
+      opacity: 0;
+    }
+    20%,
+    55% {
+      opacity: 1;
+    }
+    70% {
+      opacity: 0.35;
+    }
+    85%,
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes lift-in {
+    from {
+      opacity: 0;
+      filter: blur(4px);
+      transform: translateY(0.5rem);
+    }
+  }
+}
+
 /* Carousel tabs: an ink crossing the chosen row's hairline while its deck's
    first picture loads (src/blocks/carousel-tabs/DeckControls.tsx). */
 @theme {

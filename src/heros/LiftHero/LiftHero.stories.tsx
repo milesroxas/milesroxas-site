@@ -12,7 +12,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A dark opening whose figure is a score stepping up from the first version to the latest, over a dashed baseline. The fluoro readout is the gain.',
+          "An opening in the visitor's theme whose figure is a score stepping up from the first version to the latest, over a dashed baseline. The readout is the gain: fluoro digits on the dark ground, ink on a fluoro plate on paper. On load the copy enters, the baseline traces, then the band draws from left to right while the readout counts the gain.",
       },
     },
   },
