@@ -82,7 +82,11 @@ export default async function Page({ params: paramsPromise }: Args) {
       <PayloadRedirects disableNotFound url={url} />
       {draft && <LivePreviewListener />}
       <RenderHero {...hero} />
-      {gated ? <MembersGate kind="page" next={url} /> : <RenderBlocks blocks={layout} />}
+      {gated ? (
+        <MembersGate kind="page" next={url} />
+      ) : (
+        <RenderBlocks blocks={layout} callOutVeil={false} />
+      )}
       {!gated && showContents && <ContentsButton />}
     </article>
   )

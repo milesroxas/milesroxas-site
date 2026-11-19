@@ -37,7 +37,7 @@ type SectionChildBlock = NonNullable<PageSectionBlock['blocks']>[number]
 
 type FlatBlock = Exclude<LayoutBlock, { blockType: 'section' }> | SectionChildBlock
 
-const legacyBlockBody = (block: FlatBlock) => {
+const legacyBlockBody = (block: FlatBlock, callOutVeil: boolean) => {
   switch (block.blockType) {
     case 'archive':
       return <ArchiveBlock {...block} />
@@ -54,7 +54,7 @@ const legacyBlockBody = (block: FlatBlock) => {
     case 'tabs':
       return <TabsBlock {...block} />
     case 'callout':
-      return <CallOutBlock {...block} />
+      return <CallOutBlock {...block} veil={callOutVeil} />
     default:
       return undefined
   }
@@ -72,8 +72,8 @@ const legacyWrapperClassName = (block: FlatBlock) => {
  * own theme and spacing. `content` renders here inside a Section too, where it
  * keeps the same wrapper.
  */
-const renderLegacyBlock = (block: FlatBlock, blockKey: React.Key) => {
-  const body = legacyBlockBody(block)
+const renderLegacyBlock = (block: FlatBlock, blockKey: React.Key, callOutVeil: boolean) => {
+  const body = legacyBlockBody(block, callOutVeil)
   if (body === undefined) return undefined
   return withBlockReveal(block.blockType, blockKey, body, legacyWrapperClassName(block))
 }
@@ -83,8 +83,13 @@ const renderLegacyBlock = (block: FlatBlock, blockKey: React.Key) => {
  * entrance `reveal-variants.ts` assigns it (`bare` inside a Section, whose
  * band it sits on).
  */
-const renderFlatBlock = (block: FlatBlock, blockKey: React.Key, bare: boolean) => {
-  const legacy = renderLegacyBlock(block, blockKey)
+const renderFlatBlock = (
+  block: FlatBlock,
+  blockKey: React.Key,
+  bare: boolean,
+  callOutVeil: boolean,
+) => {
+  const legacy = renderLegacyBlock(block, blockKey, callOutVeil)
   if (legacy !== undefined) return legacy
   return renderContentBlock(block, blockKey, bare, sectionChildComponents)
 }
@@ -111,9 +116,11 @@ const withBandEdge = (node: React.ReactNode, edge: string | undefined, blockKey:
     node
   )
 
-export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }> = async ({
-  blocks,
-}) => {
+export const RenderBlocks: React.FC<{
+  blocks: LayoutBlock[] | null | undefined
+  /** The Call Out's bottom fade; Pages entries turn it off. */
+  callOutVeil?: boolean
+}> = async ({ blocks, callOutVeil = true }) => {
   if (!Array.isArray(blocks) || blocks.length === 0) return null
 
   // Protected works resolve to their fallbacks; the visitor's cookie is read
@@ -140,7 +147,7 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
               theme={block.theme}
             >
               {(block.blocks ?? []).map((child, childIndex) =>
-                renderFlatBlock(child, blockKeys.fromBlock(child, childIndex), true),
+                renderFlatBlock(child, blockKeys.fromBlock(child, childIndex), true, callOutVeil),
               )}
             </SectionBand>,
             edges[index],
@@ -149,7 +156,7 @@ export const RenderBlocks: React.FC<{ blocks: LayoutBlock[] | null | undefined }
         }
 
         // Legacy blocks carry their own spacing in their own wrapper.
-        const legacy = renderLegacyBlock(block, blockKey)
+        const legacy = renderLegacyBlock(block, blockKey, callOutVeil)
         if (legacy !== undefined) return legacy
         return withBandEdge(
           renderContentBlock(block, blockKey, false, sectionChildComponents),

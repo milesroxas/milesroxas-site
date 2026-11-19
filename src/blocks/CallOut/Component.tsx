@@ -4,14 +4,23 @@ import { ScrollReveal } from '@/shared/ui/scroll-reveal'
 
 // Past the shared gate: the bottom veil hides the copy's first stretch
 // above the fold, and the entrance has to play where it can be seen.
-const ENTER_OFFSET = 0.4
+const VEILED_ENTER_OFFSET = 0.4
 
-export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => (
+/** `veil: false` drops the bottom fade (Pages entries); the home page keeps it. */
+export const CallOutBlock: React.FC<CallOutBlockProps & { veil?: boolean }> = ({
+  richText,
+  veil = true,
+}) => (
   // Type on the page, not a painted band: a `data-theme` pin would make the
   // dock swap material while it floats over this scroll. The veil fades the
   // words out through the dock's band so they don't show through the glass;
   // the bottom padding matches it so copy at rest never sits underneath.
-  <ScrollReveal as="div" className="relative" enterOffset={ENTER_OFFSET} variant="intro">
+  <ScrollReveal
+    as="div"
+    className="relative"
+    enterOffset={veil ? VEILED_ENTER_OFFSET : undefined}
+    variant="intro"
+  >
     <div className="container flex min-h-[50dvh] items-center justify-center pt-16 pb-36">
       <div
         className="text-heading-2/snug w-full max-w-[46ch] text-center font-light text-balance"
@@ -20,9 +29,11 @@ export const CallOutBlock: React.FC<CallOutBlockProps> = ({ richText }) => (
         {richText && <RichText className="mb-0" data={richText} />}
       </div>
     </div>
-    <div
-      aria-hidden
-      className="from-background pointer-events-none sticky bottom-0 z-10 -mt-36 h-36 bg-gradient-to-t from-65% to-transparent"
-    />
+    {veil && (
+      <div
+        aria-hidden
+        className="from-background pointer-events-none sticky bottom-0 z-10 -mt-36 h-36 bg-gradient-to-t from-65% to-transparent"
+      />
+    )}
   </ScrollReveal>
 )
