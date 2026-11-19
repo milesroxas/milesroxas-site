@@ -135,10 +135,7 @@
   width: fit-content;
 }
 
-.bs-case-headings .lc-h,
-.bs-case-all .lc-h,
-.bs-case-all .t-body,
-.bs-case-all .t-lead {
+.bs-case-nav .lc {
   text-transform: lowercase;
 }
 

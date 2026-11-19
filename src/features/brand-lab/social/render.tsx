@@ -3,11 +3,11 @@ import type { ReactElement, ReactNode } from 'react'
 import { FAMILIES, INK, MONO } from '../config'
 import { CASE, type LabWork, POSTS, WORKS, workById } from '../content'
 import { createRng } from '../random'
-import { palette, renderBrand } from '../render'
+import { headlineCase, palette, renderBrand } from '../render'
 import { FORMATS, type SocialConfig } from './config'
 
 type Box = { x: number; y: number; w: number; h: number }
-type Kind = 'caps' | 'lower' | 'mono'
+type Kind = 'caps' | 'text' | 'mono'
 
 const r1 = (v: number) => Math.round(v * 10) / 10
 const pad2 = (n: number) => String(n).padStart(2, '0')
@@ -252,12 +252,12 @@ export function renderSocial(cfg: SocialConfig, opts: { idPrefix?: string } = {}
     const metaLines = square ? 1 : 2
     // Rule 6: the long title drops to body size; the project name is the moment.
     const title = fitLines(
-      work.title.toLowerCase(),
+      headlineCase(work.title),
       { w: tbW, h: body * 3 },
       {
         max: body,
         min: body,
-        kind: 'lower',
+        kind: 'text',
         weight: wf,
         tracking: -0.01,
         lh: 1.3,
@@ -367,12 +367,12 @@ export function renderSocial(cfg: SocialConfig, opts: { idPrefix?: string } = {}
 
   if (cfg.template === 'post') {
     const post = POSTS[cfg.postIndex] ?? POSTS[0]
-    const text = (cfg.headline.trim() || post?.title || '').toLowerCase()
+    const text = headlineCase(cfg.headline.trim() || post?.title || '')
     const box = { w: C.w * (landscape ? 0.82 : 1), h: C.h - meta * 9 }
     const t = fitLines(text, box, {
       max: S * 0.12,
       min: meta * 1.4,
-      kind: 'lower',
+      kind: 'text',
       weight: wf,
       tracking: -0.03,
       lh: 1.02,

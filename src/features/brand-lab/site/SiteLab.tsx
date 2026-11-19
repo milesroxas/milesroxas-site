@@ -230,7 +230,7 @@ export function SiteLab() {
             >
               {CASE_MODES.map((m) => (
                 <option key={m} value={m}>
-                  {m === 'headings' ? 'nav + headings' : m === 'all' ? 'everything' : 'nothing'}
+                  {m === 'nav' ? 'nav + labels' : 'nothing'}
                 </option>
               ))}
             </select>

@@ -3,7 +3,7 @@ import type { CSSProperties, ReactElement, ReactNode } from 'react'
 import { type BrandConfig, FAMILIES, MONO, PIXEL, SLOGANS } from '../config'
 import { CASE, HOME, type LabWork, POSTS, SITE, WORKS, workById } from '../content'
 import { createRng, type Rng } from '../random'
-import { palette, renderBrand } from '../render'
+import { nameCase, palette, renderBrand } from '../render'
 import { PAGE_SECTIONS, type SectionKey, type SiteConfig } from './config'
 
 type Ctx = { site: SiteConfig; brand: BrandConfig; cols: number }
@@ -71,7 +71,7 @@ function WorkCard({ work, ctx }: { work: LabWork; ctx: Ctx }) {
           <Meta className="fg">{part(ctx.brand, workIndex(work))}</Meta>
           <Meta>{work.capabilities.slice(0, 2).join(' · ')}</Meta>
         </div>
-        <p className="t-body lc-h bs-card-title">{work.title}</p>
+        <p className="t-body bs-card-title">{work.title}</p>
         <Meta>{work.client}</Meta>
       </div>
     </a>
@@ -95,7 +95,7 @@ function PartList({ works, ctx, showThumb }: { works: LabWork[]; ctx: Ctx; showT
               // biome-ignore lint/performance/noImgElement: lab preview thumbnail.
               <img alt="" className="bs-part-thumb" loading="lazy" src={w.image} />
             ) : null}
-            <span className="t-body lc-h">{w.title}</span>
+            <span className="t-body">{w.title}</span>
           </span>
           <span className="t-body muted">{w.client}</span>
           <Meta>{w.role ?? 'n/a'}</Meta>
@@ -155,17 +155,17 @@ function Nav({ ctx }: { ctx: Ctx }) {
         <Meta className="fg">{brand.code}</Meta>
         <a className="bs-key" href="#home">
           <Meta>00</Meta>
-          <span className="lc-h">{brand.name}</span>
+          <span className="lc">{brand.name}</span>
         </a>
         {SITE.nav.map((l, i) => (
           <a className={`bs-key ${i === active ? 'on' : ''}`} href={`#${l}`} key={l}>
             <Meta>{pad2(i + 1)}</Meta>
-            <span className="lc-h">{l}</span>
+            <span className="lc">{l}</span>
           </a>
         ))}
         <span className="bs-key">
           <Meta>⌘K</Meta>
-          <span className="lc-h">Ask</span>
+          <span className="lc">Ask</span>
         </span>
       </nav>
     )
@@ -180,7 +180,7 @@ function Nav({ ctx }: { ctx: Ctx }) {
           {SITE.nav.map((l, i) => (
             <a className={i === active ? 'on' : ''} href={`#${l}`} key={l}>
               <Meta>{pad2(i + 1)}</Meta>
-              <span className="t-body lc-h">{l}</span>
+              <span className="t-body lc">{l}</span>
             </a>
           ))}
         </nav>
@@ -190,7 +190,7 @@ function Nav({ ctx }: { ctx: Ctx }) {
   }
   return (
     <header className="bs-sec bs-navbar">
-      <span className="t-body lc-h">
+      <span className="t-body lc">
         {brand.name}
         <sup className="t-meta fg">™</sup>
       </span>
@@ -198,7 +198,7 @@ function Nav({ ctx }: { ctx: Ctx }) {
         {SITE.nav.map((l, i) => (
           <a className={i === active ? 'on' : ''} href={`#${l}`} key={l}>
             <Meta>{pad2(i + 1)}</Meta>
-            <span className="t-body lc-h">{l}</span>
+            <span className="t-body lc">{l}</span>
           </a>
         ))}
       </nav>
@@ -206,7 +206,7 @@ function Nav({ ctx }: { ctx: Ctx }) {
         <Meta className="fg">{brand.code}</Meta>
         <span className="bs-key">
           <Meta>⌘K</Meta>
-          <span className="lc-h">Ask</span>
+          <span className="lc">Ask</span>
         </span>
       </span>
     </header>
@@ -224,7 +224,7 @@ function Hero({ ctx }: { ctx: Ctx }) {
       <section className="bs-poster">
         {renderBrand(brand, { idPrefix: 'site', bare: true, title: 'Opening moment' })}
         <div className="bs-sec bs-g">
-          <p className="t-lead lc-h" style={col(ctx, 0.66)}>
+          <p className="t-lead" style={col(ctx, 0.66)}>
             {SITE.tagline}
           </p>
         </div>
@@ -232,7 +232,7 @@ function Hero({ ctx }: { ctx: Ctx }) {
     )
   }
   if (v === 1) {
-    const name = brand.name.toLowerCase()
+    const name = nameCase(brand.name)
     return (
       <section className="bs-sec bs-hero-name">
         <h1
@@ -246,7 +246,7 @@ function Hero({ ctx }: { ctx: Ctx }) {
           <Meta className="fg">{SITE.jobTitle}</Meta>
         </div>
         <div className="bs-g">
-          <p className="t-lead lc-h" style={col(ctx, 0.66)}>
+          <p className="t-lead" style={col(ctx, 0.66)}>
             {SITE.tagline}
           </p>
         </div>
@@ -308,7 +308,7 @@ function Overview({ ctx }: { ctx: Ctx }) {
           </span>
           <Meta>years in practice</Meta>
         </div>
-        <p className="t-lead lc-h" style={col(ctx, 0.58, 0.42)}>
+        <p className="t-lead" style={col(ctx, 0.58, 0.42)}>
           {HOME.overview}
         </p>
       </section>
@@ -317,7 +317,7 @@ function Overview({ ctx }: { ctx: Ctx }) {
   return (
     <section className="bs-sec bs-g bs-overview">
       <Meta className="fg">00 / overview</Meta>
-      <p className="t-lead lc-h" style={col(ctx, 0.75, 0.25)}>
+      <p className="t-lead" style={col(ctx, 0.75, 0.25)}>
         {HOME.overview}
       </p>
     </section>
@@ -358,7 +358,7 @@ function Capabilities({ ctx }: { ctx: Ctx }) {
               <div className={`bs-legend-row ${i === live ? 'on' : ''}`} key={c.title}>
                 <Meta className="fg">{pad2(i + 1)}</Meta>
                 <div>
-                  <h3 className="t-lead lc-h">{c.title}</h3>
+                  <h3 className="t-lead">{c.title}</h3>
                   <p className="t-body muted">{c.body}</p>
                 </div>
               </div>
@@ -375,7 +375,7 @@ function Capabilities({ ctx }: { ctx: Ctx }) {
         {HOME.capabilities.map((c, i) => (
           <a className="bs-g bs-row" href="#work" key={c.title}>
             <Meta className="fg">{pad2(i + 1)}</Meta>
-            <h3 className="t-lead lc-h" style={col(ctx, 0.42, 0.08)}>
+            <h3 className="t-lead" style={col(ctx, 0.42, 0.08)}>
               {c.title}
             </h3>
             <p className="t-body muted" style={col(ctx, 0.33)}>
@@ -394,7 +394,7 @@ function Capabilities({ ctx }: { ctx: Ctx }) {
         {HOME.capabilities.map((c, i) => (
           <div className="bs-capcol" key={c.title} style={col(ctx, 1 / 3)}>
             <Meta className="fg">{pad2(i + 1)}</Meta>
-            <h3 className="t-lead lc-h">{c.title}</h3>
+            <h3 className="t-lead">{c.title}</h3>
             <p className="t-body muted">{c.body}</p>
             <ul>
               {c.works.map((id) => (
@@ -423,7 +423,7 @@ function WorkList({ ctx, works, variant }: { ctx: Ctx; works: LabWork[]; variant
           </div>
           <div className="bs-plate" style={col(ctx, 0.34)}>
             <Meta className="fg">{part(ctx.brand, workIndex(first))}</Meta>
-            <h3 className="t-lead lc-h">{first.title}</h3>
+            <h3 className="t-lead">{first.title}</h3>
             <p className="t-body muted">{first.description}</p>
             <Meta>
               {first.client} / {first.role}
@@ -458,7 +458,7 @@ function Selected({ ctx }: { ctx: Ctx }) {
 function About({ ctx }: { ctx: Ctx }) {
   const prose = (
     <div className="bs-prose" style={col(ctx, 0.58, 0.42)}>
-      <h2 className="t-lead lc-h">{HOME.about.heading}</h2>
+      <h2 className="t-lead">{HOME.about.heading}</h2>
       {HOME.about.paragraphs.map((p) => (
         <p className="t-body" key={p.slice(0, 24)}>
           {p}
@@ -505,7 +505,7 @@ function Writing({ ctx }: { ctx: Ctx }) {
           {POSTS.map((p, i) => (
             <a className="bs-postcard" href="#post" key={p.title} style={col(ctx, 0.5)}>
               <Meta className="fg">P–{pad2(i + 1)}</Meta>
-              <h3 className="t-lead lc-h">{p.title}</h3>
+              <h3 className="t-lead">{p.title}</h3>
               <Meta>{p.date}</Meta>
             </a>
           ))}
@@ -519,7 +519,7 @@ function Writing({ ctx }: { ctx: Ctx }) {
       {POSTS.map((p) => (
         <a className="bs-receipt" href="#post" key={p.title}>
           <Meta>{p.date}</Meta>
-          <span className="t-body lc-h">{p.title}</span>
+          <span className="t-body">{p.title}</span>
           <span className="bs-leader" />
           <Meta className="fg">read →</Meta>
         </a>
@@ -536,11 +536,11 @@ function WorksHeader({ ctx }: { ctx: Ctx }) {
     for (const w of WORKS) for (const c of w.capabilities) caps.set(c, (caps.get(c) ?? 0) + 1)
     return (
       <section className="bs-sec">
-        <h1 className="t-lead lc-h">Work</h1>
+        <h1 className="t-lead">Work</h1>
         <div className="bs-keys">
           <span className="bs-key on">
             <Meta>{WORKS.length}</Meta>
-            <span className="lc-h">All</span>
+            <span className="lc">All</span>
           </span>
           {[...caps.entries()]
             .sort((a, b) => b[1] - a[1])
@@ -548,7 +548,7 @@ function WorksHeader({ ctx }: { ctx: Ctx }) {
             .map(([c, n]) => (
               <span className="bs-key" key={c}>
                 <Meta>{n}</Meta>
-                <span className="lc-h">{c}</span>
+                <span className="lc">{c}</span>
               </span>
             ))}
         </div>
@@ -559,9 +559,9 @@ function WorksHeader({ ctx }: { ctx: Ctx }) {
     <section className="bs-sec bs-works-head">
       <h1
         className="t-display"
-        style={{ fontSize: fitType('work', 11 * ctx.brand.scale * 1.4, 40, 0.52) }}
+        style={{ fontSize: fitType('Work', 11 * ctx.brand.scale * 1.4, 40, 0.52) }}
       >
-        work
+        Work
       </h1>
       <Meta className="fg">{pad2(WORKS.length)} entries / brand · product · technology</Meta>
     </section>
@@ -600,7 +600,7 @@ function CaseHero({ ctx }: { ctx: Ctx }) {
             ))}
           </div>
           <div className="bs-g">
-            <h1 className="t-lead lc-h bs-case-title" style={col(ctx, 0.66)}>
+            <h1 className="t-lead bs-case-title" style={col(ctx, 0.66)}>
               {work.title}
             </h1>
             <p className="t-body muted" style={col(ctx, 0.5)}>
@@ -634,7 +634,7 @@ function CaseHero({ ctx }: { ctx: Ctx }) {
       <Meta className="fg">part {part(brand, workIndex(work))} / case study</Meta>
       <div className="bs-g">
         <div style={col(ctx, 0.66)}>
-          <h1 className="t-lead lc-h bs-case-title">{work.title}</h1>
+          <h1 className="t-lead bs-case-title">{work.title}</h1>
           <p className="t-body muted">{work.description}</p>
         </div>
         <div className="bs-specsheet" style={col(ctx, 0.34, 0.66)}>
@@ -657,7 +657,7 @@ function Chapter({ ctx, i, wide }: { ctx: Ctx; i: number; wide?: boolean }) {
   if (!c) return null
   return (
     <article className="bs-chapter" id={`ch${i + 1}`}>
-      <h2 className="t-lead lc-h">{c.heading}</h2>
+      <h2 className="t-lead">{c.heading}</h2>
       <p className="t-body">{c.body}</p>
       <div className="bs-outcome" style={wide ? undefined : { maxWidth: '60ch' }}>
         <Meta className="fg">→ what I built</Meta>
@@ -693,7 +693,7 @@ function Story({ ctx }: { ctx: Ctx }) {
           {CASE.chapters.map((c, i) => (
             <a className={i === 0 ? 'on' : ''} href={`#ch${i + 1}`} key={c.heading}>
               <Meta className="fg">{pad2(i + 1)}</Meta>
-              <span className="t-body lc-h">{c.heading}</span>
+              <span className="t-body">{c.heading}</span>
             </a>
           ))}
         </nav>
@@ -727,7 +727,7 @@ function Related({ ctx }: { ctx: Ctx }) {
       <section>
         <a className="bs-nextbar" href="#next">
           <Meta>next / {next ? part(ctx.brand, workIndex(next)) : ''}</Meta>
-          <span className="t-lead lc-h">{next?.title} →</span>
+          <span className="t-lead">{next?.title} →</span>
         </a>
         <div className="bs-sec">
           <PartList ctx={ctx} works={rest} />
@@ -764,7 +764,7 @@ function Footer({ ctx }: { ctx: Ctx }) {
       ) : null}
       <div className="bs-sec bs-g bs-colophon">
         <div style={col(ctx, 1 / 3)}>
-          <p className="t-body lc-h">
+          <p className="t-body lc">
             {brand.name}
             <sup className="t-meta fg">™</sup>
           </p>

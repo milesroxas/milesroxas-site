@@ -19,7 +19,7 @@ import { createRng, type Rng } from './random'
 export const RENDER_WIDTH = 1600
 
 type Rect = { x: number; y: number; w: number; h: number }
-type Kind = 'caps' | 'lower' | 'mono'
+type Kind = 'caps' | 'text' | 'mono'
 
 export type Palette = {
   bg: string
@@ -123,6 +123,12 @@ const contrast = (a: string, b: string) => {
 }
 const readableOn = (bg: string, light: string) =>
   contrast(bg, light) >= contrast(bg, INK) ? light : INK
+
+/** A headline is never all lowercase: it starts with a capital. */
+export const headlineCase = (text: string) => text.replace(/^\s*\p{Ll}/u, (c) => c.toUpperCase())
+
+/** A name set as a headline capitalises every word. */
+export const nameCase = (text: string) => text.replace(/(^|\s)\p{Ll}/gu, (c) => c.toUpperCase())
 
 export function palette(cfg: BrandConfig): Palette {
   const paper = PAPERS[cfg.paper]?.hex ?? '#f5f5f5'
@@ -332,7 +338,7 @@ function frameOver(ctx: Ctx, moment: Rect | null): ReactNode[] {
   const out: ReactNode[] = []
   const yName = m + body * 0.8
   const name = cfg.name.toLowerCase()
-  const nameW = measure(name, body, 'lower', cfg.frameWeight, -0.01)
+  const nameW = measure(name, body, 'text', cfg.frameWeight, -0.01)
 
   out.push(
     txt({
@@ -405,7 +411,7 @@ function frameOver(ctx: Ctx, moment: Rect | null): ReactNode[] {
   const fitsFour =
     cols >= 8 &&
     SPEC.every(
-      ([, v]) => measure(v, body, 'lower', cfg.frameWeight, -0.01) < ctx.span(Math.floor(cols / 4)),
+      ([, v]) => measure(v, body, 'text', cfg.frameWeight, -0.01) < ctx.span(Math.floor(cols / 4)),
     )
   const blocks = fitsFour ? 4 : 2
   const step = Math.floor(cols / blocks)
@@ -572,8 +578,8 @@ type Moment = { node: ReactNode; rect: Rect | null }
 function frameMode(ctx: Ctx): Moment {
   const { cfg, meta: mt, pal, sans } = ctx
   const sp = chooseSpan(ctx, 0.6)
-  const text = cfg.name.toLowerCase()
-  const size = fitSize(text, sp.w, 'lower', cfg.frameWeight, -0.03, mt * cfg.scale)
+  const text = nameCase(cfg.name)
+  const size = fitSize(text, sp.w, 'text', cfg.frameWeight, -0.03, mt * cfg.scale)
   const h = size * 0.95
   const y = placeY(ctx, h)
   const base = y + size * 0.74

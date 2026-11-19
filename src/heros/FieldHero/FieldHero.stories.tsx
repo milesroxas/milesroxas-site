@@ -12,7 +12,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The aim field grounds the whole band under a lowercase statement; the rule at its foot reads what the reticle is locked on. Move the pointer over the copy and click to fire a ripple.',
+          'The aim field grounds the whole band under a light statement; the rule at its foot reads what the reticle is locked on. Move the pointer over the copy and click to fire a ripple.',
       },
     },
   },

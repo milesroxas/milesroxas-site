@@ -13,7 +13,7 @@ export const heroMeta =
   'font-mono text-[11px] leading-snug tracking-[0.06em] whitespace-nowrap text-muted-foreground uppercase tabular-nums'
 
 /**
- * A frame hero's copy: its rich text as a light lowercase statement over a
+ * A frame hero's copy: its rich text as a light statement over a
  * plain lede, then its links. Prose styles are off so the type tokens set
  * the voice; `titleClassName` lets a hero push the statement past
  * `text-display` when the band is all type.
@@ -26,7 +26,7 @@ export const HeroCopy: React.FC<
       <RichText
         className={cn(
           'flex flex-col gap-6',
-          '[&_h1]:text-display [&_h1]:text-balance [&_h1]:lowercase',
+          '[&_h1]:text-display [&_h1]:text-balance',
           '[&_p]:max-w-[44ch] [&_p]:text-lg [&_p]:text-pretty',
           titleClassName,
         )}

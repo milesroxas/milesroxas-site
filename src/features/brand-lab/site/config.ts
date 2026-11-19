@@ -120,7 +120,7 @@ export const PAGE_SECTIONS: Record<Page, SectionDef[]> = {
   ],
 }
 
-export const CASE_MODES = ['headings', 'all', 'none'] as const
+export const CASE_MODES = ['nav', 'none'] as const
 export type CaseMode = (typeof CASE_MODES)[number]
 
 export type SiteConfig = {
@@ -155,7 +155,7 @@ export const DEFAULT_SITE: SiteConfig = {
   kind: 'site',
   page: 'home',
   viewport: 'desktop',
-  caseMode: 'headings',
+  caseMode: 'nav',
   lead: 1.9,
   variants: DEFAULT_VARIANTS,
   brand: DEFAULT_CONFIG,
@@ -183,7 +183,7 @@ export function normalizeSite(input: Partial<SiteConfig> | null | undefined): Si
     kind: 'site',
     page: PAGES.includes(c.page as Page) ? (c.page as Page) : DEFAULT_SITE.page,
     viewport: c.viewport === 'mobile' ? 'mobile' : 'desktop',
-    caseMode: CASE_MODES.includes(c.caseMode as CaseMode) ? (c.caseMode as CaseMode) : 'headings',
+    caseMode: CASE_MODES.includes(c.caseMode as CaseMode) ? (c.caseMode as CaseMode) : 'nav',
     lead:
       typeof c.lead === 'number' && Number.isFinite(c.lead)
         ? Math.min(3, Math.max(1, c.lead))
