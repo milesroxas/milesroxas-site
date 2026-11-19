@@ -47,7 +47,7 @@ export function CtaStrip({ target }: { target: CtaTarget }) {
           </span>
         </div>
         <div className="col-span-12 flex flex-col gap-3 md:col-span-8">
-          <h2 className="text-[2.1rem] leading-[1.1] font-light tracking-[-0.02em] text-balance lowercase">
+          <h2 className="text-[2.1rem] leading-[1.1] font-light tracking-[-0.02em] text-balance">
             <a
               className="group-data-[committed]/cta:text-accent transition-[color] duration-300 outline-none"
               href={target.href}

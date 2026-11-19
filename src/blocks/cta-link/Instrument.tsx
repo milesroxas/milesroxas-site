@@ -62,7 +62,7 @@ export function CtaInstrument({ target }: { target: CtaTarget }) {
           </span>
         </div>
         <h2
-          className="max-w-[22ch] text-[2.1rem] leading-[1.1] font-light tracking-[-0.02em] text-balance lowercase"
+          className="max-w-[22ch] text-[2.1rem] leading-[1.1] font-light tracking-[-0.02em] text-balance"
           data-reveal
         >
           <a

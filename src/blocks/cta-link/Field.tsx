@@ -43,7 +43,7 @@ export function CtaField({ target }: { target: CtaTarget }) {
           </span>
         </div>
         <h2
-          className="max-w-[16ch] text-[clamp(2.75rem,7vw,8rem)] leading-[0.98] font-light tracking-[-0.035em] text-balance lowercase md:max-w-[20ch]"
+          className="max-w-[16ch] text-[clamp(2.75rem,7vw,8rem)] leading-[0.98] font-light tracking-[-0.035em] text-balance md:max-w-[20ch]"
           data-reveal
         >
           <a
