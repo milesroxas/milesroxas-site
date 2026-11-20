@@ -172,6 +172,12 @@ export type PaintSource = { kind: 'image'; src: string } | { kind: 'video'; post
 /** A video tab's live layer: the player's wrapper and its `<video>`, read when a swap needs them. */
 export type LiveLayer = { wrap: HTMLElement | null; video: HTMLVideoElement | null }
 
+/** The progress counter's entrance, its hold on 100 once the paint lands, and its exit (ms). */
+const READOUT_IN = 200
+const READOUT_HOLD = 300
+const READOUT_OUT = 400
+const READOUT_EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
+
 /** How long a swap waits for a video's first frame before painting its poster (ms). */
 const FRAME_HOLD = 600
 /** The canvas fading off a poster onto the playing video, where the two can differ (ms). */
@@ -473,6 +479,18 @@ export function PixelPaint({
       }
     }
 
+    /** The counter shows only while a paint runs: in as it starts, out a beat after it lands. */
+    const showReadout = (on: boolean) => {
+      const el = readout?.current
+      if (!el) return
+      el.style.transition = reduced.matches
+        ? 'none'
+        : on
+          ? `opacity ${READOUT_IN}ms ${READOUT_EASE}`
+          : `opacity ${READOUT_OUT}ms ${READOUT_EASE} ${READOUT_HOLD}ms`
+      el.style.opacity = on && !reduced.matches ? '1' : '0'
+    }
+
     const setCanvas = (visible: boolean, fade = 0) => {
       canvas.style.transition = fade ? `opacity ${fade}ms cubic-bezier(0.23, 1, 0.32, 1)` : 'none'
       canvas.style.opacity = visible ? '1' : '0'
@@ -557,6 +575,7 @@ export function PixelPaint({
       if (raw < 1) raf = requestAnimationFrame(frame)
       else {
         raf = 0
+        showReadout(false)
         handoff(next, gen)
       }
     }
@@ -591,6 +610,7 @@ export function PixelPaint({
       if (g !== gen) return
       seed = Math.random()
       startedAt = performance.now()
+      showReadout(true)
       raf = requestAnimationFrame(frame)
     }
     goRef.current = (to) => void start(to)
@@ -613,6 +633,7 @@ export function PixelPaint({
         raf = 0
         draw(null, 1)
         writeReadout(1)
+        showReadout(false)
         handoff(next, gen)
       } else if (next >= 0) draw(null, 1)
     }

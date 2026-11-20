@@ -28,7 +28,7 @@ import { cloudflareImageLoader, isCloudflareImageUrl } from '@/utilities/cloudfl
 import { getMediaUrl } from '@/utilities/getMediaURL'
 import { streamPosterUrl } from '@/utilities/streamPoster'
 import { cn } from '@/utilities/ui'
-import { PIXEL_PAINT } from './look'
+import { AIM_TUNING, PIXEL_PAINT } from './look'
 import { type LiveLayer, type PaintSource, PixelPaint } from './PixelPaint'
 
 /** A tab after the adapter resolved its visual slot; the story `source` never reaches the client. */
@@ -314,7 +314,7 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({
           onPointerLeave={() => setAwake(false)}
         >
           <AimLayer
-            config={{ ...RETICLE, ...aim }}
+            config={{ ...RETICLE, ...aim, ...AIM_TUNING }}
             readouts={false}
             tone={overPanel ? 'spot' : 'invert'}
           />
@@ -474,6 +474,7 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({
                 <AimLayer
                   config={{
                     ...RETICLE,
+                    ...AIM_TUNING,
                     tone: awake ? panel.wakeTone : panel.restTone,
                     cell: panel.cell,
                     speed: panel.speed,
@@ -530,7 +531,7 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({
                     {pad2(active)} / {tab.title}
                   </span>
                   {paints ? (
-                    <span className={readout} ref={readoutRef}>
+                    <span className={cn(readout, 'opacity-0')} ref={readoutRef}>
                       000/100
                     </span>
                   ) : null}
