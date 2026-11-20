@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { richTextFixture } from '@/shared/testing/richTextFixture'
 import { blockControls } from '@/stories/block-controls'
-import { mediaFixture, videoFixture } from '@/stories/fixtures'
+import {
+  cloudflareImageFixture,
+  mediaFixture,
+  streamVideoFixture,
+  videoDocFixture,
+  videoFixture,
+} from '@/stories/fixtures'
 import { FeatureTabsBlock } from './Component'
 
 const controls = blockControls<typeof FeatureTabsBlock>('featureTabs')
@@ -82,6 +88,23 @@ export const Default: Story = {}
 export const Video: Story = {
   args: {
     tabs: meta.args.tabs.map((tab) => (tab.media ? { ...tab, media: videoFixture } : tab)),
+  },
+}
+
+/**
+ * A still, an uploaded video on Stream and a full-length video's loop: each
+ * paints in, and a video tab plays from its first frame once the paint lands.
+ * Needs network (Cloudflare Images and Stream).
+ */
+export const PaintedVideo: Story = {
+  args: {
+    tabs: meta.args.tabs.map((tab, index) =>
+      index === 0
+        ? { ...tab, media: cloudflareImageFixture }
+        : index === 1
+          ? { ...tab, media: streamVideoFixture }
+          : { ...tab, media: null, playVideo: true, video: videoDocFixture },
+    ),
   },
 }
 

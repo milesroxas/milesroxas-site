@@ -30,6 +30,10 @@ export type VideoPlayerProps = {
   priority?: boolean
   posterWidth?: number
   videoClassName?: string
+  /** Start the loop on its own; off for a caller that plays it (Feature tabs' paint handoff). */
+  autoPlay?: boolean
+  /** CORS mode for the loop, so a caller can read its frames into a canvas. */
+  crossOrigin?: 'anonymous'
 }
 
 const DEFAULT_RATIO = '16 / 9'
@@ -41,6 +45,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   priority = false,
   posterWidth,
   videoClassName,
+  autoPlay = true,
+  crossOrigin,
 }) => {
   const [playing, setPlaying] = useState(false)
   const playerRef = useRef<HTMLVideoElement | null>(null)
@@ -95,6 +101,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     >
       {loop ? (
         <VideoMedia
+          autoPlay={autoPlay}
+          crossOrigin={crossOrigin}
           fill
           posterWidth={posterWidth}
           priority={priority}

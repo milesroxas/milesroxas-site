@@ -66,7 +66,7 @@ What size to export an image or video for each block that holds media. Measured 
 | Carousel | Contained, slide Full / Half / One third | each slide keeps its own ratio | 2800 / 2300 / 1200 wide | 1920 wide |
 | Carousel | Full width, slide Full / Half / One third | own ratio | 2880 / 1800 / 1200 wide | 1920 wide |
 | Carousel tabs | | own ratio, 5 columns (8 on tablet) | 1800 wide | 1920 wide |
-| Feature tabs | | 3:2 below desktop, 16:9 on desktop; 8 columns on tablet, 5 on desktop | 1920 × 1080 (16:9). Subject in the centre 3:2 (middle 84% of the width) | 1920 × 1080 |
+| Feature tabs | | 16:9 at every width; full width below 1440px, 5 columns from 1440px. Stills and videos paint in on a switch (a video by its first frame, then it plays); a Streak Field tab shows each tab whole | 1920 × 1080 (16:9), nothing cropped | 1920 × 1080 |
 
 ### Lists
 
