@@ -1,8 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
   // CLI scripts run by hand (MIGRATIONS.md, src/features/ask/README.md, docs/composer-roadmap.md,
-  // docs/performance.md, docs/media.md); MDX pages are loaded by the Storybook docs config.
+  // docs/performance.md, docs/media.md, and the probes in plans/tools); MDX pages are loaded by
+  // the Storybook docs config.
   "entry": [
+    "plans/tools/*.mjs",
     "scripts/add-missing-columns.ts",
     "scripts/ask-judge-eval.ts",
     "scripts/backfill-ask-index.ts",

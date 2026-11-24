@@ -12,13 +12,14 @@ await page.evaluate(() => {
   window.__log = []
   const t0 = performance.now()
   const tick = () => {
-    const panels = [...document.querySelectorAll('[role="tabpanel"]')].filter((p) => p.children.length)
+    const panels = [...document.querySelectorAll('[role="tabpanel"]')].filter(
+      (p) => p.children.length,
+    )
     window.__log.push({
       t: Math.round(performance.now() - t0),
       panels: panels.map((p) => {
         const plate = p.querySelector('[data-tab-swap="plate"]')
         const copy = [...p.querySelectorAll('[data-tab-swap="copy"]')]
-        const pr = plate?.getBoundingClientRect()
         return {
           id: p.id.split('-').at(-1).slice(0, 4),
           st: p.dataset.state.slice(0, 3),
@@ -65,8 +66,14 @@ if (script === 'back') {
 const log = await page.evaluate(() => window.__log)
 let last = ''
 for (const e of log) {
-  if (e.click) { console.log('---- click', e.click); last = ''; continue }
-  const s = e.panels.map((p) => `${p.id}:${p.st} z${p.z} clip[${p.clip}] plOp${p.plOp} copyOp${p.copyOp} ${p.vid}`).join(' | ')
+  if (e.click) {
+    console.log('---- click', e.click)
+    last = ''
+    continue
+  }
+  const s = e.panels
+    .map((p) => `${p.id}:${p.st} z${p.z} clip[${p.clip}] plOp${p.plOp} copyOp${p.copyOp} ${p.vid}`)
+    .join(' | ')
   if (s !== last) console.log(String(e.t).padStart(5), s)
   last = s
 }

@@ -1,7 +1,5 @@
 {
-  "packs": [
-    "generic"
-  ],
+  "packs": ["generic"],
   "rules": null,
   "weights": {
     "adherence": 50,
