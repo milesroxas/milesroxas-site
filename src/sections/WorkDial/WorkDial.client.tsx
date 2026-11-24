@@ -37,11 +37,7 @@ const DIAL = {
   /** Ink and size a row falls to away from the centre. */
   ink: 0.18,
   scale: 0.55,
-  /**
-   * Rows sit closer on screen than in the scroll: each row takes a long
-   * stretch of scroll, so a flick does not skip past it, but the dial still
-   * shows its neighbours.
-   */
+  /** Rows sit a little closer on screen than their own height, so the dial shows its neighbours. */
   pack: 0.95,
   /** Degrees a row at the edge has turned away, like a drum. */
   tilt: 18,
@@ -52,51 +48,54 @@ const DIAL = {
   blurSpread: 1.2,
   /** Where along the reach a row starts fading out, gone by the window's edge. */
   fadeFrom: 0.75,
-  /** How long the page rests before it settles on the nearest row, and how long the settle takes. */
-  settleAfter: 140,
-  settle: 1,
-  /**
-   * The wheel locks on to a row the moment it lets go: once it has been
-   * quiet `lockAfter` ms, or a trackpad's momentum has tailed off below
-   * `tailSize` pixels a step, the page glides firmly (`lockLerp`) to the row
-   * it was heading for, and the plate changes with it. Leaning `lockReach` of
-   * the way into the next row is enough to land on it. The rest of the
-   * momentum, steps under `tailGap` ms apart that keep shrinking, no longer
-   * moves the page.
-   */
-  lockAfter: 70,
-  lockReach: 0.25,
-  lockLerp: 0.09,
-  tailSize: 6,
-  tailGap: 50,
-  /**
-   * Without the wheel (keys, scrollbar, touch), the plate changes only for a
-   * row that has held the centre line this long, ms, while the page moves
-   * slower than `commitSpeed` rows a second, so a fast scroll bows the plate
-   * instead of flicking through every picture it passes.
-   */
-  commitAfter: 160,
-  commitSpeed: 2.5,
+  /** How long a focused row's scroll to the centre line takes, seconds. */
+  focus: 1,
   /** How long the page must be still, ms, before its speed reads as zero. */
   restAfter: 120,
   /**
-   * The dial scrolls heavier than the rest of the site: a wheel notch moves
-   * it less, and the page glides longer after it, so each turn lands with
-   * weight. Lenis's own defaults are 1 and 0.1.
+   * How far into a work's stretch, in the way the page is going, the caption
+   * and summary hand over to the next work: early, so they arrive while the
+   * plate's wave is still rising. They then play out on their own ease (CSS).
    */
-  wheel: 0.55,
-  lerp: 0.055,
+  handover: 0.25,
+  /**
+   * A page left between two works for `settleAfter` ms glides to the one the
+   * caption shows, over `settleBase` s plus `settlePer` s per work of
+   * distance. Any input stops it at once and hands the page back.
+   */
+  settleAfter: 2000,
+  settleBase: 0.8,
+  settlePer: 0.8,
 } as const
 
 const easeOutQuart = (t: number) => 1 - (1 - t) ** 4
+/** The page moves on screen while it settles: it eases in and out. */
+const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2)
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 const smoothstep = (edge0: number, edge1: number, x: number) => {
   const t = clamp((x - edge0) / (edge1 - edge0), 0, 1)
   return t * t * (3 - 2 * t)
 }
-/** Where the page rests with row `index` on the centre line. */
-const restingScroll = ({ listTop, row }: { listTop: number; row: number }, index: number) =>
-  listTop + index * row
+/**
+ * `travel` is the scroll each work takes: a full screen. The text and the
+ * plate's wave both follow it one to one; only a page left between two works
+ * for a while glides to the nearest whole one (`DIAL.settleAfter`).
+ */
+type Geometry = { top: number; row: number; travel: number }
+/** Where the page rests with row `index` on the centre line: the start of its stretch. */
+const restingScroll = ({ top, travel }: Geometry, index: number) => top + index * travel
+/**
+ * The work the caption shows next. It hands over only in the way the page is
+ * going (`way`: 1 down, -1 up, 0 at rest), `DIAL.handover` into a work's
+ * stretch, so a page resting between two works never flips between them.
+ */
+const handOver = (shown: number, position: number, way: number) => {
+  if (shown < 0) return Math.round(position)
+  // ceil(position - handover) going down, mirrored to floor(position + handover) going up.
+  return way * (position - shown) > DIAL.handover
+    ? way * Math.ceil(way * position - DIAL.handover)
+    : shown
+}
 const enterAt = (ms: number) => ({ '--enter-at': `${ms}ms` }) as CSSProperties
 
 type RowProps = {
@@ -116,7 +115,7 @@ function DialRow({ item, index, active, plateRef, onOpen, onFocusRow, ref }: Row
   const morph = useWorkCardMorph(slug, href, plateRef, () => onOpen(index), { travel: true })
 
   return (
-    <li className="work-dial-row">
+    <li className="work-dial-row" style={{ '--dial-i': index } as CSSProperties}>
       <Link
         {...cursorTarget('view')}
         ref={ref}
@@ -180,14 +179,15 @@ export function WorkDial(props: WorkDialProps) {
 /**
  * The works index as a dial: one picture fixed in the centre, the list
  * turning past it. The row on the centre line is the one shown; rows dim,
- * shrink and tilt away with distance from it, like a drum. The plate follows
- * the row the reader stops on, not every row the page passes, and bows with
- * the scroll's speed in between; a resting page settles on the nearest row.
- * Clicking a row or the picture opens the case study through the plate.
+ * shrink and tilt away with distance from it, like a drum. Everything follows
+ * the reader's scroll and nothing else: the plate's wave between two rows is
+ * as far along as the page is between them, and the page rests wherever the
+ * reader leaves it. Only Lenis smooths the scroll; the dial never takes it
+ * over. Clicking a row or the picture opens the case study through the plate.
  */
 function Dial({ items, title, lead }: WorkDialProps) {
   const lenis = useLenis()
-  /** The row the plate shows: the last one the reader stopped on. */
+  /** The work the caption and summary show; it hands over early (`DIAL.handover`). */
   const [active, setActive] = useState(0)
   const [opening, setOpening] = useState<number | null>(null)
   const plateRef = useRef<HTMLDivElement>(null)
@@ -195,8 +195,9 @@ function Dial({ items, title, lead }: WorkDialProps) {
   const focusRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLOListElement>(null)
   const linksRef = useRef<(HTMLAnchorElement | null)[]>([])
-  const flex = useMemo(createPlateSignal, [])
-  const geometry = useRef({ listTop: 0, row: 1 })
+  /** The page's speed, which the plate bows with, and its position, which drives the wave. */
+  const [flex, scrub] = useMemo(() => [createPlateSignal(), createPlateSignal()], [])
+  const geometry = useRef<Geometry>({ top: 0, row: 1, travel: 1 })
   const openingRef = useRef(false)
   openingRef.current = opening !== null
 
@@ -208,48 +209,36 @@ function Dial({ items, title, lead }: WorkDialProps) {
 
   useEffect(() => {
     const list = listRef.current
+    // The dial's own box: its top is where the works' scroll starts.
+    const root = list?.parentElement
     const frame = windowRef.current
     const line = focusRef.current
-    if (!list || !frame || !line) return
+    if (!root || !list || !frame || !line) return
     const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-dial-row]'))
     const last = Math.max(rows.length - 1, 0)
     const reduced = matchMedia('(prefers-reduced-motion: reduce)')
     // From the centre line to the window's edge, above and below.
     const reach = { above: 1, below: 1 }
-    let current = 0
-    let settleTimer: ReturnType<typeof setTimeout> | undefined
-    let commitTimer: ReturnType<typeof setTimeout> | undefined
+    /** The row on the centre line, and where the drum stands: exactly where the scroll is. */
+    let current = -1
+    const drum = { at: 0 }
     let restTimer: ReturnType<typeof setTimeout> | undefined
-    let lockTimer: ReturnType<typeof setTimeout> | undefined
-    let touching = false
-    /** Rows a second, signed, and where and when the page last moved. */
+    let settleTimer: ReturnType<typeof setTimeout> | undefined
+    /** The page is gliding to a work; a pointer or finger is down. */
+    let settling = false
+    let pressed = false
+    /** Works a second, signed, and where and when the page last moved. */
     let speed = 0
     let lastPosition = 0
     let movedAt = 0
-    /** The row the wheel locked on to, until the page reaches it or a new gesture starts. */
-    let locked: number | null = null
-    /** Locked, the wheel's momentum is spent: its tail is swallowed. */
-    let coasting = false
-    const wheel = { size: 0, way: 0, at: 0 }
 
-    const commit = () => {
-      if (openingRef.current) return
-      const moving = performance.now() - movedAt < DIAL.restAfter ? Math.abs(speed) : 0
-      if (moving > DIAL.commitSpeed) {
-        commitTimer = setTimeout(commit, 60)
-        return
-      }
-      setActive(current)
-    }
-
-    const update = () => {
-      const { listTop, row } = geometry.current
-      const raw = (scrollY - listTop) / row
-      const position = clamp(raw, 0, last)
+    /** Lays the rows on the drum: each is placed from the centre line, not the scroll. */
+    const render = () => {
+      const { row } = geometry.current
       const { inkSpread, blurSpread } = DIAL
       rows.forEach((el, i) => {
-        const away = Math.abs(i - position)
-        const offset = (i - position) * row
+        const away = Math.abs(i - drum.at)
+        const offset = (i - drum.at) * row
         const reachSide = offset < 0 ? reach.above : reach.below
         const distance = (offset * DIAL.pack) / reachSide
         const u = Math.abs(distance)
@@ -258,7 +247,6 @@ function Dial({ items, title, lead }: WorkDialProps) {
         // On the drum, a row's height on screen follows the sine of its turn.
         const turned =
           Math.sin(Math.min(u, 1) * DIAL.bulge) / Math.sin(DIAL.bulge) + Math.max(u - 1, 0)
-        const shift = side * turned * reachSide - offset
         const lit = Math.exp(-((away / inkSpread) ** 2))
         const ink = (DIAL.ink + (1 - DIAL.ink) * lit) * (1 - smoothstep(DIAL.fadeFrom, 1, u))
         el.style.setProperty('--dial-o', ink.toFixed(3))
@@ -266,133 +254,112 @@ function Dial({ items, title, lead }: WorkDialProps) {
           '--dial-blur',
           `${(DIAL.blur * (1 - Math.exp(-((away / blurSpread) ** 2)))).toFixed(2)}px`,
         )
-        el.style.setProperty('--dial-y', `${shift.toFixed(1)}px`)
+        el.style.setProperty('--dial-y', `${(side * turned * reachSide).toFixed(1)}px`)
         el.style.setProperty('--dial-scale', (1 - (1 - DIAL.scale) * fall).toFixed(4))
         el.style.setProperty('--dial-tilt', (-side * Math.min(u, 1) * DIAL.tilt).toFixed(2))
       })
-      if (!openingRef.current) track(position)
+    }
+
+    /** Where the page is, in works: the plate's wave and the text both follow it. */
+    const update = () => {
+      const { top, travel } = geometry.current
+      const position = clamp((scrollY - top) / travel, 0, last)
+      if (openingRef.current) return position
+      scrub.set(position)
+      drum.at = position
+      render()
+      const next = handOver(current, position, Math.sign(position - lastPosition))
+      if (next !== current) {
+        current = next
+        setActive(next)
+      }
       return position
     }
 
-    /** Notes the row on the centre line; the plate follows it once the reader stops. */
-    const track = (position: number) => {
-      const next = Math.round(position)
-      if (locked !== null && Math.abs(position - locked) < 0.01) locked = null
-      if (next === current) return
-      current = next
-      clearTimeout(commitTimer)
-      if (locked === null) commitTimer = setTimeout(commit, DIAL.commitAfter)
-    }
-
-    const lockOn = () => {
-      if (!lenis || touching || reduced.matches || openingRef.current) return
-      const raw = (lenis.targetScroll - geometry.current.listTop) / geometry.current.row
-      if (raw <= 0 || raw >= last) return
-      const heading = Math.sign(lenis.targetScroll - lenis.animatedScroll)
-      const base = Math.floor(raw)
-      const into = raw - base
-      const row =
-        heading > 0
-          ? base + Number(into > DIAL.lockReach)
-          : heading < 0
-            ? base + Number(into > 1 - DIAL.lockReach)
-            : Math.round(raw)
-      locked = row
-      coasting = true
-      clearTimeout(commitTimer)
-      clearTimeout(settleTimer)
-      setActive(row)
-      lenis.scrollTo(restingScroll(geometry.current, row), {
-        programmatic: false,
-        lerp: DIAL.lockLerp,
-      })
-    }
-
-    // Lenis reads `wheelMultiplier` only when it is created; its `virtualScroll`
-    // hook may scale each delta instead.
-    /** False swallows the step: it is the tail of momentum the dial has already locked on from. */
-    const onWheel = (deltaY: number) => {
+    const measureSpeed = (position: number) => {
       const now = performance.now()
-      const size = Math.abs(deltaY)
-      const way = Math.sign(deltaY)
-      const tail = way === wheel.way && now - wheel.at < DIAL.tailGap && size <= wheel.size + 1
-      Object.assign(wheel, { size, way, at: now })
-      clearTimeout(lockTimer)
-      if (coasting && tail) return false
-      coasting = false
-      locked = null
-      if (tail && size < DIAL.tailSize) lockOn()
-      if (coasting) return false
-      lockTimer = setTimeout(lockOn, DIAL.lockAfter)
-      return true
+      const dt = (now - movedAt) / 1000
+      if (dt <= 0) return
+      // A scroll after a pause starts from rest; steady ones average over a few frames.
+      const instant = dt < 0.1 ? (position - lastPosition) / dt : 0
+      speed += (instant - speed) * 0.35
+      movedAt = now
+      lastPosition = position
     }
 
-    const options = lenis?.options
-    const { virtualScroll, lerp } = options ?? {}
-    if (options) {
-      options.lerp = DIAL.lerp
-      options.virtualScroll = (data) => {
-        if (data.event.type.includes('wheel')) {
-          data.deltaX *= DIAL.wheel
-          data.deltaY *= DIAL.wheel
-          if (!onWheel(data.deltaY)) {
-            data.event.preventDefault()
-            return false
-          }
-        }
-        return virtualScroll?.(data) ?? true
-      }
-    }
-
-    const settle = () => {
-      if (touching || reduced.matches || openingRef.current) return
-      const raw = (scrollY - geometry.current.listTop) / geometry.current.row
-      if (raw <= 0 || raw >= last) return
-      const nearest = Math.round(raw)
-      if (Math.abs(raw - nearest) < 0.01) return
-      const top = restingScroll(geometry.current, nearest)
-      if (lenis) lenis.scrollTo(top, { duration: DIAL.settle, easing: easeOutQuart })
-      else scrollTo({ top, behavior: 'smooth' })
-    }
-
-    // A finger resting on the glass is still reading: settle once it lifts.
-    const onTouchStart = () => {
-      touching = true
-      coasting = false
-      locked = null
-      clearTimeout(settleTimer)
-    }
-    const onTouchEnd = () => {
-      touching = false
+    const scheduleSettle = () => {
       clearTimeout(settleTimer)
       settleTimer = setTimeout(settle, DIAL.settleAfter)
     }
 
     const onScroll = () => {
-      const position = update()
-      const now = performance.now()
-      const dt = (now - movedAt) / 1000
-      if (dt > 0) {
-        // A scroll after a pause starts from rest; steady ones average over a few frames.
-        const instant = dt < 0.1 ? (position - lastPosition) / dt : 0
-        speed += (instant - speed) * 0.35
-        movedAt = now
-        lastPosition = position
-      }
-      if (!reduced.matches) flex.set(speed)
+      measureSpeed(update())
+      // The plate bows with the page's speed in rows of scroll, as it did when a row took one.
+      const { row, travel } = geometry.current
+      if (!reduced.matches) flex.set((speed * travel) / row)
       clearTimeout(restTimer)
       restTimer = setTimeout(() => {
         speed = 0
         flex.set(0)
       }, DIAL.restAfter)
+      if (!settling) scheduleSettle()
+    }
+
+    /** The reader is holding the page, reading in another tab or opening a work. */
+    const held = () => pressed || document.hidden || reduced.matches || openingRef.current
+
+    /** Where a page left between two works glides to: none once it is past the dial or there. */
+    const settleTarget = () => {
+      const { top, travel } = geometry.current
+      const raw = (scrollY - top) / travel
+      const distance = Math.abs(raw - current)
+      if (raw <= 0 || raw >= last || distance * travel < 2) return null
+      return { top: restingScroll(geometry.current, current), distance }
+    }
+
+    /** Glides a page left between two works to the one the caption shows. */
+    const settle = () => {
+      const target = held() ? null : settleTarget()
+      if (!lenis || !target) return
+      settling = true
+      lenis.scrollTo(target.top, {
+        duration: DIAL.settleBase + DIAL.settlePer * target.distance,
+        easing: easeInOutCubic,
+        onComplete: () => {
+          settling = false
+        },
+      })
+    }
+
+    // The wheel takes over a glide by itself (Lenis retargets from where the
+    // page is). Keys, the scrollbar and touch scroll natively, so the glide
+    // stops first or it would fight them: stopping resets Lenis to the page.
+    const onWheel = () => {
       clearTimeout(settleTimer)
-      settleTimer = setTimeout(settle, DIAL.settleAfter)
+      settling = false
+    }
+    const interrupt = () => {
+      clearTimeout(settleTimer)
+      if (!settling || !lenis) return
+      settling = false
+      lenis.stop()
+      lenis.start()
+    }
+    const onPress = () => {
+      pressed = true
+      interrupt()
+    }
+    const onRelease = () => {
+      pressed = false
+      scheduleSettle()
     }
 
     const measure = () => {
       geometry.current = {
-        listTop: list.getBoundingClientRect().top + scrollY,
+        top: root.getBoundingClientRect().top + scrollY,
         row: rows[0]?.offsetHeight || 1,
+        // The list holds the screen: its height is the screen's.
+        travel: list.offsetHeight || 1,
       }
       reach.above = Math.max(line.offsetTop - frame.offsetTop, 1)
       reach.below = Math.max(frame.offsetTop + frame.offsetHeight - line.offsetTop, 1)
@@ -400,41 +367,49 @@ function Dial({ items, title, lead }: WorkDialProps) {
     }
 
     measure()
-    // A page that opens part way down shows its row at once.
-    setActive(current)
     const resize = new ResizeObserver(measure)
-    resize.observe(list)
+    resize.observe(root)
     resize.observe(frame)
-    addEventListener('scroll', onScroll, { passive: true })
-    addEventListener('touchstart', onTouchStart, { passive: true })
-    addEventListener('touchend', onTouchEnd, { passive: true })
-    addEventListener('touchcancel', onTouchEnd, { passive: true })
+    const listeners = [
+      ['scroll', onScroll],
+      ['wheel', onWheel],
+      ['keydown', interrupt],
+      ['touchstart', interrupt],
+      ['pointerdown', onPress],
+      ['pointerup', onRelease],
+      ['pointercancel', onRelease],
+    ] as const
+    for (const [type, listener] of listeners) {
+      addEventListener(type, listener, { passive: true, capture: true })
+    }
     return () => {
       resize.disconnect()
-      removeEventListener('scroll', onScroll)
-      removeEventListener('touchstart', onTouchStart)
-      removeEventListener('touchend', onTouchEnd)
-      removeEventListener('touchcancel', onTouchEnd)
-      clearTimeout(settleTimer)
-      clearTimeout(commitTimer)
-      clearTimeout(restTimer)
-      clearTimeout(lockTimer)
-      if (options) {
-        options.virtualScroll = virtualScroll
-        options.lerp = lerp ?? options.lerp
+      for (const [type, listener] of listeners) {
+        removeEventListener(type, listener, { capture: true })
       }
+      clearTimeout(restTimer)
+      clearTimeout(settleTimer)
     }
-  }, [lenis, flex])
+  }, [flex, scrub, lenis])
 
+  // Tabbing to a row brings it to the centre line, as focus would scroll it into view.
   const focusRow = (index: number) => {
     const top = restingScroll(geometry.current, index)
     const immediate = matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (lenis) lenis.scrollTo(top, { duration: DIAL.settle, easing: easeOutQuart, immediate })
+    if (lenis) lenis.scrollTo(top, { duration: DIAL.focus, easing: easeOutQuart, immediate })
     else scrollTo({ top, behavior: immediate ? 'instant' : 'smooth' })
   }
 
   return (
-    <div className="work-dial" style={moreWorkMotionStyle}>
+    <div
+      className="work-dial"
+      style={
+        {
+          ...moreWorkMotionStyle,
+          '--dial-steps': Math.max(items.length - 1, 0),
+        } as CSSProperties
+      }
+    >
       <header className="work-dial-header">
         <div className="work-dial-heading">
           {/* The count sits beside the heading, not in it: the h1 reads "Work", not "Work11". */}
@@ -495,11 +470,11 @@ function Dial({ items, title, lead }: WorkDialProps) {
                   always
                   className="aspect-auto size-full"
                   index={opening ?? active}
-                  lead="scroll"
                   items={items}
                   opening={opening !== null}
                   flex={flex}
                   ref={plateRef}
+                  scrub={scrub}
                   size="(min-width: 64rem) 42vw, 100vw"
                 />
               </ViewTransition>
@@ -569,6 +544,8 @@ function Dial({ items, title, lead }: WorkDialProps) {
           />
         ))}
       </ol>
+      {/* The scroll the works take; the stage and the list hold the screen while it passes. */}
+      <div aria-hidden className="work-dial-track" />
     </div>
   )
 }

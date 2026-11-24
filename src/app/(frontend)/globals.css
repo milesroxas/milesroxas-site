@@ -3408,6 +3408,10 @@ html:active-view-transition-type(work-open) .dock {
    Tailwind only) and the dial is never mounted. */
 .work-dial {
   --dial-row: 14rem;
+  /* The caption and summary: the old one leaves fast, the new one follows once
+     it is gone, so two never overlap, and settles slower. */
+  --dial-note-out: 200ms;
+  --dial-note-in: 600ms;
   --dial-plate-w: min(41.25vw, (100svh - var(--chrome-top) - var(--dock-clearance) - 6rem) * 1.6);
   --dial-plate-h: calc(var(--dial-plate-w) / 1.6);
   --dial-window-top: var(--chrome-top);
@@ -3520,8 +3524,7 @@ html:active-view-transition-type(work-open) .dock {
 
 /* The caption's label: the client in ink, then a short rule and the industry
    in the muted voice. Every label shares one cell, as the summaries do, and
-   turns on the same drum, a shade lighter (1px of blur). It leads the
-   change: the label turns at once, the summary a beat after. */
+   moves with them, a shade lighter (1px of blur). */
 .work-dial-label {
   display: grid;
   flex: 1;
@@ -3534,28 +3537,7 @@ html:active-view-transition-type(work-open) .dock {
   align-items: center;
   gap: 0.625rem;
   min-width: 0;
-  opacity: 0;
-  filter: blur(1px);
-  will-change: transform, opacity, filter;
-  transition:
-    opacity var(--more-work-ink) var(--ease-out-quint),
-    filter var(--more-work-ink) var(--ease-out-quint),
-    transform var(--more-work-ink) var(--ease-out-quint);
-}
-
-.work-dial-label > span[data-position="past"] {
-  transform: perspective(50rem) translateY(-0.25em) rotateX(4deg);
-}
-
-.work-dial-label > span[data-position="ahead"] {
-  transform: perspective(50rem) translateY(0.25em) rotateX(-4deg);
-}
-
-.work-dial-label > span[data-position="shown"] {
-  opacity: 1;
-  filter: blur(0);
-  transform: perspective(50rem) translateY(0) rotateX(0);
-  transition-duration: var(--more-work-swap);
+  --note-blur: 1px;
 }
 
 .work-dial-label-rule {
@@ -3570,10 +3552,13 @@ html:active-view-transition-type(work-open) .dock {
    measure. Four lines at most, the room the plate leaves. Every summary
    shares one grid cell, so the box holds the tallest and nothing below moves.
    The summaries sit on the drum with their rows: the one in ink is level, the
-   ones past are turned a little up and away, the ones ahead a little down
-   (4deg, 2px of blur, a quarter line of travel). A change turns the way the
-   dial did: the old one leaves at once and faster, the new one follows a beat
-   later. Reduced motion keeps the ink alone. */
+   ones past sit a little above and faded, the ones ahead a little below
+   (2px of blur, a quarter line of travel). They hand over a quarter of the
+   way into the scroll (`DIAL.handover`), while the plate's wave is still
+   rising, and then play on their own ease: the old one leaves fast, the new
+   one starts once it is gone and settles slower, the summary a beat after the
+   label. Flat slides only: a 3D turn makes text shimmer as it moves. Reduced
+   motion keeps the ink alone. */
 .work-dial-summary {
   position: absolute;
   top: calc(100% + 2.5rem);
@@ -3591,31 +3576,50 @@ html:active-view-transition-type(work-open) .dock {
   display: -webkit-box;
   grid-area: 1 / 1;
   overflow: hidden;
-  opacity: 0;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
-  filter: blur(2px);
+  --note-blur: 2px;
+}
+
+/* A label or summary away from the shown work: `--note-k` is -1 past, 1
+   ahead, 0 shown; `--note-a` its distance, `--note-o` its ink. */
+.work-dial-label > span,
+.work-dial-summary > p {
+  opacity: var(--note-o);
+  filter: blur(calc(var(--note-a) * var(--note-blur)));
   will-change: transform, opacity, filter;
+  transform: translateY(calc(var(--note-k) * 0.25em));
   transition:
-    opacity var(--more-work-ink) var(--ease-out-quint),
-    filter var(--more-work-ink) var(--ease-out-quint),
-    transform var(--more-work-ink) var(--ease-out-quint);
+    opacity var(--dial-note-out) var(--ease-out-quint),
+    filter var(--dial-note-out) var(--ease-out-quint),
+    transform var(--dial-note-out) var(--ease-out-quint);
 }
 
+.work-dial-label > span[data-position="past"],
 .work-dial-summary > p[data-position="past"] {
-  transform: perspective(50rem) translateY(-0.25em) rotateX(4deg);
+  --note-k: -1;
+  --note-a: 1;
+  --note-o: 0;
 }
 
+.work-dial-label > span[data-position="ahead"],
 .work-dial-summary > p[data-position="ahead"] {
-  transform: perspective(50rem) translateY(0.25em) rotateX(-4deg);
+  --note-k: 1;
+  --note-a: 1;
+  --note-o: 0;
+}
+
+.work-dial-label > span[data-position="shown"],
+.work-dial-summary > p[data-position="shown"] {
+  --note-k: 0;
+  --note-a: 0;
+  --note-o: 1;
+  transition-duration: var(--dial-note-in);
+  transition-delay: var(--dial-note-out);
 }
 
 .work-dial-summary > p[data-position="shown"] {
-  opacity: 1;
-  filter: blur(0);
-  transform: perspective(50rem) translateY(0) rotateX(0);
-  transition-duration: var(--more-work-swap);
-  transition-delay: 120ms;
+  transition-delay: calc(var(--dial-note-out) + 60ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3632,15 +3636,26 @@ html:active-view-transition-type(work-open) .dock {
   }
 }
 
+/* The list holds the screen over the stage, like the plate; the track under
+   it is the scroll the works take, a full screen each. Every row sits
+   on the centre line and is placed on the drum by `--dial-y`; before the
+   script runs they stand a row apart. */
 .work-dial-list {
-  position: relative;
+  position: sticky;
+  top: 0;
+  height: 100svh;
   margin-top: -100svh;
-  padding-top: calc(var(--dial-focus) - var(--dial-row) / 2);
-  padding-bottom: calc(100svh - var(--dial-focus) - var(--dial-row) / 2);
 }
 
 .work-dial-row {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--dial-focus) - var(--dial-row) / 2);
   height: var(--dial-row);
+}
+
+.work-dial-track {
+  height: calc(100svh * var(--dial-steps, 0));
 }
 
 /* Perspective first, so the tilt reads as a drum turning rather than a squash.
@@ -3652,7 +3667,7 @@ html:active-view-transition-type(work-open) .dock {
   opacity: var(--dial-o, 1);
   filter: blur(var(--dial-blur, 0px));
   will-change: transform, opacity, filter;
-  transform: translateY(var(--dial-y, 0)) perspective(50rem)
+  transform: translateY(var(--dial-y, calc(var(--dial-i, 0) * var(--dial-row)))) perspective(50rem)
     rotateX(calc(var(--dial-tilt, 0) * 1deg)) scale(var(--dial-scale, 1));
   transform-origin: left center;
 }
@@ -3750,11 +3765,11 @@ html:active-view-transition-type(work-open) .dock {
   border-radius: 2px;
 }
 
-/* Reduced motion: the ink still follows the centre line; nothing moves,
-   turns or shrinks. */
+/* Reduced motion: the ink still follows the centre line and the rows step
+   into place at once; nothing turns or shrinks. */
 @media (prefers-reduced-motion: reduce) {
   .work-dial-link {
-    transform: none;
+    transform: translateY(var(--dial-y, calc(var(--dial-i, 0) * var(--dial-row))));
   }
 }
 

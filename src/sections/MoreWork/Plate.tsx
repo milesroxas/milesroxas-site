@@ -18,7 +18,6 @@ import { useNearViewport } from '@/hooks/use-near-viewport'
 import { GPU_PRIORITY } from '@/lib/webgl/gpu-budget'
 import { useGpuLease } from '@/lib/webgl/use-gpu-lease'
 import { cn } from '@/utilities/ui'
-import type { PlateLead } from './plate-runtime'
 import { createPlateVideos, type PlateVideos } from './plate-videos'
 import type { MoreWorkItem } from './query'
 import type { PlateSignal } from './signal'
@@ -88,12 +87,12 @@ type Props = {
   always?: boolean
   /** The scroll speed the plate bows with, in rows per second. */
   flex?: PlateSignal
+  /** The scroll's position in rows; given, the scroll leads the wave between rows, not the index. */
+  scrub?: PlateSignal
   /** The frame's aspect and any other class it needs; 1.6 by default. */
   className?: string
   /** The pictures' `sizes`. */
   size?: string
-  /** What leads the plate: the pointer by default, the scroll for the dial. */
-  lead?: PlateLead
 }
 
 /**
@@ -114,9 +113,9 @@ export function MoreWorkPlate({
   ref,
   always = false,
   flex,
+  scrub,
   className,
   size = '46vw',
-  lead = 'pointer',
 }: Props) {
   const { hasGPU } = useDeviceDetection()
   const plateLayout = usePlateLayout()
@@ -183,9 +182,9 @@ export function MoreWorkPlate({
                 flex={flex}
                 frameRef={ref}
                 index={index}
-                lead={lead}
                 onFailure={handleFailure}
                 onReady={handleReady}
+                scrub={scrub}
               />
             </Suspense>
           </FailureBoundary>

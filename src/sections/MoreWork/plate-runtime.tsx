@@ -29,10 +29,7 @@ const { plate } = MORE_WORK_MOTION
 /** The plate's look (`./plate-shader`): a wave that travels up the plate and bends its frame. Timing is in `./motion`. */
 const PLATE_LOOK = {
   duration: plate.duration / 1000,
-  ease: {
-    pointer: CustomEase.create('more-work-plate-pointer', plate.ease.pointer.join(',')),
-    scroll: CustomEase.create('more-work-plate-scroll', plate.ease.scroll.join(',')),
-  },
+  ease: CustomEase.create('more-work-plate', plate.ease.join(',')),
   /** How much faster a wave runs once another row is waiting, and how long it takes to get there. */
   hurry: plate.hurry,
   hurryRamp: plate.hurryRamp / 1000,
@@ -139,25 +136,17 @@ function onVideoFrames(video: HTMLVideoElement, callback: () => void) {
   return () => cancelAnimationFrame(handle)
 }
 
-/**
- * What leads the plate, and so how it answers. `pointer` (More work) opens
- * each wave fast and starts a row's wave at once, over a running one that
- * quickens to land under it. `scroll` (the dial) opens calmer, and a row that
- * arrives mid-wave waits for the running wave to pass, quickening it.
- */
-export type PlateLead = 'pointer' | 'scroll'
-
 type PlateSceneProps = {
   media: PlateMedia[]
   index: number
   flex?: PlateSignal
+  scrub?: PlateSignal
   bleed: number
-  lead: PlateLead
   onFirstFrame: () => void
 }
 
-/** One wave carrying `row` over everything below it. */
-type Wave = { row: number; direction: number; tween: gsap.core.Tween; state: { progress: number } }
+/** One wave carrying `row` over everything below it; a scrubbed wave has no tween. */
+type Wave = { row: number; direction: number; tween?: gsap.core.Tween; state: { progress: number } }
 
 const hurry = (tween: gsap.core.Tween) =>
   gsap.to(tween, {
@@ -167,7 +156,59 @@ const hurry = (tween: gsap.core.Tween) =>
     overwrite: true,
   })
 
-function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateSceneProps) {
+/** Quickens every running wave, so they land under the next. */
+const hurryAll = (waves: Wave[]) => {
+  for (const { tween } of waves) if (tween) hurry(tween)
+}
+
+/** Stops a wave's tween and the hurry running on it. */
+const stopWave = ({ tween }: Wave) => {
+  if (!tween) return
+  gsap.killTweensOf(tween)
+  tween.kill()
+}
+
+type Redraw = { show: () => void; tick: () => void }
+
+/**
+ * Scrubbed, the scroll is the wave's clock, one to one: the position between
+ * two rows is how far the next row's wave has risen, and scrolling back
+ * lowers it again. The bend still eases in and out of its own accord.
+ */
+function useScrubbedWave(
+  scrub: PlateSignal | undefined,
+  count: number,
+  base: RefObject<number>,
+  waves: RefObject<Wave[]>,
+  redraw: RefObject<Redraw>,
+) {
+  useEffect(() => {
+    if (!scrub) return
+    const last = count - 1
+    let pair = ''
+    const apply = () => {
+      const position = Math.min(Math.max(scrub.get(), 0), last)
+      const from = Math.floor(position)
+      const to = Math.min(from + 1, last)
+      base.current = from
+      waves.current =
+        to === from ? [] : [{ row: to, direction: 1, state: { progress: position - from } }]
+      const next = `${from}:${to}`
+      if (next === pair) return redraw.current.tick()
+      pair = next
+      redraw.current.show()
+    }
+    apply()
+    return scrub.subscribe(apply)
+  }, [scrub, count, base, waves, redraw])
+}
+
+/**
+ * The index leads the plate (More work): a row's wave starts at once, over a
+ * running one that quickens to land under it. Given `scrub` (the works dial),
+ * the scroll leads instead and the index only names the row.
+ */
+function PlateScene({ media, index, flex, scrub, bleed, onFirstFrame }: PlateSceneProps) {
   const size = useThree((state) => state.size)
   const invalidate = useThree((state) => state.invalidate)
   const materialRef = useRef<ShaderMaterial>(null)
@@ -258,8 +299,6 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
     }
     tick()
   }
-  const showRef = useRef(show)
-  showRef.current = show
 
   useEffect(() => () => stopVideos.current(), [])
 
@@ -267,11 +306,8 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
     const u = materialRef.current?.uniforms
     if (!u) return
     u.uAspect.value = size.width / Math.max(size.height, 1)
-    showRef.current()
+    actions.current.show()
   }, [size.width, size.height, uniforms])
-
-  /** How many waves may run at once. */
-  const room = lead === 'pointer' ? PLATE_WAVES : 1
 
   /**
    * A finished wave shows its picture whole: it becomes the base, and any
@@ -279,7 +315,7 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
    */
   const land = (wave: Wave) => {
     const at = waves.current.indexOf(wave)
-    for (const under of waves.current.slice(0, at)) under.tween.kill()
+    for (const under of waves.current.slice(0, at)) stopWave(under)
     waves.current = waves.current.slice(at + 1)
     base.current = wave.row
     const next = queued.current
@@ -293,7 +329,7 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
    * it when the list moved up. Waves already running quicken to land under it.
    */
   const start = (row: number) => {
-    for (const under of waves.current) hurry(under.tween)
+    hurryAll(waves.current)
     const state = { progress: 0 }
     const wave: Wave = {
       row,
@@ -302,26 +338,21 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
       tween: gsap.to(state, {
         progress: 1,
         duration: PLATE_LOOK.duration,
-        ease: PLATE_LOOK.ease[lead],
+        ease: PLATE_LOOK.ease,
         onUpdate: tick,
-        onComplete: () => landRef.current(wave),
+        onComplete: () => actions.current.land(wave),
       }),
     }
     waves.current.push(wave)
     show()
   }
-  const landRef = useRef(land)
-  landRef.current = land
-  const startRef = useRef(start)
-  startRef.current = start
+  /** This render's callbacks, for effects and tweens that outlive it. */
+  const actions = useRef({ show, tick, land, start })
+  actions.current = { show, tick, land, start }
 
   useEffect(
     () => () => {
-      for (const { tween } of waves.current) {
-        // The hurry is a tween on the wave's own tween.
-        gsap.killTweensOf(tween)
-        tween.kill()
-      }
+      for (const wave of waves.current) stopWave(wave)
     },
     [],
   )
@@ -329,17 +360,20 @@ function PlateScene({ media, index, flex, bleed, lead, onFirstFrame }: PlateScen
   // A wave is never cut. A row that arrives while the plate has no room for
   // another wave waits, and the running waves quicken to make way for it.
   useEffect(() => {
+    if (scrub) return
     if (index === target()) {
       queued.current = null
       return
     }
-    if (waves.current.length >= room) {
+    if (waves.current.length >= PLATE_WAVES) {
       queued.current = index
-      for (const wave of waves.current) hurry(wave.tween)
+      hurryAll(waves.current)
       return
     }
-    startRef.current(index)
-  }, [index, room, target])
+    actions.current.start(index)
+  }, [index, target, scrub])
+
+  useScrubbedWave(scrub, media.length, base, waves, actions)
 
   // The plate bows with the scroll on a damped follow, so it leans into a
   // flick and eases back once the page rests.
@@ -403,12 +437,13 @@ export type PlateRuntimeProps = {
   index: number
   /** The scroll speed the plate bows with, in rows per second. */
   flex?: PlateSignal
+  /** The scroll's position in rows: the wave between two rows follows it instead of a clock. */
+  scrub?: PlateSignal
   /**
    * How far the canvas reaches past the frame on each side, as a share of
    * the frame, so the wave has room to move the plate's edges.
    */
   bleed: number
-  lead: PlateLead
   onReady: () => void
   onFailure: (reason: PlateFailureReason) => void
 }
@@ -424,8 +459,8 @@ export default function PlateRuntime({
   count,
   index,
   flex,
+  scrub,
   bleed,
-  lead,
   onReady,
   onFailure,
 }: PlateRuntimeProps) {
@@ -468,8 +503,8 @@ export default function PlateRuntime({
             bleed={bleed}
             flex={flex}
             index={index}
-            lead={lead}
             media={media}
+            scrub={scrub}
             onFirstFrame={handleFirstFrame}
           />
         )}

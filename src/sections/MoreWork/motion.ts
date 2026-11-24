@@ -9,16 +9,15 @@ export const MORE_WORK_MOTION = {
   /**
    * The plate's wave: long, so two pictures sharing the frame read as a
    * considered change of plate, not a flicker. It moves the moment a row is
-   * chosen, with no slow start, and spends most of its length settling. Its
-   * curve follows what leads the plate (`PlateLead`): the pointer's opens
-   * faster, so the plate answers the row it enters; the scroll's is calmer.
-   * A row that lands mid-wave never cuts it: over `hurryRamp` ms the running
-   * wave quickens by `hurry`, under the new row's wave (pointer) or ahead of
-   * it (scroll).
+   * chosen, with no slow start, and spends most of its length settling, so
+   * the plate answers the row the pointer enters. A row that lands mid-wave
+   * never cuts it: over `hurryRamp` ms the running wave quickens by `hurry`,
+   * under the new row's wave. The works dial has no clock: its scroll drives
+   * the wave (`scrub`).
    */
   plate: {
     duration: 1800,
-    ease: { pointer: [0.2, 0.5, 0.1, 1], scroll: [0.3, 0.4, 0.12, 1] },
+    ease: [0.2, 0.5, 0.1, 1],
     hurry: 3,
     hurryRamp: 300,
   },
