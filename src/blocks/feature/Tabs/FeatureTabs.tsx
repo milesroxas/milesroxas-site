@@ -1,5 +1,6 @@
 'use client'
 
+import { ArrowLeft, ArrowRight, ChevronRight } from 'lucide-react'
 import type React from 'react'
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { AimLayer } from '@/blocks/cta-link/AimLayer'
@@ -13,7 +14,7 @@ import { typeScale } from '@/blocks/shared/typography'
 import { Container } from '@/components/Container'
 import { VideoMedia, warmVideo } from '@/components/Media/VideoMedia'
 import RichText from '@/components/RichText'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer'
 import { VideoPlayer } from '@/components/VideoPlayer'
 import { loopSource } from '@/components/VideoPlayer/loop'
 import { Visual } from '@/components/Visual'
@@ -46,7 +47,7 @@ type FeatureTabsProps = {
   theme?: FeatureTabsBlockData['theme']
 }
 
-const MEDIA_SIZES = '(max-width: 1440px) 100vw, 62vw'
+const MEDIA_SIZES = '(max-width: 1024px) 100vw, 62vw'
 /** The paint's texture width: the panel's widest at 2× density. */
 const PAINT_WIDTH = 2000
 
@@ -121,7 +122,7 @@ const LivePlayer = ({ visual }: { visual: VisualData }) => {
   )
 }
 
-/** Keys per row: one row up to four, then two rows. */
+/** Keys per row below `lg`: one row up to four, then two rows. From `lg` every key shares one row. */
 const keyColumns = (count: number) => (count <= 4 ? count : Math.ceil(count / 2))
 
 /**
@@ -196,19 +197,22 @@ const useSeam = (active: number) => {
 }
 
 /**
- * Feature tabs as a console: hardware keys over a display, beside an ink
- * panel. The keys and the copy are one module in one ruled frame; the lit
- * key inverts, and the spot seam under it runs into the display that says
- * what it does. The panel runs the instrument field, and a switch paints the
- * new picture in through randomized pixel cells (`PixelPaint`, values in
+ * Feature tabs as a console: a rail of hardware keys over a display and an
+ * ink panel. The lit key inverts and the spot seam under it travels the
+ * rail. The panel runs the instrument field, and a switch paints the new
+ * picture in through randomized pixel cells (`PixelPaint`, values in
  * `./look`) while the yellow readout counts the cells that have landed.
  *
- * From 90rem the module and the panel sit side by side and the module takes
- * the panel's height exactly: its column has no height of its own
- * (`contain: size`), the display takes what the keys and the list leave, and
- * a long description scrolls inside it. Narrower, the column is too slim for
- * that, so the panel leads and the module stacks under it, the keys right
- * below the picture they change.
+ * From `lg` the keys run in one row across the block and the display (3/8)
+ * sits beside the panel (5/8) under them. The display keeps its copy's
+ * natural height, so a long description or list never scrolls inside the
+ * block and the picture and the copy stay readable together (Rail, settled
+ * in /proto/feature-tabs-many, 2026-11-26; the earlier layout locked the
+ * copy column to the panel's 16:9 height, which left one line of display at
+ * eight tabs). Narrower, the panel leads and the keys and copy stack under
+ * it, the keys right below the picture they change. Below `md` the keys
+ * become a list of rows under a pinned panel, and a row opens its copy in a
+ * bottom sheet that steps to the neighbouring tabs.
  *
  * Stills and videos paint alike. A video tab paints its first frame and
  * hands off to its player as the paint lands, the player parked under the
@@ -238,6 +242,9 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({
   const keys = useRef<(HTMLButtonElement | null)[]>([])
   const readoutRef = useRef<HTMLSpanElement>(null)
   const copyRef = useCopyIn(active)
+  /** Below `md` the copy opens in a bottom sheet from a list of rows instead of under the keys. */
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const sheetCopyRef = useCopyIn(active)
   const { listRef, seamRef } = useSeam(active)
   const id = useId()
   const sources = useMemo(() => rows.map((row) => paintSource(row.visual)), [rows])
@@ -263,6 +270,16 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({
     }
   }, [mounted, live, epochs])
 
+  // A sheet left open while the viewport grows past `md` would hide copy the page now shows inline.
+  useEffect(() => {
+    const wide = window.matchMedia('(min-width: 48rem)')
+    const close = () => {
+      if (wide.matches) setSheetOpen(false)
+    }
+    wide.addEventListener('change', close)
+    return () => wide.removeEventListener('change', close)
+  }, [])
+
   if (rows.length === 0) return null
 
   const n = rows.length
@@ -284,6 +301,10 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({
     intend(to)
     setActive(to)
   }
+  const openSheet = (to: number) => {
+    choose(to)
+    setSheetOpen(true)
+  }
   const go = (to: number) => {
     keys.current[to]?.focus()
     choose(to)
@@ -304,6 +325,33 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({
     go(to)
   }
 
+  const sampleList = tab.items?.length ? (
+    <div className="flex flex-col gap-3" key={`${tab.id ?? active}-list`}>
+      {tab.subheading ? (
+        <h4 className={meta} data-tab-copy>
+          {tab.subheading}
+        </h4>
+      ) : null}
+      <ol className="border-foreground/15 flex flex-col border-t text-sm">
+        {tab.items.map((item, index) => (
+          <li
+            className="border-foreground/15 flex gap-4 border-b py-2.5"
+            data-tab-copy
+            key={item.id ?? index}
+          >
+            <span className={cn(meta, 'w-5 shrink-0 pt-px')}>{pad2(index)}</span>
+            <span className="text-pretty">{item.text}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  ) : null
+
+  const prev = rows[active - 1]
+  const next = rows[active + 1]
+  const stepClass =
+    'flex min-h-14 touch-manipulation items-center gap-2 px-4 text-sm transition-[background-color,opacity] duration-150 ease-out select-none [-webkit-tap-highlight-color:transparent] active:bg-foreground/[0.06] disabled:opacity-30 motion-reduce:transition-none focus-visible:outline-ring focus-visible:outline-2 focus-visible:-outline-offset-2'
+
   return (
     <Section bare={bare} theme={theme}>
       <Container>
@@ -319,150 +367,135 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({
             tone={overPanel ? 'spot' : 'invert'}
           />
           <BlockGrid className="gap-y-6">
-            <div
-              className="flex flex-col gap-5 md:col-span-8 min-[90rem]:col-span-3 min-[90rem]:self-stretch min-[90rem]:[contain:size]"
-              ref={copyRef}
-            >
-              <div className="flex flex-col gap-3 min-[90rem]:min-h-0 min-[90rem]:flex-1">
-                <div
-                  className="border-foreground flex shrink-0 justify-end border-t pt-3"
-                  data-reveal
-                >
-                  <span className={meta} data-aim="text">
-                    {pad2(active)} / {pad2(n - 1)}
-                  </span>
-                </div>
-
-                <div className="flex flex-col min-[90rem]:min-h-0 min-[90rem]:flex-1">
-                  <div
-                    aria-label="Feature tabs"
-                    className="border-foreground/20 relative grid shrink-0 border-t border-l"
-                    data-reveal
-                    ref={listRef}
-                    role="tablist"
-                    style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
-                  >
-                    {rows.map((row, index) => {
-                      const on = index === active
-                      return (
-                        <button
-                          aria-controls={`${id}-panel`}
-                          aria-selected={on}
-                          className={cn(
-                            'group border-foreground/20 relative flex touch-manipulation flex-col border-r border-b text-left select-none [-webkit-tap-highlight-color:transparent]',
-                            'transition-[background-color,color] duration-300 ease-(--ease-out-quint) motion-reduce:transition-none',
-                            'focus-visible:outline-ring focus-visible:outline-2 focus-visible:-outline-offset-4',
-                            on ? 'bg-foreground text-background' : 'hover:bg-foreground/[0.06]',
-                          )}
-                          id={`${id}-tab-${index}`}
-                          key={row.id ?? index}
-                          onClick={() => choose(index)}
-                          onFocus={() => intend(index)}
-                          onKeyDown={onKeyDown(index)}
-                          onPointerDown={() => intend(index)}
-                          onPointerEnter={() => intend(index)}
-                          ref={(el) => {
-                            keys.current[index] = el
-                          }}
-                          role="tab"
-                          style={index === n - 1 ? { gridColumn: `span ${lastSpan}` } : undefined}
-                          tabIndex={on ? 0 : -1}
-                          type="button"
-                        >
-                          <span className="flex flex-1 flex-col gap-1.5 px-2.5 py-2 transition-[translate,scale] duration-150 ease-out group-active:translate-y-px group-active:scale-[0.97] motion-reduce:transition-none">
-                            <span
-                              aria-hidden
-                              className={cn(meta, on ? 'text-background/60' : undefined)}
-                            >
-                              {pad2(index)}
-                            </span>
-                            <span
-                              className={cn(
-                                'text-sm leading-tight font-light',
-                                tabSize !== 'small' && '2xl:text-base',
-                              )}
-                            >
-                              {row.title}
-                            </span>
-                          </span>
-                        </button>
-                      )
-                    })}
-                    <span
-                      aria-hidden
-                      className="bg-accent pointer-events-none absolute top-0 left-0 z-10 h-0.5"
-                      ref={seamRef}
-                    />
-                  </div>
-
-                  <div
-                    aria-labelledby={`${id}-tab-${active}`}
-                    className="flex flex-col gap-4 min-[90rem]:min-h-0 min-[90rem]:flex-1"
-                    data-reveal
-                    id={`${id}-panel`}
-                    role="tabpanel"
-                  >
-                    {/* The display: the lit key's copy, scrolling only when it outgrows the panel's height. */}
-                    <div className="border-foreground/20 relative min-h-[14.5rem] border-x border-b md:min-h-[10.5rem] min-[90rem]:min-h-0 min-[90rem]:flex-1">
-                      <div className="min-[90rem]:absolute min-[90rem]:inset-0">
-                        <ScrollArea className="min-[90rem]:h-full" type="auto">
-                          <div className="flex flex-col gap-3 p-3" key={tab.id ?? active}>
-                            <h3
-                              className={cn(type.heading, 'font-light text-balance')}
-                              data-tab-copy
-                            >
-                              {tab.heading}
-                            </h3>
-                            {tab.description ? (
-                              <div className="text-muted-foreground text-pretty" data-tab-copy>
-                                <RichText
-                                  className={type.body}
-                                  data={tab.description}
-                                  enableGutter={false}
-                                  enableProse={false}
-                                />
-                              </div>
-                            ) : null}
-                            {alt ? <p className="sr-only">{alt}</p> : null}
-                          </div>
-                        </ScrollArea>
-                      </div>
-                    </div>
-
-                    {tab.items?.length ? (
-                      <div className="flex shrink-0 flex-col gap-3" key={tab.id ?? active}>
-                        {tab.subheading ? (
-                          <h4 className={meta} data-tab-copy>
-                            {tab.subheading}
-                          </h4>
-                        ) : null}
-                        <ol className="border-foreground/15 flex flex-col border-t text-sm">
-                          {tab.items.map((item, index) => (
-                            <li
-                              className="border-foreground/15 flex gap-4 border-b py-2.5"
-                              data-tab-copy
-                              key={item.id ?? index}
-                            >
-                              <span className={cn(meta, 'w-5 shrink-0 pt-px')}>{pad2(index)}</span>
-                              <span className="text-pretty">{item.text}</span>
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
-                    ) : null}
-
-                    {tab.caption ? (
-                      <p className="text-muted-foreground text-sm md:hidden" data-tab-copy>
-                        {tab.caption}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
+            <div className="flex flex-col gap-3 md:col-span-8">
+              <div className="border-foreground flex justify-end border-t pt-3" data-reveal>
+                <span className={meta} data-aim="text">
+                  {pad2(active)} / {pad2(n - 1)}
+                </span>
               </div>
+              <div
+                aria-label="Feature tabs"
+                className="border-foreground/20 relative grid grid-cols-(--keys) border-t border-l max-md:hidden lg:grid-cols-(--keys-lg)"
+                data-reveal
+                ref={listRef}
+                role="tablist"
+                style={
+                  {
+                    '--keys': `repeat(${columns}, minmax(0, 1fr))`,
+                    '--keys-lg': `repeat(${n}, minmax(0, 1fr))`,
+                  } as React.CSSProperties
+                }
+              >
+                {rows.map((row, index) => {
+                  const on = index === active
+                  return (
+                    <button
+                      aria-controls={`${id}-panel`}
+                      aria-selected={on}
+                      className={cn(
+                        'group border-foreground/20 relative flex touch-manipulation flex-col border-r border-b text-left select-none [-webkit-tap-highlight-color:transparent] max-lg:[grid-column:var(--last,auto)]',
+                        'transition-[background-color,color] duration-300 ease-(--ease-out-quint) motion-reduce:transition-none',
+                        'focus-visible:outline-ring focus-visible:outline-2 focus-visible:-outline-offset-4',
+                        on ? 'bg-foreground text-background' : 'hover:bg-foreground/[0.06]',
+                      )}
+                      id={`${id}-tab-${index}`}
+                      key={row.id ?? index}
+                      onClick={() => choose(index)}
+                      onFocus={() => intend(index)}
+                      onKeyDown={onKeyDown(index)}
+                      onPointerDown={() => intend(index)}
+                      onPointerEnter={() => intend(index)}
+                      ref={(el) => {
+                        keys.current[index] = el
+                      }}
+                      role="tab"
+                      style={
+                        index === n - 1
+                          ? ({ '--last': `span ${lastSpan}` } as React.CSSProperties)
+                          : undefined
+                      }
+                      tabIndex={on ? 0 : -1}
+                      type="button"
+                    >
+                      <span className="flex min-h-11 flex-1 items-center px-2.5 py-2.5 transition-[translate,scale] duration-150 ease-out group-active:translate-y-px group-active:scale-[0.97] motion-reduce:transition-none">
+                        <span
+                          className={cn(
+                            'text-sm leading-tight font-light',
+                            tabSize !== 'small' && '2xl:text-base',
+                          )}
+                        >
+                          {row.title}
+                        </span>
+                      </span>
+                    </button>
+                  )
+                })}
+                <span
+                  aria-hidden
+                  className="bg-accent pointer-events-none absolute top-0 left-0 z-10 h-0.5"
+                  ref={seamRef}
+                />
+              </div>
+
+              {/* Phones: one row per tab, its lead line in view, under the pinned panel; a tap opens the copy in a sheet. */}
+              <ol className="border-foreground/20 border-t md:hidden" data-reveal>
+                {rows.map((row, index) => (
+                  <li className="border-foreground/20 border-b" key={row.id ?? index}>
+                    <button
+                      aria-current={index === active || undefined}
+                      aria-haspopup="dialog"
+                      className="focus-visible:outline-ring active:bg-foreground/[0.06] aria-[current]:before:bg-accent relative flex min-h-14 w-full touch-manipulation items-center gap-3 py-3 pl-3 text-left transition-[background-color] duration-150 ease-out select-none [-webkit-tap-highlight-color:transparent] before:absolute before:inset-y-3 before:left-0 before:w-0.5 focus-visible:outline-2 focus-visible:-outline-offset-2 motion-reduce:transition-none"
+                      onClick={() => openSheet(index)}
+                      onPointerDown={() => intend(index)}
+                      type="button"
+                    >
+                      <span className="flex min-w-0 flex-1 flex-col gap-1">
+                        <span className="text-base leading-tight font-light">{row.title}</span>
+                        <span className="text-muted-foreground line-clamp-2 text-sm text-pretty">
+                          {row.heading}
+                        </span>
+                      </span>
+                      <ChevronRight aria-hidden className="text-muted-foreground size-4 shrink-0" />
+                    </button>
+                  </li>
+                ))}
+              </ol>
             </div>
 
             <div
-              className="relative aspect-video self-start max-[90rem]:order-first md:col-span-8 min-[90rem]:col-span-5"
+              aria-labelledby={`${id}-tab-${active}`}
+              className="flex flex-col gap-4 max-md:hidden md:col-span-8 lg:col-span-3"
+              data-reveal
+              id={`${id}-panel`}
+              ref={copyRef}
+              role="tabpanel"
+            >
+              {/* The display: the lit key's copy at its natural height. */}
+              <div
+                className="border-foreground/20 flex flex-col gap-3 border p-3"
+                key={tab.id ?? active}
+              >
+                <h3 className={cn(type.heading, 'font-light text-balance')} data-tab-copy>
+                  {tab.heading}
+                </h3>
+                {tab.description ? (
+                  <div className="text-muted-foreground text-pretty" data-tab-copy>
+                    <RichText
+                      className={type.body}
+                      data={tab.description}
+                      enableGutter={false}
+                      enableProse={false}
+                    />
+                  </div>
+                ) : null}
+                {alt ? <p className="sr-only">{alt}</p> : null}
+              </div>
+
+              {sampleList}
+            </div>
+
+            <div
+              className="max-md:before:bg-background relative aspect-video self-start max-lg:order-first max-md:sticky max-md:top-(--chrome-top) max-md:z-10 max-md:before:absolute max-md:before:inset-x-0 max-md:before:bottom-full max-md:before:h-(--chrome-top) md:col-span-8 lg:col-span-5"
               data-reveal="media"
               onPointerEnter={() => setOverPanel(true)}
               onPointerLeave={() => setOverPanel(false)}
@@ -557,6 +590,63 @@ export const FeatureTabs: React.FC<FeatureTabsProps> = ({
           </BlockGrid>
         </div>
       </Container>
+
+      <Drawer onOpenChange={setSheetOpen} open={sheetOpen}>
+        <DrawerContent aria-describedby={undefined} className="max-h-[85dvh] md:hidden">
+          <div
+            className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-4 pt-4 pb-6"
+            ref={sheetCopyRef}
+          >
+            <div className="flex flex-col gap-3" key={tab.id ?? active}>
+              <span className={meta} data-tab-copy>
+                {pad2(active)} / {tab.title}
+              </span>
+              <DrawerTitle asChild className={cn(type.heading, 'font-light text-balance')}>
+                <h3 data-tab-copy>{tab.heading}</h3>
+              </DrawerTitle>
+              {tab.description ? (
+                <div className="text-muted-foreground text-pretty" data-tab-copy>
+                  <RichText
+                    className={type.body}
+                    data={tab.description}
+                    enableGutter={false}
+                    enableProse={false}
+                  />
+                </div>
+              ) : null}
+            </div>
+            {sampleList}
+            {tab.caption ? (
+              <p className="text-muted-foreground text-sm" data-tab-copy>
+                {tab.caption}
+              </p>
+            ) : null}
+          </div>
+          <nav
+            aria-label="Step through tabs"
+            className="border-foreground/15 grid grid-cols-2 border-t pb-[env(safe-area-inset-bottom,0px)]"
+          >
+            <button
+              className={stepClass}
+              disabled={!prev}
+              onClick={() => choose(active - 1)}
+              type="button"
+            >
+              <ArrowLeft aria-hidden className="size-4 shrink-0" />
+              <span className="truncate">{prev ? prev.title : 'Previous'}</span>
+            </button>
+            <button
+              className={cn(stepClass, 'border-foreground/15 justify-end border-l')}
+              disabled={!next}
+              onClick={() => choose(active + 1)}
+              type="button"
+            >
+              <span className="truncate">{next ? next.title : 'Next'}</span>
+              <ArrowRight aria-hidden className="size-4 shrink-0" />
+            </button>
+          </nav>
+        </DrawerContent>
+      </Drawer>
     </Section>
   )
 }
