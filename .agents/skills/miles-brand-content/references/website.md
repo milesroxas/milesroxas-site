@@ -82,7 +82,7 @@ Case study narrative lives in `layout` blocks; there are no story sections. Map 
 
 Posts carry the "Building and learning" and "Tools and systems" pillars most often. Write them with `references/articles.md`: pick the shape, open on the work, state the point early, give each section one job, and end on an implication the evidence earns. Bylined posts speak as Miles in the first person. Name AI and collaborators where they did the work: how the work was split is part of the story.
 
-A post's sections are Standard heading blocks (`richTransition`) followed by Rich text blocks, as the published posts are built; `content` holds the body when the post has no layout. An external post (`source: external`) gets only `intro.body`: two short paragraphs, what the article covers and who it is worth reading for, with one concrete detail from it.
+How a post's blocks are built (section headings as `##` inside Rich text, never a Standard heading block; tight section spacing; media sizes; publishing) is in the `miles-site-posts` skill: follow it for every post save. `content` holds the body when the post has no layout. An external post (`source: external`) gets only `intro.body`: two short paragraphs, what the article covers and who it is worth reading for, with one concrete detail from it.
 
 ## SEO and answer engines
 
