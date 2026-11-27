@@ -1,4 +1,4 @@
-# Migration snapshot chain check. See docs/conductor.md → "Schema changes across workspaces".
+# Migration snapshot chain check. See docs/worktrees.md → "Schema changes across worktrees".
 #
 # A pull_request run checks out the merge commit GitHub builds (refs/pull/N/merge),
 # so the drift check sees dev's newest migration next to the branch's. A

@@ -48,7 +48,6 @@ INERT_RES=(
   '^CLAUDE\.md$'
   '^\.claude/'
   '^\.cursor/'
-  '^\.conductor/'
   '^\.vscode/'
   # Design and brand ideation. Nothing in the app imports it: Elyx files
   # anywhere, plans, agent skills, Impeccable notes and the dev-only brand
@@ -70,6 +69,7 @@ INERT_RES=(
   # Local dev environment.
   '^docker-compose\.yml$'
   '^scripts/dev-tui/'
+  '^scripts/worktree/'
   # Lint, test and Storybook tooling.
   '^biome\.jsonc?$'
   '^\.fallowrc\.jsonc?$'

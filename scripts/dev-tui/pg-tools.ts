@@ -112,7 +112,7 @@ const sqlString = (value: string) => `'${value.replace(/'/g, "''")}'`
 
 /**
  * Replace a local database with an empty one. The database comment survives:
- * `.conductor/prune-dbs.sh` finds orphaned workspace databases by theirs, and
+ * `scripts/worktree/prune-dbs.sh` finds orphaned worktree databases by theirs, and
  * `CREATE DATABASE` starts without one.
  */
 export async function localDropAndCreateDb(db: string): Promise<void> {

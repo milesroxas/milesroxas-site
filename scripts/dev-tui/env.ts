@@ -39,10 +39,10 @@ const exists = (file: string) =>
   )
 
 /**
- * The main checkout when this is a git worktree (a Conductor workspace), else
- * null. Its untracked files serve the workspace too: the Vercel link and the
- * pulled production env, which `.conductor/settings.toml` deliberately does not
- * copy into every workspace.
+ * The main checkout when this is a git worktree (a T3 Code worktree), else
+ * null. Its untracked files serve the worktree too: the Vercel link and the
+ * pulled production env, which worktree setup deliberately does not copy
+ * into every worktree.
  */
 async function mainCheckoutRoot(): Promise<string | null> {
   const r = await execa('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], {
@@ -182,8 +182,8 @@ const LOCAL_DB_NAME = /^[a-z][a-z0-9_]{0,62}$/
 
 /**
  * The local Docker database this checkout works in: the one its env chain
- * names when that is on the local container (a Conductor workspace's
- * `payload_<city>`), else the main dev DB `payload`. Every TUI action that
+ * names when that is on the local container (a worktree's
+ * `payload_<worktree dir>`), else the main dev DB `payload`. Every TUI action that
  * reads or replaces a local database targets this one, so a pull in a
  * workspace fills that workspace's DB and never the main checkout's.
  */

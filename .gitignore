@@ -42,9 +42,6 @@ storybook-static
 .claude/worktrees/
 .claude/settings.local.json
 
-# Conductor — personal overrides (https://www.conductor.build/docs/reference/settings)
-.conductor/settings.local.toml
-
 # Content snapshots written by scripts/compose-layouts.ts (local recovery artifacts)
 scripts/snapshots/
 

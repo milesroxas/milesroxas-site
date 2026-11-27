@@ -12,9 +12,9 @@
 # 3) Runs scripts/check-migration-drift.ts whenever schema source or migrations
 #    changed: `migrate:create` diffs the config against the newest snapshot file,
 #    so a field added after the migration was generated, or a migration generated
-#    in a parallel workspace before dev gained another one, leaves the newest
+#    in a parallel worktree before dev gained another one, leaves the newest
 #    snapshot out of step with the config — and the next migrate:create re-emits
-#    statements CI already applied. See docs/conductor.md.
+#    statements CI already applied. See docs/worktrees.md.
 # 4) When the push adds a migration, fails unless the branch holds every
 #    migration on origin/dev (the integration branch) and its own migrations
 #    sort after dev's newest.
@@ -73,7 +73,7 @@ SCHEMA_RES=(
 MIGRATION_RE='^src/migrations/[0-9].*\.(ts|json)$'
 MIGRATION_TS_RE='^src/migrations/[0-9].*\.ts$'
 SNAPSHOT_RE='^src/migrations/[0-9].*\.json$'
-# Branches merge into dev; main only receives dev. See docs/conductor.md.
+# Branches merge into dev; main only receives dev. See docs/worktrees.md.
 INTEGRATION_BRANCH=dev
 INTEGRATION_REF="origin/$INTEGRATION_BRANCH"
 
@@ -122,7 +122,7 @@ snapshots_at() {
 # A branch migration must be generated on top of dev's newest. The drift check
 # only sees this branch's tree, so a migration from a branch that never took
 # dev's newer migrations passes it and breaks the snapshot chain on merge.
-# See docs/conductor.md → "Schema changes across workspaces".
+# See docs/worktrees.md → "Schema changes across worktrees".
 check_integration_order() {
   local local_sha="$1"
   if [[ "$fetched_integration" == 0 ]]; then

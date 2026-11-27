@@ -25,7 +25,7 @@ Do not keep `.env.local` or `.env.production` in the repo root. Next.js loads th
 
 ### Get production content locally
 
-`pnpm dev:tui` → **Pull production content → local Docker DB**. It pulls `.env.production.pulled` with the Vercel CLI if missing, `pg_dump`s production with the container's own client, and restores it over the local DB your `.env` names: `payload` in the main checkout, `payload_<city>` in a Conductor workspace (the TUI footer shows which). A workspace borrows the main checkout's Vercel link and pulled env file, so it needs neither of its own. Local data is replaced and not backed up; use **Database → Back up local Docker DB** first if local has work worth keeping.
+`pnpm dev:tui` → **Pull production content → local Docker DB**. It pulls `.env.production.pulled` with the Vercel CLI if missing, `pg_dump`s production with the container's own client, and restores it over the local DB your `.env` names: `payload` in the main checkout, `payload_<worktree dir>` in a T3 Code worktree (the TUI footer shows which). A worktree borrows the main checkout's Vercel link and pulled env file, so it needs neither of its own. Local data is replaced and not backed up; use **Database → Back up local Docker DB** first if local has work worth keeping.
 
 After a pull, `pnpm dev` push re-applies any schema changes on your branch.
 
@@ -49,7 +49,7 @@ pnpm guard:preview-db && payload migrate && pnpm build
 2. `pnpm dev` pushes the change into the local DB.
 3. `pnpm generate:types` (and `pnpm generate:importmap` for admin components).
 4. `pnpm migrate:create <name>`. Review the SQL. Commit the `.ts` and `.json` together.
-5. `pnpm check:migrations` and `pnpm check:migrations:drift`, then rebase onto `origin/dev` and push: [docs/conductor.md](docs/conductor.md) → Schema changes across workspaces.
+5. `pnpm check:migrations` and `pnpm check:migrations:drift`, then rebase onto `origin/dev` and push: [docs/worktrees.md](docs/worktrees.md) → Schema changes across worktrees.
 
 ```bash
 pnpm migrate:create <name>    # a file to review and commit; touches no database
@@ -84,9 +84,9 @@ expect scripts/migrate-create.exp <name> column:posts.body_text=body column:post
 
 `.githooks/pre-push` (wired by `pnpm install` via `prepare`) rejects a push that changes schema files without a new migration. It also runs the enum check on changed migrations and the drift check when schema or migrations changed. When you add a schema-owning path, add it to `SCHEMA_RES` in the hook. `SKIP_MIGRATION_GUARD=1 git push` skips it; use that only when you are sure no migration is needed.
 
-### Parallel workspaces
+### Parallel worktrees
 
-Each Conductor workspace has its own database. The last migration to merge has to be generated on top of the others. See [docs/conductor.md](docs/conductor.md).
+Each T3 Code worktree has its own database. The last migration to merge has to be generated on top of the others. See [docs/worktrees.md](docs/worktrees.md).
 
 ## Legacy recovery scripts
 

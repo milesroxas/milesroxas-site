@@ -10,13 +10,13 @@ export const PROJECT_ROOT = path.resolve(__dirname, '../..')
  * Pinned Postgres image (server + bundled client tools). Same major as Neon
  * production (17), so pg_dump matches the server and drizzle-kit reads the
  * local catalog the way it reads production's.
- * Keep in sync with `docker-compose.yml` and `.conductor/lib.sh`.
+ * Keep in sync with `docker-compose.yml` and `scripts/worktree/lib.sh`.
  */
 export const POSTGRES_DOCKER_IMAGE = 'pgvector/pgvector:pg17-trixie'
 
-/** The local Docker Postgres (docker-compose.yml). Keep in sync with `.conductor/lib.sh`. */
+/** The local Docker Postgres (docker-compose.yml). Keep in sync with `scripts/worktree/lib.sh`. */
 export const LOCAL_POSTGRES_HOST = '127.0.0.1:54330'
-/** The main checkout's dev database; a Conductor workspace has its own `payload_<city>`. */
+/** The main checkout's dev database; a worktree has its own `payload_<worktree dir>`. */
 export const LOCAL_POSTGRES_DB = `postgresql://postgres@${LOCAL_POSTGRES_HOST}/payload`
 
 /**

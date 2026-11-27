@@ -1,12 +1,12 @@
 # Local Postgres for development. App runs on the host: pnpm dev
 # Connection: postgresql://postgres@127.0.0.1:54330/payload (see .env.example)
-# Bump POSTGRES_DOCKER_IMAGE in scripts/dev-tui/constants.ts and .conductor/lib.sh together with `image:` below.
+# Bump POSTGRES_DOCKER_IMAGE in scripts/dev-tui/constants.ts and scripts/worktree/lib.sh together with `image:` below.
 # Major/minor jumps usually need a fresh volume: pnpm db:reset
 #
 # Port 54330, not 5432/54320: sas-site's container owns 54320 and Supabase
 # local stacks take 54321-54324, so each project keeps its own port.
 
-# Fixed project name so every checkout (main repo, Conductor workspaces) targets the
+# Fixed project name so every checkout (main checkout, T3 Code worktrees) targets the
 # same container/volume. Compose otherwise derives the project from the directory
 # name, and `docker compose exec` in a workspace can't see the running container.
 name: milesroxas
@@ -16,7 +16,7 @@ configs:
   # (db:reset) leaves the DB ready for push without a manual step. Inline
   # content rather than a bind-mounted directory: a bind mount's absolute host
   # path is part of the service config hash, so `docker compose up` from a
-  # different checkout (Conductor workspace vs main repo) would see a
+  # different checkout (a worktree vs the main checkout) would see a
   # "changed" config and re-create the running container.
   initdb-extensions:
     content: |

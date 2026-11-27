@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Run script (Conductor, T3 Code): Storybook on the workspace's port + 1
-# (Conductor reserves CONDUCTOR_PORT..+9; a T3 worktree owns DEV_PORT and +1).
+# Storybook script (T3 Code): Storybook on the worktree's DEV_PORT + 1.
 set -euo pipefail
 source "$(dirname "$0")/lib.sh"
 

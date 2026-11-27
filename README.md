@@ -29,11 +29,11 @@ frontend.
 4. `pnpm dev:tui` → **Pull production content → local Docker DB**
 5. `pnpm dev`, then open `http://localhost:3000`
 
-Skip step 4 for an empty database: `pnpm dev` pushes the schema and the admin prompts for a first user. Database workflow: [MIGRATIONS.md](MIGRATIONS.md). Parallel workspaces: [docs/conductor.md](docs/conductor.md).
+Skip step 4 for an empty database: `pnpm dev` pushes the schema and the admin prompts for a first user. Database workflow: [MIGRATIONS.md](MIGRATIONS.md). Parallel worktrees: [docs/worktrees.md](docs/worktrees.md).
 
 ## Branches and Releases
 
-`dev` is the integration branch and `main` is production. Feature branches and Conductor workspaces start from `origin/dev` and land on `dev`: rebase onto `origin/dev` and `git push origin HEAD:dev`, or a PR into `dev` when one is wanted. Vercel builds only `main` (`vercel.json` → `git.deploymentEnabled`); a preview of `dev` is created by hand in the Vercel dashboard (Deployments → Create Deployment, ref `dev`) and migrates the Neon preview branch. Release: Miles runs `git push origin dev:main` from the main checkout (fast-forward), or merges a PR from `dev` into `main`; the production build migrates production, and `pnpm migrate:status` confirms the ledger. Never `vercel deploy` from a branch: `scripts/guard-preview-db.ts` refuses it. Details: [docs/conductor.md](docs/conductor.md) → Branch flow.
+`dev` is the integration branch and `main` is production. Feature branches and T3 Code worktrees start from `origin/dev` and land on `dev`: rebase onto `origin/dev` and `git push origin HEAD:dev`, or a PR into `dev` when one is wanted. Vercel builds only `main` (`vercel.json` → `git.deploymentEnabled`); a preview of `dev` is created by hand in the Vercel dashboard (Deployments → Create Deployment, ref `dev`) and migrates the Neon preview branch. Release: Miles runs `git push origin dev:main` from the main checkout (fast-forward), or merges a PR from `dev` into `main`; the production build migrates production, and `pnpm migrate:status` confirms the ledger. Never `vercel deploy` from a branch: `scripts/guard-preview-db.ts` refuses it. Details: [docs/worktrees.md](docs/worktrees.md) → Branch flow.
 
 ## Commands
 
@@ -77,7 +77,7 @@ This is the single reference for environment files and variables. `.env.example`
 | File | Purpose |
 | --- | --- |
 | `.env` | Local development values; `POSTGRES_URL` is the local Docker DB |
-| `.env.production.pulled` | Production env pulled by the dev TUI. Only the TUI, `pnpm migrate:status` and Conductor read it |
+| `.env.production.pulled` | Production env pulled by the dev TUI. Only the TUI, `pnpm migrate:status` and the worktree setup script (`--from production`) read it |
 | `.env.example` | Reference template |
 
 Do not create `.env.local` or `.env.production`: Next.js loads them over `.env`, and a `vercel env pull` into either points local dev or a local build at Neon. Pull production env through `pnpm dev:tui` → Database → Pull Vercel production env.
@@ -172,7 +172,7 @@ Main directories inside `src/`:
 ## Docs
 
 - [docs/aeo.md](docs/aeo.md) - SEO and AEO: metadata, JSON-LD, sitemap, `llms.txt` and the `.md` alternates
-- [docs/conductor.md](docs/conductor.md) - Conductor workspaces, branch flow, schema changes across workspaces
+- [docs/worktrees.md](docs/worktrees.md) - T3 Code worktrees, branch flow, schema changes across worktrees
 - [docs/figures.md](docs/figures.md) - Chart and diagram blocks, Markdown input, the figure palette
 - [docs/immersive-effects.md](docs/immersive-effects.md) - How the WebGL and shader effects are organized and tuned
 - [docs/mcp.md](docs/mcp.md) - The `milesroxas-cms` MCP server: tools, keys, `pnpm cms:upload`
@@ -190,4 +190,4 @@ Main directories inside `src/`:
 
 - Push in development, migrations in CI: the Vercel build runs `payload migrate`.
 - See [MIGRATIONS.md](MIGRATIONS.md) for the migration workflow.
-- See [Branches and Releases](#branches-and-releases) above and [docs/conductor.md](docs/conductor.md) for branch and release flow.
+- See [Branches and Releases](#branches-and-releases) above and [docs/worktrees.md](docs/worktrees.md) for branch and release flow.

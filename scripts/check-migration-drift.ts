@@ -9,7 +9,7 @@
  * 1. A field added after the branch's migration was generated: local drizzle
  *    push syncs the column, the migration never carries it, prod prerender
  *    dies on `column does not exist`.
- * 2. Parallel workspaces (Conductor): branches A and B each generate a
+ * 2. Parallel worktrees: branches A and B each generate a
  *    migration from the same base snapshot. After both merge, the newest
  *    snapshot lacks the other branch's changes, so the next `migrate:create`
  *    re-emits them and CI's `payload migrate` fails on `already exists`.
@@ -22,7 +22,7 @@
  * Fix: if the branch owns the change, ask, then `pnpm migrate:create <name>`.
  * If main gained a migration after yours was generated: rebase, delete your
  * migration (`.ts` + `.json`), regenerate so its snapshot includes main's.
- * See docs/conductor.md → "Schema changes across workspaces".
+ * See docs/worktrees.md → "Schema changes across worktrees".
  *
  * If drizzle prompts (create vs rename) the answer does not matter here — a
  * prompt already means the snapshot and the config disagree.
@@ -73,7 +73,7 @@ async function main(): Promise<void> {
   console.error(
     '\n  Branch owns the change → ask, then `pnpm migrate:create <name>`.' +
       '\n  Main gained a migration after yours → rebase, delete your .ts + .json, regenerate.' +
-      '\n  See docs/conductor.md → "Schema changes across workspaces".\n',
+      '\n  See docs/worktrees.md → "Schema changes across worktrees".\n',
   )
   process.exit(1)
 }

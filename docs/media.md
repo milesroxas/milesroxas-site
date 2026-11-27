@@ -197,7 +197,7 @@ Done once on 2026-10-11; recorded so it can be repeated for another account.
      ]
    }
    ```
-   Add a Conductor workspace's port or a preview host when uploading from there. A custom
+   Add a worktree's port (`DEV_PORT` in its `.env`) or a preview host when uploading from there. A custom
    domain needs the zone on Cloudflare (full setup, or a partial CNAME zone on a Business or
    Enterprise plan); milesroxas.com's DNS is on Vercel, so the bucket keeps its r2.dev URL. That
    URL is rate limited, which is fine here: only Cloudflare's own ingest, the fallback for a
